@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LEVEL UP — Sorteo de Agosto</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- ══ FIREBASE SDK ══ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    --bg: #052b24;
+    --surface: #0a4b3f;
+    --surface2: #073b32;
+    --border: #105c4d;
+    --border2: #167d6a;
+    --accent: #84cc16;
+    --orange: #f97316;
+    --red: #dc2626;
+    --blue: #1d4ed8;
+    --text: #ffffff;
+    --muted: #9ca3af;
+    --dim: #6b7280;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+  input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+  input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+  select { -webkit-appearance: none; appearance: none; }
+
+  /* ── LOADING ── */
+  #loading-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; z-index: 9999;
+  }
+  #loading-screen.hidden { display: none; }
+  .loading-spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 900; color: var(--muted); letter-spacing: 0.3em; text-transform: uppercase; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%) translateY(-60px);
+    z-index: 9999; background: var(--surface); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px; padding: 10px 20px; display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5); max-width: calc(100vw - 28px);
+    transition: transform 0.25s cubic-bezier(.34,1.56,.64,1); pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast span { font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100dvh; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 16px;
+  }
+  .login-card {
+    background: var(--surface); border-radius: 28px; padding: 36px 24px;
+    border: 1px solid var(--border); width: 100%; max-width: 400px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+  .login-title { font-family: 'Barlow Condensed', sans-serif; font-size: 48px; font-weight: 900; color: var(--accent); letter-spacing: -0.04em; line-height: 1; }
+  .login-sub { color: var(--orange); font-size: 9px; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; margin-top: 8px; }
+  .field-label { font-size: 9px; font-weight: 700; color: var(--dim); letter-spacing: 0.2em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .field-input {
+    width: 100%; background: #0f372f; border: 1px solid var(--border2); color: var(--text);
+    border-radius: 14px; padding: 14px 16px; font-size: 14px; font-family: 'Barlow', sans-serif;
+    outline: none; transition: border-color 0.2s;
+  }
+  .field-input:focus { border-color: var(--accent); }
+  .btn-login {
+    width: 100%; background: var(--orange); color: #fff; font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; padding: 16px; border-radius: 14px; border: none; font-size: 16px;
+    letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; margin-top: 4px;
+    box-shadow: 0 4px 20px rgba(249,115,22,0.35); transition: background 0.15s, transform 0.1s;
+  }
+  .btn-login:active { background: #ea6c10; transform: scale(0.98); }
+
+  /* ── APP LAYOUT ── */
+  #app-screen { display: none; flex-direction: column; min-height: 100dvh; }
+  #app-screen.active { display: flex; }
+
+  /* ── HEADER ── */
+  #header {
+    background: #041e18; border-bottom: 1px solid var(--surface);
+    position: sticky; top: 0; z-index: 50; padding: 10px 14px;
+  }
+  .header-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .header-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; color: var(--accent); letter-spacing: -0.03em; }
+  .status-badge {
+    padding: 4px 10px; border-radius: 20px; font-size: 8px; font-weight: 900;
+    letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+  }
+  .status-open   { background: rgba(74,222,128,0.1);  color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+  .status-wait   { background: rgba(251,146,60,0.1);  color: #fb923c; border: 1px solid rgba(251,146,60,0.2); }
+  .status-closed { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+  .user-pill { display: flex; align-items: center; gap: 8px; background: var(--surface); padding: 6px 12px; border-radius: 12px; border: 1px solid var(--border); }
+  .user-pill .uname { font-size: 11px; font-weight: 700; }
+  .btn-logout {
+    background: rgba(153,27,27,0.2); border: 1px solid rgba(153,27,27,0.3);
+    border-radius: 10px; padding: 8px; color: #f87171; cursor: pointer;
+    display: flex; align-items: center; transition: background 0.15s;
+  }
+  .btn-logout:active { background: rgba(153,27,27,0.4); }
+  .admin-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .btn-admin {
+    padding: 6px 12px; border-radius: 10px; border: none; font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s;
+  }
+  .btn-admin:active { transform: scale(0.95); }
+
+  /* ── TABS ── */
+  .tabs {
+    display: flex; margin: 10px 10px 0; background: #041e18;
+    border-radius: 14px; padding: 4px; border: 1px solid var(--surface);
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 6px; border: none; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 12px;
+    letter-spacing: 0.15em; text-transform: uppercase; transition: all 0.2s;
+    border-radius: 10px; background: transparent; color: var(--muted);
+  }
+  .tab-btn.active { background: var(--accent); color: #052b24; }
+
+  /* ── MAIN ── */
+  #main { padding: 10px 10px 80px; flex: 1; }
+  .card { background: var(--surface); border-radius: 20px; padding: 16px 14px; border: 1px solid var(--border); }
+
+  /* ── ADMIN PANEL ── */
+  #admin-panel { margin: 10px 10px 0; display: none; }
+  #admin-panel.open { display: block; }
+  .section-label {
+    font-size: 9px; font-weight: 900; color: var(--accent); letter-spacing: 0.35em;
+    text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .tp-wrap { background: rgba(0,0,0,0.2); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; }
+  .tp-label { font-size: 8px; font-weight: 900; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+  .tp-date {
+    width: 100%; background: var(--bg); border: 1px solid var(--border2); color: #fff;
+    border-radius: 10px; padding: 8px 12px; font-size: 13px; outline: none;
+    margin-bottom: 8px; font-family: 'Barlow', sans-serif;
+  }
+  .tp-time-row { display: flex; gap: 8px; }
+  .tp-selects {
+    flex: 1; display: flex; background: var(--bg); border: 1px solid var(--border2);
+    border-radius: 10px; overflow: hidden; height: 38px; align-items: center;
+  }
+  .tp-sel {
+    flex: 1; background: transparent; color: #fff; font-size: 13px; font-weight: 900;
+    border: none; outline: none; text-align: center; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif; padding: 0 4px;
+  }
+  .tp-colon { color: var(--dim); font-weight: 900; padding: 0 2px; }
+  .tp-ampm-wrap {
+    display: flex; background: var(--bg); border: 1px solid var(--border2);
+    border-radius: 10px; overflow: hidden; height: 38px;
+  }
+  .tp-ampm-btn {
+    padding: 0 12px; background: transparent; color: var(--muted); font-weight: 900;
+    font-size: 10px; border: none; cursor: pointer; transition: all 0.15s;
+    font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.1em;
+  }
+  .tp-ampm-btn.active { background: var(--accent); color: #052b24; }
+  .student-list { max-height: 380px; overflow-y: auto; }
+  .student-row {
+    background: rgba(0,0,0,0.3); border-radius: 16px; padding: 12px;
+    margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05);
+  }
+  .student-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .pos-label { font-size: 8px; font-weight: 900; color: var(--dim); letter-spacing: 0.2em; text-transform: uppercase; }
+  .mini-input {
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px; color: #fff; font-family: 'Barlow', sans-serif; outline: none;
+    transition: border-color 0.15s; font-weight: 700;
+  }
+  .mini-input:focus { border-color: var(--accent); }
+  .btn-add-student {
+    width: 100%; padding: 12px; background: transparent;
+    border: 2px dashed rgba(132,204,22,0.4); border-radius: 14px;
+    color: var(--accent); font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer;
+    transition: background 0.15s; margin-top: 4px;
+  }
+  .btn-add-student:hover { background: rgba(132,204,22,0.07); }
+
+  /* ── BOARD ── */
+  .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .board-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; }
+  .board-sub { font-size: 9px; color: var(--dim); font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 2px; }
+  .taken-box {
+    text-align: right; background: rgba(0,0,0,0.3); padding: 8px 14px;
+    border-radius: 14px; border: 1px solid rgba(255,255,255,0.05);
+  }
+  .taken-label { font-size: 8px; color: var(--dim); font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2px; }
+  .taken-count { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; color: var(--orange); line-height: 1; }
+  .taken-total { font-size: 14px; font-weight: 900; color: var(--dim); }
+  #num-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
+  .num-btn {
+    height: 36px; width: 100%; border-radius: 9px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 900;
+    border: 2px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.04);
+    color: var(--muted); cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s; -webkit-tap-highlight-color: transparent;
+  }
+  .num-btn:active { transform: scale(0.88); }
+  .num-btn.taken { color: #fff; border-color: rgba(0,0,0,0.25); opacity: 0.45; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+  .num-btn.mine  { color: #fff; border-color: rgba(255,255,255,0.6); opacity: 1 !important; transform: scale(1.06); box-shadow: 0 0 0 2px rgba(255,255,255,0.25); z-index: 2; }
+  .num-emoji {
+    position: absolute; top: -6px; right: -6px; font-size: 10px;
+    background: #fff; border-radius: 50%; width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4); z-index: 3;
+  }
+
+  /* ── BLOCKED OVERLAY ── */
+  #board-overlay {
+    position: absolute; inset: 0; z-index: 10;
+    background: rgba(10,75,63,0.97); backdrop-filter: blur(12px);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px; border-radius: 20px; text-align: center;
+  }
+  #board-overlay.show { display: flex; }
+  .overlay-icon  { font-size: 40px; margin-bottom: 16px; }
+  .overlay-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .overlay-sub   { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.8; margin-bottom: 20px; }
+  .overlay-start {
+    background: linear-gradient(135deg,rgba(249,115,22,0.3),rgba(249,115,22,0.08));
+    border: 2px solid rgba(249,115,22,0.4); border-radius: 18px; padding: 14px 18px; margin-bottom: 12px;
+  }
+  .overlay-start-label { color: #fb923c; font-size: 8px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 6px; }
+  .overlay-start-date  { font-size: 14px; font-weight: 900; text-transform: uppercase; line-height: 1.4; }
+  .clock-box  { background: rgba(0,0,0,0.4); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
+  .clock-lbl  { font-size: 8px; color: var(--dim); font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
+  #live-clock { font-size: 30px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; color: var(--accent); letter-spacing: 0.15em; }
+
+  /* ── RANKING ── */
+  .rank-card { padding: 12px 14px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.15); margin-bottom: 8px; transition: all 0.2s; }
+  .rank-card.me { border-color: var(--orange); background: rgba(249,115,22,0.1); }
+  .rank-row  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .rank-avatar { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+  .rank-name { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
+  .rank-time { font-size: 9px; font-weight: 700; margin-top: 2px; letter-spacing: 0.04em; }
+  .rank-count { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; flex-shrink: 0; }
+  .rank-bar-bg   { height: 5px; background: rgba(0,0,0,0.4); border-radius: 10px; overflow: hidden; }
+  .rank-bar-fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
+
+  /* ── RESET MODAL ── */
+  #reset-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(16px);
+    display: none; align-items: center; justify-content: center; padding: 16px; z-index: 300;
+  }
+  #reset-modal.show { display: flex; }
+  .modal-card { background: var(--surface); border-radius: 28px; padding: 32px 24px; border: 2px solid rgba(220,38,38,0.3); max-width: 360px; width: 100%; text-align: center; box-shadow: 0 0 80px rgba(220,38,38,0.2); }
+  .modal-icon  { font-size: 40px; margin-bottom: 18px; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 10px; }
+  .modal-sub   { color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; line-height: 1.8; margin-bottom: 24px; }
+  .btn-reset-confirm { width: 100%; padding: 15px; background: var(--red); color: #fff; border-radius: 14px; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; margin-bottom: 10px; box-shadow: 0 4px 20px rgba(220,38,38,0.3); transition: background 0.15s; }
+  .btn-reset-cancel  { width: 100%; padding: 13px; background: rgba(255,255,255,0.05); color: var(--muted); border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: background 0.15s; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.25s ease forwards; }
+
+  @media (min-width: 768px) {
+    #admin-panel { margin: 10px 14px 0; }
+    #admin-panel .card { padding: 16px 18px; }
+    #admin-cronograma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .tp-wrap { padding: 10px 12px; margin-bottom: 0; }
+    .tp-date { padding: 6px 10px; font-size: 12px; margin-bottom: 6px; }
+    .tp-selects { height: 32px; }
+    .tp-sel { font-size: 12px; }
+    .tp-ampm-wrap { height: 32px; }
+    .tp-ampm-btn { padding: 0 9px; font-size: 9px; }
+    .student-list { max-height: none; overflow-y: visible; }
+    #student-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .student-row { margin-bottom: 0; padding: 8px 10px; }
+    .student-row-top { margin-bottom: 6px; }
+    .mini-input { font-size: 11px !important; }
+    .mini-input[type="text"]   { padding: 5px 7px !important; }
+    .mini-input[type="number"] { padding: 5px 4px !important; }
+    .section-label { margin-bottom: 8px; }
+    #admin-alumnos-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+    .btn-add-student { padding: 9px; font-size: 10px; margin-top: 8px; }
+    #num-grid { grid-template-columns: repeat(12, 1fr); gap: 6px; }
+    .num-btn { height: 40px; font-size: 14px; }
+  }
+  @media (min-width: 1100px) {
+    #num-grid { grid-template-columns: repeat(15, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Conectando...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
+  <div class="login-card fade-in">
+    <div style="text-align:center;margin-bottom:32px">
+      <div class="login-title">LEVEL UP</div>
+      <div class="login-sub">Sorteo de Agosto</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div>
+        <label class="field-label">Alumno</label>
+        <select id="sel-student" class="field-input" style="cursor:pointer">
+          <option value="" disabled selected>— Selecciona tu nombre —</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">PIN de acceso</label>
+        <input type="password" id="inp-pin" class="field-input" placeholder="••••" autocomplete="off">
+      </div>
+      <div id="login-err" style="color:#f87171;font-size:11px;font-weight:700;text-align:center;display:none">PIN incorrecto</div>
+      <button class="btn-login" onclick="doLogin()">INGRESAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <header id="header">
+    <div class="header-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="header-title">LEVEL UP</div>
+        <div id="status-badge" class="status-badge status-open">● Activo</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="user-pill">
+          <span id="hdr-icon" style="font-size:20px">👤</span>
+          <span id="hdr-name" class="uname">–</span>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="admin-buttons" class="admin-row" style="display:none">
+      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">⚙️ CONFIG</button>
+      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">📄 REPORTE</button>
+      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">🗑️ RESET</button>
+    </div>
+  </header>
+
+  <div id="admin-panel">
+    <div class="card" style="border-radius:20px">
+      <div class="section-label">📅 CRONOGRAMA</div>
+      <div id="admin-cronograma-grid">
+        <div class="tp-wrap" id="tp-start-wrap"></div>
+        <div class="tp-wrap" id="tp-end-wrap"></div>
+      </div>
+      <div id="admin-alumnos-section">
+        <div class="section-label">⏳ ALUMNOS</div>
+        <div class="student-list">
+          <div id="student-list"></div>
+        </div>
+        <button class="btn-add-student" onclick="addStudent()">➕ AGREGAR ALUMNO</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">🎯 TABLERO</button>
+    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">🏆 RANKING</button>
+  </div>
+
+  <main id="main">
+    <div id="pane-board">
+      <div class="card" style="position:relative;overflow:hidden">
+        <div id="board-overlay">
+          <div>
+            <div class="overlay-icon"  id="overlay-icon">⏳</div>
+            <div class="overlay-title" id="overlay-title">ESPERA TU TURNO</div>
+            <div class="overlay-sub"   id="overlay-sub">Los turnos se habilitan de 9 AM a 9 PM.</div>
+            <div id="overlay-wait-info">
+              <div class="overlay-start">
+                <div class="overlay-start-label">COMIENZA EL</div>
+                <div class="overlay-start-date" id="overlay-start-date">–</div>
+              </div>
+              <div class="clock-box" style="margin-top:10px">
+                <div class="clock-lbl">HORA ACTUAL</div>
+                <div id="live-clock">–</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="board-header">
+          <div>
+            <div class="board-title">TABLERO VIVO</div>
+            <div class="board-sub">Reserva tus números</div>
+          </div>
+          <div class="taken-box">
+            <div class="taken-label">Tomados</div>
+            <div><span class="taken-count" id="taken-count">0</span><span class="taken-total"> / 200</span></div>
+          </div>
+        </div>
+        <div id="num-grid"></div>
+      </div>
+    </div>
+
+    <div id="pane-ranking" style="display:none">
+      <div class="card">
+        <div class="section-label" style="margin-bottom:14px">⏳ Ranking de Turnos</div>
+        <div id="ranking-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- RESET MODAL -->
+<div id="reset-modal">
+  <div class="modal-card">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">¿REINICIAR TODO?</div>
+    <div class="modal-sub">Se perderán todas las selecciones permanentemente.</div>
+    <button class="btn-reset-confirm" onclick="doReset()">REINICIAR</button>
+    <button class="btn-reset-cancel"  onclick="closeReset()">CANCELAR</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast">
+  <span id="toast-icon">⚠️</span>
+  <span id="toast-msg">–</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// ★  CONFIGURACIÓN DE FIREBASE  ★
+//    Reemplaza estos valores con los de tu proyecto en Firebase
+// ═══════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:        "maths-level-up.firebaseapp.com",
+  projectId:         "maths-level-up",
+  storageBucket:     "maths-level-up.firebasestorage.app",
+  messagingSenderId: "854549565666",
+  appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db  = firebase.firestore();
+const REF = db.collection('sorteo').doc('main');
+
+// ═══════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════
+const DEFAULT_STUDENTS = [
+  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },
+  { id:2,  name:"Lucio Prado",       max:24, color:"#ef4444", icon:"🍎",  pin:"47291" },
+  { id:3,  name:"Joanna Prado",      max:17, color:"#f472b6", icon:"👧🏻", pin:"83652" },
+  { id:4,  name:"Manuel Villacorta", max:15, color:"#ea580c", icon:"👦🏻", pin:"15937" },
+  { id:5,  name:"Maria Villalobos",  max:14, color:"#ca8a04", icon:"👧🏽", pin:"62840" },
+  { id:6,  name:"Augusto Giuffra",   max:12, color:"#b91c1c", icon:"🕷️",  pin:"39514" },
+  { id:7,  name:"Santiago Quinto",   max:11, color:"#f97316", icon:"🏃🏻", pin:"70268" },
+  { id:8,  name:"Tiago Poma",        max:10, color:"#eab308", icon:"🐶",  pin:"58429" },
+  { id:9,  name:"Mateo Ríos",        max:6,  color:"#3b82f6", icon:"🐧",  pin:"26173" },
+  { id:10, name:"Rafaela Villena",   max:6,  color:"#0d9488", icon:"🐨",  pin:"91536" }
+];
+const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
+const TOTAL = 200;
+
+// Estado (sincronizado con Firestore)
+let allocations = {};
+let overrides   = {};
+let appConfig   = { startTime:'', endTime:'' };
+let loggedId    = null;
+let clockTimer  = null;
+let saveDebounce = null;
+
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE — GUARDAR ESTADO
+// ═══════════════════════════════════════════════════════════════
+function saveState(partial = {}) {
+  const payload = {
+    allocations,
+    overrides,
+    config: appConfig,
+    ...partial
+  };
+  REF.set(payload, { merge: true }).catch(err => {
+    console.error('Error guardando en Firebase:', err);
+    showToast('Error al guardar. Revisa tu conexión.');
+  });
+}
+
+function saveStateDebounced(partial = {}) {
+  clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(() => saveState(partial), 600);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE — ESCUCHAR CAMBIOS EN TIEMPO REAL
+// ═══════════════════════════════════════════════════════════════
+function initFirestore() {
+  REF.onSnapshot(doc => {
+    const data = doc.exists ? doc.data() : {};
+    allocations = data.allocations || {};
+    overrides   = data.overrides   || {};
+    appConfig   = data.config      || { startTime:'', endTime:'' };
+
+    // Ocultar loading y mostrar login la primera vez
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('login-screen').style.display = 'flex';
+
+    // Re-renderizar si hay sesión activa
+    if (loggedId !== null) renderAll();
+  }, err => {
+    console.error('Error de Firestore:', err);
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('login-screen').style.display = 'flex';
+    showToast('No se pudo conectar a la base de datos.');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function getStudents() {
+  const baseMap = {};
+  DEFAULT_STUDENTS.forEach(s => { baseMap[s.id] = s; });
+  const allIds = new Set([
+    ...DEFAULT_STUDENTS.map(s => String(s.id)),
+    ...Object.keys(overrides)
+  ]);
+  const list = [];
+  allIds.forEach(idStr => {
+    const id = parseInt(idStr);
+    if (isNaN(id) || id === 0) return;
+    const base = baseMap[id] || { id, name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#888888" };
+    const ov = overrides[idStr] || {};
+    if (ov.deleted) return;
+    list.push({
+      id,
+      name:  ov.name  !== undefined ? ov.name  : base.name,
+      icon:  ov.icon  !== undefined ? ov.icon  : base.icon,
+      max:   ov.max   !== undefined ? ov.max   : base.max,
+      pin:   ov.pin   !== undefined ? ov.pin   : base.pin,
+      color: ov.color !== undefined ? ov.color : base.color,
+    });
+  });
+  return list.sort((a,b) => (b.max||0) - (a.max||0));
+}
+
+function getFullList() { return [ADMIN, ...getStudents()]; }
+
+function getPickCounts() {
+  const c = {};
+  getFullList().forEach(s => { c[s.id] = 0; });
+  Object.values(allocations).forEach(id => { if (c[id] !== undefined) c[id]++; });
+  return c;
+}
+
+function getPersonalStart(studentId) {
+  if (!appConfig.startTime) return null;
+  const students = getStudents();
+  const idx = students.findIndex(s => s.id === studentId);
+  if (idx === -1) return new Date(appConfig.startTime);
+  let t = new Date(appConfig.startTime);
+  if (t.getHours() < 9)  t.setHours(9,0,0,0);
+  else if (t.getHours() > 21) { t.setDate(t.getDate()+1); t.setHours(9,0,0,0); }
+  for (let i = 0; i < idx; i++) {
+    t.setHours(t.getHours()+1);
+    if (t.getHours() > 21) { t.setDate(t.getDate()+1); t.setHours(9,0,0,0); }
+  }
+  return t;
+}
+
+function getVotingStatus() {
+  if (!appConfig.startTime || !appConfig.endTime) return 'open';
+  const now = new Date();
+  if (now > new Date(appConfig.endTime)) return 'closed';
+  const active = getFullList().find(s => s.id === loggedId);
+  if (active?.role === 'admin') return 'open';
+  const ps = getPersonalStart(loggedId);
+  if (!ps) return 'open';
+  if (now < ps) return 'waiting_turn';
+  return 'open';
+}
+
+function formatFullDate(d) {
+  if (!d) return 'No definida';
+  const dt = d instanceof Date ? d : new Date(d);
+  if (isNaN(dt)) return 'Fecha Inválida';
+  const dateStr = dt.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+  const timeStr = dt.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', hour12:true });
+  return `${dateStr.charAt(0).toUpperCase()+dateStr.slice(1)} a las ${timeStr.toUpperCase()}`;
+}
+
+function setOverride(id, field, value) {
+  const key = String(id);
+  if (!overrides[key]) overrides[key] = {};
+  overrides[key][field] = value;
+  saveStateDebounced();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+let toastTimeout;
+function showToast(msg, type='error') {
+  const el = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : '⚠️';
+  document.getElementById('toast-msg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════════
+function buildLoginSelect() {
+  const sel = document.getElementById('sel-student');
+  sel.innerHTML = '<option value="" disabled selected>— Selecciona tu nombre —</option>';
+  getFullList().forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = String(s.id);
+    opt.textContent = `${s.icon} ${s.name}`;
+    sel.appendChild(opt);
+  });
+}
+
+function doLogin() {
+  const selId   = document.getElementById('sel-student').value;
+  const pin     = document.getElementById('inp-pin').value;
+  const err     = document.getElementById('login-err');
+  const student = getFullList().find(s => String(s.id) === selId);
+  if (!student || String(student.pin) !== pin) {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 2500);
+    return;
+  }
+  loggedId = student.id;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').classList.add('active');
+  document.getElementById('hdr-icon').textContent = student.icon;
+  document.getElementById('hdr-name').textContent = student.name.split(' ')[0];
+  if (student.role === 'admin') document.getElementById('admin-buttons').style.display = 'flex';
+  startClock();
+  renderAll();
+  showToast(`¡Bienvenido/a, ${student.name}!`, 'success');
+}
+
+document.getElementById('inp-pin').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogout() {
+  loggedId = null;
+  clearInterval(clockTimer);
+  document.getElementById('app-screen').classList.remove('active');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('admin-buttons').style.display = 'none';
+  document.getElementById('admin-panel').classList.remove('open');
+  document.getElementById('btn-toggle-config').style.background = '#105c4d';
+  document.getElementById('inp-pin').value = '';
+  buildLoginSelect();
+  switchTab('board');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.getElementById('pane-board').style.display   = tab === 'board'   ? 'block' : 'none';
+  document.getElementById('pane-ranking').style.display = tab === 'ranking' ? 'block' : 'none';
+  document.getElementById('tab-board').classList.toggle('active',   tab === 'board');
+  document.getElementById('tab-ranking').classList.toggle('active', tab === 'ranking');
+  if (tab === 'ranking') renderRanking();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════════════
+function startClock() {
+  clearInterval(clockTimer);
+  clockTimer = setInterval(tickClock, 1000);
+  tickClock();
+}
+
+function tickClock() {
+  const now = new Date();
+  const clk = document.getElementById('live-clock');
+  if (clk) clk.textContent = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+  updateStatusBadge();
+  updateBoardOverlay();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATUS BADGE
+// ═══════════════════════════════════════════════════════════════
+function updateStatusBadge() {
+  const badge = document.getElementById('status-badge');
+  const vs = getVotingStatus();
+  badge.className = 'status-badge';
+  if (vs === 'open')          { badge.classList.add('status-open');   badge.textContent = '● Activo'; }
+  else if (vs === 'waiting_turn') { badge.classList.add('status-wait'); badge.textContent = '⏳ Espera'; }
+  else                        { badge.classList.add('status-closed'); badge.textContent = '✕ Cerrado'; }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// BOARD OVERLAY
+// ═══════════════════════════════════════════════════════════════
+function updateBoardOverlay() {
+  const vs = getVotingStatus();
+  const overlay  = document.getElementById('board-overlay');
+  const waitInfo = document.getElementById('overlay-wait-info');
+  if (vs === 'open') { overlay.classList.remove('show'); return; }
+  overlay.classList.add('show');
+  if (vs === 'waiting_turn') {
+    document.getElementById('overlay-icon').textContent  = '⏳';
+    document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
+    document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 9 AM a 9 PM.';
+    waitInfo.style.display = 'block';
+    document.getElementById('overlay-start-date').textContent = formatFullDate(getPersonalStart(loggedId));
+  } else {
+    document.getElementById('overlay-icon').textContent  = '🔒';
+    document.getElementById('overlay-title').textContent = 'SORTEO CERRADO';
+    document.getElementById('overlay-sub').textContent   = 'El tiempo de participación ha terminado.';
+    waitInfo.style.display = 'none';
+  }
+}
+
+function renderGrid() {
+  const grid     = document.getElementById('num-grid');
+  const students = getStudents();
+  grid.innerHTML = '';
+  for (let n = 1; n <= TOTAL; n++) {
+    const ownerId = allocations[n];
+    const owner   = students.find(s => String(s.id) === String(ownerId));
+    const isMine  = String(ownerId) === String(loggedId);
+    const btn     = document.createElement('button');
+    btn.className = 'num-btn' + (isMine ? ' mine' : (ownerId ? ' taken' : ''));
+    btn.textContent = n;
+    if (ownerId) {
+      btn.style.background  = owner?.color || '#555';
+      btn.style.borderColor = isMine ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.25)';
+    }
+    if (isMine) btn.style.background = owner?.color || '#555';
+    if (ownerId) {
+      const em = document.createElement('span');
+      em.className = 'num-emoji';
+      em.textContent = owner?.icon || '👤';
+      btn.appendChild(em);
+    }
+    btn.addEventListener('click', () => handleNumber(n));
+    grid.appendChild(btn);
+  }
+  document.getElementById('taken-count').textContent = Object.keys(allocations).length;
+}
+
+function handleNumber(num) {
+  if (loggedId === null) return;
+  const active       = getFullList().find(s => s.id === loggedId);
+  const currentOwner = allocations[num];
+  if (active?.role === 'admin') {
+    if (currentOwner) { delete allocations[num]; saveState(); renderGrid(); showToast(`Número ${num} liberado.`, 'success'); }
+    return;
+  }
+  const vs = getVotingStatus();
+  if (vs !== 'open') {
+    if (vs === 'waiting_turn') showToast(`Tu turno: ${formatFullDate(getPersonalStart(loggedId))}`);
+    else showToast('Sorteo cerrado.');
+    return;
+  }
+  if (String(currentOwner) === String(loggedId)) {
+    delete allocations[num];
+  } else if (!currentOwner) {
+    const counts = getPickCounts();
+    if ((counts[loggedId]||0) >= (active?.max||0)) { showToast(`Cupo lleno (${active?.max}).`); return; }
+    allocations[num] = loggedId;
+  } else { showToast('Ya ocupado.'); return; }
+  saveState();
+  renderGrid();
+}
+
+function renderRanking() {
+  const list     = document.getElementById('ranking-list');
+  const students = getStudents();
+  const counts   = getPickCounts();
+  list.innerHTML = '';
+  students.forEach((s, idx) => {
+    const count = counts[s.id] || 0;
+    const ps    = getPersonalStart(s.id);
+    const isMyTurn = ps && new Date() >= ps && getVotingStatus() !== 'closed';
+    const isMe  = loggedId === s.id;
+    const pct   = Math.min(100, (count / (s.max||1)) * 100);
+    const div   = document.createElement('div');
+    div.className = 'rank-card' + (isMe ? ' me' : '');
+    div.innerHTML = `
+      <div class="rank-row">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rank-avatar" style="background:${s.color||'#555'}">${s.icon}</div>
+          <div>
+            <div class="rank-name">${idx+1}. ${s.name}</div>
+            <div class="rank-time" style="color:${isMyTurn?'#4ade80':'#6b7280'}">${isMyTurn ? '✓ Turno activo' : formatFullDate(ps)}</div>
+          </div>
+        </div>
+        <div class="rank-count" style="color:${count>=(s.max||0)?'#fb923c':'#e5e7eb'}">${count}/${s.max||0}</div>
+      </div>
+      <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${s.color||'#555'}"></div></div>`;
+    list.appendChild(div);
+  });
+}
+
+function toggleAdminPanel() {
+  const panel = document.getElementById('admin-panel');
+  const btn   = document.getElementById('btn-toggle-config');
+  const isOpen = panel.classList.toggle('open');
+  btn.style.background = isOpen ? '#f97316' : '#105c4d';
+  btn.textContent = isOpen ? '⚙️ CERRAR' : '⚙️ CONFIG';
+  if (isOpen) renderAdminPanel();
+}
+
+function renderAdminPanel() {
+  buildTimePicker('tp-start-wrap', 'Inicio de Apertura', appConfig.startTime, v => { appConfig.startTime = v; saveState(); renderAdminPanel(); renderAll(); });
+  buildTimePicker('tp-end-wrap', 'Cierre Final', appConfig.endTime, v => { appConfig.endTime = v; saveState(); renderAll(); });
+  renderStudentList();
+}
+
+function renderStudentList() {
+  const list = document.getElementById('student-list');
+  const students = getStudents();
+  list.innerHTML = '';
+  students.forEach((s, idx) => {
+    const row = document.createElement('div');
+    row.className = 'student-row';
+    row.innerHTML = `
+      <div class="student-row-top">
+        <span class="pos-label">POS. ${idx+1}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="color" value="${s.color||'#ffffff'}" title="Color" style="width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer" onchange="setOverride(${s.id},'color',this.value);renderStudentList()">
+          <button onclick="setOverride(${s.id},'deleted',true);renderStudentList();renderAll()" style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#f87171;cursor:pointer;font-size:12px">🗑️</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" value="${s.icon||''}" placeholder="emoji" class="mini-input" style="width:42px;text-align:center;font-size:16px;padding:6px 4px" oninput="setOverride(${s.id},'icon',this.value)">
+        <input type="text" value="${s.name||''}" placeholder="Nombre" class="mini-input" style="flex:1;padding:6px 10px;font-size:12px;text-transform:uppercase" oninput="setOverride(${s.id},'name',this.value)">
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1"><div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">CUPO</div><input type="number" value="${s.max||0}" class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px" oninput="setOverride(${s.id},'max',parseInt(this.value)||0)"></div>
+        <div style="flex:1"><div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PIN</div><input type="text" value="${s.pin||''}" class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px" oninput="setOverride(${s.id},'pin',this.value)"></div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function addStudent() {
+  const allIds = [...DEFAULT_STUDENTS.map(s => s.id), ...Object.keys(overrides).map(Number).filter(n => !isNaN(n))];
+  const newId  = allIds.length > 0 ? Math.max(...allIds) + 1 : 11;
+  overrides[String(newId)] = { name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#84cc16", deleted:false };
+  saveState(); renderStudentList(); renderAll();
+  showToast('Alumno agregado.', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TIME PICKER
+// ═══════════════════════════════════════════════════════════════
+function buildTimePicker(containerId, label, isoValue, onChangeFn) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = `<div class="tp-label">${label}</div>`;
+  const getLocalDateString = d => {
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  };
+  const dateObj = isoValue ? new Date(isoValue) : new Date();
+  const valid   = !isNaN(dateObj.getTime());
+  let dateStr   = valid ? getLocalDateString(dateObj) : getLocalDateString(new Date());
+  let h24 = valid ? dateObj.getHours() : 9;
+  let ampm = h24 >= 12 ? 'PM' : 'AM';
+  let h12  = h24 % 12 || 12;
+  let mins = valid ? dateObj.getMinutes() : 0;
+  const apply = () => {
+    let h = h12;
+    if (ampm === 'PM' && h < 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    onChangeFn(`${dateStr}T${String(h).padStart(2,'0')}:${String(mins).padStart(2,'0')}:00`);
+  };
+  const dateIn = document.createElement('input');
+  dateIn.type = 'date'; dateIn.value = dateStr; dateIn.className = 'tp-date';
+  dateIn.addEventListener('change', () => { dateStr = dateIn.value; apply(); });
+  wrap.appendChild(dateIn);
+  const row = document.createElement('div'); row.className = 'tp-time-row';
+  const selWrap = document.createElement('div'); selWrap.className = 'tp-selects';
+  const selH = document.createElement('select'); selH.className = 'tp-sel';
+  [1,2,3,4,5,6,7,8,9,10,11,12].forEach(h => {
+    const o = document.createElement('option');
+    o.value = o.textContent = String(h).padStart(2,'0');
+    if (h === h12) o.selected = true;
+    selH.appendChild(o);
+  });
+  selH.addEventListener('change', () => { h12 = parseInt(selH.value); apply(); });
+  const colon = document.createElement('span'); colon.className = 'tp-colon'; colon.textContent = ':';
+  const selM = document.createElement('select'); selM.className = 'tp-sel';
+  [0,5,10,15,20,25,30,35,40,45,50,55].forEach(m => {
+    const o = document.createElement('option');
+    o.value = o.textContent = String(m).padStart(2,'0');
+    if (m === mins) o.selected = true;
+    selM.appendChild(o);
+  });
+  selM.addEventListener('change', () => { mins = parseInt(selM.value); apply(); });
+  selWrap.append(selH, colon, selM);
+  const ampmWrap = document.createElement('div'); ampmWrap.className = 'tp-ampm-wrap';
+  ['AM','PM'].forEach(p => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.className = 'tp-ampm-btn' + (ampm === p ? ' active' : '');
+    b.textContent = p;
+    b.addEventListener('click', () => {
+      ampm = p;
+      ampmWrap.querySelectorAll('.tp-ampm-btn').forEach(btn => btn.classList.remove('active'));
+      b.classList.add('active');
+      apply();
+    });
+    ampmWrap.appendChild(b);
+  });
+  row.append(selWrap, ampmWrap);
+  wrap.appendChild(row);
+}
+
+function openReset()  { document.getElementById('reset-modal').classList.add('show'); }
+function closeReset() { document.getElementById('reset-modal').classList.remove('show'); }
+function doReset() {
+  allocations = {};
+  saveState();
+  closeReset();
+  renderGrid();
+  showToast('Tablero limpio.', 'success');
+}
+
+function exportTxt() {
+  const students = getStudents();
+  let c = 'REPORTE DE SORTEO - AGOSTO\n\n';
+  students.forEach((s, i) => {
+    const nums = Object.entries(allocations)
+      .filter(([,id]) => String(id) === String(s.id))
+      .map(([n]) => n).sort((a,b) => a - b);
+    c += `${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNúmeros: ${nums.join(', ')||'-'}\n\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([c], { type:'text/plain' }));
+  a.download = 'sorteo_levelup.txt'; a.click();
+}
+
+function renderAll() {
+  renderGrid();
+  updateStatusBadge();
+  updateBoardOverlay();
+  buildLoginSelect();
+}
+
+initFirestore();
+</script>
+</body>
+</html>
