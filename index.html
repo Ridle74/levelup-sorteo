@@ -187,6 +187,13 @@
     transition: background 0.15s; margin-top: 4px;
   }
   .btn-add-student:hover { background: rgba(132,204,22,0.07); }
+  .btn-centena {
+    padding: 6px 14px; border-radius: 10px; border: 2px solid var(--border2);
+    background: var(--bg); color: var(--muted); font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 13px; cursor: pointer; transition: all 0.15s; letter-spacing: 0.05em;
+  }
+  .btn-centena:active { transform: scale(0.93); }
+  .btn-centena.active { background: var(--accent); color: #052b24; border-color: var(--accent); }
 
   /* ── BOARD ── */
   .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -404,6 +411,24 @@
           <div id="student-list"></div>
         </div>
         <button class="btn-add-student" onclick="addStudent()">➕ AGREGAR ALUMNO</button>
+
+        <!-- Resumen total cupos + control números -->
+        <div id="admin-summary-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+          <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SUMA TOTAL DE CUPOS</div>
+            <div id="admin-total-cupos" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#84cc16;line-height:1">0</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px">NÚMEROS EN EL TABLERO</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button onclick="setTotalNumbers(100)" id="btn-total-100" class="btn-centena">100</button>
+              <button onclick="setTotalNumbers(200)" id="btn-total-200" class="btn-centena">200</button>
+              <button onclick="setTotalNumbers(300)" id="btn-total-300" class="btn-centena">300</button>
+              <button onclick="setTotalNumbers(400)" id="btn-total-400" class="btn-centena">400</button>
+              <button onclick="setTotalNumbers(500)" id="btn-total-500" class="btn-centena">500</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -445,7 +470,7 @@
           </div>
           <div class="taken-box">
             <div class="taken-label">Tomados</div>
-            <div><span class="taken-count" id="taken-count">0</span><span class="taken-total"> / 200</span></div>
+            <div><span class="taken-count" id="taken-count">0</span><span class="taken-total" id="taken-total"> / 200</span></div>
           </div>
         </div>
         <div id="num-grid"></div>
@@ -497,12 +522,12 @@ const DEFAULT_STUDENTS = [
   { id:10, name:"Rafaela Villena",   max:6,  color:"#0d9488", icon:"🐨",  pin:"91536" }
 ];
 const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
-const TOTAL = 200;
+const getTotal = () => appConfig.totalNumbers || 200;
 
 // State
 let allocations = {}; // num -> ownerId
 let overrides   = {}; // id  -> { name, icon, max, pin, color, deleted }
-let appConfig   = { startTime:'', endTime:'' };
+let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
 let loggedId    = null;
 let clockTimer  = null;
 
@@ -724,7 +749,7 @@ function renderGrid() {
   const grid = document.getElementById('num-grid');
   const students = getStudents();
   grid.innerHTML = '';
-  for (let n = 1; n <= TOTAL; n++) {
+  for (let n = 1; n <= getTotal(); n++) {
     const ownerId = allocations[n];
     const owner = students.find(s => String(s.id) === String(ownerId));
     const isMine = String(ownerId) === String(loggedId);
@@ -748,6 +773,7 @@ function renderGrid() {
     grid.appendChild(btn);
   }
   document.getElementById('taken-count').textContent = Object.keys(allocations).length;
+  document.getElementById('taken-total').textContent = ' / ' + getTotal();
 }
 
 function handleNumber(num) {
@@ -827,7 +853,35 @@ function toggleAdminPanel() {
   if (isOpen) renderAdminPanel();
 }
 
+
+// ═══════════════════════════════════════════════════════════════════════
+// TOTAL NUMBERS + ADMIN SUMMARY
+// ═══════════════════════════════════════════════════════════════════════
+function setTotalNumbers(n) {
+  appConfig.totalNumbers = n;
+  // remove allocations beyond new total
+  Object.keys(allocations).forEach(k => { if (parseInt(k) > n) delete allocations[k]; });
+  updateAdminSummary();
+  renderAll();
+  showToast('Tablero actualizado a ' + n + ' números.', 'success');
+}
+
+function updateAdminSummary() {
+  const cuposEl = document.getElementById('admin-total-cupos');
+  if (cuposEl) {
+    const students = getStudents();
+    const suma = students.reduce((acc, s) => acc + (s.max || 0), 0);
+    cuposEl.textContent = suma;
+  }
+  // highlight active centena button
+  [100,200,300,400,500].forEach(n => {
+    const btn = document.getElementById('btn-total-' + n);
+    if (btn) btn.classList.toggle('active', appConfig.totalNumbers === n);
+  });
+}
+
 function renderAdminPanel() {
+  updateAdminSummary();
   buildTimePicker('tp-start-wrap', 'Inicio de Apertura', appConfig.startTime, v => { appConfig.startTime = v; renderAdminPanel(); renderAll(); });
   buildTimePicker('tp-end-wrap',   'Cierre Final',        appConfig.endTime,   v => { appConfig.endTime = v;   renderAll(); });
   renderStudentList();
