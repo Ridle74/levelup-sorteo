@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LEVEL UP — Sorteo de Agosto</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- ══ FIREBASE SDK ══ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <style>
   :root {
     --bg: #052b24;
@@ -38,6 +43,21 @@
   input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
   input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
   select { -webkit-appearance: none; appearance: none; }
+
+  /* ── LOADING ── */
+  #loading-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px; z-index: 9999;
+  }
+  #loading-screen.hidden { display: none; }
+  .loading-spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 900; color: var(--muted); letter-spacing: 0.3em; text-transform: uppercase; }
 
   /* ── TOAST ── */
   #toast {
@@ -152,9 +172,7 @@
     border: none; outline: none; text-align: center; cursor: pointer;
     font-family: 'Barlow Condensed', sans-serif; padding: 0 4px;
   }
-  .tp-sel option {
-    background: #0a2e26; color: #fff; font-weight: 900;
-  }
+  .tp-sel option { background: #0a2e26; color: #fff; font-weight: 900; }
   .tp-colon { color: var(--dim); font-weight: 900; padding: 0 2px; }
   .tp-ampm-wrap {
     display: flex; background: var(--bg); border: 1px solid var(--border2);
@@ -206,9 +224,7 @@
   .taken-label { font-size: 8px; color: var(--dim); font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 2px; }
   .taken-count { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; color: var(--orange); line-height: 1; }
   .taken-total { font-size: 14px; font-weight: 900; color: var(--dim); }
-  #num-grid {
-    display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px;
-  }
+  #num-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
   .num-btn {
     height: 36px; width: 100%; border-radius: 9px;
     font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 900;
@@ -294,44 +310,28 @@
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .fade-in { animation: fadeIn 0.25s ease forwards; }
 
-  /* ── DESKTOP: compact admin panel ── */
+  /* ── DESKTOP ── */
   @media (min-width: 768px) {
     #admin-panel { margin: 10px 14px 0; }
     #admin-panel .card { padding: 16px 18px; }
-
-    /* Cronograma: 2 time pickers side by side */
-    #admin-cronograma-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-    }
-
-    /* tp-wrap more compact */
+    #admin-cronograma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .tp-wrap { padding: 10px 12px; margin-bottom: 0; }
     .tp-date { padding: 6px 10px; font-size: 12px; margin-bottom: 6px; }
     .tp-selects { height: 32px; }
     .tp-sel { font-size: 12px; }
     .tp-ampm-wrap { height: 32px; }
     .tp-ampm-btn { padding: 0 9px; font-size: 9px; }
-
-    /* student list: 4-column grid */
     .student-list { max-height: none; overflow-y: visible; }
-    #student-list {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
-    }
+    #student-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
     .student-row { margin-bottom: 0; padding: 10px 12px; }
     .student-row-top { margin-bottom: 8px; }
     .mini-input { font-size: 11px !important; }
-
-    /* section labels smaller gap */
     .section-label { margin-bottom: 8px; }
     #admin-alumnos-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
-
     .btn-add-student { padding: 9px; font-size: 10px; margin-top: 8px; }
-
-    /* num grid more columns on desktop */
     #num-grid { grid-template-columns: repeat(12, 1fr); gap: 6px; }
     .num-btn { height: 40px; font-size: 14px; }
   }
-
   @media (min-width: 1100px) {
     #num-grid { grid-template-columns: repeat(15, 1fr); }
   }
@@ -339,8 +339,14 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════ LOGIN ═════════════════════ -->
-<div id="login-screen">
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Conectando...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none">
   <div class="login-card fade-in">
     <div style="text-align:center;margin-bottom:32px">
       <div class="login-title">LEVEL UP</div>
@@ -363,7 +369,7 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ APP ══════════════════════ -->
+<!-- APP -->
 <div id="app-screen">
 
   <!-- HEADER -->
@@ -384,15 +390,9 @@
       </div>
     </div>
     <div id="admin-buttons" class="admin-row" style="display:none">
-      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">
-        ⚙️ CONFIG
-      </button>
-      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">
-        📄 REPORTE
-      </button>
-      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">
-        🗑️ RESET
-      </button>
+      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">⚙️ CONFIG</button>
+      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">📄 REPORTE</button>
+      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">🗑️ RESET</button>
     </div>
   </header>
 
@@ -440,11 +440,8 @@
   </div>
 
   <main id="main">
-
-    <!-- BOARD -->
     <div id="pane-board">
       <div class="card" style="position:relative;overflow:hidden">
-        <!-- Blocked overlay -->
         <div id="board-overlay">
           <div>
             <div class="overlay-icon" id="overlay-icon">⏳</div>
@@ -462,7 +459,6 @@
             </div>
           </div>
         </div>
-
         <div class="board-header">
           <div>
             <div class="board-title">TABLERO VIVO</div>
@@ -477,14 +473,12 @@
       </div>
     </div>
 
-    <!-- RANKING -->
     <div id="pane-ranking" style="display:none">
       <div class="card">
         <div class="section-label" style="margin-bottom:14px">⏳ Ranking de Turnos</div>
         <div id="ranking-list"></div>
       </div>
     </div>
-
   </main>
 </div>
 
@@ -506,9 +500,24 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// ★  CONFIGURACIÓN DE FIREBASE  ★
+// ═══════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:        "maths-level-up.firebaseapp.com",
+  projectId:         "maths-level-up",
+  storageBucket:     "maths-level-up.firebasestorage.app",
+  messagingSenderId: "854549565666",
+  appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
+};
+firebase.initializeApp(firebaseConfig);
+const db  = firebase.firestore();
+const REF = db.collection('sorteo').doc('main');
+
+// ═══════════════════════════════════════════════════════════════
 // DATA
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 const DEFAULT_STUDENTS = [
   { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },
   { id:2,  name:"Lucio Prado",       max:24, color:"#ef4444", icon:"🍎",  pin:"47291" },
@@ -524,16 +533,54 @@ const DEFAULT_STUDENTS = [
 const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
 const getTotal = () => appConfig.totalNumbers || 200;
 
-// State
-let allocations = {}; // num -> ownerId
-let overrides   = {}; // id  -> { name, icon, max, pin, color, deleted }
-let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
-let loggedId    = null;
-let clockTimer  = null;
+// Estado (sincronizado con Firestore)
+let allocations  = {};
+let overrides    = {};
+let appConfig    = { startTime:'', endTime:'', totalNumbers: 200 };
+let loggedId     = null;
+let clockTimer   = null;
+let saveDebounce = null;
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE — GUARDAR
+// ═══════════════════════════════════════════════════════════════
+function saveState() {
+  REF.set({ allocations, overrides, config: appConfig }, { merge: true })
+    .catch(err => { console.error('Firebase save error:', err); showToast('Error al guardar.'); });
+}
+function saveStateDebounced() {
+  clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(saveState, 600);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE — ESCUCHAR EN TIEMPO REAL
+// ═══════════════════════════════════════════════════════════════
+function initFirestore() {
+  REF.onSnapshot(doc => {
+    const data = doc.exists ? doc.data() : {};
+    allocations = data.allocations || {};
+    overrides   = data.overrides   || {};
+    appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
+    if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
+
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('login-screen').style.display = 'flex';
+    buildLoginSelect();
+
+    if (loggedId !== null) renderAll();
+  }, err => {
+    console.error('Firestore error:', err);
+    document.getElementById('loading-screen').classList.add('hidden');
+    document.getElementById('login-screen').style.display = 'flex';
+    buildLoginSelect();
+    showToast('No se pudo conectar a Firebase.');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
 // HELPERS
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function getStudents() {
   const baseMap = {};
   DEFAULT_STUDENTS.forEach(s => { baseMap[s.id] = s; });
@@ -560,7 +607,7 @@ function getStudents() {
   return list.sort((a,b) => {
     const diff = (b.max||0) - (a.max||0);
     if (diff !== 0) return diff;
-    return a.id - b.id; // empate: menor id (posición original) va primero
+    return a.id - b.id;
   });
 }
 
@@ -613,11 +660,12 @@ function setOverride(id, field, value) {
   const key = String(id);
   if (!overrides[key]) overrides[key] = {};
   overrides[key][field] = value;
+  saveStateDebounced();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // TOAST
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 let toastTimeout;
 function showToast(msg, type='error') {
   const el = document.getElementById('toast');
@@ -628,9 +676,9 @@ function showToast(msg, type='error') {
   toastTimeout = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // LOGIN
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function buildLoginSelect() {
   const sel = document.getElementById('sel-student');
   sel.innerHTML = '<option value="" disabled selected>— Selecciona tu nombre —</option>';
@@ -678,9 +726,9 @@ function doLogout() {
   switchTab('board');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // TABS
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function switchTab(tab) {
   document.getElementById('pane-board').style.display   = tab === 'board'   ? 'block' : 'none';
   document.getElementById('pane-ranking').style.display = tab === 'ranking' ? 'block' : 'none';
@@ -689,15 +737,14 @@ function switchTab(tab) {
   if (tab === 'ranking') renderRanking();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // CLOCK
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function startClock() {
   clearInterval(clockTimer);
   clockTimer = setInterval(tickClock, 1000);
   tickClock();
 }
-
 function tickClock() {
   const now = new Date();
   const clk = document.getElementById('live-clock');
@@ -706,66 +753,63 @@ function tickClock() {
   updateBoardOverlay();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // STATUS BADGE
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function updateStatusBadge() {
   const badge = document.getElementById('status-badge');
   const vs = getVotingStatus();
   badge.className = 'status-badge';
-  if (vs === 'open')         { badge.classList.add('status-open');   badge.textContent = '● Activo'; }
-  else if (vs === 'waiting_turn') { badge.classList.add('status-wait'); badge.textContent = '⏳ Espera'; }
-  else                       { badge.classList.add('status-closed'); badge.textContent = '✕ Cerrado'; }
+  if (vs === 'open')               { badge.classList.add('status-open');   badge.textContent = '● Activo'; }
+  else if (vs === 'waiting_turn')  { badge.classList.add('status-wait');   badge.textContent = '⏳ Espera'; }
+  else                             { badge.classList.add('status-closed'); badge.textContent = '✕ Cerrado'; }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // BOARD OVERLAY
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function updateBoardOverlay() {
   const vs = getVotingStatus();
-  const overlay = document.getElementById('board-overlay');
+  const overlay  = document.getElementById('board-overlay');
   const waitInfo = document.getElementById('overlay-wait-info');
   if (vs === 'open') { overlay.classList.remove('show'); return; }
   overlay.classList.add('show');
   if (vs === 'waiting_turn') {
-    document.getElementById('overlay-icon').textContent = '⏳';
+    document.getElementById('overlay-icon').textContent  = '⏳';
     document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
-    document.getElementById('overlay-sub').textContent = 'Los turnos se habilitan de 9 AM a 9 PM.';
+    document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 9 AM a 9 PM.';
     waitInfo.style.display = 'block';
-    const ps = getPersonalStart(loggedId);
-    document.getElementById('overlay-start-date').textContent = formatFullDate(ps);
+    document.getElementById('overlay-start-date').textContent = formatFullDate(getPersonalStart(loggedId));
   } else {
-    document.getElementById('overlay-icon').textContent = '🔒';
+    document.getElementById('overlay-icon').textContent  = '🔒';
     document.getElementById('overlay-title').textContent = 'SORTEO CERRADO';
-    document.getElementById('overlay-sub').textContent = 'El tiempo de participación ha terminado.';
+    document.getElementById('overlay-sub').textContent   = 'El tiempo de participación ha terminado.';
     waitInfo.style.display = 'none';
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // NUMBER GRID
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function renderGrid() {
   const grid = document.getElementById('num-grid');
   const students = getStudents();
   grid.innerHTML = '';
   for (let n = 1; n <= getTotal(); n++) {
     const ownerId = allocations[n];
-    const owner = students.find(s => String(s.id) === String(ownerId));
-    const isMine = String(ownerId) === String(loggedId);
-    const btn = document.createElement('button');
+    const owner   = students.find(s => String(s.id) === String(ownerId));
+    const isMine  = String(ownerId) === String(loggedId);
+    const btn     = document.createElement('button');
     btn.className = 'num-btn' + (isMine ? ' mine' : (ownerId ? ' taken' : ''));
     btn.textContent = n;
     if (ownerId) {
-      btn.style.background = owner?.color || '#555';
+      btn.style.background  = owner?.color || '#555';
       btn.style.borderColor = isMine ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.25)';
     }
-    if (isMine) {
-      btn.style.background = owner?.color || '#555';
-    }
+    if (isMine) btn.style.background = owner?.color || '#555';
     if (ownerId) {
       const em = document.createElement('span');
-      em.className = 'num-emoji';
+      em.className   = 'num-emoji';
       em.textContent = owner?.icon || '👤';
       btn.appendChild(em);
     }
@@ -778,11 +822,10 @@ function renderGrid() {
 
 function handleNumber(num) {
   if (loggedId === null) return;
-  const active = getFullList().find(s => s.id === loggedId);
+  const active       = getFullList().find(s => s.id === loggedId);
   const currentOwner = allocations[num];
-
   if (active?.role === 'admin') {
-    if (currentOwner) { delete allocations[num]; renderGrid(); showToast(`Número ${num} liberado.`, 'success'); }
+    if (currentOwner) { delete allocations[num]; saveState(); renderGrid(); showToast(`Número ${num} liberado.`, 'success'); }
     return;
   }
   const vs = getVotingStatus();
@@ -801,26 +844,27 @@ function handleNumber(num) {
     showToast('Ya ocupado.');
     return;
   }
+  saveState();
   renderGrid();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // RANKING
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function renderRanking() {
-  const list = document.getElementById('ranking-list');
+  const list     = document.getElementById('ranking-list');
   const students = getStudents();
-  const counts = getPickCounts();
+  const counts   = getPickCounts();
   list.innerHTML = '';
   students.forEach((s, idx) => {
-    const count = counts[s.id] || 0;
-    const ps = getPersonalStart(s.id);
+    const count    = counts[s.id] || 0;
+    const ps       = getPersonalStart(s.id);
     const isMyTurn = ps && new Date() >= ps && getVotingStatus() !== 'closed';
-    const isMe = loggedId === s.id;
-    const pct = Math.min(100, (count / (s.max||1)) * 100);
-    const div = document.createElement('div');
-    div.className = 'rank-card' + (isMe ? ' me' : '');
-    div.innerHTML = `
+    const isMe     = loggedId === s.id;
+    const pct      = Math.min(100, (count / (s.max||1)) * 100);
+    const div      = document.createElement('div');
+    div.className  = 'rank-card' + (isMe ? ' me' : '');
+    div.innerHTML  = `
       <div class="rank-row">
         <div style="display:flex;align-items:center;gap:10px">
           <div class="rank-avatar" style="background:${s.color||'#555'}">${s.icon}</div>
@@ -835,32 +879,27 @@ function renderRanking() {
       </div>
       <div class="rank-bar-bg">
         <div class="rank-bar-fill" style="width:${pct}%;background:${s.color||'#555'}"></div>
-      </div>
-    `;
+      </div>`;
     list.appendChild(div);
   });
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // ADMIN PANEL
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function toggleAdminPanel() {
-  const panel = document.getElementById('admin-panel');
-  const btn   = document.getElementById('btn-toggle-config');
+  const panel  = document.getElementById('admin-panel');
+  const btn    = document.getElementById('btn-toggle-config');
   const isOpen = panel.classList.toggle('open');
   btn.style.background = isOpen ? '#f97316' : '#105c4d';
-  btn.textContent = isOpen ? '⚙️ CERRAR' : '⚙️ CONFIG';
+  btn.textContent      = isOpen ? '⚙️ CERRAR' : '⚙️ CONFIG';
   if (isOpen) renderAdminPanel();
 }
 
-
-// ═══════════════════════════════════════════════════════════════════════
-// TOTAL NUMBERS + ADMIN SUMMARY
-// ═══════════════════════════════════════════════════════════════════════
 function setTotalNumbers(n) {
   appConfig.totalNumbers = n;
-  // remove allocations beyond new total
   Object.keys(allocations).forEach(k => { if (parseInt(k) > n) delete allocations[k]; });
+  saveState();
   updateAdminSummary();
   renderAll();
   showToast('Tablero actualizado a ' + n + ' números.', 'success');
@@ -869,11 +908,9 @@ function setTotalNumbers(n) {
 function updateAdminSummary() {
   const cuposEl = document.getElementById('admin-total-cupos');
   if (cuposEl) {
-    const students = getStudents();
-    const suma = students.reduce((acc, s) => acc + (s.max || 0), 0);
+    const suma = getStudents().reduce((acc, s) => acc + (s.max || 0), 0);
     cuposEl.textContent = suma;
   }
-  // highlight active centena button
   [100,200,300,400,500].forEach(n => {
     const btn = document.getElementById('btn-total-' + n);
     if (btn) btn.classList.toggle('active', appConfig.totalNumbers === n);
@@ -882,13 +919,17 @@ function updateAdminSummary() {
 
 function renderAdminPanel() {
   updateAdminSummary();
-  buildTimePicker('tp-start-wrap', 'Inicio de Apertura', appConfig.startTime, v => { appConfig.startTime = v; renderAdminPanel(); renderAll(); });
-  buildTimePicker('tp-end-wrap',   'Cierre Final',        appConfig.endTime,   v => { appConfig.endTime = v;   renderAll(); });
+  buildTimePicker('tp-start-wrap', 'Inicio de Apertura', appConfig.startTime, v => {
+    appConfig.startTime = v; saveState(); renderAdminPanel(); renderAll();
+  });
+  buildTimePicker('tp-end-wrap', 'Cierre Final', appConfig.endTime, v => {
+    appConfig.endTime = v; saveState(); renderAll();
+  });
   renderStudentList();
 }
 
 function renderStudentList() {
-  const list = document.getElementById('student-list');
+  const list     = document.getElementById('student-list');
   const students = getStudents();
   list.innerHTML = '';
   students.forEach((s, idx) => {
@@ -926,8 +967,7 @@ function renderStudentList() {
             class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px"
             oninput="setOverride(${s.id},'pin',this.value)">
         </div>
-      </div>
-    `;
+      </div>`;
     list.appendChild(row);
   });
 }
@@ -936,50 +976,42 @@ function addStudent() {
   const allIds = [...DEFAULT_STUDENTS.map(s => s.id), ...Object.keys(overrides).map(Number).filter(n => !isNaN(n))];
   const newId  = allIds.length > 0 ? Math.max(...allIds) + 1 : 11;
   overrides[String(newId)] = { name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#84cc16", deleted:false };
+  saveState();
   renderStudentList();
   renderAll();
   showToast('Alumno agregado.', 'success');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // TIME PICKER
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function buildTimePicker(containerId, label, isoValue, onChangeFn) {
   const wrap = document.getElementById(containerId);
   wrap.innerHTML = `<div class="tp-label">${label}</div>`;
-
   const getLocalDateString = d => {
     const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
     return `${y}-${m}-${day}`;
   };
-
   const dateObj = isoValue ? new Date(isoValue) : new Date();
   const valid   = !isNaN(dateObj.getTime());
   let dateStr   = valid ? getLocalDateString(dateObj) : getLocalDateString(new Date());
-  let h24 = valid ? dateObj.getHours() : 9;
+  let h24  = valid ? dateObj.getHours() : 9;
   let ampm = h24 >= 12 ? 'PM' : 'AM';
   let h12  = h24 % 12 || 12;
   let mins = valid ? dateObj.getMinutes() : 0;
-
   const apply = () => {
     let h = h12;
     if (ampm === 'PM' && h < 12) h += 12;
     if (ampm === 'AM' && h === 12) h = 0;
     onChangeFn(`${dateStr}T${String(h).padStart(2,'0')}:${String(mins).padStart(2,'0')}:00`);
   };
-
-  // date
   const dateIn = document.createElement('input');
   dateIn.type = 'date'; dateIn.value = dateStr; dateIn.className = 'tp-date';
   dateIn.addEventListener('change', () => { dateStr = dateIn.value; apply(); });
   wrap.appendChild(dateIn);
-
-  // time row
-  const row = document.createElement('div'); row.className = 'tp-time-row';
-
-  // selects
+  const row     = document.createElement('div'); row.className = 'tp-time-row';
   const selWrap = document.createElement('div'); selWrap.className = 'tp-selects';
-  const selH = document.createElement('select'); selH.className = 'tp-sel';
+  const selH    = document.createElement('select'); selH.className = 'tp-sel';
   [1,2,3,4,5,6,7,8,9,10,11,12].forEach(h => {
     const o = document.createElement('option');
     o.value = o.textContent = String(h).padStart(2,'0');
@@ -987,10 +1019,8 @@ function buildTimePicker(containerId, label, isoValue, onChangeFn) {
     selH.appendChild(o);
   });
   selH.addEventListener('change', () => { h12 = parseInt(selH.value); apply(); });
-
   const colon = document.createElement('span'); colon.className = 'tp-colon'; colon.textContent = ':';
-
-  const selM = document.createElement('select'); selM.className = 'tp-sel';
+  const selM  = document.createElement('select'); selM.className = 'tp-sel';
   [0,5,10,15,20,25,30,35,40,45,50,55].forEach(m => {
     const o = document.createElement('option');
     o.value = o.textContent = String(m).padStart(2,'0');
@@ -998,10 +1028,7 @@ function buildTimePicker(containerId, label, isoValue, onChangeFn) {
     selM.appendChild(o);
   });
   selM.addEventListener('change', () => { mins = parseInt(selM.value); apply(); });
-
   selWrap.append(selH, colon, selM);
-
-  // am/pm
   const ampmWrap = document.createElement('div'); ampmWrap.className = 'tp-ampm-wrap';
   ['AM','PM'].forEach(p => {
     const b = document.createElement('button'); b.type = 'button';
@@ -1015,33 +1042,33 @@ function buildTimePicker(containerId, label, isoValue, onChangeFn) {
     });
     ampmWrap.appendChild(b);
   });
-
   row.append(selWrap, ampmWrap);
   wrap.appendChild(row);
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // RESET
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function openReset()  { document.getElementById('reset-modal').classList.add('show'); }
 function closeReset() { document.getElementById('reset-modal').classList.remove('show'); }
 function doReset() {
   allocations = {};
+  saveState();
   closeReset();
   renderGrid();
   showToast('Tablero limpio.', 'success');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // EXPORT
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function exportTxt() {
   const students = getStudents();
   let c = 'REPORTE DE SORTEO - AGOSTO\n\n';
   students.forEach((s, i) => {
     const nums = Object.entries(allocations)
       .filter(([,id]) => String(id) === String(s.id))
-      .map(([n]) => n).sort((a,b)=>a-b);
+      .map(([n]) => n).sort((a,b) => a-b);
     c += `${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNúmeros: ${nums.join(', ')||'-'}\n\n`;
   });
   const a = document.createElement('a');
@@ -1049,19 +1076,19 @@ function exportTxt() {
   a.download = 'sorteo_levelup.txt'; a.click();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // RENDER ALL
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 function renderAll() {
   renderGrid();
   updateStatusBadge();
   updateBoardOverlay();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════════════════════════
-buildLoginSelect();
+// ═══════════════════════════════════════════════════════════════
+initFirestore();
 </script>
 </body>
 </html>
