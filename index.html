@@ -264,6 +264,50 @@
   .clock-lbl { font-size: 8px; color: var(--dim); font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
   #live-clock { font-size: 30px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; color: var(--accent); letter-spacing: 0.15em; }
 
+  /* ── PALETA DE COLORES ── */
+  .color-palette {
+    display: none; position: absolute; right: 0; top: 30px;
+    background: #0a2e26; border: 1px solid var(--border2);
+    border-radius: 12px; padding: 8px; z-index: 100;
+    grid-template-columns: repeat(4, 1fr); gap: 5px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .color-palette.open { display: grid; }
+  .color-swatch {
+    width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
+    border: 2px solid transparent; transition: transform 0.1s, border-color 0.1s;
+  }
+  .color-swatch:hover { transform: scale(1.2); }
+  .color-swatch.selected { border-color: #fff; }
+  .color-trigger {
+    width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.3); flex-shrink: 0;
+    transition: transform 0.15s;
+  }
+  .color-trigger:hover { transform: scale(1.1); }
+  .color-wrap { position: relative; }
+
+  /* ── PROGRESO TABLERO ── */
+  #progress-card { padding: 10px 14px; }
+  .prog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 12px;
+  }
+  .prog-item { display: flex; flex-direction: column; gap: 3px; }
+  .prog-top { display: flex; justify-content: space-between; align-items: center; }
+  .prog-name { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .prog-frac { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900; flex-shrink: 0; }
+  .prog-bar-bg { height: 5px; background: rgba(0,0,0,0.35); border-radius: 10px; overflow: hidden; }
+  .prog-bar-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+  @media (min-width: 768px) {
+    .prog-grid { grid-template-columns: repeat(4, 1fr); }
+    .prog-name { max-width: 100px; }
+  }
+  @media (min-width: 1100px) {
+    .prog-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+
   /* ── RANKING ── */
   .rank-card {
     padding: 12px 14px; border-radius: 16px;
@@ -441,6 +485,12 @@
 
   <main id="main">
     <div id="pane-board">
+
+      <!-- PROGRESO DE ALUMNOS -->
+      <div class="card" id="progress-card" style="margin-bottom:10px">
+        <div id="progress-list"></div>
+      </div>
+
       <div class="card" style="position:relative;overflow:hidden">
         <div id="board-overlay">
           <div>
@@ -519,16 +569,16 @@ const REF = db.collection('sorteo').doc('main');
 // DATA
 // ═══════════════════════════════════════════════════════════════
 const DEFAULT_STUDENTS = [
-  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },
-  { id:2,  name:"Lucio Prado",       max:24, color:"#ef4444", icon:"🍎",  pin:"47291" },
-  { id:3,  name:"Joanna Prado",      max:17, color:"#f472b6", icon:"👧🏻", pin:"83652" },
-  { id:4,  name:"Manuel Villacorta", max:15, color:"#ea580c", icon:"👦🏻", pin:"15937" },
-  { id:5,  name:"Maria Villalobos",  max:14, color:"#ca8a04", icon:"👧🏽", pin:"62840" },
-  { id:6,  name:"Augusto Giuffra",   max:12, color:"#b91c1c", icon:"🕷️",  pin:"39514" },
-  { id:7,  name:"Santiago Quinto",   max:11, color:"#f97316", icon:"🏃🏻", pin:"70268" },
-  { id:8,  name:"Tiago Poma",        max:10, color:"#eab308", icon:"🐶",  pin:"58429" },
-  { id:9,  name:"Mateo Ríos",        max:6,  color:"#3b82f6", icon:"🐧",  pin:"26173" },
-  { id:10, name:"Rafaela Villena",   max:6,  color:"#0d9488", icon:"🐨",  pin:"91536" }
+  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },  // rosa
+  { id:2,  name:"Lucio Prado",       max:24, color:"#3b82f6", icon:"🍎",  pin:"47291" },  // azul
+  { id:3,  name:"Joanna Prado",      max:17, color:"#a855f7", icon:"👧🏻", pin:"83652" },  // violeta
+  { id:4,  name:"Manuel Villacorta", max:15, color:"#f97316", icon:"👦🏻", pin:"15937" },  // naranja
+  { id:5,  name:"Maria Villalobos",  max:14, color:"#eab308", icon:"👧🏽", pin:"62840" },  // amarillo
+  { id:6,  name:"Augusto Giuffra",   max:12, color:"#ef4444", icon:"🕷️",  pin:"39514" },  // rojo
+  { id:7,  name:"Santiago Quinto",   max:11, color:"#22c55e", icon:"🏃🏻", pin:"70268" },  // verde
+  { id:8,  name:"Tiago Poma",        max:10, color:"#06b6d4", icon:"🐶",  pin:"58429" },  // cyan
+  { id:9,  name:"Mateo Ríos",        max:6,  color:"#f43f5e", icon:"🐧",  pin:"26173" },  // carmesí
+  { id:10, name:"Rafaela Villena",   max:6,  color:"#14b8a6", icon:"🐨",  pin:"91536" }   // teal
 ];
 const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
 const getTotal = () => appConfig.totalNumbers || 200;
@@ -565,15 +615,22 @@ function initFirestore() {
     if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
 
     document.getElementById('loading-screen').classList.add('hidden');
-    document.getElementById('login-screen').style.display = 'flex';
-    buildLoginSelect();
 
-    if (loggedId !== null) renderAll();
+    if (loggedId === null) {
+      // Sin sesión activa: mostrar login
+      document.getElementById('login-screen').style.display = 'flex';
+      buildLoginSelect();
+    } else {
+      // Sesión activa: solo actualizar datos en pantalla
+      renderAll();
+    }
   }, err => {
     console.error('Firestore error:', err);
     document.getElementById('loading-screen').classList.add('hidden');
-    document.getElementById('login-screen').style.display = 'flex';
-    buildLoginSelect();
+    if (loggedId === null) {
+      document.getElementById('login-screen').style.display = 'flex';
+      buildLoginSelect();
+    }
     showToast('No se pudo conectar a Firebase.');
   });
 }
@@ -825,7 +882,7 @@ function handleNumber(num) {
   const active       = getFullList().find(s => s.id === loggedId);
   const currentOwner = allocations[num];
   if (active?.role === 'admin') {
-    if (currentOwner) { delete allocations[num]; saveState(); renderGrid(); showToast(`Número ${num} liberado.`, 'success'); }
+    if (currentOwner) { delete allocations[num]; saveState(); renderAll(); showToast(`Número ${num} liberado.`, 'success'); }
     return;
   }
   const vs = getVotingStatus();
@@ -845,7 +902,7 @@ function handleNumber(num) {
     return;
   }
   saveState();
-  renderGrid();
+  renderAll();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -939,9 +996,13 @@ function renderStudentList() {
       <div class="student-row-top">
         <span class="pos-label">POS. ${idx+1}</span>
         <div style="display:flex;align-items:center;gap:8px">
-          <input type="color" value="${s.color||'#ffffff'}" title="Color"
-            style="width:22px;height:22px;border-radius:6px;border:none;background:transparent;cursor:pointer"
-            onchange="setOverride(${s.id},'color',this.value);renderStudentList()">
+          <div class="color-wrap">
+            <div class="color-trigger" style="background:${s.color||'#888'}"
+              onclick="togglePalette(event, ${s.id})"></div>
+            <div class="color-palette" id="palette-${s.id}">
+              ${COLOR_PALETTE.map(c=>`<div class="color-swatch${s.color===c?' selected':''}" style="background:${c}" onclick="pickColor(event,${s.id},'${c}')"></div>`).join('')}
+            </div>
+          </div>
           <button onclick="setOverride(${s.id},'deleted',true);renderStudentList();renderAll()"
             style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#f87171;cursor:pointer;font-size:12px">🗑️</button>
         </div>
@@ -972,10 +1033,61 @@ function renderStudentList() {
   });
 }
 
+const COLOR_PALETTE = [
+  "#EF4444", // rojo vivo
+  "#991B1B", // granate oscuro
+  "#F97316", // naranja
+  "#92400E", // marrón chocolate
+  "#EAB308", // amarillo
+  "#78350F", // café oscuro
+  "#84CC16", // verde lima
+  "#14532D", // verde botella
+  "#22C55E", // verde brillante
+  "#0D9488", // teal
+  "#06B6D4", // cyan brillante
+  "#164E63", // azul petróleo
+  "#3B82F6", // azul brillante
+  "#1E3A8A", // azul marino
+  "#8B5CF6", // violeta
+  "#4C1D95", // morado oscuro
+  "#EC4899", // rosa brillante
+  "#9D174D", // bordó
+  "#F43F5E", // carmesí
+  "#475569"  // gris pizarra
+];
+
+function togglePalette(e, id) {
+  e.stopPropagation();
+  // Cierra todas las otras paletas abiertas
+  document.querySelectorAll('.color-palette.open').forEach(p => {
+    if (p.id !== 'palette-' + id) p.classList.remove('open');
+  });
+  document.getElementById('palette-' + id)?.classList.toggle('open');
+}
+
+function pickColor(e, id, color) {
+  e.stopPropagation();
+  setOverride(id, 'color', color);
+  document.getElementById('palette-' + id)?.classList.remove('open');
+  renderStudentList();
+  renderAll();
+}
+
+// Clic fuera cierra todas las paletas
+document.addEventListener('click', () => {
+  document.querySelectorAll('.color-palette.open').forEach(p => p.classList.remove('open'));
+});
+
+function pickUniqueColor() {
+  const usedColors = getStudents().map(s => s.color.toLowerCase());
+  const free = COLOR_PALETTE.find(c => !usedColors.includes(c.toLowerCase()));
+  return free || COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+}
+
 function addStudent() {
   const allIds = [...DEFAULT_STUDENTS.map(s => s.id), ...Object.keys(overrides).map(Number).filter(n => !isNaN(n))];
   const newId  = allIds.length > 0 ? Math.max(...allIds) + 1 : 11;
-  overrides[String(newId)] = { name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#84cc16", deleted:false };
+  overrides[String(newId)] = { name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color: pickUniqueColor(), deleted:false };
   saveState();
   renderStudentList();
   renderAll();
@@ -1055,7 +1167,7 @@ function doReset() {
   allocations = {};
   saveState();
   closeReset();
-  renderGrid();
+  renderAll();
   showToast('Tablero limpio.', 'success');
 }
 
@@ -1077,10 +1189,43 @@ function exportTxt() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// PROGRESO EN TABLERO
+// ═══════════════════════════════════════════════════════════════
+function renderBoardProgress() {
+  const container = document.getElementById('progress-list');
+  if (!container) return;
+
+  // Solo mostrar el progreso del alumno logueado (admin no tiene cupo)
+  const me = getStudents().find(s => s.id === loggedId);
+  if (!me) { container.innerHTML = ''; return; }
+
+  const count = getPickCounts()[me.id] || 0;
+  const max   = me.max || 1;
+  const pct   = Math.min(100, (count / max) * 100);
+  const full  = count >= me.max;
+  const fracColor = full ? '#fb923c' : '#e5e7eb';
+
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:22px">${me.icon}</span>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:${me.color||'#fff'}">${me.name}</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:${fracColor}">${count} / ${me.max||0}</span>
+        </div>
+        <div class="prog-bar-bg">
+          <div class="prog-bar-fill" style="width:${pct}%;background:${me.color||'#84cc16'}"></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // RENDER ALL
 // ═══════════════════════════════════════════════════════════════
 function renderAll() {
   renderGrid();
+  renderBoardProgress();
   updateStatusBadge();
   updateBoardOverlay();
 }
