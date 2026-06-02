@@ -305,10 +305,10 @@
     .tp-ampm-wrap { height: 32px; }
     .tp-ampm-btn { padding: 0 9px; font-size: 9px; }
 
-    /* student list: 2-column grid */
+    /* student list: 4-column grid */
     .student-list { max-height: none; overflow-y: visible; }
     #student-list {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
     }
     .student-row { margin-bottom: 0; padding: 10px 12px; }
     .student-row-top { margin-bottom: 8px; }
@@ -532,7 +532,11 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
     });
   });
-  return list.sort((a,b) => (b.max||0) - (a.max||0));
+  return list.sort((a,b) => {
+    const diff = (b.max||0) - (a.max||0);
+    if (diff !== 0) return diff;
+    return a.id - b.id; // empate: menor id (posición original) va primero
+  });
 }
 
 function getFullList() { return [ADMIN, ...getStudents()]; }
