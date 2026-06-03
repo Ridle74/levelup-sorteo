@@ -834,12 +834,19 @@ function showToast(msg, type='error') {
 // ═══════════════════════════════════════════════════════════════
 // LOGIN
 // ═══════════════════════════════════════════════════════════════
+function getSorteoMonth() {
+  const dt = appConfig.startTime ? new Date(appConfig.startTime) : new Date();
+  // Antes del día 15 → mes anterior; del 15 en adelante → mes actual
+  if (dt.getDate() < 15) {
+    dt.setMonth(dt.getMonth() - 1);
+  }
+  const month = dt.toLocaleDateString('es-ES', { month: 'long' });
+  return month.charAt(0).toUpperCase() + month.slice(1);
+}
+
 function updateLoginSubtitle() {
   const el = document.getElementById('login-sub');
-  if (!el) return;
-  const dt = appConfig.startTime ? new Date(appConfig.startTime) : new Date();
-  const month = dt.toLocaleDateString('es-ES', { month: 'long' });
-  el.textContent = 'Sorteo de ' + month.charAt(0).toUpperCase() + month.slice(1);
+  if (el) el.textContent = 'Sorteo de ' + getSorteoMonth();
 }
 
 function openPublicRanking() {
@@ -857,11 +864,7 @@ function openPublicRanking() {
 
   // Subtítulo dinámico
   const sub = document.getElementById('public-ranking-subtitle');
-  if (sub) {
-    const dt = appConfig.startTime ? new Date(appConfig.startTime) : new Date();
-    const month = dt.toLocaleDateString('es-ES',{month:'long'}).toUpperCase();
-    sub.textContent = 'MATHS LEVEL UP · ' + month;
-  }
+  if (sub) sub.textContent = 'MATHS LEVEL UP · ' + getSorteoMonth().toUpperCase();
 
   modal.style.display = 'flex';
 
@@ -910,11 +913,7 @@ function openPublicNumbers() {
 
   // Subtítulo dinámico
   const sub = document.getElementById('public-numbers-subtitle');
-  if (sub) {
-    const dt = appConfig.startTime ? new Date(appConfig.startTime) : new Date();
-    const month = dt.toLocaleDateString('es-ES',{month:'long'}).toUpperCase();
-    sub.textContent = 'MATHS LEVEL UP · ' + month;
-  }
+  if (sub) sub.textContent = 'MATHS LEVEL UP · ' + getSorteoMonth().toUpperCase();
 
   modal.style.display = 'flex';
 
