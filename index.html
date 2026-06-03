@@ -7,10 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 
 <!-- ══ FIREBASE SDK ══ -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js?v=2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js?v=2"></script>
 <!-- ══ HTML2CANVAS (captura de imagen) ══ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js?v=2"></script>
 
 <style>
   :root {
@@ -692,20 +692,62 @@ let saveDebounce = null;
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE — GUARDAR
 // ═══════════════════════════════════════════════════════════════
+
+// Guarda overrides y config (no necesitan transacción)
+function saveMeta() {
+  REF.set({ overrides: overrides, config: appConfig }, { merge: true })
+    .catch(err => { console.error('Firebase meta save error:', err); showToast('Error al guardar.'); });
+}
+
+// Guarda un cambio puntual en allocations usando transacción atómica.
+// action: 'set'    → allocations[num] = ownerId
+// action: 'delete' → delete allocations[num]
+function saveAllocationChange(num, action, ownerId) {
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(REF);
+    const data = snap.exists ? snap.data() : {};
+    // Copiar el objeto completo de allocations
+    const current = Object.assign({}, data.allocations || {});
+
+    if (action === 'delete') {
+      delete current[num];
+    } else {
+      // Validar cupo en el servidor para evitar race conditions
+      if (ownerId !== 0) {
+        const students = getStudents();
+        const student  = students.find(s => s.id === ownerId);
+        if (student) {
+          const count = Object.values(current).filter(id => String(id) === String(ownerId)).length;
+          if (count >= (student.max || 0)) {
+            throw new Error('CUPO_LLENO:' + student.max);
+          }
+        }
+      }
+      current[num] = ownerId;
+    }
+
+    // Reemplazar el objeto allocations COMPLETO con set+merge
+    // Esto garantiza que onSnapshot se dispare en TODOS los clientes
+    tx.set(REF, { allocations: current }, { merge: true });
+  });
+}
+
+// Compatibilidad: saveState sigue existiendo para overrides/config
 function saveState() {
-  REF.set({ allocations, overrides, config: appConfig }, { merge: true })
-    .catch(err => { console.error('Firebase save error:', err); showToast('Error al guardar.'); });
+  saveMeta();
 }
 function saveStateDebounced() {
   clearTimeout(saveDebounce);
-  saveDebounce = setTimeout(saveState, 600);
+  saveDebounce = setTimeout(saveMeta, 600);
 }
 
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE — ESCUCHAR EN TIEMPO REAL
 // ═══════════════════════════════════════════════════════════════
 function initFirestore() {
+  console.log('[Firebase] Iniciando listener onSnapshot...');
   REF.onSnapshot(doc => {
+    console.log('[Firebase] onSnapshot recibido:', new Date().toLocaleTimeString());
     const data = doc.exists ? doc.data() : {};
     allocations = data.allocations || {};
     overrides   = data.overrides   || {};
@@ -715,15 +757,13 @@ function initFirestore() {
     document.getElementById('loading-screen').classList.add('hidden');
 
     if (loggedId === null) {
-      // Sin sesión activa: mostrar login
       document.getElementById('login-screen').style.display = 'flex';
       buildLoginSelect();
     } else {
-      // Sesión activa: solo actualizar datos en pantalla
       renderAll();
     }
   }, err => {
-    console.error('Firestore error:', err);
+    console.error('[Firebase] ERROR en onSnapshot:', err.code, err.message);
     document.getElementById('loading-screen').classList.add('hidden');
     if (loggedId === null) {
       document.getElementById('login-screen').style.display = 'flex';
@@ -906,17 +946,14 @@ function openPublicRanking() {
   }, 50);
 }
 
-function openPublicNumbers() {
-  const modal    = document.getElementById('public-numbers-modal');
-  const list     = document.getElementById('public-numbers-list');
+function renderPublicNumbersList() {
+  const list = document.getElementById('public-numbers-list');
+  if (!list) return;
+  // Si el modal no está visible, no hacer nada
+  const modal = document.getElementById('public-numbers-modal');
+  if (modal.style.display === 'none' || modal.style.display === '') return;
+
   const students = getStudents();
-
-  // Subtítulo dinámico
-  const sub = document.getElementById('public-numbers-subtitle');
-  if (sub) sub.textContent = 'MATHS LEVEL UP · ' + getSorteoMonth().toUpperCase();
-
-  modal.style.display = 'flex';
-
   list.innerHTML = students.map(s => {
     const nums = Object.entries(allocations)
       .filter(([, id]) => String(id) === String(s.id))
@@ -946,6 +983,14 @@ function openPublicNumbers() {
         <div style="display:flex;flex-wrap:wrap;gap:5px">${numsHtml}</div>
       </div>`;
   }).join('');
+}
+
+function openPublicNumbers() {
+  const modal = document.getElementById('public-numbers-modal');
+  const sub   = document.getElementById('public-numbers-subtitle');
+  if (sub) sub.textContent = 'MATHS LEVEL UP · ' + getSorteoMonth().toUpperCase();
+  modal.style.display = 'flex';
+  renderPublicNumbersList();
 }
 
 function closePublicNumbers() {
@@ -1146,28 +1191,68 @@ function handleNumber(num) {
   if (loggedId === null) return;
   const active       = getFullList().find(s => s.id === loggedId);
   const currentOwner = allocations[num];
+
   if (active?.role === 'admin') {
-    if (currentOwner) { delete allocations[num]; saveState(); renderAll(); showToast(`Número ${num} liberado.`, 'success'); }
+    if (!currentOwner) return;
+    // Optimistic: actualizar pantalla de inmediato
+    delete allocations[num];
+    renderAll();
+    saveAllocationChange(num, 'delete', null)
+      .then(() => showToast('Número ' + num + ' liberado.', 'success'))
+      .catch(err => {
+        console.error(err);
+        // Revertir si falla
+        allocations[num] = currentOwner;
+        renderAll();
+        showToast('Error al liberar número.');
+      });
     return;
   }
+
   const vs = getVotingStatus();
   if (vs !== 'open') {
-    if (vs === 'waiting_turn') showToast(`Tu turno: ${formatFullDate(getPersonalStart(loggedId))}`);
+    if (vs === 'waiting_turn') showToast('Tu turno: ' + formatFullDate(getPersonalStart(loggedId)));
     else showToast('Sorteo cerrado.');
     return;
   }
+
   if (String(currentOwner) === String(loggedId)) {
+    // Optimistic: deseleccionar de inmediato
     delete allocations[num];
+    renderAll();
+    saveAllocationChange(num, 'delete', null)
+      .catch(err => {
+        console.error(err);
+        // Revertir si falla
+        allocations[num] = loggedId;
+        renderAll();
+        showToast('Error al deseleccionar.');
+      });
   } else if (!currentOwner) {
+    // Validación de cupo local antes de tocar nada
     const counts = getPickCounts();
-    if ((counts[loggedId]||0) >= (active?.max||0)) { showToast(`Cupo lleno (${active?.max}).`); return; }
+    if ((counts[loggedId] || 0) >= (active?.max || 0)) {
+      showToast('Cupo lleno (' + (active?.max) + ').');
+      return;
+    }
+    // Optimistic: mostrar número como seleccionado de inmediato
     allocations[num] = loggedId;
+    renderAll();
+    saveAllocationChange(num, 'set', loggedId)
+      .catch(err => {
+        // Revertir si el servidor rechaza (ej: otro cliente tomó el número)
+        delete allocations[num];
+        renderAll();
+        if (err.message && err.message.startsWith('CUPO_LLENO:')) {
+          const max = err.message.split(':')[1];
+          showToast('Cupo lleno (' + max + ').');
+        } else {
+          showToast('Número ya ocupado, intenta otro.');
+        }
+      });
   } else {
     showToast('Ya ocupado.');
-    return;
   }
-  saveState();
-  renderAll();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1570,6 +1655,7 @@ function renderAll() {
   renderBoardProgress();
   updateStatusBadge();
   updateBoardOverlay();
+  renderPublicNumbersList();
 }
 
 // ═══════════════════════════════════════════════════════════════
