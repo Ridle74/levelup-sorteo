@@ -706,13 +706,15 @@ function saveAllocationChange(num, action, ownerId) {
   return db.runTransaction(async tx => {
     const snap = await tx.get(REF);
     const data = snap.exists ? snap.data() : {};
-    // Copiar el objeto completo de allocations
-    const current = Object.assign({}, data.allocations || {});
+
+    // Leer el estado completo del servidor
+    const current   = Object.assign({}, data.allocations || {});
+    const ovServer  = data.overrides || {};
+    const cfgServer = data.config    || {};
 
     if (action === 'delete') {
       delete current[num];
     } else {
-      // Validar cupo en el servidor para evitar race conditions
       if (ownerId !== 0) {
         const students = getStudents();
         const student  = students.find(s => s.id === ownerId);
@@ -726,9 +728,13 @@ function saveAllocationChange(num, action, ownerId) {
       current[num] = ownerId;
     }
 
-    // Reemplazar el objeto allocations COMPLETO con set+merge
-    // Esto garantiza que onSnapshot se dispare en TODOS los clientes
-    tx.set(REF, { allocations: current }, { merge: true });
+    // set SIN merge: reemplaza allocations completamente.
+    // Se incluyen overrides y config para no perderlos.
+    tx.set(REF, {
+      allocations: current,
+      overrides:   ovServer,
+      config:      cfgServer
+    });
   });
 }
 
