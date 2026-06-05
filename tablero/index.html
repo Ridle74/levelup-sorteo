@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LEVEL UP â Tablero</title>
+<title>LEVEL UP — Tablero</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 </head>
@@ -23,12 +23,12 @@
     <div class="header-row">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="header-title">LEVEL UP</div>
-        <div id="status-badge" class="status-badge status-open">â Activo</div>
+        <div id="status-badge" class="status-badge status-open">● Activo</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="user-pill">
-          <span id="hdr-icon" style="font-size:20px">ð¤</span>
-          <span id="hdr-name" class="uname">â</span>
+          <span id="hdr-icon" style="font-size:20px">👤</span>
+          <span id="hdr-name" class="uname">–</span>
         </div>
         <button class="btn-logout" onclick="doLogout()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -36,33 +36,33 @@
       </div>
     </div>
     <div id="admin-buttons" class="admin-row" style="display:none">
-      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">âï¸ CONFIG</button>
-      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">ð REPORTE</button>
-      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">ðï¸ RESET</button>
+      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">⚙️ CONFIG</button>
+      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">📄 REPORTE</button>
+      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">🗑️ RESET</button>
     </div>
   </header>
 
   <!-- ADMIN PANEL -->
   <div id="admin-panel">
     <div class="card" style="border-radius:20px">
-      <div class="section-label">ð CRONOGRAMA</div>
+      <div class="section-label">📅 CRONOGRAMA</div>
       <div id="admin-cronograma-grid">
         <div class="tp-wrap" id="tp-start-wrap"></div>
         <div class="tp-wrap" id="tp-end-wrap"></div>
       </div>
       <div id="admin-alumnos-section">
-        <div class="section-label">â³ ALUMNOS</div>
+        <div class="section-label">⏳ ALUMNOS</div>
         <div class="student-list">
           <div id="student-list"></div>
         </div>
-        <button class="btn-add-student" onclick="addStudent()">â AGREGAR ALUMNO</button>
+        <button class="btn-add-student" onclick="addStudent()">➕ AGREGAR ALUMNO</button>
         <div id="admin-summary-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
           <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
             <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SUMA TOTAL DE CUPOS</div>
             <div id="admin-total-cupos" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#84cc16;line-height:1">0</div>
           </div>
           <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
-            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px">NÃMEROS EN EL TABLERO</div>
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px">NÚMEROS EN EL TABLERO</div>
             <div style="display:flex;gap:6px;flex-wrap:wrap">
               <button onclick="setTotalNumbers(100)" id="btn-total-100" class="btn-centena">100</button>
               <button onclick="setTotalNumbers(200)" id="btn-total-200" class="btn-centena">200</button>
@@ -78,8 +78,8 @@
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">ð¯ TABLERO</button>
-    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">ð RANKING</button>
+    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">🎯 TABLERO</button>
+    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">🏆 RANKING</button>
   </div>
 
   <main id="main">
@@ -91,17 +91,17 @@
       <div class="card" style="position:relative;overflow:hidden">
         <div id="board-overlay">
           <div>
-            <div class="overlay-icon" id="overlay-icon">â³</div>
+            <div class="overlay-icon" id="overlay-icon">⏳</div>
             <div class="overlay-title" id="overlay-title">ESPERA TU TURNO</div>
             <div class="overlay-sub"   id="overlay-sub">Los turnos se habilitan de 9 AM a 9 PM.</div>
             <div id="overlay-wait-info">
               <div class="overlay-start">
                 <div class="overlay-start-label">COMIENZA EL</div>
-                <div class="overlay-start-date" id="overlay-start-date">â</div>
+                <div class="overlay-start-date" id="overlay-start-date">–</div>
               </div>
               <div class="clock-box" style="margin-top:10px">
                 <div class="clock-lbl">HORA ACTUAL</div>
-                <div id="live-clock">â</div>
+                <div id="live-clock">–</div>
               </div>
             </div>
           </div>
@@ -109,7 +109,7 @@
         <div class="board-header">
           <div>
             <div class="board-title">TABLERO VIVO</div>
-            <div class="board-sub">Reserva tus nÃºmeros</div>
+            <div class="board-sub">Reserva tus números</div>
           </div>
           <div class="taken-box">
             <div class="taken-label">Tomados</div>
@@ -123,7 +123,7 @@
     <!-- RANKING -->
     <div id="pane-ranking" style="display:none">
       <div class="card">
-        <div class="section-label" style="margin-bottom:14px">â³ Ranking de Turnos</div>
+        <div class="section-label" style="margin-bottom:14px">⏳ Ranking de Turnos</div>
         <div id="ranking-list"></div>
       </div>
     </div>
@@ -133,26 +133,26 @@
 <!-- RESET MODAL -->
 <div id="reset-modal">
   <div class="modal-card">
-    <div class="modal-icon">ðï¸</div>
-    <div class="modal-title">Â¿REINICIAR TODO?</div>
-    <div class="modal-sub">Se perderÃ¡n todas las selecciones permanentemente.</div>
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">¿REINICIAR TODO?</div>
+    <div class="modal-sub">Se perderán todas las selecciones permanentemente.</div>
     <button class="btn-reset-confirm" onclick="doReset()">REINICIAR</button>
     <button class="btn-reset-cancel"  onclick="closeReset()">CANCELAR</button>
   </div>
 </div>
 
 <!-- TOAST -->
-<div id="toast"><span id="toast-icon">â ï¸</span><span id="toast-msg">â</span></div>
+<div id="toast"><span id="toast-icon">⚠️</span><span id="toast-msg">–</span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="/js/shared.js"></script>
 <script>
-// ââ VERIFICAR LOGIN ââ
+// ── VERIFICAR LOGIN ──
 const loggedId = getLoggedId();
 if (loggedId === null) window.location.href = '/';
 
-// ââ CLOCK ââ
+// ── CLOCK ──
 let clockTimer = null;
 function startClock() {
   clearInterval(clockTimer);
@@ -167,17 +167,17 @@ function tickClock() {
   updateBoardOverlay();
 }
 
-// ââ STATUS BADGE ââ
+// ── STATUS BADGE ──
 function updateStatusBadge() {
   const badge = document.getElementById('status-badge');
   const vs    = getVotingStatus(loggedId);
   badge.className = 'status-badge';
-  if (vs === 'open')            { badge.classList.add('status-open');   badge.textContent = 'â Activo'; }
-  else if (vs === 'waiting_turn') { badge.classList.add('status-wait'); badge.textContent = 'â³ Espera'; }
-  else                            { badge.classList.add('status-closed'); badge.textContent = 'â Cerrado'; }
+  if (vs === 'open')            { badge.classList.add('status-open');   badge.textContent = '● Activo'; }
+  else if (vs === 'waiting_turn') { badge.classList.add('status-wait'); badge.textContent = '⏳ Espera'; }
+  else                            { badge.classList.add('status-closed'); badge.textContent = '✕ Cerrado'; }
 }
 
-// ââ BOARD OVERLAY ââ
+// ── BOARD OVERLAY ──
 function updateBoardOverlay() {
   const vs      = getVotingStatus(loggedId);
   const overlay  = document.getElementById('board-overlay');
@@ -185,20 +185,20 @@ function updateBoardOverlay() {
   if (vs === 'open') { overlay.classList.remove('show'); return; }
   overlay.classList.add('show');
   if (vs === 'waiting_turn') {
-    document.getElementById('overlay-icon').textContent  = 'â³';
+    document.getElementById('overlay-icon').textContent  = '⏳';
     document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
     document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 9 AM a 9 PM.';
     waitInfo.style.display = 'block';
     document.getElementById('overlay-start-date').textContent = formatFullDate(getPersonalStart(loggedId));
   } else {
-    document.getElementById('overlay-icon').textContent  = 'ð';
+    document.getElementById('overlay-icon').textContent  = '🔒';
     document.getElementById('overlay-title').textContent = 'SORTEO CERRADO';
-    document.getElementById('overlay-sub').textContent   = 'El tiempo de participaciÃ³n ha terminado.';
+    document.getElementById('overlay-sub').textContent   = 'El tiempo de participación ha terminado.';
     waitInfo.style.display = 'none';
   }
 }
 
-// ââ TABS ââ
+// ── TABS ──
 function switchTab(tab) {
   document.getElementById('pane-board').style.display   = tab === 'board'   ? 'block' : 'none';
   document.getElementById('pane-ranking').style.display = tab === 'ranking' ? 'block' : 'none';
@@ -207,7 +207,7 @@ function switchTab(tab) {
   if (tab === 'ranking') renderRanking();
 }
 
-// ââ NUMBER GRID ââ
+// ── NUMBER GRID ──
 function renderGrid() {
   const grid     = document.getElementById('num-grid');
   const students = getStudents();
@@ -226,7 +226,7 @@ function renderGrid() {
     if (ownerId) {
       const em = document.createElement('span');
       em.className   = 'num-emoji';
-      em.textContent = owner?.icon || 'ð¤';
+      em.textContent = owner?.icon || '👤';
       btn.appendChild(em);
     }
     btn.addEventListener('click', () => handleNumber(n));
@@ -245,8 +245,8 @@ function handleNumber(num) {
     delete allocations[num];
     renderAll();
     saveAllocationChange(num, 'delete', null)
-      .then(() => showToast('NÃºmero ' + num + ' liberado.', 'success'))
-      .catch(err => { console.error(err); allocations[num] = currentOwner; renderAll(); showToast('Error al liberar nÃºmero.'); });
+      .then(() => showToast('Número ' + num + ' liberado.', 'success'))
+      .catch(err => { console.error(err); allocations[num] = currentOwner; renderAll(); showToast('Error al liberar número.'); });
     return;
   }
 
@@ -271,14 +271,14 @@ function handleNumber(num) {
       .catch(err => {
         delete allocations[num]; renderAll();
         if (err.message && err.message.startsWith('CUPO_LLENO:')) showToast('Cupo lleno (' + err.message.split(':')[1] + ').');
-        else showToast('NÃºmero ya ocupado, intenta otro.');
+        else showToast('Número ya ocupado, intenta otro.');
       });
   } else {
     showToast('Ya ocupado.');
   }
 }
 
-// ââ RANKING ââ
+// ── RANKING ──
 function renderRanking() {
   const list     = document.getElementById('ranking-list');
   const students = getStudents();
@@ -299,7 +299,7 @@ function renderRanking() {
           <div>
             <div class="rank-name">${idx+1}. ${s.name}</div>
             <div class="rank-time" style="color:${isMyTurn?'#4ade80':'#6f7280'}">
-              ${isMyTurn ? 'â Turno activo' : formatFullDate(ps)}
+              ${isMyTurn ? '✓ Turno activo' : formatFullDate(ps)}
             </div>
           </div>
         </div>
@@ -312,7 +312,7 @@ function renderRanking() {
   });
 }
 
-// ââ BOARD PROGRESS ââ
+// ── BOARD PROGRESS ──
 function renderBoardProgress() {
   const container = document.getElementById('progress-list');
   if (!container) return;
@@ -337,7 +337,7 @@ function renderBoardProgress() {
     </div>`;
 }
 
-// ââ RENDER ALL ââ
+// ── RENDER ALL ──
 function renderAll() {
   renderGrid();
   renderBoardProgress();
@@ -345,19 +345,19 @@ function renderAll() {
   updateBoardOverlay();
 }
 
-// ââ LOGOUT ââ
+// ── LOGOUT ──
 function doLogout() {
   setLoggedId(null);
   window.location.href = '/';
 }
 
-// ââ ADMIN ââ
+// ── ADMIN ──
 function toggleAdminPanel() {
   const panel  = document.getElementById('admin-panel');
   const btn    = document.getElementById('btn-toggle-config');
   const isOpen = panel.classList.toggle('open');
   btn.style.background = isOpen ? '#f97316' : '#105c4d';
-  btn.textContent      = isOpen ? 'âï¸ CERRAR' : 'âï¸ CONFIG';
+  btn.textContent      = isOpen ? '⚙️ CERRAR' : '⚙️ CONFIG';
   if (isOpen) renderAdminPanel();
 }
 
@@ -365,10 +365,10 @@ function setTotalNumbers(n) {
   appConfig.totalNumbers = n;
   Object.keys(allocations).forEach(k => { if (parseInt(k) > n) delete allocations[k]; });
   REF.set({ allocations, overrides, config: appConfig })
-    .catch(err => { console.error(err); showToast('Error al guardar tamaÃ±o del tablero.'); });
+    .catch(err => { console.error(err); showToast('Error al guardar tamaño del tablero.'); });
   updateAdminSummary();
   renderAll();
-  showToast('Tablero actualizado a ' + n + ' nÃºmeros.', 'success');
+  showToast('Tablero actualizado a ' + n + ' números.', 'success');
 }
 
 function updateAdminSummary() {
@@ -402,9 +402,9 @@ function renderStudentList() {
       <div class="student-row-top">
         <div style="display:flex;align-items:center;gap:6px">
           <span class="pos-label">POS. ${idx+1}</span>
-          <button class="msg-btn" title="Inicio de selecciÃ³n" onclick="copyMsg(${s.id},1)">ð©</button>
-          <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">ð¢</button>
-          <button class="msg-btn" title="Detalles del sorteo" onclick="copyMsg(${s.id},3)">ð´</button>
+          <button class="msg-btn" title="Inicio de selección" onclick="copyMsg(${s.id},1)">📩</button>
+          <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">📢</button>
+          <button class="msg-btn" title="Detalles del sorteo" onclick="copyMsg(${s.id},3)">🔴</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="color-wrap">
@@ -414,7 +414,7 @@ function renderStudentList() {
             </div>
           </div>
           <button onclick="setOverride(${s.id},'deleted',true);renderStudentList();renderAll()"
-            style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#f87171;cursor:pointer;font-size:12px">ðï¸</button>
+            style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#f87171;cursor:pointer;font-size:12px">🗑️</button>
         </div>
       </div>
       <div style="display:flex;gap:6px;margin-bottom:8px">
@@ -466,14 +466,14 @@ function pickUniqueColor() {
 function addStudent() {
   const allIds = [...DEFAULT_STUDENTS.map(s => s.id), ...Object.keys(overrides).map(Number).filter(n => !isNaN(n))];
   const newId  = allIds.length > 0 ? Math.max(...allIds) + 1 : 11;
-  overrides[String(newId)] = { name:"Nuevo Alumno", icon:"ð¤", max:0, pin:"1234", color: pickUniqueColor(), deleted:false };
+  overrides[String(newId)] = { name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color: pickUniqueColor(), deleted:false };
   saveMeta();
   renderStudentList();
   renderAll();
   showToast('Alumno agregado.', 'success');
 }
 
-// ââ TIME PICKER ââ
+// ── TIME PICKER ──
 function buildTimePicker(containerId, label, isoValue, onChangeFn) {
   const wrap = document.getElementById(containerId);
   wrap.innerHTML = `<div class="tp-label">${label}</div>`;
@@ -535,7 +535,7 @@ function buildTimePicker(containerId, label, isoValue, onChangeFn) {
   wrap.appendChild(row);
 }
 
-// ââ MESSAGES ââ
+// ── MESSAGES ──
 function copyMsg(studentId, type) {
   const students  = getStudents();
   const s         = students.find(st => st.id === studentId);
@@ -547,27 +547,27 @@ function copyMsg(studentId, type) {
 
   if (type === 1) {
     let recon = '';
-    if (rank === 1) recon = `ð *Â¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *PRIMER PUESTO* en MATHS LEVEL UP del mes de Mayo. Â¡Eres el mejor! Por ello, has ganado un premio de *S/. 50* que enviaremos vÃ­a Yape al apoderado. ð\n\n`;
-    else if (rank === 2) recon = `ð¥ *Â¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *SEGUNDO PUESTO* en MATHS LEVEL UP del mes de Mayo. Â¡Excelente trabajo! Por ello, has ganado un premio de *S/. 25* que enviaremos vÃ­a Yape al apoderado. ð\n\n`;
-    text = `${recon}*Â¡BUENAS NOCHES, ${UPPER}!*\nYa puedes participar en el sorteo de MATHS LEVEL UP que realizaremos maÃ±ana al mediodÃ­a. Sigue estos pasos para elegir tus nÃºmeros:\n\nEntra aquÃ­: https://dazzling-platypus-6cdce9.netlify.app/\nSelecciona tu nombre en la lista.\nIngresa tu contraseÃ±a de acceso: ${s.pin}\n\n*Â¡Mucho Ã©xito en el sorteo!*`;
+    if (rank === 1) recon = `🏆 *¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *PRIMER PUESTO* en MATHS LEVEL UP del mes de Mayo. ¡Eres el mejor! Por ello, has ganado un premio de *S/. 50* que enviaremos vía Yape al apoderado. 🎉\n\n`;
+    else if (rank === 2) recon = `🥈 *¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *SEGUNDO PUESTO* en MATHS LEVEL UP del mes de Mayo. ¡Excelente trabajo! Por ello, has ganado un premio de *S/. 25* que enviaremos vía Yape al apoderado. 🎉\n\n`;
+    text = `${recon}*¡BUENAS NOCHES, ${UPPER}!*\nYa puedes participar en el sorteo de MATHS LEVEL UP que realizaremos mañana al mediodía. Sigue estos pasos para elegir tus números:\n\nEntra aquí: https://dazzling-platypus-6cdce9.netlify.app/\nSelecciona tu nombre en la lista.\nIngresa tu contraseña de acceso: ${s.pin}\n\n*¡Mucho éxito en el sorteo!*`;
   } else if (type === 2) {
-    text = `Estimados padres de familia, muy buenos dÃ­as.\nLes recuerdo que maÃ±ana al mediodÃ­a realizaremos el sorteo de MATHS LEVEL UP: MES MAYO para premiar el esfuerzo de los chicos.\n\nð EL PREMIO: El ganador se llevarÃ¡ S/. 100 en experiencias. Queremos que sea un momento divertido, por lo que serÃ­a preferible que el alumno pueda canjearlo por entradas al cine, saldo para sus videojuegos, o una comida para celebrar en casa (como pizza, chifa o pollo a la brasa). Nota: El premio se enviarÃ¡ vÃ­a Yape al apoderado.\n\nâ ï¸ RECORDATORIO URGENTE:\nTienen plazo solo hasta hoy para que sus hijos ingresen al enlace enviado con su cuenta y contraseÃ±a para elegir sus nÃºmeros. Quienes no los elijan a tiempo, no podrÃ¡n participar en el sorteo.`;
+    text = `Estimados padres de familia, muy buenos días.\nLes recuerdo que mañana al mediodía realizaremos el sorteo de MATHS LEVEL UP: MES MAYO para premiar el esfuerzo de los chicos.\n\n🎁 EL PREMIO: El ganador se llevará S/. 100 en experiencias. Queremos que sea un momento divertido, por lo que sería preferible que el alumno pueda canjearlo por entradas al cine, saldo para sus videojuegos, o una comida para celebrar en casa (como pizza, chifa o pollo a la brasa). Nota: El premio se enviará vía Yape al apoderado.\n\n⚠️ RECORDATORIO URGENTE:\nTienen plazo solo hasta hoy para que sus hijos ingresen al enlace enviado con su cuenta y contraseña para elegir sus números. Quienes no los elijan a tiempo, no podrán participar en el sorteo.`;
   } else if (type === 3) {
-    text = `ð´ DETALLES DEL SORTEO EN VIVO\nð DinÃ¡mica: El ganador serÃ¡ el primer alumno que logre completar los 5 nÃºmeros que sacaremos al azar durante la transmisiÃ³n.\nð Fecha: Hoy, domingo 07 de Junio\nâ° Hora del sorteo: 12:00 pm â 12:30 pm\nð Link de Google Meet: meet.google.com/pyi-pazk-jtp\nÂ¡Los esperamos al mediodÃ­a para celebrar juntos!`;
+    text = `🔴 DETALLES DEL SORTEO EN VIVO\n🏆 Dinámica: El ganador será el primer alumno que logre completar los 5 números que sacaremos al azar durante la transmisión.\n📅 Fecha: Hoy, domingo 07 de Junio\n⏰ Hora del sorteo: 12:00 pm – 12:30 pm\n📍 Link de Google Meet: meet.google.com/pyi-pazk-jtp\n¡Los esperamos al mediodía para celebrar juntos!`;
   }
 
   navigator.clipboard.writeText(text).then(() => {
-    showToast(`Â¡Mensaje copiado para ${firstName}!`, 'success');
+    showToast(`¡Mensaje copiado para ${firstName}!`, 'success');
   }).catch(() => {
     const ta = document.createElement('textarea');
     ta.value = text; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
-    showToast(`Â¡Mensaje copiado para ${firstName}!`, 'success');
+    showToast(`¡Mensaje copiado para ${firstName}!`, 'success');
   });
 }
 
-// ââ RESET ââ
+// ── RESET ──
 function openReset()  { document.getElementById('reset-modal').classList.add('show'); }
 function closeReset() { document.getElementById('reset-modal').classList.remove('show'); }
 function doReset() {
@@ -579,7 +579,7 @@ function doReset() {
   renderAll();
 }
 
-// ââ EXPORT ââ
+// ── EXPORT ──
 function exportTxt() {
   const students = getStudents();
   let c = 'REPORTE DE SORTEO - ' + getSorteoMonth().toUpperCase() + '\n\n';
@@ -587,14 +587,14 @@ function exportTxt() {
     const nums = Object.entries(allocations)
       .filter(([,id]) => String(id) === String(s.id))
       .map(([n]) => n).sort((a,b) => a-b);
-    c += `${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNÃºmeros: ${nums.join(', ')||'-'}\n\n`;
+    c += `${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNúmeros: ${nums.join(', ')||'-'}\n\n`;
   });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([c], { type:'text/plain' }));
   a.download = 'sorteo_levelup.txt'; a.click();
 }
 
-// ââ INIT ââ
+// ── INIT ──
 REF.onSnapshot(doc => {
   const data = doc.exists ? doc.data() : {};
   allocations = data.allocations || {};
