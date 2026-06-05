@@ -1,6 +1,6 @@
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 // FIREBASE CONFIG
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
   authDomain:        "maths-level-up.firebaseapp.com",
@@ -13,22 +13,22 @@ firebase.initializeApp(firebaseConfig);
 const db  = firebase.firestore();
 const REF = db.collection('sorteo').doc('main');
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 // DATA
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 const DEFAULT_STUDENTS = [
-  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"ð§ð¼", pin:"24680" },
-  { id:2,  name:"Lucio Prado",       max:24, color:"#3b82f6", icon:"ð",  pin:"47291" },
-  { id:3,  name:"Joanna Prado",      max:17, color:"#a855f7", icon:"ð§ð»", pin:"83652" },
-  { id:4,  name:"Manuel Villacorta", max:15, color:"#f97316", icon:"ð¦ð»", pin:"15937" },
-  { id:5,  name:"Maria Villalobos",  max:14, color:"#eab308", icon:"ð§ð½", pin:"62840" },
-  { id:6,  name:"Augusto Giuffra",   max:12, color:"#ef4444", icon:"ð·ï¸",  pin:"39514" },
-  { id:7,  name:"Santiago Quinto",   max:11, color:"#22c55e", icon:"ðð»", pin:"70268" },
-  { id:8,  name:"Tiago Poma",        max:10, color:"#06b6d4", icon:"ð¶",  pin:"58429" },
-  { id:9,  name:"Mateo RÃ­os",        max:6,  color:"#f43f5e", icon:"ð§",  pin:"26173" },
-  { id:10, name:"Rafaela Villena",   max:6,  color:"#14b8a6", icon:"ð¨",  pin:"91536" }
+  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },
+  { id:2,  name:"Lucio Prado",       max:24, color:"#3b82f6", icon:"🍎",  pin:"47291" },
+  { id:3,  name:"Joanna Prado",      max:17, color:"#a855f7", icon:"👧🏻", pin:"83652" },
+  { id:4,  name:"Manuel Villacorta", max:15, color:"#f97316", icon:"👦🏻", pin:"15937" },
+  { id:5,  name:"Maria Villalobos",  max:14, color:"#eab308", icon:"👧🏽", pin:"62840" },
+  { id:6,  name:"Augusto Giuffra",   max:12, color:"#ef4444", icon:"🕷️",  pin:"39514" },
+  { id:7,  name:"Santiago Quinto",   max:11, color:"#22c55e", icon:"🏃🏻", pin:"70268" },
+  { id:8,  name:"Tiago Poma",        max:10, color:"#06b6d4", icon:"🐶",  pin:"58429" },
+  { id:9,  name:"Mateo Ríos",        max:6,  color:"#f43f5e", icon:"🐧",  pin:"26173" },
+  { id:10, name:"Rafaela Villena",   max:6,  color:"#14b8a6", icon:"🐨",  pin:"91536" }
 ];
-const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"ð¨ð»âð«", pin:"80808", role:"admin" };
+const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
 
 const COLOR_PALETTE = [
   "#EF4444","#991B1B","#F97316","#92400E","#EAB308","#78350F",
@@ -37,16 +37,16 @@ const COLOR_PALETTE = [
   "#F43F5E","#475569"
 ];
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// ESTADO COMPARTIDO (cada pÃ¡gina lo carga desde Firebase)
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
+// ESTADO COMPARTIDO (cada página lo carga desde Firebase)
+// ═══════════════════════════════════════════════════════════════
 let allocations = {};
 let overrides   = {};
 let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// SESSION (login persistente entre pÃ¡ginas)
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
+// SESSION (login persistente entre páginas)
+// ═══════════════════════════════════════════════════════════════
 function getLoggedId() {
   const v = sessionStorage.getItem('loggedId');
   return v !== null ? parseInt(v) : null;
@@ -56,9 +56,9 @@ function setLoggedId(id) {
   else sessionStorage.setItem('loggedId', String(id));
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 // HELPERS
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 function getTotal() { return appConfig.totalNumbers || 200; }
 
 function getStudents() {
@@ -72,7 +72,7 @@ function getStudents() {
   allIds.forEach(idStr => {
     const id = parseInt(idStr);
     if (isNaN(id) || id === 0) return;
-    const base = baseMap[id] || { id, name:"Nuevo Alumno", icon:"ð¤", max:0, pin:"1234", color:"#888888" };
+    const base = baseMap[id] || { id, name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#888888" };
     const ov = overrides[idStr] || {};
     if (ov.deleted) return;
     list.push({
@@ -129,7 +129,7 @@ function getVotingStatus(loggedId) {
 function formatFullDate(d) {
   if (!d) return 'No definida';
   const dt = d instanceof Date ? d : new Date(d);
-  if (isNaN(dt)) return 'Fecha InvÃ¡lida';
+  if (isNaN(dt)) return 'Fecha Inválida';
   const dateStr = dt.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
   const timeStr = dt.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', hour12:true });
   return `${dateStr.charAt(0).toUpperCase()+dateStr.slice(1)} a las ${timeStr.toUpperCase()}`;
@@ -142,23 +142,23 @@ function getSorteoMonth() {
   return month.charAt(0).toUpperCase() + month.slice(1);
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 // TOAST
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
 let toastTimeout;
 function showToast(msg, type='error') {
   const el = document.getElementById('toast');
   if (!el) return;
-  document.getElementById('toast-icon').textContent = type === 'success' ? 'â' : 'â ï¸';
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : '⚠️';
   document.getElementById('toast-msg').textContent  = msg;
   el.classList.add('show');
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-// FIREBASE â GUARDAR
-// âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE — GUARDAR
+// ═══════════════════════════════════════════════════════════════
 function saveMeta() {
   REF.set({ overrides, config: appConfig }, { merge: true })
     .catch(err => { console.error('Firebase meta save error:', err); showToast('Error al guardar.'); });
@@ -207,5 +207,5 @@ function descargarImagen(canvas, nombre = 'tabla-posiciones.png') {
   a.download = nombre;
   a.href = canvas.toDataURL('image/png');
   a.click();
-  showToast('Â¡Imagen descargada!', 'success');
+  showToast('¡Imagen descargada!', 'success');
 }
