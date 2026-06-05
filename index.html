@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LEVEL UP â Sorteo</title>
+<title>LEVEL UP — Sorteo</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 </head>
@@ -26,40 +26,40 @@
       <div>
         <label class="field-label">Alumno</label>
         <select id="sel-student" class="field-input" style="cursor:pointer">
-          <option value="" disabled selected>â Selecciona tu nombre â</option>
+          <option value="" disabled selected>— Selecciona tu nombre —</option>
         </select>
       </div>
       <div>
         <label class="field-label">PIN de acceso</label>
-        <input type="password" id="inp-pin" class="field-input" placeholder="â¢â¢â¢â¢" autocomplete="off">
+        <input type="password" id="inp-pin" class="field-input" placeholder="••••" autocomplete="off">
       </div>
       <div id="login-err" style="color:#f87171;font-size:11px;font-weight:700;text-align:center;display:none">PIN incorrecto</div>
       <button class="btn-login" onclick="doLogin()">INGRESAR</button>
       <a href="/ranking" style="display:block;text-align:center;background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;">
-        ð VER TABLA DE POSICIONES
+        🏆 VER TABLA DE POSICIONES
       </a>
       <a href="/numeros" style="display:block;text-align:center;background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;">
-        ð¯ VER NÃMEROS DEL SORTEO
+        🎯 VER NÚMEROS DEL SORTEO
       </a>
     </div>
   </div>
 </div>
 
 <!-- TOAST -->
-<div id="toast"><span id="toast-icon">â ï¸</span><span id="toast-msg">â</span></div>
+<div id="toast"><span id="toast-icon">⚠️</span><span id="toast-msg">–</span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="/js/shared.js"></script>
 <script>
-  // Si ya hay sesiÃ³n activa, ir directo al tablero
+  // Si ya hay sesión activa, ir directo al tablero
   if (getLoggedId() !== null) window.location.href = '/tablero';
 
   function buildLoginSelect() {
     const sub = document.getElementById('login-sub');
     if (sub) sub.textContent = 'Sorteo de ' + getSorteoMonth();
     const sel = document.getElementById('sel-student');
-    sel.innerHTML = '<option value="" disabled selected>â Selecciona tu nombre â</option>';
+    sel.innerHTML = '<option value="" disabled selected>— Selecciona tu nombre —</option>';
     getFullList().forEach(s => {
       const opt = document.createElement('option');
       opt.value = String(s.id);
