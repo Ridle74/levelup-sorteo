@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LEVEL UP â Tablero</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Cargando...</div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="header-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="header-title">LEVEL UP</div>
+        <div id="status-badge" class="status-badge status-open">â Activo</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="user-pill">
+          <span id="hdr-icon" style="font-size:20px">ð¤</span>
+          <span id="hdr-name" class="uname">â</span>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="admin-buttons" class="admin-row" style="display:none">
+      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">âï¸ CONFIG</button>
+      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">ð REPORTE</button>
+      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">ðï¸ RESET</button>
+    </div>
+  </header>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel">
+    <div class="card" style="border-radius:20px">
+      <div class="section-label">ð CRONOGRAMA</div>
+      <div id="admin-cronograma-grid">
+        <div class="tp-wrap" id="tp-start-wrap"></div>
+        <div class="tp-wrap" id="tp-end-wrap"></div>
+      </div>
+      <div id="admin-alumnos-section">
+        <div class="section-label">â³ ALUMNOS</div>
+        <div class="student-list">
+          <div id="student-list"></div>
+        </div>
+        <button class="btn-add-student" onclick="addStudent()">â AGREGAR ALUMNO</button>
+        <div id="admin-summary-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+          <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SUMA TOTAL DE CUPOS</div>
+            <div id="admin-total-cupos" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#84cc16;line-height:1">0</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px">NÃMEROS EN EL TABLERO</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button onclick="setTotalNumbers(100)" id="btn-total-100" class="btn-centena">100</button>
+              <button onclick="setTotalNumbers(200)" id="btn-total-200" class="btn-centena">200</button>
+              <button onclick="setTotalNumbers(300)" id="btn-total-300" class="btn-centena">300</button>
+              <button onclick="setTotalNumbers(400)" id="btn-total-400" class="btn-centena">400</button>
+              <button onclick="setTotalNumbers(500)" id="btn-total-500" class="btn-centena">500</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">ð¯ TABLERO</button>
+    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">ð RANKING</button>
+  </div>
+
+  <main id="main">
+    <!-- TABLERO -->
+    <div id="pane-board">
+      <div class="card" id="progress-card" style="margin-bottom:10px">
+        <div id="progress-list"></div>
+      </div>
+      <div class="card" style="position:relative;overflow:hidden">
+        <div id="board-overlay">
+          <div>
+            <div class="overlay-icon" id="overlay-icon">â³</div>
+            <div class="overlay-title" id="overlay-title">ESPERA TU TURNO</div>
+            <div class="overlay-sub"   id="overlay-sub">Los turnos se habilitan de 9 AM a 9 PM.</div>
+            <div id="overlay-wait-info">
+              <div class="overlay-start">
+                <div class="overlay-start-label">COMIENZA EL</div>
+                <div class="overlay-start-date" id="overlay-start-date">â</div>
+              </div>
+              <div class="clock-box" style="margin-top:10px">
+                <div class="clock-lbl">HORA ACTUAL</div>
+                <div id="live-clock">â</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="board-header">
+          <div>
+            <div class="board-title">TABLERO VIVO</div>
+            <div class="board-sub">Reserva tus nÃºmeros</div>
+          </div>
+          <div class="taken-box">
+            <div class="taken-label">Tomados</div>
+            <div><span class="taken-count" id="taken-count">0</span><span class="taken-total" id="taken-total"> / 200</span></div>
+          </div>
+        </div>
+        <div id="num-grid"></div>
+      </div>
+    </div>
+
+    <!-- RANKING -->
+    <div id="pane-ranking" style="display:none">
+      <div class="card">
+        <div class="section-label" style="margin-bottom:14px">â³ Ranking de Turnos</div>
+        <div id="ranking-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- RESET MODAL -->
+<div id="reset-modal">
+  <div class="modal-card">
+    <div class="modal-icon">ðï¸</div>
+    <div class="modal-title">Â¿REINICIAR TODO?</div>
+    <div class="modal-sub">Se perderÃ¡n todas las selecciones permanentemente.</div>
+    <button class="btn-reset-confirm" onclick="doReset()">REINICIAR</button>
+    <button class="btn-reset-cancel"  onclick="closeReset()">CANCELAR</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span id="toast-icon">â ï¸</span><span id="toast-msg">â</span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="/js/shared.js"></script>
+<script>
+// ââ VERIFICAR LOGIN ââ
+const loggedId = getLoggedId();
+if (loggedId === null) window.location.href = '/';
+
+// ââ CLOCK ââ
+let clockTimer = null;
+function startClock() {
+  clearInterval(clockTimer);
+  clockTimer = setInterval(tickClock, 1000);
+  tickClock();
+}
+function tickClock() {
+  const now = new Date();
+  const clk = document.getElementById('live-clock');
+  if (clk) clk.textContent = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+  updateStatusBadge();
+  updateBoardOverlay();
+}
+
+// ââ STATUS BADGE ââ
+function updateStatusBadge() {
+  const badge = document.getElementById('status-badge');
+  const vs    = getVotingStatus(loggedId);
+  badge.className = 'status-badge';
+  if (vs === 'open')            { badge.classList.add('status-open');   badge.textContent = 'â Activo'; }
+  else if (vs === 'waiting_turn') { badge.classList.add('status-wait'); badge.textContent = 'â³ Espera'; }
+  else                            { badge.classList.add('status-closed'); badge.textContent = 'â Cerrado'; }
+}
+
+// ââ BOARD OVERLAY ââ
+function updateBoardOverlay() {
+  const vs      = getVotingStatus(loggedId);
+  const overlay  = document.getElementById('board-overlay');
+  const waitInfo = document.getElementById('overlay-wait-info');
+  if (vs === 'open') { overlay.classList.remove('show'); return; }
+  overlay.classList.add('show');
+  if (vs === 'waiting_turn') {
+    document.getElementById('overlay-icon').textContent  = 'â³';
+    document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
+    document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 9 AM a 9 PM.';
+    waitInfo.style.display = 'block';
+    document.getElementById('overlay-start-date').textContent = formatFullDate(getPersonalStart(loggedId));
+  } else {
+    document.getElementById('overlay-icon').textContent  = 'ð';
+    document.getElementById('overlay-title').textContent = 'SORTEO CERRADO';
+    document.getElementById('overlay-sub').textContent   = 'El tiempo de participaciÃ³n ha terminado.';
+    waitInfo.style.display = 'none';
+  }
+}
+
+// ââ TABS ââ
+function switchTab(tab) {
+  document.getElementById('pane-board').style.display   = tab === 'board'   ? 'block' : 'none';
+  document.getElementById('pane-ranking').style.display = tab === 'ranking' ? 'block' : 'none';
+  document.getElementById('tab-board').classList.toggle('active',   tab === 'board');
+  document.getElementById('tab-ranking').classList.toggle('active', tab === 'ranking');
+  if (tab === 'ranking') renderRanking();
+}
+
+// ââ NUMBER GRID ââ
+function renderGrid() {
+  const grid     = document.getElementById('num-grid');
+  const students = getStudents();
+  grid.innerHTML = '';
+  for (let n = 1; n <= getTotal(); n++) {
+    const ownerId = allocations[n];
+    const owner   = students.find(s => String(s.id) === String(ownerId));
+    const isMine  = String(ownerId) === String(loggedId);
+    const btn     = document.createElement('button');
+    btn.className = 'num-btn' + (isMine ? ' mine' : (ownerId ? ' taken' : ''));
+    btn.textContent = n;
+    if (ownerId) {
+      btn.style.background  = owner?.color || '#555';
+      btn.style.borderColor = isMine ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.25)';
+    }
+    if (ownerId) {
+      const em = document.createElement('span');
+      em.className   = 'num-emoji';
+      em.textContent = owner?.icon || 'ð¤';
+      btn.appendChild(em);
+    }
+    btn.addEventListener('click', () => handleNumber(n));
+    grid.appendChild(btn);
+  }
+  document.getElementById('taken-count').textContent = Object.keys(allocations).length;
+  document.getElementById('taken-total').textContent = ' / ' + getTotal();
+}
+
+function handleNumber(num) {
+  const active       = getFullList().find(s => s.id === loggedId);
+  const currentOwner = allocations[num];
+
+  if (active?.role === 'admin') {
+    if (!currentOwner) return;
+    delete allocations[num];
+    renderAll();
+    saveAllocationChange(num, 'delete', null)
+      .then(() => showToast('NÃºmero ' + num + ' liberado.', 'success'))
+      .catch(err => { console.error(err); allocations[num] = currentOwner; renderAll(); showToast('Error al liberar nÃºmero.'); });
+    return;
+  }
+
+  const vs = getVotingStatus(loggedId);
+  if (vs !== 'open') {
+    if (vs === 'waiting_turn') showToast('Tu turno: ' + formatFullDate(getPersonalStart(loggedId)));
+    else showToast('Sorteo cerrado.');
+    return;
+  }
+
+  if (String(currentOwner) === String(loggedId)) {
+    delete allocations[num];
+    renderAll();
+    saveAllocationChange(num, 'delete', null)
+      .catch(err => { console.error(err); allocations[num] = loggedId; renderAll(); showToast('Error al deseleccionar.'); });
+  } else if (!currentOwner) {
+    const counts = getPickCounts();
+    if ((counts[loggedId] || 0) >= (active?.max || 0)) { showToast('Cupo lleno (' + active?.max + ').'); return; }
+    allocations[num] = loggedId;
+    renderAll();
+    saveAllocationChange(num, 'set', loggedId)
+      .catch(err => {
+        delete allocations[num]; renderAll();
+        if (err.message && err.message.startsWith('CUPO_LLENO:')) showToast('Cupo lleno (' + err.message.split(':')[1] + ').');
+        else showToast('NÃºmero ya ocupado, intenta otro.');
+      });
+  } else {
+    showToast('Ya ocupado.');
+  }
+}
+
+// ââ RANKING ââ
+function renderRanking() {
+  const list     = document.getElementById('ranking-list');
+  const students = getStudents();
+  const counts   = getPickCounts();
+  list.innerHTML = '';
+  students.forEach((s, idx) => {
+    const count    = counts[s.id] || 0;
+    const ps       = getPersonalStart(s.id);
+    const isMyTurn = ps && new Date() >= ps && getVotingStatus(loggedId) !== 'closed';
+    const isMe     = loggedId === s.id;
+    const pct      = Math.min(100, (count / (s.max||1)) * 100);
+    const div      = document.createElement('div');
+    div.className  = 'rank-card' + (isMe ? ' me' : '');
+    div.innerHTML  = `
+      <div class="rank-row">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rank-avatar" style="background:${s.color||'#555'}">${s.icon}</div>
+          <div>
+            <div class="rank-name">${idx+1}. ${s.name}</div>
+            <div class="rank-time" style="color:${isMyTurn?'#4ade80':'#6f7280'}">
+              ${isMyTurn ? 'â Turno activo' : formatFullDate(ps)}
+            </div>
+          </div>
+        </div>
+        <div class="rank-count" style="color:${count>=(s.max||0)?'#fb923c':'#e5e7eb'}">${count}/${s.max||0}</div>
+      </div>
+      <div class="rank-bar-bg">
+        <div class="rank-bar-fill" style="width:${pct}%;background:${s.color||'#555'}"></div>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+// ââ BOARD PROGRESS ââ
+function renderBoardProgress() {
+  const container = document.getElementById('progress-list');
+  if (!container) return;
+  const me = getStudents().find(s => s.id === loggedId);
+  if (!me) { container.innerHTML = ''; return; }
+  const count = getPickCounts()[me.id] || 0;
+  const max   = me.max || 1;
+  const pct   = Math.min(100, (count / max) * 100);
+  const full  = count >= me.max;
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:22px">${me.icon}</span>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:${me.color||'#fff'}">${me.name}</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:${full?'#fb923c':'#e5e7eb'}">${count} / ${me.max||0}</span>
+        </div>
+        <div class="prog-bar-bg">
+          <div class="prog-bar-fill" style="width:${pct}%;background:${me.color||'#84cc16'}"></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ââ RENDER ALL ââ
+function renderAll() {
+  renderGrid();
+  renderBoardProgress();
+  updateStatusBadge();
+  updateBoardOverlay();
+}
+
+// ââ LOGOUT ââ
+function doLogout() {
+  setLoggedId(null);
+  window.location.href = '/';
+}
+
+// ââ ADMIN ââ
+function toggleAdminPanel() {
+  const panel  = document.getElementById('admin-panel');
+  const btn    = document.getElementById('btn-toggle-config');
+  const isOpen = panel.classList.toggle('open');
+  btn.style.background = isOpen ? '#f97316' : '#105c4d';
+  btn.textContent      = isOpen ? 'âï¸ CERRAR' : 'âï¸ CONFIG';
+  if (isOpen) renderAdminPanel();
+}
+
+function setTotalNumbers(n) {
+  appConfig.totalNumbers = n;
+  Object.keys(allocations).forEach(k => { if (parseInt(k) > n) delete allocations[k]; });
+  REF.set({ allocations, overrides, config: appConfig })
+    .catch(err => { console.error(err); showToast('Error al guardar tamaÃ±o del tablero.'); });
+  updateAdminSummary();
+  renderAll();
+  showToast('Tablero actualizado a ' + n + ' nÃºmeros.', 'success');
+}
+
+function updateAdminSummary() {
+  const cuposEl = document.getElementById('admin-total-cupos');
+  if (cuposEl) cuposEl.textContent = getStudents().reduce((acc, s) => acc + (s.max || 0), 0);
+  [100,200,300,400,500].forEach(n => {
+    const btn = document.getElementById('btn-total-' + n);
+    if (btn) btn.classList.toggle('active', appConfig.totalNumbers === n);
+  });
+}
+
+function renderAdminPanel() {
+  updateAdminSummary();
+  buildTimePicker('tp-start-wrap', 'Inicio de Apertura', appConfig.startTime, v => {
+    appConfig.startTime = v; saveMeta(); renderAdminPanel(); renderAll();
+  });
+  buildTimePicker('tp-end-wrap', 'Cierre Final', appConfig.endTime, v => {
+    appConfig.endTime = v; saveMeta(); renderAll();
+  });
+  renderStudentList();
+}
+
+function renderStudentList() {
+  const list     = document.getElementById('student-list');
+  const students = getStudents();
+  list.innerHTML = '';
+  students.forEach((s, idx) => {
+    const row = document.createElement('div');
+    row.className = 'student-row';
+    row.innerHTML = `
+      <div class="student-row-top">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="pos-label">POS. ${idx+1}</span>
+          <button class="msg-btn" title="Inicio de selecciÃ³n" onclick="copyMsg(${s.id},1)">ð©</button>
+          <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">ð¢</button>
+          <button class="msg-btn" title="Detalles del sorteo" onclick="copyMsg(${s.id},3)">ð´</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="color-wrap">
+            <div class="color-trigger" style="background:${s.color||'#888'}" onclick="togglePalette(event,${s.id})"></div>
+            <div class="color-palette" id="palette-${s.id}">
+              ${COLOR_PALETTE.map(c => `<div class="color-swatch${s.color===c?' selected':''}" style="background:${c}" onclick="pickColor(event,${s.id},'${c}')"></div>`).join('')}
+            </div>
+          </div>
+          <button onclick="setOverride(${s.id},'deleted',true);renderStudentList();renderAll()"
+            style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#f87171;cursor:pointer;font-size:12px">ðï¸</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" value="${s.icon||''}" placeholder="emoji"
+          class="mini-input" style="width:42px;text-align:center;font-size:16px;padding:6px 4px"
+          oninput="setOverride(${s.id},'icon',this.value)">
+        <input type="text" value="${s.name||''}" placeholder="Nombre del Alumno"
+          class="mini-input" style="flex:1;padding:6px 10px;font-size:12px;text-transform:uppercase"
+          oninput="setOverride(${s.id},'name',this.value)">
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1">
+          <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">CUPO</div>
+          <input type="number" value="${s.max||0}"
+            class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px"
+            oninput="setOverride(${s.id},'max',parseInt(this.value)||0)">
+        </div>
+        <div style="flex:1">
+          <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PIN</div>
+          <input type="text" value="${s.pin||''}"
+            class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px"
+            oninput="setOverride(${s.id},'pin',this.value)">
+        </div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function togglePalette(e, id) {
+  e.stopPropagation();
+  document.querySelectorAll('.color-palette.open').forEach(p => { if (p.id !== 'palette-' + id) p.classList.remove('open'); });
+  document.getElementById('palette-' + id)?.classList.toggle('open');
+}
+function pickColor(e, id, color) {
+  e.stopPropagation();
+  setOverride(id, 'color', color);
+  document.getElementById('palette-' + id)?.classList.remove('open');
+  renderStudentList();
+  renderAll();
+}
+document.addEventListener('click', () => {
+  document.querySelectorAll('.color-palette.open').forEach(p => p.classList.remove('open'));
+});
+
+function pickUniqueColor() {
+  const used = getStudents().map(s => s.color.toLowerCase());
+  return COLOR_PALETTE.find(c => !used.includes(c.toLowerCase())) || COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
+}
+function addStudent() {
+  const allIds = [...DEFAULT_STUDENTS.map(s => s.id), ...Object.keys(overrides).map(Number).filter(n => !isNaN(n))];
+  const newId  = allIds.length > 0 ? Math.max(...allIds) + 1 : 11;
+  overrides[String(newId)] = { name:"Nuevo Alumno", icon:"ð¤", max:0, pin:"1234", color: pickUniqueColor(), deleted:false };
+  saveMeta();
+  renderStudentList();
+  renderAll();
+  showToast('Alumno agregado.', 'success');
+}
+
+// ââ TIME PICKER ââ
+function buildTimePicker(containerId, label, isoValue, onChangeFn) {
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = `<div class="tp-label">${label}</div>`;
+  const getLocalDateString = d => {
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  };
+  const dateObj = isoValue ? new Date(isoValue) : new Date();
+  const valid   = !isNaN(dateObj.getTime());
+  let dateStr   = valid ? getLocalDateString(dateObj) : getLocalDateString(new Date());
+  let h24  = valid ? dateObj.getHours() : 9;
+  let ampm = h24 >= 12 ? 'PM' : 'AM';
+  let h12  = h24 % 12 || 12;
+  let mins = valid ? dateObj.getMinutes() : 0;
+  const apply = () => {
+    let h = h12;
+    if (ampm === 'PM' && h < 12) h += 12;
+    if (ampm === 'AM' && h === 12) h = 0;
+    onChangeFn(`${dateStr}T${String(h).padStart(2,'0')}:${String(mins).padStart(2,'0')}:00`);
+  };
+  const dateIn = document.createElement('input');
+  dateIn.type = 'date'; dateIn.value = dateStr; dateIn.className = 'tp-date';
+  dateIn.addEventListener('change', () => { dateStr = dateIn.value; apply(); });
+  wrap.appendChild(dateIn);
+  const row     = document.createElement('div'); row.className = 'tp-time-row';
+  const selWrap = document.createElement('div'); selWrap.className = 'tp-selects';
+  const selH    = document.createElement('select'); selH.className = 'tp-sel';
+  [1,2,3,4,5,6,7,8,9,10,11,12].forEach(h => {
+    const o = document.createElement('option');
+    o.value = o.textContent = String(h).padStart(2,'0');
+    if (h === h12) o.selected = true;
+    selH.appendChild(o);
+  });
+  selH.addEventListener('change', () => { h12 = parseInt(selH.value); apply(); });
+  const colon = document.createElement('span'); colon.className = 'tp-colon'; colon.textContent = ':';
+  const selM  = document.createElement('select'); selM.className = 'tp-sel';
+  [0,5,10,15,20,25,30,35,40,45,50,55].forEach(m => {
+    const o = document.createElement('option');
+    o.value = o.textContent = String(m).padStart(2,'0');
+    if (m === mins) o.selected = true;
+    selM.appendChild(o);
+  });
+  selM.addEventListener('change', () => { mins = parseInt(selM.value); apply(); });
+  selWrap.append(selH, colon, selM);
+  const ampmWrap = document.createElement('div'); ampmWrap.className = 'tp-ampm-wrap';
+  ['AM','PM'].forEach(p => {
+    const b = document.createElement('button'); b.type = 'button';
+    b.className = 'tp-ampm-btn' + (ampm === p ? ' active' : '');
+    b.textContent = p;
+    b.addEventListener('click', () => {
+      ampm = p;
+      ampmWrap.querySelectorAll('.tp-ampm-btn').forEach(btn => btn.classList.remove('active'));
+      b.classList.add('active');
+      apply();
+    });
+    ampmWrap.appendChild(b);
+  });
+  row.append(selWrap, ampmWrap);
+  wrap.appendChild(row);
+}
+
+// ââ MESSAGES ââ
+function copyMsg(studentId, type) {
+  const students  = getStudents();
+  const s         = students.find(st => st.id === studentId);
+  if (!s) return;
+  const rank      = students.findIndex(st => st.id === studentId) + 1;
+  const firstName = s.name.split(' ')[0];
+  const UPPER     = firstName.toUpperCase();
+  let text = '';
+
+  if (type === 1) {
+    let recon = '';
+    if (rank === 1) recon = `ð *Â¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *PRIMER PUESTO* en MATHS LEVEL UP del mes de Mayo. Â¡Eres el mejor! Por ello, has ganado un premio de *S/. 50* que enviaremos vÃ­a Yape al apoderado. ð\n\n`;
+    else if (rank === 2) recon = `ð¥ *Â¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *SEGUNDO PUESTO* en MATHS LEVEL UP del mes de Mayo. Â¡Excelente trabajo! Por ello, has ganado un premio de *S/. 25* que enviaremos vÃ­a Yape al apoderado. ð\n\n`;
+    text = `${recon}*Â¡BUENAS NOCHES, ${UPPER}!*\nYa puedes participar en el sorteo de MATHS LEVEL UP que realizaremos maÃ±ana al mediodÃ­a. Sigue estos pasos para elegir tus nÃºmeros:\n\nEntra aquÃ­: https://dazzling-platypus-6cdce9.netlify.app/\nSelecciona tu nombre en la lista.\nIngresa tu contraseÃ±a de acceso: ${s.pin}\n\n*Â¡Mucho Ã©xito en el sorteo!*`;
+  } else if (type === 2) {
+    text = `Estimados padres de familia, muy buenos dÃ­as.\nLes recuerdo que maÃ±ana al mediodÃ­a realizaremos el sorteo de MATHS LEVEL UP: MES MAYO para premiar el esfuerzo de los chicos.\n\nð EL PREMIO: El ganador se llevarÃ¡ S/. 100 en experiencias. Queremos que sea un momento divertido, por lo que serÃ­a preferible que el alumno pueda canjearlo por entradas al cine, saldo para sus videojuegos, o una comida para celebrar en casa (como pizza, chifa o pollo a la brasa). Nota: El premio se enviarÃ¡ vÃ­a Yape al apoderado.\n\nâ ï¸ RECORDATORIO URGENTE:\nTienen plazo solo hasta hoy para que sus hijos ingresen al enlace enviado con su cuenta y contraseÃ±a para elegir sus nÃºmeros. Quienes no los elijan a tiempo, no podrÃ¡n participar en el sorteo.`;
+  } else if (type === 3) {
+    text = `ð´ DETALLES DEL SORTEO EN VIVO\nð DinÃ¡mica: El ganador serÃ¡ el primer alumno que logre completar los 5 nÃºmeros que sacaremos al azar durante la transmisiÃ³n.\nð Fecha: Hoy, domingo 07 de Junio\nâ° Hora del sorteo: 12:00 pm â 12:30 pm\nð Link de Google Meet: meet.google.com/pyi-pazk-jtp\nÂ¡Los esperamos al mediodÃ­a para celebrar juntos!`;
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(`Â¡Mensaje copiado para ${firstName}!`, 'success');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast(`Â¡Mensaje copiado para ${firstName}!`, 'success');
+  });
+}
+
+// ââ RESET ââ
+function openReset()  { document.getElementById('reset-modal').classList.add('show'); }
+function closeReset() { document.getElementById('reset-modal').classList.remove('show'); }
+function doReset() {
+  allocations = {};
+  REF.set({ allocations: {}, overrides, config: appConfig })
+    .then(() => showToast('Tablero limpio.', 'success'))
+    .catch(err => { console.error(err); showToast('Error al reiniciar.'); });
+  closeReset();
+  renderAll();
+}
+
+// ââ EXPORT ââ
+function exportTxt() {
+  const students = getStudents();
+  let c = 'REPORTE DE SORTEO - ' + getSorteoMonth().toUpperCase() + '\n\n';
+  students.forEach((s, i) => {
+    const nums = Object.entries(allocations)
+      .filter(([,id]) => String(id) === String(s.id))
+      .map(([n]) => n).sort((a,b) => a-b);
+    c += `${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNÃºmeros: ${nums.join(', ')||'-'}\n\n`;
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([c], { type:'text/plain' }));
+  a.download = 'sorteo_levelup.txt'; a.click();
+}
+
+// ââ INIT ââ
+REF.onSnapshot(doc => {
+  const data = doc.exists ? doc.data() : {};
+  allocations = data.allocations || {};
+  overrides   = data.overrides   || {};
+  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
+  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
+
+  document.getElementById('loading-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.add('active');
+
+  const student = getFullList().find(s => s.id === loggedId);
+  if (!student) { setLoggedId(null); window.location.href = '/'; return; }
+
+  document.getElementById('hdr-icon').textContent = student.icon;
+  document.getElementById('hdr-name').textContent = student.name.split(' ')[0];
+  if (student.role === 'admin') document.getElementById('admin-buttons').style.display = 'flex';
+
+  startClock();
+  renderAll();
+}, err => {
+  console.error('[Firebase]', err);
+  showToast('No se pudo conectar a Firebase.');
+});
+</script>
+</body>
+</html>
