@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>LEVEL UP â Tabla de Posiciones</title>
+<title>LEVEL UP — Tabla de Posiciones</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -31,7 +31,7 @@
     padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
     padding-bottom: 20px;
   }
-  /* DecoraciÃ³n de fondo */
+  /* Decoración de fondo */
   .bg-deco { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
   .bg-deco div { position: absolute; border-radius: 50%; }
 </style>
@@ -53,14 +53,14 @@
     <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
       <div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1">
-          <span style="color:#eab308">ð</span> <span style="color:#84cc16">TABLA DE</span>
+          <span style="color:#eab308">🏆</span> <span style="color:#84cc16">TABLA DE</span>
         </div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">POSICIONES</div>
         <div id="page-subtitle" style="font-size:9px;color:rgba(132,204,22,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
-        <a href="/" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;text-decoration:none;font-size:16px;line-height:1;">â</a>
-        <button onclick="captureRanking()" style="background:#eab308;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">ð¸ COPIAR</button>
+        <a href="/" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;text-decoration:none;font-size:16px;line-height:1;">✕</a>
+        <button onclick="captureRanking()" style="background:#eab308;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
       </div>
     </div>
   </div>
@@ -76,7 +76,7 @@
 </div>
 
 <!-- TOAST -->
-<div id="toast"><span id="toast-icon">â ï¸</span><span id="toast-msg">â</span></div>
+<div id="toast"><span id="toast-icon">⚠️</span><span id="toast-msg">–</span></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -86,7 +86,7 @@ function renderRanking() {
   const list     = document.getElementById('ranking-list');
   const students = getStudents();
   const counts   = getPickCounts();
-  const medals   = ['ð¥','ð¥','ð¥'];
+  const medals   = ['🥇','🥈','🥉'];
   const podiumBg = [
     'linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,215,0,0.05))',
     'linear-gradient(135deg,rgba(192,192,192,0.15),rgba(192,192,192,0.04))',
@@ -95,7 +95,7 @@ function renderRanking() {
   const podiumBorder = ['rgba(255,215,0,0.4)','rgba(192,192,192,0.3)','rgba(205,127,50,0.3)'];
 
   const sub = document.getElementById('page-subtitle');
-  if (sub) sub.textContent = 'MATHS LEVEL UP Â· ' + getSorteoMonth().toUpperCase();
+  if (sub) sub.textContent = 'MATHS LEVEL UP · ' + getSorteoMonth().toUpperCase();
 
   list.innerHTML = students.map((s, idx) => {
     const count   = counts[s.id] || 0;
@@ -138,7 +138,7 @@ function captureRanking() {
     canvas.toBlob(blob => {
       if (navigator.clipboard && window.ClipboardItem) {
         navigator.clipboard.write([new ClipboardItem({'image/png': blob})])
-          .then(() => showToast('Â¡Imagen copiada!', 'success'))
+          .then(() => showToast('¡Imagen copiada!', 'success'))
           .catch(() => descargarImagen(canvas));
       } else { descargarImagen(canvas); }
     }, 'image/png');
