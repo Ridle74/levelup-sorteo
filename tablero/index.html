@@ -150,7 +150,7 @@
 <script>
 // ── VERIFICAR LOGIN ──
 const loggedId = getLoggedId();
-if (loggedId === null) window.location.href = '/';
+if (loggedId === null) window.location.href = '/student';
 
 // ── CLOCK ──
 let clockTimer = null;
@@ -298,7 +298,7 @@ function renderRanking() {
           <div class="rank-avatar" style="background:${s.color||'#555'}">${s.icon}</div>
           <div>
             <div class="rank-name">${idx+1}. ${s.name}</div>
-            <div class="rank-time" style="color:${isMyTurn?'#4ade80':'#6f7280'}">
+            <div class="rank-time" style="color:${isMyTurn?'#4ade80':'#6b7280'}">
               ${isMyTurn ? '✓ Turno activo' : formatFullDate(ps)}
             </div>
           </div>
@@ -348,7 +348,7 @@ function renderAll() {
 // ── LOGOUT ──
 function doLogout() {
   setLoggedId(null);
-  window.location.href = '/';
+  window.location.href = '/student';
 }
 
 // ── ADMIN ──
@@ -606,7 +606,7 @@ REF.onSnapshot(doc => {
   document.getElementById('app-screen').classList.add('active');
 
   const student = getFullList().find(s => s.id === loggedId);
-  if (!student) { setLoggedId(null); window.location.href = '/'; return; }
+  if (!student) { setLoggedId(null); window.location.href = '/student'; return; }
 
   document.getElementById('hdr-icon').textContent = student.icon;
   document.getElementById('hdr-name').textContent = student.name.split(' ')[0];
