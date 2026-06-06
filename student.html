@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MATHS LEVEL UP — Estudiante</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* ── SPA SHELL ─────────────────────────────────────── */
+#app { min-height: 100dvh; }
+body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+
+/* ── INITIAL LOADING ──────────────────────────────── */
+#initial-loading {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #050d1a; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+}
+#initial-loading.hidden { display: none; }
+
+/* ── VIEW TRANSITION ──────────────────────────────── */
+.vw { animation: vIn 0.18s ease-out; }
+@keyframes vIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+/* ── BOTTOM NAV ───────────────────────────────────── */
+#bottom-nav {
+  display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: rgba(5,13,26,0.97); backdrop-filter: blur(16px) saturate(180%);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#bottom-nav.visible { display: block; }
+.nav-row { display: flex; max-width: 600px; margin: 0 auto; }
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; padding: 10px 2px 8px; border: none; background: none; cursor: pointer;
+  color: rgba(255,255,255,0.35); font-family: 'Barlow Condensed', sans-serif;
+  font-size: 8px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: color 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.nav-btn .ni { font-size: 22px; line-height: 1; display: block; }
+.nav-btn.active { color: #60a5fa; }
+.nav-btn.active .ni { filter: drop-shadow(0 0 5px rgba(96,165,250,0.5)); }
+
+/* ── DASHBOARD ────────────────────────────────────── */
+.dash-hero {
+  background: linear-gradient(135deg,#1e3a8a,#2563eb 50%,#3b82f6);
+  border-radius: 20px; padding: 20px; margin-bottom: 10px;
+  position: relative; overflow: hidden;
+}
+.dash-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.dash-stat { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; }
+.ds-lbl { font-size:8px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:4px; }
+.ds-val { font-family:'Barlow Condensed',sans-serif; font-size:30px; font-weight:900; line-height:1; }
+.dash-link {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer;
+  color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900;
+  text-transform:uppercase; letter-spacing:0.05em; transition:background 0.12s;
+  -webkit-tap-highlight-color:transparent;
+}
+.dash-link:active { background:rgba(255,255,255,0.09); }
+.dl-ico { font-size:24px; flex-shrink:0; }
+.dl-arr { margin-left:auto; color:rgba(255,255,255,0.25); font-size:20px; }
+
+/* ── TAREAS ───────────────────────────────────────── */
+.task-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:8px; }
+.task-card.tdone { opacity:0.45; }
+.task-t { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; text-transform:uppercase; }
+.task-t.tdt { text-decoration:line-through; }
+.task-d { font-size:12px; color:rgba(255,255,255,0.55); margin-top:4px; line-height:1.5; }
+.task-btns { display:flex; gap:6px; margin-top:10px; }
+.btn-dg {
+  flex:1; border:none; border-radius:10px; padding:9px; cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px;
+  letter-spacing:0.1em; text-transform:uppercase;
+}
+.btn-dg.off { background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.25); }
+.btn-dg.on  { background:rgba(34,197,94,0.3);  color:#86efac; border:1px solid rgba(34,197,94,0.4); }
+.btn-dt { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#f87171; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; }
+.add-task-box { background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:16px; padding:16px; margin-top:12px; }
+.fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:8px; outline:none; }
+.fsm:focus { border-color:rgba(59,130,246,0.5); }
+textarea.fsm { resize:none; height:64px; }
+
+/* ── PUNTOS ───────────────────────────────────────── */
+.pts-hero { background:linear-gradient(135deg,#1a3a1a,#14532d 50%,#166534); border-radius:20px; padding:20px; margin-bottom:10px; }
+.pts-row { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:8px; }
+.vr-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.vr-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.15em; text-transform:uppercase; width:74px; flex-shrink:0; }
+.vr-bg  { flex:1; height:7px; background:rgba(0,0,0,0.4); border-radius:10px; overflow:hidden; }
+.vr-fill{ height:100%; border-radius:10px; transition:width 0.7s ease; }
+.vr-num { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; width:30px; text-align:right; flex-shrink:0; }
+.vr-inp { background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:3px 8px; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; width:54px; text-align:center; }
+
+/* ── COTIZADOR ────────────────────────────────────── */
+.cotiz-blk { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; margin-bottom:10px; }
+.cotiz-l { font-size:8px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
+.pills { display:flex; flex-wrap:wrap; gap:6px; }
+.pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:8px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
+.pill.psel { border-color:#3b82f6; color:#93c5fd; background:rgba(59,130,246,0.12); }
+.cotiz-res { background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:12px; }
+.price-big { font-family:'Barlow Condensed',sans-serif; font-size:52px; font-weight:900; color:#93c5fd; line-height:1; }
+.price-lbl { font-size:10px; color:rgba(147,197,253,0.6); font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-top:4px; }
+.price-det { font-size:12px; color:rgba(255,255,255,0.5); margin-top:12px; line-height:1.8; }
+
+/* ── RANKING / NUMEROS PAGE ────────────────────────── */
+.pub-wrap { width:100%; max-width:480px; margin:12px auto; border-radius:24px; overflow:hidden; box-shadow:0 24px 80px rgba(0,0,0,0.7); }
+.pub-hdr  { padding:18px 18px 14px; position:relative; overflow:hidden; }
+.pub-hdr::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.pub-list { padding:10px 12px 20px; display:flex; flex-direction:column; gap:8px; }
+
+/* ── MISC ─────────────────────────────────────────── */
+.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+.btn-sm {
+  border:none; border-radius:10px; padding:9px 16px; cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px;
+  letter-spacing:0.1em; text-transform:uppercase;
+}
+.btn-primary { background:#3b82f6; color:#fff; }
+.btn-primary:active { background:#2563eb; }
+</style>
+</head>
+<body>
+
+<!-- PATH → HASH redirect (backward compat) -->
+<script>
+  (function(){
+    var m={'/tablero':'tablero','/ranking':'ranking','/numeros':'numeros'};
+    var r=m[location.pathname]; if(r) location.replace('/#'+r);
+  })();
+</script>
+
+<!-- INITIAL LOADING -->
+<div id="initial-loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Conectando...</div>
+</div>
+
+<!-- APP -->
+<div id="app"></div>
+
+<!-- BOTTOM NAV -->
+<div id="bottom-nav">
+  <div class="nav-row" id="nav-row"></div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span id="toast-icon">⚠️</span><span id="toast-msg">–</span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ════════════════════════════════════════════════════════
+// FIREBASE
+// ════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:        "maths-level-up.firebaseapp.com",
+  projectId:         "maths-level-up",
+  storageBucket:     "maths-level-up.firebasestorage.app",
+  messagingSenderId: "854549565666",
+  appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
+};
+firebase.initializeApp(firebaseConfig);
+const db  = firebase.firestore();
+const REF = db.collection('sorteo').doc('main');
+
+// ════════════════════════════════════════════════════════
+// CONSTANTS
+// ════════════════════════════════════════════════════════
+const DEFAULT_STUDENTS = [
+  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },
+  { id:2,  name:"Lucio Prado",       max:24, color:"#3b82f6", icon:"🍎",  pin:"47291" },
+  { id:3,  name:"Joanna Prado",      max:17, color:"#a855f7", icon:"👧🏻", pin:"83652" },
+  { id:4,  name:"Manuel Villacorta", max:15, color:"#f97316", icon:"👦🏻", pin:"15937" },
+  { id:5,  name:"Maria Villalobos",  max:14, color:"#eab308", icon:"👧🏽", pin:"62840" },
+  { id:6,  name:"Augusto Giuffra",   max:12, color:"#ef4444", icon:"🕷️",  pin:"39514" },
+  { id:7,  name:"Santiago Quinto",   max:11, color:"#22c55e", icon:"🏃🏻", pin:"70268" },
+  { id:8,  name:"Tiago Poma",        max:10, color:"#06b6d4", icon:"🐶",  pin:"58429" },
+  { id:9,  name:"Mateo Ríos",        max:6,  color:"#f43f5e", icon:"🐧",  pin:"26173" },
+  { id:10, name:"Rafaela Villena",   max:6,  color:"#14b8a6", icon:"🐨",  pin:"91536" }
+];
+const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
+const COLOR_PALETTE = [
+  "#EF4444","#991B1B","#F97316","#92400E","#EAB308","#78350F",
+  "#84CC16","#14532D","#22C55E","#0D9488","#06B6D4","#164E63",
+  "#3B82F6","#1E3A8A","#8B5CF6","#4C1D95","#EC4899","#9D174D",
+  "#F43F5E","#475569"
+];
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let allocations = {};
+let overrides   = {};
+let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
+let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[] }]
+let points      = {};   // { "1":{ hours:0, progress:0, tasks:0 }, ... }
+let appReady    = false;
+let clockTimer  = null;
+
+// ════════════════════════════════════════════════════════
+// SESSION
+// ════════════════════════════════════════════════════════
+function getLoggedId() {
+  const v = sessionStorage.getItem('loggedId');
+  return v !== null ? parseInt(v) : null;
+}
+function setLoggedId(id) {
+  if (id === null) sessionStorage.removeItem('loggedId');
+  else sessionStorage.setItem('loggedId', String(id));
+}
+function isAdmin() { return getLoggedId() === 0; }
+
+// ════════════════════════════════════════════════════════
+// DATA HELPERS
+// ════════════════════════════════════════════════════════
+function getTotal() { return appConfig.totalNumbers || 200; }
+
+function getStudents() {
+  const baseMap = {};
+  DEFAULT_STUDENTS.forEach(s => { baseMap[s.id] = s; });
+  const allIds = new Set([
+    ...DEFAULT_STUDENTS.map(s => String(s.id)),
+    ...Object.keys(overrides)
+  ]);
+  const list = [];
+  allIds.forEach(idStr => {
+    const id = parseInt(idStr);
+    if (isNaN(id) || id === 0) return;
+    const base = baseMap[id] || { id, name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#888888" };
+    const ov   = overrides[idStr] || {};
+    if (ov.deleted) return;
+    list.push({
+      id,
+      name:  ov.name  !== undefined ? ov.name  : base.name,
+      icon:  ov.icon  !== undefined ? ov.icon  : base.icon,
+      max:   ov.max   !== undefined ? ov.max   : base.max,
+      pin:   ov.pin   !== undefined ? ov.pin   : base.pin,
+      color: ov.color !== undefined ? ov.color : base.color,
+    });
+  });
+  return list.sort((a,b) => { const d=(b.max||0)-(a.max||0); return d!==0?d:a.id-b.id; });
+}
+
+function getFullList() { return [ADMIN, ...getStudents()]; }
+
+function getPickCounts() {
+  const c = {};
+  getFullList().forEach(s => { c[s.id] = 0; });
+  Object.values(allocations).forEach(id => { if (c[id] !== undefined) c[id]++; });
+  return c;
+}
+
+function getPersonalStart(studentId) {
+  if (!appConfig.startTime) return null;
+  const students = getStudents();
+  const idx = students.findIndex(s => s.id === studentId);
+  if (idx === -1) return new Date(appConfig.startTime);
+  let t = new Date(appConfig.startTime);
+  if (t.getHours() < 9) t.setHours(9,0,0,0);
+  else if (t.getHours() > 21) { t.setDate(t.getDate()+1); t.setHours(9,0,0,0); }
+  for (let i = 0; i < idx; i++) {
+    t.setHours(t.getHours()+1);
+    if (t.getHours() > 21) { t.setDate(t.getDate()+1); t.setHours(9,0,0,0); }
+  }
+  return t;
+}
+
+function getVotingStatus(loggedId) {
+  if (!appConfig.startTime || !appConfig.endTime) return 'open';
+  const now = new Date();
+  if (now > new Date(appConfig.endTime)) return 'closed';
+  const active = getFullList().find(s => s.id === loggedId);
+  if (active?.role === 'admin') return 'open';
+  const ps = getPersonalStart(loggedId);
+  if (!ps || now >= ps) return 'open';
+  return 'waiting_turn';
+}
+
+function formatFullDate(d) {
+  if (!d) return 'No definida';
+  const dt = d instanceof Date ? d : new Date(d);
+  if (isNaN(dt)) return 'Fecha Inválida';
+  const ds = dt.toLocaleDateString('es-ES',{ weekday:'long', day:'numeric', month:'long' });
+  const ts = dt.toLocaleTimeString('es-ES',{ hour:'2-digit', minute:'2-digit', hour12:true });
+  return `${ds.charAt(0).toUpperCase()+ds.slice(1)} a las ${ts.toUpperCase()}`;
+}
+
+function getSorteoMonth() {
+  const dt = appConfig.startTime ? new Date(appConfig.startTime) : new Date();
+  if (dt.getDate() < 15) dt.setMonth(dt.getMonth()-1);
+  const m = dt.toLocaleDateString('es-ES',{ month:'long' });
+  return m.charAt(0).toUpperCase()+m.slice(1);
+}
+
+function getStudentPoints(id) {
+  const p = points[String(id)] || {};
+  return { hours: p.hours||0, progress: p.progress||0, tasks: p.tasks||0 };
+}
+function getTotalPts(id) { const p=getStudentPoints(id); return p.hours+p.progress+p.tasks; }
+
+// ════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════
+let _tt;
+function showToast(msg, type='error') {
+  const el = document.getElementById('toast'); if (!el) return;
+  document.getElementById('toast-icon').textContent = type==='success'?'✅':'⚠️';
+  document.getElementById('toast-msg').textContent  = msg;
+  el.classList.add('show'); clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════════════════════
+// FIREBASE SAVE
+// ════════════════════════════════════════════════════════
+function saveMeta() {
+  REF.set({ overrides, config: appConfig }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar.'); });
+}
+let _sd = null;
+function saveDebounced() { clearTimeout(_sd); _sd = setTimeout(saveMeta, 600); }
+function setOverride(id, field, value) {
+  const k = String(id); if (!overrides[k]) overrides[k]={};
+  overrides[k][field] = value; saveDebounced();
+}
+
+function saveAllocationChange(num, action, ownerId) {
+  return db.runTransaction(async tx => {
+    const snap = await tx.get(REF);
+    const data = snap.exists ? snap.data() : {};
+    const cur  = Object.assign({}, data.allocations||{});
+    if (action === 'delete') {
+      delete cur[num];
+    } else {
+      if (ownerId !== 0) {
+        const s = getStudents().find(s => s.id === ownerId);
+        if (s) {
+          const cnt = Object.values(cur).filter(i => String(i)===String(ownerId)).length;
+          if (cnt >= (s.max||0)) throw new Error('CUPO_LLENO:'+s.max);
+        }
+      }
+      cur[num] = ownerId;
+    }
+    tx.set(REF,{ allocations:cur, overrides:data.overrides||{}, config:data.config||{}, lms:data.lms||{} });
+  });
+}
+
+function saveLms() {
+  REF.set({ lms:{ tasks, points } }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar.'); });
+}
+
+function descargarImagen(canvas, nombre='imagen.png') {
+  const a = document.createElement('a');
+  a.download=nombre; a.href=canvas.toDataURL('image/png'); a.click();
+  showToast('¡Imagen descargada!','success');
+}
+
+// ════════════════════════════════════════════════════════
+// ROUTER
+// ════════════════════════════════════════════════════════
+const PUBLIC_ROUTES = new Set(['login','ranking','numeros']);
+const ADMIN_ROUTES  = new Set(['cotizador']);
+
+function go(hash) { window.location.hash = hash; }
+
+function router() {
+  if (!appReady) return;
+  const hash     = window.location.hash.slice(1) || 'login';
+  const loggedId = getLoggedId();
+  const app      = document.getElementById('app');
+  const nav      = document.getElementById('bottom-nav');
+
+  // Auth guards
+  if (!PUBLIC_ROUTES.has(hash) && loggedId === null) { go('login'); return; }
+  if (hash === 'login' && loggedId !== null) { go('dashboard'); return; }
+  if (ADMIN_ROUTES.has(hash) && !isAdmin()) { go('dashboard'); return; }
+
+  clearInterval(clockTimer);
+
+  const views = {
+    login: vLogin, dashboard: vDashboard, tablero: vTablero,
+    ranking: vRankingPage, numeros: vNumerosPage,
+    tareas: vTareas, puntos: vPuntos, cotizador: vCotizador
+  };
+  app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
+
+  const showNav = loggedId !== null;
+  if (showNav) {
+    buildNav(hash);
+    nav.classList.add('visible');
+    document.body.classList.add('nav-visible');
+  } else {
+    nav.classList.remove('visible');
+    document.body.classList.remove('nav-visible');
+  }
+
+  const setup = {
+    login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
+    ranking:vRankingSetup, numeros:vNumerosSetup,
+    tareas:vTareasSetup, puntos:vPuntosSetup, cotizador:vCotizadorSetup
+  };
+  if (setup[hash]) setup[hash]();
+}
+
+function buildNav(active) {
+  const loggedId = getLoggedId();
+  const navItems = isAdmin()
+    ? [
+        { r:'dashboard', i:'🏠', l:'Inicio' },
+        { r:'tablero',   i:'🎯', l:'Tablero' },
+        { r:'tareas',    i:'📋', l:'Tareas' },
+        { r:'puntos',    i:'⭐', l:'Puntos' },
+        { r:'cotizador', i:'🧮', l:'Cotizador' },
+      ]
+    : [
+        { r:'dashboard', i:'🏠', l:'Inicio' },
+        { r:'tablero',   i:'🎯', l:'Tablero' },
+        { r:'tareas',    i:'📋', l:'Tareas' },
+        { r:'puntos',    i:'⭐', l:'Puntos' },
+        { r:'ranking',   i:'🏆', l:'Ranking' },
+      ];
+  document.getElementById('nav-row').innerHTML = navItems.map(n =>
+    `<button class="nav-btn${n.r===active?' active':''}" data-r="${n.r}" onclick="go('${n.r}')">
+      <span class="ni">${n.i}</span>${n.l}
+    </button>`
+  ).join('');
+}
+
+window.addEventListener('hashchange', router);
+
+// ════════════════════════════════════════════════════════
+// VIEW: LOGIN
+// ════════════════════════════════════════════════════════
+function vLogin() {
+  return `
+  <div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px">
+    <div class="login-card fade-in" style="width:100%;max-width:360px">
+      <div style="text-align:center;margin-bottom:32px">
+        <div class="login-title">LEVEL UP</div>
+        <div class="login-sub" id="login-sub">Sorteo</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label class="field-label">Alumno</label>
+          <select id="sel-student" class="field-input" style="cursor:pointer">
+            <option value="" disabled selected>— Selecciona tu nombre —</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">PIN de acceso</label>
+          <input type="password" id="inp-pin" class="field-input" placeholder="••••" autocomplete="off">
+        </div>
+        <div id="login-err" style="color:#f87171;font-size:11px;font-weight:700;text-align:center;display:none">PIN incorrecto</div>
+        <button class="btn-login" onclick="doLogin()">INGRESAR</button>
+        <button onclick="go('ranking')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
+          🏆 VER TABLA DE POSICIONES
+        </button>
+        <button onclick="go('numeros')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
+          🎯 VER NÚMEROS DEL SORTEO
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+function vLoginSetup() {
+  const sub = document.getElementById('login-sub');
+  if (sub) sub.textContent = 'Sorteo de ' + getSorteoMonth();
+  const sel = document.getElementById('sel-student');
+  if (!sel) return;
+  getFullList().forEach(s => {
+    const o = document.createElement('option');
+    o.value = String(s.id);
+    o.textContent = s.icon + ' ' + s.name;
+    sel.appendChild(o);
+  });
+  document.getElementById('inp-pin').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+}
+function doLogin() {
+  const selId = document.getElementById('sel-student').value;
+  const pin   = document.getElementById('inp-pin').value;
+  const err   = document.getElementById('login-err');
+  const s     = getFullList().find(s => String(s.id) === selId);
+  if (!s || String(s.pin) !== pin) {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display='none', 2500); return;
+  }
+  setLoggedId(s.id);
+  go('dashboard');
+}
+function doLogout() { setLoggedId(null); go('login'); }
+
+// ════════════════════════════════════════════════════════
+// VIEW: DASHBOARD
+// ════════════════════════════════════════════════════════
+function vDashboard() {
+  const loggedId  = getLoggedId();
+  const student   = getFullList().find(s => s.id === loggedId);
+  if (!student) return vLogin();
+  const firstName = student.name.split(' ')[0];
+  const counts    = getPickCounts();
+  const myCount   = counts[loggedId] || 0;
+  const myMax     = student.max || 0;
+  const pct       = myMax > 0 ? Math.min(100, Math.round((myCount/myMax)*100)) : 0;
+  const pts       = getStudentPoints(loggedId);
+  const totalPts  = pts.hours + pts.progress + pts.tasks;
+  const myTasks   = tasks.filter(t => t.assignTo==='all' || String(t.assignTo)===String(loggedId));
+  const pending   = myTasks.filter(t => !(t.completedBy||[]).includes(loggedId)).length;
+
+  return `
+  <div style="padding:12px">
+    <div class="dash-hero">
+      <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:10px;color:rgba(147,197,253,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">BIENVENIDO</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:1;letter-spacing:-0.02em">${student.icon} ${firstName.toUpperCase()}</div>
+          <div style="font-size:11px;color:rgba(147,197,253,0.8);font-weight:600;margin-top:4px">MATHS LEVEL UP</div>
+        </div>
+        <button onclick="doLogout()" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;flex-shrink:0">SALIR</button>
+      </div>
+    </div>
+
+    ${!isAdmin() ? `
+    <div class="dash-grid">
+      <div class="dash-stat">
+        <div class="ds-lbl">Mis Números</div>
+        <div class="ds-val" style="color:${myCount>=myMax&&myMax>0?'#fb923c':'#e5e7eb'}">${myCount}/${myMax}</div>
+        <div style="height:5px;background:rgba(0,0,0,0.4);border-radius:10px;overflow:hidden;margin-top:8px">
+          <div style="height:100%;width:${pct}%;background:${student.color||'#3b82f6'};border-radius:10px"></div>
+        </div>
+      </div>
+      <div class="dash-stat">
+        <div class="ds-lbl">Mis Puntos</div>
+        <div class="ds-val" style="color:#84cc16">${totalPts}</div>
+        <div style="font-size:10px;color:#6b7280;margin-top:6px">${pts.hours}h · ${pts.progress}p · ${pts.tasks}t</div>
+      </div>
+    </div>` : `
+    <div class="dash-grid">
+      <div class="dash-stat">
+        <div class="ds-lbl">Alumnos</div>
+        <div class="ds-val" style="color:#60a5fa">${getStudents().length}</div>
+      </div>
+      <div class="dash-stat">
+        <div class="ds-lbl">Números Tomados</div>
+        <div class="ds-val" style="color:#4ade80">${Object.keys(allocations).length}/${getTotal()}</div>
+      </div>
+    </div>`}
+
+    ${pending > 0 ? `
+    <div style="background:rgba(234,179,8,0.1);border:1px solid rgba(234,179,8,0.25);border-radius:14px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:22px">📋</span>
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;text-transform:uppercase">${pending} tarea${pending>1?'s':''} pendiente${pending>1?'s':''}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.5)">Toca Tareas para verlas</div>
+      </div>
+    </div>` : ''}
+
+    <div class="dash-link" onclick="go('tablero')">
+      <span class="dl-ico">🎯</span>
+      <div><div>Tablero del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Elige tus números</div></div>
+      <span class="dl-arr">›</span>
+    </div>
+    <div class="dash-link" onclick="go('ranking')">
+      <span class="dl-ico">🏆</span>
+      <div><div>Tabla de Posiciones</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ranking del sorteo</div></div>
+      <span class="dl-arr">›</span>
+    </div>
+    <div class="dash-link" onclick="go('numeros')">
+      <span class="dl-ico">🔢</span>
+      <div><div>Números del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ver todos los números</div></div>
+      <span class="dl-arr">›</span>
+    </div>
+  </div>`;
+}
+function vDashboardSetup() {}
+
+// ════════════════════════════════════════════════════════
+// VIEW: TABLERO
+// ════════════════════════════════════════════════════════
+function vTablero() {
+  const loggedId = getLoggedId();
+  const student  = getFullList().find(s => s.id === loggedId);
+  if (!student) { go('login'); return ''; }
+  return `
+  <header id="header">
+    <div class="header-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="header-title">LEVEL UP</div>
+        <div id="status-badge" class="status-badge status-open">● Activo</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="user-pill">
+          <span id="hdr-icon" style="font-size:20px">${student.icon}</span>
+          <span id="hdr-name" class="uname">${student.name.split(' ')[0]}</span>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="admin-buttons" class="admin-row" style="display:${student.role==='admin'?'flex':'none'}">
+      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">⚙️ CONFIG</button>
+      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">📄 REPORTE</button>
+      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">🗑️ RESET</button>
+    </div>
+  </header>
+
+  <div id="admin-panel">
+    <div class="card" style="border-radius:20px">
+      <div class="section-label">📅 CRONOGRAMA</div>
+      <div id="admin-cronograma-grid">
+        <div class="tp-wrap" id="tp-start-wrap"></div>
+        <div class="tp-wrap" id="tp-end-wrap"></div>
+      </div>
+      <div id="admin-alumnos-section">
+        <div class="section-label">⏳ ALUMNOS</div>
+        <div class="student-list"><div id="student-list"></div></div>
+        <button class="btn-add-student" onclick="addStudent()">➕ AGREGAR ALUMNO</button>
+        <div id="admin-summary-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
+          <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SUMA TOTAL DE CUPOS</div>
+            <div id="admin-total-cupos" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#84cc16;line-height:1">0</div>
+          </div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
+            <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px">NÚMEROS EN EL TABLERO</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${[100,200,300,400,500].map(n=>`<button onclick="setTotalNumbers(${n})" id="btn-total-${n}" class="btn-centena">${n}</button>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">🎯 TABLERO</button>
+    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">🏆 RANKING</button>
+  </div>
+
+  <main id="main">
+    <div id="pane-board">
+      <div class="card" id="progress-card" style="margin-bottom:10px"><div id="progress-list"></div></div>
+      <div class="card" style="position:relative;overflow:hidden">
+        <div id="board-overlay">
+          <div>
+            <div class="overlay-icon" id="overlay-icon">⏳</div>
+            <div class="overlay-title" id="overlay-title">ESPERA TU TURNO</div>
+            <div class="overlay-sub"   id="overlay-sub">Los turnos se habilitan de 9 AM a 9 PM.</div>
+            <div id="overlay-wait-info">
+              <div class="overlay-start">
+                <div class="overlay-start-label">COMIENZA EL</div>
+                <div class="overlay-start-date" id="overlay-start-date">–</div>
+              </div>
+              <div class="clock-box" style="margin-top:10px">
+                <div class="clock-lbl">HORA ACTUAL</div>
+                <div id="live-clock">–</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="board-header">
+          <div><div class="board-title">TABLERO VIVO</div><div class="board-sub">Reserva tus números</div></div>
+          <div class="taken-box">
+            <div class="taken-label">Tomados</div>
+            <div><span class="taken-count" id="taken-count">0</span><span class="taken-total" id="taken-total"> / 200</span></div>
+          </div>
+        </div>
+        <div id="num-grid"></div>
+      </div>
+    </div>
+    <div id="pane-ranking" style="display:none">
+      <div class="card">
+        <div class="section-label" style="margin-bottom:14px">⏳ Ranking de Turnos</div>
+        <div id="ranking-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="reset-modal">
+    <div class="modal-card">
+      <div class="modal-icon">🗑️</div>
+      <div class="modal-title">¿REINICIAR TODO?</div>
+      <div class="modal-sub">Se perderán todas las selecciones permanentemente.</div>
+      <button class="btn-reset-confirm" onclick="doReset()">REINICIAR</button>
+      <button class="btn-reset-cancel"  onclick="closeReset()">CANCELAR</button>
+    </div>
+  </div>`;
+}
+
+function vTableroSetup() {
+  const loggedId = getLoggedId();
+  renderAll(loggedId);
+  startClock(loggedId);
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.color-palette.open').forEach(p => p.classList.remove('open'));
+  });
+}
+
+function startClock(loggedId) {
+  clearInterval(clockTimer);
+  clockTimer = setInterval(() => tickClock(loggedId), 1000);
+  tickClock(loggedId);
+}
+function tickClock(loggedId) {
+  const clk = document.getElementById('live-clock');
+  if (!clk) { clearInterval(clockTimer); return; }
+  clk.textContent = new Date().toLocaleTimeString('es-ES',{ hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true });
+  updateStatusBadge(loggedId);
+  updateBoardOverlay(loggedId);
+}
+function updateStatusBadge(loggedId) {
+  const badge = document.getElementById('status-badge'); if (!badge) return;
+  const vs = getVotingStatus(loggedId);
+  badge.className = 'status-badge';
+  if (vs==='open')         { badge.classList.add('status-open');   badge.textContent='● Activo'; }
+  else if (vs==='waiting_turn') { badge.classList.add('status-wait'); badge.textContent='⏳ Espera'; }
+  else                          { badge.classList.add('status-closed'); badge.textContent='✕ Cerrado'; }
+}
+function updateBoardOverlay(loggedId) {
+  const vs = getVotingStatus(loggedId);
+  const overlay = document.getElementById('board-overlay'); if (!overlay) return;
+  const waitInfo = document.getElementById('overlay-wait-info');
+  if (vs==='open') { overlay.classList.remove('show'); return; }
+  overlay.classList.add('show');
+  if (vs==='waiting_turn') {
+    document.getElementById('overlay-icon').textContent  = '⏳';
+    document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
+    document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 9 AM a 9 PM.';
+    waitInfo.style.display = 'block';
+    document.getElementById('overlay-start-date').textContent = formatFullDate(getPersonalStart(loggedId));
+  } else {
+    document.getElementById('overlay-icon').textContent  = '🔒';
+    document.getElementById('overlay-title').textContent = 'SORTEO CERRADO';
+    document.getElementById('overlay-sub').textContent   = 'El tiempo de participación ha terminado.';
+    waitInfo.style.display = 'none';
+  }
+}
+function switchTab(tab) {
+  document.getElementById('pane-board').style.display   = tab==='board'   ? 'block' : 'none';
+  document.getElementById('pane-ranking').style.display = tab==='ranking' ? 'block' : 'none';
+  document.getElementById('tab-board').classList.toggle('active',   tab==='board');
+  document.getElementById('tab-ranking').classList.toggle('active', tab==='ranking');
+  if (tab==='ranking') renderTableroRanking();
+}
+function renderGrid(loggedId) {
+  const grid     = document.getElementById('num-grid'); if (!grid) return;
+  const students = getStudents();
+  grid.innerHTML = '';
+  for (let n=1; n<=getTotal(); n++) {
+    const ownerId = allocations[n];
+    const owner   = students.find(s => String(s.id)===String(ownerId));
+    const isMine  = String(ownerId)===String(loggedId);
+    const btn     = document.createElement('button');
+    btn.className = 'num-btn' + (isMine?' mine':(ownerId?' taken':''));
+    btn.textContent = n;
+    if (ownerId) {
+      btn.style.background  = owner?.color || '#555';
+      btn.style.borderColor = isMine ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.25)';
+      const em = document.createElement('span');
+      em.className = 'num-emoji'; em.textContent = owner?.icon||'👤';
+      btn.appendChild(em);
+    }
+    btn.addEventListener('click', () => handleNumber(n, loggedId));
+    grid.appendChild(btn);
+  }
+  document.getElementById('taken-count').textContent = Object.keys(allocations).length;
+  document.getElementById('taken-total').textContent = ' / ' + getTotal();
+}
+function handleNumber(num, loggedId) {
+  const active       = getFullList().find(s => s.id===loggedId);
+  const currentOwner = allocations[num];
+  if (active?.role==='admin') {
+    if (!currentOwner) return;
+    delete allocations[num]; renderAll(loggedId);
+    saveAllocationChange(num,'delete',null)
+      .then(()=>showToast('Número '+num+' liberado.','success'))
+      .catch(e=>{ console.error(e); allocations[num]=currentOwner; renderAll(loggedId); showToast('Error al liberar.'); });
+    return;
+  }
+  const vs = getVotingStatus(loggedId);
+  if (vs!=='open') {
+    if (vs==='waiting_turn') showToast('Tu turno: '+formatFullDate(getPersonalStart(loggedId)));
+    else showToast('Sorteo cerrado.');
+    return;
+  }
+  if (String(currentOwner)===String(loggedId)) {
+    delete allocations[num]; renderAll(loggedId);
+    saveAllocationChange(num,'delete',null)
+      .catch(e=>{ console.error(e); allocations[num]=loggedId; renderAll(loggedId); showToast('Error al deseleccionar.'); });
+  } else if (!currentOwner) {
+    const counts = getPickCounts();
+    if ((counts[loggedId]||0) >= (active?.max||0)) { showToast('Cupo lleno ('+(active?.max)+').'); return; }
+    allocations[num] = loggedId; renderAll(loggedId);
+    saveAllocationChange(num,'set',loggedId)
+      .catch(e=>{
+        delete allocations[num]; renderAll(loggedId);
+        if (e.message?.startsWith('CUPO_LLENO:')) showToast('Cupo lleno ('+e.message.split(':')[1]+').');
+        else showToast('Número ya ocupado, intenta otro.');
+      });
+  } else { showToast('Ya ocupado.'); }
+}
+function renderBoardProgress(loggedId) {
+  const container = document.getElementById('progress-list'); if (!container) return;
+  const me = getStudents().find(s => s.id===loggedId);
+  if (!me) { container.innerHTML=''; return; }
+  const count = getPickCounts()[me.id]||0;
+  const max   = me.max||1;
+  const pct   = Math.min(100,(count/max)*100);
+  container.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:22px">${me.icon}</span>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;text-transform:uppercase;color:${me.color||'#fff'}">${me.name}</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:${count>=me.max?'#fb923c':'#e5e7eb'}">${count} / ${me.max||0}</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${pct}%;background:${me.color||'#84cc16'}"></div></div>
+      </div>
+    </div>`;
+}
+function renderTableroRanking() {
+  const list=document.getElementById('ranking-list'); if(!list) return;
+  const loggedId=getLoggedId();
+  const students=getStudents(); const counts=getPickCounts();
+  list.innerHTML='';
+  students.forEach((s,idx) => {
+    const count=counts[s.id]||0; const ps=getPersonalStart(s.id);
+    const isMyTurn=ps&&new Date()>=ps&&getVotingStatus(loggedId)!=='closed';
+    const isMe=loggedId===s.id;
+    const pct=Math.min(100,(count/(s.max||1))*100);
+    const div=document.createElement('div');
+    div.className='rank-card'+(isMe?' me':'');
+    div.innerHTML=`
+      <div class="rank-row">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rank-avatar" style="background:${s.color||'#555'}">${s.icon}</div>
+          <div>
+            <div class="rank-name">${idx+1}. ${s.name}</div>
+            <div class="rank-time" style="color:${isMyTurn?'#4ade80':'#6b7280'}">${isMyTurn?'✓ Turno activo':formatFullDate(ps)}</div>
+          </div>
+        </div>
+        <div class="rank-count" style="color:${count>=(s.max||0)?'#fb923c':'#e5e7eb'}">${count}/${s.max||0}</div>
+      </div>
+      <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${s.color||'#555'}"></div></div>`;
+    list.appendChild(div);
+  });
+}
+function renderAll(loggedId) {
+  renderGrid(loggedId); renderBoardProgress(loggedId);
+  updateStatusBadge(loggedId); updateBoardOverlay(loggedId);
+}
+// Admin panel
+function toggleAdminPanel() {
+  const panel=document.getElementById('admin-panel');
+  const btn=document.getElementById('btn-toggle-config');
+  const isOpen=panel.classList.toggle('open');
+  btn.style.background=isOpen?'#f97316':'#105c4d';
+  btn.textContent=isOpen?'⚙️ CERRAR':'⚙️ CONFIG';
+  if (isOpen) renderAdminPanel();
+}
+function setTotalNumbers(n) {
+  appConfig.totalNumbers=n;
+  Object.keys(allocations).forEach(k=>{ if(parseInt(k)>n) delete allocations[k]; });
+  REF.set({ allocations, overrides, config:appConfig, lms:{tasks,points} })
+    .catch(e=>{ console.error(e); showToast('Error.'); });
+  updateAdminSummary(); renderAll(getLoggedId());
+  showToast('Tablero actualizado a '+n+' números.','success');
+}
+function updateAdminSummary() {
+  const el=document.getElementById('admin-total-cupos');
+  if (el) el.textContent=getStudents().reduce((a,s)=>a+(s.max||0),0);
+  [100,200,300,400,500].forEach(n=>{
+    const b=document.getElementById('btn-total-'+n);
+    if (b) b.classList.toggle('active',appConfig.totalNumbers===n);
+  });
+}
+function renderAdminPanel() {
+  updateAdminSummary();
+  buildTimePicker('tp-start-wrap','Inicio de Apertura',appConfig.startTime,v=>{ appConfig.startTime=v; saveMeta(); renderAdminPanel(); renderAll(getLoggedId()); });
+  buildTimePicker('tp-end-wrap','Cierre Final',appConfig.endTime,v=>{ appConfig.endTime=v; saveMeta(); renderAll(getLoggedId()); });
+  renderStudentList();
+}
+function renderStudentList() {
+  const list=document.getElementById('student-list'); if (!list) return;
+  list.innerHTML='';
+  getStudents().forEach((s,idx) => {
+    const row=document.createElement('div');
+    row.className='student-row';
+    row.innerHTML=`
+      <div class="student-row-top">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="pos-label">POS. ${idx+1}</span>
+          <button class="msg-btn" title="Inicio de selección" onclick="copyMsg(${s.id},1)">📩</button>
+          <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">📢</button>
+          <button class="msg-btn" title="Detalles del sorteo" onclick="copyMsg(${s.id},3)">🔴</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="color-wrap">
+            <div class="color-trigger" style="background:${s.color||'#888'}" onclick="togglePalette(event,${s.id})"></div>
+            <div class="color-palette" id="palette-${s.id}">
+              ${COLOR_PALETTE.map(c=>`<div class="color-swatch${s.color===c?' selected':''}" style="background:${c}" onclick="pickColor(event,${s.id},'${c}')"></div>`).join('')}
+            </div>
+          </div>
+          <button onclick="setOverride(${s.id},'deleted',true);renderStudentList();renderAll(getLoggedId())"
+            style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#f87171;cursor:pointer;font-size:12px">🗑️</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <input type="text" value="${s.icon||''}" placeholder="emoji" class="mini-input" style="width:42px;text-align:center;font-size:16px;padding:6px 4px" oninput="setOverride(${s.id},'icon',this.value)">
+        <input type="text" value="${s.name||''}" placeholder="Nombre" class="mini-input" style="flex:1;padding:6px 10px;font-size:12px;text-transform:uppercase" oninput="setOverride(${s.id},'name',this.value)">
+      </div>
+      <div style="display:flex;gap:6px">
+        <div style="flex:1">
+          <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">CUPO</div>
+          <input type="number" value="${s.max||0}" class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px" oninput="setOverride(${s.id},'max',parseInt(this.value)||0)">
+        </div>
+        <div style="flex:1">
+          <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PIN</div>
+          <input type="text" value="${s.pin||''}" class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px" oninput="setOverride(${s.id},'pin',this.value)">
+        </div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+function togglePalette(e,id) {
+  e.stopPropagation();
+  document.querySelectorAll('.color-palette.open').forEach(p=>{ if(p.id!=='palette-'+id) p.classList.remove('open'); });
+  document.getElementById('palette-'+id)?.classList.toggle('open');
+}
+function pickColor(e,id,color) {
+  e.stopPropagation();
+  setOverride(id,'color',color);
+  document.getElementById('palette-'+id)?.classList.remove('open');
+  renderStudentList(); renderAll(getLoggedId());
+}
+function pickUniqueColor() {
+  const used=getStudents().map(s=>s.color.toLowerCase());
+  return COLOR_PALETTE.find(c=>!used.includes(c.toLowerCase()))||COLOR_PALETTE[Math.floor(Math.random()*COLOR_PALETTE.length)];
+}
+function addStudent() {
+  const allIds=[...DEFAULT_STUDENTS.map(s=>s.id),...Object.keys(overrides).map(Number).filter(n=>!isNaN(n))];
+  const newId=allIds.length>0?Math.max(...allIds)+1:11;
+  overrides[String(newId)]={ name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:pickUniqueColor(), deleted:false };
+  saveMeta(); renderStudentList(); renderAll(getLoggedId());
+  showToast('Alumno agregado.','success');
+}
+function buildTimePicker(containerId,label,isoValue,onChangeFn) {
+  const wrap=document.getElementById(containerId); if (!wrap) return;
+  wrap.innerHTML=`<div class="tp-label">${label}</div>`;
+  const getLD=d=>{ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; };
+  const dateObj=isoValue?new Date(isoValue):new Date(); const valid=!isNaN(dateObj.getTime());
+  let dateStr=valid?getLD(dateObj):getLD(new Date()); let h24=valid?dateObj.getHours():9;
+  let ampm=h24>=12?'PM':'AM'; let h12=h24%12||12; let mins=valid?dateObj.getMinutes():0;
+  const apply=()=>{ let h=h12; if(ampm==='PM'&&h<12)h+=12; if(ampm==='AM'&&h===12)h=0; onChangeFn(`${dateStr}T${String(h).padStart(2,'0')}:${String(mins).padStart(2,'0')}:00`); };
+  const dateIn=document.createElement('input'); dateIn.type='date'; dateIn.value=dateStr; dateIn.className='tp-date';
+  dateIn.addEventListener('change',()=>{ dateStr=dateIn.value; apply(); });
+  wrap.appendChild(dateIn);
+  const row=document.createElement('div'); row.className='tp-time-row';
+  const selWrap=document.createElement('div'); selWrap.className='tp-selects';
+  const selH=document.createElement('select'); selH.className='tp-sel';
+  [1,2,3,4,5,6,7,8,9,10,11,12].forEach(h=>{ const o=document.createElement('option'); o.value=o.textContent=String(h).padStart(2,'0'); if(h===h12)o.selected=true; selH.appendChild(o); });
+  selH.addEventListener('change',()=>{ h12=parseInt(selH.value); apply(); });
+  const colon=document.createElement('span'); colon.className='tp-colon'; colon.textContent=':';
+  const selM=document.createElement('select'); selM.className='tp-sel';
+  [0,5,10,15,20,25,30,35,40,45,50,55].forEach(m=>{ const o=document.createElement('option'); o.value=o.textContent=String(m).padStart(2,'0'); if(m===mins)o.selected=true; selM.appendChild(o); });
+  selM.addEventListener('change',()=>{ mins=parseInt(selM.value); apply(); });
+  selWrap.append(selH,colon,selM);
+  const ampmWrap=document.createElement('div'); ampmWrap.className='tp-ampm-wrap';
+  ['AM','PM'].forEach(p=>{ const b=document.createElement('button'); b.type='button'; b.className='tp-ampm-btn'+(ampm===p?' active':''); b.textContent=p; b.addEventListener('click',()=>{ ampm=p; ampmWrap.querySelectorAll('.tp-ampm-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); apply(); }); ampmWrap.appendChild(b); });
+  row.append(selWrap,ampmWrap); wrap.appendChild(row);
+}
+function copyMsg(studentId,type) {
+  const students=getStudents(); const s=students.find(st=>st.id===studentId); if (!s) return;
+  const rank=students.findIndex(st=>st.id===studentId)+1;
+  const firstName=s.name.split(' ')[0]; const UPPER=firstName.toUpperCase();
+  let text='';
+  if (type===1) {
+    let recon='';
+    if (rank===1) recon=`🏆 *¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *PRIMER PUESTO* en MATHS LEVEL UP del mes de ${getSorteoMonth()}. ¡Eres el mejor! Por ello, has ganado un premio de *S/. 50* que enviaremos vía Yape al apoderado. 🎉\n\n`;
+    else if (rank===2) recon=`🥈 *¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *SEGUNDO PUESTO* en MATHS LEVEL UP del mes de ${getSorteoMonth()}. ¡Excelente trabajo! Por ello, has ganado un premio de *S/. 25* que enviaremos vía Yape al apoderado. 🎉\n\n`;
+    text=`${recon}*¡BUENAS NOCHES, ${UPPER}!*\nYa puedes participar en el sorteo de MATHS LEVEL UP que realizaremos mañana al mediodía. Sigue estos pasos para elegir tus números:\n\nEntra aquí: https://dazzling-platypus-6cdce9.netlify.app/\nSelecciona tu nombre en la lista.\nIngresa tu contraseña de acceso: ${s.pin}\n\n*¡Mucho éxito en el sorteo!*`;
+  } else if (type===2) {
+    text=`Estimados padres de familia, muy buenos días.\nLes recuerdo que mañana al mediodía realizaremos el sorteo de MATHS LEVEL UP: MES ${getSorteoMonth().toUpperCase()} para premiar el esfuerzo de los chicos.\n\n🎁 EL PREMIO: El ganador se llevará S/. 100 en experiencias. Queremos que sea un momento divertido, por lo que sería preferible que el alumno pueda canjearlo por entradas al cine, saldo para sus videojuegos, o una comida para celebrar en casa (como pizza, chifa o pollo a la brasa). Nota: El premio se enviará vía Yape al apoderado.\n\n⚠️ RECORDATORIO URGENTE:\nTienen plazo solo hasta hoy para que sus hijos ingresen al enlace enviado con su cuenta y contraseña para elegir sus números. Quienes no los elijan a tiempo, no podrán participar en el sorteo.`;
+  } else if (type===3) {
+    text=`🔴 DETALLES DEL SORTEO EN VIVO\n🏆 Dinámica: El ganador será el primer alumno que logre completar los 5 números que sacaremos al azar durante la transmisión.\n📅 Fecha: Hoy, domingo ${new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long'})}\n⏰ Hora del sorteo: 12:00 pm – 12:30 pm\n📍 Link de Google Meet: meet.google.com/pyi-pazk-jtp\n¡Los esperamos al mediodía para celebrar juntos!`;
+  }
+  navigator.clipboard.writeText(text).then(()=>showToast(`¡Mensaje copiado para ${firstName}!`,'success')).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showToast(`¡Mensaje copiado para ${firstName}!`,'success');
+  });
+}
+function openReset()  { document.getElementById('reset-modal').classList.add('show'); }
+function closeReset() { document.getElementById('reset-modal').classList.remove('show'); }
+function doReset() {
+  allocations={};
+  REF.set({ allocations:{}, overrides, config:appConfig, lms:{tasks,points} })
+    .then(()=>showToast('Tablero limpio.','success'))
+    .catch(e=>{ console.error(e); showToast('Error al reiniciar.'); });
+  closeReset(); renderAll(getLoggedId());
+}
+function exportTxt() {
+  const students=getStudents();
+  let c='REPORTE DE SORTEO - '+getSorteoMonth().toUpperCase()+'\n\n';
+  students.forEach((s,i)=>{
+    const nums=Object.entries(allocations).filter(([,id])=>String(id)===String(s.id)).map(([n])=>n).sort((a,b)=>a-b);
+    c+=`${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNúmeros: ${nums.join(', ')||'-'}\n\n`;
+  });
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([c],{type:'text/plain'})); a.download='sorteo_levelup.txt'; a.click();
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW: RANKING PAGE (público)
+// ════════════════════════════════════════════════════════
+function vRankingPage() {
+  const loggedId = getLoggedId();
+  return `
+  <div style="background:radial-gradient(ellipse at top,#1a6b3a 0%,#0a3320 40%,#051a10 100%);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:12px">
+    <div class="pub-wrap" style="border:1px solid rgba(132,204,22,0.25)">
+      <div class="pub-hdr" id="ranking-card" style="background:linear-gradient(135deg,#065f2e,#0f7a3a 50%,#1a9148)">
+        <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#eab308">🏆</span> <span style="color:#84cc16">TABLA DE</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">POSICIONES</div>
+            <div id="rank-subtitle" style="font-size:9px;color:rgba(132,204,22,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
+            <button onclick="captureRanking()" style="background:#eab308;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
+          </div>
+        </div>
+      </div>
+      <div id="ranking-page-list" class="pub-list" style="background:linear-gradient(180deg,#0a3320,#071f14)"></div>
+    </div>
+  </div>`;
+}
+function vRankingSetup() {
+  const sub=document.getElementById('rank-subtitle');
+  if (sub) sub.textContent='MATHS LEVEL UP · '+getSorteoMonth().toUpperCase();
+  const list=document.getElementById('ranking-page-list'); if (!list) return;
+  const students=getStudents(); const counts=getPickCounts();
+  const medals=['🥇','🥈','🥉'];
+  const podBg=['linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,215,0,0.05))','linear-gradient(135deg,rgba(192,192,192,0.15),rgba(192,192,192,0.04))','linear-gradient(135deg,rgba(205,127,50,0.15),rgba(205,127,50,0.04))'];
+  const podBorder=['rgba(255,215,0,0.4)','rgba(192,192,192,0.3)','rgba(205,127,50,0.3)'];
+  list.innerHTML=students.map((s,idx)=>{
+    const count=counts[s.id]||0; const pct=Math.min(100,(count/(s.max||1))*100); const full=count>=s.max;
+    const isPod=idx<3; const bg=isPod?podBg[idx]:'rgba(255,255,255,0.03)'; const border=isPod?podBorder[idx]:'rgba(255,255,255,0.07)';
+    const rankEl=isPod?`<span style="font-size:22px;line-height:1;flex-shrink:0">${medals[idx]}</span>`
+      :`<span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:rgba(255,255,255,0.3);width:22px;text-align:center;flex-shrink:0">${idx+1}</span>`;
+    return `<div style="background:${bg};border:1px solid ${border};border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px">
+      <div style="display:flex;align-items:center;gap:10px">
+        ${rankEl}
+        <div style="width:36px;height:36px;border-radius:10px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px ${s.color}55">${s.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+          <div style="height:6px;background:rgba(0,0,0,0.4);border-radius:10px;overflow:hidden;margin-top:5px">
+            <div style="height:100%;width:0%;background:${s.color};border-radius:10px;transition:width 0.8s cubic-bezier(.34,1.1,.64,1)" data-w="${pct}"></div>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:${full?'#fb923c':'#e5e7eb'};line-height:1">${count}/${s.max}</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:0.1em">${Math.round(pct)}%</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{ list.querySelectorAll('[data-w]').forEach(b=>{ b.style.width=b.dataset.w+'%'; }); },50);
+}
+function captureRanking() {
+  const card=document.getElementById('ranking-card'); if (!card) return;
+  showToast('Generando imagen...','success');
+  html2canvas(card,{scale:2,useCORS:true,backgroundColor:null,logging:false}).then(canvas=>{
+    canvas.toBlob(blob=>{
+      if (navigator.clipboard&&window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(()=>showToast('¡Imagen copiada!','success')).catch(()=>descargarImagen(canvas,'tabla-posiciones.png'));
+      } else descargarImagen(canvas,'tabla-posiciones.png');
+    },'image/png');
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW: NUMEROS PAGE (público)
+// ════════════════════════════════════════════════════════
+function vNumerosPage() {
+  const loggedId=getLoggedId();
+  return `
+  <div style="background:radial-gradient(ellipse at top,#1a3a6b 0%,#0a1f3d 40%,#050d1a 100%);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:12px">
+    <div class="pub-wrap" style="border:1px solid rgba(59,130,246,0.25)">
+      <div class="pub-hdr" id="numbers-card" style="background:linear-gradient(135deg,#1e3a8a,#2563eb 50%,#3b82f6)">
+        <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#eab308">🎯</span> <span style="color:#93c5fd">NÚMEROS</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DEL SORTEO</div>
+            <div id="num-subtitle" style="font-size:9px;color:rgba(147,197,253,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
+            <button onclick="captureNumeros()" style="background:#eab308;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
+          </div>
+        </div>
+      </div>
+      <div id="numeros-page-list" class="pub-list" style="background:linear-gradient(180deg,#0a1f3d,#050d1a)"></div>
+    </div>
+  </div>`;
+}
+function vNumerosSetup() {
+  const sub=document.getElementById('num-subtitle');
+  if (sub) sub.textContent='MATHS LEVEL UP · '+getSorteoMonth().toUpperCase();
+  const list=document.getElementById('numeros-page-list'); if (!list) return;
+  const students=getStudents();
+  list.innerHTML=students.map(s=>{
+    const nums=Object.entries(allocations).filter(([,id])=>String(id)===String(s.id)).map(([n])=>parseInt(n)).sort((a,b)=>a-b);
+    const count=nums.length; const pct=Math.min(100,(count/(s.max||1))*100); const full=count>=s.max;
+    const numsHtml=nums.length>0
+      ?nums.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:${s.color};color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;box-shadow:0 2px 6px ${s.color}66">${n}</span>`).join('')
+      :`<span style="font-size:11px;color:rgba(255,255,255,0.3);font-style:italic">Sin números aún</span>`;
+    return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:12px;border-left:4px solid ${s.color}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="width:36px;height:36px;border-radius:10px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 10px ${s.color}55">${s.icon}</div>
+        <div style="flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase">${s.name}</div>
+          <div style="height:4px;background:rgba(0,0,0,0.4);border-radius:10px;margin-top:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${s.color};border-radius:10px"></div></div>
+        </div>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:${full?'#fb923c':'#e5e7eb'};flex-shrink:0">${count}/${s.max}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${numsHtml}</div>
+    </div>`;
+  }).join('');
+}
+function captureNumeros() {
+  const card=document.getElementById('numbers-card'); if (!card) return;
+  showToast('Generando imagen...','success');
+  html2canvas(card,{scale:2,useCORS:true,backgroundColor:null,logging:false}).then(canvas=>{
+    canvas.toBlob(blob=>{
+      if (navigator.clipboard&&window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(()=>showToast('¡Imagen copiada!','success')).catch(()=>descargarImagen(canvas,'numeros-sorteo.png'));
+      } else descargarImagen(canvas,'numeros-sorteo.png');
+    },'image/png');
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW: TAREAS
+// ════════════════════════════════════════════════════════
+function vTareas() {
+  const loggedId = getLoggedId();
+  const myTasks  = isAdmin()
+    ? tasks
+    : tasks.filter(t => t.assignTo==='all' || String(t.assignTo)===String(loggedId));
+  const sorted   = [...myTasks].sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+  return `
+  <div style="padding:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1">📋 TAREAS</div>
+        <div style="font-size:10px;color:#6b7280;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:2px">MATHS LEVEL UP</div>
+      </div>
+      ${isAdmin()?`<button class="btn-sm btn-primary" onclick="toggleAddTask()">➕ NUEVA</button>`:''}
+    </div>
+
+    ${isAdmin()?`
+    <div id="add-task-box" class="add-task-box" style="display:none">
+      <div class="sec-lbl">NUEVA TAREA</div>
+      <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60">
+      <textarea class="fsm" id="t-desc" placeholder="Descripción (opcional)..."></textarea>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">FECHA LÍMITE</div>
+          <input type="date" class="fsm" id="t-due" style="margin-bottom:0">
+        </div>
+        <div style="flex:1">
+          <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">ASIGNAR A</div>
+          <select class="fsm" id="t-assign" style="margin-bottom:0">
+            <option value="all">🌍 Todos</option>
+            ${getStudents().map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <button class="btn-sm btn-primary" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
+    </div>`:''}
+
+    <div id="tasks-list">
+      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN TAREAS PENDIENTES</div></div>`
+      : sorted.map(t => renderTask(t, loggedId)).join('')}
+    </div>
+  </div>`;
+}
+function renderTask(t, loggedId) {
+  const done = (t.completedBy||[]).includes(loggedId);
+  const dueText = t.due ? new Date(t.due+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}).toUpperCase() : '';
+  const assignLabel = t.assignTo==='all' ? '🌍 Todos'
+    : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
+  const completedCount = (t.completedBy||[]).length;
+  return `
+  <div class="task-card${done?' tdone':''}" id="tc-${t.id}">
+    <div class="task-t${done?' tdt':''}">${t.title}</div>
+    ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}</span>`:''}
+      ${isAdmin()&&t.assignTo==='all'?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(59,130,246,0.12);color:#93c5fd;border:1px solid rgba(59,130,246,0.2)">${assignLabel}</span>`:''}
+      ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:#4ade80;border:1px solid rgba(34,197,94,0.15)">✓ ${completedCount}/${getStudents().length}</span>`:''}
+    </div>
+    <div class="task-btns">
+      <button class="btn-dg ${done?'on':'off'}" onclick="toggleTaskDone('${t.id}')">${done?'✓ COMPLETADA':'MARCAR COMO HECHA'}</button>
+      ${isAdmin()?`<button class="btn-dt" onclick="deleteTask('${t.id}')">🗑️</button>`:''}
+    </div>
+  </div>`;
+}
+function vTareasSetup() {}
+function toggleAddTask() {
+  const box=document.getElementById('add-task-box');
+  if (box) box.style.display=box.style.display==='none'?'block':'none';
+}
+function addTask() {
+  const title=(document.getElementById('t-title')?.value||'').trim();
+  if (!title) { showToast('Escribe un título.'); return; }
+  const newTask = {
+    id: Date.now().toString(),
+    title,
+    desc:     (document.getElementById('t-desc')?.value||'').trim(),
+    due:       document.getElementById('t-due')?.value||'',
+    assignTo:  document.getElementById('t-assign')?.value||'all',
+    completedBy: []
+  };
+  tasks.push(newTask);
+  saveLms();
+  go('tareas');
+  showToast('Tarea guardada.','success');
+}
+function deleteTask(id) {
+  tasks=tasks.filter(t=>t.id!==id);
+  saveLms();
+  const el=document.getElementById('tc-'+id);
+  if (el) el.remove();
+  showToast('Tarea eliminada.','success');
+}
+function toggleTaskDone(id) {
+  const loggedId=getLoggedId();
+  const task=tasks.find(t=>t.id===id); if (!task) return;
+  if (!task.completedBy) task.completedBy=[];
+  const idx=task.completedBy.indexOf(loggedId);
+  if (idx>-1) task.completedBy.splice(idx,1);
+  else task.completedBy.push(loggedId);
+  saveLms();
+  // Update UI without full re-render
+  const newEl=document.createElement('div');
+  newEl.innerHTML=renderTask(task,loggedId);
+  const old=document.getElementById('tc-'+id);
+  if (old && newEl.firstElementChild) old.replaceWith(newEl.firstElementChild);
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW: PUNTOS
+// ════════════════════════════════════════════════════════
+function vPuntos() {
+  const loggedId = getLoggedId();
+  const students = getStudents();
+  const sorted   = [...students].sort((a,b)=>getTotalPts(b.id)-getTotalPts(a.id));
+  const medals   = ['🥇','🥈','🥉'];
+
+  return `
+  <div style="padding:12px">
+    <div class="pts-hero" style="margin-bottom:10px">
+      <div style="position:relative">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;line-height:1">⭐ PUNTOS</div>
+        <div style="font-size:10px;color:rgba(134,239,172,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px">Horas · Progreso · Tareas</div>
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <div style="flex:1;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;text-align:center">
+            <div style="font-size:8px;color:rgba(134,239,172,0.6);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">LÍDER</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;margin-top:2px">${sorted[0]?.icon||'—'} ${sorted[0]?.name.split(' ')[0]||'—'}</div>
+          </div>
+          <div style="flex:1;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;text-align:center">
+            <div style="font-size:8px;color:rgba(134,239,172,0.6);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">MÁX PUNTOS</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#4ade80;margin-top:2px">${sorted[0]?getTotalPts(sorted[0].id):0}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${sorted.map((s,idx) => {
+      const p     = getStudentPoints(s.id);
+      const total = p.hours+p.progress+p.tasks;
+      const isMe  = s.id===loggedId;
+      const medal = idx<3 ? medals[idx] : `<span style="font-size:12px;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;font-weight:900">${idx+1}</span>`;
+      return `
+      <div class="pts-row" style="${isMe?'border-color:rgba(96,165,250,0.4);':''}">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <span style="font-size:20px;flex-shrink:0">${medal}</span>
+          <div style="width:36px;height:36px;border-radius:10px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${s.icon}</div>
+          <div style="flex:1">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase">${s.name}</div>
+          </div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:${total>0?'#4ade80':'#4b5563'};flex-shrink:0">${total}</div>
+        </div>
+        <div class="vr-row">
+          <span class="vr-lbl">⏱️ Horas</span>
+          <div class="vr-bg"><div class="vr-fill" style="background:#60a5fa;width:${Math.min(100,p.hours)}%" id="bar-h-${s.id}"></div></div>
+          ${isAdmin()
+            ?`<input class="vr-inp" type="number" value="${p.hours}" min="0" max="100" oninput="updatePts(${s.id},'hours',+this.value)">`
+            :`<span class="vr-num">${p.hours}</span>`}
+        </div>
+        <div class="vr-row">
+          <span class="vr-lbl">📈 Progreso</span>
+          <div class="vr-bg"><div class="vr-fill" style="background:#a78bfa;width:${Math.min(100,p.progress)}%" id="bar-p-${s.id}"></div></div>
+          ${isAdmin()
+            ?`<input class="vr-inp" type="number" value="${p.progress}" min="0" max="100" oninput="updatePts(${s.id},'progress',+this.value)">`
+            :`<span class="vr-num">${p.progress}</span>`}
+        </div>
+        <div class="vr-row">
+          <span class="vr-lbl">✅ Tareas</span>
+          <div class="vr-bg"><div class="vr-fill" style="background:#4ade80;width:${Math.min(100,p.tasks)}%" id="bar-t-${s.id}"></div></div>
+          ${isAdmin()
+            ?`<input class="vr-inp" type="number" value="${p.tasks}" min="0" max="100" oninput="updatePts(${s.id},'tasks',+this.value)">`
+            :`<span class="vr-num">${p.tasks}</span>`}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function vPuntosSetup() {}
+let _ptsTimer=null;
+function updatePts(studentId, field, value) {
+  const key=String(studentId);
+  if (!points[key]) points[key]={hours:0,progress:0,tasks:0};
+  points[key][field]=Math.max(0,Math.min(100,value||0));
+  // Update total display
+  const row=document.querySelector(`[id="bar-h-${studentId}"]`)?.closest('.pts-row');
+  if (row) {
+    const total=getTotalPts(studentId);
+    const totalEl=row.querySelector('[data-total]');
+    if (totalEl) totalEl.textContent=total;
+  }
+  clearTimeout(_ptsTimer);
+  _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },1000);
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW: COTIZADOR
+// ════════════════════════════════════════════════════════
+const COTIZ = {
+  type: null, duration: null, level: null, freq: 1
+};
+const COTIZ_PRICES = { individual:70, duo:50, group:40 };
+const COTIZ_DUR    = { 45:0.75, 60:1, 90:1.5 };
+const COTIZ_LVL    = { primaria:1, secundaria:1.1, uni:1.3 };
+
+function vCotizador() {
+  return `
+  <div style="padding:12px">
+    <div style="margin-bottom:14px">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1">🧮 COTIZADOR</div>
+      <div style="font-size:10px;color:#6b7280;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:2px">SOLO ADMIN · Precio por alumno/mes</div>
+    </div>
+
+    <div class="cotiz-blk">
+      <div class="cotiz-l">TIPO DE CLASE</div>
+      <div class="pills">
+        <div class="pill${COTIZ.type==='individual'?' psel':''}" onclick="setCotiz('type','individual')">👤 Individual</div>
+        <div class="pill${COTIZ.type==='duo'?' psel':''}" onclick="setCotiz('type','duo')">👥 Dúo (2-3)</div>
+        <div class="pill${COTIZ.type==='group'?' psel':''}" onclick="setCotiz('type','group')">👨‍👩‍👧 Grupo (4+)</div>
+      </div>
+    </div>
+
+    <div class="cotiz-blk">
+      <div class="cotiz-l">DURACIÓN POR SESIÓN</div>
+      <div class="pills">
+        <div class="pill${COTIZ.duration===45?' psel':''}" onclick="setCotiz('duration',45)">45 MIN</div>
+        <div class="pill${COTIZ.duration===60?' psel':''}" onclick="setCotiz('duration',60)">60 MIN</div>
+        <div class="pill${COTIZ.duration===90?' psel':''}" onclick="setCotiz('duration',90)">90 MIN</div>
+      </div>
+    </div>
+
+    <div class="cotiz-blk">
+      <div class="cotiz-l">NIVEL</div>
+      <div class="pills">
+        <div class="pill${COTIZ.level==='primaria'?' psel':''}" onclick="setCotiz('level','primaria')">🏫 Primaria</div>
+        <div class="pill${COTIZ.level==='secundaria'?' psel':''}" onclick="setCotiz('level','secundaria')">🎒 Secundaria</div>
+        <div class="pill${COTIZ.level==='uni'?' psel':''}" onclick="setCotiz('level','uni')">🎓 Universitario</div>
+      </div>
+    </div>
+
+    <div class="cotiz-blk">
+      <div class="cotiz-l">SESIONES POR SEMANA</div>
+      <div class="pills">
+        ${[1,2,3].map(n=>`<div class="pill${COTIZ.freq===n?' psel':''}" onclick="setCotiz('freq',${n})">${n}x / semana</div>`).join('')}
+      </div>
+    </div>
+
+    <div id="cotiz-result"></div>
+  </div>`;
+}
+function vCotizadorSetup() {
+  COTIZ.type=null; COTIZ.duration=null; COTIZ.level=null; COTIZ.freq=1;
+  calcCotiz();
+}
+function setCotiz(field, value) {
+  COTIZ[field]=value;
+  // Update pill UI
+  const maps = { type:['individual','duo','group'], duration:[45,60,90], level:['primaria','secundaria','uni'], freq:[1,2,3] };
+  document.querySelectorAll('.pill').forEach(el => {
+    // re-render is simpler
+  });
+  // Re-render view to update pill states
+  const app=document.getElementById('app');
+  app.innerHTML=`<div class="vw">${vCotizador()}</div>`;
+  vCotizadorSetup(); calcCotiz();
+}
+function calcCotiz() {
+  const res=document.getElementById('cotiz-result'); if (!res) return;
+  if (!COTIZ.type||!COTIZ.duration||!COTIZ.level) {
+    res.innerHTML=`<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900">SELECCIONA TODAS LAS OPCIONES</div>`;
+    return;
+  }
+  const basePrice   = COTIZ_PRICES[COTIZ.type] || 60;
+  const durMult     = COTIZ_DUR[COTIZ.duration] || 1;
+  const lvlMult     = COTIZ_LVL[COTIZ.level]    || 1;
+  const sessPerWeek = COTIZ.freq || 1;
+  const pricePerSess= Math.round(basePrice * durMult * lvlMult);
+  const monthly     = pricePerSess * sessPerWeek * 4;
+  const typeLabels  = { individual:'Individual', duo:'Dúo', group:'Grupo' };
+  const lvlLabels   = { primaria:'Primaria', secundaria:'Secundaria', uni:'Universitario' };
+  res.innerHTML=`
+  <div class="cotiz-res">
+    <div style="font-size:10px;color:rgba(147,197,253,0.6);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px">PRECIO MENSUAL ESTIMADO</div>
+    <div class="price-big">S/. ${monthly}</div>
+    <div class="price-lbl">por alumno · ${COTIZ.freq}x/sem · ${COTIZ.duration} min</div>
+    <div class="price-det">
+      Precio por sesión: <strong>S/. ${pricePerSess}</strong><br>
+      ${sessPerWeek} sesión${sessPerWeek>1?'es':''}/semana × 4 semanas = ${sessPerWeek*4} sesiones<br>
+      Tipo: ${typeLabels[COTIZ.type]} · Nivel: ${lvlLabels[COTIZ.level]}
+    </div>
+    <button onclick="copyCotizacion(${monthly},${pricePerSess})" style="margin-top:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:10px 20px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.15em;text-transform:uppercase">📋 COPIAR COTIZACIÓN</button>
+  </div>`;
+}
+function copyCotizacion(monthly, perSess) {
+  const typeLabels  = { individual:'Individual', duo:'Dúo (2-3 alumnos)', group:'Grupo (4+ alumnos)' };
+  const lvlLabels   = { primaria:'Primaria', secundaria:'Secundaria', uni:'Universitario' };
+  const text=`COTIZACIÓN MATHS LEVEL UP\n\nTipo de clase: ${typeLabels[COTIZ.type]||'-'}\nNivel: ${lvlLabels[COTIZ.level]||'-'}\nDuración por sesión: ${COTIZ.duration} minutos\nFrecuencia: ${COTIZ.freq} sesión${COTIZ.freq>1?'es':''} por semana\n\nPrecio por sesión: S/. ${perSess}\nTOTAL MENSUAL: S/. ${monthly}\n\n¡Contáctanos para más información!`;
+  navigator.clipboard.writeText(text).then(()=>showToast('Cotización copiada.','success')).catch(()=>showToast('No se pudo copiar.'));
+}
+
+// ════════════════════════════════════════════════════════
+// FIREBASE LISTENER + BOOT
+// ════════════════════════════════════════════════════════
+REF.onSnapshot(doc => {
+  const data = doc.exists ? doc.data() : {};
+  allocations = data.allocations || {};
+  overrides   = data.overrides   || {};
+  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
+  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
+  const lms   = data.lms || {};
+  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
+  points      = typeof lms.points==='object' ? lms.points : {};
+
+  if (!appReady) {
+    appReady = true;
+    document.getElementById('initial-loading').classList.add('hidden');
+    router();
+  } else {
+    // Live-update tablero if it's open
+    const hash = window.location.hash.slice(1);
+    if (hash === 'tablero') {
+      const loggedId = getLoggedId();
+      if (loggedId !== null) renderAll(loggedId);
+    }
+    if (hash === 'ranking')   vRankingSetup();
+    if (hash === 'numeros')   vNumerosSetup();
+    if (hash === 'dashboard') {
+      const app=document.getElementById('app');
+      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
+    }
+  }
+}, err => {
+  console.error('[Firebase]', err);
+  document.getElementById('initial-loading').classList.add('hidden');
+  appReady = true;
+  router();
+  showToast('No se pudo conectar a Firebase.');
+});
+</script>
+</body>
+</html>
