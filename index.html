@@ -374,20 +374,30 @@ function ripple(e, btn) {
   var LEGACY_MAP = { '/tablero': 'tablero', '/ranking': 'ranking', '/numeros': 'numeros' };
 
   // Compatibilidad con rutas antiguas (/tablero, /ranking, /numeros):
-  // redirige directo a la vista de estudiante con el hash correspondiente.
+  // redirige directo a la ruta limpia equivalente dentro de /student.
   var legacyView = LEGACY_MAP[location.pathname];
   if (legacyView) {
-    location.replace(STUDENT_PATH + '#' + legacyView);
+    location.replace(STUDENT_PATH + '/' + legacyView);
     return;
   }
 
   var iframe = null;
   var home = document.getElementById('home-view');
+  var studentRouteSynced = false;
+
+  // Extrae el nombre de vista de una ruta tipo /student/dashboard -> "dashboard"
+  function pathToView(pathname) {
+    if (pathname.indexOf(STUDENT_PATH + '/') === 0) {
+      return pathname.slice(STUDENT_PATH.length + 1).split('/')[0] || '';
+    }
+    return '';
+  }
 
   function ensureIframe() {
     if (!iframe) {
       iframe = document.createElement('iframe');
-      iframe.src = '/student.html' + (location.hash || '');
+      var initialView = pathToView(location.pathname);
+      iframe.src = '/student.html' + (initialView ? '?view=' + encodeURIComponent(initialView) : '');
       iframe.title = 'MATHS LEVEL UP';
       iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:5000;background:#050d1a;display:none;';
       document.body.appendChild(iframe);
@@ -407,6 +417,7 @@ function ripple(e, btn) {
     home.style.display = '';
     if (iframe) iframe.style.display = 'none';
     document.title = "easyMaths - Michel H'R";
+    studentRouteSynced = false;
     if (push) history.pushState({ view: 'home' }, '', '/');
   }
 
@@ -414,8 +425,37 @@ function ripple(e, btn) {
     return location.pathname.indexOf(STUDENT_PATH) === 0;
   }
 
+  // La app de estudiante (en el iframe) avisa por postMessage qué vista
+  // está mostrando; reflejamos eso en la URL visible como /student/<vista>
+  // sin recargar nada (pushState/replaceState).
+  window.addEventListener('message', function (e) {
+    if (e.origin !== location.origin) return;
+    var d = e.data;
+    if (!d || d.type !== 'student-route' || !d.view) return;
+
+    var newPath = STUDENT_PATH + '/' + d.view;
+    if (location.pathname !== newPath) {
+      if (!studentRouteSynced) {
+        history.replaceState({ view: 'student', route: d.view }, '', newPath);
+      } else {
+        history.pushState({ view: 'student', route: d.view }, '', newPath);
+      }
+    }
+    studentRouteSynced = true;
+    document.title = 'MATHS LEVEL UP';
+  });
+
   window.addEventListener('popstate', function () {
-    if (isStudentPath()) showStudent(false); else showHome(false);
+    if (isStudentPath()) {
+      showStudent(false);
+      if (iframe && iframe.contentWindow) {
+        var v = pathToView(location.pathname) || 'dashboard';
+        iframe.contentWindow.postMessage({ type: 'student-goto', view: v }, location.origin);
+      }
+      studentRouteSynced = true;
+    } else {
+      showHome(false);
+    }
   });
 
   document.addEventListener('DOMContentLoaded', function () {

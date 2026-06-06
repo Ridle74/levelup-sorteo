@@ -203,6 +203,28 @@ let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[] }]
 let points      = {};   // { "1":{ hours:0, progress:0, tasks:0 }, ... }
 let appReady    = false;
 let clockTimer  = null;
+let currentView = (new URLSearchParams(location.search).get('view')) || 'login';
+
+// Notifica a la página padre (index.html) la vista actual para que
+// actualice la URL visible a /student/<vista> sin recargar nada.
+function notifyParentRoute(view) {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'student-route', view: view }, location.origin);
+    }
+  } catch (e) {}
+}
+
+// Permite que el padre (al navegar con atrás/adelante) le diga a esta
+// app interna qué vista mostrar, sin pasar por la URL del iframe.
+window.addEventListener('message', function (e) {
+  if (e.origin !== location.origin) return;
+  var d = e.data;
+  if (d && d.type === 'student-goto' && typeof d.view === 'string' && d.view !== currentView) {
+    currentView = d.view;
+    router();
+  }
+});
 
 // ════════════════════════════════════════════════════════
 // SESSION
@@ -369,11 +391,11 @@ function descargarImagen(canvas, nombre='imagen.png') {
 const PUBLIC_ROUTES = new Set(['login','ranking','numeros']);
 const ADMIN_ROUTES  = new Set(['cotizador']);
 
-function go(hash) { window.location.hash = hash; }
+function go(view) { currentView = view; router(); }
 
 function router() {
   if (!appReady) return;
-  const hash     = window.location.hash.slice(1) || 'login';
+  const hash     = currentView || 'login';
   const loggedId = getLoggedId();
   const app      = document.getElementById('app');
   const nav      = document.getElementById('bottom-nav');
@@ -408,6 +430,8 @@ function router() {
     tareas:vTareasSetup, puntos:vPuntosSetup, cotizador:vCotizadorSetup
   };
   if (setup[hash]) setup[hash]();
+
+  notifyParentRoute(hash);
 }
 
 function buildNav(active) {
@@ -434,7 +458,6 @@ function buildNav(active) {
   ).join('');
 }
 
-window.addEventListener('hashchange', router);
 
 // ════════════════════════════════════════════════════════
 // VIEW: LOGIN
@@ -1466,7 +1489,7 @@ REF.onSnapshot(doc => {
     router();
   } else {
     // Live-update tablero if it's open
-    const hash = window.location.hash.slice(1);
+    const hash = currentView;
     if (hash === 'tablero') {
       const loggedId = getLoggedId();
       if (loggedId !== null) renderAll(loggedId);
