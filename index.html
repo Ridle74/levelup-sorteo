@@ -371,13 +371,23 @@ function ripple(e, btn) {
 <script>
 (function () {
   var STUDENT_PATH = '/student';
+  var LEGACY_MAP = { '/tablero': 'tablero', '/ranking': 'ranking', '/numeros': 'numeros' };
+
+  // Compatibilidad con rutas antiguas (/tablero, /ranking, /numeros):
+  // redirige directo a la vista de estudiante con el hash correspondiente.
+  var legacyView = LEGACY_MAP[location.pathname];
+  if (legacyView) {
+    location.replace(STUDENT_PATH + '#' + legacyView);
+    return;
+  }
+
   var iframe = null;
   var home = document.getElementById('home-view');
 
   function ensureIframe() {
     if (!iframe) {
       iframe = document.createElement('iframe');
-      iframe.src = '/student.html';
+      iframe.src = '/student.html' + (location.hash || '');
       iframe.title = 'MATHS LEVEL UP';
       iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:5000;background:#050d1a;display:none;';
       document.body.appendChild(iframe);
