@@ -233,7 +233,7 @@ let DATA = JSON.parse(JSON.stringify(SEED));
 DATA.adminPin = ADMIN_PIN_DEFAULT;
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 let appReady = false;
 let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
@@ -274,10 +274,17 @@ function loadData() {
         DATA.cycleEnd        = SEED.cycleEnd;
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
-        REF.set({
+        // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
+        // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
+        // explícitamente con FieldValue.delete() antes de escribir los nuevos.
+        const delFields = {};
+        Object.keys(d.parents  || {}).forEach(pid => { if (!(pid in SEED.parents))  delFields['parents.'+pid]  = firebase.firestore.FieldValue.delete(); });
+        Object.keys(d.students || {}).forEach(sid => { if (!(sid in SEED.students)) delFields['students.'+sid] = firebase.firestore.FieldValue.delete(); });
+        const cleanup = Object.keys(delFields).length ? REF.update(delFields).catch(()=>{}) : Promise.resolve();
+        cleanup.then(() => REF.set({
           parents: SEED.parents, students: SEED.students, sessions: SEED.sessions,
           cycleName: SEED.cycleName, cycleEnd: SEED.cycleEnd, seedVersion: SEED_VERSION
-        }, { merge:true }).catch(()=>{});
+        }, { merge:true })).catch(()=>{});
       } else {
         DATA.parents         = d.parents         || SEED.parents;
         DATA.students        = d.students        || SEED.students;
@@ -819,6 +826,9 @@ function vAdminSolicitudes() {
 
 function vAdminCuentas() {
   const parents = Object.entries(DATA.parents);
+  const assignedIds = new Set();
+  parents.forEach(([, p]) => (p.children||[]).forEach(cid => assignedIds.add(String(cid))));
+  const orphanStudents = Object.entries(DATA.students).filter(([sid]) => !assignedIds.has(String(sid)));
   return `
   <div style="padding:16px;max-width:640px;margin:0 auto">
     <div class="sec-lbl">Clave del administrador</div>
@@ -831,6 +841,17 @@ function vAdminCuentas() {
         <button class="btn-grn" style="width:auto;padding:11px 18px" onclick="changeAdminPin()">Guardar</button>
       </div>
     </div>
+
+    ${orphanStudents.length ? `
+    <div class="sec-lbl" style="margin-top:20px;color:#fca5a5">Alumnos sin padre/madre asignado (${orphanStudents.length})</div>
+    <div class="req-card" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3)">
+      <p style="font-size:11px;color:rgba(255,255,255,0.55);line-height:1.6;margin:0 0 8px">
+        Estos alumnos no aparecen en la lista de hijos de ninguna cuenta — revisa si falta crear o vincular su cuenta de padre/madre.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${orphanStudents.map(([sid, s]) => `<span class="child-chip" style="border-color:${s.color}55;color:${s.color}">${s.icon} ${s.name}</span>`).join('')}
+      </div>
+    </div>` : ''}
 
     <div class="sec-lbl" style="margin-top:20px">Familias registradas (${parents.length})</div>
     ${parents.map(([id, p]) => {
