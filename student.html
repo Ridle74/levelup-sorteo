@@ -161,6 +161,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db  = firebase.firestore();
 const REF = db.collection('sorteo').doc('main');
+// Documento compartido de autenticación admin — el MISMO usado por /padres,
+// así que cambiar la clave admin aquí también la cambia allá (y viceversa).
+const AUTH_REF = db.collection('shared').doc('auth');
 
 // ════════════════════════════════════════════════════════
 // CONSTANTS
@@ -1364,6 +1367,12 @@ function updatePts(studentId, field, value) {
 // ════════════════════════════════════════════════════════
 // FIREBASE LISTENER + BOOT
 // ════════════════════════════════════════════════════════
+// Mantiene la clave del admin sincronizada con /padres (mismo documento compartido).
+AUTH_REF.onSnapshot(doc => {
+  const a = doc.exists ? doc.data() : {};
+  ADMIN.pin = a.adminPin || "80808";
+}, err => console.error('[Firebase auth]', err));
+
 REF.onSnapshot(doc => {
   const data = doc.exists ? doc.data() : {};
   allocations = data.allocations || {};

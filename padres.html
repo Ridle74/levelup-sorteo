@@ -103,6 +103,9 @@ firebase.initializeApp(firebaseConfig);
 const db  = firebase.firestore();
 // Documento dedicado para el portal de padres (no toca 'sorteo/main').
 const REF = db.collection('padres').doc('main');
+// Documento compartido de autenticación admin — el MISMO usado por /student,
+// así que cambiar la clave admin aquí también la cambia allá (y viceversa).
+const AUTH_REF = db.collection('shared').doc('auth');
 
 // ════════════════════════════════════════════════════════
 // ESQUEMA DE DATOS (diseño)
@@ -189,8 +192,12 @@ const SEED = {
     { id:24, studentId:2,  day:0, start:"10:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
     { id:25, studentId:13, day:0, start:"11:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" }
   ],
-  requests: []
+  requests: [],
+  // Solicitudes de creación de cuenta hechas por padres nuevos (auto-registro).
+  // El admin las revisa y aprueba/rechaza desde el panel de administración.
+  accountRequests: []
 };
+const ADMIN_PIN_DEFAULT = '80808'; // misma clave admin que /student (editable luego desde aquí)
 const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const DAY_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
@@ -202,16 +209,25 @@ function setLoggedParent(id) {
   if (id === null) localStorage.removeItem('padresLoggedId');
   else localStorage.setItem('padresLoggedId', String(id));
 }
+// Sesión admin — también persistente (mismo dispositivo queda con acceso).
+function isLoggedAdmin() { return localStorage.getItem('padresAdmin') === '1'; }
+function setLoggedAdmin(on) {
+  if (on) localStorage.setItem('padresAdmin', '1');
+  else localStorage.removeItem('padresAdmin');
+}
 
 // ════════════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════════════
 let DATA = JSON.parse(JSON.stringify(SEED));
+DATA.adminPin = ADMIN_PIN_DEFAULT;
 let appReady = false;
 let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
 let selectedChild = null;      // studentId actualmente mostrado en calendario
 let currentView = 'login';
+let loginTab = 'familia';      // 'familia' | 'crear'  (pestañas de la pantalla de login)
+let editingParentId = null;    // id de padre cuyo PIN se está editando en el panel admin
 
 function startOfWeek(d) {
   const x = new Date(d); const day = x.getDay();
@@ -224,28 +240,56 @@ function fmtDM(d) { return d.toLocaleDateString('es-PE',{ day:'numeric', month:'
 // FIREBASE LOAD / SAVE
 // ════════════════════════════════════════════════════════
 function loadData() {
+  let pending = 2;
+  const done = () => { if (--pending === 0) { appReady = true; boot(); } };
+
   REF.get().then(snap => {
     if (snap.exists) {
       const d = snap.data();
-      DATA.parents  = d.parents  || SEED.parents;
-      DATA.students = d.students || SEED.students;
-      DATA.sessions = d.sessions || SEED.sessions;
-      DATA.requests = d.requests || [];
+      DATA.parents         = d.parents         || SEED.parents;
+      DATA.students        = d.students        || SEED.students;
+      DATA.sessions        = d.sessions        || SEED.sessions;
+      DATA.requests        = d.requests        || [];
+      DATA.accountRequests = d.accountRequests || [];
     } else {
       // Primera vez: sembrar Firestore con datos base.
       REF.set(SEED).catch(()=>{});
     }
-    appReady = true;
-    boot();
+    done();
   }).catch(e => {
     console.error(e);
-    appReady = true; // seguimos con SEED local si Firestore falla
-    boot();
+    done(); // seguimos con SEED local si Firestore falla
+  });
+
+  // Clave admin compartida con /student — un solo documento, una sola clave.
+  AUTH_REF.get().then(snap => {
+    if (snap.exists && snap.data().adminPin) {
+      DATA.adminPin = snap.data().adminPin;
+    } else {
+      AUTH_REF.set({ adminPin: ADMIN_PIN_DEFAULT }, { merge:true }).catch(()=>{});
+      DATA.adminPin = ADMIN_PIN_DEFAULT;
+    }
+    done();
+  }).catch(e => {
+    console.error(e);
+    DATA.adminPin = ADMIN_PIN_DEFAULT;
+    done();
   });
 }
 function saveRequests() {
   REF.set({ requests: DATA.requests }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar la solicitud.'); });
+}
+function saveAccountRequests() {
+  REF.set({ accountRequests: DATA.accountRequests }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar la solicitud.'); });
+}
+function saveParents() {
+  REF.set({ parents: DATA.parents }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar los cambios.'); });
+}
+function saveAdminPin(newPin) {
+  return AUTH_REF.set({ adminPin: newPin }, { merge:true }).then(() => { DATA.adminPin = newPin; });
 }
 
 // ════════════════════════════════════════════════════════
@@ -267,25 +311,37 @@ function go(view) { currentView = view; render(); }
 
 function render() {
   if (!appReady) return;
-  const parentId = getLoggedParent();
+  const parentId  = getLoggedParent();
+  const adminMode = isLoggedAdmin();
   const app = document.getElementById('app');
   const nav = document.getElementById('bottom-nav');
 
-  if (parentId === null && currentView !== 'login') currentView = 'login';
-  if (parentId !== null && currentView === 'login') currentView = 'inicio';
+  const loggedIn = adminMode || parentId !== null;
+  if (!loggedIn && currentView !== 'login') currentView = 'login';
+  if (loggedIn && currentView === 'login') currentView = adminMode ? 'a-inicio' : 'inicio';
 
-  const views = { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar };
-  app.innerHTML = `<div class="vw">${(views[currentView]||vLogin)()}</div>`;
+  const views = adminMode
+    ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes }
+    : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar };
+  app.innerHTML = `<div class="vw">${(views[currentView]||(adminMode?vAdminInicio:vLogin))()}</div>`;
 
-  const showNav = parentId !== null;
-  document.body.classList.toggle('nav-visible', showNav);
-  if (showNav) {
+  document.body.classList.toggle('nav-visible', loggedIn);
+  if (loggedIn) {
     nav.classList.add('visible');
-    nav.querySelector('#nav-row').innerHTML = [
-      {r:'inicio',     i:'🏠', l:'Inicio'},
-      {r:'calendario', i:'📅', l:'Calendario'},
-      {r:'solicitar',  i:'➕', l:'Solicitar'}
-    ].map(n => `<button class="nav-btn${currentView===n.r?' active':''}" onclick="go('${n.r}')"><span class="ni">${n.i}</span><span>${n.l}</span></button>`).join('');
+    const navItems = adminMode
+      ? [
+          {r:'a-inicio',      i:'🛠️', l:'Inicio'},
+          {r:'a-solicitudes', i:'📥', l:'Solicitudes'},
+          {r:'a-cuentas',     i:'🔑', l:'Cuentas'}
+        ]
+      : [
+          {r:'inicio',     i:'🏠', l:'Inicio'},
+          {r:'calendario', i:'📅', l:'Calendario'},
+          {r:'solicitar',  i:'➕', l:'Solicitar'}
+        ];
+    nav.querySelector('#nav-row').innerHTML = navItems.map(n =>
+      `<button class="nav-btn${currentView===n.r?' active':''}" onclick="go('${n.r}')"><span class="ni">${n.i}</span><span>${n.l}</span></button>`
+    ).join('');
   } else {
     nav.classList.remove('visible');
   }
@@ -298,6 +354,12 @@ function bindView() {
     if (form) form.addEventListener('submit', e => {
       e.preventDefault();
       const pin = document.getElementById('login-pin').value.trim();
+      if (pin === DATA.adminPin) {
+        setLoggedAdmin(true);
+        currentView = 'a-inicio';
+        render();
+        return;
+      }
       const match = Object.entries(DATA.parents).find(([id,p]) => p.pin === pin);
       if (match) {
         setLoggedParent(match[0]);
@@ -308,10 +370,40 @@ function bindView() {
         document.getElementById('login-err').style.display = 'block';
       }
     });
+    const cform = document.getElementById('crear-form');
+    if (cform) cform.addEventListener('submit', e => {
+      e.preventDefault();
+      const reg = {
+        id: Date.now(),
+        parentName: document.getElementById('cr-parent').value.trim(),
+        phone:      document.getElementById('cr-phone').value.trim(),
+        childFirstName:    document.getElementById('cr-cname').value.trim(),
+        childFirstSurname: document.getElementById('cr-csurname').value.trim(),
+        note: document.getElementById('cr-note').value.trim(),
+        status: 'pendiente',
+        createdAt: new Date().toISOString()
+      };
+      if (!reg.parentName || !reg.childFirstName || !reg.childFirstSurname) return;
+      DATA.accountRequests.push(reg);
+      saveAccountRequests();
+      showToast('Solicitud enviada. El profesor revisará tus datos y activará tu cuenta.', 'success');
+      e.target.reset();
+      loginTab = 'familia';
+      render();
+    });
   }
 }
 
-function logout() { setLoggedParent(null); selectedChild = null; currentView = 'login'; render(); }
+function setLoginTab(t) { loginTab = t; render(); }
+
+function logout() {
+  setLoggedParent(null);
+  setLoggedAdmin(false);
+  selectedChild = null;
+  editingParentId = null;
+  currentView = 'login';
+  render();
+}
 function selectChild(id) { selectedChild = id; render(); }
 function setCalMode(m) { calMode = m; render(); }
 function calStep(dir) {
@@ -327,15 +419,39 @@ function vLogin() {
   return `
   <div class="login-wrap">
     <div class="login-logo"><div class="lt">MATHS LEVEL UP</div><div class="ll">Portal de Padres</div></div>
+    <div class="tab-row">
+      <button class="${loginTab==='familia'?'on':''}" onclick="setLoginTab('familia')">Ya tengo cuenta</button>
+      <button class="${loginTab==='crear'?'on':''}" onclick="setLoginTab('crear')">Crear cuenta</button>
+    </div>
+    ${loginTab === 'familia' ? `
     <form id="login-form">
-      <label class="field-label">Clave de familia (4 dígitos)</label>
-      <input class="fsm" id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="• • • •" autocomplete="off" required>
+      <label class="field-label">Clave de acceso</label>
+      <input class="fsm" id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="• • • •" autocomplete="off" required>
       <div id="login-err" style="color:#f87171;font-size:11px;font-weight:700;text-align:center;display:none;margin-bottom:10px">Clave incorrecta. Verifica con tu profesor.</div>
       <button class="btn-grn" type="submit">Ingresar</button>
     </form>
     <p style="text-align:center;font-size:11px;color:rgba(255,255,255,0.35);margin-top:18px;line-height:1.6">
       El acceso queda guardado en este dispositivo: la próxima vez que entres a "Padres" verás tu cuenta directamente.
-    </p>
+    </p>` : `
+    <form id="crear-form">
+      <p style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:14px">
+        Completa estos datos para solicitar tu cuenta de familia. El profesor revisará la solicitud, verificará a tu hijo(a) en su lista de alumnos y te enviará tu clave de acceso.
+      </p>
+      <label class="field-label">Tu nombre (padre / madre / apoderado)</label>
+      <input class="fsm" id="cr-parent" type="text" placeholder="Ej: Sra. Rodríguez" autocomplete="off" required>
+      <label class="field-label">Teléfono / WhatsApp (opcional)</label>
+      <input class="fsm" id="cr-phone" type="tel" placeholder="Ej: 999 999 999" autocomplete="off">
+      <label class="field-label">Primer nombre del hijo(a)</label>
+      <input class="fsm" id="cr-cname" type="text" placeholder="Ej: Mateo" autocomplete="off" required>
+      <label class="field-label">Primer apellido del hijo(a)</label>
+      <input class="fsm" id="cr-csurname" type="text" placeholder="Ej: Ríos" autocomplete="off" required>
+      <label class="field-label">Comentario (opcional)</label>
+      <textarea class="fsm" id="cr-note" rows="2" placeholder="Ej: mi hijo ya lleva clases los martes con el profesor"></textarea>
+      <button class="btn-grn" type="submit">Solicitar acceso</button>
+    </form>
+    <p style="text-align:center;font-size:11px;color:rgba(255,255,255,0.35);margin-top:18px;line-height:1.6">
+      Tu solicitud quedará pendiente hasta que el profesor la apruebe y te entregue tu clave de acceso.
+    </p>`}
   </div>`;
 }
 
@@ -500,6 +616,212 @@ function vSolicitar() {
       </div>`;
     }).join('') : `<div class="cal-empty">Aún no has hecho solicitudes.</div>`}
   </div>`;
+}
+
+// ════════════════════════════════════════════════════════
+// ADMIN — helpers de datos
+// ════════════════════════════════════════════════════════
+function nextStudentId() {
+  const ids = Object.keys(DATA.students).map(Number).filter(n=>!isNaN(n));
+  return (ids.length ? Math.max(...ids) : 0) + 1;
+}
+function genPin(len=4) {
+  let p; let tries=0;
+  do {
+    p = String(Math.floor(Math.random()*Math.pow(10,len))).padStart(len,'0');
+    tries++;
+  } while (tries<30 && (p===DATA.adminPin || Object.values(DATA.parents).some(par=>par.pin===p)));
+  return p;
+}
+function findStudentByName(first, last) {
+  const f = first.trim().toLowerCase(), l = last.trim().toLowerCase();
+  const entries = Object.entries(DATA.students);
+  for (const [id, s] of entries) {
+    const parts = s.name.toLowerCase().split(/\s+/);
+    if (parts.includes(f) && parts.includes(l)) return parseInt(id);
+  }
+  return null;
+}
+
+function approveAccountRequest(reqId) {
+  const reg = DATA.accountRequests.find(r => r.id === reqId);
+  if (!reg || reg.status !== 'pendiente') return;
+
+  let studentId = findStudentByName(reg.childFirstName, reg.childFirstSurname);
+  let createdNew = false;
+  if (!studentId) {
+    studentId = nextStudentId();
+    DATA.students[studentId] = {
+      name: `${reg.childFirstName} ${reg.childFirstSurname}`.trim(),
+      color: '#64748b', icon: '👤', modality: 'Virtual'
+    };
+    createdNew = true;
+  }
+
+  const pin = genPin(4);
+  const parentId = 'fam_' + reg.id;
+  DATA.parents[parentId] = { name: reg.parentName, pin, phone: reg.phone || '', children: [studentId] };
+
+  reg.status = 'aprobada';
+  reg.assignedParentId = parentId;
+  reg.assignedStudentId = studentId;
+  reg.assignedPin = pin;
+  reg.resolvedAt = new Date().toISOString();
+
+  REF.set({ parents: DATA.parents, students: DATA.students, accountRequests: DATA.accountRequests }, { merge:true })
+    .then(() => showToast(`Cuenta creada. Clave para ${reg.parentName}: ${pin}${createdNew?' (se creó un nuevo alumno en la lista)':''}`, 'success'))
+    .catch(e => { console.error(e); showToast('Error al crear la cuenta.'); });
+  render();
+}
+function rejectAccountRequest(reqId) {
+  const reg = DATA.accountRequests.find(r => r.id === reqId);
+  if (!reg || reg.status !== 'pendiente') return;
+  reg.status = 'rechazada';
+  reg.resolvedAt = new Date().toISOString();
+  saveAccountRequests();
+  showToast('Solicitud marcada como rechazada.', 'success');
+  render();
+}
+function setClassRequestStatus(reqId, status) {
+  const r = DATA.requests.find(x => x.id === reqId);
+  if (!r) return;
+  r.status = status;
+  saveRequests();
+  showToast(status==='aprobada' ? 'Solicitud de clase aprobada.' : 'Solicitud marcada como no disponible.', 'success');
+  render();
+}
+function startEditParentPin(id) { editingParentId = id; render(); }
+function cancelEditParentPin() { editingParentId = null; render(); }
+function saveParentPin(id) {
+  const input = document.getElementById('edit-pin-' + id);
+  if (!input) return;
+  const val = input.value.trim();
+  if (!/^\d{4,6}$/.test(val)) { showToast('La clave debe tener entre 4 y 6 dígitos.'); return; }
+  DATA.parents[id].pin = val;
+  saveParents();
+  editingParentId = null;
+  showToast('Clave actualizada.', 'success');
+  render();
+}
+
+// ════════════════════════════════════════════════════════
+// ADMIN — VISTAS
+// ════════════════════════════════════════════════════════
+function vAdminInicio() {
+  const pendCuentas = DATA.accountRequests.filter(r => r.status==='pendiente').length;
+  const pendClases  = DATA.requests.filter(r => r.status==='pendiente').length;
+  const totalFam    = Object.keys(DATA.parents).length;
+  const totalAlum   = Object.keys(DATA.students).length;
+  return `
+  <div style="padding:16px;max-width:600px;margin:0 auto">
+    <div class="dash-hero">
+      <div style="position:relative;z-index:1">
+        <div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.7)">Modo administrador</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-top:2px">Panel del profesor</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:6px">${totalFam} familias · ${totalAlum} alumnos registrados</div>
+      </div>
+    </div>
+
+    <div class="sec-lbl">Pendientes por revisar</div>
+    <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">📝</span>Solicitudes de cuenta nuevas<span class="req-status pend" style="margin-left:auto">${pendCuentas}</span></div>
+    <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">🗓️</span>Solicitudes de clase adicional<span class="req-status pend" style="margin-left:auto">${pendClases}</span></div>
+    <div class="dash-link" onclick="go('a-cuentas')"><span class="dl-ico">🔑</span>Cuentas, claves y contraseñas<span class="dl-arr">›</span></div>
+    <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
+  </div>`;
+}
+
+function vAdminSolicitudes() {
+  const statusLabel = { pendiente:'Pendiente', aprobada:'Aprobada', rechazada:'Rechazada' };
+  const statusClass = { pendiente:'pend', aprobada:'appr', rechazada:'rej' };
+  const cuentas = DATA.accountRequests.slice().reverse();
+  const clases  = DATA.requests.slice().reverse();
+
+  return `
+  <div style="padding:16px;max-width:640px;margin:0 auto">
+    <div class="sec-lbl">Solicitudes de cuenta (auto-registro de padres)</div>
+    ${cuentas.length ? cuentas.map(r => `
+      <div class="req-list-item" style="align-items:flex-start">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${r.parentName}</div>
+          <div class="cs-meta" style="margin-top:3px">Hijo(a): ${r.childFirstName} ${r.childFirstSurname}${r.phone?' · 📱 '+r.phone:''}</div>
+          ${r.note?`<div class="cs-meta" style="margin-top:2px;color:rgba(255,255,255,0.4)">"${r.note}"</div>`:''}
+          ${r.status==='aprobada' ? `<div class="cs-meta" style="margin-top:4px;color:#86efac">Clave asignada: <strong>${r.assignedPin}</strong></div>` : ''}
+          ${r.status==='pendiente' ? `
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="approveAccountRequest(${r.id})">✓ Aprobar y crear cuenta</button>
+              <button class="btn-ghost" style="margin-top:0;padding:8px 14px;font-size:11px;width:auto" onclick="rejectAccountRequest(${r.id})">✕ Rechazar</button>
+            </div>` : ''}
+        </div>
+        <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
+      </div>`).join('') : `<div class="cal-empty">No hay solicitudes de cuenta.</div>`}
+
+    <div class="sec-lbl" style="margin-top:22px">Solicitudes de clase adicional</div>
+    ${clases.length ? clases.map(r => {
+      const st = DATA.students[r.studentId];
+      const par = DATA.parents[r.parentId];
+      return `<div class="req-list-item" style="align-items:flex-start">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${st?st.icon:''} ${st?st.name:''} · ${DAY_NAMES[r.day]} ${r.start}</div>
+          <div class="cs-meta" style="margin-top:3px">${r.dur} min · ${r.modality}${par?' · Familia: '+par.name:''}${r.note?' · '+r.note:''}</div>
+          ${r.status==='pendiente' ? `
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="setClassRequestStatus(${r.id},'aprobada')">✓ Aprobar</button>
+              <button class="btn-ghost" style="margin-top:0;padding:8px 14px;font-size:11px;width:auto" onclick="setClassRequestStatus(${r.id},'rechazada')">✕ No disponible</button>
+            </div>` : ''}
+        </div>
+        <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
+      </div>`;
+    }).join('') : `<div class="cal-empty">No hay solicitudes de clase.</div>`}
+  </div>`;
+}
+
+function vAdminCuentas() {
+  const parents = Object.entries(DATA.parents);
+  return `
+  <div style="padding:16px;max-width:640px;margin:0 auto">
+    <div class="sec-lbl">Clave del administrador</div>
+    <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.2)">
+      <p style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6;margin:0 0 10px">
+        Esta es la MISMA clave que usas para entrar como administrador en el portal de Estudiantes (/student). Si la cambias aquí, también cambia allá.
+      </p>
+      <div style="display:flex;gap:8px">
+        <input class="fsm" id="admin-pin-new" type="text" inputmode="numeric" maxlength="6" placeholder="Nueva clave admin" style="margin-bottom:0">
+        <button class="btn-grn" style="width:auto;padding:11px 18px" onclick="changeAdminPin()">Guardar</button>
+      </div>
+    </div>
+
+    <div class="sec-lbl" style="margin-top:20px">Familias registradas (${parents.length})</div>
+    ${parents.map(([id, p]) => {
+      const kids = (p.children||[]).map(cid => DATA.students[cid]).filter(Boolean);
+      const editing = editingParentId === id;
+      return `<div class="req-list-item" style="align-items:flex-start">
+        <div style="flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${p.name}</div>
+          <div class="cs-meta" style="margin-top:3px">${kids.map(k=>k.icon+' '+k.name).join(' · ')||'Sin hijos asignados'}${p.phone?' · 📱 '+p.phone:''}</div>
+          ${editing ? `
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <input class="fsm" id="edit-pin-${id}" type="text" inputmode="numeric" maxlength="6" value="${p.pin}" style="margin-bottom:0">
+              <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveParentPin('${id}')">Guardar</button>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditParentPin()">Cancelar</button>
+            </div>` : `
+            <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
+              <span class="cs-meta">Clave actual: <strong style="color:#86efac">${p.pin}</strong></span>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:7px 14px;font-size:10px" onclick="startEditParentPin('${id}')">✏️ Cambiar clave</button>
+            </div>`}
+        </div>
+      </div>`;
+    }).join('')}
+    <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
+  </div>`;
+}
+function changeAdminPin() {
+  const input = document.getElementById('admin-pin-new');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!/^\d{4,6}$/.test(val)) { showToast('La clave debe tener entre 4 y 6 dígitos.'); return; }
+  saveAdminPin(val)
+    .then(() => { showToast('Clave de administrador actualizada (válida también en /student).', 'success'); render(); })
+    .catch(e => { console.error(e); showToast('Error al guardar la nueva clave.'); });
 }
 
 // hook the request form after render
