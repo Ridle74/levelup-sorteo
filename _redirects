@@ -1,1 +1,6 @@
-/* /index.html 200
+/tablero   /student/tablero   301
+/ranking   /student/ranking   301
+/numeros   /student/numeros   301
+/student   /student.html      200
+/student/* /student.html      200
+/*         /index.html        200

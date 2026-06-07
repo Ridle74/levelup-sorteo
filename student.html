@@ -127,14 +127,6 @@ textarea.fsm { resize:none; height:64px; }
 </head>
 <body>
 
-<!-- PATH → HASH redirect (backward compat) -->
-<script>
-  (function(){
-    var m={'/tablero':'tablero','/ranking':'ranking','/numeros':'numeros'};
-    var r=m[location.pathname]; if(r) location.replace('/#'+r);
-  })();
-</script>
-
 <!-- INITIAL LOADING -->
 <div id="initial-loading">
   <div class="loading-spinner"></div>
@@ -203,27 +195,22 @@ let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[] }]
 let points      = {};   // { "1":{ hours:0, progress:0, tasks:0 }, ... }
 let appReady    = false;
 let clockTimer  = null;
-let currentView = (new URLSearchParams(location.search).get('view')) || 'login';
-
-// Notifica a la página padre (index.html) la vista actual para que
-// actualice la URL visible a /student/<vista> sin recargar nada.
-function notifyParentRoute(view) {
-  try {
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: 'student-route', view: view }, location.origin);
-    }
-  } catch (e) {}
+// La vista actual se obtiene directo de la URL: /student/<vista>
+// (también acepta ?view=<vista> por compatibilidad).
+function viewFromLocation() {
+  var m = location.pathname.match(/^\/student\/([^\/?#]+)/);
+  if (m && m[1]) return decodeURIComponent(m[1]);
+  var qp = new URLSearchParams(location.search).get('view');
+  return qp || 'login';
 }
 
-// Permite que el padre (al navegar con atrás/adelante) le diga a esta
-// app interna qué vista mostrar, sin pasar por la URL del iframe.
-window.addEventListener('message', function (e) {
-  if (e.origin !== location.origin) return;
-  var d = e.data;
-  if (d && d.type === 'student-goto' && typeof d.view === 'string' && d.view !== currentView) {
-    currentView = d.view;
-    router();
-  }
+let currentView = viewFromLocation();
+
+// Atrás/adelante del navegador: releer la vista desde la URL y renderizar
+// sin recargar la página.
+window.addEventListener('popstate', function () {
+  currentView = viewFromLocation();
+  router();
 });
 
 // ════════════════════════════════════════════════════════
@@ -391,7 +378,12 @@ function descargarImagen(canvas, nombre='imagen.png') {
 const PUBLIC_ROUTES = new Set(['login','ranking','numeros']);
 const ADMIN_ROUTES  = new Set(['cotizador']);
 
-function go(view) { currentView = view; router(); }
+function go(view) {
+  currentView = view;
+  var path = '/student/' + view;
+  if (location.pathname !== path) history.pushState({ view: view }, '', path);
+  router();
+}
 
 function router() {
   if (!appReady) return;
@@ -431,7 +423,12 @@ function router() {
   };
   if (setup[hash]) setup[hash]();
 
-  notifyParentRoute(hash);
+  // Mantiene la URL sincronizada con la vista resuelta (p.ej. si el guard
+  // de autenticación cambió la vista a 'login'), sin crear historial extra.
+  var syncedPath = '/student/' + hash;
+  if (location.pathname !== syncedPath) {
+    history.replaceState({ view: hash }, '', syncedPath);
+  }
 }
 
 function buildNav(active) {

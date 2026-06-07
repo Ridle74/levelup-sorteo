@@ -2,17 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" id="viewport-meta" content="width=1366">
-<script>
-  // Evita el "flash" de viewport incorrecto: si la ruta es /student(...),
-  // usamos viewport móvil estándar desde el inicio; si es la landing, el fijo de 1366.
-  (function () {
-    var vp = document.getElementById('viewport-meta');
-    if (vp && location.pathname.indexOf('/student') === 0) {
-      vp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-    }
-  })();
-</script>
+<meta name="viewport" content="width=1366">
 <title>easyMaths - Michel H'R</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -380,119 +370,19 @@ function ripple(e, btn) {
 
 <script>
 (function () {
-  var STUDENT_PATH = '/student';
-  var LEGACY_MAP = { '/tablero': 'tablero', '/ranking': 'ranking', '/numeros': 'numeros' };
-
-  // Compatibilidad con rutas antiguas (/tablero, /ranking, /numeros):
-  // redirige directo a la ruta limpia equivalente dentro de /student.
-  var legacyView = LEGACY_MAP[location.pathname];
-  if (legacyView) {
-    location.replace(STUDENT_PATH + '/' + legacyView);
-    return;
-  }
-
-  var iframe = null;
-  var home = document.getElementById('home-view');
-  var studentRouteSynced = false;
-  var viewportMeta = document.getElementById('viewport-meta');
-  var HOME_VIEWPORT = 'width=1366';
-  var STUDENT_VIEWPORT = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-
-  function setViewport(content) {
-    if (viewportMeta && viewportMeta.getAttribute('content') !== content) {
-      viewportMeta.setAttribute('content', content);
-    }
-  }
-
-  // Extrae el nombre de vista de una ruta tipo /student/dashboard -> "dashboard"
-  function pathToView(pathname) {
-    if (pathname.indexOf(STUDENT_PATH + '/') === 0) {
-      return pathname.slice(STUDENT_PATH.length + 1).split('/')[0] || '';
-    }
-    return '';
-  }
-
-  function ensureIframe() {
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      var initialView = pathToView(location.pathname);
-      iframe.src = '/student.html' + (initialView ? '?view=' + encodeURIComponent(initialView) : '');
-      iframe.title = 'MATHS LEVEL UP';
-      iframe.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;border:0;z-index:5000;background:#050d1a;display:none;';
-      document.body.appendChild(iframe);
-    }
-    return iframe;
-  }
-
-  function showStudent(push) {
-    ensureIframe();
-    home.style.display = 'none';
-    iframe.style.display = 'block';
-    document.title = 'MATHS LEVEL UP';
-    setViewport(STUDENT_VIEWPORT);
-    if (push) history.pushState({ view: 'student' }, '', STUDENT_PATH);
-  }
-
-  function showHome(push) {
-    home.style.display = '';
-    if (iframe) iframe.style.display = 'none';
-    document.title = "easyMaths - Michel H'R";
-    studentRouteSynced = false;
-    setViewport(HOME_VIEWPORT);
-    if (push) history.pushState({ view: 'home' }, '', '/');
-  }
-
-  function isStudentPath() {
-    return location.pathname.indexOf(STUDENT_PATH) === 0;
-  }
-
-  // La app de estudiante (en el iframe) avisa por postMessage qué vista
-  // está mostrando; reflejamos eso en la URL visible como /student/<vista>
-  // sin recargar nada (pushState/replaceState).
-  window.addEventListener('message', function (e) {
-    if (e.origin !== location.origin) return;
-    var d = e.data;
-    if (!d || d.type !== 'student-route' || !d.view) return;
-
-    var newPath = STUDENT_PATH + '/' + d.view;
-    if (location.pathname !== newPath) {
-      if (!studentRouteSynced) {
-        history.replaceState({ view: 'student', route: d.view }, '', newPath);
-      } else {
-        history.pushState({ view: 'student', route: d.view }, '', newPath);
-      }
-    }
-    studentRouteSynced = true;
-    document.title = 'MATHS LEVEL UP';
-  });
-
-  window.addEventListener('popstate', function () {
-    if (isStudentPath()) {
-      showStudent(false);
-      if (iframe && iframe.contentWindow) {
-        var v = pathToView(location.pathname) || 'dashboard';
-        iframe.contentWindow.postMessage({ type: 'student-goto', view: v }, location.origin);
-      }
-      studentRouteSynced = true;
-    } else {
-      showHome(false);
-    }
-  });
-
+  // /student y /student/* ahora los sirve Netlify directamente como
+  // student.html (ver _redirects), que trae su propio viewport móvil
+  // correcto. Así evitamos que el LMS herede el viewport fijo de 1366px
+  // de esta landing (eso era lo que lo hacía verse "zoom-out" en celulares).
+  // Aquí solo hace falta llevar al usuario a /student al pulsar "Estudiantes".
   document.addEventListener('DOMContentLoaded', function () {
     var labels = document.querySelectorAll('.btn-text');
     labels.forEach(function (label) {
       if (label.textContent.trim() === 'Estudiantes') {
         var btn = label.closest('button');
-        if (btn) btn.addEventListener('click', function () { showStudent(true); });
+        if (btn) btn.addEventListener('click', function () { location.href = '/student'; });
       }
     });
-
-    if (isStudentPath()) {
-      showStudent(false);
-    } else {
-      setTimeout(ensureIframe, 1000);
-    }
   });
 })();
 </script>
