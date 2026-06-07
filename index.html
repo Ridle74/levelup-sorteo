@@ -2,7 +2,17 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1366">
+<meta name="viewport" id="viewport-meta" content="width=1366">
+<script>
+  // Evita el "flash" de viewport incorrecto: si la ruta es /student(...),
+  // usamos viewport móvil estándar desde el inicio; si es la landing, el fijo de 1366.
+  (function () {
+    var vp = document.getElementById('viewport-meta');
+    if (vp && location.pathname.indexOf('/student') === 0) {
+      vp.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+    }
+  })();
+</script>
 <title>easyMaths - Michel H'R</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
@@ -384,6 +394,15 @@ function ripple(e, btn) {
   var iframe = null;
   var home = document.getElementById('home-view');
   var studentRouteSynced = false;
+  var viewportMeta = document.getElementById('viewport-meta');
+  var HOME_VIEWPORT = 'width=1366';
+  var STUDENT_VIEWPORT = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
+
+  function setViewport(content) {
+    if (viewportMeta && viewportMeta.getAttribute('content') !== content) {
+      viewportMeta.setAttribute('content', content);
+    }
+  }
 
   // Extrae el nombre de vista de una ruta tipo /student/dashboard -> "dashboard"
   function pathToView(pathname) {
@@ -410,6 +429,7 @@ function ripple(e, btn) {
     home.style.display = 'none';
     iframe.style.display = 'block';
     document.title = 'MATHS LEVEL UP';
+    setViewport(STUDENT_VIEWPORT);
     if (push) history.pushState({ view: 'student' }, '', STUDENT_PATH);
   }
 
@@ -418,6 +438,7 @@ function ripple(e, btn) {
     if (iframe) iframe.style.display = 'none';
     document.title = "easyMaths - Michel H'R";
     studentRouteSynced = false;
+    setViewport(HOME_VIEWPORT);
     if (push) history.pushState({ view: 'home' }, '', '/');
   }
 
