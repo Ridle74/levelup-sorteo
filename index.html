@@ -22,7 +22,7 @@ html {
 }
 body {
   width: 1366px;
-  min-height: 2450px;
+  min-height: 2610px;
   position: relative;
   background: transparent;
   /* Center the content column */
@@ -43,7 +43,7 @@ body {
 /* PAGE: z-index 3 */
 .page {
   position: relative; z-index: 3;
-  min-height: 2450px;
+  min-height: 2610px;
   padding-bottom: 163px;
   display: flex; flex-direction: column; align-items: center;
 }
@@ -183,6 +183,12 @@ body {
 .btn-wrapper:nth-child(3) { animation: fadeUp 0.55s 0.75s ease both; }
 .btn-wrapper:nth-child(4) { animation: fadeUp 0.55s 0.85s ease both; }
 .btn-wrapper:nth-child(5) { animation: fadeUp 0.55s 0.95s ease both; }
+.btn-wrapper:nth-child(6) { animation: fadeUp 0.55s 1.05s ease both; }
+
+/* Elementos nuevos: ocultos por defecto (m&#243;vil) */
+.btn-icon { display: none; }
+.btn-sub { display: none; }
+.refs-section { display: none; }
 
 /* SOCIAL */
 .social-row {
@@ -211,12 +217,170 @@ body {
 
 @keyframes fadeUp   { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
 @keyframes fadeDown { from{opacity:0;transform:translateY(-28px)} to{opacity:1;transform:none} }
+
+/* Animaciones sutiles para vista m&#243;vil/t&#225;ctil: los botones y los
+   iconos de redes sociales "respiran" suavemente para que la pantalla
+   no se sienta est&#225;tica. Se aplican solo cuando NO hay mouse fino
+   (m&#243;vil/t&#225;ctil), para no interferir con los estados hover de escritorio. */
+@keyframes btnBreathe  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+@keyframes iconBreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+
+@media not all and (hover: hover) and (pointer: fine) {
+  /* Brillo (sheen) que recorre cada boton de forma diagonal y suave cada
+     cierto tiempo, como el detalle de luz que pasa sobre tarjetas/botones
+     en interfaces modernas (efecto "shine sweep"). Le da vida sin ser
+     llamativo: aparece, cruza el boton y se desvanece, en bucle. */
+  @keyframes shineSweep {
+    0%   { background-position: 160% 0; opacity: 0; }
+    8%   { opacity: 1; }
+    38%  { opacity: 1; }
+    52%  { background-position: -60% 0; opacity: 0; }
+    100% { background-position: -60% 0; opacity: 0; }
+  }
+  .btn-wrapper { --life-delay: 0s; }
+  .btn-wrapper:nth-child(2) { --life-delay: -1.1s; }
+  .btn-wrapper:nth-child(3) { --life-delay: -2.2s; }
+  .btn-wrapper:nth-child(4) { --life-delay: -3.3s; }
+  .btn-wrapper:nth-child(5) { --life-delay: -4.4s; }
+  .btn-wrapper:nth-child(6) { --life-delay: -5.5s; }
+
+  .btn-wrapper::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 18px 28px 18px 28px;
+    background: linear-gradient(115deg,
+      transparent 38%,
+      rgba(255,255,255,0.55) 49%,
+      rgba(133,204,0,0.16) 54%,
+      transparent 64%);
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    z-index: 2;
+    pointer-events: none;
+    animation: shineSweep 6.5s ease-in-out infinite;
+    animation-delay: var(--life-delay);
+  }
+
+  .btn-main  { animation: btnBreathe 3.4s ease-in-out infinite; }
+  .btn-wrapper:nth-child(1) .btn-main { animation-delay: 1.6s; }
+  .btn-wrapper:nth-child(2) .btn-main { animation-delay: 1.9s; }
+  .btn-wrapper:nth-child(3) .btn-main { animation-delay: 2.2s; }
+  .btn-wrapper:nth-child(4) .btn-main { animation-delay: 2.5s; }
+  .btn-wrapper:nth-child(5) .btn-main { animation-delay: 2.8s; }
+  .btn-wrapper:nth-child(6) .btn-main { animation-delay: 3.1s; }
+
+  .social-icon { animation: iconBreathe 2.6s ease-in-out infinite; }
+  .social-item:nth-child(1) .social-icon { animation-delay: 1.9s; }
+  .social-item:nth-child(2) .social-icon { animation-delay: 2.2s; }
+  .social-item:nth-child(3) .social-icon { animation-delay: 2.5s; }
+}
 .ripple {
   position: absolute; border-radius: 50%;
   background: rgba(133,204,0,0.18); transform: scale(0);
   animation: rippleAnim 0.6s ease-out forwards; pointer-events: none;
 }
 @keyframes rippleAnim { to{transform:scale(4);opacity:0} }
+
+/* ===== VERSI&#211;N ESCRITORIO (mouse real, no t&#225;ctil) ===== */
+@media (hover: hover) and (pointer: fine) {
+  .buttons-grid {
+    width: 100%; max-width: 880px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .btn-wrapper { width: 100%; height: 100%; }
+  .btn-main {
+    flex-direction: column; gap: 12px;
+    width: 100%; height: 100%; min-height: 156px;
+    padding: 26px 16px;
+  }
+  .btn-text { font-size: 15px; letter-spacing: 2.6px; }
+  .btn-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; color: #85cc00; position: relative; z-index: 1;
+  }
+  .btn-icon svg { width: 100%; height: 100%; stroke: currentColor; fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-sub {
+    display: block; font-size: 11px; font-weight: 400; letter-spacing: 1.1px;
+    color: #9a9588; text-align: center; position: relative; z-index: 1;
+  }
+
+  /* Orden visual validado: fila 1 = Padres, Horarios, Estudiantes / fila 2 = Cotiza a domicilio, Cat&#225;logo 2026, Cotiza virtual */
+  .btn-wrapper:nth-child(1) { order: 2; } /* Horarios -> arriba centro */
+  .btn-wrapper:nth-child(2) { order: 1; } /* Padres -> arriba izquierda */
+  .btn-wrapper:nth-child(3) { order: 3; } /* Estudiantes -> arriba derecha */
+  .btn-wrapper:nth-child(4) { order: 5; } /* Cat&#225;logo 2026 -> abajo centro */
+  .btn-wrapper:nth-child(5) { order: 4; } /* Cotiza a Domicilio -> abajo izquierda */
+  .btn-wrapper:nth-child(6) { order: 6; } /* Cotiza Virtual -> abajo derecha */
+
+  .refs-section { display: block; margin-top: 70px; width: 100%; max-width: 980px; }
+  .refs-title {
+    text-align: center; font-family: 'Montserrat', sans-serif;
+    font-size: 19px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+    color: #555; margin-bottom: 30px;
+  }
+  .refs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .ref-card {
+    background: rgba(255,254,250,0.82); border: 1.8px solid rgba(175,170,158,0.45);
+    border-radius: 16px 24px 16px 24px; padding: 26px 22px; display: flex; flex-direction: column; gap: 16px;
+  }
+  .ref-quote {
+    font-size: 13.5px; line-height: 1.55; color: #5a564c; text-align: center;
+    min-height: 62px; display: flex; align-items: center; font-style: italic;
+  }
+  .ref-name { font-size: 12px; letter-spacing: 1.5px; color: #85cc00; text-align: center; font-weight: 500; }
+
+  /* M&#225;rmol como fondo del body: crece y se desplaza con el contenido (no fijo).
+     Tambi&#233;n quitamos el alto fijo de 2450px para que no quede un sobrante
+     de m&#225;rmol vac&#237;o debajo del contenido compacto de escritorio. */
+  body {
+    min-height: auto;
+    background-color: #f4f3ef;
+    background-image: url('marble_bg.svg');
+    background-repeat: no-repeat;
+    background-position: 65% 30%;
+    background-size: 160% auto;
+  }
+  #marbleBg { display: none; }
+
+  /* Ramitas: tama&#241;o compacto y sin animaci&#243;n de respiraci&#243;n, alineadas por JS */
+  .branch-tr, .branch-bl {
+    width: 260px; animation: none;
+  }
+  .branch-bl { bottom: auto; top: 0; }
+
+  /* P&#225;gina: margen vertical compacto (igual que el preview validado) */
+  .page {
+    min-height: auto;
+    padding: 120px 20px 90px;
+  }
+
+  /* BRAND ROW: logo al costado izquierdo del nombre, conjunto centrado */
+  .brand-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 26px; margin-bottom: 26px;
+  }
+  .logo-section {
+    margin-top: 0; animation: none;
+  }
+  .logo-img {
+    width: 130px; animation: none;
+    filter: drop-shadow(0 6px 26px rgba(100,130,20,0.17));
+  }
+  .name-section { margin-top: 0; }
+  .name-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px; letter-spacing: -1px; line-height: 1;
+  }
+  .name-script {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 24px; font-weight: 400; color: #85cc00;
+    line-height: normal; margin-top: 4px;
+  }
+  .divider { width: 180px; margin: 0 0 34px; }
+}
 </style>
 </head>
 <body>
@@ -234,6 +398,7 @@ body {
 
 <div class="page">
 
+  <div class="brand-row">
   <div class="logo-section">
     <img class="logo-img" src="logo.svg" alt="easyMaths logo">
   </div>
@@ -241,6 +406,7 @@ body {
   <div class="name-section">
     <div class="name-main">Michel H'R</div>
     <div class="name-script">clases de matematica</div>
+  </div>
   </div>
 
   <div class="divider">
@@ -257,50 +423,96 @@ body {
   </svg>
 
   <div class="buttons-grid">
+    <!-- 1. HORARIOS -->
     <div class="btn-wrapper">
       <button class="btn-main" onclick="ripple(event,this)">
         <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg></span>
         <span class="btn-text">Horarios</span>
+        <span class="btn-sub">Disponibilidad de clases</span>
       </button>
     </div>
+    <!-- 2. PADRES -->
     <div class="btn-wrapper">
       <button class="btn-main" onclick="ripple(event,this)">
         <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><circle cx="8.5" cy="7" r="3"/><circle cx="16" cy="8" r="2.4"/><path d="M3 20v-1.6c0-2 1.8-3.6 4-3.6h3c1.6 0 3 .85 3.6 2.1"/><path d="M13.4 16.2c.5-.95 1.6-1.6 2.8-1.6h.6c1.8 0 3.2 1.4 3.2 3.1V19"/></svg></span>
+        <span class="btn-text">Padres</span>
+        <span class="btn-sub">Seguimiento de tus hijos</span>
+      </button>
+    </div>
+    <!-- 3. ESTUDIANTES -->
+    <div class="btn-wrapper">
+      <button class="btn-main" onclick="ripple(event,this)">
+        <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><path d="M12 4 2 9l10 5 10-5-10-5Z"/><path d="M6 11.5V17c0 1.4 2.7 3 6 3s6-1.6 6-3v-5.5"/><path d="M22 9v6"/></svg></span>
         <span class="btn-text">Estudiantes</span>
+        <span class="btn-sub">Tu panel de progreso</span>
       </button>
     </div>
+    <!-- 4. CATALOGO 2026 -->
     <div class="btn-wrapper">
       <button class="btn-main" onclick="ripple(event,this)">
         <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <span class="btn-text">Cotiza a Domicilio</span>
-      </button>
-    </div>
-    <div class="btn-wrapper">
-      <button class="btn-main" onclick="ripple(event,this)">
-        <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/><path d="M9 7h7M9 11h7"/></svg></span>
         <span class="btn-text">Cat&#225;logo 2026</span>
+        <span class="btn-sub">M&#225;s detalles</span>
       </button>
     </div>
+    <!-- 5. COTIZA A DOMICILIO -->
     <div class="btn-wrapper">
       <button class="btn-main" onclick="ripple(event,this)">
         <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <span class="btn-text">Referencias</span>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg></span>
+        <span class="btn-text">Cotiza a Domicilio</span>
+        <span class="btn-sub">Individuales o grupales</span>
       </button>
+    </div>
+    <!-- 6. COTIZA VIRTUAL -->
+    <div class="btn-wrapper">
+      <button class="btn-main" onclick="ripple(event,this)">
+        <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="m8 10 3 2-3 2"/><path d="M13 14h3"/></svg></span>
+        <span class="btn-text">Cotiza Virtual</span>
+        <span class="btn-sub">Individuales o grupales</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- REFERENCIAS — sección separada, visible solo en escritorio (ver media query) -->
+  <div class="refs-section">
+    <div class="refs-title">Lo que dicen mis alumnos</div>
+    <div class="refs-grid">
+      <div class="ref-card">
+        <div class="ref-quote">&ldquo;Entend&#237; trigonometr&#237;a en solo dos clases gracias a su paciencia y forma de explicar.&rdquo;</div>
+        <div class="ref-name">&mdash; Valeria S. &mdash;</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-quote">&ldquo;Mi hijo subi&#243; de nota r&#225;pido gracias al seguimiento semanal y los ejercicios extra.&rdquo;</div>
+        <div class="ref-name">&mdash; Renzo Q. &mdash;</div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-quote">&ldquo;Las clases personalizadas me ayudaron a practicar sin sentirme presionada nunca.&rdquo;</div>
+        <div class="ref-name">&mdash; Camila T. &mdash;</div>
+      </div>
     </div>
   </div>
 
@@ -354,13 +566,13 @@ function ripple(e, btn) {
       body.style.marginRight    = 'auto';
       html.style.minHeight      = '';
     } else {
-      // Narrow screen: scale content proportionally
+      // Narrow screen: scale content proportionally.
       var scale = vw / 1366;
       body.style.transform      = 'scale(' + scale + ')';
       body.style.transformOrigin= 'top left';
       body.style.marginLeft     = '0';
       body.style.marginRight    = '0';
-      html.style.minHeight      = Math.ceil(2450 * scale) + 'px';
+      html.style.minHeight      = Math.ceil(2610 * scale) + 'px';
     }
   }
   apply();
@@ -384,6 +596,36 @@ function ripple(e, btn) {
       }
     });
   });
+})();
+</script>
+
+<script>
+(function () {
+  // Alinea la ramita inferior izquierda con la puntita de los &#237;conos
+  // sociales &#8212; SOLO en escritorio real (mouse/trackpad), nunca en t&#225;ctil.
+  var mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var fineOffset = -40;
+
+  function alignBranchToSocial() {
+    if (!mq.matches) return;
+    var branch = document.querySelector('.branch-bl');
+    var icon = document.querySelector('.social-icon');
+    var page = document.querySelector('.page');
+    if (!branch || !icon || !page) return;
+    var iconTop = icon.getBoundingClientRect().top;
+    var pageTop = page.getBoundingClientRect().top;
+    branch.style.top = (iconTop - pageTop + fineOffset) + 'px';
+  }
+
+  window.addEventListener('load', function () {
+    alignBranchToSocial();
+    // Reintenta tras asentarse el layout (im&#225;genes/fuentes pueden
+    // desplazar elementos despu&#233;s del evento load inicial)
+    setTimeout(alignBranchToSocial, 150);
+    setTimeout(alignBranchToSocial, 500);
+    setTimeout(alignBranchToSocial, 1200);
+  });
+  window.addEventListener('resize', alignBranchToSocial);
 })();
 </script>
 
