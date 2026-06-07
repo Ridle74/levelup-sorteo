@@ -32,6 +32,15 @@ body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
   padding-bottom: env(safe-area-inset-bottom);
 }
 #bottom-nav.visible { display: block; }
+
+/* ── HISTORY BAR (atrás / inicio / adelante) ──────── */
+#hist-bar { display:none; position: fixed; top: 0; left: 0; right: 0; z-index: 200; gap:8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: rgba(5,13,26,0.92); backdrop-filter: blur(16px) saturate(180%); border-bottom: 1px solid rgba(255,255,255,0.08); }
+#hist-bar.visible { display:flex; }
+.hist-btn { border:none; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); width:38px; height:34px; border-radius:10px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: background 0.15s, color 0.15s, opacity 0.15s; -webkit-tap-highlight-color: transparent; }
+.hist-btn:not(:disabled):active { background: rgba(96,165,250,0.18); color:#60a5fa; }
+.hist-btn:disabled { opacity:0.3; cursor:default; }
+#hist-home { background: rgba(96,165,250,0.12); color:#60a5fa; }
+body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .nav-row { display: flex; max-width: 600px; margin: 0 auto; }
 .nav-btn {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -131,6 +140,13 @@ textarea.fsm { resize:none; height:64px; }
 <div id="initial-loading">
   <div class="loading-spinner"></div>
   <div class="loading-text">Conectando...</div>
+</div>
+
+<!-- HISTORY BAR -->
+<div id="hist-bar">
+  <button class="hist-btn" id="hist-back" onclick="navBack()" title="Atrás">◀</button>
+  <button class="hist-btn" id="hist-home" onclick="navHome()" title="Inicio">🏠</button>
+  <button class="hist-btn" id="hist-fwd" onclick="navForward()" title="Adelante">▶</button>
 </div>
 
 <!-- APP -->
@@ -388,6 +404,12 @@ function go(view) {
   router();
 }
 
+// Botones de navegación (atrás / inicio / adelante) — usan el historial real
+// del navegador, que ya mantenemos sincronizado vía pushState/popstate.
+function navBack()    { history.back(); }
+function navForward() { history.forward(); }
+function navHome()    { go('dashboard'); }
+
 function router() {
   if (!appReady) return;
   const hash     = currentView || 'login';
@@ -417,6 +439,14 @@ function router() {
   } else {
     nav.classList.remove('visible');
     document.body.classList.remove('nav-visible');
+  }
+
+  // Barra atrás/inicio/adelante: visible cuando hay sesión y no estamos en el inicio (dashboard)
+  const histBar = document.getElementById('hist-bar');
+  if (histBar) {
+    const showHist = loggedId !== null && hash !== 'dashboard';
+    histBar.classList.toggle('visible', showHist);
+    document.body.classList.toggle('hist-visible', showHist);
   }
 
   const setup = {
