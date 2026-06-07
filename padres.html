@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MATHS LEVEL UP — Portal de Padres</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+#app { min-height: 100dvh; }
+body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+#initial-loading { position: fixed; inset: 0; z-index: 9999; background: #050d1a; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+#initial-loading.hidden { display: none; }
+.vw { animation: vIn 0.18s ease-out; }
+@keyframes vIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+#bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: rgba(5,13,26,0.97); backdrop-filter: blur(16px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: env(safe-area-inset-bottom); }
+#bottom-nav.visible { display: block; }
+.nav-row { display: flex; max-width: 600px; margin: 0 auto; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 10px 2px 8px; border: none; background: none; cursor: pointer; color: rgba(255,255,255,0.35); font-family: 'Barlow Condensed', sans-serif; font-size: 8px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.15s; -webkit-tap-highlight-color: transparent; }
+.nav-btn .ni { font-size: 22px; line-height: 1; display: block; }
+.nav-btn.active { color: #4ade80; }
+.nav-btn.active .ni { filter: drop-shadow(0 0 5px rgba(74,222,128,0.5)); }
+
+.dash-hero { background: linear-gradient(135deg,#14532d,#16a34a 50%,#22c55e); border-radius: 20px; padding: 20px; margin-bottom: 10px; position: relative; overflow: hidden; }
+.dash-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+.fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:11px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; box-sizing:border-box; margin-bottom:10px; outline:none; }
+.fsm:focus { border-color:rgba(74,222,128,0.5); }
+.btn-grn { width:100%; border:none; border-radius:12px; padding:13px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; letter-spacing:0.12em; text-transform:uppercase; background:linear-gradient(135deg,#16a34a,#22c55e); color:#fff; }
+.btn-ghost { width:100%; border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.7); margin-top:8px; }
+
+/* Child chips */
+.child-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.child-chip { display:flex; align-items:center; gap:6px; border:2px solid rgba(255,255,255,0.12); border-radius:14px; padding:8px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:rgba(255,255,255,0.55); transition:all .15s; -webkit-tap-highlight-color:transparent; }
+.child-chip.csel { border-color:#22c55e; color:#86efac; background:rgba(34,197,94,0.12); }
+
+/* Calendar */
+.cal-toolbar { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.cal-toggle { display:flex; border:1px solid rgba(255,255,255,0.12); border-radius:12px; overflow:hidden; }
+.cal-toggle button { border:none; background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.5); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:9px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.cal-toggle button.on { background:rgba(34,197,94,0.18); color:#86efac; }
+.cal-nav { margin-left:auto; display:flex; gap:6px; }
+.cal-nav button { border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:#fff; border-radius:10px; width:34px; height:34px; font-size:16px; cursor:pointer; }
+.cal-range { font-size:11px; color:rgba(255,255,255,0.45); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:700; }
+
+.cal-grid { display:grid; gap:6px; }
+.cal-day { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:10px; }
+.cal-day-hdr { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.65); margin-bottom:8px; display:flex; justify-content:space-between; }
+.cal-day-hdr .dnum { color:rgba(255,255,255,0.35); font-weight:700; font-size:11px; }
+.cal-empty { font-size:11px; color:rgba(255,255,255,0.25); padding:10px 0; text-align:center; }
+.cal-slot { border-radius:10px; padding:9px 11px; margin-bottom:6px; border-left:4px solid; }
+.cal-slot .cs-time { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; }
+.cal-slot .cs-meta { font-size:10px; color:rgba(255,255,255,0.55); margin-top:2px; letter-spacing:0.05em; text-transform:uppercase; }
+
+/* Request card */
+.req-card { background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.18); border-radius:16px; padding:16px; margin-top:14px; }
+.req-row { display:flex; gap:8px; margin-bottom:8px; }
+.req-row select, .req-row input { flex:1; }
+.req-list-item { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.req-status { font-size:9px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; padding:4px 10px; border-radius:8px; flex-shrink:0; }
+.req-status.pend { background:rgba(234,179,8,0.15); color:#fde047; }
+.req-status.appr { background:rgba(34,197,94,0.18); color:#86efac; }
+.req-status.rej  { background:rgba(239,68,68,0.15); color:#f87171; }
+
+/* Login */
+.login-wrap { max-width:380px; margin:0 auto; padding-top:12vh; }
+.login-logo { text-align:center; margin-bottom:28px; }
+.login-logo .lt { font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+.login-logo .ll { font-family:'Barlow Condensed',sans-serif; font-size:30px; font-weight:900; color:#fff; margin-top:2px; }
+.field-label { font-size:10px; font-weight:900; color:#6b7280; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px; display:block; }
+.tab-row { display:flex; gap:8px; margin-bottom:18px; }
+.tab-row button { flex:1; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.45); border-radius:12px; padding:10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; }
+.tab-row button.on { background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.35); color:#86efac; }
+
+.dash-link { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; transition:background 0.12s; -webkit-tap-highlight-color:transparent; }
+.dash-link:active { background:rgba(255,255,255,0.09); }
+.dl-ico { font-size:24px; flex-shrink:0; }
+.dl-arr { margin-left:auto; color:rgba(255,255,255,0.25); font-size:20px; }
+</style>
+</head>
+<body>
+<div id="initial-loading"><div class="login-logo"><div class="lt">MATHS LEVEL UP</div><div class="ll">Portal de Padres</div></div><div style="color:rgba(255,255,255,0.4);font-size:12px">Cargando…</div></div>
+<div id="app"></div>
+<div id="bottom-nav"><div class="nav-row" id="nav-row"></div></div>
+<div id="toast"><span id="toast-icon">⚠️</span><span id="toast-msg">–</span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+// ════════════════════════════════════════════════════════
+// FIREBASE  (mismo proyecto que /student)
+// ════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:        "maths-level-up.firebaseapp.com",
+  projectId:         "maths-level-up",
+  storageBucket:     "maths-level-up.firebasestorage.app",
+  messagingSenderId: "854549565666",
+  appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
+};
+firebase.initializeApp(firebaseConfig);
+const db  = firebase.firestore();
+// Documento dedicado para el portal de padres (no toca 'sorteo/main').
+const REF = db.collection('padres').doc('main');
+
+// ════════════════════════════════════════════════════════
+// ESQUEMA DE DATOS (diseño)
+// ────────────────────────────────────────────────────────
+// padres/main = {
+//   parents: {
+//     "<parentId>": {
+//        name, pin, phone, children: [studentId, ...]
+//     }
+//   },
+//   students: {            // espejo ligero de los alumnos (nombre + color + icono)
+//     "<studentId>": { name, color, icon, modality: 'Virtual' | 'Domicilio' }
+//   },
+//   sessions: [            // clases programadas (recurrentes semanales)
+//     { id, studentId, day: 0-6 (0=Dom), start:"HH:MM", dur: minutos,
+//       modality:'Virtual'|'Domicilio', topic }
+//   ],
+//   requests: [            // solicitudes de clases adicionales hechas por padres
+//     { id, parentId, studentId, day, start, dur, modality, note,
+//       status:'pendiente'|'aprobada'|'rechazada', createdAt }
+//   ]
+// }
+// ════════════════════════════════════════════════════════
+// Semilla inicial — agrupa alumnos existentes de /student por apellido familiar.
+// Esto puebla Firestore la primera vez que alguien entra (merge:true, no pisa
+// datos reales que el profesor edite después desde el panel admin).
+// Datos reales tomados de la agenda "ProGrid Ecosystem" que el profesor ya
+// tenía armada (INITIAL_PARENTS + FULL_MASTER_DATA). day = día de la semana
+// (0=Domingo … 6=Sábado, igual que Date.getDay()/dateOffset original);
+// modality 'One to One' → Virtual y 'One to Family' → Domicilio.
+const SEED = {
+  parents: {
+    "villenaprado": { name:"Fam. Villena Prado", pin:"5511", phone:"", children:[1,2] },
+    "rprado":       { name:"Sr. Rodrigo Prado",  pin:"5522", phone:"", children:[3,10] },
+    "ferreira":     { name:"Fam. Ferreira",      pin:"5533", phone:"", children:[4] },
+    "villacorta":   { name:"Sra. Villacorta",    pin:"5544", phone:"", children:[5] },
+    "giuffra":      { name:"Sra. Giuffra",       pin:"5555", phone:"", children:[6] },
+    "villalobos":   { name:"Sr. Villalobos",     pin:"5566", phone:"", children:[7] },
+    "quinto":       { name:"Sra. Quinto",        pin:"5577", phone:"", children:[8] },
+    "bruna":        { name:"Sra. Bruna",         pin:"5588", phone:"", children:[9] },
+    "poma":         { name:"Sra. Poma",          pin:"5599", phone:"", children:[11] },
+    "rios":         { name:"Sra. Ríos",          pin:"5500", phone:"", children:[12] },
+    "urena":        { name:"Sr. Ureña",          pin:"5512", phone:"", children:[13] }
+  },
+  students: {
+    "1":  { name:"Rafaela Villena",   color:"#9333ea", icon:"🐨",  modality:"Virtual" },
+    "2":  { name:"Mikela Villena",    color:"#9333ea", icon:"👧🏼", modality:"Virtual" },
+    "3":  { name:"Alejandro Prado",   color:"#d97706", icon:"🦁",  modality:"Virtual" },
+    "4":  { name:"Joao & Josué",      color:"#d97706", icon:"👦🏻", modality:"Domicilio" },
+    "5":  { name:"Manuel Villacorta", color:"#e11d48", icon:"👦🏻", modality:"Virtual" },
+    "6":  { name:"Augusto Giuffra",   color:"#10b981", icon:"🕷️", modality:"Virtual" },
+    "7":  { name:"Maria Villalobos",  color:"#64748b", icon:"👧🏽", modality:"Virtual" },
+    "8":  { name:"Santiago Quinto",   color:"#9333ea", icon:"🏃🏻", modality:"Virtual" },
+    "9":  { name:"Agus / Brune",      color:"#10b981", icon:"👦🏻", modality:"Virtual" },
+    "10": { name:"Joanna Prado",      color:"#d97706", icon:"👧🏻", modality:"Domicilio" },
+    "11": { name:"Tiago Poma",        color:"#10b981", icon:"🐶",  modality:"Domicilio" },
+    "12": { name:"Mateo Ríos",        color:"#2563eb", icon:"🐧",  modality:"Virtual" },
+    "13": { name:"Jorge Ureña",       color:"#2563eb", icon:"👦🏻", modality:"Virtual" }
+  },
+  sessions: [
+    { id:1,  studentId:1,  day:1, start:"15:15", dur:45,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:2,  studentId:3,  day:1, start:"16:00", dur:120, modality:"Virtual",   topic:"Sesión programada" },
+    { id:3,  studentId:2,  day:1, start:"18:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:4,  studentId:5,  day:1, start:"19:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:5,  studentId:6,  day:2, start:"15:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:6,  studentId:7,  day:2, start:"16:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:7,  studentId:4,  day:2, start:"17:30", dur:180, modality:"Domicilio", topic:"Sesión programada" },
+    { id:8,  studentId:1,  day:3, start:"15:15", dur:45,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:9,  studentId:3,  day:3, start:"16:00", dur:120, modality:"Virtual",   topic:"Sesión programada" },
+    { id:10, studentId:8,  day:3, start:"18:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:11, studentId:5,  day:3, start:"19:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:12, studentId:9,  day:4, start:"15:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:13, studentId:7,  day:4, start:"16:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:14, studentId:4,  day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"Sesión programada" },
+    { id:15, studentId:3,  day:5, start:"16:00", dur:120, modality:"Virtual",   topic:"Sesión programada" },
+    { id:16, studentId:6,  day:5, start:"18:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:17, studentId:5,  day:5, start:"19:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:18, studentId:2,  day:6, start:"09:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:19, studentId:7,  day:6, start:"10:00", dur:120, modality:"Virtual",   topic:"Sesión programada" },
+    { id:20, studentId:1,  day:6, start:"12:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:21, studentId:10, day:6, start:"14:30", dur:120, modality:"Domicilio", topic:"Sesión programada" },
+    { id:22, studentId:11, day:6, start:"17:00", dur:60,  modality:"Domicilio", topic:"Sesión programada" },
+    { id:23, studentId:12, day:0, start:"09:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:24, studentId:2,  day:0, start:"10:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" },
+    { id:25, studentId:13, day:0, start:"11:00", dur:60,  modality:"Virtual",   topic:"Sesión programada" }
+  ],
+  requests: []
+};
+const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DAY_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+// ════════════════════════════════════════════════════════
+// SESSION  (persistente — usa localStorage, sobrevive cierres de pestaña)
+// ════════════════════════════════════════════════════════
+function getLoggedParent() { return localStorage.getItem('padresLoggedId'); }
+function setLoggedParent(id) {
+  if (id === null) localStorage.removeItem('padresLoggedId');
+  else localStorage.setItem('padresLoggedId', String(id));
+}
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let DATA = JSON.parse(JSON.stringify(SEED));
+let appReady = false;
+let calMode = 'week';          // 'week' | '4dias'
+let calAnchor = startOfWeek(new Date());
+let selectedChild = null;      // studentId actualmente mostrado en calendario
+let currentView = 'login';
+
+function startOfWeek(d) {
+  const x = new Date(d); const day = x.getDay();
+  x.setDate(x.getDate() - day); x.setHours(0,0,0,0); return x;
+}
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function fmtDM(d) { return d.toLocaleDateString('es-PE',{ day:'numeric', month:'short' }); }
+
+// ════════════════════════════════════════════════════════
+// FIREBASE LOAD / SAVE
+// ════════════════════════════════════════════════════════
+function loadData() {
+  REF.get().then(snap => {
+    if (snap.exists) {
+      const d = snap.data();
+      DATA.parents  = d.parents  || SEED.parents;
+      DATA.students = d.students || SEED.students;
+      DATA.sessions = d.sessions || SEED.sessions;
+      DATA.requests = d.requests || [];
+    } else {
+      // Primera vez: sembrar Firestore con datos base.
+      REF.set(SEED).catch(()=>{});
+    }
+    appReady = true;
+    boot();
+  }).catch(e => {
+    console.error(e);
+    appReady = true; // seguimos con SEED local si Firestore falla
+    boot();
+  });
+}
+function saveRequests() {
+  REF.set({ requests: DATA.requests }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar la solicitud.'); });
+}
+
+// ════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════
+let _tt;
+function showToast(msg, type='error') {
+  const el = document.getElementById('toast'); if (!el) return;
+  document.getElementById('toast-icon').textContent = type==='success'?'✅':'⚠️';
+  document.getElementById('toast-msg').textContent  = msg;
+  el.classList.add('show'); clearTimeout(_tt);
+  _tt = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════════════════════
+// ROUTER
+// ════════════════════════════════════════════════════════
+function go(view) { currentView = view; render(); }
+
+function render() {
+  if (!appReady) return;
+  const parentId = getLoggedParent();
+  const app = document.getElementById('app');
+  const nav = document.getElementById('bottom-nav');
+
+  if (parentId === null && currentView !== 'login') currentView = 'login';
+  if (parentId !== null && currentView === 'login') currentView = 'inicio';
+
+  const views = { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar };
+  app.innerHTML = `<div class="vw">${(views[currentView]||vLogin)()}</div>`;
+
+  const showNav = parentId !== null;
+  document.body.classList.toggle('nav-visible', showNav);
+  if (showNav) {
+    nav.classList.add('visible');
+    nav.querySelector('#nav-row').innerHTML = [
+      {r:'inicio',     i:'🏠', l:'Inicio'},
+      {r:'calendario', i:'📅', l:'Calendario'},
+      {r:'solicitar',  i:'➕', l:'Solicitar'}
+    ].map(n => `<button class="nav-btn${currentView===n.r?' active':''}" onclick="go('${n.r}')"><span class="ni">${n.i}</span><span>${n.l}</span></button>`).join('');
+  } else {
+    nav.classList.remove('visible');
+  }
+  bindView();
+}
+
+function bindView() {
+  if (currentView === 'login') {
+    const form = document.getElementById('login-form');
+    if (form) form.addEventListener('submit', e => {
+      e.preventDefault();
+      const pin = document.getElementById('login-pin').value.trim();
+      const match = Object.entries(DATA.parents).find(([id,p]) => p.pin === pin);
+      if (match) {
+        setLoggedParent(match[0]);
+        selectedChild = (match[1].children||[])[0] || null;
+        currentView = 'inicio';
+        render();
+      } else {
+        document.getElementById('login-err').style.display = 'block';
+      }
+    });
+  }
+}
+
+function logout() { setLoggedParent(null); selectedChild = null; currentView = 'login'; render(); }
+function selectChild(id) { selectedChild = id; render(); }
+function setCalMode(m) { calMode = m; render(); }
+function calStep(dir) {
+  const span = calMode === 'week' ? 7 : 4;
+  calAnchor = addDays(calAnchor, dir * span);
+  render();
+}
+
+// ════════════════════════════════════════════════════════
+// VIEWS
+// ════════════════════════════════════════════════════════
+function vLogin() {
+  return `
+  <div class="login-wrap">
+    <div class="login-logo"><div class="lt">MATHS LEVEL UP</div><div class="ll">Portal de Padres</div></div>
+    <form id="login-form">
+      <label class="field-label">Clave de familia (4 dígitos)</label>
+      <input class="fsm" id="login-pin" type="password" inputmode="numeric" maxlength="4" placeholder="• • • •" autocomplete="off" required>
+      <div id="login-err" style="color:#f87171;font-size:11px;font-weight:700;text-align:center;display:none;margin-bottom:10px">Clave incorrecta. Verifica con tu profesor.</div>
+      <button class="btn-grn" type="submit">Ingresar</button>
+    </form>
+    <p style="text-align:center;font-size:11px;color:rgba(255,255,255,0.35);margin-top:18px;line-height:1.6">
+      El acceso queda guardado en este dispositivo: la próxima vez que entres a "Padres" verás tu cuenta directamente.
+    </p>
+  </div>`;
+}
+
+function vInicio() {
+  const parentId = getLoggedParent();
+  const parent   = DATA.parents[parentId];
+  if (!parent) { logout(); return ''; }
+  const children = (parent.children||[]).map(id => DATA.students[id]).filter(Boolean);
+  const today = new Date(); const todayDow = today.getDay();
+  const upcoming = [];
+  (parent.children||[]).forEach(sid => {
+    DATA.sessions.filter(s => s.studentId === sid).forEach(s => {
+      let delta = (s.day - todayDow + 7) % 7;
+      const date = addDays(today, delta);
+      upcoming.push({ ...s, date, isToday: delta===0 });
+    });
+  });
+  upcoming.sort((a,b) => {
+    const da = a.date.getTime() + (a.isToday?0:0);
+    const db_ = b.date.getTime();
+    if (da !== db_) return da - db_;
+    return a.start.localeCompare(b.start);
+  });
+  const next3 = upcoming.slice(0,3);
+  const reqCount = DATA.requests.filter(r => r.parentId === parentId).length;
+  const pendCount = DATA.requests.filter(r => r.parentId === parentId && r.status==='pendiente').length;
+
+  return `
+  <div style="padding:16px;max-width:600px;margin:0 auto">
+    <div class="dash-hero">
+      <div style="position:relative;z-index:1">
+        <div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.7)">Bienvenido</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-top:2px">${parent.name}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:6px">${children.length} ${children.length===1?'hijo registrado':'hijos registrados'} · ${pendCount} ${pendCount===1?'solicitud pendiente':'solicitudes pendientes'}</div>
+      </div>
+    </div>
+
+    <div class="sec-lbl">Tus hijos</div>
+    <div class="child-row">
+      ${children.map(c => `<div class="child-chip csel" style="border-color:${c.color}55;color:${c.color}">${c.icon} ${c.name.split(' ')[0]}</div>`).join('')}
+    </div>
+
+    <div class="sec-lbl" style="margin-top:6px">Próximas clases</div>
+    ${next3.length ? next3.map(s => {
+      const st = DATA.students[s.studentId];
+      return `<div class="cal-slot" style="border-left-color:${st.color};background:${st.color}14">
+        <div class="cs-time">${st.icon} ${st.name.split(' ')[0]} · ${s.start} (${s.dur} min)</div>
+        <div class="cs-meta">${s.isToday?'Hoy':DAY_NAMES[s.day]+' · '+fmtDM(s.date)} · ${s.modality} · ${s.topic}</div>
+      </div>`;
+    }).join('') : `<div class="cal-empty">No hay clases programadas próximamente.</div>`}
+
+    <div class="dash-link" onclick="go('calendario')"><span class="dl-ico">📅</span>Ver calendario completo<span class="dl-arr">›</span></div>
+    <div class="dash-link" onclick="go('solicitar')"><span class="dl-ico">➕</span>Solicitar clase adicional<span class="dl-arr">›</span></div>
+    <button class="btn-ghost" onclick="logout()">Cerrar sesión de esta familia</button>
+  </div>`;
+}
+
+function vCalendario() {
+  const parentId = getLoggedParent();
+  const parent   = DATA.parents[parentId];
+  if (!parent) { logout(); return ''; }
+  const children = (parent.children||[]).map(id => DATA.students[id]).filter(Boolean);
+  if (selectedChild === null && children.length) selectedChild = children[0].id;
+  const days = calMode === 'week' ? 7 : 4;
+  const rangeStart = calAnchor;
+  const rangeEnd   = addDays(calAnchor, days-1);
+  const dayList = Array.from({length: days}, (_,i) => addDays(rangeStart, i));
+
+  return `
+  <div style="padding:16px;max-width:680px;margin:0 auto">
+    <div class="sec-lbl">Calendario de clases</div>
+    <div class="child-row">
+      ${children.map(c => `<div class="child-chip${selectedChild===c.id?' csel':''}" onclick="selectChild(${c.id})">${c.icon} ${c.name.split(' ')[0]}</div>`).join('')}
+    </div>
+    <div class="cal-toolbar">
+      <div class="cal-toggle">
+        <button class="${calMode==='4dias'?'on':''}" onclick="setCalMode('4dias')">4 días</button>
+        <button class="${calMode==='week'?'on':''}" onclick="setCalMode('week')">Semana</button>
+      </div>
+      <div class="cal-nav">
+        <button onclick="calStep(-1)">‹</button>
+        <button onclick="calStep(1)">›</button>
+      </div>
+    </div>
+    <div class="cal-range">${fmtDM(rangeStart)} — ${fmtDM(rangeEnd)}</div>
+    <div class="cal-grid" style="grid-template-columns:repeat(${calMode==='4dias'?2:1},1fr)">
+      ${dayList.map(d => {
+        const dow = d.getDay();
+        const slots = selectedChild ? DATA.sessions.filter(s => s.studentId===selectedChild && s.day===dow) : [];
+        const st = selectedChild ? DATA.students[selectedChild] : null;
+        return `<div class="cal-day">
+          <div class="cal-day-hdr"><span>${DAY_NAMES[dow]}</span><span class="dnum">${fmtDM(d)}</span></div>
+          ${slots.length ? slots.map(s => `<div class="cal-slot" style="border-left-color:${st.color};background:${st.color}14">
+              <div class="cs-time">${s.start} · ${s.dur} min</div>
+              <div class="cs-meta">${s.modality} · ${s.topic}</div>
+            </div>`).join('') : `<div class="cal-empty">Sin clases este día</div>`}
+        </div>`;
+      }).join('')}
+    </div>
+    <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:14px;line-height:1.6">
+      ¿Quieres una clase en un horario libre? Usa "Solicitar" en el menú inferior — verificamos disponibilidad y te confirmamos.
+    </p>
+  </div>`;
+}
+
+function vSolicitar() {
+  const parentId = getLoggedParent();
+  const parent   = DATA.parents[parentId];
+  if (!parent) { logout(); return ''; }
+  const children = (parent.children||[]).map(id => DATA.students[id]).filter(Boolean);
+  const myReqs = DATA.requests.filter(r => r.parentId === parentId).slice().reverse();
+  const statusLabel = { pendiente:'Pendiente', aprobada:'Aprobada', rechazada:'No disponible' };
+  const statusClass = { pendiente:'pend', aprobada:'appr', rechazada:'rej' };
+
+  return `
+  <div style="padding:16px;max-width:600px;margin:0 auto">
+    <div class="sec-lbl">Solicitar clase adicional</div>
+    <div class="req-card">
+      <form id="req-form">
+        <label class="field-label">Hijo(a)</label>
+        <select class="fsm" id="req-child">
+          ${children.map(c => `<option value="${c.id}">${c.icon} ${c.name}</option>`).join('')}
+        </select>
+        <label class="field-label">Día de la semana</label>
+        <select class="fsm" id="req-day">
+          ${DAY_NAMES.map((n,i) => `<option value="${i}">${n}</option>`).join('')}
+        </select>
+        <div class="req-row">
+          <div style="flex:1">
+            <label class="field-label">Hora</label>
+            <input class="fsm" id="req-time" type="time" value="16:00" required>
+          </div>
+          <div style="flex:1">
+            <label class="field-label">Duración</label>
+            <select class="fsm" id="req-dur">
+              <option value="45">45 min</option>
+              <option value="60" selected>60 min</option>
+              <option value="90">90 min</option>
+            </select>
+          </div>
+        </div>
+        <label class="field-label">Modalidad</label>
+        <select class="fsm" id="req-modality">
+          <option value="Virtual">Virtual</option>
+          <option value="Domicilio">A domicilio</option>
+        </select>
+        <label class="field-label">Comentario (opcional)</label>
+        <textarea class="fsm" id="req-note" rows="2" placeholder="Ej: reforzar geometría antes del examen"></textarea>
+        <button class="btn-grn" type="submit">Enviar solicitud</button>
+      </form>
+    </div>
+
+    <div class="sec-lbl" style="margin-top:18px">Tus solicitudes</div>
+    ${myReqs.length ? myReqs.map(r => {
+      const st = DATA.students[r.studentId];
+      return `<div class="req-list-item">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${st?st.icon:''} ${st?st.name.split(' ')[0]:''} · ${DAY_NAMES[r.day]} ${r.start}</div>
+          <div class="cs-meta" style="margin-top:3px">${r.dur} min · ${r.modality}${r.note?' · '+r.note:''}</div>
+        </div>
+        <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
+      </div>`;
+    }).join('') : `<div class="cal-empty">Aún no has hecho solicitudes.</div>`}
+  </div>`;
+}
+
+// hook the request form after render
+const _origBindView = bindView;
+bindView = function() {
+  _origBindView();
+  if (currentView === 'solicitar') {
+    const form = document.getElementById('req-form');
+    if (form) form.addEventListener('submit', e => {
+      e.preventDefault();
+      const parentId = getLoggedParent();
+      const req = {
+        id: Date.now(),
+        parentId,
+        studentId: parseInt(document.getElementById('req-child').value),
+        day: parseInt(document.getElementById('req-day').value),
+        start: document.getElementById('req-time').value,
+        dur: parseInt(document.getElementById('req-dur').value),
+        modality: document.getElementById('req-modality').value,
+        note: document.getElementById('req-note').value.trim(),
+        status: 'pendiente',
+        createdAt: new Date().toISOString()
+      };
+      DATA.requests.push(req);
+      saveRequests();
+      showToast('Solicitud enviada. Te confirmaremos la disponibilidad pronto.', 'success');
+      render();
+    });
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════════════════
+function boot() {
+  document.getElementById('initial-loading').classList.add('hidden');
+  const parentId = getLoggedParent();
+  const parent = parentId !== null ? DATA.parents[parentId] : null;
+  if (parent) {
+    selectedChild = (parent.children||[])[0] || null;
+    currentView = 'inicio';
+  } else {
+    currentView = 'login';
+  }
+  render();
+}
+
+loadData();
+</script>
+</body>
+</html>

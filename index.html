@@ -594,6 +594,26 @@ function ripple(e, btn) {
         var btn = label.closest('button');
         if (btn) btn.addEventListener('click', function () { location.href = '/student'; });
       }
+      if (label.textContent.trim() === 'Padres') {
+        var btnP = label.closest('button');
+        if (btnP) btnP.addEventListener('click', function () { location.href = '/padres'; });
+      }
+      if (label.textContent.trim() === 'Cotiza Virtual') {
+        var btnCV = label.closest('button');
+        if (btnCV) btnCV.addEventListener('click', function () { location.href = '/cotiza-virtual'; });
+      }
+      if (label.textContent.trim() === 'Cotiza a Domicilio') {
+        var btnCD = label.closest('button');
+        if (btnCD) btnCD.addEventListener('click', function () { location.href = '/cotiza-domicilio'; });
+      }
+      if (label.textContent.trim() === 'Horarios') {
+        var btnH = label.closest('button');
+        if (btnH) btnH.addEventListener('click', function () { location.href = '/horarios'; });
+      }
+      if (label.textContent.trim() === 'Catálogo 2026') {
+        var btnC26 = label.closest('button');
+        if (btnC26) btnC26.addEventListener('click', function () { location.href = '/catalogo-2026'; });
+      }
     });
   });
 })();

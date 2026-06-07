@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MATHS LEVEL UP — Cotiza Virtual</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { margin:0; min-height:100dvh; background:#050d1a; color:#fff; font-family:'Barlow',sans-serif; }
+.wrap { max-width:520px; margin:0 auto; padding:22px 18px 60px; }
+.back { display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,0.5); text-decoration:none; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:18px; }
+.hero { background:linear-gradient(135deg,#1e3a8a,#2563eb 50%,#3b82f6); border-radius:20px; padding:22px; margin-bottom:18px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.hero-ico { font-size:30px; }
+.hero-t { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; line-height:1.05; margin-top:6px; }
+.hero-s { font-size:12px; color:rgba(255,255,255,0.75); margin-top:6px; }
+.blk { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; margin-bottom:12px; }
+.lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
+.pills { display:flex; flex-wrap:wrap; gap:6px; }
+.pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:9px 15px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; }
+.pill.psel { border-color:#3b82f6; color:#93c5fd; background:rgba(59,130,246,0.12); }
+.fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:11px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; outline:none; }
+.fsm:focus { border-color:rgba(59,130,246,0.5); }
+.res { background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:6px; }
+.price-big { font-family:'Barlow Condensed',sans-serif; font-size:48px; font-weight:900; color:#93c5fd; line-height:1; }
+.price-lbl { font-size:10px; color:rgba(147,197,253,0.6); font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-top:4px; }
+.price-det { font-size:12px; color:rgba(255,255,255,0.5); margin-top:12px; line-height:1.8; }
+.cta { margin-top:16px; width:100%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 20px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; }
+.empty { text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">‹ Volver al inicio</a>
+  <div class="hero">
+    <div class="hero-ico">💻</div>
+    <div class="hero-t">COTIZA TU CLASE VIRTUAL</div>
+    <div class="hero-s">Calcula el costo por hora de tus clases en línea — individuales o grupales.</div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Tipo de clase</div>
+    <div class="pills" id="cv-type">
+      <div class="pill" data-v="individual">👤 Individual</div>
+      <div class="pill" data-v="duo">👥 Dúo (2-3)</div>
+      <div class="pill" data-v="group">👨‍👩‍👧 Grupo (4+)</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Nivel</div>
+    <div class="pills" id="cv-level">
+      <div class="pill" data-v="primaria">🏫 Primaria</div>
+      <div class="pill" data-v="secundaria">🎒 Secundaria</div>
+      <div class="pill" data-v="uni">🎓 Universitario</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">Horas por semana</div>
+    <input class="fsm" id="cv-hours" type="number" min="0.5" step="0.5" value="2" inputmode="decimal">
+  </div>
+
+  <div id="cv-result"></div>
+</div>
+
+<script>
+// Tarifa base por hora (S/.) según tipo de clase virtual; multiplicador por nivel.
+const CV_RATE  = { individual:35, duo:25, group:18 };
+const CV_LEVEL = { primaria:1, secundaria:1.1, uni:1.25 };
+const CV = { type:null, level:null };
+
+function bindPills(containerId, key) {
+  const c = document.getElementById(containerId);
+  c.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      CV[key] = p.dataset.v;
+      c.querySelectorAll('.pill').forEach(x => x.classList.toggle('psel', x===p));
+      calc();
+    });
+  });
+}
+bindPills('cv-type','type');
+bindPills('cv-level','level');
+document.getElementById('cv-hours').addEventListener('input', calc);
+
+function calc() {
+  const res = document.getElementById('cv-result');
+  const hours = parseFloat(document.getElementById('cv-hours').value) || 0;
+  if (!CV.type || !CV.level || hours <= 0) {
+    res.innerHTML = `<div class="empty">SELECCIONA TIPO, NIVEL Y HORAS PARA VER TU COTIZACIÓN</div>`;
+    return;
+  }
+  const base = CV_RATE[CV.type];
+  const mult = CV_LEVEL[CV.level];
+  const perHour = Math.round(base * mult);
+  const weekly  = Math.round(perHour * hours);
+  const monthly = weekly * 4;
+  const typeLabels  = { individual:'Individual', duo:'Dúo (2-3 alumnos)', group:'Grupo (4+ alumnos)' };
+  const lvlLabels   = { primaria:'Primaria', secundaria:'Secundaria', uni:'Universitario' };
+  res.innerHTML = `
+  <div class="res">
+    <div class="price-lbl">COSTO POR HORA</div>
+    <div class="price-big">S/. ${perHour}</div>
+    <div class="price-det">
+      ${hours} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong> por semana<br>
+      Estimado mensual (4 semanas): <strong>S/. ${monthly}</strong><br>
+      Tipo: ${typeLabels[CV.type]} · Nivel: ${lvlLabels[CV.level]}
+    </div>
+    <button class="cta" onclick="copyCV(${perHour},${weekly},${monthly})">📋 Copiar cotización</button>
+  </div>`;
+}
+function copyCV(perHour, weekly, monthly) {
+  const typeLabels  = { individual:'Individual', duo:'Dúo (2-3 alumnos)', group:'Grupo (4+ alumnos)' };
+  const lvlLabels   = { primaria:'Primaria', secundaria:'Secundaria', uni:'Universitario' };
+  const hours = parseFloat(document.getElementById('cv-hours').value) || 0;
+  const text = `COTIZACIÓN — CLASE VIRTUAL — MATHS LEVEL UP\n\nTipo de clase: ${typeLabels[CV.type]}\nNivel: ${lvlLabels[CV.level]}\nHoras por semana: ${hours}\n\nCosto por hora: S/. ${perHour}\nTotal semanal: S/. ${weekly}\nEstimado mensual: S/. ${monthly}\n\n¡Contáctanos para reservar tu horario!`;
+  navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
+}
+</script>
+</body>
+</html>

@@ -3,4 +3,10 @@
 /numeros   /student/numeros   301
 /student   /student.html      200
 /student/* /student.html      200
+/padres    /padres.html       200
+/padres/*  /padres.html       200
+/cotiza-virtual    /cotiza-virtual.html    200
+/cotiza-domicilio  /cotiza-domicilio.html  200
+/horarios          /horarios.html          200
+/catalogo-2026     /catalogo-2026.html     200
 /*         /index.html        200

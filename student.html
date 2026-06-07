@@ -376,7 +376,7 @@ function descargarImagen(canvas, nombre='imagen.png') {
 // ROUTER
 // ════════════════════════════════════════════════════════
 const PUBLIC_ROUTES = new Set(['login','ranking','numeros']);
-const ADMIN_ROUTES  = new Set(['cotizador']);
+const ADMIN_ROUTES  = new Set([]);
 
 function go(view) {
   currentView = view;
@@ -402,7 +402,7 @@ function router() {
   const views = {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
     ranking: vRankingPage, numeros: vNumerosPage,
-    tareas: vTareas, puntos: vPuntos, cotizador: vCotizador
+    tareas: vTareas, puntos: vPuntos
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
@@ -419,7 +419,7 @@ function router() {
   const setup = {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
     ranking:vRankingSetup, numeros:vNumerosSetup,
-    tareas:vTareasSetup, puntos:vPuntosSetup, cotizador:vCotizadorSetup
+    tareas:vTareasSetup, puntos:vPuntosSetup
   };
   if (setup[hash]) setup[hash]();
 
@@ -439,7 +439,6 @@ function buildNav(active) {
         { r:'tablero',   i:'🎯', l:'Tablero' },
         { r:'tareas',    i:'📋', l:'Tareas' },
         { r:'puntos',    i:'⭐', l:'Puntos' },
-        { r:'cotizador', i:'🧮', l:'Cotizador' },
       ]
     : [
         { r:'dashboard', i:'🏠', l:'Inicio' },
@@ -1360,111 +1359,6 @@ function updatePts(studentId, field, value) {
   }
   clearTimeout(_ptsTimer);
   _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },1000);
-}
-
-// ════════════════════════════════════════════════════════
-// VIEW: COTIZADOR
-// ════════════════════════════════════════════════════════
-const COTIZ = {
-  type: null, duration: null, level: null, freq: 1
-};
-const COTIZ_PRICES = { individual:70, duo:50, group:40 };
-const COTIZ_DUR    = { 45:0.75, 60:1, 90:1.5 };
-const COTIZ_LVL    = { primaria:1, secundaria:1.1, uni:1.3 };
-
-function vCotizador() {
-  return `
-  <div style="padding:12px">
-    <div style="margin-bottom:14px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1">🧮 COTIZADOR</div>
-      <div style="font-size:10px;color:#6b7280;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:2px">SOLO ADMIN · Precio por alumno/mes</div>
-    </div>
-
-    <div class="cotiz-blk">
-      <div class="cotiz-l">TIPO DE CLASE</div>
-      <div class="pills">
-        <div class="pill${COTIZ.type==='individual'?' psel':''}" onclick="setCotiz('type','individual')">👤 Individual</div>
-        <div class="pill${COTIZ.type==='duo'?' psel':''}" onclick="setCotiz('type','duo')">👥 Dúo (2-3)</div>
-        <div class="pill${COTIZ.type==='group'?' psel':''}" onclick="setCotiz('type','group')">👨‍👩‍👧 Grupo (4+)</div>
-      </div>
-    </div>
-
-    <div class="cotiz-blk">
-      <div class="cotiz-l">DURACIÓN POR SESIÓN</div>
-      <div class="pills">
-        <div class="pill${COTIZ.duration===45?' psel':''}" onclick="setCotiz('duration',45)">45 MIN</div>
-        <div class="pill${COTIZ.duration===60?' psel':''}" onclick="setCotiz('duration',60)">60 MIN</div>
-        <div class="pill${COTIZ.duration===90?' psel':''}" onclick="setCotiz('duration',90)">90 MIN</div>
-      </div>
-    </div>
-
-    <div class="cotiz-blk">
-      <div class="cotiz-l">NIVEL</div>
-      <div class="pills">
-        <div class="pill${COTIZ.level==='primaria'?' psel':''}" onclick="setCotiz('level','primaria')">🏫 Primaria</div>
-        <div class="pill${COTIZ.level==='secundaria'?' psel':''}" onclick="setCotiz('level','secundaria')">🎒 Secundaria</div>
-        <div class="pill${COTIZ.level==='uni'?' psel':''}" onclick="setCotiz('level','uni')">🎓 Universitario</div>
-      </div>
-    </div>
-
-    <div class="cotiz-blk">
-      <div class="cotiz-l">SESIONES POR SEMANA</div>
-      <div class="pills">
-        ${[1,2,3].map(n=>`<div class="pill${COTIZ.freq===n?' psel':''}" onclick="setCotiz('freq',${n})">${n}x / semana</div>`).join('')}
-      </div>
-    </div>
-
-    <div id="cotiz-result"></div>
-  </div>`;
-}
-function vCotizadorSetup() {
-  COTIZ.type=null; COTIZ.duration=null; COTIZ.level=null; COTIZ.freq=1;
-  calcCotiz();
-}
-function setCotiz(field, value) {
-  COTIZ[field]=value;
-  // Update pill UI
-  const maps = { type:['individual','duo','group'], duration:[45,60,90], level:['primaria','secundaria','uni'], freq:[1,2,3] };
-  document.querySelectorAll('.pill').forEach(el => {
-    // re-render is simpler
-  });
-  // Re-render view to update pill states
-  const app=document.getElementById('app');
-  app.innerHTML=`<div class="vw">${vCotizador()}</div>`;
-  vCotizadorSetup(); calcCotiz();
-}
-function calcCotiz() {
-  const res=document.getElementById('cotiz-result'); if (!res) return;
-  if (!COTIZ.type||!COTIZ.duration||!COTIZ.level) {
-    res.innerHTML=`<div style="text-align:center;padding:24px;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900">SELECCIONA TODAS LAS OPCIONES</div>`;
-    return;
-  }
-  const basePrice   = COTIZ_PRICES[COTIZ.type] || 60;
-  const durMult     = COTIZ_DUR[COTIZ.duration] || 1;
-  const lvlMult     = COTIZ_LVL[COTIZ.level]    || 1;
-  const sessPerWeek = COTIZ.freq || 1;
-  const pricePerSess= Math.round(basePrice * durMult * lvlMult);
-  const monthly     = pricePerSess * sessPerWeek * 4;
-  const typeLabels  = { individual:'Individual', duo:'Dúo', group:'Grupo' };
-  const lvlLabels   = { primaria:'Primaria', secundaria:'Secundaria', uni:'Universitario' };
-  res.innerHTML=`
-  <div class="cotiz-res">
-    <div style="font-size:10px;color:rgba(147,197,253,0.6);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px">PRECIO MENSUAL ESTIMADO</div>
-    <div class="price-big">S/. ${monthly}</div>
-    <div class="price-lbl">por alumno · ${COTIZ.freq}x/sem · ${COTIZ.duration} min</div>
-    <div class="price-det">
-      Precio por sesión: <strong>S/. ${pricePerSess}</strong><br>
-      ${sessPerWeek} sesión${sessPerWeek>1?'es':''}/semana × 4 semanas = ${sessPerWeek*4} sesiones<br>
-      Tipo: ${typeLabels[COTIZ.type]} · Nivel: ${lvlLabels[COTIZ.level]}
-    </div>
-    <button onclick="copyCotizacion(${monthly},${pricePerSess})" style="margin-top:16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:10px 20px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.15em;text-transform:uppercase">📋 COPIAR COTIZACIÓN</button>
-  </div>`;
-}
-function copyCotizacion(monthly, perSess) {
-  const typeLabels  = { individual:'Individual', duo:'Dúo (2-3 alumnos)', group:'Grupo (4+ alumnos)' };
-  const lvlLabels   = { primaria:'Primaria', secundaria:'Secundaria', uni:'Universitario' };
-  const text=`COTIZACIÓN MATHS LEVEL UP\n\nTipo de clase: ${typeLabels[COTIZ.type]||'-'}\nNivel: ${lvlLabels[COTIZ.level]||'-'}\nDuración por sesión: ${COTIZ.duration} minutos\nFrecuencia: ${COTIZ.freq} sesión${COTIZ.freq>1?'es':''} por semana\n\nPrecio por sesión: S/. ${perSess}\nTOTAL MENSUAL: S/. ${monthly}\n\n¡Contáctanos para más información!`;
-  navigator.clipboard.writeText(text).then(()=>showToast('Cotización copiada.','success')).catch(()=>showToast('No se pudo copiar.'));
 }
 
 // ════════════════════════════════════════════════════════
