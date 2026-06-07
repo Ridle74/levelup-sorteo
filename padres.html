@@ -144,7 +144,8 @@ const SEED = {
     "fprado":      { name:"Sr. Fernando Prado",     pin:"6611", phone:"", children:[3,4,10] },
     "vera":        { name:"Sra. Julissa Vera",      pin:"6622", phone:"", children:[8] },
     "paredes":     { name:"Sra. Dora Paredes",      pin:"6633", phone:"", children:[5] },
-    "valdez":      { name:"Sra. Jenifer Valdez",    pin:"6644", phone:"", children:[6,9] },
+    "valdez":      { name:"Sra. Jenifer Valdez",    pin:"6644", phone:"", children:[6] },
+    "zambrano":    { name:"Sra. Lady Zambrano",     pin:"6623", phone:"", children:[9] },
     "benites":     { name:"Sra. Marissa Benites",   pin:"6655", phone:"", children:[1,2] },
     "garcia":      { name:"Sra. Diana García",      pin:"6666", phone:"", children:[12] },
     "wvillalobos": { name:"Sr. Walther Villalobos", pin:"6677", phone:"", children:[7] },
@@ -233,7 +234,7 @@ let DATA = JSON.parse(JSON.stringify(SEED));
 DATA.adminPin = ADMIN_PIN_DEFAULT;
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
-const SEED_VERSION = 3;
+const SEED_VERSION = 4;
 let appReady = false;
 let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
