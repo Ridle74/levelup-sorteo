@@ -52,8 +52,10 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .cal-nav button { border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:#fff; border-radius:10px; width:34px; height:34px; font-size:16px; cursor:pointer; }
 .cal-range { font-size:11px; color:rgba(255,255,255,0.45); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:700; }
 
-.cal-grid { display:grid; gap:6px; }
-.cal-day { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:10px; }
+.cal-grid { display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:8px; scroll-snap-type:x proximity; }
+.cal-grid::-webkit-scrollbar { height:6px; }
+.cal-grid::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:6px; }
+.cal-day { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:10px; flex:0 0 150px; scroll-snap-align:start; }
 .cal-day-hdr { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.65); margin-bottom:8px; display:flex; justify-content:space-between; }
 .cal-day-hdr .dnum { color:rgba(255,255,255,0.35); font-weight:700; font-size:11px; }
 .cal-empty { font-size:11px; color:rgba(255,255,255,0.25); padding:10px 0; text-align:center; }
@@ -154,7 +156,7 @@ const SEED = {
   cycleName: "MATHS ONEX",
   cycleEnd:  "2026-07-05",
   parents: {
-    "fprado":      { name:"Sr. Fernando Prado",     pin:"6611", phone:"", children:[3,4,10] },
+    "fprado":      { name:"Sr. Fernando Prado",     pin:"6611", phone:"", children:[3,4,10,16,17] },
     "vera":        { name:"Sra. Julissa Vera",      pin:"6622", phone:"", children:[8] },
     "paredes":     { name:"Sra. Dora Paredes",      pin:"6633", phone:"", children:[5] },
     "valdez":      { name:"Sra. Jenifer Valdez",    pin:"6644", phone:"", children:[6] },
@@ -170,8 +172,8 @@ const SEED = {
   students: {
     "1":  { name:"Rafaela Villena",   color:"#9333ea", icon:"🐨",  modality:"Virtual" },
     "2":  { name:"Mikela Villena",    color:"#9333ea", icon:"👧🏼", modality:"Virtual" },
-    "3":  { name:"Alejandro Prado",   color:"#d97706", icon:"🦁",  modality:"Domicilio" },
-    "4":  { name:"Joao & Josué",      color:"#d97706", icon:"👦🏻", modality:"Domicilio" },
+    "3":  { name:"Alejandro Rodríguez", color:"#d97706", icon:"🦁",  modality:"Domicilio" },
+    "4":  { name:"Joao Prado",        color:"#d97706", icon:"👦🏻", modality:"Domicilio" },
     "5":  { name:"Manuel Villacorta", color:"#e11d48", icon:"👦🏻", modality:"Virtual" },
     "6":  { name:"Augusto Giuffra",   color:"#10b981", icon:"🕷️",  modality:"Virtual" },
     "7":  { name:"Maria Villalobos",  color:"#64748b", icon:"👧🏽", modality:"Virtual" },
@@ -182,7 +184,9 @@ const SEED = {
     "12": { name:"Mateo Ríos",        color:"#2563eb", icon:"🐧",  modality:"Virtual" },
     "13": { name:"Jorge Ureña",       color:"#2563eb", icon:"👦🏻", modality:"Virtual" },
     "14": { name:"Catalina Vera",     color:"#0d9488", icon:"🐱",  modality:"Virtual" },
-    "15": { name:"Gustavo Pacheco",   color:"#ca8a04", icon:"🐯",  modality:"Virtual" }
+    "15": { name:"Gustavo Pacheco",   color:"#ca8a04", icon:"🐯",  modality:"Virtual" },
+    "16": { name:"Josué Prado",       color:"#d97706", icon:"👦🏻", modality:"Domicilio" },
+    "17": { name:"Lucio Prado",       color:"#d97706", icon:"🐻",  modality:"Domicilio" }
   },
   sessions: [
     // Lunes
@@ -214,7 +218,10 @@ const SEED = {
     { id:21, studentId:14, day:0, start:"10:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     { id:22, studentId:13, day:0, start:"11:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     { id:23, studentId:15, day:0, start:"12:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:24, studentId:7,  day:0, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" }
+    { id:24, studentId:7,  day:0, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    // Clases conjuntas de Joao y Josué (comparten horario "One to Family")
+    { id:25, studentId:16, day:2, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
+    { id:26, studentId:16, day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" }
   ],
   requests: [],
   // Solicitudes de creación de cuenta hechas por padres nuevos (auto-registro).
@@ -247,7 +254,7 @@ let DATA = JSON.parse(JSON.stringify(SEED));
 DATA.adminPin = ADMIN_PIN_DEFAULT;
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
-const SEED_VERSION = 4;
+const SEED_VERSION = 5;
 let appReady = false;
 let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
@@ -647,7 +654,7 @@ function vCalendario() {
       </div>
     </div>
     <div class="cal-range">${fmtDM(rangeStart)} — ${fmtDM(rangeEnd)}</div>
-    <div class="cal-grid" style="grid-template-columns:repeat(${calMode==='4dias'?2:1},1fr)">
+    <div class="cal-grid">
       ${dayList.map(d => {
         const dow = d.getDay();
         const slots = selectedChild ? DATA.sessions.filter(s => s.studentId===selectedChild && s.day===dow) : [];
