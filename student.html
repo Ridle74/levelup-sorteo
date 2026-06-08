@@ -457,7 +457,8 @@ function viewFromLocation() {
 }
 
 let currentView = viewFromLocation();
-let taskFilter  = 'all'; // 'all' | 'done' — filtro visual de la pestaña Tareas
+let taskFilter  = 'pending'; // 'pending' | 'done' — filtro de la pestaña Tareas
+let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
 
 // Atrás/adelante del navegador: releer la vista desde la URL y renderizar
 // sin recargar la página.
@@ -507,7 +508,8 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
     });
   });
-  return list.sort((a,b) => { const d=(b.max||0)-(a.max||0); return d!==0?d:a.id-b.id; });
+  // Orden de turnos: a mayor puntaje del mes actual, mejor posición (turno más temprano).
+  return list.sort((a,b) => { const d=getTotalPts(b.id)-getTotalPts(a.id); return d!==0?d:a.id-b.id; });
 }
 
 function getFullList() { return [ADMIN, ...getStudents()]; }
@@ -898,7 +900,7 @@ function vDashboard() {
 
     <div class="tabs">
       <button class="tab-btn active">🏠 RESUMEN</button>
-      <button class="tab-btn" onclick="go('tablero')">🎮 TABLERO</button>
+      <button class="tab-btn" onclick="showToast('🎮 GAMING: muy pronto la plataforma donde se transmitirá el sorteo en vivo.','info')">🎮 GAMING</button>
     </div>
 
     ${!isAdmin() ? `
@@ -1554,7 +1556,7 @@ function vTareas() {
   const completedCount = myTasks.length - pendingCount;
   const filtered = taskFilter==='done'
     ? myTasks.filter(t => (t.completedBy||[]).includes(loggedId))
-    : myTasks;
+    : myTasks.filter(t => !(t.completedBy||[]).includes(loggedId));
   const sorted   = [...filtered].sort((a,b)=>(a.due||'').localeCompare(b.due||''));
   return `
   <div style="padding:12px">
@@ -1573,7 +1575,7 @@ function vTareas() {
     </div>
 
     <div class="tabs">
-      <button class="tab-btn${taskFilter==='all'?' active':''}" onclick="setTaskFilter('all')">📌 PENDIENTES (${pendingCount})</button>
+      <button class="tab-btn${taskFilter==='pending'?' active':''}" onclick="setTaskFilter('pending')">📌 PENDIENTES (${pendingCount})</button>
       <button class="tab-btn${taskFilter==='done'?' active':''}" onclick="setTaskFilter('done')">✅ COMPLETADAS (${completedCount})</button>
     </div>
 
@@ -1599,7 +1601,7 @@ function vTareas() {
     </div>`:''}
 
     <div id="tasks-list">
-      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN TAREAS PENDIENTES</div></div>`
+      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskFilter==='done'?'SIN TAREAS COMPLETADAS':'SIN TAREAS PENDIENTES'}</div></div>`
       : sorted.map(t => renderTask(t, loggedId)).join('')}
     </div>
   </div>`;
@@ -1628,6 +1630,10 @@ function renderTask(t, loggedId) {
 function vTareasSetup() {}
 function setTaskFilter(f) {
   taskFilter = f;
+  router();
+}
+function setPuntosTab(t) {
+  puntosTab = t;
   router();
 }
 function toggleAddTask() {
@@ -1665,11 +1671,7 @@ function toggleTaskDone(id) {
   if (idx>-1) task.completedBy.splice(idx,1);
   else task.completedBy.push(loggedId);
   saveLms();
-  // Update UI without full re-render
-  const newEl=document.createElement('div');
-  newEl.innerHTML=renderTask(task,loggedId);
-  const old=document.getElementById('tc-'+id);
-  if (old && newEl.firstElementChild) old.replaceWith(newEl.firstElementChild);
+  router(); // re-render completo para que el filtro Pendientes/Completadas se aplique correctamente
 }
 
 // ════════════════════════════════════════════════════════
@@ -1702,10 +1704,11 @@ function vPuntos() {
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active">⭐ RESUMEN</button>
-      <button class="tab-btn" onclick="go('tablero')">🎮 TABLERO</button>
+      <button class="tab-btn${puntosTab==='resumen'?' active':''}" onclick="setPuntosTab('resumen')">⭐ RESUMEN</button>
+      <button class="tab-btn${puntosTab==='historial'?' active':''}" onclick="setPuntosTab('historial')">📅 HISTORIAL</button>
     </div>
 
+    ${puntosTab==='historial' ? vPuntosHistorial() : `
     ${sorted.map((s,idx) => {
       const p     = getStudentPoints(s.id);
       const total = p.hours+p.progress+p.tasks;
@@ -1739,6 +1742,52 @@ function vPuntos() {
         ${admin ? vPtsAdminPanel(s) : ''}
       </div>`;
     }).join('')}
+    `}
+  </div>`;
+}
+
+// Historial de torneos mensuales pasados: top-3 de cada ranking + ganador del sorteo de ese mes.
+function vPuntosHistorial() {
+  const meses = [
+    {
+      nombre: 'MAYO 2026',
+      podio: [
+        {pos:1, nombre:'Brunella Varillas'},
+        {pos:2, nombre:'Lucio Prado'},
+        {pos:3, nombre:'Alejandro Prado'}
+      ],
+      sorteo: 'Brunella Varillas'
+    },
+    {
+      nombre: 'ABRIL 2026',
+      podio: [
+        {pos:1, nombre:'Mikela Villena', pts:25},
+        {pos:2, nombre:'Lucio Prado', pts:24},
+        {pos:3, nombre:'Joanna Prado', pts:17}
+      ],
+      sorteo: 'Manuel Villacorta'
+    }
+  ];
+  const medals = ['🥇','🥈','🥉'];
+  return `
+  <div style="display:flex;flex-direction:column;gap:12px">
+    ${meses.map(m => `
+    <div class="pts-row">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;color:#b06bff;margin-bottom:10px">🏆 ${m.nombre}</div>
+      ${m.podio.map((p,idx) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:6px 0;${idx<m.podio.length-1?'border-bottom:1px solid rgba(255,255,255,0.06);':''}">
+        <span style="font-size:20px;flex-shrink:0">${medals[idx]}</span>
+        <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;text-transform:uppercase">${p.nombre}</div>
+        ${p.pts!=null ? `<div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#39ff7a">${p.pts} pts</div>` : ''}
+      </div>`).join('')}
+      <div style="margin-top:12px;display:flex;align-items:center;gap:10px;background:rgba(255,210,63,0.08);border:1px solid rgba(255,210,63,0.25);border-radius:12px;padding:10px 12px">
+        <span style="font-size:20px">🎉</span>
+        <div>
+          <div style="font-size:8px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,210,63,0.7)">GANADOR DEL SORTEO</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;color:#ffd23f">${m.sorteo}</div>
+        </div>
+      </div>
+    </div>`).join('')}
   </div>`;
 }
 
