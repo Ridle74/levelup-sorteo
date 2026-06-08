@@ -348,7 +348,7 @@ function getStudentPoints(id, monthOffset=0) {
   // arrToBool: soporta formato nuevo (array de booleanos) y formato viejo (un solo booleano por fecha)
   const arrToBool = v => Array.isArray(v) ? v : (v ? [true] : []);
   Object.entries(log).forEach(([dateKey, marks]) => {
-    if (!dateKey.startsWith(ym) || !marks) return;
+    if (!dateKey.startsWith(ym) || !marks || marks.absent) return;
     arrToBool(marks.hours).forEach(v => { if (v) hours++; });
     arrToBool(marks.progress).forEach(v => { if (v) progress++; });
     arrToBool(marks.tasks).forEach(v => { if (v) tasks += taskMult; });
@@ -1488,26 +1488,32 @@ function vPtsDateChecklist(s) {
   }
   const dayShort = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
   return `
-  <div style="margin-top:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px">
+  <div id="pts-dates-${s.id}" style="margin-top:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
       <button onclick="changePtsMonth(-1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">◀</button>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:0.05em">${fmtPtsMonth(offset)}</span>
       <button onclick="changePtsMonth(1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">▶</button>
     </div>
     <div style="font-size:9px;color:rgba(255,255,255,0.35);line-height:1.6;margin-bottom:8px">
-      ⏱️ Horas y 📈 Progreso: un cuadradito por cada hora de clase ese día. ✅ Tareas: hasta ${PTS_TASKS_MAX} por fecha${mult>1?`, cada uno vale ×${mult} para este alumno (ajustable arriba)`:''}.
+      ⏱️ Horas y 📈 Progreso: un cuadradito por cada hora de clase ese día. ✅ Tareas: hasta ${PTS_TASKS_MAX} por fecha${mult>1?`, cada uno vale ×${mult} para este alumno (ajustable arriba)`:''}. 🚫 Si el alumno faltó, marca "Faltó a clase" para que esa fecha no sume ni reste puntos.
     </div>
     ${dates.map(({date,key,hours}) => {
       const m = log[key] || {};
+      const absent = !!m.absent;
       const isFuture = date > today;
       const dlabel = `${dayShort[date.getDay()]} ${date.getDate()}`;
+      const dim = absent ? 'opacity:0.4' : '';
       return `
       <div style="display:flex;align-items:flex-start;gap:6px;padding:7px 4px;border-top:1px solid rgba(255,255,255,0.05)">
         <span style="flex:0 0 56px;font-size:12px;font-weight:700;padding-top:2px;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}<br><span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35)">${hours}h clase</span></span>
         <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:9px;color:rgba(96,165,250,0.7);width:42px;flex-shrink:0">⏱️ Horas</span>${ptsCheckRow(s.id,key,'hours',hours,m.hours,'#60a5fa',isFuture)}</div>
-          <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:9px;color:rgba(167,139,250,0.7);width:42px;flex-shrink:0">📈 Prog.</span>${ptsCheckRow(s.id,key,'progress',hours,m.progress,'#a78bfa',isFuture)}</div>
-          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:rgba(74,222,128,0.7);width:42px;flex-shrink:0">✅ Tareas</span>${ptsCheckRow(s.id,key,'tasks',PTS_TASKS_MAX,m.tasks,'#4ade80',isFuture)}</div>
+          <label style="display:flex;align-items:center;gap:5px;margin-bottom:5px;font-size:10px;font-weight:700;color:${absent?'#f87171':'rgba(248,113,113,0.55)'};cursor:${isFuture?'default':'pointer'}">
+            <input type="checkbox" ${absent?'checked':''} ${isFuture?'disabled':''} onchange="toggleAbsent(${s.id},'${key}',this.checked)" style="width:14px;height:14px;accent-color:#f87171;cursor:${isFuture?'default':'pointer'}">
+            🚫 Faltó a clase${absent?' — no cuenta para el total':''}
+          </label>
+          <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:9px;color:rgba(96,165,250,0.7);width:42px;flex-shrink:0">⏱️ Horas</span>${ptsCheckRow(s.id,key,'hours',hours,m.hours,'#60a5fa',isFuture||absent)}</div>
+          <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:9px;color:rgba(167,139,250,0.7);width:42px;flex-shrink:0">📈 Prog.</span>${ptsCheckRow(s.id,key,'progress',hours,m.progress,'#a78bfa',isFuture||absent)}</div>
+          <div style="${dim};display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:rgba(74,222,128,0.7);width:42px;flex-shrink:0">✅ Tareas</span>${ptsCheckRow(s.id,key,'tasks',PTS_TASKS_MAX,m.tasks,'#4ade80',isFuture||absent)}</div>
         </div>
       </div>`;
     }).join('')}
@@ -1543,6 +1549,25 @@ function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   if (totalEl) totalEl.textContent=getTotalPts(studentId);
   clearTimeout(_ptsTimer);
   _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },800);
+}
+
+// Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
+// Horas/Progreso/Tareas de ese día y se excluye del cálculo de puntos (no suma ni resta).
+function toggleAbsent(studentId, dateKey, checked) {
+  _lastPtsLocalEdit = Date.now();
+  const key=String(studentId);
+  if (!pointsLog[key]) pointsLog[key]={};
+  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
+  const entry = pointsLog[key][dateKey];
+  entry.absent = !!checked;
+  if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
+  const totalEl=document.getElementById(`pts-total-${studentId}`);
+  if (totalEl) totalEl.textContent=getTotalPts(studentId);
+  const cont=document.getElementById(`pts-dates-${studentId}`);
+  const st=getStudents().find(x=>String(x.id)===key);
+  if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
+  clearTimeout(_ptsTimer);
+  _ptsTimer=setTimeout(()=>{ saveLms(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
 }
 
 // ════════════════════════════════════════════════════════
