@@ -239,23 +239,19 @@ textarea.fsm { resize:none; height:64px; }
 #app .overlay-title { text-shadow: 0 0 12px var(--nc-purple); }
 #app .clock-box, #app .overlay-start { background: rgba(34,229,255,0.07); border: 1px solid rgba(34,229,255,0.2); border-radius: 12px; }
 
-/* ── ENCABEZADO (#header) — tarjeta neón rectangular con bordes redondeados (igual que Inicio/Puntos) ── */
+/* ── ENCABEZADO (#header) — tarjeta con borde neón ámbar brillante (igual que referencia del usuario) ── */
 #app #header {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   margin: 12px 12px 10px;
   border-radius: 20px;
   padding: 16px 18px;
-  background: linear-gradient(115deg, #5b21b6 0%, #0e7490 55%, #39ff7a 100%);
-  box-shadow: 0 0 0 1px rgba(34,229,255,0.35) inset, 0 14px 44px -14px rgba(176,107,255,0.55);
-  border-bottom: none;
+  background: linear-gradient(180deg, #0c1f14, #06120c);
+  border: 2px solid #ffd23f;
+  box-shadow: 0 0 10px 2px rgba(255,210,63,0.55), 0 0 28px 4px rgba(255,210,63,0.35), inset 0 0 14px rgba(255,210,63,0.12);
+  border-bottom: 2px solid #ffd23f;
 }
-#app #header::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.025) 20px, rgba(255,255,255,0.025) 40px);
-  pointer-events: none;
-}
+#app #header::before { content: none; }
 #app #header::after { content: none; }
 #app #header > * { position: relative; z-index: 1; }
 #app #header .admin-row { margin-top: 12px; }
