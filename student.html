@@ -278,6 +278,37 @@ textarea.fsm { resize:none; height:64px; }
   color: rgba(255,255,255,0.55);
   transition: all 0.25s;
 }
+
+/* ── BOTONES ADMIN (CONFIG / REPORTE / RESET) — set "gamer" neón cohesivo ── */
+#app .btn-admin { text-shadow: 0 0 8px currentColor; letter-spacing: 0.16em; }
+#app .btn-neon-cfg {
+  background: linear-gradient(135deg, rgba(34,229,255,0.16), rgba(57,255,122,0.10));
+  border: 1px solid rgba(34,229,255,0.5);
+  color: var(--nc-cyan);
+  box-shadow: 0 0 14px -3px rgba(34,229,255,0.6), inset 0 0 10px rgba(34,229,255,0.1);
+}
+#app .btn-neon-cfg:hover { box-shadow: 0 0 20px -2px rgba(34,229,255,0.8), inset 0 0 12px rgba(34,229,255,0.16); }
+#app .btn-neon-cfg.is-open {
+  background: linear-gradient(135deg, rgba(255,210,63,0.22), rgba(255,138,61,0.14));
+  border-color: rgba(255,210,63,0.6);
+  color: var(--nc-amber);
+  box-shadow: 0 0 16px -2px rgba(255,210,63,0.65), inset 0 0 10px rgba(255,210,63,0.14);
+}
+#app .btn-neon-rep {
+  background: linear-gradient(135deg, rgba(176,107,255,0.18), rgba(34,229,255,0.10));
+  border: 1px solid rgba(176,107,255,0.5);
+  color: var(--nc-purple);
+  box-shadow: 0 0 14px -3px rgba(176,107,255,0.6), inset 0 0 10px rgba(176,107,255,0.1);
+}
+#app .btn-neon-rep:hover { box-shadow: 0 0 20px -2px rgba(176,107,255,0.8), inset 0 0 12px rgba(176,107,255,0.16); }
+#app .btn-neon-rst {
+  background: linear-gradient(135deg, rgba(255,92,122,0.20), rgba(255,138,61,0.12));
+  border: 1px solid rgba(255,92,122,0.5);
+  color: var(--nc-pink);
+  box-shadow: 0 0 14px -3px rgba(255,92,122,0.6), inset 0 0 10px rgba(255,92,122,0.1);
+}
+#app .btn-neon-rst:hover { box-shadow: 0 0 20px -2px rgba(255,92,122,0.85), inset 0 0 12px rgba(255,92,122,0.18); }
+
 #app .tab-btn.active {
   background: linear-gradient(180deg, #0c1f14, #06120c);
   color: var(--nc-lime);
@@ -929,9 +960,9 @@ function vTablero() {
       </div>
     </div>
     <div id="admin-buttons" class="admin-row" style="display:${student.role==='admin'?'flex':'none'}">
-      <button id="btn-toggle-config" class="btn-admin" style="background:#105c4d;color:#fff" onclick="toggleAdminPanel()">⚙️ CONFIG</button>
-      <button class="btn-admin" style="background:#1d4ed8;color:#fff" onclick="exportTxt()">📄 REPORTE</button>
-      <button class="btn-admin" style="background:#dc2626;color:#fff" onclick="openReset()">🗑️ RESET</button>
+      <button id="btn-toggle-config" class="btn-admin btn-neon-cfg" onclick="toggleAdminPanel()">⚡ CONFIG</button>
+      <button class="btn-admin btn-neon-rep" onclick="exportTxt()">🎯 REPORTE</button>
+      <button class="btn-admin btn-neon-rst" onclick="openReset()">💥 RESET</button>
     </div>
   </header>
 
@@ -1181,8 +1212,8 @@ function toggleAdminPanel() {
   const panel=document.getElementById('admin-panel');
   const btn=document.getElementById('btn-toggle-config');
   const isOpen=panel.classList.toggle('open');
-  btn.style.background=isOpen?'#f97316':'#105c4d';
-  btn.textContent=isOpen?'⚙️ CERRAR':'⚙️ CONFIG';
+  btn.classList.toggle('is-open', isOpen);
+  btn.textContent=isOpen?'✖ CERRAR':'⚡ CONFIG';
   if (isOpen) renderAdminPanel();
 }
 function setTotalNumbers(n) {
