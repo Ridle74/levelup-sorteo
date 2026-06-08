@@ -239,23 +239,30 @@ textarea.fsm { resize:none; height:64px; }
 #app .overlay-title { text-shadow: 0 0 12px var(--nc-purple); }
 #app .clock-box, #app .overlay-start { background: rgba(34,229,255,0.07); border: 1px solid rgba(34,229,255,0.2); border-radius: 12px; }
 
-/* ── ENCABEZADO (#header) — tarjeta con borde neón ámbar brillante (igual que referencia del usuario) ── */
+/* ── ENCABEZADO (#header) — tarjeta con degradado neón arcade (intercambiado con pestaña activa) ── */
 #app #header {
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   margin: 12px 12px 10px;
   border-radius: 20px;
   padding: 16px 18px;
-  background: linear-gradient(180deg, #0c1f14, #06120c);
-  border: 2px solid #ffd23f;
-  box-shadow: 0 0 10px 2px rgba(255,210,63,0.55), 0 0 28px 4px rgba(255,210,63,0.35), inset 0 0 14px rgba(255,210,63,0.12);
-  border-bottom: 2px solid #ffd23f;
+  background: linear-gradient(115deg,#7c3aed,#22e5ff 65%,#39ff7a);
+  box-shadow: 0 0 22px -4px var(--nc-cyan), 0 0 0 1px rgba(255,255,255,0.3) inset, 0 14px 44px -14px rgba(176,107,255,0.55);
+  border: none;
 }
-#app #header::before { content: none; }
+#app #header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.06) 20px, rgba(255,255,255,0.06) 40px);
+  pointer-events: none;
+}
 #app #header::after { content: none; }
 #app #header > * { position: relative; z-index: 1; }
 #app #header .admin-row { margin-top: 12px; }
-#app #header .header-title { text-shadow: 0 0 14px rgba(57,255,122,0.55); }
+#app #header .header-title { color: #06141f; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+#app #header .status-badge { backdrop-filter: blur(2px); }
+#app #header .uname { color: #06141f; }
+#app #header .user-pill { background: rgba(6,20,31,0.18); border-color: rgba(6,20,31,0.3); }
 
 /* ── PESTAÑAS (Tablero/Ranking) y RANKING DE TURNOS — arcade neón ── */
 #app .tab-btn {
@@ -265,10 +272,11 @@ textarea.fsm { resize:none; height:64px; }
   transition: all 0.25s;
 }
 #app .tab-btn.active {
-  background: linear-gradient(115deg,#7c3aed,#22e5ff 65%,#39ff7a);
-  color: #06141f;
-  box-shadow: 0 0 22px -4px var(--nc-cyan), 0 0 0 1px rgba(255,255,255,0.3) inset;
-  text-shadow: none;
+  background: linear-gradient(180deg, #0c1f14, #06120c);
+  color: var(--nc-lime);
+  border: 2px solid #ffd23f;
+  box-shadow: 0 0 10px 2px rgba(255,210,63,0.55), 0 0 22px 4px rgba(255,210,63,0.3), inset 0 0 14px rgba(255,210,63,0.12);
+  text-shadow: 0 0 10px rgba(57,255,122,0.6);
 }
 #app .status-badge { backdrop-filter: blur(2px); letter-spacing: 0.08em; }
 #app .status-open   { background: rgba(57,255,122,0.12); color: var(--nc-lime);  border-color: rgba(57,255,122,0.4); box-shadow: 0 0 14px -4px var(--nc-lime);  text-shadow: 0 0 8px currentColor; }
