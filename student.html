@@ -239,6 +239,29 @@ textarea.fsm { resize:none; height:64px; }
 #app .overlay-title { text-shadow: 0 0 12px var(--nc-purple); }
 #app .clock-box, #app .overlay-start { background: rgba(34,229,255,0.07); border: 1px solid rgba(34,229,255,0.2); border-radius: 12px; }
 
+/* ── ENCABEZADO (#header) — fondo neón con transición de colores ── */
+#app #header {
+  background: linear-gradient(100deg, #5b21b6 0%, #0e7490 45%, #15172c 75%, #0a0b16 100%);
+  border-bottom: 1px solid rgba(34,229,255,0.25);
+  box-shadow: 0 0 0 1px rgba(34,229,255,0.12) inset, 0 8px 30px -12px rgba(176,107,255,0.55);
+  position: relative;
+  overflow: hidden;
+}
+#app #header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.025) 20px, rgba(255,255,255,0.025) 40px);
+  pointer-events: none;
+}
+#app #header::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: linear-gradient(90deg, var(--nc-cyan), var(--nc-purple), var(--nc-lime), var(--nc-amber));
+  box-shadow: 0 0 12px -1px rgba(34,229,255,0.8);
+}
+#app #header > * { position: relative; z-index: 1; }
+#app #header .header-title { text-shadow: 0 0 14px rgba(57,255,122,0.55); }
+
 /* ── PESTAÑAS (Tablero/Ranking) y RANKING DE TURNOS — arcade neón ── */
 #app .tab-btn {
   background: linear-gradient(160deg, rgba(34,229,255,0.06), rgba(176,107,255,0.04));
