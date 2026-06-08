@@ -215,7 +215,8 @@ let overrides   = {};
 let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
 let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[] }]
 let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... }
-let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:bool,progress:bool,tasks:bool} } }
+let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progress:[bool],tasks:[bool]} } }
+let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 let classDaysByName = {}; // { "<nombre normalizado>": Set([0..6]) } — días de la semana con clase, desde /padres
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
@@ -335,16 +336,19 @@ function getSorteoMonth() {
 }
 
 // Cuenta las marcas (true) del mes actual en pointsLog para un alumno: { hours, progress, tasks }
+// Cada entrada de hours/progress/tasks ahora es un arreglo de booleanos (uno por cuadradito).
+// Para Joanna Prado, cada cuadradito de Tareas marcado vale ×3 (cursos de nivel más avanzado).
 function getStudentPoints(id, monthOffset=0) {
   const log = pointsLog[String(id)] || {};
+  const taskMult = getTaskMult(id);
   const base = new Date(); base.setMonth(base.getMonth()+monthOffset);
   const ym = `${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}`;
   let hours=0, progress=0, tasks=0;
   Object.entries(log).forEach(([dateKey, marks]) => {
     if (!dateKey.startsWith(ym) || !marks) return;
-    if (marks.hours)    hours++;
-    if (marks.progress) progress++;
-    if (marks.tasks)    tasks++;
+    (marks.hours||[]).forEach(v => { if (v) hours++; });
+    (marks.progress||[]).forEach(v => { if (v) progress++; });
+    (marks.tasks||[]).forEach(v => { if (v) tasks += taskMult; });
   });
   return { hours, progress, tasks };
 }
@@ -398,15 +402,16 @@ function saveAllocationChange(num, action, ownerId) {
 }
 
 function saveLms() {
-  REF.set({ lms:{ tasks, points, pointsLog } }, { merge:true })
+  REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers } }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
 
-// Devuelve [{date:Date, key:'YYYY-MM-DD'}] de las fechas del mes (con offset) en que el alumno tiene clase,
-// según su horario semanal sincronizado desde /padres (classDaysByName). Si no hay match, devuelve [].
+// Devuelve [{date:Date, key:'YYYY-MM-DD', hours:N}] de las fechas del mes (con offset) en que el alumno
+// tiene clase, junto con el total de horas de clase ese día — según el horario semanal sincronizado
+// desde /padres (classDaysByName: { "<nombre>": {"<díaSemana>": horas} }). Si no hay match, devuelve [].
 function getClassDatesForStudent(studentName, monthOffset=0) {
-  const days = classDaysByName[normName(studentName)];
-  if (!days || !days.size) return [];
+  const hoursByDay = classDaysByName[normName(studentName)];
+  if (!hoursByDay || !Object.keys(hoursByDay).length) return [];
   const base = new Date();
   base.setMonth(base.getMonth()+monthOffset);
   const y = base.getFullYear(), m = base.getMonth();
@@ -414,13 +419,18 @@ function getClassDatesForStudent(studentName, monthOffset=0) {
   const out = [];
   for (let d=1; d<=last; d++) {
     const dt = new Date(y, m, d);
-    if (days.has(dt.getDay())) {
+    const h = hoursByDay[dt.getDay()];
+    if (h) {
       const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      out.push({ date:dt, key });
+      out.push({ date:dt, key, hours:h });
     }
   }
   return out;
 }
+const PTS_TASKS_MAX = 5;          // máximo de cuadraditos de Tareas por fecha
+// Multiplicador de valor por cuadradito de Tareas para un alumno (1 = normal, 3 = vale el triple, etc.)
+// Editable por el admin desde el panel de Puntos — sin necesidad de tocar código para futuros casos como el de Joanna.
+function getTaskMult(id) { return Number(taskMultipliers[String(id)]) || 1; }
 function fmtPtsMonth(monthOffset=0) {
   const base = new Date();
   base.setMonth(base.getMonth()+monthOffset);
@@ -1420,13 +1430,43 @@ function vPuntos() {
 // Panel admin: botón para expandir/contraer el checklist de fechas de clase del alumno (mes actual o navegado).
 function vPtsAdminPanel(s) {
   const open = expandedPtsStudent === s.id;
+  const mult = getTaskMult(s.id);
   return `
   <div style="margin-top:8px">
-    <button onclick="togglePtsEditor(${s.id})" style="width:100%;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.7);border-radius:10px;padding:8px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer">
-      ${open ? '▲ Ocultar fechas de clase' : '▼ Marcar puntos por fecha'}
-    </button>
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+      <button onclick="togglePtsEditor(${s.id})" style="flex:1;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.7);border-radius:10px;padding:8px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer">
+        ${open ? '▲ Ocultar fechas de clase' : '▼ Marcar puntos por fecha'}
+      </button>
+      <div title="Valor de cada cuadradito de Tareas para este alumno (1 = normal, 3 = vale el triple, etc.). Útil para alumnos que llevan temas de un nivel más avanzado." style="display:flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:6px 9px;background:rgba(255,255,255,0.02)">
+        <span style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:800;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap">✕ Tareas</span>
+        <input type="number" min="1" max="10" step="1" value="${mult}" oninput="setTaskMult(${s.id},+this.value)" style="width:38px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:6px;color:#fff;text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;padding:3px">
+      </div>
+    </div>
     ${open ? vPtsDateChecklist(s) : ''}
   </div>`;
+}
+
+// Permite al admin ajustar, sin tocar código, cuánto vale cada cuadradito de Tareas para un alumno
+// (p.ej. si en el futuro otro alumno lleva temas de nivel avanzado como Joanna, basta con poner 3 aquí).
+let _multTimer=null;
+function setTaskMult(studentId, value) {
+  const v = Math.max(1, Math.min(10, Math.round(value||1)));
+  taskMultipliers[String(studentId)] = v;
+  const totalEl=document.getElementById(`pts-total-${studentId}`);
+  if (totalEl) totalEl.textContent=getTotalPts(studentId);
+  clearTimeout(_multTimer);
+  _multTimer=setTimeout(()=>{ saveLms(); showToast('Multiplicador de Tareas guardado.','success'); },800);
+}
+
+// Genera N casillas (checkboxes) para un campo (hours/progress/tasks) de una fecha, según el arreglo guardado.
+function ptsCheckRow(studentId, dateKey, field, count, savedArr, color, disabled) {
+  const arr = Array.isArray(savedArr) ? savedArr : [];
+  let html = '';
+  for (let i=0; i<count; i++) {
+    const checked = !!arr[i];
+    html += `<input type="checkbox" ${checked?'checked':''} ${disabled?'disabled':''} onchange="togglePointMark(${studentId},'${dateKey}','${field}',${i},${count},this.checked)" style="width:16px;height:16px;margin:1px;accent-color:${color};cursor:pointer">`;
+  }
+  return html;
 }
 
 function vPtsDateChecklist(s) {
@@ -1434,6 +1474,7 @@ function vPtsDateChecklist(s) {
   const dates  = getClassDatesForStudent(s.name, offset);
   const log    = pointsLog[String(s.id)] || {};
   const today  = new Date(); today.setHours(0,0,0,0);
+  const mult   = getTaskMult(s.id);
 
   if (!dates.length) {
     return `
@@ -1449,19 +1490,21 @@ function vPtsDateChecklist(s) {
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:0.05em">${fmtPtsMonth(offset)}</span>
       <button onclick="changePtsMonth(1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">▶</button>
     </div>
-    <div style="display:flex;gap:6px;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase;padding:0 4px 4px;margin-bottom:2px">
-      <span style="flex:1.4">Fecha</span><span style="flex:1;text-align:center">⏱️ Hrs</span><span style="flex:1;text-align:center">📈 Prog</span><span style="flex:1;text-align:center">✅ Tareas</span>
+    <div style="font-size:9px;color:rgba(255,255,255,0.35);line-height:1.6;margin-bottom:8px">
+      ⏱️ Horas y 📈 Progreso: un cuadradito por cada hora de clase ese día. ✅ Tareas: hasta ${PTS_TASKS_MAX} por fecha${mult>1?`, cada uno vale ×${mult} para este alumno (ajustable arriba)`:''}.
     </div>
-    ${dates.map(({date,key}) => {
+    ${dates.map(({date,key,hours}) => {
       const m = log[key] || {};
       const isFuture = date > today;
       const dlabel = `${dayShort[date.getDay()]} ${date.getDate()}`;
       return `
-      <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-top:1px solid rgba(255,255,255,0.05)">
-        <span style="flex:1.4;font-size:12px;font-weight:700;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}</span>
-        <span style="flex:1;text-align:center"><input type="checkbox" ${m.hours?'checked':''} ${isFuture?'disabled':''} onchange="togglePointMark(${s.id},'${key}','hours',this.checked)" style="width:18px;height:18px;accent-color:#60a5fa;cursor:pointer"></span>
-        <span style="flex:1;text-align:center"><input type="checkbox" ${m.progress?'checked':''} ${isFuture?'disabled':''} onchange="togglePointMark(${s.id},'${key}','progress',this.checked)" style="width:18px;height:18px;accent-color:#a78bfa;cursor:pointer"></span>
-        <span style="flex:1;text-align:center"><input type="checkbox" ${m.tasks?'checked':''} ${isFuture?'disabled':''} onchange="togglePointMark(${s.id},'${key}','tasks',this.checked)" style="width:18px;height:18px;accent-color:#4ade80;cursor:pointer"></span>
+      <div style="display:flex;align-items:flex-start;gap:6px;padding:7px 4px;border-top:1px solid rgba(255,255,255,0.05)">
+        <span style="flex:0 0 56px;font-size:12px;font-weight:700;padding-top:2px;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}<br><span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35)">${hours}h clase</span></span>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:9px;color:rgba(96,165,250,0.7);width:42px;flex-shrink:0">⏱️ Horas</span>${ptsCheckRow(s.id,key,'hours',hours,m.hours,'#60a5fa',isFuture)}</div>
+          <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="font-size:9px;color:rgba(167,139,250,0.7);width:42px;flex-shrink:0">📈 Prog.</span>${ptsCheckRow(s.id,key,'progress',hours,m.progress,'#a78bfa',isFuture)}</div>
+          <div style="display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:rgba(74,222,128,0.7);width:42px;flex-shrink:0">✅ Tareas</span>${ptsCheckRow(s.id,key,'tasks',PTS_TASKS_MAX,m.tasks,'#4ade80',isFuture)}</div>
+        </div>
       </div>`;
     }).join('')}
   </div>`;
@@ -1481,11 +1524,15 @@ function changePtsMonth(delta) {
   if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
 }
 let _ptsTimer=null;
-function togglePointMark(studentId, dateKey, field, checked) {
+// idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
+function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   const key=String(studentId);
   if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:false,progress:false,tasks:false};
-  pointsLog[key][dateKey][field]=!!checked;
+  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
+  const entry = pointsLog[key][dateKey];
+  if (!Array.isArray(entry[field])) entry[field]=[];
+  while (entry[field].length < count) entry[field].push(false);
+  entry[field][idx]=!!checked;
   // Refresca el total mostrado en la cabecera de la fila sin re-render completo
   const totalEl=document.getElementById(`pts-total-${studentId}`);
   if (totalEl) totalEl.textContent=getTotalPts(studentId);
@@ -1512,9 +1559,13 @@ PADRES_REF.onSnapshot(doc => {
   const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
   const map = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
-    const days = new Set();
-    pSessions.filter(s => String(s.studentId)===String(sid)).forEach(s => days.add(s.day));
-    map[normName(st.name)] = days;
+    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
+    const hoursByDay = {};
+    pSessions.filter(s => String(s.studentId)===String(sid)).forEach(s => {
+      const h = Math.max(1, Math.round((s.dur||60)/60));
+      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
+    });
+    map[normName(st.name)] = hoursByDay;
   });
   classDaysByName = map;
   if (currentView === 'puntos') {
@@ -1533,6 +1584,16 @@ REF.onSnapshot(doc => {
   tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
   points      = typeof lms.points==='object' ? lms.points : {};
   pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
+  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
+  // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
+  // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
+  (function seedJoannaMult(){
+    const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
+    if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
+      taskMultipliers[String(joanna.id)] = 3;
+      saveLms();
+    }
+  })();
 
   if (!appReady) {
     appReady = true;
