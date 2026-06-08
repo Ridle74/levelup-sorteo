@@ -239,30 +239,37 @@ textarea.fsm { resize:none; height:64px; }
 #app .overlay-title { text-shadow: 0 0 12px var(--nc-purple); }
 #app .clock-box, #app .overlay-start { background: rgba(34,229,255,0.07); border: 1px solid rgba(34,229,255,0.2); border-radius: 12px; }
 
-/* ── ENCABEZADO (#header) — tarjeta con degradado neón arcade (intercambiado con pestaña activa) ── */
+/* ── ENCABEZADO (#header) — base oscura "consola arcade" con borde y resplandor neón cian/morado (deja resaltar los acentos de cada elemento) ── */
 #app #header {
   position: relative;
   overflow: hidden;
   margin: 12px 12px 10px;
   border-radius: 20px;
   padding: 16px 18px;
-  background: linear-gradient(115deg,#7c3aed,#22e5ff 65%,#39ff7a);
-  box-shadow: 0 0 22px -4px var(--nc-cyan), 0 0 0 1px rgba(255,255,255,0.3) inset, 0 14px 44px -14px rgba(176,107,255,0.55);
-  border: none;
+  background: linear-gradient(135deg, #150c2b 0%, #0c1730 55%, #081d1a 100%);
+  border: 1px solid rgba(124,58,237,0.4);
+  box-shadow:
+    0 0 0 1px rgba(34,229,255,0.14) inset,
+    0 0 26px -6px rgba(124,58,237,0.55),
+    0 0 30px -10px rgba(34,229,255,0.4),
+    0 16px 40px -18px rgba(0,0,0,0.6);
 }
 #app #header::before {
   content: '';
   position: absolute; inset: 0;
-  background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.06) 20px, rgba(255,255,255,0.06) 40px);
+  background: repeating-linear-gradient(45deg, transparent, transparent 22px, rgba(124,58,237,0.05) 22px, rgba(124,58,237,0.05) 44px);
   pointer-events: none;
 }
-#app #header::after { content: none; }
+#app #header::after {
+  content: '';
+  position: absolute; left: 14px; right: 14px; bottom: 6px; height: 2px; border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(124,58,237,0.6) 20%, rgba(34,229,255,0.7) 50%, rgba(57,255,122,0.6) 80%, transparent);
+  filter: blur(0.3px);
+  pointer-events: none;
+}
 #app #header > * { position: relative; z-index: 1; }
 #app #header .admin-row { margin-top: 12px; }
-#app #header .header-title { color: #06141f; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
-#app #header .status-badge { backdrop-filter: blur(2px); }
-#app #header .uname { color: #06141f; }
-#app #header .user-pill { background: rgba(6,20,31,0.18); border-color: rgba(6,20,31,0.3); }
+#app #header .header-title { text-shadow: 0 0 14px rgba(57,255,122,0.55); }
 
 /* ── PESTAÑAS (Tablero/Ranking) y RANKING DE TURNOS — arcade neón ── */
 #app .tab-btn {
