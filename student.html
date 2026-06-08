@@ -237,6 +237,46 @@ textarea.fsm { resize:none; height:64px; }
 }
 #app .overlay-title { text-shadow: 0 0 12px var(--nc-purple); }
 #app .clock-box, #app .overlay-start { background: rgba(34,229,255,0.07); border: 1px solid rgba(34,229,255,0.2); border-radius: 12px; }
+
+/* ── PESTAÑAS (Tablero/Ranking) y RANKING DE TURNOS — arcade neón ── */
+#app .tab-btn {
+  background: linear-gradient(160deg, rgba(34,229,255,0.06), rgba(176,107,255,0.04));
+  border: 1px solid rgba(34,229,255,0.18);
+  color: rgba(255,255,255,0.55);
+  transition: all 0.25s;
+}
+#app .tab-btn.active {
+  background: linear-gradient(115deg,#7c3aed,#22e5ff 65%,#39ff7a);
+  color: #06141f;
+  box-shadow: 0 0 22px -4px var(--nc-cyan), 0 0 0 1px rgba(255,255,255,0.3) inset;
+  text-shadow: none;
+}
+#app .status-badge { backdrop-filter: blur(2px); letter-spacing: 0.08em; }
+#app .status-open   { background: rgba(57,255,122,0.12); color: var(--nc-lime);  border-color: rgba(57,255,122,0.4); box-shadow: 0 0 14px -4px var(--nc-lime);  text-shadow: 0 0 8px currentColor; }
+#app .status-wait   { background: rgba(255,210,63,0.12); color: var(--nc-amber); border-color: rgba(255,210,63,0.4); box-shadow: 0 0 14px -4px var(--nc-amber); text-shadow: 0 0 8px currentColor; }
+#app .status-closed { background: rgba(255,92,122,0.12); color: var(--nc-pink);  border-color: rgba(255,92,122,0.4); box-shadow: 0 0 14px -4px var(--nc-pink);  text-shadow: 0 0 8px currentColor; }
+
+#app .rank-card {
+  background: linear-gradient(160deg, rgba(34,229,255,0.06), rgba(15,17,38,0.65));
+  border: 1px solid rgba(34,229,255,0.16);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset, 0 8px 24px -12px rgba(34,229,255,0.3);
+}
+#app .rank-card.me {
+  border-color: rgba(57,255,122,0.6);
+  background: linear-gradient(160deg, rgba(57,255,122,0.14), rgba(15,17,38,0.7));
+  box-shadow: 0 0 24px -6px var(--nc-lime), 0 0 0 1px rgba(57,255,122,0.3) inset;
+}
+#app .rank-avatar { box-shadow: 0 0 14px -2px rgba(255,255,255,0.55), 0 0 0 1px rgba(255,255,255,0.18) inset; border-color: rgba(255,255,255,0.18); }
+#app .rank-name  { text-shadow: 0 0 10px rgba(34,229,255,0.4); letter-spacing: 0.02em; }
+#app .rank-count { text-shadow: 0 0 12px currentColor; }
+#app .rank-bar-bg, #app .prog-bar-bg {
+  height: 7px; background: rgba(0,0,0,0.5);
+  box-shadow: 0 0 0 1px rgba(34,229,255,0.1) inset;
+}
+#app .rank-bar-fill, #app .prog-bar-fill {
+  box-shadow: 0 0 12px -1px rgba(255,255,255,0.6);
+  filter: brightness(1.18) saturate(1.4);
+}
 </style>
 </head>
 <body>
