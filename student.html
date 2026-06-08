@@ -219,6 +219,7 @@ let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progre
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 let classDaysByName = {}; // { "<nombre normalizado>": Set([0..6]) } — días de la semana con clase, desde /padres
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
+let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evita re-render brusco al recibir el propio guardado)
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
 let appReady    = false;
 let clockTimer  = null;
@@ -1452,6 +1453,7 @@ function vPtsAdminPanel(s) {
 // (p.ej. si en el futuro otro alumno lleva temas de nivel avanzado como Joanna, basta con poner 3 aquí).
 let _multTimer=null;
 function setTaskMult(studentId, value) {
+  _lastPtsLocalEdit = Date.now();
   const v = Math.max(1, Math.min(10, Math.round(value||1)));
   taskMultipliers[String(studentId)] = v;
   const totalEl=document.getElementById(`pts-total-${studentId}`);
@@ -1528,6 +1530,7 @@ function changePtsMonth(delta) {
 let _ptsTimer=null;
 // idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
 function togglePointMark(studentId, dateKey, field, idx, count, checked) {
+  _lastPtsLocalEdit = Date.now();
   const key=String(studentId);
   if (!pointsLog[key]) pointsLog[key]={};
   if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
@@ -1615,8 +1618,13 @@ REF.onSnapshot(doc => {
       if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
     }
     if (hash === 'puntos') {
-      const app=document.getElementById('app');
-      if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
+      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
+      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
+      if (Date.now() - _lastPtsLocalEdit > 2500) {
+        const app=document.getElementById('app');
+        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+      }
     }
   }
 }, err => {
