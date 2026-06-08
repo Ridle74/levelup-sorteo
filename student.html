@@ -71,11 +71,12 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 
 /* ── DASHBOARD ────────────────────────────────────── */
 .dash-hero {
-  background: linear-gradient(135deg,#5b21b6,#9333ea 45%,#22e5ff);
+  background: linear-gradient(115deg, #5b21b6 0%, #7c3aed 50%, #22e5ff 100%);
   border-radius: 20px; padding: 20px; margin-bottom: 10px;
   position: relative; overflow: hidden;
 }
-.dash-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.dash-hero::before { content:''; position:absolute; inset:0; background:linear-gradient(115deg, rgba(5,7,14,0.58) 0%, rgba(5,7,14,0.34) 45%, rgba(5,7,14,0.58) 100%); }
+.dash-hero > * { position: relative; z-index: 1; }
 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .dash-stat { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; }
 .ds-lbl { font-size:8px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:4px; }
@@ -93,6 +94,13 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .dl-arr { margin-left:auto; color:rgba(255,255,255,0.25); font-size:20px; }
 
 /* ── TAREAS ───────────────────────────────────────── */
+.task-hero {
+  background: linear-gradient(115deg, #14532d 0%, #15803d 50%, #84cc16 100%);
+  border-radius: 20px; padding: 18px 20px; margin-bottom: 10px;
+  position: relative; overflow: hidden;
+}
+.task-hero::before { content:''; position:absolute; inset:0; background:linear-gradient(115deg, rgba(5,7,14,0.58) 0%, rgba(5,7,14,0.34) 45%, rgba(5,7,14,0.58) 100%); }
+.task-hero > * { position: relative; z-index: 1; }
 .task-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:8px; }
 .task-card.tdone { opacity:0.45; }
 .task-t { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; text-transform:uppercase; }
@@ -114,7 +122,13 @@ textarea.fsm { resize:none; height:64px; }
 
 
 /* ── PUNTOS ───────────────────────────────────────── */
-.pts-hero { background:linear-gradient(135deg,#0a4d3a,#0d9488 55%,#39ff7a); border-radius:20px; padding:20px; margin-bottom:10px; }
+.pts-hero {
+  background: linear-gradient(115deg, #9d174d 0%, #b06bff 50%, #22e5ff 100%);
+  border-radius:20px; padding:20px; margin-bottom:10px;
+  position: relative; overflow: hidden;
+}
+.pts-hero::before { content:''; position:absolute; inset:0; background:linear-gradient(115deg, rgba(5,7,14,0.58) 0%, rgba(5,7,14,0.34) 45%, rgba(5,7,14,0.58) 100%); }
+.pts-hero > * { position: relative; z-index: 1; }
 .pts-row { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:8px; }
 .vr-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .vr-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.15em; text-transform:uppercase; width:74px; flex-shrink:0; }
@@ -172,7 +186,8 @@ textarea.fsm { resize:none; height:64px; }
 
 /* halos de color variado en las cabeceras de cada sección */
 .dash-hero { box-shadow: 0 0 0 1px rgba(176,107,255,0.4) inset, 0 14px 44px -14px rgba(34,229,255,0.55); }
-.pts-hero  { box-shadow: 0 0 0 1px rgba(57,255,122,0.35) inset, 0 14px 44px -14px rgba(13,148,136,0.5); }
+.task-hero { box-shadow: 0 0 0 1px rgba(132,204,22,0.35) inset, 0 14px 44px -14px rgba(57,255,122,0.5); }
+.pts-hero  { box-shadow: 0 0 0 1px rgba(176,107,255,0.35) inset, 0 14px 44px -14px rgba(255,92,200,0.5); }
 #ranking-card { box-shadow: 0 0 0 1px rgba(255,210,63,0.35) inset, 0 14px 44px -14px rgba(255,92,200,0.55) !important; }
 #numbers-card { box-shadow: 0 0 0 1px rgba(34,229,255,0.35) inset, 0 14px 44px -14px rgba(176,107,255,0.55) !important; }
 
@@ -442,6 +457,7 @@ function viewFromLocation() {
 }
 
 let currentView = viewFromLocation();
+let taskFilter  = 'all'; // 'all' | 'done' — filtro visual de la pestaña Tareas
 
 // Atrás/adelante del navegador: releer la vista desde la URL y renderizar
 // sin recargar la página.
@@ -878,6 +894,11 @@ function vDashboard() {
         </div>
         <button onclick="doLogout()" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;flex-shrink:0">SALIR</button>
       </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active">🏠 RESUMEN</button>
+      <button class="tab-btn" onclick="go('tablero')">🎮 TABLERO</button>
     </div>
 
     ${!isAdmin() ? `
@@ -1529,15 +1550,31 @@ function vTareas() {
   const myTasks  = isAdmin()
     ? tasks
     : tasks.filter(t => t.assignTo==='all' || String(t.assignTo)===String(loggedId));
-  const sorted   = [...myTasks].sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+  const pendingCount   = myTasks.filter(t => !(t.completedBy||[]).includes(loggedId)).length;
+  const completedCount = myTasks.length - pendingCount;
+  const filtered = taskFilter==='done'
+    ? myTasks.filter(t => (t.completedBy||[]).includes(loggedId))
+    : myTasks;
+  const sorted   = [...filtered].sort((a,b)=>(a.due||'').localeCompare(b.due||''));
   return `
   <div style="padding:12px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1">📋 TAREAS</div>
-        <div style="font-size:10px;color:#6b7280;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:2px">MATHS LEVEL UP</div>
+    <div class="task-hero">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.8)">📋 TAREAS</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.75);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,0.7)">MATHS LEVEL UP</div>
+        </div>
+        <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:8px 16px;text-align:center">
+          <div style="font-size:8px;font-weight:900;letter-spacing:0.16em;color:rgba(255,255,255,0.65);text-transform:uppercase">Hechas</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;line-height:1;color:#baff29;text-shadow:0 0 14px currentColor">${completedCount}/${myTasks.length}</div>
+        </div>
       </div>
-      ${isAdmin()?`<button class="btn-sm btn-primary" onclick="toggleAddTask()">➕ NUEVA</button>`:''}
+      ${isAdmin()?`<button class="btn-sm btn-primary" onclick="toggleAddTask()" style="margin-top:14px">➕ NUEVA TAREA</button>`:''}
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn${taskFilter==='all'?' active':''}" onclick="setTaskFilter('all')">📌 PENDIENTES (${pendingCount})</button>
+      <button class="tab-btn${taskFilter==='done'?' active':''}" onclick="setTaskFilter('done')">✅ COMPLETADAS (${completedCount})</button>
     </div>
 
     ${isAdmin()?`
@@ -1589,6 +1626,10 @@ function renderTask(t, loggedId) {
   </div>`;
 }
 function vTareasSetup() {}
+function setTaskFilter(f) {
+  taskFilter = f;
+  router();
+}
 function toggleAddTask() {
   const box=document.getElementById('add-task-box');
   if (box) box.style.display=box.style.display==='none'?'block':'none';
@@ -1658,6 +1699,11 @@ function vPuntos() {
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active">⭐ RESUMEN</button>
+      <button class="tab-btn" onclick="go('tablero')">🎮 TABLERO</button>
     </div>
 
     ${sorted.map((s,idx) => {
