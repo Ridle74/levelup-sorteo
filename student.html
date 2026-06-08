@@ -112,9 +112,6 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .fsm:focus { border-color:rgba(34,229,255,0.5); }
 textarea.fsm { resize:none; height:64px; }
 
-/* ── TABLERO (hero) ───────────────────────────────── */
-.brd-hero { background:linear-gradient(120deg,#5b21b6,#0e7490 48%,#39ff7a); border-radius:20px; padding:20px; margin-bottom:10px; position:relative; overflow:hidden; }
-.brd-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
 
 /* ── PUNTOS ───────────────────────────────────────── */
 .pts-hero { background:linear-gradient(135deg,#0a4d3a,#0d9488 55%,#39ff7a); border-radius:20px; padding:20px; margin-bottom:10px; }
@@ -176,7 +173,6 @@ textarea.fsm { resize:none; height:64px; }
 /* halos de color variado en las cabeceras de cada sección */
 .dash-hero { box-shadow: 0 0 0 1px rgba(176,107,255,0.4) inset, 0 14px 44px -14px rgba(34,229,255,0.55); }
 .pts-hero  { box-shadow: 0 0 0 1px rgba(57,255,122,0.35) inset, 0 14px 44px -14px rgba(13,148,136,0.5); }
-.brd-hero  { box-shadow: 0 0 0 1px rgba(34,229,255,0.35) inset, 0 14px 44px -14px rgba(57,255,122,0.5); }
 #ranking-card { box-shadow: 0 0 0 1px rgba(255,210,63,0.35) inset, 0 14px 44px -14px rgba(255,92,200,0.55) !important; }
 #numbers-card { box-shadow: 0 0 0 1px rgba(34,229,255,0.35) inset, 0 14px 44px -14px rgba(176,107,255,0.55) !important; }
 
@@ -906,22 +902,6 @@ function vTablero() {
     </div>
   </header>
 
-  <div style="padding:12px 12px 0">
-    <div class="brd-hero">
-      <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
-        <div>
-          <div style="font-size:10px;color:rgba(220,255,240,0.75);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SORTEO · ${getSorteoMonth().toUpperCase()}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:900;line-height:1;letter-spacing:-0.02em">🎮 TABLERO</div>
-          <div style="font-size:11px;color:rgba(220,255,240,0.85);font-weight:600;margin-top:4px">Elige tus números antes que se acaben</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;background:rgba(0,0,0,0.22);border-radius:12px;padding:8px 14px">
-          <div style="font-size:8px;color:rgba(220,255,240,0.65);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">Tomados</div>
-          <div id="brd-hero-count" style="font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;line-height:1.1;margin-top:2px">${Object.keys(allocations).length}/${getTotal()}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div id="admin-panel">
     <div class="card" style="border-radius:20px">
       <div class="section-label">📅 CRONOGRAMA</div>
@@ -1079,8 +1059,6 @@ function renderGrid(loggedId) {
   }
   document.getElementById('taken-count').textContent = Object.keys(allocations).length;
   document.getElementById('taken-total').textContent = ' / ' + getTotal();
-  const hc = document.getElementById('brd-hero-count');
-  if (hc) hc.textContent = Object.keys(allocations).length + '/' + getTotal();
 }
 function handleNumber(num, loggedId) {
   const active       = getFullList().find(s => s.id===loggedId);
