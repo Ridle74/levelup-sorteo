@@ -509,8 +509,9 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
     });
   });
-  // Orden de turnos: a mayor puntaje del mes actual, mejor posición (turno más temprano).
-  return list.sort((a,b) => { const d=getTotalPts(b.id)-getTotalPts(a.id); return d!==0?d:a.id-b.id; });
+  // Orden de turnos: "max" guarda los puntos finales del último mes cerrado (p.ej. mayo),
+  // que es lo que define los cupos/posición del ciclo actual — a mayor puntaje, mejor turno.
+  return list.sort((a,b) => { const d=(b.max||0)-(a.max||0); return d!==0?d:a.id-b.id; });
 }
 
 function getFullList() { return [ADMIN, ...getStudents()]; }
@@ -1801,9 +1802,9 @@ const HISTORIAL_SEED = {
     {nombre:'Joanna Prado',   pts:17}
   ],
   '2026-05': [
-    {nombre:'Brunella Varillas', pts:null},
-    {nombre:'Lucio Prado',       pts:null},
-    {nombre:'Alejandro Prado',   pts:null}
+    {nombre:'Brunella Varillas', pts:29},
+    {nombre:'Lucio Prado',       pts:26},
+    {nombre:'Alejandro Prado',   pts:24}
   ]
 };
 
