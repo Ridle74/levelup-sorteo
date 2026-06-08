@@ -180,6 +180,9 @@ const REF = db.collection('sorteo').doc('main');
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
+// Lectura del horario semanal de /padres (solo lectura) — sirve para saber
+// qué días tiene clase cada alumno y así habilitar el registro de Puntos por fecha.
+const PADRES_REF = db.collection('padres').doc('main');
 
 // ════════════════════════════════════════════════════════
 // CONSTANTS
@@ -211,7 +214,11 @@ let allocations = {};
 let overrides   = {};
 let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
 let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[] }]
-let points      = {};   // { "1":{ hours:0, progress:0, tasks:0 }, ... }
+let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... }
+let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:bool,progress:bool,tasks:bool} } }
+let classDaysByName = {}; // { "<nombre normalizado>": Set([0..6]) } — días de la semana con clase, desde /padres
+let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
+let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
 let appReady    = false;
 let clockTimer  = null;
 // La vista actual se obtiene directo de la URL: /student/<vista>
@@ -327,9 +334,19 @@ function getSorteoMonth() {
   return m.charAt(0).toUpperCase()+m.slice(1);
 }
 
-function getStudentPoints(id) {
-  const p = points[String(id)] || {};
-  return { hours: p.hours||0, progress: p.progress||0, tasks: p.tasks||0 };
+// Cuenta las marcas (true) del mes actual en pointsLog para un alumno: { hours, progress, tasks }
+function getStudentPoints(id, monthOffset=0) {
+  const log = pointsLog[String(id)] || {};
+  const base = new Date(); base.setMonth(base.getMonth()+monthOffset);
+  const ym = `${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}`;
+  let hours=0, progress=0, tasks=0;
+  Object.entries(log).forEach(([dateKey, marks]) => {
+    if (!dateKey.startsWith(ym) || !marks) return;
+    if (marks.hours)    hours++;
+    if (marks.progress) progress++;
+    if (marks.tasks)    tasks++;
+  });
+  return { hours, progress, tasks };
 }
 function getTotalPts(id) { const p=getStudentPoints(id); return p.hours+p.progress+p.tasks; }
 
@@ -381,8 +398,34 @@ function saveAllocationChange(num, action, ownerId) {
 }
 
 function saveLms() {
-  REF.set({ lms:{ tasks, points } }, { merge:true })
+  REF.set({ lms:{ tasks, points, pointsLog } }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
+}
+
+// Devuelve [{date:Date, key:'YYYY-MM-DD'}] de las fechas del mes (con offset) en que el alumno tiene clase,
+// según su horario semanal sincronizado desde /padres (classDaysByName). Si no hay match, devuelve [].
+function getClassDatesForStudent(studentName, monthOffset=0) {
+  const days = classDaysByName[normName(studentName)];
+  if (!days || !days.size) return [];
+  const base = new Date();
+  base.setMonth(base.getMonth()+monthOffset);
+  const y = base.getFullYear(), m = base.getMonth();
+  const last = new Date(y, m+1, 0).getDate();
+  const out = [];
+  for (let d=1; d<=last; d++) {
+    const dt = new Date(y, m, d);
+    if (days.has(dt.getDay())) {
+      const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      out.push({ date:dt, key });
+    }
+  }
+  return out;
+}
+function fmtPtsMonth(monthOffset=0) {
+  const base = new Date();
+  base.setMonth(base.getMonth()+monthOffset);
+  const m = base.toLocaleDateString('es-ES',{ month:'long', year:'numeric' });
+  return m.charAt(0).toUpperCase()+m.slice(1);
 }
 
 function descargarImagen(canvas, nombre='imagen.png') {
@@ -1317,6 +1360,7 @@ function vPuntos() {
   const students = getStudents();
   const sorted   = [...students].sort((a,b)=>getTotalPts(b.id)-getTotalPts(a.id));
   const medals   = ['🥇','🥈','🥉'];
+  const admin    = isAdmin();
 
   return `
   <div style="padding:12px">
@@ -1350,48 +1394,103 @@ function vPuntos() {
           <div style="flex:1">
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase">${s.name}</div>
           </div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:${total>0?'#4ade80':'#4b5563'};flex-shrink:0">${total}</div>
+          <div id="pts-total-${s.id}" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:${total>0?'#4ade80':'#4b5563'};flex-shrink:0">${total}</div>
         </div>
         <div class="vr-row">
           <span class="vr-lbl">⏱️ Horas</span>
-          <div class="vr-bg"><div class="vr-fill" style="background:#60a5fa;width:${Math.min(100,p.hours)}%" id="bar-h-${s.id}"></div></div>
-          ${isAdmin()
-            ?`<input class="vr-inp" type="number" value="${p.hours}" min="0" max="100" oninput="updatePts(${s.id},'hours',+this.value)">`
-            :`<span class="vr-num">${p.hours}</span>`}
+          <div class="vr-bg"><div class="vr-fill" style="background:#60a5fa;width:${Math.min(100,p.hours*10)}%" id="bar-h-${s.id}"></div></div>
+          <span class="vr-num">${p.hours}</span>
         </div>
         <div class="vr-row">
           <span class="vr-lbl">📈 Progreso</span>
-          <div class="vr-bg"><div class="vr-fill" style="background:#a78bfa;width:${Math.min(100,p.progress)}%" id="bar-p-${s.id}"></div></div>
-          ${isAdmin()
-            ?`<input class="vr-inp" type="number" value="${p.progress}" min="0" max="100" oninput="updatePts(${s.id},'progress',+this.value)">`
-            :`<span class="vr-num">${p.progress}</span>`}
+          <div class="vr-bg"><div class="vr-fill" style="background:#a78bfa;width:${Math.min(100,p.progress*10)}%" id="bar-p-${s.id}"></div></div>
+          <span class="vr-num">${p.progress}</span>
         </div>
         <div class="vr-row">
           <span class="vr-lbl">✅ Tareas</span>
-          <div class="vr-bg"><div class="vr-fill" style="background:#4ade80;width:${Math.min(100,p.tasks)}%" id="bar-t-${s.id}"></div></div>
-          ${isAdmin()
-            ?`<input class="vr-inp" type="number" value="${p.tasks}" min="0" max="100" oninput="updatePts(${s.id},'tasks',+this.value)">`
-            :`<span class="vr-num">${p.tasks}</span>`}
+          <div class="vr-bg"><div class="vr-fill" style="background:#4ade80;width:${Math.min(100,p.tasks*10)}%" id="bar-t-${s.id}"></div></div>
+          <span class="vr-num">${p.tasks}</span>
         </div>
+        ${admin ? vPtsAdminPanel(s) : ''}
       </div>`;
     }).join('')}
   </div>`;
 }
-function vPuntosSetup() {}
-let _ptsTimer=null;
-function updatePts(studentId, field, value) {
-  const key=String(studentId);
-  if (!points[key]) points[key]={hours:0,progress:0,tasks:0};
-  points[key][field]=Math.max(0,Math.min(100,value||0));
-  // Update total display
-  const row=document.querySelector(`[id="bar-h-${studentId}"]`)?.closest('.pts-row');
-  if (row) {
-    const total=getTotalPts(studentId);
-    const totalEl=row.querySelector('[data-total]');
-    if (totalEl) totalEl.textContent=total;
+
+// Panel admin: botón para expandir/contraer el checklist de fechas de clase del alumno (mes actual o navegado).
+function vPtsAdminPanel(s) {
+  const open = expandedPtsStudent === s.id;
+  return `
+  <div style="margin-top:8px">
+    <button onclick="togglePtsEditor(${s.id})" style="width:100%;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.7);border-radius:10px;padding:8px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer">
+      ${open ? '▲ Ocultar fechas de clase' : '▼ Marcar puntos por fecha'}
+    </button>
+    ${open ? vPtsDateChecklist(s) : ''}
+  </div>`;
+}
+
+function vPtsDateChecklist(s) {
+  const offset = ptsMonthOffset;
+  const dates  = getClassDatesForStudent(s.name, offset);
+  const log    = pointsLog[String(s.id)] || {};
+  const today  = new Date(); today.setHours(0,0,0,0);
+
+  if (!dates.length) {
+    return `
+    <div style="margin-top:8px;padding:14px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;text-align:center;font-size:11px;color:rgba(255,255,255,0.4)">
+      No se encontró un horario sincronizado para <strong>${s.name}</strong> en /padres. Verifica que el nombre coincida exactamente.
+    </div>`;
   }
+  const dayShort = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  return `
+  <div style="margin-top:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <button onclick="changePtsMonth(-1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">◀</button>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:0.05em">${fmtPtsMonth(offset)}</span>
+      <button onclick="changePtsMonth(1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">▶</button>
+    </div>
+    <div style="display:flex;gap:6px;font-size:9px;font-weight:900;color:rgba(255,255,255,0.35);letter-spacing:0.1em;text-transform:uppercase;padding:0 4px 4px;margin-bottom:2px">
+      <span style="flex:1.4">Fecha</span><span style="flex:1;text-align:center">⏱️ Hrs</span><span style="flex:1;text-align:center">📈 Prog</span><span style="flex:1;text-align:center">✅ Tareas</span>
+    </div>
+    ${dates.map(({date,key}) => {
+      const m = log[key] || {};
+      const isFuture = date > today;
+      const dlabel = `${dayShort[date.getDay()]} ${date.getDate()}`;
+      return `
+      <div style="display:flex;align-items:center;gap:6px;padding:6px 4px;border-top:1px solid rgba(255,255,255,0.05)">
+        <span style="flex:1.4;font-size:12px;font-weight:700;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}</span>
+        <span style="flex:1;text-align:center"><input type="checkbox" ${m.hours?'checked':''} ${isFuture?'disabled':''} onchange="togglePointMark(${s.id},'${key}','hours',this.checked)" style="width:18px;height:18px;accent-color:#60a5fa;cursor:pointer"></span>
+        <span style="flex:1;text-align:center"><input type="checkbox" ${m.progress?'checked':''} ${isFuture?'disabled':''} onchange="togglePointMark(${s.id},'${key}','progress',this.checked)" style="width:18px;height:18px;accent-color:#a78bfa;cursor:pointer"></span>
+        <span style="flex:1;text-align:center"><input type="checkbox" ${m.tasks?'checked':''} ${isFuture?'disabled':''} onchange="togglePointMark(${s.id},'${key}','tasks',this.checked)" style="width:18px;height:18px;accent-color:#4ade80;cursor:pointer"></span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function vPuntosSetup() {}
+
+function togglePtsEditor(studentId) {
+  expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
+  ptsMonthOffset = 0;
+  const app=document.getElementById('app');
+  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+}
+function changePtsMonth(delta) {
+  ptsMonthOffset += delta;
+  const app=document.getElementById('app');
+  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+}
+let _ptsTimer=null;
+function togglePointMark(studentId, dateKey, field, checked) {
+  const key=String(studentId);
+  if (!pointsLog[key]) pointsLog[key]={};
+  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:false,progress:false,tasks:false};
+  pointsLog[key][dateKey][field]=!!checked;
+  // Refresca el total mostrado en la cabecera de la fila sin re-render completo
+  const totalEl=document.getElementById(`pts-total-${studentId}`);
+  if (totalEl) totalEl.textContent=getTotalPts(studentId);
   clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },1000);
+  _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },800);
 }
 
 // ════════════════════════════════════════════════════════
@@ -1403,6 +1502,27 @@ AUTH_REF.onSnapshot(doc => {
   ADMIN.pin = a.adminPin || "80808";
 }, err => console.error('[Firebase auth]', err));
 
+// Normaliza nombres para emparejar alumnos entre /student y /padres (minúsculas, sin tildes, sin espacios extra).
+function normName(s) {
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+}
+PADRES_REF.onSnapshot(doc => {
+  const d = doc.exists ? doc.data() : {};
+  const pStudents = d.students || {};
+  const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
+  const map = {};
+  Object.entries(pStudents).forEach(([sid, st]) => {
+    const days = new Set();
+    pSessions.filter(s => String(s.studentId)===String(sid)).forEach(s => days.add(s.day));
+    map[normName(st.name)] = days;
+  });
+  classDaysByName = map;
+  if (currentView === 'puntos') {
+    const app=document.getElementById('app');
+    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+  }
+}, err => console.error('[Firebase padres]', err));
+
 REF.onSnapshot(doc => {
   const data = doc.exists ? doc.data() : {};
   allocations = data.allocations || {};
@@ -1412,6 +1532,7 @@ REF.onSnapshot(doc => {
   const lms   = data.lms || {};
   tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
   points      = typeof lms.points==='object' ? lms.points : {};
+  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
 
   if (!appReady) {
     appReady = true;
@@ -1429,6 +1550,10 @@ REF.onSnapshot(doc => {
     if (hash === 'dashboard') {
       const app=document.getElementById('app');
       if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
+    }
+    if (hash === 'puntos') {
+      const app=document.getElementById('app');
+      if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
     }
   }
 }, err => {
