@@ -8,6 +8,22 @@
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+/* ── PALETA GAMER NEÓN (sobreescribe el tema base solo en /student) ── */
+:root {
+  --bg: #0a0b16;
+  --surface: #15172c;
+  --surface2: #1b1e3a;
+  --border: rgba(34,229,255,0.16);
+  --border2: rgba(176,107,255,0.4);
+  --accent: #39ff7a;
+  --orange: #ff8a3d;
+  --red: #ff3860;
+  --blue: #4fb6ff;
+}
+#initial-loading { background: #0a0b16 !important; }
+#login-screen, #login-screen::before { background: var(--bg) !important; }
+.login-card { box-shadow: 0 0 0 1px rgba(34,229,255,0.18) inset, 0 24px 70px -20px rgba(176,107,255,0.35); }
+
 /* ── SPA SHELL ─────────────────────────────────────── */
 #app { min-height: 100dvh; }
 body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
@@ -55,7 +71,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 
 /* ── DASHBOARD ────────────────────────────────────── */
 .dash-hero {
-  background: linear-gradient(135deg,#1e3a8a,#2563eb 50%,#3b82f6);
+  background: linear-gradient(135deg,#5b21b6,#9333ea 45%,#22e5ff);
   border-radius: 20px; padding: 20px; margin-bottom: 10px;
   position: relative; overflow: hidden;
 }
@@ -91,13 +107,13 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .btn-dg.off { background:rgba(34,197,94,0.15); color:#39ff7a; border:1px solid rgba(34,197,94,0.25); }
 .btn-dg.on  { background:rgba(34,197,94,0.3);  color:#86efac; border:1px solid rgba(34,197,94,0.4); }
 .btn-dt { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; }
-.add-task-box { background:rgba(59,130,246,0.07); border:1px solid rgba(59,130,246,0.2); border-radius:16px; padding:16px; margin-top:12px; }
+.add-task-box { background:rgba(34,229,255,0.07); border:1px solid rgba(34,229,255,0.2); border-radius:16px; padding:16px; margin-top:12px; }
 .fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:8px; outline:none; }
-.fsm:focus { border-color:rgba(59,130,246,0.5); }
+.fsm:focus { border-color:rgba(34,229,255,0.5); }
 textarea.fsm { resize:none; height:64px; }
 
 /* ── PUNTOS ───────────────────────────────────────── */
-.pts-hero { background:linear-gradient(135deg,#1a3a1a,#14532d 50%,#166534); border-radius:20px; padding:20px; margin-bottom:10px; }
+.pts-hero { background:linear-gradient(135deg,#0a4d3a,#0d9488 55%,#39ff7a); border-radius:20px; padding:20px; margin-bottom:10px; }
 .pts-row { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:8px; }
 .vr-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .vr-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.15em; text-transform:uppercase; width:74px; flex-shrink:0; }
@@ -111,10 +127,10 @@ textarea.fsm { resize:none; height:64px; }
 .cotiz-l { font-size:8px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
 .pills { display:flex; flex-wrap:wrap; gap:6px; }
 .pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:8px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; -webkit-tap-highlight-color:transparent; }
-.pill.psel { border-color:#3b82f6; color:#7dd3ff; background:rgba(59,130,246,0.12); }
-.cotiz-res { background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(139,92,246,0.1)); border:1px solid rgba(59,130,246,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:12px; }
+.pill.psel { border-color:#22e5ff; color:#7dd3ff; background:rgba(34,229,255,0.12); box-shadow:0 0 14px -3px #22e5ff; }
+.cotiz-res { background:linear-gradient(135deg,rgba(34,229,255,0.15),rgba(139,92,246,0.1)); border:1px solid rgba(34,229,255,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:12px; }
 .price-big { font-family:'Barlow Condensed',sans-serif; font-size:52px; font-weight:900; color:#7dd3ff; line-height:1; }
-.price-lbl { font-size:10px; color:rgba(147,197,253,0.6); font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-top:4px; }
+.price-lbl { font-size:10px; color:rgba(220,200,255,0.6); font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-top:4px; }
 .price-det { font-size:12px; color:rgba(255,255,255,0.5); margin-top:12px; line-height:1.8; }
 
 /* ── RANKING / NUMEROS PAGE ────────────────────────── */
@@ -130,8 +146,8 @@ textarea.fsm { resize:none; height:64px; }
   font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px;
   letter-spacing:0.1em; text-transform:uppercase;
 }
-.btn-primary { background:#3b82f6; color:#fff; }
-.btn-primary:active { background:#2563eb; }
+.btn-primary { background:linear-gradient(135deg,#7c3aed,#22e5ff); color:#0a0b16; font-weight:900; box-shadow:0 0 18px -4px #22e5ff; }
+.btn-primary:active { filter:brightness(0.9); }
 
 /* ════════════════════════════════════════════════════════
    NEON GAMER · EDUCATIVO — paleta de luces y resplandores
@@ -154,9 +170,10 @@ textarea.fsm { resize:none; height:64px; }
 #app > .vw { position: relative; z-index: 1; }
 
 /* halos de color variado en las cabeceras de cada sección */
-.dash-hero { box-shadow: 0 0 0 1px rgba(79,168,255,0.35) inset, 0 14px 44px -14px rgba(79,168,255,0.55); }
-.pts-hero  { box-shadow: 0 0 0 1px rgba(186,255,41,0.32) inset, 0 14px 44px -14px rgba(186,255,41,0.42); }
-.pub-hdr   { box-shadow: 0 0 0 1px rgba(255,92,200,0.32) inset, 0 14px 44px -14px rgba(255,92,200,0.5) !important; }
+.dash-hero { box-shadow: 0 0 0 1px rgba(176,107,255,0.4) inset, 0 14px 44px -14px rgba(34,229,255,0.55); }
+.pts-hero  { box-shadow: 0 0 0 1px rgba(57,255,122,0.35) inset, 0 14px 44px -14px rgba(13,148,136,0.5); }
+#ranking-card { box-shadow: 0 0 0 1px rgba(255,210,63,0.35) inset, 0 14px 44px -14px rgba(255,92,200,0.55) !important; }
+#numbers-card { box-shadow: 0 0 0 1px rgba(34,229,255,0.35) inset, 0 14px 44px -14px rgba(176,107,255,0.55) !important; }
 
 /* tarjetas con borde neón sutil y reacción al toque */
 .dash-stat, .pts-row, .task-card, .cotiz-blk, .add-task-box {
@@ -581,16 +598,16 @@ function buildNav(active) {
   const navItems = isAdmin()
     ? [
         { r:'dashboard', i:'🏠', l:'Inicio' },
-        { r:'tablero',   i:'🎯', l:'Tablero' },
-        { r:'tareas',    i:'📋', l:'Tareas' },
-        { r:'puntos',    i:'⭐', l:'Puntos' },
+        { r:'tablero',   i:'🎮', l:'Tablero' },
+        { r:'tareas',    i:'📜', l:'Tareas' },
+        { r:'puntos',    i:'⚡', l:'Puntos' },
       ]
     : [
         { r:'dashboard', i:'🏠', l:'Inicio' },
-        { r:'tablero',   i:'🎯', l:'Tablero' },
-        { r:'tareas',    i:'📋', l:'Tareas' },
-        { r:'puntos',    i:'⭐', l:'Puntos' },
-        { r:'ranking',   i:'🏆', l:'Ranking' },
+        { r:'tablero',   i:'🎮', l:'Tablero' },
+        { r:'tareas',    i:'📜', l:'Tareas' },
+        { r:'puntos',    i:'⚡', l:'Puntos' },
+        { r:'ranking',   i:'👑', l:'Ranking' },
       ];
   document.getElementById('nav-row').innerHTML = navItems.map(n =>
     `<button class="nav-btn${n.r===active?' active':''}" data-r="${n.r}" onclick="go('${n.r}')">
@@ -625,10 +642,10 @@ function vLogin() {
         <div id="login-err" style="color:#ff5c7a;font-size:11px;font-weight:700;text-align:center;display:none">PIN incorrecto</div>
         <button class="btn-login" onclick="doLogin()">INGRESAR</button>
         <button onclick="go('ranking')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
-          🏆 VER TABLA DE POSICIONES
+          👑 VER TABLA DE POSICIONES
         </button>
         <button onclick="go('numeros')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
-          🎯 VER NÚMEROS DEL SORTEO
+          🎲 VER NÚMEROS DEL SORTEO
         </button>
       </div>
     </div>
@@ -685,9 +702,9 @@ function vDashboard() {
     <div class="dash-hero">
       <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
         <div>
-          <div style="font-size:10px;color:rgba(147,197,253,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">BIENVENIDO</div>
+          <div style="font-size:10px;color:rgba(220,200,255,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">BIENVENIDO</div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:1;letter-spacing:-0.02em">${student.icon} ${firstName.toUpperCase()}</div>
-          <div style="font-size:11px;color:rgba(147,197,253,0.8);font-weight:600;margin-top:4px">MATHS LEVEL UP</div>
+          <div style="font-size:11px;color:rgba(220,200,255,0.8);font-weight:600;margin-top:4px">MATHS LEVEL UP</div>
         </div>
         <button onclick="doLogout()" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;flex-shrink:0">SALIR</button>
       </div>
@@ -704,7 +721,7 @@ function vDashboard() {
       </div>
       <div class="dash-stat">
         <div class="ds-lbl">Mis Puntos</div>
-        <div class="ds-val" style="color:#84cc16">${totalPts}</div>
+        <div class="ds-val" style="color:#39ff7a">${totalPts}</div>
         <div style="font-size:10px;color:#6b7280;margin-top:6px">${pts.hours}h · ${pts.progress}p · ${pts.tasks}t</div>
       </div>
     </div>` : `
@@ -729,17 +746,17 @@ function vDashboard() {
     </div>` : ''}
 
     <div class="dash-link" onclick="go('tablero')">
-      <span class="dl-ico">🎯</span>
+      <span class="dl-ico">🎮</span>
       <div><div>Tablero del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Elige tus números</div></div>
       <span class="dl-arr">›</span>
     </div>
     <div class="dash-link" onclick="go('ranking')">
-      <span class="dl-ico">🏆</span>
+      <span class="dl-ico">👑</span>
       <div><div>Tabla de Posiciones</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ranking del sorteo</div></div>
       <span class="dl-arr">›</span>
     </div>
     <div class="dash-link" onclick="go('numeros')">
-      <span class="dl-ico">🔢</span>
+      <span class="dl-ico">🎲</span>
       <div><div>Números del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ver todos los números</div></div>
       <span class="dl-arr">›</span>
     </div>
@@ -792,7 +809,7 @@ function vTablero() {
         <div id="admin-summary-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
           <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
             <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SUMA TOTAL DE CUPOS</div>
-            <div id="admin-total-cupos" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#84cc16;line-height:1">0</div>
+            <div id="admin-total-cupos" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#39ff7a;line-height:1">0</div>
           </div>
           <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
             <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:6px">NÚMEROS EN EL TABLERO</div>
@@ -806,8 +823,8 @@ function vTablero() {
   </div>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">🎯 TABLERO</button>
-    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">🏆 RANKING</button>
+    <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">🎮 TABLERO</button>
+    <button class="tab-btn"        id="tab-ranking" onclick="switchTab('ranking')">👑 RANKING</button>
   </div>
 
   <main id="main">
@@ -1188,17 +1205,17 @@ function vRankingPage() {
   const loggedId = getLoggedId();
   return `
   <div style="background:radial-gradient(ellipse at top,#1a6b3a 0%,#0a3320 40%,#051a10 100%);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:12px">
-    <div class="pub-wrap" style="border:1px solid rgba(132,204,22,0.25)">
-      <div class="pub-hdr" id="ranking-card" style="background:linear-gradient(135deg,#065f2e,#0f7a3a 50%,#1a9148)">
+    <div class="pub-wrap" style="border:1px solid rgba(255,92,200,0.3)">
+      <div class="pub-hdr" id="ranking-card" style="background:linear-gradient(135deg,#9d174d,#d6418f 50%,#ffd23f)">
         <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
           <div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#eab308">🏆</span> <span style="color:#84cc16">TABLA DE</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#ffd23f">👑</span> <span style="color:#fff">TABLA DE</span></div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">POSICIONES</div>
             <div id="rank-subtitle" style="font-size:9px;color:rgba(132,204,22,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
             ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
-            <button onclick="captureRanking()" style="background:#eab308;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
+            <button onclick="captureRanking()" style="background:#ffd23f;box-shadow:0 0 14px -3px #ffd23f;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
           </div>
         </div>
       </div>
@@ -1257,17 +1274,17 @@ function vNumerosPage() {
   const loggedId=getLoggedId();
   return `
   <div style="background:radial-gradient(ellipse at top,#1a3a6b 0%,#0a1f3d 40%,#050d1a 100%);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:12px">
-    <div class="pub-wrap" style="border:1px solid rgba(59,130,246,0.25)">
-      <div class="pub-hdr" id="numbers-card" style="background:linear-gradient(135deg,#1e3a8a,#2563eb 50%,#3b82f6)">
+    <div class="pub-wrap" style="border:1px solid rgba(176,107,255,0.3)">
+      <div class="pub-hdr" id="numbers-card" style="background:linear-gradient(135deg,#581c87,#7c3aed 50%,#22e5ff)">
         <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
           <div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#eab308">🎯</span> <span style="color:#7dd3ff">NÚMEROS</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#ffd23f">🎲</span> <span style="color:#fff">NÚMEROS</span></div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DEL SORTEO</div>
-            <div id="num-subtitle" style="font-size:9px;color:rgba(147,197,253,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+            <div id="num-subtitle" style="font-size:9px;color:rgba(220,200,255,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
             ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
-            <button onclick="captureNumeros()" style="background:#eab308;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
+            <button onclick="captureNumeros()" style="background:#ffd23f;box-shadow:0 0 14px -3px #ffd23f;border:none;border-radius:10px;padding:7px 10px;color:#000;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
           </div>
         </div>
       </div>
@@ -1369,7 +1386,7 @@ function renderTask(t, loggedId) {
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
     <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
       ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}</span>`:''}
-      ${isAdmin()&&t.assignTo==='all'?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(59,130,246,0.12);color:#7dd3ff;border:1px solid rgba(59,130,246,0.2)">${assignLabel}</span>`:''}
+      ${isAdmin()&&t.assignTo==='all'?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,229,255,0.12);color:#7dd3ff;border:1px solid rgba(34,229,255,0.2)">${assignLabel}</span>`:''}
       ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:#39ff7a;border:1px solid rgba(34,197,94,0.15)">✓ ${completedCount}/${getStudents().length}</span>`:''}
     </div>
     <div class="task-btns">
@@ -1435,7 +1452,7 @@ function vPuntos() {
   <div style="padding:12px">
     <div class="pts-hero" style="margin-bottom:10px">
       <div style="position:relative">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;line-height:1">⭐ PUNTOS</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;line-height:1">⚡ PUNTOS</div>
         <div style="font-size:10px;color:rgba(134,239,172,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px">Horas · Progreso · Tareas</div>
         <div style="display:flex;gap:10px;margin-top:14px">
           <div style="flex:1;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;text-align:center">
