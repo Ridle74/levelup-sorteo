@@ -440,6 +440,7 @@ let appConfig   = { startTime:'', endTime:'', totalNumbers: 200 };
 let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[] }]
 let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... }
 let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progress:[bool],tasks:[bool]} } }
+let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 let classDaysByName = {}; // { "<nombre normalizado>": Set([0..6]) } — días de la semana con clase, desde /padres
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
@@ -666,7 +667,7 @@ function saveAllocationChange(num, action, ownerId) {
 }
 
 function saveLms() {
-  REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers } }, { merge:true })
+  REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers, pointsHistory } }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
 
@@ -1769,17 +1770,53 @@ function getTotalPts2(id, monthOffset) {
   return p.hours + p.progress + p.tasks;
 }
 
-// Historial de torneos mensuales pasados: top-3 calculado automáticamente con los puntos
-// guardados de cada mes + ganador del sorteo de ese mes (ver SORTEO_WINNERS arriba).
+// Cuando empieza un mes nuevo, archiva automáticamente el podio (top-3) del mes que acaba de
+// terminar — calculado a partir de los puntos guardados ese mes — para que quede guardado para
+// siempre en HISTORIAL sin necesidad de capturarlo a mano. Solo el admin persiste el guardado
+// (para no generar choques de escritura entre varios alumnos conectados a la vez).
+function archiveMonthIfNeeded() {
+  try {
+    const now = new Date();
+    let changed = false;
+    for (let off = -1; off >= -6; off--) {
+      const d = new Date(now); d.setMonth(d.getMonth()+off);
+      const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      if (pointsHistory[ym]) continue; // ya archivado
+      const top3 = getMonthTop3(off).filter(p => p.pts > 0);
+      if (top3.length === 0) continue; // ese mes no tiene puntos registrados
+      pointsHistory[ym] = top3;
+      changed = true;
+    }
+    if (changed && isAdmin()) saveLms();
+  } catch(e) { /* silencioso: no debe romper la carga si algo falla aquí */ }
+}
+
+// Podios de meses anteriores a que existiera el archivado automático (abril/mayo 2026),
+// guardados aquí una sola vez con los datos que Michel proporcionó. A partir de junio 2026
+// el podio se calcula y archiva solo (ver archiveMonthIfNeeded) — no hace falta tocar nada más.
+const HISTORIAL_SEED = {
+  '2026-04': [
+    {nombre:'Mikela Villena', pts:25},
+    {nombre:'Lucio Prado',    pts:24},
+    {nombre:'Joanna Prado',   pts:17}
+  ],
+  '2026-05': [
+    {nombre:'Brunella Varillas', pts:null},
+    {nombre:'Lucio Prado',       pts:null},
+    {nombre:'Alejandro Prado',   pts:null}
+  ]
+};
+
+// Historial de torneos mensuales pasados: podio archivado automáticamente al cierre de cada mes
+// (pointsHistory) + datos semilla de meses previos al archivado + ganador del sorteo de ese mes.
 function vPuntosHistorial() {
   const now = new Date();
-  // Recorremos los meses anteriores al actual que ya tengan puntos registrados (hasta 12 atrás).
   const meses = [];
   for (let off = -1; off >= -12; off--) {
     const d = new Date(now); d.setMonth(d.getMonth()+off);
     const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    const podio = getMonthTop3(off).filter(p => p.pts > 0);
-    if (podio.length === 0) continue; // mes sin datos registrados: no se muestra
+    const podio = pointsHistory[ym] || HISTORIAL_SEED[ym];
+    if (!podio || podio.length === 0) continue; // mes sin datos registrados: no se muestra
     meses.push({ ym, nombre: `${MESES_ES[d.getMonth()]} ${d.getFullYear()}`, podio, sorteo: SORTEO_WINNERS[ym] || null });
   }
   const medals = ['🥇','🥈','🥉'];
@@ -1795,7 +1832,7 @@ function vPuntosHistorial() {
       <div style="display:flex;align-items:center;gap:10px;padding:6px 0;${idx<m.podio.length-1?'border-bottom:1px solid rgba(255,255,255,0.06);':''}">
         <span style="font-size:20px;flex-shrink:0">${medals[idx]}</span>
         <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;text-transform:uppercase">${p.nombre}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#39ff7a">${p.pts} pts</div>
+        ${p.pts!=null ? `<div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#39ff7a">${p.pts} pts</div>` : ''}
       </div>`).join('')}
       <div style="margin-top:12px;display:flex;align-items:center;gap:10px;background:rgba(255,210,63,0.08);border:1px solid rgba(255,210,63,0.25);border-radius:12px;padding:10px 12px">
         <span style="font-size:20px">🎉</span>
@@ -1992,7 +2029,9 @@ REF.onSnapshot(doc => {
   tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
   points      = typeof lms.points==='object' ? lms.points : {};
   pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
+  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
   taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
+  archiveMonthIfNeeded();
   // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
   // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
   (function seedJoannaMult(){
