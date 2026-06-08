@@ -344,11 +344,13 @@ function getStudentPoints(id, monthOffset=0) {
   const base = new Date(); base.setMonth(base.getMonth()+monthOffset);
   const ym = `${base.getFullYear()}-${String(base.getMonth()+1).padStart(2,'0')}`;
   let hours=0, progress=0, tasks=0;
+  // arrToBool: soporta formato nuevo (array de booleanos) y formato viejo (un solo booleano por fecha)
+  const arrToBool = v => Array.isArray(v) ? v : (v ? [true] : []);
   Object.entries(log).forEach(([dateKey, marks]) => {
     if (!dateKey.startsWith(ym) || !marks) return;
-    (marks.hours||[]).forEach(v => { if (v) hours++; });
-    (marks.progress||[]).forEach(v => { if (v) progress++; });
-    (marks.tasks||[]).forEach(v => { if (v) tasks += taskMult; });
+    arrToBool(marks.hours).forEach(v => { if (v) hours++; });
+    arrToBool(marks.progress).forEach(v => { if (v) progress++; });
+    arrToBool(marks.tasks).forEach(v => { if (v) tasks += taskMult; });
   });
   return { hours, progress, tasks };
 }
@@ -1460,7 +1462,7 @@ function setTaskMult(studentId, value) {
 
 // Genera N casillas (checkboxes) para un campo (hours/progress/tasks) de una fecha, según el arreglo guardado.
 function ptsCheckRow(studentId, dateKey, field, count, savedArr, color, disabled) {
-  const arr = Array.isArray(savedArr) ? savedArr : [];
+  const arr = Array.isArray(savedArr) ? savedArr : (savedArr ? [true] : []);
   let html = '';
   for (let i=0; i<count; i++) {
     const checked = !!arr[i];
