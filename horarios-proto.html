@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horarios · Proto</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #080b12;
+    --surface:  #0e1220;
+    --border:   rgba(255,255,255,0.08);
+    --text:     #e8eaf6;
+    --muted:    rgba(255,255,255,0.35);
+    --today-glow: #4fb6ff;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── scanline overlay ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── header ── */
+  .hdr {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(8,11,18,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hdr-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 900;
+    letter-spacing: 0.1em;
+    background: linear-gradient(90deg, #4fb6ff, #a78bfa, #34d399);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    flex: 1;
+  }
+  .week-nav {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .nav-arrow {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04);
+    color: var(--text); font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .nav-arrow:hover {
+    background: rgba(79,182,255,0.12);
+    border-color: rgba(79,182,255,0.4);
+  }
+  .week-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.6);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .btn-hoy {
+    padding: 5px 12px; border-radius: 8px;
+    border: 1px solid rgba(79,182,255,0.35);
+    background: rgba(79,182,255,0.08);
+    color: #4fb6ff; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    transition: background 0.15s;
+  }
+  .btn-hoy:hover { background: rgba(79,182,255,0.18); }
+
+  /* ── page body (grid + sidebar) ── */
+  .page-body {
+    display: flex;
+    align-items: flex-start;
+    height: calc(100dvh - 57px); /* below header */
+    overflow: hidden;
+  }
+
+  /* ── main grid ── */
+  .grid-wrap {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 14px 12px 80px;
+    height: 100%;
+  }
+  .grid-inner {
+    display: inline-flex;
+    align-items: flex-start;
+    min-width: max-content;
+    gap: 0;
+  }
+
+  /* ── time column ── */
+  .time-col {
+    flex-shrink: 0;
+    width: 52px;
+  }
+  .time-col .hdr-cell { height: 52px; }
+  .time-labels {
+    position: relative;
+  }
+  .time-label {
+    position: absolute;
+    right: 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    white-space: nowrap; line-height: 1;
+  }
+
+  /* ── day column ── */
+  .day-col {
+    flex-shrink: 0;
+    width: 142px;
+    border-left: 1px solid var(--border);
+    transition: opacity 0.2s;
+  }
+  .day-col.is-past { opacity: 0.28; }
+  .day-col.is-today { border-left-color: rgba(79,182,255,0.5); }
+
+  .day-hdr {
+    height: 52px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 2px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .day-col.is-today .day-hdr {
+    background: rgba(79,182,255,0.07);
+    border-bottom-color: rgba(79,182,255,0.4);
+  }
+  .day-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 900;
+    letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+  }
+  .day-col.is-today .day-name { color: #4fb6ff; }
+  .day-date {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 900;
+    color: rgba(255,255,255,0.7);
+    line-height: 1;
+  }
+  .day-col.is-today .day-date {
+    color: #4fb6ff;
+    text-shadow: 0 0 14px rgba(79,182,255,0.7);
+  }
+  /* today dot */
+  .day-col.is-today .day-hdr::after {
+    content: 'HOY';
+    position: absolute; bottom: -9px;
+    background: #4fb6ff; color: #000;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 8px; font-weight: 900; letter-spacing: 0.1em;
+    padding: 1px 6px; border-radius: 4px;
+    box-shadow: 0 0 8px rgba(79,182,255,0.6);
+  }
+
+  /* ── schedule container ── */
+  .day-body {
+    position: relative;
+  }
+  .hour-line {
+    position: absolute; left: 0; right: 0;
+    height: 1px;
+    background: rgba(255,255,255,0.05);
+  }
+  .hour-line.first { background: rgba(255,255,255,0.1); }
+
+  /* ── session card ── */
+  .card {
+    position: absolute;
+    left: 5px; right: 5px;
+    border-radius: 10px;
+    padding: 9px 10px;
+    overflow: hidden;
+    display: flex; flex-direction: column; justify-content: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+  }
+  .card:hover {
+    transform: translateX(2px);
+    z-index: 10;
+  }
+  .card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: inherit;
+    filter: blur(16px);
+    opacity: 0.15;
+    z-index: -1;
+  }
+  .card-icon  { font-size: 20px; line-height: 1; }
+  .card-name  {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 900;
+    color: #fff; margin-top: 4px; line-height: 1;
+  }
+  .card-time  {
+    font-size: 10px; font-weight: 700;
+    margin-top: 4px; line-height: 1.3;
+    opacity: 0.9;
+  }
+  .card-mod   {
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  /* multi-student card */
+  .card-group-time {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.07em;
+    color: rgba(255,255,255,0.45); margin-bottom: 6px;
+  }
+  .card-student {
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0;
+  }
+  .card-student + .card-student { margin-top: 5px; }
+  .card-student-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
+  .card-student-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 900;
+    color: #fff; line-height: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-student-sub {
+    font-size: 9px; font-weight: 700;
+    margin-top: 1px; line-height: 1; opacity: 0.75;
+  }
+
+  /* loading / empty */
+  .state-msg {
+    min-height: 60vh;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px; text-align: center; padding: 32px;
+  }
+  .state-msg .ico { font-size: 48px; }
+  .state-msg p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  /* spinner */
+  .spin {
+    width: 28px; height: 28px;
+    border: 3px solid rgba(79,182,255,0.2);
+    border-top-color: #4fb6ff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── scrollbar global ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(79,182,255,0.2);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(79,182,255,0.45); }
+  * { scrollbar-width: thin; scrollbar-color: rgba(79,182,255,0.2) transparent; }
+
+  /* ── sidebar ── */
+  .sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    border-left: 1px solid var(--border);
+    background: rgba(10,13,22,0.6);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .sb-section {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sb-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 900;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 10px;
+  }
+
+  /* ranking */
+  .rank-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: 8px;
+    margin-bottom: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.15s;
+  }
+  .rank-row:hover { background: rgba(255,255,255,0.06); }
+  .rank-medal { font-size: 16px; line-height: 1; flex-shrink: 0; }
+  .rank-icon  { font-size: 18px; line-height: 1; flex-shrink: 0; }
+  .rank-info  { flex: 1; min-width: 0; }
+  .rank-name  {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 900; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1;
+  }
+  .rank-pts   {
+    font-size: 10px; font-weight: 700;
+    margin-top: 2px; line-height: 1;
+  }
+  .rank-bar-wrap {
+    height: 3px; background: rgba(255,255,255,0.08);
+    border-radius: 2px; margin-top: 4px; overflow: hidden;
+  }
+  .rank-bar { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+  /* recent points log */
+  .log-entry {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-icon  { font-size: 18px; line-height: 1.2; flex-shrink: 0; }
+  .log-body  { flex: 1; min-width: 0; }
+  .log-name  {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 900; color: #fff; line-height: 1;
+  }
+  .log-date  {
+    font-size: 9px; font-weight: 600;
+    color: rgba(255,255,255,0.35); margin-top: 1px; line-height: 1;
+  }
+  .log-pts   {
+    font-size: 10px; font-weight: 700; margin-top: 3px; line-height: 1;
+  }
+  .log-tag {
+    display: inline-block;
+    font-size: 8px; font-weight: 700; letter-spacing: 0.06em;
+    padding: 1px 5px; border-radius: 3px;
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.5);
+    margin-right: 2px; margin-top: 3px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-title">📅 HORARIOS</div>
+  <div class="week-nav">
+    <button class="nav-arrow" onclick="changeWeek(-1)">◀</button>
+    <span class="week-label" id="week-label">–</span>
+    <button class="nav-arrow" onclick="changeWeek(1)">▶</button>
+  </div>
+  <button class="btn-hoy" onclick="goToday()">HOY</button>
+</div>
+
+<!-- BODY: grid + sidebar -->
+<div class="page-body">
+
+  <!-- GRID -->
+  <div class="grid-wrap">
+    <div id="grid-root" class="state-msg">
+      <div class="spin"></div>
+      <p>Cargando horarios…</p>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- Top 3 -->
+    <div class="sb-section">
+      <div class="sb-title">🏆 Top 3 alumnos</div>
+      <div id="sb-ranking"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
+    </div>
+    <!-- Recent points -->
+    <div class="sb-section" style="flex:1;border-bottom:none">
+      <div class="sb-title">⚡ Últimos puntos</div>
+      <div id="sb-log"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ── Firebase ────────────────────────────────────────────
+firebase.initializeApp({
+  apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:        "maths-level-up.firebaseapp.com",
+  projectId:         "maths-level-up",
+  storageBucket:     "maths-level-up.firebasestorage.app",
+  messagingSenderId: "854549565666",
+  appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
+});
+const db = firebase.firestore();
+const PADRES_REF = db.collection('padres').doc('main');
+const SORTEO_REF = db.collection('sorteo').doc('main');
+
+// ── Alumnos base ─────────────────────────────────────────
+const DEFAULT_STUDENTS = [
+  { id:1,  name:"Mikela Villena",    color:"#f472b6", icon:"👧🏼" },  // neon pink
+  { id:2,  name:"Lucio Prado",       color:"#60a5fa", icon:"🍎"  },  // neon blue
+  { id:3,  name:"Joanna Prado",      color:"#c084fc", icon:"👧🏻" },  // neon purple
+  { id:4,  name:"Manuel Villacorta", color:"#fb923c", icon:"👦🏻" },  // neon orange
+  { id:5,  name:"Maria Villalobos",  color:"#fde047", icon:"👧🏽" },  // neon yellow
+  { id:6,  name:"Augusto Giuffra",   color:"#f87171", icon:"🕷️"  },  // neon red
+  { id:7,  name:"Santiago Quinto",   color:"#4ade80", icon:"🏃🏻" },  // neon green
+  { id:8,  name:"Tiago Poma",        color:"#22d3ee", icon:"🐶"  },  // neon cyan
+  { id:9,  name:"Mateo Ríos",        color:"#fb7185", icon:"🐧"  },  // neon rose
+  { id:10, name:"Rafaela Villena",   color:"#34d399", icon:"🐨"  }   // neon emerald
+];
+
+// ── State ────────────────────────────────────────────────
+let padresData       = { students: {}, sessions: [] };
+let overrides        = {};
+let lmsPoints        = {};   // { "<studentId>": totalPts }
+let lmsLog           = {};   // { "<studentId>": { "YYYY-MM-DD": { hours,progress,tasks,absent } } }
+let lmsMultipliers   = {};   // { "<studentId>": N }
+let weekOffset       = 0;    // 0 = semana actual
+
+// ── Helpers ──────────────────────────────────────────────
+function normName(s) {
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+}
+
+function addMins(t, mins) {
+  if (!t) return '';
+  const [h, mn] = t.split(':').map(Number);
+  const tot = h*60 + mn + Number(mins||0);
+  return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+}
+
+function getStudentInfo(name) {
+  const nn = normName(name);
+  // Check overrides first
+  const fromOverride = Object.values(overrides).find(o => normName(o.name||'') === nn);
+  if (fromOverride) return fromOverride;
+  return DEFAULT_STUDENTS.find(s => normName(s.name) === nn) || { color:'#4fb6ff', icon:'👤' };
+}
+
+// ── Week navigation ──────────────────────────────────────
+function getWeekDates(offset = 0) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  // Monday of current week
+  const day = today.getDay(); // 0=Sun
+  const diffToMon = (day === 0 ? -6 : 1 - day);
+  const mon = new Date(today);
+  mon.setDate(today.getDate() + diffToMon + offset * 7);
+  return Array.from({length: 7}, (_, i) => {
+    const d = new Date(mon);
+    d.setDate(mon.getDate() + i);
+    return d;
+  });
+}
+
+function fmtWeekLabel(dates) {
+  const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const a = dates[0], b = dates[6];
+  if (a.getMonth() === b.getMonth()) {
+    return `${a.getDate()}–${b.getDate()} ${MONTHS[a.getMonth()]} ${a.getFullYear()}`;
+  }
+  return `${a.getDate()} ${MONTHS[a.getMonth()]} – ${b.getDate()} ${MONTHS[b.getMonth()]}`;
+}
+
+function changeWeek(delta) { weekOffset += delta; render(); }
+function goToday()          { weekOffset = 0;     render(); }
+
+// ── Render ───────────────────────────────────────────────
+function render() {
+  const sessions  = padresData.sessions || [];
+  const pStudents = padresData.students || {};
+
+  if (!sessions.length) {
+    document.getElementById('grid-root').innerHTML = `
+      <div class="ico">📅</div>
+      <p>No hay horarios registrados aún.<br>Se sincronizan desde el portal de padres.</p>`;
+    return;
+  }
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const weekDates = getWeekDates(weekOffset);
+  // weekDates[0]=Lun … weekDates[6]=Dom
+  // JS getDay: 0=Sun,1=Mon…6=Sat → weekDates index = (getDay()+6)%7
+
+  document.getElementById('week-label').textContent = fmtWeekLabel(weekDates);
+
+  // ── Calcular rango horario ──────────────────────────────
+  let minH = 24, maxH = 0;
+  sessions.forEach(s => {
+    if (!s.start) return;
+    const [h, mn] = s.start.split(':').map(Number);
+    const sf = h + mn/60;
+    const ef = sf + (s.dur || 60)/60;
+    if (sf < minH) minH = sf;
+    if (ef > maxH) maxH = ef;
+  });
+  minH = Math.floor(minH);
+  maxH = Math.ceil(maxH);
+  if (minH >= maxH) { minH = 8; maxH = 18; }
+  const N_ROWS  = maxH - minH;
+  const ROW_H   = 90;
+  const totalH  = N_ROWS * ROW_H;
+  const GAP     = 5;
+
+  // hour labels
+  const hourLabels = Array.from({length: N_ROWS + 1}, (_, i) =>
+    `${String(minH + i).padStart(2,'0')}:00`
+  );
+
+  // ── Agrupar sesiones por día+start ──────────────────────
+  // slotMap key = `${jsDayOfWeek}|${start}`
+  const slotMap = {};
+  sessions.forEach(s => {
+    const sid = String(s.studentId);
+    const st  = pStudents[sid];
+    if (!st || !st.name || !s.start) return;
+    const jsDay = Number(s.day); // 0=Sun,1=Mon…
+    const [h, mn] = s.start.split(':').map(Number);
+    const startFrac = h + mn/60;
+    const durH      = (s.dur || 60)/60;
+    const info = getStudentInfo(st.name);
+    const key  = `${jsDay}|${s.start}`;
+    if (!slotMap[key]) slotMap[key] = { jsDay, startFrac, maxDurH: 0, start: s.start, students: [] };
+    if (durH > slotMap[key].maxDurH) slotMap[key].maxDurH = durH;
+    slotMap[key].students.push({
+      name:     st.name.split(' ')[0],
+      icon:     info.icon  || '👤',
+      color:    info.color || '#4fb6ff',
+      modality: s.modality || '',
+      dur:      s.dur || 60
+    });
+  });
+
+  // ── HTML ────────────────────────────────────────────────
+  const DAY_NAMES = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
+
+  // time column
+  let timeColHTML = `
+  <div class="time-col">
+    <div class="hdr-cell" style="height:52px"></div>
+    <div class="time-labels" style="height:${totalH + 16}px">
+      ${hourLabels.map((lbl, i) => {
+        const topPx = i * ROW_H;
+        const transform = i === 0 ? 'translateY(2px)' : i === N_ROWS ? 'translateY(-100%)' : 'translateY(-50%)';
+        return `<div class="time-label" style="top:${topPx}px;transform:${transform}">${lbl}</div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  // day columns
+  const dayColsHTML = weekDates.map((date, wi) => {
+    const jsDay  = date.getDay(); // 0=Sun,1=Mon…
+    const isPast = date < today;
+    const isToday= date.getTime() === today.getTime();
+
+    // Get slots for this jsDay
+    const slots = Object.values(slotMap).filter(sl => sl.jsDay === jsDay);
+
+    // Check if this day has any sessions this week
+    const hasSlots = slots.length > 0;
+
+    let cls = 'day-col';
+    if (isPast)  cls += ' is-past';
+    if (isToday) cls += ' is-today';
+
+    const MONTHS_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+    const hdrHTML = `
+    <div class="day-hdr">
+      <div class="day-name">${DAY_NAMES[jsDay]}</div>
+      <div class="day-date">${date.getDate()}</div>
+    </div>`;
+
+    // hour lines
+    const linesHTML = hourLabels.map((_, i) => `
+      <div class="hour-line${i===0?' first':''}" style="top:${i*ROW_H}px"></div>
+    `).join('');
+
+    // cards
+    const cardsHTML = slots.map(slot => {
+      const topPx    = (slot.startFrac - minH) * ROW_H;
+      const heightPx = Math.max(slot.maxDurH * ROW_H - GAP*2, 38);
+      const allSameMod = slot.students.every(s => s.modality === slot.students[0].modality);
+      const allSameDur = slot.students.every(s => s.dur === slot.students[0].dur);
+      const sharedMod  = allSameMod && slot.students[0].modality ? slot.students[0].modality : '';
+
+      const cardStyle = `top:${topPx + GAP}px;height:${heightPx}px;`;
+
+      if (slot.students.length === 1) {
+        const s   = slot.students[0];
+        const end = addMins(slot.start, s.dur);
+        const bg  = hexToRgba(s.color, 0.1);
+        const bd  = hexToRgba(s.color, 0.45);
+        return `
+        <div class="card" style="${cardStyle}background:${bg};border:1px solid ${bd};">
+          <div class="card-icon">${s.icon}</div>
+          <div class="card-name">${s.name}</div>
+          <div class="card-time" style="color:${s.color}">${slot.start}–${end}</div>
+          ${s.modality ? `<div class="card-mod" style="color:${s.color}">${s.modality.toUpperCase()}</div>` : ''}
+        </div>`;
+      }
+
+      // merged
+      const maxEnd = addMins(slot.start, Math.max(...slot.students.map(s => s.dur)));
+      return `
+      <div class="card" style="${cardStyle}background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);">
+        <div class="card-group-time">${slot.start}–${maxEnd}${sharedMod ? ' · '+sharedMod : ''}</div>
+        ${slot.students.map(s => {
+          const sEnd     = addMins(slot.start, s.dur);
+          const extraTime = !allSameDur ? ` –${sEnd}` : '';
+          const extraMod  = !allSameMod && s.modality ? s.modality : '';
+          return `
+          <div class="card-student">
+            <span class="card-student-icon">${s.icon}</span>
+            <div style="min-width:0">
+              <div class="card-student-name">${s.name}</div>
+              ${(extraTime||extraMod) ? `<div class="card-student-sub" style="color:${s.color}">${extraTime}${extraMod}</div>` : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join('');
+
+    return `
+    <div class="${cls}">
+      ${hdrHTML}
+      <div class="day-body" style="height:${totalH}px">
+        ${linesHTML}
+        ${cardsHTML}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('grid-root').className = '';
+  document.getElementById('grid-root').innerHTML = `
+  <div class="grid-inner">
+    ${timeColHTML}
+    ${dayColsHTML}
+  </div>`;
+}
+
+// ── Color helper ─────────────────────────────────────────
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ── Firebase listeners ───────────────────────────────────
+PADRES_REF.onSnapshot(doc => {
+  const d = doc.exists ? doc.data() : {};
+  padresData = {
+    students: d.students || {},
+    sessions: Array.isArray(d.sessions) ? d.sessions : []
+  };
+  render();
+  renderSidebar();
+}, err => {
+  document.getElementById('grid-root').innerHTML = `
+    <div class="ico">⚠️</div>
+    <p>Error al cargar: ${err.message}</p>`;
+});
+
+SORTEO_REF.onSnapshot(doc => {
+  const d   = doc.exists ? doc.data() : {};
+  const lms = d.lms || {};
+  overrides      = lms.overrides      || d.overrides || {};
+  lmsPoints      = lms.points         || {};
+  lmsLog         = lms.pointsLog      || {};
+  lmsMultipliers = lms.taskMultipliers|| {};
+  render();
+  renderSidebar();
+});
+
+// ── Sidebar helpers ───────────────────────────────────────
+// pointsLog entries are arrays of booleans — count truthy values
+function countBools(arr) {
+  return Array.isArray(arr) ? arr.filter(Boolean).length : 0;
+}
+// Compute current-month pts for a student from lmsLog
+function getSidebarPts(id) {
+  const log  = lmsLog[String(id)] || {};
+  const mult = Number(lmsMultipliers[String(id)]) || 1;
+  const now  = new Date();
+  const ym   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  let hrs = 0, prog = 0, tsk = 0;
+  Object.entries(log).forEach(([date, entry]) => {
+    if (!date.startsWith(ym) || entry.absent) return;
+    hrs  += countBools(entry.hours);
+    prog += countBools(entry.progress);
+    tsk  += countBools(entry.tasks);
+  });
+  return hrs + prog + tsk * mult;
+}
+
+// ── Sidebar ───────────────────────────────────────────────
+function renderSidebar() {
+  const sbRanking = document.getElementById('sb-ranking');
+  const sbLog     = document.getElementById('sb-log');
+  if (!sbRanking || !sbLog) return;
+
+  // Build id→info map using DEFAULT_STUDENTS + overrides
+  // (same IDs that lmsLog and lmsMultipliers use)
+  const idMap = {};
+  DEFAULT_STUDENTS.forEach(s => {
+    idMap[String(s.id)] = { name: s.name.split(' ')[0], icon: s.icon, color: s.color };
+  });
+  Object.entries(overrides).forEach(([id, ov]) => {
+    if (ov && ov.name) idMap[String(id)] = {
+      name:  ov.name.split(' ')[0],
+      icon:  ov.icon  || '👤',
+      color: ov.color || '#4fb6ff'
+    };
+  });
+
+  // ── TOP 3 ────────────────────────────────────────────────
+  const ranked = Object.keys(lmsLog)
+    .map(id => {
+      const info = idMap[String(id)];
+      if (!info) return null;
+      const pts = getSidebarPts(id);
+      return { id, pts, ...info };
+    })
+    .filter(e => e && e.pts > 0)
+    .sort((a, b) => b.pts - a.pts);
+
+  const MEDALS = ['🥇','🥈','🥉'];
+  const maxPts = ranked.length ? ranked[0].pts : 1;
+
+  sbRanking.innerHTML = ranked.slice(0, 3).map((e, i) => {
+    const barW = maxPts > 0 ? Math.round(e.pts / maxPts * 100) : 0;
+    return `
+    <div class="rank-row">
+      <div class="rank-medal">${MEDALS[i]}</div>
+      <div class="rank-icon">${e.icon}</div>
+      <div class="rank-info">
+        <div class="rank-name">${e.name}</div>
+        <div class="rank-pts" style="color:${e.color}">${e.pts} pts</div>
+        <div class="rank-bar-wrap">
+          <div class="rank-bar" style="width:${barW}%;background:${e.color}"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:rgba(255,255,255,0.25);font-size:12px">Sin datos aún</div>';
+
+  // ── RECENT LOG ───────────────────────────────────────────
+  const allEntries = [];
+  Object.entries(lmsLog).forEach(([id, dateMap]) => {
+    const info = idMap[String(id)];
+    if (!info || !dateMap || typeof dateMap !== 'object') return;
+    const mult = Number(lmsMultipliers[String(id)] || 1);
+    Object.entries(dateMap).forEach(([date, entry]) => {
+      if (entry.absent) return;
+      const hrs  = countBools(entry.hours);
+      const prog = countBools(entry.progress);
+      const tsk  = countBools(entry.tasks);
+      const pts  = hrs + prog + tsk * mult;
+      if (pts === 0) return;
+      allEntries.push({ date, id, ...info, pts, tsk, prog, hrs });
+    });
+  });
+
+  allEntries.sort((a, b) => b.date.localeCompare(a.date));
+
+  const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const fmtDate = d => {
+    const [y, m, day] = d.split('-').map(Number);
+    return `${day} ${MONTHS[m-1]}`;
+  };
+
+  sbLog.innerHTML = allEntries.slice(0, 14).map(e => {
+    const tags = [];
+    if (e.tsk  > 0) tags.push(`${e.tsk} tarea${e.tsk>1?'s':''}`);
+    if (e.prog > 0) tags.push(`${e.prog} avance`);
+    if (e.hrs  > 0) tags.push(`${e.hrs}h`);
+    return `
+    <div class="log-entry">
+      <div class="log-icon">${e.icon}</div>
+      <div class="log-body">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <div class="log-name">${e.name}</div>
+          <div class="log-pts" style="color:${e.color};font-size:12px;font-weight:900">+${e.pts}</div>
+        </div>
+        <div class="log-date">${fmtDate(e.date)}</div>
+        <div>${tags.map(t => `<span class="log-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:rgba(255,255,255,0.25);font-size:12px">Sin actividad aún</div>';
+}
+</script>
+</body>
+</html>
