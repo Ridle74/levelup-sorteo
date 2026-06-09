@@ -444,6 +444,7 @@ let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio g
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
+let padresRaw        = { students: {}, sessions: [] }; // snapshot crudo de /padres para la grilla de horarios
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
 let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evita re-render brusco al recibir el propio guardado)
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
@@ -791,7 +792,7 @@ function router() {
   const views = {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
     ranking: vRankingPage, numeros: vNumerosPage,
-    tareas: vTareas, puntos: vPuntos
+    tareas: vTareas, puntos: vPuntos, horarios: vHorarios
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
@@ -816,7 +817,7 @@ function router() {
   const setup = {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
     ranking:vRankingSetup, numeros:vNumerosSetup,
-    tareas:vTareasSetup, puntos:vPuntosSetup
+    tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup
   };
   if (setup[hash]) setup[hash]();
 
@@ -836,6 +837,7 @@ function buildNav(active) {
         { r:'tablero',   i:'🎮', l:'Tablero' },
         { r:'tareas',    i:'📜', l:'Tareas' },
         { r:'puntos',    i:'⚡', l:'Puntos' },
+        { r:'horarios',  i:'📅', l:'Horarios' },
       ]
     : [
         { r:'dashboard', i:'🏠', l:'Inicio' },
@@ -2017,6 +2019,139 @@ function vPtsDateChecklist(s) {
 
 function vPuntosSetup() {}
 
+// ════════════════════════════════════════════════════════
+// VIEW: HORARIOS
+// ════════════════════════════════════════════════════════
+function vHorarios() {
+  const sessions = padresRaw.sessions || [];
+  const pStudents = padresRaw.students || {};
+  const lmsStudents = getStudents();
+
+  // Lookup normName → {icon, color} desde LMS
+  const lmsMap = {};
+  lmsStudents.forEach(s => { lmsMap[normName(s.name)] = s; });
+
+  const DAY_ORDER  = [1, 2, 3, 4, 5, 6, 0];
+  const DAY_LABELS = {1:'Lun', 2:'Mar', 3:'Mié', 4:'Jue', 5:'Vie', 6:'Sáb', 0:'Dom'};
+
+  // grid[startTime][day] = [{name, icon, color, dur, modality}]
+  const grid = {};
+  const allTimesSet = new Set();
+
+  sessions.forEach(s => {
+    const sid = String(s.studentId);
+    const st  = pStudents[sid];
+    if (!st || !st.name) return;
+    const time = s.start || '00:00';
+    const day  = Number(s.day);
+    allTimesSet.add(time);
+    if (!grid[time]) grid[time] = {};
+    if (!grid[time][day]) grid[time][day] = [];
+    const lms = lmsMap[normName(st.name)] || {};
+    grid[time][day].push({
+      name:     st.name.split(' ')[0],
+      icon:     lms.icon  || '👤',
+      color:    lms.color || '#4fb6ff',
+      dur:      s.dur      || 60,
+      modality: s.modality || ''
+    });
+  });
+
+  const sortedTimes = [...allTimesSet].sort();
+
+  const addMins = (t, mins) => {
+    if (!t) return '';
+    const [h, mn] = t.split(':').map(Number);
+    const tot = h*60 + mn + Number(mins||0);
+    return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+  };
+
+  if (!sortedTimes.length) {
+    return `
+    <div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center">
+      <div>
+        <div style="font-size:48px;margin-bottom:12px">📅</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.5)">No hay horarios registrados aún.<br>Los horarios se sincronizan desde el portal de padres.</div>
+      </div>
+    </div>`;
+  }
+
+  // Solo días que tienen al menos un alumno
+  const activeDays = DAY_ORDER.filter(d =>
+    sortedTimes.some(t => grid[t] && grid[t][d] && grid[t][d].length)
+  );
+
+  const COL_W  = 130;
+  const TIME_W = 54;
+
+  return `
+  <div style="padding:12px 12px 80px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:0.05em;margin-bottom:14px">📅 HORARIOS</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px">
+      <div style="display:inline-flex;flex-direction:column;min-width:max-content;gap:4px">
+
+        <!-- Encabezado: días -->
+        <div style="display:flex">
+          <div style="width:${TIME_W}px;flex-shrink:0"></div>
+          ${activeDays.map(d => `
+            <div style="width:${COL_W}px;flex-shrink:0;text-align:center;font-family:'Barlow Condensed',sans-serif;
+                        font-size:13px;font-weight:900;letter-spacing:0.12em;color:rgba(255,255,255,0.55);
+                        padding:6px 4px 8px;border-bottom:1px solid rgba(255,255,255,0.1)">
+              ${DAY_LABELS[d]}
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Filas de horas -->
+        ${sortedTimes.map(time => `
+          <div style="display:flex;align-items:stretch;gap:0">
+
+            <!-- Etiqueta de hora -->
+            <div style="width:${TIME_W}px;flex-shrink:0;display:flex;align-items:flex-start;
+                        justify-content:flex-end;padding:8px 10px 0 0">
+              <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;
+                           color:rgba(255,255,255,0.4);letter-spacing:0.05em">${time}</span>
+            </div>
+
+            <!-- Celdas por día -->
+            ${activeDays.map(d => {
+              const slots = (grid[time] && grid[time][d]) || [];
+              if (!slots.length) {
+                return `<div style="width:${COL_W}px;flex-shrink:0;padding:4px;
+                                    border-left:1px solid rgba(255,255,255,0.04);min-height:48px"></div>`;
+              }
+              return `
+              <div style="width:${COL_W}px;flex-shrink:0;padding:4px;
+                          border-left:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px">
+                ${slots.map(sl => {
+                  const endT = addMins(time, sl.dur);
+                  const modLabel = sl.modality
+                    ? `<span style="font-size:8px;opacity:0.65;font-weight:600"> · ${sl.modality}</span>`
+                    : '';
+                  return `
+                  <div style="background:rgba(255,255,255,0.04);border:1px solid ${sl.color}55;
+                              border-radius:8px;padding:7px 8px">
+                    <div style="font-size:16px;line-height:1">${sl.icon}</div>
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;
+                                color:#fff;margin-top:3px;line-height:1">${sl.name}</div>
+                    <div style="font-size:9px;font-weight:700;color:${sl.color};margin-top:4px;line-height:1.2">
+                      ${time}–${endT}${modLabel}
+                    </div>
+                  </div>`;
+                }).join('')}
+              </div>`;
+            }).join('')}
+
+          </div>
+        `).join('')}
+
+      </div>
+    </div>
+  </div>`;
+}
+
+function vHorariosSetup() {}
+
 function togglePtsEditor(studentId) {
   expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
   ptsMonthOffset = 0;
@@ -2082,6 +2217,7 @@ PADRES_REF.onSnapshot(doc => {
   const d = doc.exists ? doc.data() : {};
   const pStudents = d.students || {};
   const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
+  padresRaw = { students: pStudents, sessions: pSessions };
   const map = {}, slotMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
     // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
@@ -2103,6 +2239,10 @@ PADRES_REF.onSnapshot(doc => {
   if (currentView === 'puntos') {
     const app=document.getElementById('app');
     if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+  }
+  if (currentView === 'horarios') {
+    const app=document.getElementById('app');
+    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
   }
 }, err => console.error('[Firebase padres]', err));
 
