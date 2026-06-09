@@ -442,7 +442,8 @@ let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... 
 let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progress:[bool],tasks:[bool]} } }
 let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
-let classDaysByName = {}; // { "<nombre normalizado>": Set([0..6]) } — días de la semana con clase, desde /padres
+let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
+let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
 let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evita re-render brusco al recibir el propio guardado)
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
@@ -717,7 +718,9 @@ function saveLms() {
 // tiene clase, junto con el total de horas de clase ese día — según el horario semanal sincronizado
 // desde /padres (classDaysByName: { "<nombre>": {"<díaSemana>": horas} }). Si no hay match, devuelve [].
 function getClassDatesForStudent(studentName, monthOffset=0) {
-  const hoursByDay = classDaysByName[normName(studentName)];
+  const nn = normName(studentName);
+  const hoursByDay = classDaysByName[nn];
+  const slotsByDay = classSlotsByName[nn] || {};
   if (!hoursByDay || !Object.keys(hoursByDay).length) return [];
   const base = new Date();
   base.setMonth(base.getMonth()+monthOffset);
@@ -728,8 +731,9 @@ function getClassDatesForStudent(studentName, monthOffset=0) {
     const dt = new Date(y, m, d);
     const h = hoursByDay[dt.getDay()];
     if (h) {
-      const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      out.push({ date:dt, key, hours:h });
+      const key   = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const slots = slotsByDay[dt.getDay()] || [];
+      out.push({ date:dt, key, hours:h, slots });
     }
   }
   return out;
@@ -1972,15 +1976,22 @@ function vPtsDateChecklist(s) {
     <div style="font-size:9px;color:rgba(255,255,255,0.35);line-height:1.6;margin-bottom:8px">
       ⏱️ Horas y 📈 Progreso: un cuadradito por cada hora de clase ese día. ✅ Tareas: hasta ${PTS_TASKS_MAX} por fecha${mult>1?`, cada uno vale ×${mult} para este alumno (ajustable arriba)`:''}. 🚫 Si el alumno faltó, marca "Faltó a clase" para que esa fecha no sume ni reste puntos.
     </div>
-    ${dates.map(({date,key,hours}) => {
+    ${dates.map(({date,key,hours,slots}) => {
       const m = log[key] || {};
       const absent = !!m.absent;
       const isFuture = date > today;
       const dlabel = `${dayShort[date.getDay()]} ${date.getDate()}`;
       const dim = absent ? 'opacity:0.4' : '';
+      const slotLines = slots.length
+        ? slots.map(sl => {
+            const timeStr = sl.start || '';
+            const modStr  = sl.modality ? `<span style="color:rgba(255,255,255,0.3);font-weight:500"> · ${sl.modality}</span>` : '';
+            return `<span style="display:block;font-size:9px;font-weight:700;color:rgba(79,182,255,0.75);line-height:1.5">${timeStr}${modStr}</span>`;
+          }).join('')
+        : '';
       return `
       <div style="display:flex;align-items:flex-start;gap:6px;padding:7px 4px;border-top:1px solid rgba(255,255,255,0.05)">
-        <span style="flex:0 0 56px;font-size:12px;font-weight:700;padding-top:2px;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}<br><span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35)">${hours}h clase</span></span>
+        <span style="flex:0 0 72px;font-size:12px;font-weight:700;padding-top:2px;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}<br><span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35)">${hours}h clase</span>${slotLines}</span>
         <div style="flex:1">
           <label style="display:flex;align-items:center;gap:5px;margin-bottom:5px;font-size:10px;font-weight:700;color:${absent?'#ff5c7a':'rgba(248,113,113,0.55)'};cursor:${isFuture?'default':'pointer'}">
             <input type="checkbox" ${absent?'checked':''} ${isFuture?'disabled':''} onchange="toggleAbsent(${s.id},'${key}',this.checked)" style="width:14px;height:14px;accent-color:#ff5c7a;cursor:${isFuture?'default':'pointer'}">
@@ -2062,17 +2073,24 @@ PADRES_REF.onSnapshot(doc => {
   const d = doc.exists ? doc.data() : {};
   const pStudents = d.students || {};
   const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  const map = {};
+  const map = {}, slotMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
     // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
-    const hoursByDay = {};
+    const hoursByDay = {}, slotsByDay = {};
     pSessions.filter(s => String(s.studentId)===String(sid)).forEach(s => {
       const h = Math.max(1, Math.round((s.dur||60)/60));
       hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
+      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
+      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
     });
-    map[normName(st.name)] = hoursByDay;
+    // ordenar los slots de cada día cronológicamente por hora de inicio
+    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
+    const key = normName(st.name);
+    map[key] = hoursByDay;
+    slotMap[key] = slotsByDay;
   });
-  classDaysByName = map;
+  classDaysByName  = map;
+  classSlotsByName = slotMap;
   if (currentView === 'puntos') {
     const app=document.getElementById('app');
     if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
