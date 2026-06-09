@@ -2023,41 +2023,15 @@ function vPuntosSetup() {}
 // VIEW: HORARIOS
 // ════════════════════════════════════════════════════════
 function vHorarios() {
-  const sessions = padresRaw.sessions || [];
-  const pStudents = padresRaw.students || {};
+  const sessions  = padresRaw.sessions  || [];
+  const pStudents = padresRaw.students  || {};
   const lmsStudents = getStudents();
 
-  // Lookup normName → {icon, color} desde LMS
   const lmsMap = {};
   lmsStudents.forEach(s => { lmsMap[normName(s.name)] = s; });
 
   const DAY_ORDER  = [1, 2, 3, 4, 5, 6, 0];
   const DAY_LABELS = {1:'Lun', 2:'Mar', 3:'Mié', 4:'Jue', 5:'Vie', 6:'Sáb', 0:'Dom'};
-
-  // grid[startTime][day] = [{name, icon, color, dur, modality}]
-  const grid = {};
-  const allTimesSet = new Set();
-
-  sessions.forEach(s => {
-    const sid = String(s.studentId);
-    const st  = pStudents[sid];
-    if (!st || !st.name) return;
-    const time = s.start || '00:00';
-    const day  = Number(s.day);
-    allTimesSet.add(time);
-    if (!grid[time]) grid[time] = {};
-    if (!grid[time][day]) grid[time][day] = [];
-    const lms = lmsMap[normName(st.name)] || {};
-    grid[time][day].push({
-      name:     st.name.split(' ')[0],
-      icon:     lms.icon  || '👤',
-      color:    lms.color || '#4fb6ff',
-      dur:      s.dur      || 60,
-      modality: s.modality || ''
-    });
-  });
-
-  const sortedTimes = [...allTimesSet].sort();
 
   const addMins = (t, mins) => {
     if (!t) return '';
@@ -2066,7 +2040,7 @@ function vHorarios() {
     return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
   };
 
-  if (!sortedTimes.length) {
+  if (!sessions.length) {
     return `
     <div style="min-height:70vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center">
       <div>
@@ -2076,74 +2050,176 @@ function vHorarios() {
     </div>`;
   }
 
-  // Solo días que tienen al menos un alumno
-  const activeDays = DAY_ORDER.filter(d =>
-    sortedTimes.some(t => grid[t] && grid[t][d] && grid[t][d].length)
+  // ── Rango de horas ─────────────────────────────────────
+  let minH = 24, maxH = 0;
+  sessions.forEach(s => {
+    if (!s.start) return;
+    const [h, mn] = s.start.split(':').map(Number);
+    const startFrac = h + mn / 60;
+    const endFrac   = startFrac + (s.dur || 60) / 60;
+    if (startFrac < minH) minH = startFrac;
+    if (endFrac   > maxH) maxH = endFrac;
+  });
+  minH = Math.floor(minH);
+  maxH = Math.ceil(maxH);
+  const N_ROWS = maxH - minH;
+  if (N_ROWS <= 0) return '<div style="padding:24px;color:rgba(255,255,255,0.4)">Sin datos.</div>';
+
+  // Etiqueta para cada línea divisora (N_ROWS+1, de minH hasta maxH)
+  const hourLabels = Array.from({length: N_ROWS + 1}, (_, i) =>
+    `${String(minH + i).padStart(2,'0')}:00`
   );
 
-  const COL_W  = 130;
-  const TIME_W = 54;
+  // ── Agrupar sesiones por día + start ────────────────────
+  // Alumnos con el mismo día y mismo start → una sola tarjeta unida.
+  // slotMap key = `${day}|${start}` → { day, rowStart, spanRows, start, students[] }
+  const slotMap = {};
+  sessions.forEach(s => {
+    const sid = String(s.studentId);
+    const st  = pStudents[sid];
+    if (!st || !st.name || !s.start) return;
+    const day = Number(s.day);
+    const [h, mn] = s.start.split(':').map(Number);
+    const startFrac = h + mn / 60;
+    const rowStart  = Math.floor(startFrac - minH) + 1;
+    const spanRows  = Math.max(1, Math.round((s.dur || 60) / 60));
+    const lms = lmsMap[normName(st.name)] || {};
+    const key = `${day}|${s.start}`;
+    if (!slotMap[key]) {
+      slotMap[key] = { day, rowStart, spanRows, start: s.start, students: [] };
+    }
+    // La tarjeta unida abarca el tiempo más largo del grupo
+    if (spanRows > slotMap[key].spanRows) slotMap[key].spanRows = spanRows;
+    slotMap[key].students.push({
+      name:     st.name.split(' ')[0],
+      icon:     lms.icon  || '👤',
+      color:    lms.color || '#4fb6ff',
+      modality: s.modality || '',
+      dur:      s.dur || 60
+    });
+  });
+
+  // Reagrupar por día
+  const dayData = {};
+  Object.values(slotMap).forEach(slot => {
+    if (!dayData[slot.day]) dayData[slot.day] = [];
+    dayData[slot.day].push(slot);
+  });
+
+  const activeDays = DAY_ORDER.filter(d => dayData[d] && dayData[d].length);
+  if (!activeDays.length) return '<div style="padding:24px;color:rgba(255,255,255,0.4)">Sin datos.</div>';
+
+  const ROW_H     = 90;
+  const COL_W     = 140;
+  const TIME_W    = 52;
+  const totalH    = N_ROWS * ROW_H;
+  const GRID_ROWS = `repeat(${N_ROWS}, ${ROW_H}px)`;
+
+  // ── Render de cada tarjeta ──────────────────────────────
+  const renderCard = (slot) => {
+    const allSameMod = slot.students.every(s => s.modality === slot.students[0].modality);
+    const allSameDur = slot.students.every(s => s.dur === slot.students[0].dur);
+    const sharedMod  = allSameMod && slot.students[0].modality
+      ? ` · ${slot.students[0].modality}` : '';
+
+    if (slot.students.length === 1) {
+      // ── Tarjeta individual ──
+      const s   = slot.students[0];
+      const end = addMins(slot.start, s.dur);
+      return `
+      <div style="grid-row:${slot.rowStart} / span ${slot.spanRows};z-index:1;
+                  background:rgba(255,255,255,0.04);border:1px solid ${s.color}55;
+                  border-radius:10px;padding:10px;margin:4px 0;
+                  display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:22px;line-height:1">${s.icon}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;
+                    color:#fff;margin-top:5px;line-height:1">${s.name}</div>
+        <div style="font-size:10px;font-weight:700;color:${s.color};margin-top:5px;line-height:1.3">
+          ${slot.start}–${end}${s.modality ? ' · '+s.modality : ''}
+        </div>
+      </div>`;
+    }
+
+    // ── Tarjeta unida (varios alumnos mismo día+hora) ──
+    const maxEnd = addMins(slot.start, Math.max(...slot.students.map(s => s.dur)));
+    return `
+    <div style="grid-row:${slot.rowStart} / span ${slot.spanRows};z-index:1;
+                background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);
+                border-radius:10px;padding:10px;margin:4px 0;
+                display:flex;flex-direction:column;justify-content:center;gap:7px">
+      <!-- Horario compartido en el tope -->
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;
+                  color:rgba(255,255,255,0.4);line-height:1">
+        ${slot.start}–${maxEnd}${sharedMod}
+      </div>
+      <!-- Lista de alumnos -->
+      ${slot.students.map(s => {
+        const sEnd     = addMins(slot.start, s.dur);
+        const extraTime = !allSameDur ? ` (–${sEnd})` : '';
+        const extraMod  = !allSameMod && s.modality ? ` · ${s.modality}` : '';
+        return `
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="font-size:20px;line-height:1;flex-shrink:0">${s.icon}</span>
+          <div style="min-width:0">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;
+                        color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              ${s.name}
+            </div>
+            ${(extraTime || extraMod) ? `
+            <div style="font-size:9px;font-weight:700;color:${s.color};margin-top:2px;line-height:1">
+              ${extraTime}${extraMod}
+            </div>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  };
 
   return `
   <div style="padding:12px 12px 80px">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:0.05em;margin-bottom:14px">📅 HORARIOS</div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px">
-      <div style="display:inline-flex;flex-direction:column;min-width:max-content;gap:4px">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;
+                letter-spacing:0.05em;margin-bottom:14px">📅 HORARIOS</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <div style="display:inline-flex;align-items:flex-start;min-width:max-content">
 
-        <!-- Encabezado: días -->
-        <div style="display:flex">
-          <div style="width:${TIME_W}px;flex-shrink:0"></div>
-          ${activeDays.map(d => `
-            <div style="width:${COL_W}px;flex-shrink:0;text-align:center;font-family:'Barlow Condensed',sans-serif;
-                        font-size:13px;font-weight:900;letter-spacing:0.12em;color:rgba(255,255,255,0.55);
-                        padding:6px 4px 8px;border-bottom:1px solid rgba(255,255,255,0.1)">
-              ${DAY_LABELS[d]}
-            </div>
-          `).join('')}
+        <!-- ── Columna de horas ── -->
+        <div style="flex-shrink:0;width:${TIME_W}px">
+          <div style="height:34px"></div>
+          <div style="position:relative;height:${totalH + 16}px">
+            ${hourLabels.map((lbl, i) => `
+              <div style="position:absolute;top:${i * ROW_H}px;right:8px;
+                          transform:translateY(${i === 0 ? '2px' : i === N_ROWS ? '-100%' : '-50%'});
+                          font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;
+                          color:rgba(255,255,255,0.45);white-space:nowrap;line-height:1">
+                ${lbl}
+              </div>
+            `).join('')}
+          </div>
         </div>
 
-        <!-- Filas de horas -->
-        ${sortedTimes.map(time => `
-          <div style="display:flex;align-items:stretch;gap:0">
-
-            <!-- Etiqueta de hora -->
-            <div style="width:${TIME_W}px;flex-shrink:0;display:flex;align-items:flex-start;
-                        justify-content:flex-end;padding:8px 10px 0 0">
-              <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;
-                           color:rgba(255,255,255,0.4);letter-spacing:0.05em">${time}</span>
+        <!-- ── Columnas de días ── -->
+        ${activeDays.map(d => {
+          const slots = dayData[d] || [];
+          return `
+          <div style="flex-shrink:0;width:${COL_W}px;border-left:1px solid rgba(255,255,255,0.08)">
+            <div style="height:34px;display:flex;align-items:center;justify-content:center;
+                        font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;
+                        letter-spacing:0.12em;color:rgba(255,255,255,0.55);
+                        border-bottom:1px solid rgba(255,255,255,0.12)">
+              ${DAY_LABELS[d]}
             </div>
-
-            <!-- Celdas por día -->
-            ${activeDays.map(d => {
-              const slots = (grid[time] && grid[time][d]) || [];
-              if (!slots.length) {
-                return `<div style="width:${COL_W}px;flex-shrink:0;padding:4px;
-                                    border-left:1px solid rgba(255,255,255,0.04);min-height:48px"></div>`;
-              }
-              return `
-              <div style="width:${COL_W}px;flex-shrink:0;padding:4px;
-                          border-left:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;gap:4px">
-                ${slots.map(sl => {
-                  const endT = addMins(time, sl.dur);
-                  const modLabel = sl.modality
-                    ? `<span style="font-size:8px;opacity:0.65;font-weight:600"> · ${sl.modality}</span>`
-                    : '';
-                  return `
-                  <div style="background:rgba(255,255,255,0.04);border:1px solid ${sl.color}55;
-                              border-radius:8px;padding:7px 8px">
-                    <div style="font-size:16px;line-height:1">${sl.icon}</div>
-                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;
-                                color:#fff;margin-top:3px;line-height:1">${sl.name}</div>
-                    <div style="font-size:9px;font-weight:700;color:${sl.color};margin-top:4px;line-height:1.2">
-                      ${time}–${endT}${modLabel}
-                    </div>
-                  </div>`;
-                }).join('')}
-              </div>`;
-            }).join('')}
-
-          </div>
-        `).join('')}
+            <div style="position:relative;display:grid;grid-template-rows:${GRID_ROWS};
+                        height:${totalH}px;padding:0 4px">
+              <!-- Líneas de hora -->
+              ${hourLabels.map((_, i) => `
+                <div style="position:absolute;top:${i * ROW_H}px;left:0;right:0;height:1px;
+                            background:rgba(255,255,255,${i === 0 ? '0.12' : '0.05'})"></div>
+              `).join('')}
+              <!-- Tarjetas -->
+              ${slots.map(renderCard).join('')}
+            </div>
+          </div>`;
+        }).join('')}
 
       </div>
     </div>
