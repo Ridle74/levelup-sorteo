@@ -2072,7 +2072,7 @@ function vHorarios() {
 
   // ── Agrupar sesiones por día + start ────────────────────
   // Alumnos con el mismo día y mismo start → una sola tarjeta unida.
-  // slotMap key = `${day}|${start}` → { day, rowStart, spanRows, start, students[] }
+  // slotMap key = `${day}|${start}` → { day, startFrac, maxDurH, start, students[] }
   const slotMap = {};
   sessions.forEach(s => {
     const sid = String(s.studentId);
@@ -2081,15 +2081,13 @@ function vHorarios() {
     const day = Number(s.day);
     const [h, mn] = s.start.split(':').map(Number);
     const startFrac = h + mn / 60;
-    const rowStart  = Math.floor(startFrac - minH) + 1;
-    const spanRows  = Math.max(1, Math.round((s.dur || 60) / 60));
+    const durH      = (s.dur || 60) / 60;
     const lms = lmsMap[normName(st.name)] || {};
     const key = `${day}|${s.start}`;
     if (!slotMap[key]) {
-      slotMap[key] = { day, rowStart, spanRows, start: s.start, students: [] };
+      slotMap[key] = { day, startFrac, maxDurH: 0, start: s.start, students: [] };
     }
-    // La tarjeta unida abarca el tiempo más largo del grupo
-    if (spanRows > slotMap[key].spanRows) slotMap[key].spanRows = spanRows;
+    if (durH > slotMap[key].maxDurH) slotMap[key].maxDurH = durH;
     slotMap[key].students.push({
       name:     st.name.split(' ')[0],
       icon:     lms.icon  || '👤',
@@ -2109,28 +2107,30 @@ function vHorarios() {
   const activeDays = DAY_ORDER.filter(d => dayData[d] && dayData[d].length);
   if (!activeDays.length) return '<div style="padding:24px;color:rgba(255,255,255,0.4)">Sin datos.</div>';
 
-  const ROW_H     = 90;
-  const COL_W     = 140;
-  const TIME_W    = 52;
-  const totalH    = N_ROWS * ROW_H;
-  const GRID_ROWS = `repeat(${N_ROWS}, ${ROW_H}px)`;
+  const ROW_H  = 90;   // px por hora exacta
+  const COL_W  = 140;
+  const TIME_W = 52;
+  const totalH = N_ROWS * ROW_H;
+  const GAP    = 6;    // margen vertical entre tarjeta y línea
 
-  // ── Render de cada tarjeta ──────────────────────────────
+  // ── Render de cada tarjeta (posicionamiento absoluto proporcional) ──
   const renderCard = (slot) => {
+    const topPx    = (slot.startFrac - minH) * ROW_H;
+    const heightPx = Math.max(slot.maxDurH * ROW_H - GAP * 2, 40);
     const allSameMod = slot.students.every(s => s.modality === slot.students[0].modality);
     const allSameDur = slot.students.every(s => s.dur === slot.students[0].dur);
     const sharedMod  = allSameMod && slot.students[0].modality
       ? ` · ${slot.students[0].modality}` : '';
 
+    const cardBase = `position:absolute;left:4px;right:4px;top:${topPx + GAP}px;
+                      height:${heightPx}px;z-index:1;border-radius:10px;padding:10px;
+                      overflow:hidden;display:flex;flex-direction:column;justify-content:center`;
+
     if (slot.students.length === 1) {
-      // ── Tarjeta individual ──
       const s   = slot.students[0];
       const end = addMins(slot.start, s.dur);
       return `
-      <div style="grid-row:${slot.rowStart} / span ${slot.spanRows};z-index:1;
-                  background:rgba(255,255,255,0.04);border:1px solid ${s.color}55;
-                  border-radius:10px;padding:10px;margin:4px 0;
-                  display:flex;flex-direction:column;justify-content:center">
+      <div style="${cardBase};background:rgba(255,255,255,0.04);border:1px solid ${s.color}55">
         <div style="font-size:22px;line-height:1">${s.icon}</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;
                     color:#fff;margin-top:5px;line-height:1">${s.name}</div>
@@ -2140,25 +2140,21 @@ function vHorarios() {
       </div>`;
     }
 
-    // ── Tarjeta unida (varios alumnos mismo día+hora) ──
+    // Tarjeta unida
     const maxEnd = addMins(slot.start, Math.max(...slot.students.map(s => s.dur)));
     return `
-    <div style="grid-row:${slot.rowStart} / span ${slot.spanRows};z-index:1;
-                background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);
-                border-radius:10px;padding:10px;margin:4px 0;
-                display:flex;flex-direction:column;justify-content:center;gap:7px">
-      <!-- Horario compartido en el tope -->
+    <div style="${cardBase};background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);
+                gap:7px">
       <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;
-                  color:rgba(255,255,255,0.4);line-height:1">
+                  color:rgba(255,255,255,0.4);line-height:1;flex-shrink:0">
         ${slot.start}–${maxEnd}${sharedMod}
       </div>
-      <!-- Lista de alumnos -->
       ${slot.students.map(s => {
-        const sEnd     = addMins(slot.start, s.dur);
+        const sEnd      = addMins(slot.start, s.dur);
         const extraTime = !allSameDur ? ` (–${sEnd})` : '';
         const extraMod  = !allSameMod && s.modality ? ` · ${s.modality}` : '';
         return `
-        <div style="display:flex;align-items:center;gap:7px">
+        <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
           <span style="font-size:20px;line-height:1;flex-shrink:0">${s.icon}</span>
           <div style="min-width:0">
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;
@@ -2208,14 +2204,14 @@ function vHorarios() {
                         border-bottom:1px solid rgba(255,255,255,0.12)">
               ${DAY_LABELS[d]}
             </div>
-            <div style="position:relative;display:grid;grid-template-rows:${GRID_ROWS};
-                        height:${totalH}px;padding:0 4px">
-              <!-- Líneas de hora -->
+            <!-- Contenedor de posicionamiento absoluto -->
+            <div style="position:relative;height:${totalH}px">
+              <!-- Líneas divisoras por hora exacta -->
               ${hourLabels.map((_, i) => `
                 <div style="position:absolute;top:${i * ROW_H}px;left:0;right:0;height:1px;
                             background:rgba(255,255,255,${i === 0 ? '0.12' : '0.05'})"></div>
               `).join('')}
-              <!-- Tarjetas -->
+              <!-- Tarjetas posicionadas proporcionalmente -->
               ${slots.map(renderCard).join('')}
             </div>
           </div>`;
