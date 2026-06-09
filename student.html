@@ -528,27 +528,46 @@ function getPickCounts() {
 }
 
 // ════════════════════════════════════════════════════════
-// CRONOGRAMA AUTOMÁTICO DEL SORTEO
-// Reglas fijas (ya no se configuran a mano):
-//   • Apertura  → primer LUNES del mes, 3:00 PM
-//   • Cierre    → SÁBADO de esa misma semana, 9:00 PM
-//   • Sorteo    → DOMINGO de esa misma semana, mediodía
-// Si la fecha actual ya pasó el cierre del mes en curso, se calcula
-// directamente el cronograma del mes siguiente (próximo ciclo).
+// FECHA DEL SORTEO (regla fin de mes)
+//   mes termina lun/mar/mié → sorteo ese domingo
+//   mes termina jue/vie/sáb/dom → sorteo domingo de la semana siguiente
 // ════════════════════════════════════════════════════════
-function _scheduleForMonth(year, month) {
-  let d = new Date(year, month, 1);
-  while (d.getDay() !== 1) d.setDate(d.getDate()+1); // primer lunes
-  const start = new Date(d); start.setHours(15,0,0,0);
-  const end   = new Date(d); end.setDate(end.getDate()+5);  end.setHours(21,0,0,0);
-  const draw  = new Date(d); draw.setDate(draw.getDate()+6); draw.setHours(12,0,0,0);
-  return { start, end, draw };
+function getSorteoDate(year, month) {
+  const lastDay = new Date(year, month + 1, 0);
+  const dow = lastDay.getDay();
+  let add;
+  if      (dow === 0) add = 7;
+  else if (dow <= 3)  add = 7 - dow;
+  else                add = 14 - dow;
+  return new Date(lastDay.getFullYear(), lastDay.getMonth(), lastDay.getDate() + add);
 }
+
+// ════════════════════════════════════════════════════════
+// CRONOGRAMA DE ELECCIÓN DE NÚMEROS
+// El sorteo es siempre el domingo determinado por getSorteoDate.
+// La ventana de elección es la semana previa a ese domingo:
+//   • Apertura → lunes (sorteo − 6 días), 3:00 PM
+//   • Cierre   → sábado (sorteo − 1 día), 9:00 PM
+//   • Sorteo   → domingo, mediodía
+// Si la fecha actual ya pasó el cierre del ciclo actual,
+// se usa el ciclo del mes siguiente.
+// ════════════════════════════════════════════════════════
 function computeSorteoSchedule(refDate) {
   const ref = refDate || new Date();
-  let sch = _scheduleForMonth(ref.getFullYear(), ref.getMonth());
-  if (ref > sch.end) sch = _scheduleForMonth(ref.getFullYear(), ref.getMonth()+1);
-  return sch;
+  const m = ref.getMonth(), y = ref.getFullYear();
+  // sorteo del mes actual
+  let sorteo = getSorteoDate(y, m);
+  let end    = new Date(sorteo); end.setDate(end.getDate() - 1); end.setHours(21, 0, 0, 0);
+  // si ya pasó el cierre → usar mes siguiente
+  if (ref > end) {
+    const nm = m === 11 ? 0 : m + 1;
+    const ny = m === 11 ? y + 1 : y;
+    sorteo = getSorteoDate(ny, nm);
+    end    = new Date(sorteo); end.setDate(end.getDate() - 1); end.setHours(21, 0, 0, 0);
+  }
+  const start = new Date(sorteo); start.setDate(start.getDate() - 6); start.setHours(15, 0, 0, 0);
+  const draw  = new Date(sorteo); draw.setHours(12, 0, 0, 0);
+  return { start, end, draw };
 }
 
 // Reparte proporcionalmente (en horas enteras, sin decimales) la ventana total
