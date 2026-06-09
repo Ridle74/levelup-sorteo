@@ -509,9 +509,8 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
     });
   });
-  // Orden de turnos: "max" guarda los puntos finales del último mes cerrado (p.ej. mayo),
-  // que es lo que define los cupos/posición del ciclo actual — a mayor puntaje, mejor turno.
-  return list.sort((a,b) => { const d=(b.max||0)-(a.max||0); return d!==0?d:a.id-b.id; });
+  // Orden de turnos: a mayor puntaje acumulado en el mes en curso, mejor posición.
+  return list.sort((a,b) => { const d=getTotalPts(b.id)-getTotalPts(a.id); return d!==0?d:a.id-b.id; });
 }
 
 function getFullList() { return [ADMIN, ...getStudents()]; }
@@ -1209,7 +1208,7 @@ function renderTableroRanking() {
     const count=counts[s.id]||0; const ps=getPersonalStart(s.id);
     const isMyTurn=ps&&new Date()>=ps&&getVotingStatus(loggedId)!=='closed';
     const isMe=loggedId===s.id;
-    const pct=Math.min(100,(count/(s.max||1))*100);
+    const junioPts=getTotalPts(s.id); const pct=Math.min(100,(junioPts/(s.max||1))*100);
     const div=document.createElement('div');
     div.className='rank-card'+(isMe?' me':'');
     div.innerHTML=`
@@ -1221,7 +1220,7 @@ function renderTableroRanking() {
             <div class="rank-time" style="color:${isMyTurn?'#39ff7a':'#6b7280'}">${isMyTurn?'✓ Turno activo':formatFullDate(ps)}</div>
           </div>
         </div>
-        <div class="rank-count" style="color:${count>=(s.max||0)?'#fb923c':'#e5e7eb'}">${count}/${s.max||0}</div>
+        <div class="rank-count" style="color:#e5e7eb">${junioPts} pts</div>
       </div>
       <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${s.color||'#555'}"></div></div>`;
     list.appendChild(div);
@@ -1450,7 +1449,7 @@ function vRankingSetup() {
   const podBg=['linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,215,0,0.05))','linear-gradient(135deg,rgba(192,192,192,0.15),rgba(192,192,192,0.04))','linear-gradient(135deg,rgba(205,127,50,0.15),rgba(205,127,50,0.04))'];
   const podBorder=['rgba(255,215,0,0.4)','rgba(192,192,192,0.3)','rgba(205,127,50,0.3)'];
   list.innerHTML=students.map((s,idx)=>{
-    const count=counts[s.id]||0; const pct=Math.min(100,(count/(s.max||1))*100); const full=count>=s.max;
+    const pts=getTotalPts(s.id); const pct=Math.min(100,(pts/(s.max||1))*100);
     const isPod=idx<3; const bg=isPod?podBg[idx]:'rgba(255,255,255,0.03)'; const border=isPod?podBorder[idx]:'rgba(255,255,255,0.07)';
     const rankEl=isPod?`<span style="font-size:22px;line-height:1;flex-shrink:0">${medals[idx]}</span>`
       :`<span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:rgba(255,255,255,0.3);width:22px;text-align:center;flex-shrink:0">${idx+1}</span>`;
@@ -1465,7 +1464,7 @@ function vRankingSetup() {
           </div>
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:${full?'#fb923c':'#e5e7eb'};line-height:1">${count}/${s.max}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#e5e7eb;line-height:1">${pts} pts</div>
           <div style="font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:0.1em">${Math.round(pct)}%</div>
         </div>
       </div>
