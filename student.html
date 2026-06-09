@@ -509,8 +509,13 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
     });
   });
-  // Orden de turnos: a mayor puntaje acumulado en el mes en curso, mejor posición.
-  return list.sort((a,b) => { const d=getTotalPts(b.id)-getTotalPts(a.id); return d!==0?d:a.id-b.id; });
+  // Orden: mayor puntaje del mes en curso primero.
+  // Empate: quien llegó antes al puntaje va primero (orden cronológico del pointsLog).
+  return list.sort((a,b) => {
+    const pA=getTotalPts(a.id), pB=getTotalPts(b.id);
+    if (pB!==pA) return pB-pA;
+    return getDateReachedScore(a.id,pA) - getDateReachedScore(b.id,pB);
+  });
 }
 
 function getFullList() { return [ADMIN, ...getStudents()]; }
@@ -618,6 +623,24 @@ function getStudentPoints(id, monthOffset=0) {
   return { hours, progress, tasks };
 }
 function getTotalPts(id) { const p=getStudentPoints(id); return p.hours+p.progress+p.tasks; }
+
+// Devuelve la fecha (ms) en que el alumno llegó por primera vez a targetScore este mes.
+// Usa pointsLog[id][dateKey] ordenado cronológicamente.
+// Si nunca llegó → Number.MAX_SAFE_INTEGER (queda último en desempate).
+function getDateReachedScore(id, targetScore) {
+  if (targetScore <= 0) return 0;
+  const now = new Date();
+  const prefix = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const log = pointsLog[id] || {};
+  const keys = Object.keys(log).filter(k => k.startsWith(prefix)).sort();
+  let cum = 0;
+  for (const key of keys) {
+    const e = log[key]; if (!e || e.absent) continue;
+    cum += (e.hours?1:0) + (e.progress?1:0) + (e.tasks?1:0);
+    if (cum >= targetScore) return new Date(key).getTime();
+  }
+  return Number.MAX_SAFE_INTEGER;
+}
 
 // ════════════════════════════════════════════════════════
 // TOAST
