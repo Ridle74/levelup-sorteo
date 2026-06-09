@@ -1982,17 +1982,29 @@ function vPtsDateChecklist(s) {
       const isFuture = date > today;
       const dlabel = `${dayShort[date.getDay()]} ${date.getDate()}`;
       const dim = absent ? 'opacity:0.4' : '';
-      const slotLines = slots.length
+      // Calcula hora fin: "HH:MM" + minutos → "HH:MM"
+      const addMins = (t, mins) => {
+        if (!t) return '';
+        const [h, mn] = t.split(':').map(Number);
+        const tot = h*60 + mn + Number(mins||0);
+        return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+      };
+      const slotBadges = slots.length
         ? slots.map(sl => {
-            const timeStr = sl.start || '';
-            const modStr  = sl.modality ? `<span style="color:rgba(255,255,255,0.3);font-weight:500"> · ${sl.modality}</span>` : '';
-            return `<span style="display:block;font-size:9px;font-weight:700;color:rgba(79,182,255,0.75);line-height:1.5">${timeStr}${modStr}</span>`;
-          }).join('')
+            const end   = addMins(sl.start, sl.dur);
+            const range = sl.start ? `${sl.start}–${end}` : '';
+            const mod   = sl.modality ? ` · ${sl.modality}` : '';
+            return `<span style="font-size:9px;font-weight:700;color:rgba(79,182,255,0.9);background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);border-radius:6px;padding:1px 7px;white-space:nowrap">${range}${mod}</span>`;
+          }).join(' ')
         : '';
       return `
-      <div style="display:flex;align-items:flex-start;gap:6px;padding:7px 4px;border-top:1px solid rgba(255,255,255,0.05)">
-        <span style="flex:0 0 72px;font-size:12px;font-weight:700;padding-top:2px;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}<br><span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35)">${hours}h clase</span>${slotLines}</span>
-        <div style="flex:1">
+      <div style="padding:8px 4px;border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;${isFuture?'color:rgba(255,255,255,0.3)':''}">${dlabel}</span>
+          <span style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:600">${hours}h clase</span>
+          ${slotBadges}
+        </div>
+        <div>
           <label style="display:flex;align-items:center;gap:5px;margin-bottom:5px;font-size:10px;font-weight:700;color:${absent?'#ff5c7a':'rgba(248,113,113,0.55)'};cursor:${isFuture?'default':'pointer'}">
             <input type="checkbox" ${absent?'checked':''} ${isFuture?'disabled':''} onchange="toggleAbsent(${s.id},'${key}',this.checked)" style="width:14px;height:14px;accent-color:#ff5c7a;cursor:${isFuture?'default':'pointer'}">
             🚫 Faltó a clase${absent?' — no cuenta para el total':''}
