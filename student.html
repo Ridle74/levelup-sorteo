@@ -1056,7 +1056,16 @@ function vTablero() {
         </div>
       </div>
     </div>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div class="section-label">🔑 CLAVE ADMIN</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px">
+        <input id="new-admin-pin" type="password" placeholder="Nueva clave" autocomplete="new-password"
+          style="flex:1;min-width:120px;max-width:200px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:#fff;font-size:15px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.1em;outline:none">
+        <button class="btn-admin btn-neon-cfg" style="letter-spacing:0.14em" onclick="saveAdminPin()">💾 GUARDAR CLAVE</button>
+      </div>
+    </div>
   </div>
+</div>
 
   <div class="tabs">
     <button class="tab-btn active" id="tab-board"   onclick="switchTab('board')">🎮 TABLERO</button>
@@ -1273,6 +1282,15 @@ function renderAll(loggedId) {
   updateStatusBadge(loggedId); updateBoardOverlay(loggedId);
 }
 // Admin panel
+function saveAdminPin() {
+  const val = (document.getElementById('new-admin-pin').value || '').trim();
+  if (val.length < 4) { showToast('La clave debe tener al menos 4 caracteres', 'error'); return; }
+  AUTH_REF.update({ adminPin: val }).then(() => {
+    ADMIN.pin = val;
+    document.getElementById('new-admin-pin').value = '';
+    showToast('Clave admin actualizada ✓', 'success');
+  }).catch(e => showToast('Error al guardar: ' + e.message, 'error'));
+}
 function toggleAdminPanel() {
   const panel=document.getElementById('admin-panel');
   const btn=document.getElementById('btn-toggle-config');

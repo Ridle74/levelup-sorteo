@@ -677,6 +677,7 @@ function vCalendario() {
     <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:14px;line-height:1.6">
       ¿Quieres una clase en un horario libre? Usa "Solicitar" en el menú inferior — verificamos disponibilidad y te confirmamos.
     </p>
+    <button class="btn-ghost" onclick="logout()" style="margin-top:8px">Cerrar sesión de esta familia</button>
   </div>`;
 }
 
@@ -738,6 +739,7 @@ function vSolicitar() {
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`;
     }).join('') : `<div class="cal-empty">Aún no has hecho solicitudes.</div>`}
+    <button class="btn-ghost" onclick="logout()" style="margin-top:12px">Cerrar sesión de esta familia</button>
   </div>`;
 }
 
