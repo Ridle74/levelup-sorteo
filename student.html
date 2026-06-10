@@ -526,12 +526,12 @@ window.addEventListener('popstate', function () {
 // SESSION
 // ════════════════════════════════════════════════════════
 function getLoggedId() {
-  const v = sessionStorage.getItem('loggedId');
+  const v = localStorage.getItem('loggedId');
   return v !== null ? parseInt(v) : null;
 }
 function setLoggedId(id) {
-  if (id === null) sessionStorage.removeItem('loggedId');
-  else sessionStorage.setItem('loggedId', String(id));
+  if (id === null) localStorage.removeItem('loggedId');
+  else localStorage.setItem('loggedId', String(id));
 }
 function isAdmin() { return getLoggedId() === 0; }
 
