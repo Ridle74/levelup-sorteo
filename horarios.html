@@ -7,80 +7,136 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { margin:0; min-height:100dvh; background:#050d1a; color:#fff; font-family:'Barlow',sans-serif; }
-.wrap { max-width:560px; margin:0 auto; padding:22px 18px 60px; }
-.back { display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,0.5); text-decoration:none; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:18px; }
-body { padding-top: calc(50px + env(safe-area-inset-top)); }
-#hist-bar { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; gap:8px; padding: calc(8px + env(safe-area-inset-top)) 18px 8px; background:rgba(5,13,26,0.92); backdrop-filter:blur(16px) saturate(180%); border-bottom:1px solid rgba(255,255,255,0.08); }
-.hist-btn { border:none; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85); width:38px; height:34px; border-radius:10px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s,color 0.15s; -webkit-tap-highlight-color:transparent; }
-.hist-btn:active { background:rgba(99,102,241,0.18); color:#a5b4fc; }
+body { margin:0; min-height:100dvh; background:#050d1a; color:#fff; font-family:'Barlow',sans-serif; padding-top:calc(50px + env(safe-area-inset-top)); }
+#hist-bar { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; gap:8px; padding:calc(8px + env(safe-area-inset-top)) 18px 8px; background:rgba(5,13,26,0.92); backdrop-filter:blur(16px) saturate(180%); border-bottom:1px solid rgba(255,255,255,0.08); }
+.hist-btn { border:none; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85); width:38px; height:34px; border-radius:10px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 #hist-home { background:rgba(99,102,241,0.14); color:#a5b4fc; }
-.hero { background:linear-gradient(135deg,#312e81,#4338ca 50%,#6366f1); border-radius:20px; padding:22px; margin-bottom:18px; position:relative; overflow:hidden; }
-.hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.wrap { max-width:560px; margin:0 auto; padding:22px 18px 60px; }
+.hero { background:linear-gradient(135deg,#0f2460,#1a3a8f 50%,#2563c0); border-radius:20px; padding:22px; margin-bottom:18px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; border-radius:20px; background:linear-gradient(135deg,rgba(5,7,14,0.4) 0%,rgba(5,7,14,0.1) 60%,rgba(5,7,14,0.35) 100%); }
+.hero-inner { position:relative; z-index:1; }
 .hero-ico { font-size:30px; }
 .hero-t { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; line-height:1.05; margin-top:6px; }
-.hero-s { font-size:12px; color:rgba(255,255,255,0.8); margin-top:6px; }
-.lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin:18px 0 8px; }
-.legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:6px; }
+.hero-s { font-size:12px; color:rgba(255,255,255,0.8); margin-top:6px; line-height:1.5; }
+.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin:18px 0 8px; }
+.legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px; }
 .leg-item { display:flex; align-items:center; gap:6px; font-size:11px; color:rgba(255,255,255,0.55); font-weight:700; }
 .leg-dot { width:11px; height:11px; border-radius:4px; }
-.day { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px; margin-bottom:8px; }
-.day-hdr { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; }
-.slot-row { display:flex; flex-wrap:wrap; gap:6px; }
-.slot { border-radius:10px; padding:8px 12px; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; letter-spacing:0.04em; border-left:4px solid; }
-.slot.free { background:rgba(34,197,94,0.1); border-left-color:#22c55e; color:#86efac; }
-.slot.busy { background:rgba(239,68,68,0.08); border-left-color:#ef4444; color:rgba(248,113,113,0.7); text-decoration:line-through; opacity:0.6; }
+.day-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
+.day-hdr { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.75); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+.day-count { font-size:10px; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:0.08em; }
+.slots { display:flex; flex-direction:column; gap:6px; }
+.slot { border-radius:10px; padding:9px 12px; border-left:4px solid; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.slot-left { display:flex; flex-direction:column; gap:2px; }
+.slot-time { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; letter-spacing:0.04em; }
+.slot-dur  { font-size:10px; font-weight:700; color:rgba(255,255,255,0.4); }
+.slot-badge { font-size:9px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:6px; flex-shrink:0; }
+.slot.dom  { background:rgba(239,68,68,0.07); border-left-color:#ef4444; }
+.slot.dom  .slot-time  { color:#fca5a5; }
+.slot.dom  .slot-badge { background:rgba(239,68,68,0.15); color:#fca5a5; }
+.slot.virt { background:rgba(79,182,255,0.07); border-left-color:#4fb6ff; }
+.slot.virt .slot-time  { color:#93c5fd; }
+.slot.virt .slot-badge { background:rgba(79,182,255,0.15); color:#93c5fd; }
 .cta-blk { background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.22); border-radius:16px; padding:18px; margin-top:18px; text-align:center; }
 .cta-blk p { font-size:12px; color:rgba(255,255,255,0.6); line-height:1.6; margin:6px 0 14px; }
 .cta { display:inline-block; background:linear-gradient(135deg,#4f46e5,#6366f1); border:none; border-radius:12px; padding:12px 26px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; }
+.loading { text-align:center; padding:40px 0; color:rgba(255,255,255,0.3); font-size:13px; }
 </style>
 </head>
 <body>
 <div id="hist-bar">
-  <button class="hist-btn" onclick="history.back()" title="Atrás">◀</button>
-  <button class="hist-btn" id="hist-home" onclick="location.href='/'" title="Inicio">🏠</button>
-  <button class="hist-btn" onclick="history.forward()" title="Adelante">▶</button>
+  <button class="hist-btn" onclick="history.back()">◀</button>
+  <button class="hist-btn" id="hist-home" onclick="location.href='/'">🏠</button>
+  <button class="hist-btn" onclick="history.forward()">▶</button>
 </div>
 <div class="wrap">
-  <a class="back" href="/">‹ Volver al inicio</a>
   <div class="hero">
-    <div class="hero-ico">🕒</div>
-    <div class="hero-t">DISPONIBILIDAD DE CLASES</div>
-    <div class="hero-s">Así luce una semana típica de MATHS LEVEL UP. Los bloques en verde son horarios con cupo disponible para nuevos alumnos — virtuales y a domicilio.</div>
+    <div class="hero-inner">
+      <div class="hero-ico">🕒</div>
+      <div class="hero-t">HORARIOS DE CLASES</div>
+      <div class="hero-s">Semana típica de MATHS LEVEL UP. Clases a domicilio y virtuales — consulta disponibilidad para nuevos alumnos.</div>
+    </div>
   </div>
 
   <div class="legend">
-    <div class="leg-item"><span class="leg-dot" style="background:#22c55e"></span> Cupo disponible</div>
-    <div class="leg-item"><span class="leg-dot" style="background:#ef4444"></span> Horario completo</div>
+    <div class="leg-item"><span class="leg-dot" style="background:#ef4444"></span> A domicilio</div>
+    <div class="leg-item"><span class="leg-dot" style="background:#4fb6ff"></span> Virtual</div>
   </div>
 
-  <div id="grid"></div>
+  <div id="grid"><div class="loading">Cargando horarios…</div></div>
 
   <div class="cta-blk">
-    <div class="lbl" style="margin-top:0">¿Quieres reservar uno de estos horarios?</div>
+    <div class="sec-lbl" style="margin-top:0">¿Quieres una clase en alguno de estos horarios?</div>
     <p>Cuéntanos qué día y hora te conviene y verificamos el cupo contigo. También puedes calcular el costo estimado antes de escribirnos.</p>
     <a class="cta" href="https://wa.me/51900000000?text=Hola%2C%20quiero%20consultar%20disponibilidad%20de%20horarios%20en%20MATHS%20LEVEL%20UP" target="_blank" rel="noopener">📲 Consultar por WhatsApp</a>
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script>
-const DAYS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-// Disponibilidad de referencia (se actualiza según la agenda real del profesor).
-const AVAIL = {
-  'Lunes':     [{t:'9:00 – 10:30',  free:true},  {t:'16:00 – 17:30', free:false}, {t:'18:00 – 19:30', free:true}],
-  'Martes':    [{t:'10:00 – 11:30', free:true},  {t:'15:00 – 16:30', free:false}, {t:'17:00 – 18:30', free:false}],
-  'Miércoles': [{t:'9:00 – 10:30',  free:false}, {t:'16:30 – 18:00', free:true},  {t:'19:00 – 20:30', free:true}],
-  'Jueves':    [{t:'10:00 – 11:30', free:true},  {t:'16:00 – 17:30', free:false}, {t:'18:00 – 19:30', free:true}],
-  'Viernes':   [{t:'9:00 – 10:30',  free:false}, {t:'15:30 – 17:00', free:true},  {t:'17:30 – 19:00', free:false}],
-  'Sábado':    [{t:'10:00 – 11:30', free:true},  {t:'12:00 – 13:30', free:true},  {t:'16:00 – 17:30', free:false}]
-};
-document.getElementById('grid').innerHTML = DAYS.map(d => `
-  <div class="day">
-    <div class="day-hdr">${d}</div>
-    <div class="slot-row">
-      ${AVAIL[d].map(s => `<div class="slot ${s.free?'free':'busy'}">${s.t}</div>`).join('')}
-    </div>
-  </div>`).join('');
+firebase.initializeApp({
+  apiKey:    "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:"maths-level-up.firebaseapp.com",
+  projectId: "maths-level-up",
+  appId:     "1:854549565666:web:2613613306c6cb16b30ebb"
+});
+const db = firebase.firestore();
+
+const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const WEEK_ORDER = [1,2,3,4,5,6,0];
+
+function addMin(t, m) {
+  const [h, mn] = t.split(':').map(Number);
+  const tot = h * 60 + mn + m;
+  return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+}
+
+function renderGrid(sessions) {
+  if (!sessions || !sessions.length) {
+    document.getElementById('grid').innerHTML = '<div class="loading">No hay horarios registrados.</div>';
+    return;
+  }
+  // Deduplicate by day+start (same time slot may have multiple students)
+  const slotMap = {};
+  sessions.forEach(s => {
+    const key = `${s.day}|${s.start}`;
+    if (!slotMap[key]) slotMap[key] = { day: Number(s.day), start: s.start, dur: s.dur || 60, modality: s.modality || 'Virtual' };
+    if ((s.dur || 60) > slotMap[key].dur) slotMap[key].dur = s.dur;
+    if ((s.modality || '').toLowerCase().includes('dom')) slotMap[key].modality = 'Domicilio';
+  });
+
+  const html = WEEK_ORDER.map(dow => {
+    const slots = Object.values(slotMap)
+      .filter(s => s.day === dow)
+      .sort((a, b) => a.start.localeCompare(b.start));
+    if (!slots.length) return '';
+    const cards = slots.map(s => {
+      const end = addMin(s.start, s.dur);
+      const isDom = s.modality.toLowerCase().includes('dom');
+      return `<div class="slot ${isDom ? 'dom' : 'virt'}">
+        <div class="slot-left">
+          <div class="slot-time">${s.start} – ${end}</div>
+          <div class="slot-dur">${s.dur} min</div>
+        </div>
+        <div class="slot-badge">${isDom ? 'Domicilio' : 'Virtual'}</div>
+      </div>`;
+    }).join('');
+    return `<div class="day-card">
+      <div class="day-hdr">
+        <span>${DAY_NAMES[dow]}</span>
+        <span class="day-count">${slots.length} clase${slots.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="slots">${cards}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('grid').innerHTML = html || '<div class="loading">Sin horarios registrados.</div>';
+}
+
+db.collection('padres').doc('main').get()
+  .then(doc => renderGrid(doc.exists ? (doc.data().sessions || []) : []))
+  .catch(() => renderGrid([]));
 </script>
 </body>
 </html>
