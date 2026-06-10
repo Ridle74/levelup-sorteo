@@ -442,6 +442,7 @@ let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... 
 let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progress:[bool],tasks:[bool]} } }
 let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
+let horWeekOffset  = 0;   // 0 = semana actual, ±N = semanas adelante/atrás en la vista de horarios
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let padresRaw        = { students: {}, sessions: [] }; // snapshot crudo de /padres para la grilla de horarios
@@ -2023,21 +2024,37 @@ function vPuntosSetup() {}
 // VIEW: HORARIOS
 // ════════════════════════════════════════════════════════
 function vHorarios() {
-  const sessions  = padresRaw.sessions  || [];
-  const pStudents = padresRaw.students  || {};
+  const sessions    = padresRaw.sessions  || [];
+  const pStudents   = padresRaw.students  || {};
   const lmsStudents = getStudents();
 
   const lmsMap = {};
   lmsStudents.forEach(s => { lmsMap[normName(s.name)] = s; });
-
-  const DAY_ORDER  = [1, 2, 3, 4, 5, 6, 0];
-  const DAY_LABELS = {1:'Lun', 2:'Mar', 3:'Mié', 4:'Jue', 5:'Vie', 6:'Sáb', 0:'Dom'};
 
   const addMins = (t, mins) => {
     if (!t) return '';
     const [h, mn] = t.split(':').map(Number);
     const tot = h*60 + mn + Number(mins||0);
     return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+  };
+
+  // ── Navegación por semana ───────────────────────────────
+  const getWeekDates = (offset) => {
+    const tod = new Date(); tod.setHours(0,0,0,0);
+    const day = tod.getDay();
+    const diffToMon = (day === 0 ? -6 : 1 - day);
+    const mon = new Date(tod);
+    mon.setDate(tod.getDate() + diffToMon + offset * 7);
+    return Array.from({length: 7}, (_, i) => {
+      const d = new Date(mon); d.setDate(mon.getDate() + i); return d;
+    });
+  };
+  const MONTHS_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const fmtWeekLabel = (dates) => {
+    const a = dates[0], b = dates[6];
+    if (a.getMonth() === b.getMonth())
+      return `${a.getDate()}–${b.getDate()} ${MONTHS_S[a.getMonth()]} ${a.getFullYear()}`;
+    return `${a.getDate()} ${MONTHS_S[a.getMonth()]} – ${b.getDate()} ${MONTHS_S[b.getMonth()]}`;
   };
 
   if (!sessions.length) {
@@ -2065,14 +2082,11 @@ function vHorarios() {
   const N_ROWS = maxH - minH;
   if (N_ROWS <= 0) return '<div style="padding:24px;color:rgba(255,255,255,0.4)">Sin datos.</div>';
 
-  // Etiqueta para cada línea divisora (N_ROWS+1, de minH hasta maxH)
   const hourLabels = Array.from({length: N_ROWS + 1}, (_, i) =>
     `${String(minH + i).padStart(2,'0')}:00`
   );
 
   // ── Agrupar sesiones por día + start ────────────────────
-  // Alumnos con el mismo día y mismo start → una sola tarjeta unida.
-  // slotMap key = `${day}|${start}` → { day, startFrac, maxDurH, start, students[] }
   const slotMap = {};
   sessions.forEach(s => {
     const sid = String(s.studentId);
@@ -2084,9 +2098,7 @@ function vHorarios() {
     const durH      = (s.dur || 60) / 60;
     const lms = lmsMap[normName(st.name)] || {};
     const key = `${day}|${s.start}`;
-    if (!slotMap[key]) {
-      slotMap[key] = { day, startFrac, maxDurH: 0, start: s.start, students: [] };
-    }
+    if (!slotMap[key]) slotMap[key] = { day, startFrac, maxDurH: 0, start: s.start, students: [] };
     if (durH > slotMap[key].maxDurH) slotMap[key].maxDurH = durH;
     slotMap[key].students.push({
       name:     st.name.split(' ')[0],
@@ -2097,141 +2109,129 @@ function vHorarios() {
     });
   });
 
-  // Reagrupar por día
   const dayData = {};
   Object.values(slotMap).forEach(slot => {
     if (!dayData[slot.day]) dayData[slot.day] = [];
     dayData[slot.day].push(slot);
   });
 
-  const activeDays = DAY_ORDER.filter(d => dayData[d] && dayData[d].length);
-  if (!activeDays.length) return '<div style="padding:24px;color:rgba(255,255,255,0.4)">Sin datos.</div>';
-
-  const ROW_H  = 90;   // px por hora exacta
-  const COL_W  = 140;
+  const ROW_H  = 90;
+  const COL_W  = 142;
   const TIME_W = 52;
   const totalH = N_ROWS * ROW_H;
-  const GAP    = 6;    // margen vertical entre tarjeta y línea
+  const GAP    = 5;
+  const DAY_NAMES = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 
-  // ── Render de cada tarjeta (posicionamiento absoluto proporcional) ──
+  const today     = new Date(); today.setHours(0,0,0,0);
+  const weekDates = getWeekDates(horWeekOffset);
+  const weekLabel = fmtWeekLabel(weekDates);
+
+  // ── Render de cada tarjeta ──────────────────────────────
   const renderCard = (slot) => {
     const topPx    = (slot.startFrac - minH) * ROW_H;
     const heightPx = Math.max(slot.maxDurH * ROW_H - GAP * 2, 40);
     const allSameMod = slot.students.every(s => s.modality === slot.students[0].modality);
     const allSameDur = slot.students.every(s => s.dur === slot.students[0].dur);
-    const sharedMod  = allSameMod && slot.students[0].modality
-      ? ` · ${slot.students[0].modality}` : '';
-
-    const cardBase = `position:absolute;left:4px;right:4px;top:${topPx + GAP}px;
-                      height:${heightPx}px;z-index:1;border-radius:10px;padding:10px;
-                      overflow:hidden;display:flex;flex-direction:column;justify-content:center`;
+    const sharedMod  = allSameMod && slot.students[0].modality ? ` · ${slot.students[0].modality}` : '';
+    const cardBase = `position:absolute;left:5px;right:5px;top:${topPx + GAP}px;height:${heightPx}px;z-index:1;border-radius:10px;padding:9px 10px;overflow:hidden;display:flex;flex-direction:column;justify-content:center`;
 
     if (slot.students.length === 1) {
       const s   = slot.students[0];
       const end = addMins(slot.start, s.dur);
       return `
-      <div style="${cardBase};background:rgba(255,255,255,0.04);border:1px solid ${s.color}55">
-        <div style="font-size:22px;line-height:1">${s.icon}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;
-                    color:#fff;margin-top:5px;line-height:1">${s.name}</div>
-        <div style="font-size:10px;font-weight:700;color:${s.color};margin-top:5px;line-height:1.3">
-          ${slot.start}–${end}${s.modality ? ' · '+s.modality : ''}
-        </div>
+      <div style="${cardBase};background:linear-gradient(135deg,${s.color}28,${s.color}10);border:1px solid ${s.color}55">
+        <div style="font-size:20px;line-height:1">${s.icon}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:#fff;margin-top:4px;line-height:1">${s.name}</div>
+        <div style="font-size:10px;font-weight:700;color:${s.color};margin-top:4px;line-height:1.3">${slot.start}–${end}${s.modality ? ' · '+s.modality : ''}</div>
       </div>`;
     }
 
-    // Tarjeta unida
     const maxEnd = addMins(slot.start, Math.max(...slot.students.map(s => s.dur)));
     return `
-    <div style="${cardBase};background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);
-                gap:7px">
-      <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;
-                  color:rgba(255,255,255,0.4);line-height:1;flex-shrink:0">
-        ${slot.start}–${maxEnd}${sharedMod}
-      </div>
+    <div style="${cardBase};background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.18);gap:7px">
+      <div style="font-size:9px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.4);line-height:1;flex-shrink:0">${slot.start}–${maxEnd}${sharedMod}</div>
       ${slot.students.map(s => {
-        const sEnd      = addMins(slot.start, s.dur);
+        const sEnd     = addMins(slot.start, s.dur);
         const extraTime = !allSameDur ? ` (–${sEnd})` : '';
         const extraMod  = !allSameMod && s.modality ? ` · ${s.modality}` : '';
         return `
-        <div style="display:flex;align-items:center;gap:7px;flex-shrink:0">
-          <span style="font-size:20px;line-height:1;flex-shrink:0">${s.icon}</span>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <span style="font-size:18px;line-height:1;flex-shrink:0">${s.icon}</span>
           <div style="min-width:0">
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;
-                        color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-              ${s.name}
-            </div>
-            ${(extraTime || extraMod) ? `
-            <div style="font-size:9px;font-weight:700;color:${s.color};margin-top:2px;line-height:1">
-              ${extraTime}${extraMod}
-            </div>` : ''}
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+            ${(extraTime || extraMod) ? `<div style="font-size:9px;font-weight:700;color:${s.color};margin-top:1px;line-height:1">${extraTime}${extraMod}</div>` : ''}
           </div>
         </div>`;
       }).join('')}
     </div>`;
   };
 
+  // ── Columnas de los 7 días de la semana ─────────────────
+  const dayColsHTML = weekDates.map((date) => {
+    const jsDay   = date.getDay();
+    const isPast  = date < today;
+    const isToday = date.getTime() === today.getTime();
+    const slots   = dayData[jsDay] || [];
+    const colOpacity  = isPast ? 'opacity:0.28;' : '';
+    const colBorder   = isToday ? 'border-left:1px solid rgba(79,182,255,0.5)' : 'border-left:1px solid rgba(255,255,255,0.08)';
+    const hdrBg       = isToday ? 'background:rgba(79,182,255,0.07);border-bottom:1px solid rgba(79,182,255,0.4)' : 'border-bottom:1px solid rgba(255,255,255,0.08)';
+    const nameColor   = isToday ? '#4fb6ff' : 'rgba(255,255,255,0.45)';
+    const dateColor   = isToday ? '#4fb6ff' : 'rgba(255,255,255,0.7)';
+    const dateShadow  = isToday ? 'text-shadow:0 0 14px rgba(79,182,255,0.7)' : '';
+    const todayBadge  = isToday ? `<div style="position:absolute;bottom:-9px;background:#4fb6ff;color:#000;font-family:'Barlow Condensed',sans-serif;font-size:8px;font-weight:900;letter-spacing:0.1em;padding:1px 6px;border-radius:4px;box-shadow:0 0 8px rgba(79,182,255,0.6)">HOY</div>` : '';
+    return `
+    <div style="flex-shrink:0;width:${COL_W}px;${colBorder};${colOpacity}">
+      <div style="height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative;${hdrBg}">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.14em;color:${nameColor};text-transform:uppercase">${DAY_NAMES[jsDay]}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:${dateColor};line-height:1;${dateShadow}">${date.getDate()}</div>
+        ${todayBadge}
+      </div>
+      <div style="position:relative;height:${totalH}px">
+        ${hourLabels.map((_, i) => `<div style="position:absolute;top:${i * ROW_H}px;left:0;right:0;height:1px;background:rgba(255,255,255,${i===0?'0.12':'0.05'})"></div>`).join('')}
+        ${slots.map(renderCard).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
   return `
-  <div style="display:flex;height:100%;overflow:hidden">
-  <div style="flex:1;min-width:0;overflow:auto;padding:12px 12px 80px">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;
-                letter-spacing:0.05em;margin-bottom:14px">📅 HORARIOS</div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <div style="display:inline-flex;align-items:flex-start;min-width:max-content">
-
-        <!-- ── Columna de horas ── -->
-        <div style="flex-shrink:0;width:${TIME_W}px">
-          <div style="height:34px"></div>
-          <div style="position:relative;height:${totalH + 16}px">
-            ${hourLabels.map((lbl, i) => `
-              <div style="position:absolute;top:${i * ROW_H}px;right:8px;
-                          transform:translateY(${i === 0 ? '2px' : i === N_ROWS ? '-100%' : '-50%'});
-                          font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;
-                          color:rgba(255,255,255,0.45);white-space:nowrap;line-height:1">
-                ${lbl}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- ── Columnas de días ── -->
-        ${activeDays.map(d => {
-          const slots = dayData[d] || [];
-          return `
-          <div style="flex-shrink:0;width:${COL_W}px;border-left:1px solid rgba(255,255,255,0.08)">
-            <div style="height:34px;display:flex;align-items:center;justify-content:center;
-                        font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;
-                        letter-spacing:0.12em;color:rgba(255,255,255,0.55);
-                        border-bottom:1px solid rgba(255,255,255,0.12)">
-              ${DAY_LABELS[d]}
-            </div>
-            <!-- Contenedor de posicionamiento absoluto -->
-            <div style="position:relative;height:${totalH}px">
-              <!-- Líneas divisoras por hora exacta -->
-              ${hourLabels.map((_, i) => `
-                <div style="position:absolute;top:${i * ROW_H}px;left:0;right:0;height:1px;
-                            background:rgba(255,255,255,${i === 0 ? '0.12' : '0.05'})"></div>
+  <div style="display:flex;height:100%;overflow:hidden;flex-direction:column">
+    <!-- Nav header -->
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(8,11,18,0.92);flex-shrink:0">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:0.1em;background:linear-gradient(90deg,#4fb6ff,#a78bfa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex:1">📅 HORARIOS</div>
+      <button onclick="changeHorWeek(-1)" style="width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8eaf6;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">◀</button>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.05em;white-space:nowrap">${weekLabel}</span>
+      <button onclick="changeHorWeek(1)" style="width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:#e8eaf6;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">▶</button>
+      <button onclick="horGoToday()" style="padding:5px 12px;border-radius:8px;border:1px solid rgba(79,182,255,0.35);background:rgba(79,182,255,0.08);color:#4fb6ff;font-size:11px;font-weight:700;letter-spacing:0.1em;cursor:pointer;font-family:'Barlow Condensed',sans-serif">HOY</button>
+    </div>
+    <!-- Grid + sidebar -->
+    <div style="display:flex;flex:1;min-height:0;overflow:hidden">
+      <div style="flex:1;min-width:0;overflow:auto;padding:12px 12px 80px;-webkit-overflow-scrolling:touch">
+        <div style="display:inline-flex;align-items:flex-start;min-width:max-content">
+          <!-- Columna de horas -->
+          <div style="flex-shrink:0;width:${TIME_W}px">
+            <div style="height:52px"></div>
+            <div style="position:relative;height:${totalH + 16}px">
+              ${hourLabels.map((lbl, i) => `
+                <div style="position:absolute;top:${i * ROW_H}px;right:8px;transform:translateY(${i === 0 ? '2px' : i === N_ROWS ? '-100%' : '-50%'});font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);white-space:nowrap;line-height:1">${lbl}</div>
               `).join('')}
-              <!-- Tarjetas posicionadas proporcionalmente -->
-              ${slots.map(renderCard).join('')}
             </div>
-          </div>`;
-        }).join('')}
-
+          </div>
+          <!-- Columnas de días -->
+          ${dayColsHTML}
+        </div>
+      </div>
+      <!-- Sidebar -->
+      <div id="hor-sidebar" style="width:210px;flex-shrink:0;border-left:1px solid rgba(255,255,255,0.08);overflow-y:auto;background:rgba(10,13,22,0.6);display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(79,182,255,0.2) transparent">
+        <div style="padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08)">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px">🏆 TOP 3 ALUMNOS</div>
+          <div id="hor-sb-ranking"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
+        </div>
+        <div style="padding:14px 12px;flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px">⚡ ÚLTIMOS PUNTOS</div>
+          <div id="hor-sb-log"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- Sidebar -->
-  <div id="hor-sidebar" style="width:210px;flex-shrink:0;border-left:1px solid rgba(255,255,255,0.08);overflow-y:auto;background:rgba(10,13,22,0.6);display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(79,182,255,0.2) transparent">
-    <div style="padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08)">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px">🏆 TOP 3 ALUMNOS</div>
-      <div id="hor-sb-ranking"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
-    </div>
-    <div style="padding:14px 12px;flex:1">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px">⚡ ÚLTIMOS PUNTOS</div>
-      <div id="hor-sb-log"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
-    </div>
-  </div>
   </div>`;
 }
 
@@ -2309,6 +2309,19 @@ function renderHorariosSidebar() {
 }
 
 function vHorariosSetup() { renderHorariosSidebar(); }
+
+function changeHorWeek(delta) {
+  horWeekOffset += delta;
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = `<div class="vw">${vHorarios()}</div>`;
+  renderHorariosSidebar();
+}
+function horGoToday() {
+  horWeekOffset = 0;
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = `<div class="vw">${vHorarios()}</div>`;
+  renderHorariosSidebar();
+}
 
 function togglePtsEditor(studentId) {
   expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
