@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Simulacro — /student/horarios</title>
+<style>
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  :root { --bg:#07080f; --surface:#0d1120; --border:#1a2040; --muted:#9ca3af; --accent:#4fb6ff; }
+  html, body { height:100%; overflow:hidden; }
+  body { background:var(--bg); color:#e8eaf6; font-family:'Barlow',sans-serif; display:flex; flex-direction:column; }
+  #app { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+
+  /* MINI-HERO */
+  .mini-hero-wrap { flex-shrink:0; padding:12px 14px 0; }
+  .mini-hero { position:relative; overflow:hidden; padding:14px 16px; background:linear-gradient(115deg,#1a3a8f 0%,#2563c0 45%,#06b6d4 100%); border-radius:18px; border:1px solid rgba(79,182,255,0.4); box-shadow:0 4px 24px -4px rgba(34,229,255,0.25); }
+  .mini-hero::before { content:''; position:absolute; inset:0; border-radius:18px; background:linear-gradient(115deg,rgba(5,7,14,0.45) 0%,rgba(5,7,14,0.15) 50%,rgba(5,7,14,0.40) 100%); }
+  .mini-hero-row { position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .mh-title { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:20px; text-transform:uppercase; letter-spacing:-0.02em; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8); }
+  .mh-sub   { font-size:9px; font-weight:800; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.7); margin-top:2px; }
+  .mh-chip  { background:rgba(0,0,0,0.42); border:1px solid rgba(255,255,255,0.18); border-radius:14px; padding:7px 14px; text-align:center; flex-shrink:0; }
+  .mh-chip .l { font-size:8px; font-weight:900; letter-spacing:0.16em; color:rgba(255,255,255,0.65); text-transform:uppercase; }
+  .mh-chip .v { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:24px; line-height:1; color:#4fb6ff; text-shadow:0 0 16px rgba(79,182,255,0.8); }
+
+  /* TAB BAR */
+  .tab-bar { flex-shrink:0; display:flex; gap:6px; margin:10px 14px 0; background:#0a0c18; border-radius:14px; padding:4px; border:1px solid var(--border); }
+  .tab-pill { flex:1; text-align:center; padding:10px 6px; border-radius:10px; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; letter-spacing:0.15em; text-transform:uppercase; cursor:pointer; border:none; background:none; color:var(--muted); }
+  .tab-pill.on { background:linear-gradient(180deg,#0d1530,#080e20); color:#4fb6ff; border:2px solid #4fb6ff; box-shadow:0 0 14px -2px rgba(79,182,255,0.6); }
+
+  /* WEEK NAV */
+  .week-nav { flex-shrink:0; display:flex; align-items:center; gap:6px; padding:10px 14px 6px; }
+  .wn-btn { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#e8eaf6; font-size:14px; padding:5px 12px; cursor:pointer; flex-shrink:0; }
+  .wn-btn.today { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; color:#4fb6ff; border-color:rgba(79,182,255,0.4); padding:5px 10px; }
+  .wn-lbl { flex:1; text-align:center; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:rgba(255,255,255,0.7); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* CALENDAR GRID */
+  .cal-wrap { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+  .cal-head-row { flex-shrink:0; display:flex; border-bottom:1px solid rgba(255,255,255,0.07); background:var(--bg); }
+  .time-gutter { flex-shrink:0; width:44px; }
+  .cal-days-header { display:flex; overflow:hidden; flex:1; }
+  .day-head { flex-shrink:0; width:var(--col-w,80px); text-align:center; padding:6px 2px 8px; border-left:1px solid rgba(255,255,255,0.05); }
+  .dh-name { font-size:9px; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+  .dh-num  { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; line-height:1.1; color:rgba(255,255,255,0.65); }
+  .dh-hoy  { font-size:7px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; background:#4fb6ff; color:#07080f; padding:1px 6px; border-radius:6px; display:inline-block; margin-top:2px; }
+  .day-head.is-today .dh-name { color:#4fb6ff; }
+  .day-head.is-today .dh-num  { color:#fff; text-shadow:0 0 14px rgba(79,182,255,0.7); }
+  .day-head.is-today { border-left:1px solid rgba(79,182,255,0.35); }
+  .day-head.is-past .dh-name, .day-head.is-past .dh-num { opacity:0.3; }
+
+  .cal-body-scroll { flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(79,182,255,0.15) transparent; }
+  .cal-body-inner { display:flex; }
+  .time-labels { flex-shrink:0; width:44px; }
+  .tl-slot { display:flex; align-items:flex-start; justify-content:flex-end; padding-right:8px; padding-top:3px; font-size:9px; font-weight:700; color:rgba(255,255,255,0.28); letter-spacing:0.04em; }
+
+  .cal-days-body { display:flex; position:relative; }
+  .day-col { flex-shrink:0; width:var(--col-w,80px); position:relative; border-left:1px solid rgba(255,255,255,0.05); }
+  .hour-line { border-bottom:1px solid rgba(255,255,255,0.04); }
+  .day-col.is-today { background:rgba(79,182,255,0.022); border-left:1px solid rgba(79,182,255,0.28); }
+  .day-col.is-past  { opacity:0.38; }
+
+  /* event cards */
+  .ev-card { position:absolute; left:2px; right:2px; border-radius:9px; padding:5px 6px 4px; overflow:hidden; }
+  .ev-icon { font-size:13px; line-height:1; }
+  .ev-name { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; color:#fff; margin-top:2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ev-time { font-size:8px; font-weight:700; margin-top:1px; white-space:nowrap; }
+  .ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-top:2px; }
+
+  /* ── LÍNEA DE HORA ACTUAL ── */
+  .time-now { position:absolute; z-index:10; pointer-events:none; display:flex; align-items:center; }
+  .time-now-dot  { flex-shrink:0; width:9px; height:9px; border-radius:50%; background:#4fb6ff; box-shadow:0 0 8px 2px rgba(79,182,255,0.7); margin-left:-4px; }
+  .time-now-line { flex:1; height:1px; background:rgba(79,182,255,0.6); box-shadow:0 0 6px rgba(79,182,255,0.4); }
+
+  /* ÚLTIMOS PUNTOS */
+  .pts-wrap { flex:1; min-height:0; overflow-y:auto; padding:10px 14px 80px; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(79,182,255,0.15) transparent; }
+  .pts-inner { max-width:520px; margin:0 auto; }
+  .sec-lbl { font-size:9px; font-weight:900; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.38); margin:14px 0 8px; }
+  .top3-row { display:flex; align-items:center; gap:7px; padding:8px 10px; border-radius:10px; margin-bottom:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); }
+  .top3-body { flex:1; min-width:0; }
+  .top3-name { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:#fff; }
+  .top3-pts  { font-size:10px; font-weight:700; margin-top:2px; }
+  .top3-bar  { height:3px; background:rgba(255,255,255,0.08); border-radius:2px; margin-top:4px; }
+  .top3-fill { height:100%; border-radius:2px; }
+  .log-row { display:flex; align-items:flex-start; gap:8px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .log-icon { font-size:18px; line-height:1.2; flex-shrink:0; }
+  .log-body { flex:1; min-width:0; }
+  .log-namepts { display:flex; align-items:baseline; gap:6px; }
+  .log-name { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; color:#fff; line-height:1; }
+  .log-pts  { font-size:12px; font-weight:900; line-height:1; }
+  .log-date { font-size:9px; font-weight:600; color:rgba(255,255,255,0.35); margin-top:1px; }
+  .log-tags { margin-top:3px; }
+  .log-tag  { display:inline-block; font-size:8px; font-weight:700; letter-spacing:0.06em; padding:1px 5px; border-radius:3px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.5); margin-right:2px; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { flex-shrink:0; display:flex; background:#060810; border-top:1px solid rgba(255,255,255,0.08); padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px)); }
+  .nav-tab { flex:1; display:flex; flex-direction:column; align-items:center; gap:2px; background:none; border:none; color:rgba(255,255,255,0.35); font-size:8px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 0; cursor:pointer; }
+  .nav-tab .ni { font-size:18px; line-height:1; }
+  .nav-tab.active { color:#4fb6ff; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="mini-hero-wrap">
+    <div class="mini-hero">
+      <div class="mini-hero-row">
+        <div><div class="mh-title">Horarios</div><div class="mh-sub" id="hero-sub">Cargando...</div></div>
+        <div class="mh-chip"><div class="l">Clases hoy</div><div class="v" id="hero-count">0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-pill on"  id="tab-cur" onclick="setTab('cur')">📅 Calendario</button>
+    <button class="tab-pill off" id="tab-nxt" onclick="setTab('nxt')">⚡ Últimos Puntos</button>
+  </div>
+
+  <!-- CALENDARIO -->
+  <div id="cal-content" style="flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden">
+    <div class="week-nav">
+      <button class="wn-btn" onclick="changeWeek(-1)">◀</button>
+      <span class="wn-lbl" id="week-lbl"></span>
+      <button class="wn-btn today" onclick="goToday()">HOY</button>
+      <button class="wn-btn" onclick="changeWeek(1)">▶</button>
+    </div>
+    <div class="cal-wrap">
+      <div class="cal-head-row">
+        <div class="time-gutter"></div>
+        <div class="cal-days-header" id="cal-days-header"></div>
+      </div>
+      <div class="cal-body-scroll" id="cal-body-scroll">
+        <div class="cal-body-inner">
+          <div class="time-labels" id="time-labels"></div>
+          <div class="cal-days-body" id="cal-days-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÚLTIMOS PUNTOS -->
+  <div id="pts-content" style="display:none;flex:1;min-height:0;overflow:hidden">
+    <div class="pts-wrap"><div class="pts-inner">
+      <div class="sec-lbl">🏆 Top 3 alumnos</div>
+      <div class="top3-row"><span style="font-size:16px">🥇</span><span style="font-size:18px">🎮</span><div class="top3-body"><div class="top3-name">JOAO</div><div class="top3-pts" style="color:#fb923c">23 pts</div><div class="top3-bar"><div class="top3-fill" style="width:100%;background:#fb923c"></div></div></div></div>
+      <div class="top3-row"><span style="font-size:16px">🥈</span><span style="font-size:18px">👧🏻</span><div class="top3-body"><div class="top3-name">Joanna</div><div class="top3-pts" style="color:#c084fc">19 pts</div><div class="top3-bar"><div class="top3-fill" style="width:83%;background:#c084fc"></div></div></div></div>
+      <div class="top3-row" style="margin-bottom:0"><span style="font-size:16px">🥉</span><span style="font-size:18px">👦🏻</span><div class="top3-body"><div class="top3-name">JOSUE</div><div class="top3-pts" style="color:#4ade80">18 pts</div><div class="top3-bar"><div class="top3-fill" style="width:78%;background:#4ade80"></div></div></div></div>
+      <div class="sec-lbl">⚡ Últimos puntos</div>
+      <div id="pts-log"></div>
+    </div></div>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-tab"><span class="ni">🏠</span>Inicio</button>
+  <button class="nav-tab"><span class="ni">🎮</span>Tablero</button>
+  <button class="nav-tab"><span class="ni">📋</span>Tareas</button>
+  <button class="nav-tab"><span class="ni">⚡</span>Puntos</button>
+  <button class="nav-tab active"><span class="ni">📅</span>Horarios</button>
+</nav>
+
+<script>
+const ROW_H    = 64;
+const MIN_HOUR = 8;
+const MAX_HOUR = 21;
+const HOURS    = Array.from({length: MAX_HOUR - MIN_HOUR}, (_, i) => MIN_HOUR + i);
+
+const STUDENTS = {
+  1:  { name:'Rafaela',   color:'#9333ea', icon:'🐨'  },
+  2:  { name:'Mikela',    color:'#9333ea', icon:'👧🏼' },
+  3:  { name:'Alejandro', color:'#d97706', icon:'🦁'  },
+  4:  { name:'Joao',      color:'#d97706', icon:'👦🏻' },
+  5:  { name:'Manuel',    color:'#e11d48', icon:'👦🏻' },
+  6:  { name:'Augusto',   color:'#10b981', icon:'🕷️'  },
+  7:  { name:'Maria',     color:'#64748b', icon:'👧🏽' },
+  8:  { name:'Santiago',  color:'#9333ea', icon:'🏃🏻' },
+  9:  { name:'Brunella',  color:'#10b981', icon:'🦋'  },
+  10: { name:'Joanna',    color:'#d97706', icon:'👧🏻' },
+  11: { name:'Tiago',     color:'#16a34a', icon:'🐶'  },
+  12: { name:'Mateo',     color:'#2563eb', icon:'🐧'  },
+  13: { name:'Jorge',     color:'#2563eb', icon:'👦🏻' },
+  14: { name:'Catalina',  color:'#0d9488', icon:'🐱'  },
+  15: { name:'Gustavo',   color:'#ca8a04', icon:'🐯'  },
+  16: { name:'Josué',     color:'#d97706', icon:'👦🏻' },
+  17: { name:'Lucio',     color:'#d97706', icon:'🐻'  },
+};
+
+const SESSIONS = [
+  { day:1, start:'16:00', dur:120, studentIds:[3],       modality:'Domicilio' },
+  { day:1, start:'18:30', dur:60,  studentIds:[8],       modality:'Virtual'   },
+  { day:1, start:'19:30', dur:60,  studentIds:[5],       modality:'Virtual'   },
+  { day:2, start:'15:00', dur:60,  studentIds:[6,9],     modality:'Virtual'   },
+  { day:2, start:'16:00', dur:60,  studentIds:[1],       modality:'Virtual'   },
+  { day:2, start:'17:30', dur:180, studentIds:[4,16,17], modality:'Domicilio' },
+  { day:3, start:'16:00', dur:120, studentIds:[3],       modality:'Domicilio' },
+  { day:3, start:'18:30', dur:60,  studentIds:[2],       modality:'Virtual'   },
+  { day:3, start:'19:30', dur:60,  studentIds:[5],       modality:'Virtual'   },
+  { day:4, start:'15:00', dur:60,  studentIds:[7],       modality:'Virtual'   },
+  { day:4, start:'16:00', dur:60,  studentIds:[1],       modality:'Virtual'   },
+  { day:4, start:'17:30', dur:180, studentIds:[4,16,17], modality:'Domicilio' },
+  { day:5, start:'16:00', dur:120, studentIds:[3],       modality:'Domicilio' },
+  { day:5, start:'18:30', dur:60,  studentIds:[6,9],     modality:'Virtual'   },
+  { day:5, start:'19:30', dur:60,  studentIds:[5],       modality:'Virtual'   },
+  { day:6, start:'08:00', dur:60,  studentIds:[12],      modality:'Virtual'   },
+  { day:6, start:'09:00', dur:60,  studentIds:[1],       modality:'Virtual'   },
+  { day:6, start:'10:00', dur:60,  studentIds:[2],       modality:'Virtual'   },
+  { day:6, start:'11:00', dur:120, studentIds:[7],       modality:'Virtual'   },
+  { day:6, start:'14:30', dur:120, studentIds:[10],      modality:'Domicilio' },
+  { day:6, start:'17:00', dur:60,  studentIds:[11],      modality:'Domicilio' },
+  { day:0, start:'09:00', dur:60,  studentIds:[2],       modality:'Virtual'   },
+  { day:0, start:'10:00', dur:60,  studentIds:[14],      modality:'Virtual'   },
+  { day:0, start:'11:00', dur:60,  studentIds:[13],      modality:'Virtual'   },
+  { day:0, start:'12:00', dur:60,  studentIds:[15],      modality:'Virtual'   },
+  { day:0, start:'15:00', dur:60,  studentIds:[7],       modality:'Virtual'   },
+];
+
+const MONTHS    = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const DAY_NAMES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const WEEK_ORDER = [1,2,3,4,5,6,0];
+let weekOffset = 0;
+let activeTab  = 'cur';
+
+function getWeekDates(offset) {
+  const tod = new Date(); tod.setHours(0,0,0,0);
+  const dow = tod.getDay();
+  const diff = dow === 0 ? -6 : 1 - dow;
+  const mon  = new Date(tod); mon.setDate(tod.getDate() + diff + offset * 7);
+  return WEEK_ORDER.map((_, i) => { const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+}
+
+function fmtLabel(dates) {
+  const a=dates[0], b=dates[6];
+  if (a.getMonth()===b.getMonth()) return `${a.getDate()}–${b.getDate()} ${MONTHS[a.getMonth()]} ${a.getFullYear()}`;
+  return `${a.getDate()} ${MONTHS[a.getMonth()]} – ${b.getDate()} ${MONTHS[b.getMonth()]}`;
+}
+
+function addMins(t, m) {
+  const [h,mn]=t.split(':').map(Number), tot=h*60+mn+m;
+  return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+}
+
+function toH(t) { const [h,m]=t.split(':').map(Number); return h+m/60; }
+
+function countTodaySessions() {
+  const d = new Date().getDay();
+  return SESSIONS.filter(s=>s.day===d).reduce((n,s)=>n+s.studentIds.length,0);
+}
+
+function getColW() {
+  const avail = (window.innerWidth || 390) - 44;
+  return Math.max(Math.floor(avail / 7), 72);
+}
+
+function renderCalendar() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dates = getWeekDates(weekOffset);
+  const colW  = getColW();
+  document.documentElement.style.setProperty('--col-w', colW + 'px');
+
+  document.getElementById('hero-sub').textContent   = `Semana ${fmtLabel(dates)}`;
+  document.getElementById('week-lbl').textContent   = fmtLabel(dates);
+  document.getElementById('hero-count').textContent = countTodaySessions();
+
+  // headers
+  document.getElementById('cal-days-header').innerHTML = dates.map(date => {
+    const isPast = date < today, isTod = date.getTime()===today.getTime();
+    let cls = 'day-head' + (isTod?' is-today':'') + (isPast?' is-past':'');
+    return `<div class="${cls}" style="width:${colW}px">
+      <div class="dh-name">${DAY_NAMES[date.getDay()]}</div>
+      <div class="dh-num">${date.getDate()}</div>
+      ${isTod ? '<div><span class="dh-hoy">HOY</span></div>' : ''}
+    </div>`;
+  }).join('');
+
+  // time labels
+  document.getElementById('time-labels').innerHTML = HOURS.map(h =>
+    `<div class="tl-slot" style="height:${ROW_H}px">${String(h).padStart(2,'0')}:00</div>`
+  ).join('');
+
+  // day columns
+  const totalH = HOURS.length * ROW_H;
+  document.getElementById('cal-days-body').innerHTML = dates.map(date => {
+    const jsDay = date.getDay();
+    const isPast = date < today, isTod = date.getTime()===today.getTime();
+    let cls = 'day-col' + (isTod?' is-today':'') + (isPast?' is-past':'');
+    const lines = HOURS.map(() => `<div class="hour-line" style="height:${ROW_H}px"></div>`).join('');
+    const cards = SESSIONS.filter(s=>s.day===jsDay).flatMap(sess => {
+      const topPx = (toH(sess.start) - MIN_HOUR) * ROW_H;
+      const hPx   = (sess.dur/60) * ROW_H - 3;
+      const total = sess.studentIds.length;
+      return sess.studentIds.map((id, idx) => {
+        const st  = STUDENTS[id] || { name:'?', color:'#4fb6ff', icon:'👤' };
+        const end = addMins(sess.start, sess.dur);
+        const lPx = 2 + Math.round((colW-4) * (idx/total));
+        const wPx = Math.round((colW-4)/total) - (idx<total-1?2:0);
+        const short = hPx < 44;
+        return `<div class="ev-card" style="top:${topPx}px;height:${hPx}px;left:${lPx}px;right:auto;width:${wPx}px;background:linear-gradient(160deg,${st.color}30,${st.color}12);border:1px solid ${st.color}55;box-shadow:0 0 14px -6px ${st.color}60 inset">
+          <div class="ev-icon">${st.icon}</div>
+          <div class="ev-name">${st.name}</div>
+          ${short?'':` <div class="ev-time" style="color:${st.color}">${sess.start}–${end}</div>
+          <div class="ev-badge">${sess.modality}</div>`}
+        </div>`;
+      });
+    }).join('');
+    return `<div class="${cls}" style="width:${colW}px;height:${totalH}px">${lines}${cards}</div>`;
+  }).join('');
+
+  renderTimeNow();
+}
+
+function renderTimeNow() {
+  const prev = document.getElementById('time-now');
+  if (prev) prev.remove();
+
+  const now  = new Date();
+  const curH = now.getHours() + now.getMinutes()/60;
+  if (curH < MIN_HOUR || curH >= MAX_HOUR) return;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dates = getWeekDates(weekOffset);
+  const todayIdx = dates.findIndex(d => d.getTime()===today.getTime());
+  if (todayIdx === -1) return; // no estamos en la semana actual
+
+  const colW  = getColW();
+  const leftPx = todayIdx * colW;
+
+  const el = document.createElement('div');
+  el.id = 'time-now';
+  el.className = 'time-now';
+  el.style.top   = ((curH - MIN_HOUR) * ROW_H) + 'px';
+  el.style.left  = leftPx + 'px';
+  el.style.width = colW + 'px';
+  el.innerHTML = '<div class="time-now-dot"></div><div class="time-now-line"></div>';
+  document.getElementById('cal-days-body').appendChild(el);
+}
+
+const PTS_LOG = [
+  {icon:'🍎', name:'Lucio',    pts:'+4',  color:'#60a5fa', date:'9 Jun', tags:['2 avance','2h']},
+  {icon:'👦🏻', name:'Brunella', pts:'+2',  color:'#f472b6', date:'9 Jun', tags:['1 avance','1h']},
+  {icon:'🎮',  name:'JOAO',    pts:'+11', color:'#fb923c', date:'8 Jun', tags:['5 tareas','3 avance','3h']},
+  {icon:'👦🏻', name:'JOSUE',   pts:'+9',  color:'#4ade80', date:'8 Jun', tags:['5 tareas','2 avance','2h']},
+  {icon:'👦🏻', name:'Manuel',  pts:'+2',  color:'#fb923c', date:'8 Jun', tags:['1 avance','1h']},
+  {icon:'🏃🏻', name:'Santiago',pts:'+2',  color:'#4ade80', date:'8 Jun', tags:['1 avance','1h']},
+  {icon:'👧🏻', name:'Catalina',pts:'+7',  color:'#c084fc', date:'8 Jun', tags:['3 avance','1h']},
+];
+
+function renderPtsLog() {
+  const el = document.getElementById('pts-log');
+  if (!el) return;
+  el.innerHTML = PTS_LOG.map(e => `
+    <div class="log-row">
+      <div class="log-icon">${e.icon}</div>
+      <div class="log-body">
+        <div class="log-namepts"><div class="log-name">${e.name}</div><div class="log-pts" style="color:${e.color}">${e.pts}</div></div>
+        <div class="log-date">${e.date}</div>
+        <div class="log-tags">${e.tags.map(t=>`<span class="log-tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function setTab(t) {
+  activeTab = t;
+  document.getElementById('tab-cur').className = 'tab-pill '+(t==='cur'?'on':'off');
+  document.getElementById('tab-nxt').className = 'tab-pill '+(t==='nxt'?'on':'off');
+  document.getElementById('cal-content').style.display = t==='cur'?'flex':'none';
+  document.getElementById('pts-content').style.display = t==='nxt'?'flex':'none';
+  if (t==='cur') { renderCalendar(); }
+}
+
+function changeWeek(d) { weekOffset += d; renderCalendar(); }
+function goToday()     { weekOffset = 0;  renderCalendar(); }
+
+renderCalendar();
+renderPtsLog();
+
+// actualizar línea cada minuto
+setInterval(renderTimeNow, 60000);
+
+window.addEventListener('load', () => {
+  const scroll = document.getElementById('cal-body-scroll');
+  if (!scroll) return;
+  const nowH = new Date().getHours();
+  const targetH = nowH >= MIN_HOUR ? nowH - 1 : MIN_HOUR;
+  scroll.scrollTop = Math.max(0, targetH - MIN_HOUR) * ROW_H;
+});
+</script>
+</body>
+</html>
