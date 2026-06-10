@@ -412,16 +412,16 @@ const PADRES_REF = db.collection('padres').doc('main');
 // CONSTANTS
 // ════════════════════════════════════════════════════════
 const DEFAULT_STUDENTS = [
-  { id:1,  name:"Mikela Villena",    max:25, color:"#ec4899", icon:"👧🏼", pin:"24680" },
-  { id:2,  name:"Lucio Prado",       max:24, color:"#3b82f6", icon:"🍎",  pin:"47291" },
-  { id:3,  name:"Joanna Prado",      max:17, color:"#a855f7", icon:"👧🏻", pin:"83652" },
-  { id:4,  name:"Manuel Villacorta", max:15, color:"#f97316", icon:"👦🏻", pin:"15937" },
-  { id:5,  name:"Maria Villalobos",  max:14, color:"#eab308", icon:"👧🏽", pin:"62840" },
-  { id:6,  name:"Augusto Giuffra",   max:12, color:"#ef4444", icon:"🕷️",  pin:"39514" },
-  { id:7,  name:"Santiago Quinto",   max:11, color:"#22c55e", icon:"🏃🏻", pin:"70268" },
-  { id:8,  name:"Tiago Poma",        max:10, color:"#06b6d4", icon:"🐶",  pin:"58429" },
-  { id:9,  name:"Mateo Ríos",        max:6,  color:"#f43f5e", icon:"🐧",  pin:"26173" },
-  { id:10, name:"Rafaela Villena",   max:6,  color:"#14b8a6", icon:"🐨",  pin:"91536" }
+  { id:1,  name:"Mikela Villena",    max:25, color:"#f472b6", icon:"👧🏼", pin:"24680" },
+  { id:2,  name:"Lucio Prado",       max:24, color:"#60a5fa", icon:"🍎",  pin:"47291" },
+  { id:3,  name:"Joanna Prado",      max:17, color:"#c084fc", icon:"👧🏻", pin:"83652" },
+  { id:4,  name:"Manuel Villacorta", max:15, color:"#fb923c", icon:"👦🏻", pin:"15937" },
+  { id:5,  name:"Maria Villalobos",  max:14, color:"#fde047", icon:"👧🏽", pin:"62840" },
+  { id:6,  name:"Augusto Giuffra",   max:12, color:"#f87171", icon:"🕷️",  pin:"39514" },
+  { id:7,  name:"Santiago Quinto",   max:11, color:"#4ade80", icon:"🏃🏻", pin:"70268" },
+  { id:8,  name:"Tiago Poma",        max:10, color:"#22d3ee", icon:"🐶",  pin:"58429" },
+  { id:9,  name:"Mateo Ríos",        max:6,  color:"#fb7185", icon:"🐧",  pin:"26173" },
+  { id:10, name:"Rafaela Villena",   max:6,  color:"#34d399", icon:"🐨",  pin:"91536" }
 ];
 const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
 const COLOR_PALETTE = [
@@ -2172,7 +2172,8 @@ function vHorarios() {
   };
 
   return `
-  <div style="padding:12px 12px 80px">
+  <div style="display:flex;height:100%;overflow:hidden">
+  <div style="flex:1;min-width:0;overflow:auto;padding:12px 12px 80px">
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;
                 letter-spacing:0.05em;margin-bottom:14px">📅 HORARIOS</div>
     <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
@@ -2219,10 +2220,95 @@ function vHorarios() {
 
       </div>
     </div>
+  </div>
+  <!-- Sidebar -->
+  <div id="hor-sidebar" style="width:210px;flex-shrink:0;border-left:1px solid rgba(255,255,255,0.08);overflow-y:auto;background:rgba(10,13,22,0.6);display:flex;flex-direction:column;scrollbar-width:thin;scrollbar-color:rgba(79,182,255,0.2) transparent">
+    <div style="padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px">🏆 TOP 3 ALUMNOS</div>
+      <div id="hor-sb-ranking"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
+    </div>
+    <div style="padding:14px 12px;flex:1">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px">⚡ ÚLTIMOS PUNTOS</div>
+      <div id="hor-sb-log"><div style="color:rgba(255,255,255,0.25);font-size:12px">Cargando…</div></div>
+    </div>
+  </div>
   </div>`;
 }
 
-function vHorariosSetup() {}
+function renderHorariosSidebar() {
+  const sbRanking = document.getElementById('hor-sb-ranking');
+  const sbLog     = document.getElementById('hor-sb-log');
+  if (!sbRanking || !sbLog) return;
+
+  const students = getStudents();
+
+  // ── TOP 3 ──────────────────────────────────────────────
+  const ranked = students
+    .map(s => ({ ...s, pts: getTotalPts(s.id) }))
+    .filter(s => s.pts > 0)
+    .sort((a, b) => b.pts - a.pts);
+
+  const MEDALS = ['🥇','🥈','🥉'];
+  const maxPts = ranked.length ? ranked[0].pts : 1;
+
+  sbRanking.innerHTML = ranked.slice(0, 3).map((s, i) => {
+    const barW = Math.round(s.pts / maxPts * 100);
+    return `
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;margin-bottom:4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
+      <div style="font-size:16px;line-height:1;flex-shrink:0">${MEDALS[i]}</div>
+      <div style="font-size:18px;line-height:1;flex-shrink:0">${s.icon||'👤'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1">${s.name.split(' ')[0]}</div>
+        <div style="font-size:10px;font-weight:700;color:${s.color||'#4fb6ff'};margin-top:2px;line-height:1">${s.pts} pts</div>
+        <div style="height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:4px;overflow:hidden">
+          <div style="height:100%;width:${barW}%;background:${s.color||'#4fb6ff'};border-radius:2px;transition:width 0.5s"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:rgba(255,255,255,0.25);font-size:12px">Sin datos aún</div>';
+
+  // ── RECENT LOG ─────────────────────────────────────────
+  const allEntries = [];
+  students.forEach(s => {
+    const log  = pointsLog[String(s.id)] || {};
+    const mult = getTaskMult(s.id);
+    Object.entries(log).forEach(([date, entry]) => {
+      if (entry.absent) return;
+      const hrs  = Array.isArray(entry.hours)    ? entry.hours.filter(Boolean).length    : 0;
+      const prog = Array.isArray(entry.progress) ? entry.progress.filter(Boolean).length : 0;
+      const tsk  = Array.isArray(entry.tasks)    ? entry.tasks.filter(Boolean).length    : 0;
+      const pts  = hrs + prog + tsk * mult;
+      if (pts === 0) return;
+      allEntries.push({ date, pts, tsk, prog, hrs,
+        name: s.name.split(' ')[0], icon: s.icon||'👤', color: s.color||'#4fb6ff' });
+    });
+  });
+  allEntries.sort((a, b) => b.date.localeCompare(a.date));
+
+  const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const fmtDate = d => { const [,m,day] = d.split('-').map(Number); return `${day} ${MONTHS[m-1]}`; };
+
+  sbLog.innerHTML = allEntries.slice(0, 14).map(e => {
+    const tags = [];
+    if (e.tsk  > 0) tags.push(`${e.tsk} tarea${e.tsk>1?'s':''}`);
+    if (e.prog > 0) tags.push(`${e.prog} avance`);
+    if (e.hrs  > 0) tags.push(`${e.hrs}h`);
+    return `
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="font-size:18px;line-height:1.2;flex-shrink:0">${e.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;color:#fff;line-height:1">${e.name}</div>
+          <div style="font-size:12px;font-weight:900;color:${e.color};line-height:1">+${e.pts}</div>
+        </div>
+        <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);margin-top:1px;line-height:1">${fmtDate(e.date)}</div>
+        <div style="margin-top:3px">${tags.map(t=>`<span style="display:inline-block;font-size:8px;font-weight:700;letter-spacing:0.06em;padding:1px 5px;border-radius:3px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);margin-right:2px">${t}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:rgba(255,255,255,0.25);font-size:12px">Sin actividad aún</div>';
+}
+
+function vHorariosSetup() { renderHorariosSidebar(); }
 
 function togglePtsEditor(studentId) {
   expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
@@ -2315,6 +2401,7 @@ PADRES_REF.onSnapshot(doc => {
   if (currentView === 'horarios') {
     const app=document.getElementById('app');
     if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
+    renderHorariosSidebar();
   }
 }, err => console.error('[Firebase padres]', err));
 
@@ -2367,6 +2454,7 @@ REF.onSnapshot(doc => {
         if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
       }
     }
+    if (hash === 'horarios') renderHorariosSidebar();
   }
 }, err => {
   console.error('[Firebase]', err);
