@@ -479,7 +479,7 @@ function bindView() {
       const match = Object.entries(DATA.parents).find(([id,p]) => p.pin === pin);
       if (match) {
         setLoggedParent(match[0]);
-        selectedChild = (match[1].children||[])[0] || null;
+        selectedChild = null; // mostrar todos los hijos al entrar
         currentView = 'inicio';
         render();
       } else {
@@ -521,7 +521,7 @@ function logout() {
   navHistory = []; navIndex = -1;
   render();
 }
-function selectChild(id) { selectedChild = id; render(); }
+function selectChild(id) { selectedChild = id === null ? null : Number(id); render(); }
 function setCalMode(m) { calMode = m; render(); }
 function calStep(dir) {
   const span = calMode === 'week' ? 7 : 4;
@@ -636,18 +636,25 @@ function vCalendario() {
   const parentId = getLoggedParent();
   const parent   = DATA.parents[parentId];
   if (!parent) { logout(); return ''; }
-  const children = (parent.children||[]).map(id => ({ ...DATA.students[id], id: Number(id) })).filter(c => c.name);
-  if (selectedChild === null && children.length) selectedChild = children[0].id;
+  const childIds = parent.children || [];
+  const children = childIds.map(id => ({ ...DATA.students[id], id: Number(id) })).filter(c => c.name);
+  // selectedChild: null = ver todos, number = filtrar a uno
   const days = calMode === 'week' ? 7 : 4;
   const rangeStart = calAnchor;
   const rangeEnd   = addDays(calAnchor, days-1);
   const dayList = Array.from({length: days}, (_,i) => addDays(rangeStart, i));
 
+  // Chips: "Todos" + uno por hijo
+  const allChip = `<div class="child-chip${selectedChild===null?' csel':''}" onclick="selectChild(null)">👨‍👩‍👧‍👦 Todos</div>`;
+  const childChips = children.map(c =>
+    `<div class="child-chip${selectedChild===c.id?' csel':''}" onclick="selectChild(${c.id})">${c.icon} ${c.name.split(' ')[0]}</div>`
+  ).join('');
+
   return `
   <div style="padding:16px;max-width:680px;margin:0 auto">
     <div class="sec-lbl">Calendario de clases</div>
     <div class="child-row">
-      ${children.map(c => `<div class="child-chip${selectedChild===c.id?' csel':''}" onclick="selectChild(${c.id})">${c.icon} ${c.name.split(' ')[0]}</div>`).join('')}
+      ${allChip}${childChips}
     </div>
     <div class="cal-toolbar">
       <div class="cal-toggle">
@@ -663,14 +670,21 @@ function vCalendario() {
     <div class="cal-grid">
       ${dayList.map(d => {
         const dow = d.getDay();
-        const slots = selectedChild ? DATA.sessions.filter(s => Number(s.studentId)===Number(selectedChild) && s.day===dow) : [];
-        const st = selectedChild ? DATA.students[selectedChild] : null;
+        // Si selectedChild es null, mostrar todos los hijos de esta familia
+        const activeIds = selectedChild !== null ? [Number(selectedChild)] : childIds.map(Number);
+        const slots = DATA.sessions
+          .filter(s => activeIds.includes(Number(s.studentId)) && s.day === dow)
+          .sort((a,b) => a.start.localeCompare(b.start));
         return `<div class="cal-day">
           <div class="cal-day-hdr"><span>${DAY_NAMES[dow]}</span><span class="dnum">${fmtDM(d)}</span></div>
-          ${slots.length ? slots.map(s => `<div class="cal-slot" style="border-left-color:${st.color};background:${st.color}14">
+          ${slots.length ? slots.map(s => {
+            const st = DATA.students[s.studentId] || {};
+            return `<div class="cal-slot" style="border-left-color:${st.color||'#4fb6ff'};background:${st.color||'#4fb6ff'}14">
+              <div class="cs-name" style="font-weight:900;font-size:11px;color:${st.color||'#4fb6ff'};margin-bottom:2px">${st.icon||''} ${(st.name||'').split(' ')[0]}</div>
               <div class="cs-time">${s.start} · ${s.dur} min</div>
-              <div class="cs-meta">${s.modality} · ${s.topic}</div>
-            </div>`).join('') : `<div class="cal-empty">Sin clases este día</div>`}
+              <div class="cs-meta">${s.modality}</div>
+            </div>`;
+          }).join('') : `<div class="cal-empty">Sin clases este día</div>`}
         </div>`;
       }).join('')}
     </div>
