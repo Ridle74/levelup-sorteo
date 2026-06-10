@@ -636,7 +636,7 @@ function vCalendario() {
   const parentId = getLoggedParent();
   const parent   = DATA.parents[parentId];
   if (!parent) { logout(); return ''; }
-  const children = (parent.children||[]).map(id => DATA.students[id]).filter(Boolean);
+  const children = (parent.children||[]).map(id => ({ ...DATA.students[id], id: Number(id) })).filter(c => c.name);
   if (selectedChild === null && children.length) selectedChild = children[0].id;
   const days = calMode === 'week' ? 7 : 4;
   const rangeStart = calAnchor;
@@ -663,7 +663,7 @@ function vCalendario() {
     <div class="cal-grid">
       ${dayList.map(d => {
         const dow = d.getDay();
-        const slots = selectedChild ? DATA.sessions.filter(s => s.studentId===selectedChild && s.day===dow) : [];
+        const slots = selectedChild ? DATA.sessions.filter(s => Number(s.studentId)===Number(selectedChild) && s.day===dow) : [];
         const st = selectedChild ? DATA.students[selectedChild] : null;
         return `<div class="cal-day">
           <div class="cal-day-hdr"><span>${DAY_NAMES[dow]}</span><span class="dnum">${fmtDM(d)}</span></div>
