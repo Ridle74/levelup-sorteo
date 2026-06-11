@@ -433,8 +433,11 @@ textarea.fsm { resize:none; height:64px; }
 .msgs-dm-pill{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
 .msgs-dm-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:700;cursor:pointer;position:relative;white-space:nowrap}
 .msgs-dm-btn.active{background:rgba(79,182,255,0.18);border-color:rgba(79,182,255,0.4);color:#4fb6ff}
-.msg-del{opacity:0;transition:opacity 0.15s;background:none;border:none;color:rgba(255,255,255,0.35);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1}
-.msg-wrap:hover .msg-del{opacity:1}
+.msg-del{opacity:0;transition:opacity 0.15s;background:none;border:none;color:rgba(255,255,255,0.35);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;position:absolute;top:0}
+.msg-wrap.mine .msg-del{left:-22px}
+.msg-wrap.other .msg-del{right:-22px}
+.msg-inner{position:relative}
+.msg-inner:hover .msg-del{opacity:1}
 .msg-del:hover{color:#ff4757!important}
 </style>
 </head>
@@ -1873,13 +1876,12 @@ function _buildMsgsBubbles(){
       else if (m.att.type==='file')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${m.att.name||'Archivo'}</a>`;
     }
     const canDel = mine || isAdmin();
-    return `<div class="msg-wrap ${mine?'mine':'other'}" style="align-items:flex-end;gap:4px">
-      ${mine&&canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" class="msg-del">🗑</button>`:''}
+    return `<div class="msg-wrap ${mine?'mine':'other'}">
       <div class="msg-inner">
         ${!mine&&sender?`<div class="msg-name">${sender}</div>`:''}
         <div class="msg-bubble">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
+        ${canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" class="msg-del">🗑</button>`:''}
       </div>
-      ${!mine&&canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" class="msg-del">🗑</button>`:''}
     </div>`;
   }).join('');
 }
