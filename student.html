@@ -2776,16 +2776,16 @@ function vPerfil() {
   const tabs=[{id:'foto',label:'📷 Foto'},{id:'icon',label:'Icono'},{id:'color',label:'Color'},{id:'frame',label:'Marco'},{id:'pin',label:'PIN'}];
 
   const iconGrid = PERFIL_ICONS.map(ico=>
-    '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" onclick="perfilPickIcon(''+ico+'')">'+ico+'</button>'
+    '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" data-ico="'+ico+'" onclick="perfilPickIcon(this.dataset.ico)">'+ico+'</button>'
   ).join('');
 
   const colorGrid = COLOR_PALETTE.map(col=>
-    '<div class="perfil-color-dot'+(curColor===col?' selected':'')+'" style="background:'+col+'" onclick="perfilPickColor(''+col+'')"></div>'
+    '<div class="perfil-color-dot'+(curColor===col?' selected':'')+'" style="background:'+col+'" data-col="'+col+'" onclick="perfilPickColor(this.dataset.col)"></div>'
   ).join('');
 
   const frameGrid = PERFIL_FRAMES.map(f=>{
     const fi=FRAME_IMG[f.id]; const fb=FRAME_BORDER[f.id]||'transparent';
-    return '<div class="perfil-frame-opt'+(curFrame===f.id?' selected':'')+'" onclick="perfilPickFrame(''+f.id+'')" style="display:flex;flex-direction:column;align-items:center;cursor:pointer">'
+    return '<div class="perfil-frame-opt'+(curFrame===f.id?' selected':'')+'" data-fid="'+f.id+'" onclick="perfilPickFrame(this.dataset.fid)" style="display:flex;flex-direction:column;align-items:center;cursor:pointer">'
       +'<div style="position:relative;width:60px;height:60px">'
       +'<div style="width:60px;height:60px;border-radius:50%;background:'+curColor+';'+(f.id==='none'?'border:2px dashed #444;':'border:2px solid '+fb+';')+'display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;box-sizing:border-box">'+(curPhoto?'<img src="'+curPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':curIcon)+'</div>'
       +(fi?'<img src="'+fi+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
@@ -2795,7 +2795,7 @@ function vPerfil() {
   const fotoContent='<div style="text-align:center">'
     +'<div style="font-size:12px;color:#aaa;margin-bottom:12px">Elegí una foto y ajustá el encuadre arrastrando</div>'
     +'<input type="file" id="perfil-file-input" accept="image/*" style="display:none" onchange="perfilPhotoSelected()">'
-    +'<button onclick="document.getElementById('perfil-file-input').click()" style="padding:10px 22px;border-radius:10px;background:#1a1a2e;border:1px solid #333;color:#ccc;cursor:pointer;font-size:13px;margin-bottom:14px">📁 Elegir foto</button>'
+    +'<button onclick="perfilOpenFilePicker()" style="padding:10px 22px;border-radius:10px;background:#1a1a2e;border:1px solid #333;color:#ccc;cursor:pointer;font-size:13px;margin-bottom:14px">📁 Elegir foto</button>'
     +'<div id="perfil-crop-wrap" style="display:none;flex-direction:column;align-items:center;gap:10px">'
     +'<div style="position:relative;width:220px;height:220px;border-radius:50%;overflow:hidden;border:2px solid #7c3aed;cursor:grab" id="perfil-crop-container">'
     +'<canvas id="perfil-crop-canvas" width="220" height="220" style="display:block"></canvas></div>'
@@ -2822,14 +2822,14 @@ function vPerfil() {
   };
 
   const tabButtons=tabs.map(t=>
-    '<button onclick="_perfilTab=''+t.id+'';vPerfilRefresh()" style="flex:1;padding:7px 2px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:700;background:'+(_perfilTab===t.id?'#7c3aed':'#1a1a2e')+';color:'+(_perfilTab===t.id?'#fff':'#888')+'">'+t.label+'</button>'
+    '<button data-tab="'+t.id+'" onclick="perfilSwitchTab(this.dataset.tab)" style="flex:1;padding:7px 2px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:700;background:'+(_perfilTab===t.id?'#7c3aed':'#1a1a2e')+';color:'+(_perfilTab===t.id?'#fff':'#888')+'">'+t.label+'</button>'
   ).join('');
 
   const saveBtn=_perfilTab!=='pin'?'<button onclick="perfilSaveProfile()" style="width:100%;margin-top:14px;padding:13px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:15px">Guardar cambios</button>':'';
 
   return '<div style="max-width:440px;margin:0 auto;padding:16px">'
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
-    +'<button onclick="go('dashboard')" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
+    +'<button onclick="go(&quot;dashboard&quot;)" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
     +'<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>'
     +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:12px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,80)+'</div>'
     +'<div style="text-align:center;font-size:15px;font-weight:600;margin-bottom:18px;color:#ccc">'+(st.name||'')+'</div>'
@@ -2838,6 +2838,7 @@ function vPerfil() {
     +saveBtn+'</div>';
 }
 
+function perfilSwitchTab(tab) { _perfilTab=tab; vPerfilRefresh(); }
 function vPerfilRefresh() {
   const app = document.getElementById('app');
   if (app) app.innerHTML = '<div class="vw">' + vPerfil() + '</div>';
@@ -2870,6 +2871,9 @@ function _refreshPerfilAvatar() {
     _perfilPendingColor||st.color||'#8B5CF6',
     _perfilPendingPhoto!==null?_perfilPendingPhoto:(ov.photo||null),
     _perfilPendingFrame!==null?_perfilPendingFrame:(ov.frame||'none'), 80);
+}
+function perfilOpenFilePicker() {
+  document.getElementById('perfil-file-input').click();
 }
 function perfilPhotoSelected() {
   const input=document.getElementById('perfil-file-input');
