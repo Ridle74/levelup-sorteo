@@ -115,6 +115,20 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .dash-link:active { background:rgba(0,0,0,0.04); }
 .dl-ico { font-size:24px; flex-shrink:0; }
 .dl-arr { margin-left:auto; color:rgba(0,0,0,0.2); font-size:20px; }
+.pcal-edit-btn { border:1px solid rgba(0,0,0,0.14); background:#fff; color:rgba(0,0,0,0.55); font-size:12px; padding:7px 11px; border-radius:8px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; transition:all 0.15s; }
+.pcal-edit-btn.on { background:#111; color:#fff; border-color:#111; }
+.pcal-ev-edit-ico { position:absolute; top:3px; right:3px; background:rgba(255,255,255,0.92); border:1px solid rgba(0,0,0,0.1); border-radius:5px; font-size:10px; padding:2px 5px; cursor:pointer; z-index:2; line-height:1.4; }
+.pcal-free-slot { position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden; cursor:pointer; background:rgba(0,0,0,0.02); border:1.5px dashed rgba(0,0,0,0.3); }
+.pcal-free-lbl { font-size:8px; font-weight:900; letter-spacing:0.12em; color:rgba(0,0,0,0.4); text-transform:uppercase; }
+.pcal-free-booked { background:rgba(0,0,0,0.05) !important; border-style:solid !important; border-color:rgba(0,0,0,0.18) !important; }
+.pcal-fab { position:fixed; bottom:calc(78px + env(safe-area-inset-bottom)); right:16px; width:50px; height:50px; border-radius:25px; background:#111; color:#fff; font-size:24px; border:none; cursor:pointer; z-index:300; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,0.3); -webkit-tap-highlight-color:transparent; }
+.sm-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.45); display:flex; align-items:flex-end; }
+.sm-sheet { background:#fff; border-radius:20px 20px 0 0; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-height:88vh; overflow-y:auto; }
+.sm-title { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; color:#111; }
+.sm-seg { display:flex; border:1px solid rgba(0,0,0,0.14); border-radius:10px; overflow:hidden; margin-bottom:12px; background:#fff; }
+.sm-seg button { flex:1; border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:8px; cursor:pointer; transition:all 0.15s; }
+.sm-seg button.on { background:#111; color:#fff; }
+.sm-del-btn { width:100%; border:1px solid rgba(0,0,0,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:#fff; color:rgba(0,0,0,0.45); margin-top:8px; }
 </style>
 </head>
 <body>
@@ -127,6 +141,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 <div id="app"></div>
 <div id="bottom-nav"><div class="nav-row" id="nav-row"></div></div>
 <div id="toast"><span id="toast-icon">⚠️</span><span id="toast-msg">–</span></div>
+<div id="session-modal" style="display:none"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -259,6 +274,7 @@ const SEED = {
     { id:32, studentId:7,  day:0, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" }
   ],
   requests: [],
+  freeSlots: [],
   // Solicitudes de creación de cuenta hechas por padres nuevos (auto-registro).
   // El admin las revisa y aprueba/rechaza desde el panel de administración.
   accountRequests: []
@@ -299,6 +315,10 @@ let navHistory = [];   // pila de vistas visitadas, para los botones atrás/adel
 let navIndex = -1;     // posición actual dentro de navHistory
 let loginTab = 'familia';      // 'familia' | 'crear'  (pestañas de la pantalla de login)
 let editingParentId = null;    // id de padre cuyo PIN se está editando en el panel admin
+let calEditMode = false;       // admin: modo edición del calendario
+let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
+let smEditFree  = false;       // true si se edita un freeSlot
+let smType      = 'session';   // 'session' | 'free'
 
 function startOfWeek(d) {
   const x = new Date(d); const day = x.getDay();
@@ -336,6 +356,7 @@ function loadData() {
         DATA.cycleEnd        = SEED.cycleEnd;
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
+        DATA.freeSlots       = d.freeSlots       || [];
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
         // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
         // explícitamente con FieldValue.delete() antes de escribir los nuevos.
@@ -355,6 +376,7 @@ function loadData() {
         DATA.cycleEnd        = d.cycleEnd        || SEED.cycleEnd;
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
+        DATA.freeSlots       = d.freeSlots       || [];
       }
     } else {
       // Primera vez: sembrar Firestore con datos base.
@@ -395,6 +417,14 @@ function saveParents() {
 }
 function saveAdminPin(newPin) {
   return AUTH_REF.set({ adminPin: newPin }, { merge:true }).then(() => { DATA.adminPin = newPin; });
+}
+function saveSessions() {
+  REF.set({ sessions: DATA.sessions }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar sesión.'); });
+}
+function saveFreeSlots() {
+  REF.set({ freeSlots: DATA.freeSlots }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar horario libre.'); });
 }
 
 // ════════════════════════════════════════════════════════
@@ -695,19 +725,22 @@ function vInicio() {
 }
 
 // ── Shared calendar helpers ──────────────────────────────────────
-function buildPadCalNav(rangeStart, rangeEnd, _unused) {
-  const m4 = calMode === '4dias' ? ' on' : '';
-  const mw = calMode === 'week'  ? ' on' : '';
+function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
+  const m4  = calMode === '4dias' ? ' on' : '';
+  const mw  = calMode === 'week'  ? ' on' : '';
+  const eCls = calEditMode ? ' on' : '';
   return '<div class="pcal-toolbar">'
     + '<div class="pcal-toggle">'
     + '<button class="' + m4 + '" onclick="setCalMode(\'4dias\')">4 días</button>'
     + '<button class="' + mw + '" onclick="setCalMode(\'week\')">Semana</button>'
     + '</div>'
     + '<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
+    + (isAdmin ? '<button class="pcal-edit-btn'+eCls+'" onclick="toggleCalEdit()">✏️ Editar</button>' : '')
     + '<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
     + '</div>'
     + '<div class="pcal-range-bar">' + fmtDM(rangeStart) + ' — ' + fmtDM(rangeEnd) + '</div>';
 }
+function toggleCalEdit() { calEditMode = !calEditMode; render(); }
 
 function buildPadCalGrid(dayList, activeSids, showParent) {
   const ROW_H = 56;
@@ -716,15 +749,17 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   const toH  = function(t){ var p=t.split(':').map(Number); return p[0]+p[1]/60; };
   const addM = function(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); };
 
-  // Build slot map
+  // Build slot map (recurring: key='dDOW|HH:MM'; one-time: key='DATE|HH:MM')
+  const _dStr = function(d){ return d.toISOString().slice(0,10); };
   const slotMap = {};
   DATA.sessions.forEach(function(s) {
     if (!activeSids.includes(Number(s.studentId))) return;
-    const key = s.day+'|'+s.start;
-    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), start:s.start, maxDur:0, students:[] };
+    const isOneTime = s.recurring === false && s.date;
+    const key = isOneTime ? (s.date+'|'+s.start) : ('d'+s.day+'|'+s.start);
+    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
     const dur = s.dur || 60;
     if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
-    slotMap[key].students.push({ sid: s.studentId, dur: dur, modality: s.modality });
+    slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id });
   });
 
   // ── Smart time range: fit to actual sessions ─────────────────
@@ -772,7 +807,9 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   const appEl = document.getElementById('app');
   const appW  = appEl ? appEl.offsetWidth : (window.innerWidth||390);
   const numCols = filteredDayList.length;
-  const colW  = Math.max(Math.floor((appW - 42) / numCols), 60);
+  const colW  = showParent
+    ? Math.floor((appW - 42) / numCols)
+    : Math.max(Math.floor((appW - 42) / numCols), 60);
 
   // Day headers
   const hdrs = filteredDayList.map(function(d) {
@@ -791,12 +828,16 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   }).join('');
 
   // Day columns
+  const freeSlotList = DATA.freeSlots || [];
   const cols = filteredDayList.map(function(d) {
-    const dow = d.getDay();
+    const dow  = d.getDay();
+    const dstr = _dStr(d);
     const isPast = d < today, isTod = d.getTime()===today.getTime();
     const cls = 'pcal-day-col'+(isTod?' is-today':'')+(isPast?' is-past':'');
     const lines = HOURS.map(function(){ return '<div class="pcal-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
-    const slots = Object.values(slotMap).filter(function(sl){ return sl.day===dow; });
+    const slots = Object.values(slotMap).filter(function(sl){
+      return sl.oneTimeDate ? sl.oneTimeDate===dstr : sl.day===dow;
+    });
     const cards = slots.flatMap(function(slot) {
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
       const hPx   = Math.max((slot.maxDur / 60) * ROW_H - 3, 28);
@@ -808,7 +849,10 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
         const wPx    = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short  = hPx < 42;
         const pName  = showParent ? (studentParent[String(st.sid)]||'') : '';
-        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12)">'
+        const editIco = (showParent && calEditMode && st.sessionId)
+          ? '<div class="pcal-ev-edit-ico" onclick="openEditSession('+st.sessionId+',false);event.stopPropagation()">✏️</div>' : '';
+        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12);position:relative">'
+          +editIco
           +(pName?'<div class="pcal-ev-parent">'+pName+'</div>':'')
           +'<div class="pcal-ev-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+'</div>'
           +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
@@ -816,7 +860,28 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
           +'</div>';
       });
     }).join('');
-    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+'</div>';
+    const freeCards = freeSlotList.filter(function(fs){
+      if (!showParent && fs.bookedBy) return false;
+      return (fs.recurring===false && fs.date) ? fs.date===dstr : Number(fs.day)===dow;
+    }).map(function(fs){
+      const topPx = Math.max((toH(fs.start) - MIN_H) * ROW_H, 0);
+      const hPx   = Math.max((fs.dur / 60) * ROW_H - 3, 28);
+      const end   = addM(fs.start, fs.dur);
+      const booked = !!fs.bookedBy;
+      const bookedSt = booked ? (DATA.students[fs.bookedBy.studentId]||{}) : null;
+      const clsFree = 'pcal-free-slot'+(booked?' pcal-free-booked':'');
+      const editIco = (showParent && calEditMode)
+        ? '<div class="pcal-ev-edit-ico" onclick="openEditSession(\''+fs.id+'\',true);event.stopPropagation()">✏️</div>' : '';
+      const bookTap = (!showParent && !booked) ? ' onclick="bookFreeSlot(\''+fs.id+'\')"' : '';
+      return '<div class="'+clsFree+'" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px;position:absolute"'+bookTap+'>'
+        +editIco
+        +(booked && bookedSt ? '<div class="pcal-ev-name">'+bookedSt.icon+' '+bookedSt.name.split(' ')[0]+'</div>'
+          : '<div class="pcal-free-lbl">Libre</div>')
+        +'<div class="pcal-ev-time">'+fs.start+'–'+end+'</div>'
+        +'<div class="pcal-ev-badge">'+fs.modality+'</div>'
+        +'</div>';
+    }).join('');
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+freeCards+'</div>';
   }).join('');
 
   // Current time indicator
@@ -835,7 +900,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     +'<div class="pcal-gutter"></div>'
     +'<div class="pcal-days-hdr" style="width:'+(colW*numCols)+'px">'+hdrs+'</div>'
     +'</div>'
-    +'<div class="pcal-body-scroll" id="pcal-scroll">'
+    +'<div class="pcal-body-scroll" id="pcal-scroll"'+(showParent?' style="overflow-x:hidden"':'')+'>'
     +'<div class="pcal-body-inner" style="padding-bottom:24px">'
     +'<div class="pcal-tl">'+tls+'</div>'
     +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px">'+cols+nowHtml+'</div>'
@@ -1115,9 +1180,10 @@ function vAdminCalendario() {
   const allSids    = Object.keys(DATA.students).map(Number);
 
   return '<div class="pcal-outer">'
-    + buildPadCalNav(rangeStart, rangeEnd, false)
+    + buildPadCalNav(rangeStart, rangeEnd, false, true)
     + buildPadCalGrid(dayList, allSids, true)
-    + '</div>';
+    + '</div>'
+    + '<button class="pcal-fab" onclick="openNewSession()" title="Nueva clase o horario libre">\uFF0B</button>';
 }
 
 function vAdminInicio() {
@@ -1280,6 +1346,209 @@ bindView = function() {
     });
   }
 };
+
+
+// ════════════════════════════════════════════════════════
+// SESSION MODAL — admin CRUD para sesiones y horarios libres
+// ════════════════════════════════════════════════════════
+function _smStudentOpts(parentId, selId) {
+  var par = DATA.parents[parentId] || {};
+  return (par.children||[]).map(function(id){
+    var st = DATA.students[id] || {};
+    return '<option value="'+id+'"'+(String(id)===String(selId)?' selected':'')+'>'+( st.icon||'')+' '+(st.name||id)+'</option>';
+  }).join('');
+}
+
+function _buildSM(prefill, isEdit) {
+  var p   = prefill || {};
+  var dayVal = p.day !== undefined ? Number(p.day) : 1;
+  var durVal = p.dur || 60;
+  var modVal = p.modality || 'Virtual';
+  var recVal = p.recurring !== false;
+  var initPid = p.parentId || Object.keys(DATA.parents)[0] || '';
+  var stuOpts = smType === 'session' ? _smStudentOpts(initPid, p.studentId) : '';
+  var parOpts = Object.entries(DATA.parents)
+    .sort(function(a,b){ return a[1].name.localeCompare(b[1].name); })
+    .map(function(e){ return '<option value="'+e[0]+'"'+(e[0]===initPid?' selected':'')+'>'+e[1].name+'</option>'; }).join('');
+  var html = '<div class="sm-overlay" onclick="if(event.target===this)closeSessionModal()">'
+    +'<div class="sm-sheet">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
+    +'<div class="sm-title">'+(isEdit?'Editar':'Nueva '+(smType==='free'?'horario libre':'clase'))+'</div>'
+    +'<button onclick="closeSessionModal()" style="border:none;background:rgba(0,0,0,0.07);border-radius:8px;width:32px;height:32px;font-size:18px;cursor:pointer">×</button>'
+    +'</div>'
+    +(!isEdit
+      ? '<div class="sm-seg" id="sm-type-seg" style="margin-bottom:14px">'
+        +'<button data-t="session" class="'+(smType==='session'?'on':'')+'" onclick="smSetType(\'session\')">Clase de alumno</button>'
+        +'<button data-t="free" class="'+(smType==='free'?'on':'')+'" onclick="smSetType(\'free\')">Horario libre</button>'
+        +'</div>'
+      : '')
+    +'<div id="sm-sess-fields" style="display:'+(smType==='session'?'':'none')+'">'
+    +'<label class="field-label">Padre / madre</label>'
+    +'<select class="fsm" id="sm-parent" onchange="smUpdateStudents()" style="appearance:auto">'+parOpts+'</select>'
+    +'<label class="field-label">Alumno</label>'
+    +'<select class="fsm" id="sm-student" style="appearance:auto">'+stuOpts+'</select>'
+    +'</div>'
+    +'<label class="field-label">Día de la semana</label>'
+    +'<select class="fsm" id="sm-day" style="appearance:auto">'
+    +DAY_NAMES.map(function(n,i){ return '<option value="'+i+'"'+(i===dayVal?' selected':'')+'>'+n+'</option>'; }).join('')
+    +'</select>'
+    +'<label class="field-label">Hora de inicio</label>'
+    +'<input class="fsm" id="sm-start" type="time" value="'+(p.start||'16:00')+'">'
+    +'<label class="field-label">Duración</label>'
+    +'<select class="fsm" id="sm-dur" style="appearance:auto">'
+    +[60,90,120,180].map(function(d){ return '<option value="'+d+'"'+(d===durVal?' selected':'')+'>'+d+' min</option>'; }).join('')
+    +'</select>'
+    +'<label class="field-label">Modalidad</label>'
+    +'<div class="sm-seg" id="sm-mod-seg">'
+    +'<button class="'+(modVal==='Virtual'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Virtual</button>'
+    +'<button class="'+(modVal==='Domicilio'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Domicilio</button>'
+    +'</div>'
+    +'<label class="field-label">Frecuencia</label>'
+    +'<div class="sm-seg" id="sm-rec-seg">'
+    +'<button class="'+(recVal?'on':'')+'" data-rec="true" onclick="smToggleRec(this,true)">Semanal (ciclo MATHS ONEX)</button>'
+    +'<button class="'+(recVal?'':'on')+'" data-rec="false" onclick="smToggleRec(this,false)">Solo una vez</button>'
+    +'</div>'
+    +'<div id="sm-date-wrap" style="display:'+(recVal?'none':'')+'">'
+    +'<label class="field-label">Fecha específica</label>'
+    +'<input class="fsm" id="sm-date" type="date" value="'+(p.date||'')+'">'
+    +'</div>'
+    +'<button class="btn-grn" style="margin-top:4px" onclick="submitSessionModal()">'+(isEdit?'Guardar cambios':'Crear')+'</button>'
+    +(isEdit ? '<button class="sm-del-btn" onclick="deleteSessionFromModal()">⊘ Eliminar este horario</button>' : '')
+    +'</div></div>';
+  var el = document.getElementById('session-modal');
+  el.innerHTML = html;
+  el.style.display = '';
+}
+
+function openNewSession(opts) {
+  smEditId = null; smEditFree = false;
+  smType = (opts && opts.type) || 'session';
+  _buildSM(opts && opts.prefill, false);
+}
+
+function openEditSession(id, isFree) {
+  smEditId = id; smEditFree = !!isFree;
+  smType = isFree ? 'free' : 'session';
+  var src = isFree
+    ? (DATA.freeSlots||[]).find(function(s){ return s.id==id; }) || {}
+    : DATA.sessions.find(function(s){ return s.id==id; }) || {};
+  _buildSM(src, true);
+}
+
+function closeSessionModal() {
+  document.getElementById('session-modal').style.display = 'none';
+  smEditId = null; smEditFree = false;
+}
+
+function smSetType(t) {
+  smType = t;
+  document.querySelectorAll('#sm-type-seg button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===t); });
+  document.getElementById('sm-sess-fields').style.display = t==='session' ? '' : 'none';
+}
+
+function smToggleSeg(segId, btn) {
+  document.querySelectorAll('#'+segId+' button').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+}
+
+function smToggleRec(btn, rec) {
+  document.querySelectorAll('#sm-rec-seg button').forEach(function(b){ b.classList.remove('on'); });
+  btn.classList.add('on');
+  document.getElementById('sm-date-wrap').style.display = rec ? 'none' : '';
+}
+
+function smUpdateStudents() {
+  var pid = document.getElementById('sm-parent').value;
+  document.getElementById('sm-student').innerHTML = _smStudentOpts(pid, null);
+}
+
+function submitSessionModal() {
+  var dayEl   = document.getElementById('sm-day');
+  var startEl = document.getElementById('sm-start');
+  var durEl   = document.getElementById('sm-dur');
+  if (!startEl || !startEl.value) { showToast('Indica la hora de inicio.'); return; }
+  var day      = parseInt(dayEl.value);
+  var start    = startEl.value;
+  var dur      = parseInt(durEl.value);
+  var modBtn   = document.querySelector('#sm-mod-seg .on');
+  var modality = modBtn ? modBtn.textContent.trim() : 'Virtual';
+  var recBtn   = document.querySelector('#sm-rec-seg .on');
+  var recurring = recBtn ? recBtn.dataset.rec !== 'false' : true;
+  var dateEl   = document.getElementById('sm-date');
+  var date     = recurring ? null : (dateEl ? dateEl.value || null : null);
+  if (!recurring && !date) { showToast('Indica la fecha específica.'); return; }
+  var curEditId = smEditId;
+  if (smType === 'free') {
+    var fs = { id: curEditId !== null ? curEditId : ('fs_'+Date.now()), day:day, start:start, dur:dur, modality:modality, recurring:recurring, date:date, bookedBy:null };
+    if (!DATA.freeSlots) DATA.freeSlots = [];
+    if (curEditId !== null) {
+      var idx = DATA.freeSlots.findIndex(function(s){ return s.id==curEditId; });
+      if (idx>=0) { fs.bookedBy = DATA.freeSlots[idx].bookedBy; DATA.freeSlots[idx]=fs; }
+      else DATA.freeSlots.push(fs);
+    } else { DATA.freeSlots.push(fs); }
+    saveFreeSlots();
+  } else {
+    var parEl = document.getElementById('sm-parent');
+    var stuEl = document.getElementById('sm-student');
+    if (!parEl || !stuEl || !stuEl.value) { showToast('Selecciona padre y alumno.'); return; }
+    var studentId = parseInt(stuEl.value);
+    var topic = modality === 'Virtual' ? 'One to One' : 'One to Family';
+    var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
+    if (curEditId !== null) {
+      var idx2 = DATA.sessions.findIndex(function(s){ return s.id==curEditId; });
+      if (idx2>=0) DATA.sessions[idx2]=sess; else DATA.sessions.push(sess);
+    } else { DATA.sessions.push(sess); }
+    saveSessions();
+  }
+  closeSessionModal();
+  render();
+  showToast(curEditId !== null ? 'Cambios guardados.' : 'Creado correctamente.', 'success');
+}
+
+function deleteSessionFromModal() {
+  var btn = document.querySelector('.sm-del-btn');
+  if (!btn) return;
+  if (!btn.dataset.confirmed) {
+    btn.textContent = '¿Confirmar? Toca de nuevo para eliminar.';
+    btn.style.background = 'rgba(0,0,0,0.07)';
+    btn.dataset.confirmed = '1';
+    return;
+  }
+  if (smEditFree) {
+    DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id!=smEditId; });
+    saveFreeSlots();
+  } else {
+    DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
+    saveSessions();
+  }
+  closeSessionModal();
+  render();
+  showToast('Eliminado.', 'success');
+}
+
+function bookFreeSlot(fsId) {
+  var parentId = getLoggedParent();
+  if (!parentId) return;
+  var parent = DATA.parents[parentId];
+  if (!parent) return;
+  var fs = (DATA.freeSlots||[]).find(function(s){ return s.id===fsId; });
+  if (!fs || fs.bookedBy) { showToast('Este horario ya no está disponible.'); return; }
+  var kids = (parent.children||[]).map(function(id){ var st=DATA.students[id]||{}; return Object.assign({id:id},st); }).filter(function(c){ return c.name; });
+  if (!kids.length) return;
+  if (kids.length === 1) {
+    fs.bookedBy = { parentId:parentId, studentId:kids[0].id };
+    saveFreeSlots(); render();
+    showToast('Horario reservado para '+kids[0].name.split(' ')[0]+'.', 'success');
+  } else {
+    var sel = prompt('¿Para qué alumno?\n'+kids.map(function(k,i){ return (i+1)+'. '+k.name; }).join('\n'));
+    var ix = parseInt(sel) - 1;
+    if (ix >= 0 && ix < kids.length) {
+      fs.bookedBy = { parentId:parentId, studentId:kids[ix].id };
+      saveFreeSlots(); render();
+      showToast('Horario reservado.', 'success');
+    }
+  }
+}
 
 // ════════════════════════════════════════════════════════
 // BOOT
