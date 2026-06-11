@@ -43,22 +43,45 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .child-chip { display:flex; align-items:center; gap:6px; border:2px solid rgba(255,255,255,0.12); border-radius:14px; padding:8px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:rgba(255,255,255,0.55); transition:all .15s; -webkit-tap-highlight-color:transparent; }
 .child-chip.csel { border-color:#22c55e; color:#86efac; background:rgba(34,197,94,0.12); }
 
-/* Calendar */
-.cal-toolbar { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
-.cal-toggle { display:flex; border:1px solid rgba(255,255,255,0.12); border-radius:12px; overflow:hidden; }
-.cal-toggle button { border:none; background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.5); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:9px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
-.cal-toggle button.on { background:rgba(34,197,94,0.18); color:#86efac; }
-.cal-nav { margin-left:auto; display:flex; gap:6px; }
-.cal-nav button { border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:#fff; border-radius:10px; width:34px; height:34px; font-size:16px; cursor:pointer; }
-.cal-range { font-size:11px; color:rgba(255,255,255,0.45); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.1em; font-weight:700; }
-
-.cal-grid { display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:8px; scroll-snap-type:x proximity; }
-.cal-grid::-webkit-scrollbar { height:6px; }
-.cal-grid::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:6px; }
-.cal-day { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:10px; flex:0 0 150px; scroll-snap-align:start; }
-.cal-day-hdr { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.65); margin-bottom:8px; display:flex; justify-content:space-between; }
-.cal-day-hdr .dnum { color:rgba(255,255,255,0.35); font-weight:700; font-size:11px; }
-.cal-empty { font-size:11px; color:rgba(255,255,255,0.25); padding:10px 0; text-align:center; }
+/* ── Time-grid calendar ─────────────────────────────────── */
+.pcal-outer { display:flex; flex-direction:column; height:calc(100dvh - 58px - env(safe-area-inset-bottom)); overflow:hidden; background:transparent; }
+.pcal-toolbar { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:10px 14px 6px; }
+.pcal-toggle { display:flex; border:1px solid rgba(255,255,255,0.12); border-radius:10px; overflow:hidden; }
+.pcal-toggle button { border:none; background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.45); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s; }
+.pcal-toggle button.on { background:rgba(34,197,94,0.18); color:#86efac; }
+.pcal-today-btn { border:1px solid rgba(34,197,94,0.35); background:rgba(34,197,94,0.06); color:#86efac; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 12px; border-radius:8px; cursor:pointer; }
+.pcal-nav { margin-left:auto; display:flex; gap:6px; }
+.pcal-nav button { border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:#fff; border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer; }
+.pcal-range-bar { flex-shrink:0; padding:0 14px 8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.08em; text-transform:uppercase; }
+.pcal-child-bar { flex-shrink:0; padding:0 14px 8px; display:flex; flex-wrap:wrap; gap:6px; }
+.pcal-head-row { flex-shrink:0; display:flex; border-bottom:1px solid rgba(255,255,255,0.08); }
+.pcal-gutter { flex-shrink:0; width:42px; }
+.pcal-days-hdr { display:flex; overflow:hidden; flex:1; }
+.pcal-dh { flex-shrink:0; text-align:center; padding:5px 2px 7px; border-left:1px solid rgba(255,255,255,0.05); }
+.pcal-dh-name { font-size:9px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.38); }
+.pcal-dh-num  { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; line-height:1.1; color:rgba(255,255,255,0.6); }
+.pcal-dh-hoy  { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#22c55e; color:#052e16; padding:1px 6px; border-radius:5px; display:inline-block; margin-top:1px; }
+.pcal-dh.is-today .pcal-dh-name { color:#4ade80; }
+.pcal-dh.is-today .pcal-dh-num  { color:#fff; }
+.pcal-dh.is-past .pcal-dh-name,.pcal-dh.is-past .pcal-dh-num { opacity:0.3; }
+.pcal-body-scroll { flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(34,197,94,0.15) transparent; }
+.pcal-body-inner { display:flex; }
+.pcal-tl { flex-shrink:0; width:42px; }
+.pcal-tl-slot { display:flex; align-items:flex-start; justify-content:flex-end; padding-right:7px; padding-top:3px; font-size:9px; font-weight:700; color:rgba(255,255,255,0.25); letter-spacing:0.03em; }
+.pcal-days-body { display:flex; position:relative; flex:1; }
+.pcal-day-col { flex-shrink:0; position:relative; border-left:1px solid rgba(255,255,255,0.05); }
+.pcal-hour-line { border-bottom:1px solid rgba(255,255,255,0.04); }
+.pcal-day-col.is-today { background:rgba(34,197,94,0.018); border-left:1px solid rgba(34,197,94,0.25); }
+.pcal-day-col.is-past  { opacity:0.38; }
+.pcal-ev { position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden; }
+.pcal-ev-parent { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.5); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pcal-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; color:#fff; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pcal-ev-time  { font-size:8px; font-weight:700; color:rgba(255,255,255,0.7); margin-top:1px; white-space:nowrap; }
+.pcal-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.42); margin-top:1px; }
+.pcal-now { position:absolute; z-index:10; pointer-events:none; display:flex; align-items:center; }
+.pcal-now-dot  { flex-shrink:0; width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow:0 0 8px 2px rgba(34,197,94,0.7); margin-left:-4px; }
+.pcal-now-line { flex:1; height:1px; background:rgba(34,197,94,0.55); }
+/* legacy slot (still used in solicitar view) */
 .cal-slot { border-radius:10px; padding:9px 11px; margin-bottom:6px; border-left:4px solid; }
 .cal-slot .cs-time { font-family:'Barlow',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.01em; }
 .cs-meta { font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; color:rgba(255,255,255,0.65); margin-top:3px; letter-spacing:0.02em; text-transform:none; line-height:1.5; }
@@ -273,9 +296,13 @@ let editingParentId = null;    // id de padre cuyo PIN se está editando en el p
 
 function startOfWeek(d) {
   const x = new Date(d); const day = x.getDay();
-  x.setDate(x.getDate() - day); x.setHours(0,0,0,0); return x;
+  // Start on Monday (day 1); Sunday (0) goes back 6 days
+  x.setDate(x.getDate() - (day === 0 ? 6 : day - 1)); x.setHours(0,0,0,0); return x;
 }
 function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
+function stripTitle(name) {
+  return (name||'').replace(/^(Sr\.?|Sra\.?|Dr\.?|Dra\.?)\s*/i, '').trim();
+}
 function fmtDM(d) { return d.toLocaleDateString('es-PE',{ day:'numeric', month:'short' }); }
 function fmtCycleDate(iso) {
   const d = new Date(iso+'T00:00:00');
@@ -437,7 +464,7 @@ function render() {
   }
 
   const views = adminMode
-    ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes }
+    ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario }
     : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar };
   app.innerHTML = `<div class="vw">${(views[currentView]||(adminMode?vAdminInicio:vLogin))()}</div>`;
 
@@ -447,6 +474,7 @@ function render() {
     const navItems = adminMode
       ? [
           {r:'a-inicio',      i:'🛠️', l:'Inicio'},
+          {r:'a-calendario',  i:'📅', l:'Calendario'},
           {r:'a-solicitudes', i:'📥', l:'Solicitudes'},
           {r:'a-cuentas',     i:'🔑', l:'Cuentas'}
         ]
@@ -467,25 +495,42 @@ function render() {
 function bindView() {
   if (currentView === 'login') {
     const form = document.getElementById('login-form');
-    if (form) form.addEventListener('submit', e => {
-      e.preventDefault();
-      const pin = document.getElementById('login-pin').value.trim();
-      if (pin === DATA.adminPin) {
-        setLoggedAdmin(true);
-        currentView = 'a-inicio';
-        render();
-        return;
+    if (form) {
+      // Populate parent selector
+      const sel = document.getElementById('sel-parent');
+      if (sel && sel.options.length === 1) {
+        Object.entries(DATA.parents)
+          .sort(([,a],[,b]) => stripTitle(a.name).localeCompare(stripTitle(b.name)))
+          .forEach(([id, p]) => {
+            const o = document.createElement('option');
+            o.value = id;
+            const kids = (p.children||[]).map(cid => (DATA.students[cid]||{}).name||'').filter(Boolean);
+            o.textContent = stripTitle(p.name) + (kids.length ? '  (' + kids.map(n=>n.split(' ')[0]).join(', ') + ')' : '');
+            sel.appendChild(o);
+          });
       }
-      const match = Object.entries(DATA.parents).find(([id,p]) => p.pin === pin);
-      if (match) {
-        setLoggedParent(match[0]);
-        selectedChild = null; // mostrar todos los hijos al entrar
-        currentView = 'inicio';
-        render();
-      } else {
-        document.getElementById('login-err').style.display = 'block';
-      }
-    });
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const pin      = document.getElementById('login-pin').value.trim();
+        const selEl    = document.getElementById('sel-parent');
+        const parentId = selEl ? selEl.value : '';
+        if (pin === DATA.adminPin) {
+          setLoggedAdmin(true);
+          currentView = 'a-inicio';
+          render();
+          return;
+        }
+        const parent = parentId ? DATA.parents[parentId] : null;
+        if (parent && parent.pin === pin) {
+          setLoggedParent(parentId);
+          selectedChild = null;
+          currentView = 'inicio';
+          render();
+        } else {
+          document.getElementById('login-err').style.display = 'block';
+        }
+      });
+    }
     const cform = document.getElementById('crear-form');
     if (cform) cform.addEventListener('submit', e => {
       e.preventDefault();
@@ -542,7 +587,11 @@ function vLogin() {
     </div>
     ${loginTab === 'familia' ? `
     <form id="login-form">
-      <label class="field-label">Clave de acceso</label>
+      <label class="field-label">Tu nombre</label>
+      <select id="sel-parent" class="fsm" style="cursor:pointer;appearance:auto">
+        <option value="" disabled selected>— Selecciona tu nombre —</option>
+      </select>
+      <label class="field-label" style="margin-top:12px">Clave de acceso</label>
       <input class="fsm" id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="• • • •" autocomplete="off" required>
       <div id="login-err" style="color:#f87171;font-size:11px;font-weight:700;text-align:center;display:none;margin-bottom:10px">Clave incorrecta. Verifica con tu profesor.</div>
       <button class="btn-grn" type="submit">Ingresar</button>
@@ -601,7 +650,7 @@ function vInicio() {
     <div class="dash-hero">
       <div style="position:relative;z-index:1">
         <div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.7)">Bienvenido</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-top:2px">${parent.name}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-top:2px">${stripTitle(parent.name)}</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:6px">${children.length} ${children.length===1?'hijo registrado':'hijos registrados'} · ${pendCount} ${pendCount===1?'solicitud pendiente':'solicitudes pendientes'}</div>
       </div>
     </div>
@@ -632,67 +681,154 @@ function vInicio() {
   </div>`;
 }
 
+// ── Shared calendar helpers ──────────────────────────────────────
+function buildPadCalNav(rangeStart, rangeEnd, _unused) {
+  return '<div class="pcal-toolbar">'
+    + '<div class="pcal-toggle">'
+    + '<button class="'+(calMode==='4dias'?'on':'')+'" onclick="setCalMode('4dias')">4 días</button>'
+    + '<button class="'+(calMode==='week'?'on':'')+'" onclick="setCalMode('week')">Semana</button>'
+    + '</div>'
+    + '<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
+    + '<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
+    + '</div>'
+    + '<div class="pcal-range-bar">'+fmtDM(rangeStart)+' — '+fmtDM(rangeEnd)+'</div>';
+}
+
+function buildPadCalGrid(dayList, activeSids, showParent) {
+  const ROW_H = 56, MIN_H = 8, MAX_H = 21;
+  const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
+  const totalH = HOURS.length * ROW_H;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Build slot map grouped by day+start
+  const slotMap = {};
+  DATA.sessions.forEach(function(s) {
+    if (!activeSids.includes(Number(s.studentId))) return;
+    const key = s.day+'|'+s.start;
+    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), start:s.start, maxDur:0, students:[] };
+    const dur = s.dur || 60;
+    if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
+    slotMap[key].students.push({ sid: s.studentId, dur: dur, modality: s.modality });
+  });
+
+  // Parent map
+  const studentParent = {};
+  if (showParent) {
+    Object.entries(DATA.parents).forEach(function(e) {
+      var pid = e[0], p = e[1];
+      (p.children||[]).forEach(function(cid){ studentParent[String(cid)] = stripTitle(p.name); });
+    });
+  }
+
+  const toH = function(t){ var p=t.split(':').map(Number); return p[0]+p[1]/60; };
+  const addM = function(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); };
+
+  // Compute column width
+  const appEl = document.getElementById('app');
+  const appW = appEl ? appEl.offsetWidth : (window.innerWidth||390);
+  const numCols = dayList.length;
+  const colW = Math.max(Math.floor((appW - 42) / numCols), 60);
+
+  // Day headers
+  const hdrs = dayList.map(function(d) {
+    const isPast = d < today, isTod = d.getTime()===today.getTime();
+    const cls = 'pcal-dh'+(isTod?' is-today':'')+(isPast?' is-past':'');
+    return '<div class="'+cls+'" style="width:'+colW+'px">'
+      +'<div class="pcal-dh-name">'+DAY_SHORT[d.getDay()]+'</div>'
+      +'<div class="pcal-dh-num">'+d.getDate()+'</div>'
+      +(isTod?'<div><span class="pcal-dh-hoy">HOY</span></div>':'')
+      +'</div>';
+  }).join('');
+
+  // Time labels
+  const tls = HOURS.map(function(h){
+    return '<div class="pcal-tl-slot" style="height:'+ROW_H+'px">'+String(h).padStart(2,'0')+'h</div>';
+  }).join('');
+
+  // Day columns
+  const cols = dayList.map(function(d) {
+    const dow = d.getDay();
+    const isPast = d < today, isTod = d.getTime()===today.getTime();
+    const cls = 'pcal-day-col'+(isTod?' is-today':'')+(isPast?' is-past':'');
+    const lines = HOURS.map(function(){ return '<div class="pcal-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
+    const slots = Object.values(slotMap).filter(function(sl){ return sl.day===dow; });
+    const cards = slots.flatMap(function(slot) {
+      const topPx = (toH(slot.start) - MIN_H) * ROW_H;
+      const hPx   = Math.max((slot.maxDur / 60) * ROW_H - 3, 28);
+      const total = slot.students.length;
+      return slot.students.map(function(st, idx) {
+        const stData = DATA.students[st.sid] || {};
+        const col    = stData.color || '#22c55e';
+        const end    = addM(slot.start, st.dur);
+        const lPx    = 2 + Math.round((colW-4)*(idx/total));
+        const wPx    = Math.round((colW-4)/total) - (idx<total-1?2:0);
+        const short  = hPx < 42;
+        const pName  = showParent ? (studentParent[String(st.sid)]||'') : '';
+        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:linear-gradient(160deg,'+col+'28,'+col+'12);border:1px solid '+col+'50;box-shadow:0 2px 8px -4px '+col+'55 inset">'
+          +(pName?'<div class="pcal-ev-parent">'+pName+'</div>':'')
+          +'<div class="pcal-ev-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+'</div>'
+          +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
+          +(short?'':'<div class="pcal-ev-badge">'+st.modality+'</div>')
+          +'</div>';
+      });
+    }).join('');
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+'</div>';
+  }).join('');
+
+  // Current time indicator
+  var nowHtml = '';
+  var now = new Date(); var curH = now.getHours()+now.getMinutes()/60;
+  if (curH >= MIN_H && curH < MAX_H) {
+    var todayIdx = dayList.findIndex(function(d){ return d.getTime()===today.getTime(); });
+    if (todayIdx !== -1) {
+      var topNow = (curH - MIN_H) * ROW_H;
+      nowHtml = '<div class="pcal-now" style="top:'+topNow+'px;left:'+(todayIdx*colW)+'px;width:'+colW+'px">'
+        +'<div class="pcal-now-dot"></div><div class="pcal-now-line"></div></div>';
+    }
+  }
+
+  return '<div class="pcal-head-row">'
+    +'<div class="pcal-gutter"></div>'
+    +'<div class="pcal-days-hdr" style="width:'+(colW*numCols)+'px">'+hdrs+'</div>'
+    +'</div>'
+    +'<div class="pcal-body-scroll" id="pcal-scroll">'
+    +'<div class="pcal-body-inner">'
+    +'<div class="pcal-tl">'+tls+'</div>'
+    +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px">'+cols+nowHtml+'</div>'
+    +'</div></div>';
+}
+
+function calGoToday() {
+  calAnchor = startOfWeek(new Date());
+  render();
+  setTimeout(function(){
+    var sc = document.getElementById('pcal-scroll');
+    if (sc) { var h = new Date().getHours(); sc.scrollTop = Math.max(0,(Math.max(8,h-1)-8)*56); }
+  }, 80);
+}
+
 function vCalendario() {
   const parentId = getLoggedParent();
   const parent   = DATA.parents[parentId];
   if (!parent) { logout(); return ''; }
   const childIds = parent.children || [];
   const children = childIds.map(id => ({ ...DATA.students[id], id: Number(id) })).filter(c => c.name);
-  // selectedChild: null = ver todos, number = filtrar a uno
   const days = calMode === 'week' ? 7 : 4;
   const rangeStart = calAnchor;
-  const rangeEnd   = addDays(calAnchor, days-1);
-  const dayList = Array.from({length: days}, (_,i) => addDays(rangeStart, i));
+  const rangeEnd   = addDays(calAnchor, days - 1);
+  const dayList    = Array.from({length: days}, (_, i) => addDays(rangeStart, i));
+  const activeSids = selectedChild !== null ? [Number(selectedChild)] : childIds.map(Number);
 
-  // Chips: "Todos" + uno por hijo
-  const allChip = `<div class="child-chip${selectedChild===null?' csel':''}" onclick="selectChild(null)">👨‍👩‍👧‍👦 Todos</div>`;
+  const allChip = '<div class="child-chip'+(selectedChild===null?' csel':'')+'" onclick="selectChild(null)">👨‍👩‍👧‍👦 Todos</div>';
   const childChips = children.map(c =>
-    `<div class="child-chip${selectedChild===c.id?' csel':''}" onclick="selectChild(${c.id})">${c.icon} ${c.name.split(' ')[0]}</div>`
+    '<div class="child-chip'+(selectedChild===c.id?' csel':'')+'" onclick="selectChild('+c.id+')">'+c.icon+' '+c.name.split(' ')[0]+'</div>'
   ).join('');
 
-  return `
-  <div style="padding:16px;max-width:680px;margin:0 auto">
-    <div class="sec-lbl">Calendario de clases</div>
-    <div class="child-row">
-      ${allChip}${childChips}
-    </div>
-    <div class="cal-toolbar">
-      <div class="cal-toggle">
-        <button class="${calMode==='4dias'?'on':''}" onclick="setCalMode('4dias')">4 días</button>
-        <button class="${calMode==='week'?'on':''}" onclick="setCalMode('week')">Semana</button>
-      </div>
-      <div class="cal-nav">
-        <button onclick="calStep(-1)">‹</button>
-        <button onclick="calStep(1)">›</button>
-      </div>
-    </div>
-    <div class="cal-range">${fmtDM(rangeStart)} — ${fmtDM(rangeEnd)}</div>
-    <div class="cal-grid">
-      ${dayList.map(d => {
-        const dow = d.getDay();
-        // Si selectedChild es null, mostrar todos los hijos de esta familia
-        const activeIds = selectedChild !== null ? [Number(selectedChild)] : childIds.map(Number);
-        const slots = DATA.sessions
-          .filter(s => activeIds.includes(Number(s.studentId)) && s.day === dow)
-          .sort((a,b) => a.start.localeCompare(b.start));
-        return `<div class="cal-day">
-          <div class="cal-day-hdr"><span>${DAY_NAMES[dow]}</span><span class="dnum">${fmtDM(d)}</span></div>
-          ${slots.length ? slots.map(s => {
-            const st = DATA.students[s.studentId] || {};
-            return `<div class="cal-slot" style="border-left-color:${st.color||'#4fb6ff'};background:${st.color||'#4fb6ff'}14">
-              <div class="cs-name" style="font-weight:900;font-size:11px;color:${st.color||'#4fb6ff'};margin-bottom:2px">${st.icon||''} ${(st.name||'').split(' ')[0]}</div>
-              <div class="cs-time">${s.start} · ${s.dur} min</div>
-              <div class="cs-meta">${s.modality}</div>
-            </div>`;
-          }).join('') : `<div class="cal-empty">Sin clases este día</div>`}
-        </div>`;
-      }).join('')}
-    </div>
-    <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:14px;line-height:1.6">
-      ¿Quieres una clase en un horario libre? Usa "Solicitar" en el menú inferior — verificamos disponibilidad y te confirmamos.
-    </p>
-    <button class="btn-ghost" onclick="logout()" style="margin-top:8px">Cerrar sesión de esta familia</button>
-  </div>`;
+  return '<div class="pcal-outer">'
+    + buildPadCalNav(rangeStart, rangeEnd, false)
+    + '<div class="pcal-child-bar">'+allChip+childChips+'</div>'
+    + buildPadCalGrid(dayList, activeSids, false)
+    + '</div>';
 }
 
 function vSolicitar() {
@@ -846,6 +982,19 @@ function saveParentPin(id) {
 // ════════════════════════════════════════════════════════
 // ADMIN — VISTAS
 // ════════════════════════════════════════════════════════
+function vAdminCalendario() {
+  const days = calMode === 'week' ? 7 : 4;
+  const rangeStart = calAnchor;
+  const rangeEnd   = addDays(calAnchor, days - 1);
+  const dayList    = Array.from({length: days}, (_, i) => addDays(rangeStart, i));
+  const allSids    = Object.keys(DATA.students).map(Number);
+
+  return '<div class="pcal-outer">'
+    + buildPadCalNav(rangeStart, rangeEnd, false)
+    + buildPadCalGrid(dayList, allSids, true)
+    + '</div>';
+}
+
 function vAdminInicio() {
   const pendCuentas = DATA.accountRequests.filter(r => r.status==='pendiente').length;
   const pendClases  = DATA.requests.filter(r => r.status==='pendiente').length;
@@ -862,6 +1011,7 @@ function vAdminInicio() {
     </div>
 
     <div class="sec-lbl">Pendientes por revisar</div>
+    <div class="dash-link" onclick="go('a-calendario')"><span class="dl-ico">📅</span>Calendario de todos los alumnos<span class="dl-arr">›</span></div>
     <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">📝</span>Solicitudes de cuenta nuevas<span class="req-status pend" style="margin-left:auto">${pendCuentas}</span></div>
     <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">🗓️</span>Solicitudes de clase adicional<span class="req-status pend" style="margin-left:auto">${pendClases}</span></div>
     <div class="dash-link" onclick="go('a-cuentas')"><span class="dl-ico">🔑</span>Cuentas, claves y contraseñas<span class="dl-arr">›</span></div>
@@ -901,7 +1051,7 @@ function vAdminSolicitudes() {
       return `<div class="req-list-item" style="align-items:flex-start">
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${st?st.icon:''} ${st?st.name:''} · ${DAY_NAMES[r.day]} ${r.start}</div>
-          <div class="cs-meta" style="margin-top:3px">${r.dur} min · ${r.modality}${par?' · Familia: '+par.name:''}${r.note?' · '+r.note:''}</div>
+          <div class="cs-meta" style="margin-top:3px">${r.dur} min · ${r.modality}${par?' · Familia: '+stripTitle(par.name):''}${r.note?' · '+r.note:''}</div>
           ${r.status==='pendiente' ? `
             <div style="display:flex;gap:8px;margin-top:10px">
               <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="setClassRequestStatus(${r.id},'aprobada')">✓ Aprobar</button>
