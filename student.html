@@ -2763,7 +2763,7 @@ function makeAvatarHTML(icon, color, photo, frameId, size) {
   const inner = photo
     ? '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover">'
     : '<span style="font-size:'+Math.round(size*0.5)+'px;line-height:1">'+(icon||'😀')+'</span>';
-  const bStyle = (fid!=='none') ? 'border:3px solid '+border+';' : '';
+  const bStyle = (fid!=='none') ? 'border:1.5px solid '+border+';' : '';
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0">'
     +'<div style="width:'+size+'px;height:'+size+'px;border-radius:'+_br+';background:'+(color||'#8B5CF6')+';'+bStyle+'display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
     +(img?'<img src="'+img+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
