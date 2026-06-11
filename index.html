@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1366">
 <title>easyMaths - Michel H'R</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 @font-face {
@@ -41,7 +42,7 @@ body {
 @keyframes breatheL { 0%,100%{transform:scale(1)} 50%{transform:scale(1.012)} }
 
 /* PAGE: z-index 3 */
-.page {
+.page { position: relative; z-index: 2;
   position: relative; z-index: 3;
   min-height: 2610px;
   padding-bottom: 163px;
@@ -222,58 +223,7 @@ body {
    iconos de redes sociales "respiran" suavemente para que la pantalla
    no se sienta est&#225;tica. Se aplican solo cuando NO hay mouse fino
    (m&#243;vil/t&#225;ctil), para no interferir con los estados hover de escritorio. */
-@keyframes btnBreathe  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-@keyframes iconBreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
-
-@media not all and (hover: hover) and (pointer: fine) {
-  /* Brillo (sheen) que recorre cada boton de forma diagonal y suave cada
-     cierto tiempo, como el detalle de luz que pasa sobre tarjetas/botones
-     en interfaces modernas (efecto "shine sweep"). Le da vida sin ser
-     llamativo: aparece, cruza el boton y se desvanece, en bucle. */
-  @keyframes shineSweep {
-    0%   { background-position: 160% 0; opacity: 0; }
-    8%   { opacity: 1; }
-    38%  { opacity: 1; }
-    52%  { background-position: -60% 0; opacity: 0; }
-    100% { background-position: -60% 0; opacity: 0; }
-  }
-  .btn-wrapper { --life-delay: 0s; }
-  .btn-wrapper:nth-child(2) { --life-delay: -1.1s; }
-  .btn-wrapper:nth-child(3) { --life-delay: -2.2s; }
-  .btn-wrapper:nth-child(4) { --life-delay: -3.3s; }
-  .btn-wrapper:nth-child(5) { --life-delay: -4.4s; }
-  .btn-wrapper:nth-child(6) { --life-delay: -5.5s; }
-
-  .btn-wrapper::before {
-    content: '';
-    position: absolute; inset: 0;
-    border-radius: 18px 28px 18px 28px;
-    background: linear-gradient(115deg,
-      transparent 38%,
-      rgba(255,255,255,0.55) 49%,
-      rgba(133,204,0,0.16) 54%,
-      transparent 64%);
-    background-size: 220% 100%;
-    background-repeat: no-repeat;
-    z-index: 2;
-    pointer-events: none;
-    animation: shineSweep 6.5s ease-in-out infinite;
-    animation-delay: var(--life-delay);
-  }
-
-  .btn-main  { animation: btnBreathe 3.4s ease-in-out infinite; }
-  .btn-wrapper:nth-child(1) .btn-main { animation-delay: 1.6s; }
-  .btn-wrapper:nth-child(2) .btn-main { animation-delay: 1.9s; }
-  .btn-wrapper:nth-child(3) .btn-main { animation-delay: 2.2s; }
-  .btn-wrapper:nth-child(4) .btn-main { animation-delay: 2.5s; }
-  .btn-wrapper:nth-child(5) .btn-main { animation-delay: 2.8s; }
-  .btn-wrapper:nth-child(6) .btn-main { animation-delay: 3.1s; }
-
-  .social-icon { animation: iconBreathe 2.6s ease-in-out infinite; }
-  .social-item:nth-child(1) .social-icon { animation-delay: 1.9s; }
-  .social-item:nth-child(2) .social-icon { animation-delay: 2.2s; }
-  .social-item:nth-child(3) .social-icon { animation-delay: 2.5s; }
-}
+/* Animaciones móvil eliminadas */
 .ripple {
   position: absolute; border-radius: 50%;
   background: rgba(133,204,0,0.18); transform: scale(0);
@@ -393,6 +343,92 @@ body {
   <img src="marble_bg.svg" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;" alt="">
 </div>
 
+
+<!-- WINTER LEAVES CANVAS -->
+<canvas id="leaves-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none;"></canvas>
+<script>
+(function(){
+  var canvas = document.getElementById('leaves-canvas');
+  var ctx = canvas.getContext('2d');
+  var W, H, leaves = [];
+  var COUNT = 22;
+
+  // Winter leaf colors: browns, tans, muted
+  var COLORS = ['#8B6914','#A0784A','#7A5C2E','#B08050','#6B5030','#9C7B4A','#857060','#C4A060'];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function newLeaf(fromTop) {
+    return {
+      x:    rand(0, W),
+      y:    fromTop ? rand(-60, -10) : rand(0, H),
+      size: rand(10, 22),
+      rot:  rand(0, Math.PI * 2),
+      vx:   rand(-0.6, 0.6),
+      vy:   rand(0.5, 1.6),
+      vr:   rand(-0.015, 0.015),
+      sway: rand(0, Math.PI * 2),
+      swaySpeed: rand(0.008, 0.02),
+      swayAmp:   rand(0.3, 0.9),
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      alpha: rand(0.25, 0.55)
+    };
+  }
+
+  // Draw a simple leaf shape
+  function drawLeaf(l) {
+    ctx.save();
+    ctx.translate(l.x, l.y);
+    ctx.rotate(l.rot);
+    ctx.globalAlpha = l.alpha;
+    ctx.fillStyle = l.color;
+    ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    var s = l.size;
+    // Leaf shape: two bezier curves forming an oval leaf
+    ctx.moveTo(0, -s);
+    ctx.bezierCurveTo( s * 0.9, -s * 0.5,  s * 0.9,  s * 0.5, 0,  s);
+    ctx.bezierCurveTo(-s * 0.9,  s * 0.5, -s * 0.9, -s * 0.5, 0, -s);
+    ctx.fill();
+    ctx.stroke();
+    // Center vein
+    ctx.beginPath();
+    ctx.moveTo(0, -s);
+    ctx.lineTo(0,  s);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 0.7;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  for (var i = 0; i < COUNT; i++) leaves.push(newLeaf(false));
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < leaves.length; i++) {
+      var l = leaves[i];
+      l.sway += l.swaySpeed;
+      l.x += l.vx + Math.sin(l.sway) * l.swayAmp;
+      l.y += l.vy;
+      l.rot += l.vr;
+      if (l.y > H + 40) {
+        leaves[i] = newLeaf(true);
+      }
+      drawLeaf(l);
+    }
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
 <div class="branch branch-tr"><img src="branch.svg" alt=""></div>
 <div class="branch branch-bl"><img src="branch.svg" alt=""></div>
 
