@@ -231,7 +231,18 @@ body {
 }
 @keyframes rippleAnim { to{transform:scale(4);opacity:0} }
 
-/* ===== VERSI&#211;N ESCRITORIO (mouse real, no t&#225;ctil) ===== */
+/* ===== VERSIÓN MÓVIL TÁCTIL: compactar márgenes para que entre sin scroll ===== */
+@media (pointer: coarse) {
+  .page { min-height: auto; padding-bottom: 40px; }
+  .logo-section { margin-top: 90px; }
+  .name-section { margin-top: 70px; }
+  .social-row { margin-top: 80px; gap: 50px; }
+  .social-icon { width: 90px; height: 90px; }
+  .social-icon svg { width: 46px; height: 46px; }
+  .social-label { font-size: 16px; }
+}
+
+/* ===== VERSIÓN ESCRITORIO (mouse real, no táctil) ===== */
 @media (hover: hover) and (pointer: fine) {
   .buttons-grid {
     width: 100%; max-width: 880px;
@@ -741,9 +752,4 @@ function ripple(e, btn) {
     setTimeout(alignBranchToSocial, 500);
     setTimeout(alignBranchToSocial, 1200);
   });
-  window.addEventListener('resize', alignBranchToSocial);
-})();
-</script>
-
-</body>
-</html>
+  window.addEventListener('resize', alignBranchT
