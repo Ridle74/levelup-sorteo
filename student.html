@@ -247,6 +247,16 @@ textarea.fsm { resize:none; height:64px; }
 #app .board-title { text-shadow: 0 0 12px rgba(34,229,255,0.5); letter-spacing: 0.02em; }
 #app .taken-box { background: rgba(34,229,255,0.06); border-color: rgba(34,229,255,0.18); }
 #app .taken-count { color: var(--nc-amber); text-shadow: 0 0 14px currentColor; }
+#app #status-badge.status-wait,
+#app #status-badge.status-closed {
+  font-size: 13px;
+  padding: 6px 14px;
+  background: rgba(251,146,60,0.18);
+  border-color: rgba(251,146,60,0.45);
+  color: #fb923c;
+  text-shadow: 0 0 10px rgba(251,146,60,0.5);
+  letter-spacing: 0.06em;
+}
 #app #board-overlay {
   background: rgba(15,17,38,0.96);
   border: 1px solid rgba(176,107,255,0.35);
@@ -1268,10 +1278,10 @@ function updateStatusBadge(loggedId) {
   const vs = getVotingStatus(loggedId);
   badge.className = 'status-badge';
   const sch = computeSorteoSchedule();
-  const drawLabel = sch.draw.toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+  const drawLabel = sch.draw.toLocaleDateString('es-ES',{day:'numeric',month:'short'}).toUpperCase();
   if (vs==='open')              { badge.classList.add('status-open');   badge.textContent='● Activo'; }
-  else if (vs==='waiting_turn') { badge.classList.add('status-wait');   badge.textContent='Sorteo: ' + drawLabel; }
-  else                          { badge.classList.add('status-closed'); badge.textContent='Sorteo: ' + drawLabel; }
+  else if (vs==='waiting_turn') { badge.classList.add('status-wait');   badge.textContent='🎲 Sorteo: ' + drawLabel; }
+  else                          { badge.classList.add('status-closed'); badge.textContent='🎲 Sorteo: ' + drawLabel; }
 }
 function updateBoardOverlay(loggedId) {
   const vs = getVotingStatus(loggedId);

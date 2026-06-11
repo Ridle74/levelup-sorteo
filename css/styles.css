@@ -242,7 +242,8 @@ select { -webkit-appearance: none; appearance: none; }
   position: absolute; inset: 0; z-index: 10;
   background: rgba(10,75,63,0.97); backdrop-filter: blur(12px);
   display: none; align-items: center; justify-content: center;
-  padding: 24px; border-radius: 20px; text-align: center;
+  padding: 32px 24px; border-radius: 20px; text-align: center;
+  box-sizing: border-box;
 }
 #board-overlay.show { display: flex; }
 .overlay-icon  { font-size: 40px; margin-bottom: 16px; }
@@ -254,7 +255,7 @@ select { -webkit-appearance: none; appearance: none; }
 }
 .overlay-start-label { color: #fb923c; font-size: 8px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 6px; }
 .overlay-start-date  { font-size: 14px; font-weight: 900; text-transform: uppercase; line-height: 1.4; }
-.clock-box  { background: rgba(0,0,0,0.4); border-radius: 14px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); }
+.clock-box  { background: rgba(0,0,0,0.4); border-radius: 14px; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.05); }
 .clock-lbl  { font-size: 8px; color: var(--dim); font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
 #live-clock { font-size: 30px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; color: var(--accent); letter-spacing: 0.15em; }
 
