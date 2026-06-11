@@ -903,8 +903,6 @@ function router() {
     ranking: vRankingPage, numeros: vNumerosPage,
     tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil
   };
-  // Restore bottom nav before rendering (tablero may hide it for students)
-  if (nav) nav.style.display = '';
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
   const showNav = loggedId !== null;
@@ -1255,8 +1253,6 @@ function vTableroSetup() {
     if (header) { header.style.margin = '8px 8px 6px'; header.style.padding = '10px 14px'; }
     const vw = document.querySelector('.vw');
     if (vw) vw.style.paddingBottom = '0';
-    const navRow = document.getElementById('nav-row');
-    if (navRow) navRow.parentElement.style.display = 'none';
   }
   renderAll(loggedId);
   startClock(loggedId);
