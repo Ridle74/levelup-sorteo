@@ -7,70 +7,131 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { margin:0; min-height:100dvh; background:#050d1a; color:#fff; font-family:'Barlow',sans-serif; padding-top:calc(50px + env(safe-area-inset-top)); }
-#hist-bar { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; gap:8px; padding:calc(8px + env(safe-area-inset-top)) 18px 8px; background:rgba(5,13,26,0.92); backdrop-filter:blur(16px) saturate(180%); border-bottom:1px solid rgba(255,255,255,0.08); }
-.hist-btn { border:none; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85); width:38px; height:34px; border-radius:10px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-#hist-home { background:rgba(99,102,241,0.14); color:#a5b4fc; }
-.wrap { max-width:560px; margin:0 auto; padding:22px 18px 60px; }
-.hero { background:linear-gradient(135deg,#0f2460,#1a3a8f 50%,#2563c0); border-radius:20px; padding:22px; margin-bottom:18px; position:relative; overflow:hidden; }
-.hero::before { content:''; position:absolute; inset:0; border-radius:20px; background:linear-gradient(135deg,rgba(5,7,14,0.4) 0%,rgba(5,7,14,0.1) 60%,rgba(5,7,14,0.35) 100%); }
-.hero-inner { position:relative; z-index:1; }
-.hero-ico { font-size:30px; }
-.hero-t { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; line-height:1.05; margin-top:6px; }
-.hero-s { font-size:12px; color:rgba(255,255,255,0.8); margin-top:6px; line-height:1.5; }
-.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin:18px 0 8px; }
-.legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px; }
-.leg-item { display:flex; align-items:center; gap:6px; font-size:11px; color:rgba(255,255,255,0.55); font-weight:700; }
-.leg-dot { width:11px; height:11px; border-radius:4px; }
-.day-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
-.day-hdr { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:15px; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.75); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
-.day-count { font-size:10px; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:0.08em; }
-.slots { display:flex; flex-direction:column; gap:6px; }
-.slot { border-radius:10px; padding:9px 12px; border-left:4px solid; display:flex; align-items:center; justify-content:space-between; gap:8px; }
-.slot-left { display:flex; flex-direction:column; gap:2px; }
-.slot-time { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; letter-spacing:0.04em; }
-.slot-dur  { font-size:10px; font-weight:700; color:rgba(255,255,255,0.4); }
-.slot-badge { font-size:9px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:6px; flex-shrink:0; }
-.slot.dom  { background:rgba(239,68,68,0.07); border-left-color:#ef4444; }
-.slot.dom  .slot-time  { color:#fca5a5; }
-.slot.dom  .slot-badge { background:rgba(239,68,68,0.15); color:#fca5a5; }
-.slot.virt { background:rgba(79,182,255,0.07); border-left-color:#4fb6ff; }
-.slot.virt .slot-time  { color:#93c5fd; }
-.slot.virt .slot-badge { background:rgba(79,182,255,0.15); color:#93c5fd; }
-.cta-blk { background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.22); border-radius:16px; padding:18px; margin-top:18px; text-align:center; }
-.cta-blk p { font-size:12px; color:rgba(255,255,255,0.6); line-height:1.6; margin:6px 0 14px; }
-.cta { display:inline-block; background:linear-gradient(135deg,#4f46e5,#6366f1); border:none; border-radius:12px; padding:12px 26px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; }
-.loading { text-align:center; padding:40px 0; color:rgba(255,255,255,0.3); font-size:13px; }
+*, *::before, *::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:'Barlow',sans-serif; padding-top:calc(50px + env(safe-area-inset-top)); }
+
+/* HEADER BAR */
+#hist-bar {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; gap:8px;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
+  background:rgba(255,255,255,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(0,0,0,0.08);
+}
+.hist-btn {
+  border:none; background:rgba(0,0,0,0.06); color:#111;
+  width:38px; height:34px; border-radius:10px; font-size:14px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s;
+}
+.hist-btn:active { background:rgba(0,0,0,0.14); }
+.hist-em {
+  background:#8cb800 !important; color:#fff !important;
+  font-family:'Barlow Condensed',sans-serif; font-weight:900;
+  font-size:13px; letter-spacing:-0.01em; margin-left:auto;
+}
+
+/* APP CONTAINER */
+#app { height:calc(100dvh - 50px - env(safe-area-inset-top)); overflow:hidden; display:flex; flex-direction:column; }
+.pcal-outer { display:flex; flex-direction:column; height:100%; overflow:hidden; }
+
+/* TOOLBAR */
+.pcal-toolbar { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:10px 14px 6px; }
+.pcal-toggle { display:flex; border:1px solid rgba(0,0,0,0.14); border-radius:10px; overflow:hidden; background:#fff; }
+.pcal-toggle button {
+  border:none; background:transparent; color:rgba(0,0,0,0.4);
+  font-family:'Barlow Condensed',sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s;
+}
+.pcal-toggle button.on { background:#111; color:#fff; }
+.pcal-today-btn {
+  border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.6);
+  font-family:'Barlow Condensed',sans-serif; font-weight:900;
+  font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
+  padding:7px 12px; border-radius:8px; cursor:pointer;
+}
+.pcal-nav { margin-left:auto; display:flex; gap:6px; }
+.pcal-nav button {
+  border:1px solid rgba(0,0,0,0.14); background:#fff; color:#111;
+  border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer;
+}
+.pcal-range-bar {
+  flex-shrink:0; padding:0 14px 6px;
+  font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700;
+  color:rgba(0,0,0,0.4); letter-spacing:0.08em; text-transform:uppercase;
+}
+.pcal-legend {
+  flex-shrink:0; padding:0 14px 8px; display:flex; gap:14px; flex-wrap:wrap;
+}
+.pcal-leg-item { display:flex; align-items:center; gap:5px; font-size:10px; font-weight:700; color:rgba(0,0,0,0.5); }
+.pcal-leg-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+
+/* HEAD ROW */
+.pcal-head-row { flex-shrink:0; display:flex; border-bottom:1px solid rgba(0,0,0,0.08); background:#f2f2f2; }
+.pcal-gutter { flex-shrink:0; width:42px; }
+.pcal-days-hdr { display:flex; overflow:hidden; flex:1; }
+.pcal-dh { flex-shrink:0; text-align:center; padding:5px 2px 7px; border-left:1px solid rgba(0,0,0,0.06); }
+.pcal-dh-name { font-size:9px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(0,0,0,0.35); }
+.pcal-dh-num  { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; line-height:1.1; color:rgba(0,0,0,0.6); }
+.pcal-dh-hoy  { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#111; color:#fff; padding:1px 6px; border-radius:5px; display:inline-block; margin-top:1px; }
+.pcal-dh.is-today .pcal-dh-name { color:#111; }
+.pcal-dh.is-today .pcal-dh-num  { color:#111; font-weight:900; }
+.pcal-dh.is-past .pcal-dh-name,.pcal-dh.is-past .pcal-dh-num { opacity:0.25; }
+
+/* BODY */
+.pcal-body-scroll {
+  flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin; scrollbar-color:rgba(0,0,0,0.1) transparent; background:#fff;
+}
+.pcal-body-inner { display:flex; }
+.pcal-tl { flex-shrink:0; width:42px; background:#f8f8f8; border-right:1px solid rgba(0,0,0,0.06); }
+.pcal-tl-slot {
+  display:flex; align-items:flex-start; justify-content:flex-end;
+  padding-right:7px; padding-top:3px;
+  font-size:9px; font-weight:700; color:rgba(0,0,0,0.25); letter-spacing:0.03em;
+}
+.pcal-days-body { display:flex; position:relative; flex:1; }
+.pcal-day-col { flex-shrink:0; position:relative; border-left:1px solid rgba(0,0,0,0.05); }
+.pcal-hour-line { border-bottom:1px solid rgba(0,0,0,0.05); }
+.pcal-day-col.is-today { background:rgba(0,0,0,0.02); border-left:1px solid rgba(0,0,0,0.2); }
+.pcal-day-col.is-past  { opacity:0.35; }
+
+/* EVENTS */
+.pcal-ev { position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden; }
+.pcal-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pcal-ev-time  { font-size:8px; font-weight:700; color:rgba(0,0,0,0.55); margin-top:1px; white-space:nowrap; }
+.pcal-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(0,0,0,0.35); margin-top:1px; }
+
+/* FREE SLOTS */
+.pcal-free-slot {
+  position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden;
+  background:rgba(133,200,0,0.07); border:1.5px dashed rgba(133,200,0,0.55);
+}
+.pcal-free-lbl  { font-size:8px; font-weight:900; letter-spacing:0.12em; color:rgba(80,140,0,0.7); text-transform:uppercase; }
+.pcal-free-time { font-size:8px; font-weight:700; color:rgba(0,0,0,0.45); margin-top:1px; }
+
+/* NOW LINE */
+.pcal-now { position:absolute; z-index:10; pointer-events:none; display:flex; align-items:center; }
+.pcal-now-dot  { flex-shrink:0; width:8px; height:8px; border-radius:50%; background:#111; margin-left:-4px; }
+.pcal-now-line { flex:1; height:1px; background:rgba(0,0,0,0.35); }
+
+.pcal-empty { padding:40px; text-align:center; color:rgba(0,0,0,0.3); font-size:13px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
 </style>
 </head>
 <body>
+
 <div id="hist-bar">
-  <button class="hist-btn" onclick="history.back()">◀</button>
-  <button class="hist-btn" id="hist-home" onclick="location.href='/'">🏠</button>
-  <button class="hist-btn" onclick="history.forward()">▶</button>
+  <button class="hist-btn" onclick="history.back()">&#9664;</button>
+  <button class="hist-btn" id="hist-home" onclick="location.href='/'">&#127968;</button>
+  <button class="hist-btn" onclick="history.forward()">&#9654;</button>
+  <button class="hist-btn hist-em" onclick="window.location.href='/'" title="easyMaths">
+    <img src="/favicon.svg" style="width:22px;height:22px;border-radius:4px;display:block">
+  </button>
 </div>
-<div class="wrap">
-  <div class="hero">
-    <div class="hero-inner">
-      <div class="hero-ico">🕒</div>
-      <div class="hero-t">HORARIOS DE CLASES</div>
-      <div class="hero-s">Semana típica de MATHS LEVEL UP. Clases a domicilio y virtuales — consulta disponibilidad para nuevos alumnos.</div>
-    </div>
-  </div>
 
-  <div class="legend">
-    <div class="leg-item"><span class="leg-dot" style="background:#ef4444"></span> A domicilio</div>
-    <div class="leg-item"><span class="leg-dot" style="background:#4fb6ff"></span> Virtual</div>
-  </div>
-
-  <div id="grid"><div class="loading">Cargando horarios…</div></div>
-
-  <div class="cta-blk">
-    <div class="sec-lbl" style="margin-top:0">¿Quieres una clase en alguno de estos horarios?</div>
-    <p>Cuéntanos qué día y hora te conviene y verificamos el cupo contigo. También puedes calcular el costo estimado antes de escribirnos.</p>
-    <a class="cta" href="https://wa.me/51900000000?text=Hola%2C%20quiero%20consultar%20disponibilidad%20de%20horarios%20en%20MATHS%20LEVEL%20UP" target="_blank" rel="noopener">📲 Consultar por WhatsApp</a>
-  </div>
+<div id="app">
+  <div class="pcal-empty">Cargando&hellip;</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -82,62 +143,215 @@ firebase.initializeApp({
   projectId: "maths-level-up",
   appId:     "1:854549565666:web:2613613306c6cb16b30ebb"
 });
-const db = firebase.firestore();
+var db = firebase.firestore();
 
-const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-const WEEK_ORDER = [1,2,3,4,5,6,0];
+/* ── State ─────────────────────────────────────────── */
+var DATA     = { sessions:[], freeSlots:[], cycleEnd:null };
+var calMode  = '4dias';
+var calAnchor;
+var ROW_H    = 56;
+var DAY_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
-function addMin(t, m) {
-  const [h, mn] = t.split(':').map(Number);
-  const tot = h * 60 + mn + m;
-  return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+/* ── Helpers ────────────────────────────────────────── */
+function startOfWeek(d) {
+  var r = new Date(d); r.setHours(0,0,0,0);
+  var day = r.getDay();
+  r.setDate(r.getDate() - (day === 0 ? 6 : day - 1));
+  return r;
+}
+function addDays(d,n) { var r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function fmtDM(d) { return d.toLocaleDateString('es-PE',{day:'numeric',month:'short'}); }
+function toH(t)   { var p=t.split(':').map(Number); return p[0]+p[1]/60; }
+function addM(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); }
+function dStr(d)  { return d.toISOString().slice(0,10); }
+
+calAnchor = startOfWeek(new Date());
+
+/* ── Controls ───────────────────────────────────────── */
+function setCalMode(m) { calMode=m; render(); }
+function calStep(dir) {
+  var span = calMode==='week' ? 7 : 4;
+  calAnchor = addDays(calAnchor, dir*span);
+  render();
+}
+function calGoToday() {
+  calAnchor = startOfWeek(new Date());
+  render();
+  setTimeout(function(){
+    var sc=document.getElementById('pcal-scroll');
+    if(sc){ var h=new Date().getHours(); sc.scrollTop=Math.max(0,(Math.max(8,h-1)-8)*ROW_H); }
+  },80);
 }
 
-function renderGrid(sessions) {
-  if (!sessions || !sessions.length) {
-    document.getElementById('grid').innerHTML = '<div class="loading">No hay horarios registrados.</div>';
-    return;
-  }
-  // Deduplicate by day+start (same time slot may have multiple students)
-  const slotMap = {};
-  sessions.forEach(s => {
-    const key = `${s.day}|${s.start}`;
-    if (!slotMap[key]) slotMap[key] = { day: Number(s.day), start: s.start, dur: s.dur || 60, modality: s.modality || 'Virtual' };
-    if ((s.dur || 60) > slotMap[key].dur) slotMap[key].dur = s.dur;
-    if ((s.modality || '').toLowerCase().includes('dom')) slotMap[key].modality = 'Domicilio';
+/* ── Build nav ──────────────────────────────────────── */
+function buildNav(rs,re) {
+  var m4=calMode==='4dias'?' on':'', mw=calMode==='week'?' on':'';
+  return '<div class="pcal-toolbar">'
+    +'<div class="pcal-toggle">'
+    +'<button class="'+m4+'" onclick="setCalMode(\'4dias\')">4 días</button>'
+    +'<button class="'+mw+'" onclick="setCalMode(\'week\')">Semana</button>'
+    +'</div>'
+    +'<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
+    +'<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
+    +'</div>'
+    +'<div class="pcal-range-bar">'+fmtDM(rs)+' — '+fmtDM(re)+'</div>'
+    +'<div class="pcal-legend">'
+    +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(239,68,68,0.55)"></span>A domicilio</div>'
+    +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(79,182,255,0.55)"></span>Virtual</div>'
+    +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(133,200,0,0.4);border:1.5px dashed rgba(133,200,0,0.7)"></span>Disponible</div>'
+    +'</div>';
+}
+
+/* ── Build grid ─────────────────────────────────────── */
+function buildGrid(dayList) {
+  var today=new Date(); today.setHours(0,0,0,0);
+
+  /* Deduplicate sessions by day+start */
+  var slotMap={};
+  DATA.sessions.forEach(function(s){
+    var isOne=s.recurring===false && s.date;
+    var key=isOne?(s.date+'|'+s.start):('d'+s.day+'|'+s.start);
+    if(!slotMap[key]) slotMap[key]={day:Number(s.day),oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual'};
+    if((s.dur||60)>slotMap[key].dur) slotMap[key].dur=s.dur||60;
+    if((s.modality||'').toLowerCase().includes('dom')) slotMap[key].modality='Domicilio';
   });
 
-  const html = WEEK_ORDER.map(dow => {
-    const slots = Object.values(slotMap)
-      .filter(s => s.day === dow)
-      .sort((a, b) => a.start.localeCompare(b.start));
-    if (!slots.length) return '';
-    const cards = slots.map(s => {
-      const end = addMin(s.start, s.dur);
-      const isDom = s.modality.toLowerCase().includes('dom');
-      return `<div class="slot ${isDom ? 'dom' : 'virt'}">
-        <div class="slot-left">
-          <div class="slot-time">${s.start} – ${end}</div>
-          <div class="slot-dur">${s.dur} min</div>
-        </div>
-        <div class="slot-badge">${isDom ? 'Domicilio' : 'Virtual'}</div>
-      </div>`;
-    }).join('');
-    return `<div class="day-card">
-      <div class="day-hdr">
-        <span>${DAY_NAMES[dow]}</span>
-        <span class="day-count">${slots.length} clase${slots.length > 1 ? 's' : ''}</span>
-      </div>
-      <div class="slots">${cards}</div>
-    </div>`;
+  var freeList=DATA.freeSlots||[];
+  var hasSlots=Object.keys(slotMap).length>0||freeList.length>0;
+  if(!hasSlots) return '<div class="pcal-head-row"><div class="pcal-gutter"></div></div><div class="pcal-empty">Sin horarios registrados</div>';
+
+  /* Smart time range */
+  var dynMin=23,dynMax=0;
+  Object.values(slotMap).forEach(function(sl){
+    var h=toH(sl.start); if(h<dynMin)dynMin=h;
+    var e=h+sl.dur/60; if(e>dynMax)dynMax=e;
+  });
+  freeList.forEach(function(fs){
+    var h=toH(fs.start); if(h<dynMin)dynMin=h;
+    var e=h+(fs.dur||60)/60; if(e>dynMax)dynMax=e;
+  });
+  var MIN_H=Math.max(0,Number.isInteger(dynMin)?dynMin-1:Math.floor(dynMin));
+  var MAX_H=Math.min(24,Math.ceil(dynMax));
+  var HOURS=[]; for(var i=MIN_H;i<MAX_H;i++) HOURS.push(i);
+  var totalH=HOURS.length*ROW_H;
+
+  var appEl=document.getElementById('app');
+  var appW=appEl?appEl.offsetWidth:(window.innerWidth||390);
+  var numCols=dayList.length;
+  var colW=Math.max(Math.floor((appW-42)/numCols),58);
+
+  var cycleEnd=DATA.cycleEnd?new Date(DATA.cycleEnd+'T00:00:00'):null;
+
+  /* Day headers */
+  var hdrs=dayList.map(function(d){
+    var isPast=d<today,isTod=d.getTime()===today.getTime();
+    var cls='pcal-dh'+(isTod?' is-today':'')+(isPast?' is-past':'');
+    return '<div class="'+cls+'" style="width:'+colW+'px">'
+      +'<div class="pcal-dh-name">'+DAY_SHORT[d.getDay()]+'</div>'
+      +'<div class="pcal-dh-num">'+d.getDate()+'</div>'
+      +(isTod?'<div><span class="pcal-dh-hoy">HOY</span></div>':'')
+      +'</div>';
   }).join('');
 
-  document.getElementById('grid').innerHTML = html || '<div class="loading">Sin horarios registrados.</div>';
+  /* Time labels */
+  var tls=HOURS.map(function(h){
+    return '<div class="pcal-tl-slot" style="height:'+ROW_H+'px">'+String(h).padStart(2,'0')+'h</div>';
+  }).join('');
+
+  /* Columns */
+  var cols=dayList.map(function(d){
+    var dow=d.getDay(), ds=dStr(d);
+    var isPast=d<today,isTod=d.getTime()===today.getTime();
+    var cls='pcal-day-col'+(isTod?' is-today':'')+(isPast?' is-past':'');
+    var lines=HOURS.map(function(){ return '<div class="pcal-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
+    var afterCycle=cycleEnd && d>cycleEnd;
+
+    /* Session cards */
+    var cards=Object.values(slotMap).filter(function(sl){
+      if(sl.oneTimeDate) return sl.oneTimeDate===ds;
+      if(afterCycle) return false;
+      return sl.day===dow;
+    }).map(function(slot){
+      var topPx=(toH(slot.start)-MIN_H)*ROW_H;
+      var hPx=Math.max((slot.dur/60)*ROW_H-3,28);
+      var end=addM(slot.start,slot.dur);
+      var isDom=slot.modality.toLowerCase().includes('dom');
+      var short=hPx<42;
+      var bg  =isDom?'rgba(239,68,68,0.10)':'rgba(79,182,255,0.10)';
+      var brd =isDom?'rgba(239,68,68,0.45)':'rgba(79,182,255,0.45)';
+      var nameC=isDom?'#b91c1c':'#1d6fa4';
+      return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px;background:'+bg+';border:1px solid '+brd+'">'
+        +'<div class="pcal-ev-name" style="color:'+nameC+'">Clase</div>'
+        +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
+        +(short?'':'<div class="pcal-ev-badge">'+slot.modality+'</div>')
+        +'</div>';
+    }).join('');
+
+    /* Free slot cards */
+    var freeCards=freeList.filter(function(fs){
+      if(fs.bookedBy) return false;
+      if(fs.recurring===false && fs.date) return fs.date===ds;
+      if(afterCycle) return false;
+      return Number(fs.day)===dow;
+    }).map(function(fs){
+      var topPx=Math.max((toH(fs.start)-MIN_H)*ROW_H,0);
+      var hPx=Math.max(((fs.dur||60)/60)*ROW_H-3,28);
+      var end=addM(fs.start,fs.dur||60);
+      var short=hPx<42;
+      return '<div class="pcal-free-slot" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px">'
+        +'<div class="pcal-free-lbl">Disponible</div>'
+        +(short?'':'<div class="pcal-free-time">'+fs.start+'–'+end+'</div>')
+        +'</div>';
+    }).join('');
+
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+freeCards+'</div>';
+  }).join('');
+
+  /* Now indicator */
+  var nowHtml='';
+  var now=new Date(); var curH=now.getHours()+now.getMinutes()/60;
+  if(curH>=MIN_H && curH<MAX_H){
+    var todayIdx=-1;
+    dayList.forEach(function(d,i){ if(d.getTime()===today.getTime()) todayIdx=i; });
+    if(todayIdx!==-1){
+      var topNow=(curH-MIN_H)*ROW_H;
+      nowHtml='<div class="pcal-now" style="top:'+topNow+'px;left:'+(todayIdx*colW)+'px;width:'+colW+'px">'
+        +'<div class="pcal-now-dot"></div><div class="pcal-now-line"></div></div>';
+    }
+  }
+
+  return '<div class="pcal-head-row"><div class="pcal-gutter"></div>'
+    +'<div class="pcal-days-hdr" style="width:'+(colW*numCols)+'px">'+hdrs+'</div></div>'
+    +'<div class="pcal-body-scroll" id="pcal-scroll">'
+    +'<div class="pcal-body-inner" style="padding-bottom:24px">'
+    +'<div class="pcal-tl">'+tls+'</div>'
+    +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px">'+cols+nowHtml+'</div>'
+    +'</div></div>';
 }
 
-db.collection('padres').doc('main').get()
-  .then(doc => renderGrid(doc.exists ? (doc.data().sessions || []) : []))
-  .catch(() => renderGrid([]));
+/* ── Render ─────────────────────────────────────────── */
+function render() {
+  var days=calMode==='week'?7:4;
+  var rs=calAnchor, re=addDays(calAnchor,days-1);
+  var dayList=[]; for(var i=0;i<days;i++) dayList.push(addDays(rs,i));
+  document.getElementById('app').innerHTML=
+    '<div class="pcal-outer">'+buildNav(rs,re)+buildGrid(dayList)+'</div>';
+  setTimeout(function(){
+    var sc=document.getElementById('pcal-scroll');
+    if(sc){ var h=new Date().getHours(); sc.scrollTop=Math.max(0,(Math.max(8,h-1)-8)*ROW_H); }
+  },60);
+}
+
+/* ── Load ───────────────────────────────────────────── */
+db.collection('padres').doc('main').get().then(function(doc){
+  if(doc.exists){
+    var d=doc.data();
+    DATA.sessions =d.sessions ||[];
+    DATA.freeSlots=d.freeSlots||[];
+    DATA.cycleEnd =d.cycleEnd ||null;
+  }
+  render();
+}).catch(function(){ render(); });
 </script>
 </body>
 </html>
