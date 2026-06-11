@@ -439,6 +439,12 @@ textarea.fsm { resize:none; height:64px; }
 .msg-inner{position:relative}
 .msg-inner:hover .msg-del{opacity:1}
 .msg-del:hover{color:#ff4757!important}
+    .perfil-ico-btn{background:#1a1a2e;border:2px solid transparent;border-radius:10px;font-size:24px;padding:6px;cursor:pointer;transition:border-color 0.15s;line-height:1}
+    .perfil-ico-btn.selected,.perfil-ico-btn:hover{border-color:#7c3aed}
+    .perfil-color-dot{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:border-color 0.15s}
+    .perfil-color-dot.selected,.perfil-color-dot:hover{border-color:#fff}
+    .perfil-frame-opt{display:flex;flex-direction:column;align-items:center;cursor:pointer;opacity:0.65;transition:opacity 0.15s;padding:6px}
+    .perfil-frame-opt.selected,.perfil-frame-opt:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -885,7 +891,7 @@ function router() {
   const views = {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
     ranking: vRankingPage, numeros: vNumerosPage,
-    tareas: vTareas, puntos: vPuntos, horarios: vHorarios
+    tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
@@ -910,7 +916,7 @@ function router() {
   const setup = {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
     ranking:vRankingSetup, numeros:vNumerosSetup,
-    tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup
+    tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{}
   };
   if (setup[hash]) setup[hash]();
 
@@ -1082,6 +1088,11 @@ function vDashboard() {
       </div>
     </div>` : ''}
 
+    ${!isAdmin() ? `<div class="dash-link" onclick="go('perfil')">
+      <span class="dl-ico">👤</span>
+      <div><div>Mi Perfil</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ícono · color · contraseña</div></div>
+      <span class="dl-arr">›</span>
+    </div>` : ''}
     <div class="dash-link" onclick="go('tablero')">
       <span class="dl-ico">🎮</span>
       <div><div>Tablero del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Elige tus números</div></div>
@@ -2654,6 +2665,173 @@ function vHorariosSetup() {
     const nowH = new Date().getHours();
     scroll.scrollTop = Math.max(0, (Math.max(8, nowH-1) - 8)) * 64;
   }, 100);
+}
+
+
+// ════════════════════════════════════════════════════════
+// PERFIL
+// ════════════════════════════════════════════════════════
+const PERFIL_ICONS = ['😀','😎','🤩','🥳','😍','🤓','😜','😏','🧐','🤗','😺','🐶','🦊','🐸','🐼','🐨','🦁','🐯','🦄','🐙','🦋','🌟','⚡','🔥','💎','🎮','🚀','🎵','🏆','💜'];
+
+const PERFIL_FRAMES = [
+  { id:'none',    label:'Sin marco',  shadow:'' },
+  { id:'cyan',    label:'Cyan',       shadow:'0 0 0 3px #00f7ff, 0 0 12px 4px #00f7ff88' },
+  { id:'purple',  label:'Morado',     shadow:'0 0 0 3px #a855f7, 0 0 12px 4px #a855f788' },
+  { id:'gold',    label:'Dorado',     shadow:'0 0 0 3px #f59e0b, 0 0 12px 4px #f59e0b88' },
+  { id:'fire',    label:'Fuego',      shadow:'0 0 0 3px #ef4444, 0 0 12px 4px #f97316aa' },
+  { id:'green',   label:'Verde',      shadow:'0 0 0 3px #22c55e, 0 0 12px 4px #22c55e88' },
+  { id:'pink',    label:'Rosa',       shadow:'0 0 0 3px #ec4899, 0 0 12px 4px #ec489988' },
+  { id:'rainbow', label:'Arcoíris',   shadow:'0 0 0 3px #f43f5e, 0 0 16px 6px #a855f7aa, inset 0 0 0 2px #06b6d488' },
+];
+
+function getStudentFrame(id) {
+  const ov = overrides[String(id)] || {};
+  const fid = ov.frame || 'none';
+  const f = PERFIL_FRAMES.find(x=>x.id===fid) || PERFIL_FRAMES[0];
+  return f.shadow;
+}
+
+let _perfilTab = 'icon';
+let _perfilPendingIcon  = null;
+let _perfilPendingColor = null;
+let _perfilPendingFrame = null;
+
+function vPerfil() {
+  const id = getLoggedId();
+  const students = getStudents();
+  const st = students.find(s=>s.id===id)||{};
+  const ov = overrides[String(id)]||{};
+  const curFrame = ov.frame||'none';
+  const frameObj = PERFIL_FRAMES.find(f=>f.id===curFrame)||PERFIL_FRAMES[0];
+  const iconShadow = frameObj.shadow ? 'box-shadow:'+frameObj.shadow : '';
+
+  const tabs = [
+    {id:'icon',  label:'Icono'},
+    {id:'color', label:'Color'},
+    {id:'frame', label:'Marco'},
+    {id:'pin',   label:'PIN'},
+  ];
+
+  const iconGrid = PERFIL_ICONS.map(ico =>
+    '<button class="perfil-ico-btn' + (ico===st.icon?' selected':'') + '" onclick="perfilPickIcon(\'' + ico + '\')">' + ico + '</button>'
+  ).join('');
+
+  const colorGrid = COLOR_PALETTE.map(col =>
+    '<div class="perfil-color-dot' + (st.color===col?' selected':'') + '" style="background:' + col + '" onclick="perfilPickColor(\'' + col + '\')"></div>'
+  ).join('');
+
+  const frameGrid = PERFIL_FRAMES.map(f =>
+    '<div class="perfil-frame-opt' + (curFrame===f.id?' selected':'') + '" onclick="perfilPickFrame(\'' + f.id + '\')">' +
+    '<div style="width:52px;height:52px;border-radius:50%;background:' + (st.color||'#8B5CF6') + ';display:flex;align-items:center;justify-content:center;font-size:26px;' + (f.shadow?'box-shadow:'+f.shadow:'border:2px dashed #444') + '">' + (st.icon||'😀') + '</div>' +
+    '<div style="font-size:10px;margin-top:5px;color:' + (curFrame===f.id?'#fff':'#777') + ';text-align:center">' + f.label + '</div></div>'
+  ).join('');
+
+  const pinContent = '<div>' +
+    '<div style="font-size:12px;color:#aaa;margin-bottom:10px">Ingresa tu PIN actual para poder cambiarlo</div>' +
+    '<input id="perfil-pin-old" type="password" inputmode="numeric" maxlength="10" placeholder="PIN actual" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:8px;box-sizing:border-box;font-size:15px">' +
+    '<input id="perfil-pin-new" type="password" inputmode="numeric" maxlength="10" placeholder="PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:8px;box-sizing:border-box;font-size:15px">' +
+    '<input id="perfil-pin-new2" type="password" inputmode="numeric" maxlength="10" placeholder="Repetir PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:14px;box-sizing:border-box;font-size:15px">' +
+    '<button onclick="perfilSavePin()" style="width:100%;padding:12px;border-radius:10px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px">Cambiar PIN</button>' +
+    '</div>';
+
+  const tabContents = {
+    icon:  '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">' + iconGrid + '</div>',
+    color: '<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">' + colorGrid + '</div>',
+    frame: '<div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center">' + frameGrid + '</div>',
+    pin:   pinContent,
+  };
+
+  const tabButtons = tabs.map(t =>
+    '<button onclick="_perfilTab=\'' + t.id + '\';vPerfilRefresh()" style="flex:1;padding:7px 2px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:700;background:' + (_perfilTab===t.id?'#7c3aed':'#1a1a2e') + ';color:' + (_perfilTab===t.id?'#fff':'#888') + '">' + t.label + '</button>'
+  ).join('');
+
+  const saveBtn = _perfilTab!=='pin' ? '<button onclick="perfilSaveProfile()" style="width:100%;margin-top:14px;padding:13px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:15px">Guardar cambios</button>' : '';
+
+  return '<div style="max-width:440px;margin:0 auto;padding:16px">' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">' +
+    '<button onclick="go(\'dashboard\')" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>' +
+    '<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>' +
+    '<div style="display:flex;justify-content:center;margin-bottom:12px">' +
+    '<div id="perfil-avatar" style="width:80px;height:80px;border-radius:50%;background:' + (st.color||'#8B5CF6') + ';display:flex;align-items:center;justify-content:center;font-size:40px;' + iconShadow + '">' + (st.icon||'😀') + '</div></div>' +
+    '<div style="text-align:center;font-size:15px;font-weight:600;margin-bottom:18px;color:#ccc">' + (st.name||'') + '</div>' +
+    '<div style="display:flex;gap:5px;margin-bottom:12px">' + tabButtons + '</div>' +
+    '<div id="perfil-tab-body" style="background:#111;border-radius:14px;padding:14px;min-height:120px">' + (tabContents[_perfilTab]||'') + '</div>' +
+    saveBtn + '</div>';
+}
+
+function vPerfilRefresh() {
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = '<div class="vw">' + vPerfil() + '</div>';
+}
+
+function perfilPickIcon(ico) {
+  _perfilPendingIcon = ico;
+  document.querySelectorAll('.perfil-ico-btn').forEach(b=>b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const av = document.getElementById('perfil-avatar');
+  if (av) av.textContent = ico;
+}
+
+function perfilPickColor(col) {
+  _perfilPendingColor = col;
+  document.querySelectorAll('.perfil-color-dot').forEach(b=>b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const av = document.getElementById('perfil-avatar');
+  if (av) av.style.background = col;
+}
+
+function perfilPickFrame(fid) {
+  _perfilPendingFrame = fid;
+  const f = PERFIL_FRAMES.find(x=>x.id===fid)||PERFIL_FRAMES[0];
+  document.querySelectorAll('.perfil-frame-opt').forEach(el=>el.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const av = document.getElementById('perfil-avatar');
+  if (av) av.style.boxShadow = f.shadow||'none';
+}
+
+async function perfilSaveProfile() {
+  const id = getLoggedId();
+  if (!_perfilPendingIcon && !_perfilPendingColor && !_perfilPendingFrame) {
+    showToast('No hay cambios que guardar'); return;
+  }
+  const snap = await REF.get();
+  const data = snap.exists ? snap.data() : {};
+  const ov = data.overrides || {};
+  const key = String(id);
+  ov[key] = ov[key] || {};
+  if (_perfilPendingIcon)  ov[key].icon  = _perfilPendingIcon;
+  if (_perfilPendingColor) ov[key].color = _perfilPendingColor;
+  if (_perfilPendingFrame) ov[key].frame = _perfilPendingFrame;
+  await REF.set({ overrides: ov }, { merge: true });
+  overrides = ov;
+  _perfilPendingIcon = null; _perfilPendingColor = null; _perfilPendingFrame = null;
+  showToast('Perfil guardado');
+  vPerfilRefresh();
+}
+
+async function perfilSavePin() {
+  const id = getLoggedId();
+  const students = getStudents();
+  const st = students.find(s=>s.id===id)||{};
+  const oldPin  = document.getElementById('perfil-pin-old').value.trim();
+  const newPin  = document.getElementById('perfil-pin-new').value.trim();
+  const newPin2 = document.getElementById('perfil-pin-new2').value.trim();
+  if (!oldPin||!newPin||!newPin2) { showToast('Completa todos los campos'); return; }
+  if (String(oldPin) !== String(st.pin||'')) { showToast('PIN actual incorrecto'); return; }
+  if (newPin !== newPin2) { showToast('Los PINs no coinciden'); return; }
+  if (newPin.length < 4) { showToast('El PIN debe tener al menos 4 caracteres'); return; }
+  const key = String(id);
+  const snap = await REF.get();
+  const data = snap.exists ? snap.data() : {};
+  const ov = data.overrides || {};
+  ov[key] = ov[key] || {};
+  ov[key].pin = newPin;
+  await REF.set({ overrides: ov }, { merge: true });
+  overrides = ov;
+  showToast('PIN cambiado');
+  document.getElementById('perfil-pin-old').value='';
+  document.getElementById('perfil-pin-new').value='';
+  document.getElementById('perfil-pin-new2').value='';
 }
 
 function changeHorWeek(delta) {
