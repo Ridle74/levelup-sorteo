@@ -1432,6 +1432,13 @@ function openEditSession(id, isFree) {
   var src = isFree
     ? (DATA.freeSlots||[]).find(function(s){ return s.id==id; }) || {}
     : DATA.sessions.find(function(s){ return s.id==id; }) || {};
+  // Sessions don't store parentId — look it up from children lists
+  if (!isFree && src.studentId != null && !src.parentId) {
+    var pe = Object.entries(DATA.parents).find(function(e) {
+      return (e[1].children||[]).map(String).includes(String(src.studentId));
+    });
+    if (pe) src = Object.assign({}, src, { parentId: pe[0] });
+  }
   _buildSM(src, true);
 }
 
