@@ -421,10 +421,10 @@ textarea.fsm { resize:none; height:64px; }
 .msg-att-file{display:block;margin-top:6px;padding:7px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:11px;font-weight:700}
 .msgs-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;background:#ff4757;border-radius:8px;font-size:9px;font-weight:900;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0 3px;pointer-events:none}
 .nav-notif{position:absolute;top:4px;right:calc(50% - 16px);min-width:15px;height:15px;background:#ff4757;border-radius:8px;font-size:8px;font-weight:900;color:#fff;display:none;align-items:center;justify-content:center;padding:0 2px;pointer-events:none}
-.msgs-input-txt{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:13px;padding:9px 12px;resize:none;font-family:inherit;box-sizing:border-box;line-height:1.4}
+.msgs-input-txt{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#fff;font-size:13px;padding:7px 10px;resize:none;font-family:inherit;box-sizing:border-box;line-height:1.3;height:34px;overflow:hidden}
 .msgs-input-txt:focus{outline:none;border-color:rgba(79,182,255,0.4)}
-.msgs-btn-icon{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border-radius:10px;padding:9px 11px;cursor:pointer;font-size:15px;line-height:1}
-.msgs-btn-send{background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:10px;padding:9px 14px;font-weight:900;font-size:16px;cursor:pointer;line-height:1}
+.msgs-btn-icon{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border-radius:8px;padding:7px 9px;cursor:pointer;font-size:14px;line-height:1;height:34px;flex-shrink:0}
+.msgs-btn-send{background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:8px;padding:7px 12px;font-weight:900;font-size:15px;cursor:pointer;line-height:1;height:34px;flex-shrink:0}
 .msgs-btn-send:disabled{opacity:0.4;cursor:default}
 .msgs-link-row{display:none;gap:6px;margin-bottom:8px;align-items:center}
 .msgs-link-row input{flex:1;margin-bottom:0 !important;font-size:12px}
@@ -1927,13 +1927,11 @@ function vMensajes(){
       <span id="msgs-file-name">—</span>
       <button onclick="cancelMsgsFile()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:18px;line-height:1">✕</button>
     </div>
-    <div style="display:flex;gap:6px;align-items:flex-end">
-      <textarea id="msgs-text" class="msgs-input-txt" placeholder="Escribe un mensaje..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
-      <div style="display:flex;flex-direction:column;gap:4px">
-        <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleMsgsLink()">🔗</button>
-        <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('msgs-file-input').click()">📎</button>
-        <button class="msgs-btn-send" id="msgs-send-btn" onclick="sendMsg()">➤</button>
-      </div>
+    <div style="display:flex;gap:5px;align-items:center">
+      <textarea id="msgs-text" class="msgs-input-txt" placeholder="Escribe un mensaje..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+      <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleMsgsLink()">🔗</button>
+      <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('msgs-file-input').click()">📎</button>
+      <button class="msgs-btn-send" id="msgs-send-btn" onclick="sendMsg()">➤</button>
     </div>
     <input type="file" id="msgs-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onMsgsFileSelect(this)">
   </div>`;
