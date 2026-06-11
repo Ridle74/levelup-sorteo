@@ -987,7 +987,7 @@ function vDashboard() {
   const pending   = myTasks.filter(t => !(t.completedBy||[]).includes(loggedId)).length;
 
   return `
-  <div style="padding:12px">
+  <div style="padding:12px 12px calc(88px + env(safe-area-inset-bottom)) 12px">
     <div class="dash-hero">
       <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
         <div>
@@ -1678,7 +1678,7 @@ function vTareas() {
     : myTasks.filter(t => !(t.completedBy||[]).includes(loggedId));
   const sorted   = [...filtered].sort((a,b)=>(a.due||'').localeCompare(b.due||''));
   return `
-  <div style="padding:12px">
+  <div style="padding:12px 12px calc(88px + env(safe-area-inset-bottom)) 12px">
     <div class="task-hero">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
@@ -1804,7 +1804,7 @@ function vPuntos() {
   const admin    = isAdmin();
 
   return `
-  <div style="padding:12px">
+  <div style="padding:12px 12px calc(88px + env(safe-area-inset-bottom)) 12px">
     <div class="pts-hero" style="margin-bottom:10px">
       <div style="position:relative">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;line-height:1">⚡ PUNTOS</div>
@@ -2566,8 +2566,4 @@ REF.onSnapshot(doc => {
   document.getElementById('initial-loading').classList.add('hidden');
   appReady = true;
   router();
-  showToast('No se pudo conectar a Firebase.');
-});
-</script>
-</body>
-</html>
+  showToast('No se pudo conectar a Fire
