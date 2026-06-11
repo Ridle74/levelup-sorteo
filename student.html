@@ -1866,7 +1866,7 @@ function _buildMsgsBubbles(){
     let attHtml = '';
     if (m.att){
       if (m.att.type==='link')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${m.att.name||m.att.url}</a>`;
-      else if (m.att.type==='image') attHtml=`<div style="position:relative;margin-top:6px"><img src="${m.att.url}" class="msg-att-img" alt="${m.att.name||'imagen'}" onclick="openImgViewer('${m.att.url}','${(m.att.name||'imagen').replace(/'/g,'')}')" style="cursor:zoom-in"><div style="display:flex;gap:6px;margin-top:4px"><button onclick="openImgViewer('${m.att.url}','${(m.att.name||'imagen').replace(/'/g,'')}')" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:8px;padding:4px 8px;font-size:10px;cursor:pointer">🔍 Ver</button><a href="${m.att.url}" download="${m.att.name||'imagen.jpg'}" onclick="event.stopPropagation()" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:8px;padding:4px 8px;font-size:10px;text-align:center;text-decoration:none">⬇ Guardar</a></div></div>`;
+      else if (m.att.type==='image') attHtml=`<img src="${m.att.url}" class="msg-att-img" alt="${m.att.name||'imagen'}" onclick="openImgViewer('${m.att.url}','${(m.att.name||'imagen').replace(/'/g,'')}')">`;
       else if (m.att.type==='file')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${m.att.name||'Archivo'}</a>`;
     }
     return `<div class="msg-wrap ${mine?'mine':'other'}"><div class="msg-inner">
