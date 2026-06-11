@@ -1139,7 +1139,7 @@ function vTablero() {
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="user-pill">
-          <span id="hdr-icon" style="font-size:20px">${student.icon}</span>
+          <div id="hdr-icon" style="width:28px;height:28px;border-radius:22%;background:${student.color||'#8B5CF6'};display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:16px;line-height:1">${student.icon}</div>
           <span id="hdr-name" class="uname">${student.name.split(' ')[0]}</span>
         </div>
         <button class="btn-logout" onclick="doLogout()">
@@ -1257,6 +1257,7 @@ function vTableroSetup() {
     if (vw) vw.style.paddingBottom = '0';
   }
   renderAll(loggedId);
+  if (loggedId !== null) _refreshHeaderAvatar(overrides[String(loggedId)]||{});
   startClock(loggedId);
   document.addEventListener('click', () => {
     document.querySelectorAll('.color-palette.open').forEach(p => p.classList.remove('open'));
@@ -1481,7 +1482,7 @@ function renderStudentCronograma() {
   const pill = (ico,lbl,val,col) =>
     '<div style="flex:1;min-width:80px;background:rgba(0,0,0,0.28);border-radius:10px;padding:9px 11px;border:1px solid rgba(255,255,255,0.06)">'
     +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:3px">'+ico+' '+lbl+'</div>'
-    +'<div style="font-family:sans-serif;font-size:13px;font-weight:900;color:'+col+';line-height:1.3">'+formatFullDate(val)+'</div>'
+    +'<div style="font-size:13px;font-weight:400;color:'+col+';line-height:1.3">'+formatFullDate(val)+'</div>'
     +'</div>';
   el.innerHTML = '<div class="card" style="padding:11px 13px;margin-bottom:10px">'
     +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:9px">📅 CRONOGRAMA DEL SORTEO</div>'
@@ -2758,12 +2759,13 @@ function makeAvatarHTML(icon, color, photo, frameId, size) {
   const fid = frameId || 'none';
   const img = FRAME_IMG[fid];
   const border = FRAME_BORDER[fid];
+  const _br = '22%';
   const inner = photo
-    ? '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">'
+    ? '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover">'
     : '<span style="font-size:'+Math.round(size*0.5)+'px;line-height:1">'+(icon||'😀')+'</span>';
   const bStyle = (fid!=='none') ? 'border:3px solid '+border+';' : '';
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0">'
-    +'<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+(color||'#8B5CF6')+';'+bStyle+'display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
+    +'<div style="width:'+size+'px;height:'+size+'px;border-radius:'+_br+';background:'+(color||'#8B5CF6')+';'+bStyle+'display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
     +(img?'<img src="'+img+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
     +'</div>';
 }
@@ -2808,7 +2810,7 @@ function vPerfil() {
     +'<input type="file" id="perfil-file-input" accept="image/*" style="display:none" onchange="perfilPhotoSelected()">'
     +'<button onclick="perfilOpenFilePicker()" style="padding:10px 22px;border-radius:10px;background:#1a1a2e;border:1px solid #333;color:#ccc;cursor:pointer;font-size:13px;margin-bottom:14px">📁 Elegir foto</button>'
     +'<div id="perfil-crop-wrap" style="display:none;flex-direction:column;align-items:center;gap:10px">'
-    +'<div style="position:relative;width:220px;height:220px;border-radius:50%;overflow:hidden;border:2px solid #7c3aed;cursor:grab" id="perfil-crop-container">'
+    +'<div style="position:relative;width:220px;height:220px;border-radius:22%;overflow:hidden;border:2px solid #7c3aed;cursor:grab" id="perfil-crop-container">'
     +'<canvas id="perfil-crop-canvas" width="220" height="220" style="display:block"></canvas></div>'
     +'<div style="display:flex;gap:10px;align-items:center"><span style="color:#888;font-size:12px">🔍</span>'
     +'<input type="range" id="perfil-crop-zoom" min="0.5" max="4" step="0.05" value="1" style="width:140px" oninput="perfilCropZoom()"><span style="color:#888;font-size:12px">🔎</span></div>'
@@ -2872,6 +2874,21 @@ function perfilPickFrame(fid) {
   document.querySelectorAll('.perfil-frame-opt').forEach(el=>el.classList.remove('selected'));
   event.currentTarget.classList.add('selected');
   _refreshPerfilAvatar();
+}
+function _refreshHeaderAvatar(ov) {
+  const el = document.getElementById('hdr-icon');
+  if (!el) return;
+  const photo = ov && ov.photo ? ov.photo : null;
+  const icon  = (ov && ov.icon) || '';
+  const color = (ov && ov.color) || '#8B5CF6';
+  el.style.background = color;
+  if (photo) {
+    el.style.borderRadius = '22%'; // photo
+    el.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover">';
+  } else {
+    el.style.borderRadius = '22%'; // emoji
+    el.innerHTML = '<span style="font-size:16px;line-height:1">'+icon+'</span>';
+  }
 }
 function _refreshPerfilAvatar() {
   const id=getLoggedId(); const st=getStudents().find(s=>s.id===id)||{};
@@ -2944,7 +2961,7 @@ function perfilCropConfirm() {
   const src=document.getElementById('perfil-crop-canvas'); if(!src)return;
   const out=document.createElement('canvas'); out.width=240;out.height=240;
   const ctx=out.getContext('2d');
-  ctx.beginPath();ctx.arc(120,120,120,0,Math.PI*2);ctx.clip();
+  ctx.fillStyle='#000';ctx.fillRect(0,0,240,240);
   ctx.drawImage(src,0,0,220,220,0,0,240,240);
   _perfilPendingPhoto=out.toDataURL('image/jpeg',0.75);
   document.getElementById('perfil-crop-wrap').style.display='none';
@@ -2974,9 +2991,8 @@ async function perfilSaveProfile() {
   if (_perfilPendingPhoto!==null)   ov[key].photo = _perfilPendingPhoto;
   await REF.set({ overrides: ov }, { merge: true });
   overrides = ov;
-  // Update header icon immediately if changed
-  const _hdrIco = document.getElementById('hdr-icon');
-  if (_hdrIco && ov[key].icon) _hdrIco.textContent = ov[key].icon;
+  // Update header avatar immediately
+  _refreshHeaderAvatar(ov[key]);
   _perfilPendingIcon=null;_perfilPendingColor=null;_perfilPendingFrame=null;_perfilPendingPhoto=null;
   showToast('Perfil guardado ✓');
   vPerfilRefresh();
