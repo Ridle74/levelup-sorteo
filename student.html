@@ -26,7 +26,7 @@
 
 /* ── SPA SHELL ─────────────────────────────────────── */
 #app { min-height: 100dvh; }
-body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+body.nav-visible { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
 
 /* ── INITIAL LOADING ──────────────────────────────── */
 #initial-loading {
@@ -358,7 +358,7 @@ textarea.fsm { resize:none; height:64px; }
 }
 
 /* ── HORARIOS CALENDAR GRID ─────────────────────────────── */
-.hor-outer { display:flex; flex-direction:column; height:100%; overflow:hidden; }
+.hor-outer { display:flex; flex-direction:column; height:calc(100dvh - 64px - env(safe-area-inset-bottom)); overflow:hidden; }
 .hor-mini-hero-wrap { flex-shrink:0; padding:12px 14px 0; }
 .hor-mini-hero { position:relative; overflow:hidden; padding:14px 16px; background:linear-gradient(115deg,#1a3a8f 0%,#2563c0 45%,#06b6d4 100%); border-radius:18px; border:1px solid rgba(79,182,255,0.4); box-shadow:0 4px 24px -4px rgba(34,229,255,0.25); }
 .hor-mini-hero::before { content:''; position:absolute; inset:0; border-radius:18px; background:linear-gradient(115deg,rgba(5,7,14,0.45) 0%,rgba(5,7,14,0.15) 50%,rgba(5,7,14,0.40) 100%); }
