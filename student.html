@@ -817,7 +817,7 @@ const ADMIN_ROUTES  = new Set([]);
 
 function go(view) {
   currentView = view;
-  var path = '/student/' + view;
+  var path = view === 'dashboard' ? '/student' : '/student/' + view;
   if (location.pathname !== path) history.pushState({ view: view }, '', path);
   router();
 }
@@ -876,7 +876,7 @@ function router() {
 
   // Mantiene la URL sincronizada con la vista resuelta (p.ej. si el guard
   // de autenticación cambió la vista a 'login'), sin crear historial extra.
-  var syncedPath = '/student/' + hash;
+  var syncedPath = hash === 'dashboard' ? '/student' : '/student/' + hash;
   if (location.pathname !== syncedPath) {
     history.replaceState({ view: hash }, '', syncedPath);
   }
