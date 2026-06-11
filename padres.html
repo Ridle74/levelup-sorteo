@@ -736,13 +736,18 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     if (endH > dynMax) dynMax = endH;
   });
   const hasSlots = Object.keys(slotMap).length > 0;
-  const MIN_H = hasSlots ? Math.max(0,  Math.floor(dynMin)) : 8;
-  const MAX_H = hasSlots ? Math.min(24, Math.ceil(dynMax))  : 22;
-  const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
-  const totalH = HOURS.length * ROW_H;
-
   // ── Smart day filter: single child → only their class days ───
   const singleChild = activeSids.length === 1 && !showParent;
+  // MIN_H: if session starts on exact hour go one earlier, else floor
+  const rawMinH = hasSlots ? (Number.isInteger(dynMin) ? dynMin - 1 : Math.floor(dynMin)) : 8;
+  const MIN_H = Math.max(0, rawMinH);
+  // MAX_H: for single child → same padding below as above (centering); otherwise ceil
+  var MAX_H;
+  if (!hasSlots) { MAX_H = 22; }
+  else if (singleChild) { MAX_H = Math.min(24, Math.ceil(dynMax) + (dynMin - MIN_H)); }
+  else { MAX_H = Math.min(24, Math.ceil(dynMax)); }
+  const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
+  const totalH = HOURS.length * ROW_H;
   const activeDows  = new Set(Object.values(slotMap).map(function(sl){ return sl.day; }));
   const filteredDayList = singleChild
     ? dayList.filter(function(d){ return activeDows.has(d.getDay()); })
