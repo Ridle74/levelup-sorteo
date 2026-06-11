@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test: Alineación de hojas</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Montserrat',sans-serif; background:#f4f3ef; min-height:100vh; user-select:none; }
+
+.page {
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center;
+  padding-bottom:60px; overflow:hidden; min-height:100vh;
+}
+
+/* ── Branches ── */
+.branch { position:absolute; pointer-events:none; z-index:1; width:260px; }
+.branch-tr { top:0; right:0; transform-origin:top right; }
+.branch-bl { left:0; transform-origin:bottom left; }
+.branch img { width:100%; height:auto; display:block; }
+.branch-bl img { transform:rotate(180deg); }
+
+/* click-target overlay */
+.branch-hit {
+  position:absolute; z-index:10; cursor:crosshair;
+  border:2px dashed transparent; border-radius:6px;
+  transition:border-color 0.2s;
+}
+.branch-hit:hover  { border-color:rgba(133,200,0,0.6); }
+.branch-hit.active { border-color:#85cc00; background:rgba(133,200,0,0.08); }
+
+/* content */
+.placeholder { width:100%; max-width:420px; padding:60px 20px 0; display:flex; flex-direction:column; align-items:center; gap:12px; }
+.ph-logo { width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg,#8cb800,#a8d400); display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:900; color:#fff; cursor:pointer; transition:outline 0.15s; }
+.ph-name { font-family:'Playfair Display',serif; font-size:46px; color:#2a2a2a; cursor:pointer; transition:outline 0.15s; }
+.ph-sub  { font-family:'Playfair Display',serif; font-style:italic; font-size:22px; color:#85cc00; margin-top:-4px; cursor:pointer; }
+.ph-btns { display:flex; flex-direction:column; gap:8px; width:100%; max-width:380px; margin-top:16px; }
+.ph-btn  { background:#fff; border:1px solid rgba(0,0,0,0.1); border-radius:12px; padding:18px; text-align:center; font-size:12px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#444; cursor:pointer; transition:outline 0.15s; }
+
+.social-row { margin-top:80px; display:flex; align-items:flex-start; justify-content:center; gap:50px; position:relative; z-index:3; cursor:pointer; padding:6px; border-radius:12px; transition:outline 0.15s; }
+.social-item { display:flex; flex-direction:column; align-items:center; gap:8px; text-decoration:none; pointer-events:none; }
+.social-icon { width:90px; height:90px; border-radius:50%; background:#2e2e2e; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+.social-icon svg { width:46px; height:46px; fill:#fff; }
+.social-label { font-size:10px; font-weight:700; letter-spacing:0.2em; color:#555; text-transform:uppercase; }
+
+/* hover highlight for clickable targets */
+.clickable:hover { outline:2px dashed rgba(133,200,0,0.7); outline-offset:4px; }
+.clickable.picked { outline:3px solid #85cc00; outline-offset:4px; background:rgba(133,200,0,0.06); }
+
+/* Reference line */
+.ref-line { position:absolute; left:0; right:0; height:2px; pointer-events:none; z-index:20; opacity:0; transition:opacity 0.3s; }
+.ref-line.vis { opacity:1; }
+#line-bl { background:rgba(239,68,68,0.75); }
+#line-tr { background:rgba(79,130,255,0.75); }
+
+/* Controls */
+#hud {
+  position:fixed; top:12px; left:50%; transform:translateX(-50%);
+  background:rgba(15,15,15,0.93); color:#fff;
+  border-radius:14px; padding:12px 20px;
+  font-size:11px; font-weight:600; z-index:100;
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  min-width:320px; text-align:center;
+  backdrop-filter:blur(10px);
+}
+#hud-msg { font-size:13px; line-height:1.4; }
+.hud-vals { display:flex; gap:20px; }
+.hud-val { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.hud-val span:first-child { font-size:9px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.45); }
+.hud-val span:last-child  { font-size:15px; font-family:monospace; color:#85cc00; }
+#copy-btn {
+  background:#8cb800; border:none; border-radius:8px; color:#fff;
+  padding:7px 18px; font-size:10px; font-weight:900; cursor:pointer;
+  letter-spacing:0.1em; text-transform:uppercase;
+}
+#reset-btn {
+  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff;
+  padding:7px 18px; font-size:10px; font-weight:900; cursor:pointer;
+  letter-spacing:0.1em; text-transform:uppercase;
+}
+.btn-row { display:flex; gap:8px; }
+</style>
+</head>
+<body>
+
+<div id="hud">
+  <div id="hud-msg">👆 Haz click en una hoja para seleccionarla</div>
+  <div class="hud-vals">
+    <div class="hud-val"><span>Hoja abajo-izq</span><span id="val-bl">— px</span></div>
+    <div class="hud-val"><span>Hoja arriba-der</span><span id="val-tr">— px</span></div>
+  </div>
+  <div class="btn-row">
+    <button id="reset-btn" onclick="resetAll()">↺ Reset</button>
+    <button id="copy-btn" onclick="copyValues()">📋 Copiar para index.html</button>
+  </div>
+</div>
+
+<div class="page" id="page">
+
+  <!-- Reference lines -->
+  <div class="ref-line" id="line-bl"></div>
+  <div class="ref-line" id="line-tr"></div>
+
+  <!-- TOP-RIGHT branch -->
+  <div class="branch branch-tr" id="branch-tr">
+    <img src="branch.svg" alt="">
+  </div>
+  <!-- hit area for TR branch (positioned by JS) -->
+  <div class="branch-hit" id="hit-tr" onclick="selectBranch('tr')"></div>
+
+  <!-- BOTTOM-LEFT branch -->
+  <div class="branch branch-bl" id="branch-bl">
+    <img src="branch.svg" alt="">
+  </div>
+  <!-- hit area for BL branch (positioned by JS) -->
+  <div class="branch-hit" id="hit-bl" onclick="selectBranch('bl')"></div>
+
+  <!-- Content -->
+  <div class="placeholder">
+    <div class="ph-logo clickable" id="el-logo" data-label="logo">eM</div>
+    <div class="ph-name clickable" id="el-name" data-label="nombre">Michel H'R</div>
+    <div class="ph-sub  clickable" id="el-sub"  data-label="subtítulo">clases de matematica</div>
+    <div class="ph-btns">
+      <div class="ph-btn clickable" id="el-btn1" data-label="botón 1">Horarios</div>
+      <div class="ph-btn clickable" id="el-btn2" data-label="botón 2">Padres</div>
+      <div class="ph-btn clickable" id="el-btn3" data-label="botón 3">Estudiantes</div>
+      <div class="ph-btn clickable" id="el-btn4" data-label="botón 4">Catálogo 2026</div>
+      <div class="ph-btn clickable" id="el-btn5" data-label="botón 5">Cotiza a Domicilio</div>
+      <div class="ph-btn clickable" id="el-btn6" data-label="botón 6">Cotiza Virtual</div>
+    </div>
+  </div>
+
+  <div class="social-row clickable" id="el-social" data-label="íconos sociales">
+    <div class="social-item">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      <span class="social-label">Perú</span>
+    </div>
+    <div class="social-item">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+      </div>
+      <span class="social-label">Facebook</span>
+    </div>
+    <div class="social-item">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      <span class="social-label">Italia</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// State
+var state = {
+  selected: null,   // 'tr' | 'bl' | null
+  offset_bl: 0,
+  offset_tr: 0,
+  anchor_bl: 'el-social',
+  anchor_tr: 'el-logo'
+};
+
+// ── Sync hit-area overlays to branch positions ──
+function syncHitAreas() {
+  ['tr','bl'].forEach(function(k) {
+    var branch = document.getElementById('branch-' + k);
+    var hit    = document.getElementById('hit-' + k);
+    var r      = branch.getBoundingClientRect();
+    var pr     = document.getElementById('page').getBoundingClientRect();
+    hit.style.left   = (r.left - pr.left) + 'px';
+    hit.style.top    = (r.top  - pr.top)  + 'px';
+    hit.style.width  = r.width  + 'px';
+    hit.style.height = r.height + 'px';
+  });
+}
+
+// ── Apply stored positions ──
+function applyPositions() {
+  var page    = document.getElementById('page');
+  var pageTop = page.getBoundingClientRect().top;
+
+  // BL branch
+  var branchBL = document.getElementById('branch-bl');
+  var anchorBL = document.getElementById(state.anchor_bl);
+  if (anchorBL) {
+    var t = anchorBL.getBoundingClientRect().top - pageTop + state.offset_bl;
+    branchBL.style.top    = t + 'px';
+    branchBL.style.bottom = 'auto';
+    document.getElementById('line-bl').style.top = t + 'px';
+  }
+
+  // TR branch
+  var branchTR = document.getElementById('branch-tr');
+  var anchorTR = document.getElementById(state.anchor_tr);
+  if (anchorTR) {
+    var t2 = anchorTR.getBoundingClientRect().top - pageTop + state.offset_tr;
+    branchTR.style.top = t2 + 'px';
+    document.getElementById('line-tr').style.top = t2 + 'px';
+  }
+
+  syncHitAreas();
+  document.getElementById('val-bl').textContent = state.offset_bl + ' px';
+  document.getElementById('val-tr').textContent = state.offset_tr + ' px';
+}
+
+// ── Select branch ──
+function selectBranch(key) {
+  state.selected = key;
+  document.getElementById('hit-tr').classList.toggle('active', key === 'tr');
+  document.getElementById('hit-bl').classList.toggle('active', key === 'bl');
+  var labels = { tr:'arriba-derecha (TR)', bl:'abajo-izquierda (BL)' };
+  document.getElementById('hud-msg').innerHTML =
+    '🍂 Hoja <strong>' + labels[key] + '</strong> seleccionada — ahora haz click en el elemento de referencia';
+}
+
+// ── Click on target element ──
+document.querySelectorAll('.clickable').forEach(function(el) {
+  el.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!state.selected) {
+      document.getElementById('hud-msg').textContent = '⚠️ Primero haz click en una hoja';
+      return;
+    }
+    var key    = state.selected;
+    var label  = el.dataset.label || el.id;
+    var page   = document.getElementById('page');
+    var pageTop = page.getBoundingClientRect().top;
+    var elTop  = el.getBoundingClientRect().top;
+    var branch = document.getElementById('branch-' + key);
+    var branchTop = branch.getBoundingClientRect().top;
+    var newOffset = Math.round(branchTop - elTop);  // keep visual position, calc offset
+
+    if (key === 'bl') {
+      state.anchor_bl = el.id;
+      state.offset_bl = newOffset;
+    } else {
+      state.anchor_tr = el.id;
+      state.offset_tr = newOffset;
+    }
+
+    // highlight picked element briefly
+    document.querySelectorAll('.clickable').forEach(function(x){ x.classList.remove('picked'); });
+    el.classList.add('picked');
+    setTimeout(function(){ el.classList.remove('picked'); }, 1200);
+
+    // show ref line
+    var line = document.getElementById('line-' + key);
+    line.classList.add('vis');
+    setTimeout(function(){ line.classList.remove('vis'); }, 1500);
+
+    applyPositions();
+
+    var offsetStr = (newOffset >= 0 ? '+' : '') + newOffset;
+    document.getElementById('hud-msg').innerHTML =
+      '✅ Hoja <strong>' + (key==='tr'?'arriba-der':'abajo-izq') + '</strong> alineada a <strong>' + label + '</strong> (offset ' + offsetStr + ' px)';
+    state.selected = null;
+    document.querySelectorAll('.branch-hit').forEach(function(h){ h.classList.remove('active'); });
+  });
+});
+
+// ── Copy values ──
+function copyValues() {
+  var anchors = {
+    bl: (document.getElementById(state.anchor_bl) || {}).dataset,
+    tr: (document.getElementById(state.anchor_tr) || {}).dataset
+  };
+  var txt =
+    '// Pegar en index.html dentro de alignBranches()\n' +
+    'var OFFSET_BL = ' + state.offset_bl + '; // ancla: ' + state.anchor_bl + '\n' +
+    'var OFFSET_TR = ' + state.offset_tr + '; // ancla: ' + state.anchor_tr;
+  navigator.clipboard.writeText(txt).then(function(){
+    document.getElementById('hud-msg').textContent = '✅ Copiado al portapapeles';
+  });
+}
+
+function resetAll() {
+  state.offset_bl = 0; state.offset_tr = 0;
+  state.anchor_bl = 'el-social'; state.anchor_tr = 'el-logo';
+  state.selected = null;
+  document.querySelectorAll('.branch-hit').forEach(function(h){ h.classList.remove('active'); });
+  document.getElementById('hud-msg').textContent = '👆 Haz click en una hoja para seleccionarla';
+  applyPositions();
+}
+
+window.addEventListener('load', function(){ applyPositions(); setTimeout(applyPositions, 300); });
+window.addEventListener('resize', applyPositions);
+</script>
+</body>
+</html>

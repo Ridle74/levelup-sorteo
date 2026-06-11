@@ -728,28 +728,34 @@ function ripple(e, btn) {
 
 <script>
 (function () {
-  // Alinea la ramita inferior izquierda con la puntita de los &#237;conos
-  // sociales &#8212; SOLO en escritorio real (mouse/trackpad), nunca en t&#225;ctil.
-  var mq = window.matchMedia('(hover: hover) and (pointer: fine)');
-  var fineOffset = -40;
+  // Alinea la ramita inferior izquierda con el tope de los iconos sociales.
+  // Funciona en escritorio Y en movil tactil.
+  // OFFSET: cuantos px subir (+) o bajar (-) respecto al tope del social-row.
+  var OFFSET_DESKTOP = -40;   // escritorio: sube un poco sobre los iconos
+  var OFFSET_MOBILE  =   0;   // movil: empieza exactamente al nivel del social-row
 
   function alignBranchToSocial() {
-    if (!mq.matches) return;
     var branch = document.querySelector('.branch-bl');
-    var icon = document.querySelector('.social-icon');
-    var page = document.querySelector('.page');
-    if (!branch || !icon || !page) return;
-    var iconTop = icon.getBoundingClientRect().top;
-    var pageTop = page.getBoundingClientRect().top;
-    branch.style.top = (iconTop - pageTop + fineOffset) + 'px';
+    var social = document.querySelector('.social-row');
+    var page   = document.querySelector('.page');
+    if (!branch || !social || !page) return;
+    // Forzar bottom:auto para que top tenga efecto en movil
+    branch.style.bottom = 'auto';
+    var isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var offset = isDesktop ? OFFSET_DESKTOP : OFFSET_MOBILE;
+    var socialTop = social.getBoundingClientRect().top;
+    var pageTop   = page.getBoundingClientRect().top;
+    branch.style.top = (socialTop - pageTop + offset) + 'px';
   }
 
   window.addEventListener('load', function () {
     alignBranchToSocial();
-    // Reintenta tras asentarse el layout (im&#225;genes/fuentes pueden
-    // desplazar elementos despu&#233;s del evento load inicial)
     setTimeout(alignBranchToSocial, 150);
     setTimeout(alignBranchToSocial, 500);
     setTimeout(alignBranchToSocial, 1200);
   });
-  window.addEventListener('resize', alignBranchT
+  window.addEventListener('resize', alignBranchToSocial);
+})();
+</script>
+</body>
+</html>
