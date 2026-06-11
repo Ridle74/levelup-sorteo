@@ -301,7 +301,7 @@ function startOfWeek(d) {
 }
 function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate()+n); return x; }
 function stripTitle(name) {
-  return (name||'').replace(/^(Sr\.?|Sra\.?|Dr\.?|Dra\.?)\s*/i, '').trim();
+  return (name||'').replace(/^(Sra\.?|Sr\.?|Dra\.?|Dr\.?)\s*/i, '').trim();
 }
 function fmtDM(d) { return d.toLocaleDateString('es-PE',{ day:'numeric', month:'short' }); }
 function fmtCycleDate(iso) {
@@ -500,14 +500,18 @@ function bindView() {
       const sel = document.getElementById('sel-parent');
       if (sel && sel.options.length === 1) {
         Object.entries(DATA.parents)
-          .sort(([,a],[,b]) => stripTitle(a.name).localeCompare(stripTitle(b.name)))
+          .sort(([,a],[,b]) => stripTitle(a.name).localeCompare(stripTitle(b.name), 'es'))
           .forEach(([id, p]) => {
             const o = document.createElement('option');
             o.value = id;
-            const kids = (p.children||[]).map(cid => (DATA.students[cid]||{}).name||'').filter(Boolean);
-            o.textContent = stripTitle(p.name) + (kids.length ? '  (' + kids.map(n=>n.split(' ')[0]).join(', ') + ')' : '');
+            const parts = stripTitle(p.name).split(' ');
+            o.textContent = parts.slice(0, 2).join(' ');
             sel.appendChild(o);
           });
+        const adm = document.createElement('option');
+        adm.value = '__admin__';
+        adm.textContent = '— Administrador —';
+        sel.appendChild(adm);
       }
       form.addEventListener('submit', e => {
         e.preventDefault();
@@ -519,6 +523,9 @@ function bindView() {
           currentView = 'a-inicio';
           render();
           return;
+        }
+        if (parentId === '__admin__' && pin === DATA.adminPin) {
+          setLoggedAdmin(true); currentView = 'a-inicio'; render(); return;
         }
         const parent = parentId ? DATA.parents[parentId] : null;
         if (parent && parent.pin === pin) {
