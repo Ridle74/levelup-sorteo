@@ -1125,7 +1125,6 @@ function vTablero() {
       <div style="display:flex;align-items:center;gap:10px">
         <div class="header-title">LEVEL UP</div>
         <div id="status-badge" class="status-badge status-open">● Activo</div>
-        <div id="sorteo-date-pill" style="font-size:9px;font-weight:800;letter-spacing:0.1em;color:rgba(255,255,255,0.55);background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:3px 8px;display:none"></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="user-pill">
@@ -1268,18 +1267,11 @@ function updateStatusBadge(loggedId) {
   const badge = document.getElementById('status-badge'); if (!badge) return;
   const vs = getVotingStatus(loggedId);
   badge.className = 'status-badge';
-  if (vs==='open')         { badge.classList.add('status-open');   badge.textContent='● Activo'; }
-  else if (vs==='waiting_turn') { badge.classList.add('status-wait'); badge.textContent='⏳ Espera'; }
-  else                          { badge.classList.add('status-closed'); badge.textContent='✕ Cerrado'; }
-  // Show sorteo date pill
-  const pill = document.getElementById('sorteo-date-pill');
-  if (pill) {
-    const sch = computeSorteoSchedule();
-    const d = sch.draw;
-    const label = d.toLocaleDateString('es-ES',{day:'numeric',month:'short'}).toUpperCase();
-    pill.textContent = '🎲 ' + label;
-    pill.style.display = 'inline-block';
-  }
+  const sch = computeSorteoSchedule();
+  const drawLabel = sch.draw.toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+  if (vs==='open')              { badge.classList.add('status-open');   badge.textContent='● Activo'; }
+  else if (vs==='waiting_turn') { badge.classList.add('status-wait');   badge.textContent='Sorteo: ' + drawLabel; }
+  else                          { badge.classList.add('status-closed'); badge.textContent='Sorteo: ' + drawLabel; }
 }
 function updateBoardOverlay(loggedId) {
   const vs = getVotingStatus(loggedId);
@@ -1295,11 +1287,16 @@ function updateBoardOverlay(loggedId) {
     overlay.classList.remove('show');
     if (grid) grid.style.display = '';
     if (boardHdr) boardHdr.style.display = '';
+    const card = overlay.parentElement;
+    if (card) card.style.minHeight = '';
     return;
   }
   overlay.classList.add('show');
   if (grid) grid.style.display = 'none';
   if (boardHdr) boardHdr.style.display = 'none';
+  // Give the card a fixed height so the overlay is visible
+  const card = overlay.parentElement;
+  if (card) card.style.minHeight = '320px';
   document.getElementById('overlay-icon').textContent  = '⏳';
   document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
   document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 3 PM a 9 PM.';
