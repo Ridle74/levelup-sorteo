@@ -2848,17 +2848,19 @@ function vPerfil() {
   const tabs=[{id:'foto',label:'📷 Foto'},{id:'icon',label:'Icono'},{id:'color',label:'Color'},{id:'frame',label:'Marco'},{id:'pin',label:'PIN'}];
 
   const _iconCats = Object.keys(PERFIL_ICONS_BY_CAT);
-  const _iconCatBar = _iconCats.map(cat=>
-    '<button data-cat="'+cat+'" onclick="perfilSwitchIconCat(this.dataset.cat)"'
-    +' style="padding:5px 10px;border-radius:8px;border:none;cursor:pointer;font-size:11px;font-weight:700;'
-    +(_perfilIconCat===cat?'background:#7c3aed;color:#fff':'background:#1a1a2e;color:#888')+'">'+cat+'</button>'
-  ).join('');
   const _iconList = PERFIL_ICONS_BY_CAT[_perfilIconCat]||[];
-  const iconGrid = '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+_iconCatBar+'</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:4px">'
-    +_iconList.map(ico=>
-      '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" data-ico="'+ico+'" onclick="perfilPickIcon(this.dataset.ico)">'+ico+'</button>'
-    ).join('')+'</div>';
+  const _catPills = _iconCats.map(function(cat){
+    const active = _perfilIconCat===cat;
+    return '<button data-cat="'+cat+'" onclick="perfilSwitchIconCat(this.dataset.cat)"'
+      +' style="padding:4px 12px;border-radius:20px;border:none;cursor:pointer;font-size:11px;font-weight:700;'
+      +(active?'background:#7c3aed;color:#fff;':'background:rgba(255,255,255,0.07);color:#aaa;')+'">'+(active?'▸ ':'')+cat+'</button>';
+  }).join('');
+  const iconGrid =
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+_catPills+'</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-height:270px;overflow-y:auto;padding-right:2px">'
+    +_iconList.map(function(ico){
+      return '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" data-ico="'+ico+'" onclick="perfilPickIcon(this.dataset.ico)">'+ico+'</button>';
+    }).join('')+'</div>';
 
   const colorGrid = COLOR_PALETTE.map(col=>
     '<div class="perfil-color-dot'+(curColor===col?' selected':'')+'" style="background:'+col+'" data-col="'+col+'" onclick="perfilPickColor(this.dataset.col)"></div>'
@@ -2889,7 +2891,7 @@ function vPerfil() {
 
   const tabContents={
     foto: fotoContent,
-    icon: '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">'+iconGrid+'</div>',
+    icon: iconGrid,
     color:'<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">'+colorGrid+'</div>',
     frame:'<div style="text-align:center;padding:20px 0"><div style="font-size:32px;margin-bottom:10px">🖼️</div><div style="font-size:14px;font-weight:700;color:#ccc;margin-bottom:6px">Marcos decorativos</div><div style="font-size:12px;color:#666">Próximamente — gato, diablo, murciélago,<br>ciervo, dragón y unicornio</div></div>',
     pin:  pinContent,
