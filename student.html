@@ -3112,6 +3112,11 @@ function changeHorWeek(delta) {
 function horGoToday() {
   horWeekOffset = 0;
   horDayOffset = 0;
+  const appW2 = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
+  if (appW2 < 640) {
+    const dow = new Date().getDay();
+    horDayOffset = (dow === 0 ? 6 : dow - 1); // Mon=0 … Sun=6
+  }
   renderHorariosCalendar();
 }
 
