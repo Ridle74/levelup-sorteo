@@ -198,23 +198,23 @@ const SEED = {
     "rivas":       { name:"Sol Rivas",         pin:"6612", phone:"", children:[15] }
   },
   students: {
-    "1":  { name:"Rafaela Villena",   color:"#9333ea", icon:"🐨",  modality:"Virtual" },
-    "2":  { name:"Mikela Villena",    color:"#9333ea", icon:"👧🏼", modality:"Virtual" },
-    "3":  { name:"Alejandro Rodríguez", color:"#d97706", icon:"🦁",  modality:"Domicilio" },
-    "4":  { name:"Joao Prado",        color:"#d97706", icon:"👦🏻", modality:"Domicilio" },
-    "5":  { name:"Manuel Villacorta", color:"#e11d48", icon:"👦🏻", modality:"Virtual" },
-    "6":  { name:"Augusto Giuffra",   color:"#10b981", icon:"🕷️",  modality:"Virtual" },
-    "7":  { name:"Maria Villalobos",  color:"#64748b", icon:"👧🏽", modality:"Virtual" },
-    "8":  { name:"Santiago Quinto",   color:"#9333ea", icon:"🏃🏻", modality:"Virtual" },
-    "9":  { name:"Brunella Varillas", color:"#10b981", icon:"🦋",  modality:"Virtual" },
-    "10": { name:"Joanna Prado",      color:"#d97706", icon:"👧🏻", modality:"Domicilio" },
+    "1":  { name:"Rafaela Villena",   color:"#555", icon:"🐨",  modality:"Virtual" },
+    "2":  { name:"Mikela Villena",    color:"#555", icon:"👧🏼", modality:"Virtual" },
+    "3":  { name:"Alejandro Rodríguez", color:"#777", icon:"🦁",  modality:"Domicilio" },
+    "4":  { name:"Joao Prado",        color:"#777", icon:"👦🏻", modality:"Domicilio" },
+    "5":  { name:"Manuel Villacorta", color:"#444", icon:"👦🏻", modality:"Virtual" },
+    "6":  { name:"Augusto Giuffra",   color:"#888", icon:"🕷️",  modality:"Virtual" },
+    "7":  { name:"Maria Villalobos",  color:"#888", icon:"👧🏽", modality:"Virtual" },
+    "8":  { name:"Santiago Quinto",   color:"#555", icon:"🏃🏻", modality:"Virtual" },
+    "9":  { name:"Brunella Varillas", color:"#888", icon:"🦋",  modality:"Virtual" },
+    "10": { name:"Joanna Prado",      color:"#777", icon:"👧🏻", modality:"Domicilio" },
     "11": { name:"Tiago Poma",        color:"rgba(0,0,0,0.5)", icon:"🐶",  modality:"Domicilio" },
-    "12": { name:"Mateo Ríos",        color:"#2563eb", icon:"🐧",  modality:"Virtual" },
-    "13": { name:"Jorge Ureña",       color:"#2563eb", icon:"👦🏻", modality:"Virtual" },
-    "14": { name:"Catalina Vera",     color:"#0d9488", icon:"🐱",  modality:"Virtual" },
-    "15": { name:"Gustavo Pacheco",   color:"#ca8a04", icon:"🐯",  modality:"Virtual" },
-    "16": { name:"Josué Prado",       color:"#d97706", icon:"👦🏻", modality:"Domicilio" },
-    "17": { name:"Lucio Prado",       color:"#d97706", icon:"🐻",  modality:"Domicilio" }
+    "12": { name:"Mateo Ríos",        color:"#333", icon:"🐧",  modality:"Virtual" },
+    "13": { name:"Jorge Ureña",       color:"#333", icon:"👦🏻", modality:"Virtual" },
+    "14": { name:"Catalina Vera",     color:"#666", icon:"🐱",  modality:"Virtual" },
+    "15": { name:"Gustavo Pacheco",   color:"#777", icon:"🐯",  modality:"Virtual" },
+    "16": { name:"Josué Prado",       color:"#777", icon:"👦🏻", modality:"Domicilio" },
+    "17": { name:"Lucio Prado",       color:"#777", icon:"🐻",  modality:"Domicilio" }
   },
   sessions: [
     // Lunes
@@ -470,7 +470,7 @@ function render() {
 
   const views = adminMode
     ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario }
-    : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar };
+    : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar, perfil: vPerfil };
   app.innerHTML = `<div class="vw">${(views[currentView]||(adminMode?vAdminInicio:vLogin))()}</div>`;
 
   document.body.classList.toggle('nav-visible', loggedIn);
@@ -486,7 +486,8 @@ function render() {
       : [
           {r:'inicio',     i:'🏠', l:'Inicio'},
           {r:'calendario', i:'📅', l:'Calendario'},
-          {r:'solicitar',  i:'➕', l:'Solicitar'}
+          {r:'solicitar',  i:'➕', l:'Solicitar'},
+          {r:'perfil',     i:'👤', l:'Perfil'}
         ];
     nav.querySelector('#nav-row').innerHTML = navItems.map(n =>
       `<button class="nav-btn${currentView===n.r?' active':''}" onclick="go('${n.r}')"><span class="ni">${n.i}</span><span>${n.l}</span></button>`
@@ -605,7 +606,7 @@ function vLogin() {
       </select>
       <label class="field-label" style="margin-top:12px">Clave de acceso</label>
       <input class="fsm" id="login-pin" type="password" inputmode="numeric" maxlength="6" placeholder="• • • •" autocomplete="off" required>
-      <div id="login-err" style="color:#cc0000;font-size:11px;font-weight:700;text-align:center;display:none;margin-bottom:10px">Clave incorrecta. Verifica con tu profesor.</div>
+      <div id="login-err" style="color:#333;font-size:11px;font-weight:700;text-align:center;display:none;margin-bottom:10px">Clave incorrecta. Verifica con tu profesor.</div>
       <button class="btn-grn" type="submit">Ingresar</button>
     </form>
     <p style="text-align:center;font-size:11px;color:rgba(0,0,0,0.35);margin-top:18px;line-height:1.6">
@@ -689,7 +690,6 @@ function vInicio() {
 
     <div class="dash-link" onclick="go('calendario')"><span class="dl-ico">📅</span>Ver calendario completo<span class="dl-arr">›</span></div>
     <div class="dash-link" onclick="go('solicitar')"><span class="dl-ico">➕</span>Solicitar clase adicional<span class="dl-arr">›</span></div>
-    <button class="btn-ghost" onclick="logout()">Cerrar sesión de esta familia</button>
   </div>`;
 }
 
@@ -821,6 +821,66 @@ function calGoToday() {
   }, 80);
 }
 
+function vPerfil() {
+  const parentId = getLoggedParent();
+  const parent   = DATA.parents[parentId];
+  if (!parent) { logout(); return ''; }
+  const children = (parent.children||[]).map(id => ({ id, ...DATA.students[id] })).filter(c => c.name);
+  return `
+  <div style="padding:16px;max-width:600px;margin:0 auto">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:#111;margin-bottom:18px;letter-spacing:0.02em">Mi perfil</div>
+
+    <div style="background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:16px;padding:16px;margin-bottom:12px">
+      <div class="sec-lbl" style="margin-bottom:12px">Mi cuenta</div>
+      <label class="field-label">Nombre</label>
+      <input class="fsm" id="pf-name" type="text" value="${parent.name}" autocomplete="off">
+      <label class="field-label">Nueva contraseña (PIN)</label>
+      <input class="fsm" id="pf-pin" type="password" inputmode="numeric" maxlength="6" placeholder="Dejar vacío para no cambiar" autocomplete="off">
+      <label class="field-label">Confirmar nueva contraseña</label>
+      <input class="fsm" id="pf-pin2" type="password" inputmode="numeric" maxlength="6" placeholder="Repetir PIN" autocomplete="off">
+      <div id="pf-err" style="color:#333;font-size:11px;font-weight:700;display:none;margin-bottom:8px;padding:8px 10px;background:rgba(0,0,0,0.05);border-radius:8px"></div>
+      <button class="btn-grn" onclick="savePerfil()">Guardar cambios</button>
+    </div>
+
+    ${children.map(c => `
+    <div style="background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:16px;padding:16px;margin-bottom:12px">
+      <div class="sec-lbl" style="margin-bottom:12px">${c.icon} ${c.name}</div>
+      <label class="field-label">Nombre del alumno</label>
+      <input class="fsm" id="pf-cname-${c.id}" type="text" value="${c.name}" autocomplete="off">
+      <button class="btn-grn" style="background:rgba(0,0,0,0.08);color:#111" onclick="saveChildName(${c.id})">Guardar nombre</button>
+    </div>`).join('')}
+
+    <button class="btn-ghost" style="margin-top:8px;border-color:rgba(0,0,0,0.2);color:rgba(0,0,0,0.5)" onclick="logout()">⎋ Cerrar sesión</button>
+  </div>`;
+}
+
+function savePerfil() {
+  const parentId = getLoggedParent();
+  const name  = document.getElementById('pf-name').value.trim();
+  const pin   = document.getElementById('pf-pin').value.trim();
+  const pin2  = document.getElementById('pf-pin2').value.trim();
+  const err   = document.getElementById('pf-err');
+  if (!name) { err.textContent = 'El nombre no puede estar vacío.'; err.style.display='block'; return; }
+  if (pin && pin !== pin2) { err.textContent = 'Las contraseñas no coinciden.'; err.style.display='block'; return; }
+  if (pin && (pin.length < 4 || !/^\d+$/.test(pin))) { err.textContent = 'La contraseña debe ser numérica y tener al menos 4 dígitos.'; err.style.display='block'; return; }
+  err.style.display = 'none';
+  DATA.parents[parentId].name = name;
+  if (pin) DATA.parents[parentId].pin = pin;
+  saveParents();
+  showToast('Perfil actualizado ✓');
+}
+
+function saveChildName(childId) {
+  const input = document.getElementById('pf-cname-' + childId);
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) { showToast('El nombre no puede estar vacío.'); return; }
+  if (DATA.students[childId]) DATA.students[childId].name = name;
+  REF.set({ students: DATA.students }, { merge: true })
+    .catch(e => { console.error(e); showToast('Error al guardar.'); });
+  showToast('Nombre actualizado ✓');
+}
+
 function vCalendario() {
   const parentId = getLoggedParent();
   const parent   = DATA.parents[parentId];
@@ -905,7 +965,6 @@ function vSolicitar() {
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`;
     }).join('') : `<div class="cal-empty">Aún no has hecho solicitudes.</div>`}
-    <button class="btn-ghost" onclick="logout()" style="margin-top:12px">Cerrar sesión de esta familia</button>
   </div>`;
 }
 
@@ -944,7 +1003,7 @@ function approveAccountRequest(reqId) {
     studentId = nextStudentId();
     DATA.students[studentId] = {
       name: `${reg.childFirstName} ${reg.childFirstSurname}`.trim(),
-      color: '#64748b', icon: '👤', modality: 'Virtual'
+      color: '#888', icon: '👤', modality: 'Virtual'
     };
     createdNew = true;
   }
@@ -1099,7 +1158,7 @@ function vAdminCuentas() {
     </div>
 
     ${orphanStudents.length ? `
-    <div class="sec-lbl" style="margin-top:20px;color:#fca5a5">Alumnos sin padre/madre asignado (${orphanStudents.length})</div>
+    <div class="sec-lbl" style="margin-top:20px;color:rgba(0,0,0,0.5)">Alumnos sin padre/madre asignado (${orphanStudents.length})</div>
     <div class="req-card" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3)">
       <p style="font-size:11px;color:rgba(0,0,0,0.5);line-height:1.6;margin:0 0 8px">
         Estos alumnos no aparecen en la lista de hijos de ninguna cuenta — revisa si falta crear o vincular su cuenta de padre/madre.
