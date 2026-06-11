@@ -1236,6 +1236,12 @@ function vTablero() {
 
 function vTableroSetup() {
   const loggedId = getLoggedId();
+  if (!isAdmin()) {
+    const panel = document.getElementById('admin-panel');
+    if (panel) panel.style.display = 'none';
+    const header = document.getElementById('header');
+    if (header) { header.style.margin = '8px 8px 6px'; header.style.padding = '10px 14px'; }
+  }
   renderAll(loggedId);
   startClock(loggedId);
   document.addEventListener('click', () => {
