@@ -2406,16 +2406,6 @@ function horGoToday() {
   renderHorariosCalendar();
 }
 
-
-
-
-function horGoToday() {
-  horWeekOffset = 0;
-  const app = document.getElementById('app');
-  if (app) app.innerHTML = `<div class="vw">${vHorarios()}</div>`;
-  renderHorariosSidebar();
-}
-
 function togglePtsEditor(studentId) {
   expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
   ptsMonthOffset = 0;
