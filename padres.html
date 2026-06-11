@@ -146,6 +146,7 @@ firebase.initializeApp(firebaseConfig);
 const db  = firebase.firestore();
 // Documento dedicado para el portal de padres (no toca 'sorteo/main').
 const REF = db.collection('padres').doc('main');
+const SORTEO_REF = db.collection('sorteo').doc('main');
 // Documento compartido de autenticación admin — el MISMO usado por /student,
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
@@ -709,12 +710,13 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused) {
 }
 
 function buildPadCalGrid(dayList, activeSids, showParent) {
-  const ROW_H = 56, MIN_H = 8, MAX_H = 22;
-  const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
-  const totalH = HOURS.length * ROW_H;
+  const ROW_H = 56;
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // Build slot map grouped by day+start
+  const toH  = function(t){ var p=t.split(':').map(Number); return p[0]+p[1]/60; };
+  const addM = function(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); };
+
+  // Build slot map
   const slotMap = {};
   DATA.sessions.forEach(function(s) {
     if (!activeSids.includes(Number(s.studentId))) return;
@@ -725,6 +727,33 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     slotMap[key].students.push({ sid: s.studentId, dur: dur, modality: s.modality });
   });
 
+  // ── Smart time range: fit to actual sessions ─────────────────
+  var dynMin = 23, dynMax = 0;
+  Object.values(slotMap).forEach(function(sl) {
+    var h = toH(sl.start);
+    if (h < dynMin) dynMin = h;
+    var endH = h + sl.maxDur / 60;
+    if (endH > dynMax) dynMax = endH;
+  });
+  const hasSlots = Object.keys(slotMap).length > 0;
+  const MIN_H = hasSlots ? Math.max(0,  Math.floor(dynMin) - 1) : 8;
+  const MAX_H = hasSlots ? Math.min(24, Math.ceil(dynMax)  + 1) : 22;
+  const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
+  const totalH = HOURS.length * ROW_H;
+
+  // ── Smart day filter: single child → only their class days ───
+  const singleChild = activeSids.length === 1 && !showParent;
+  const activeDows  = new Set(Object.values(slotMap).map(function(sl){ return sl.day; }));
+  const filteredDayList = singleChild
+    ? dayList.filter(function(d){ return activeDows.has(d.getDay()); })
+    : dayList;
+
+  // No sessions message
+  if (!hasSlots) {
+    return '<div class="pcal-head-row"><div class="pcal-gutter"></div></div>'
+      +'<div style="padding:40px;text-align:center;color:rgba(0,0,0,0.3);font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">Sin clases programadas</div>';
+  }
+
   // Parent map
   const studentParent = {};
   if (showParent) {
@@ -734,17 +763,14 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     });
   }
 
-  const toH = function(t){ var p=t.split(':').map(Number); return p[0]+p[1]/60; };
-  const addM = function(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); };
-
-  // Compute column width
+  // Column width based on filtered days
   const appEl = document.getElementById('app');
-  const appW = appEl ? appEl.offsetWidth : (window.innerWidth||390);
-  const numCols = dayList.length;
-  const colW = Math.max(Math.floor((appW - 42) / numCols), 60);
+  const appW  = appEl ? appEl.offsetWidth : (window.innerWidth||390);
+  const numCols = filteredDayList.length;
+  const colW  = Math.max(Math.floor((appW - 42) / numCols), 60);
 
   // Day headers
-  const hdrs = dayList.map(function(d) {
+  const hdrs = filteredDayList.map(function(d) {
     const isPast = d < today, isTod = d.getTime()===today.getTime();
     const cls = 'pcal-dh'+(isTod?' is-today':'')+(isPast?' is-past':'');
     return '<div class="'+cls+'" style="width:'+colW+'px">'
@@ -760,7 +786,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   }).join('');
 
   // Day columns
-  const cols = dayList.map(function(d) {
+  const cols = filteredDayList.map(function(d) {
     const dow = d.getDay();
     const isPast = d < today, isTod = d.getTime()===today.getTime();
     const cls = 'pcal-day-col'+(isTod?' is-today':'')+(isPast?' is-past':'');
@@ -772,7 +798,6 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       const total = slot.students.length;
       return slot.students.map(function(st, idx) {
         const stData = DATA.students[st.sid] || {};
-        const col    = stData.color || 'rgba(0,0,0,0.5)';
         const end    = addM(slot.start, st.dur);
         const lPx    = 2 + Math.round((colW-4)*(idx/total));
         const wPx    = Math.round((colW-4)/total) - (idx<total-1?2:0);
@@ -793,7 +818,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   var nowHtml = '';
   var now = new Date(); var curH = now.getHours()+now.getMinutes()/60;
   if (curH >= MIN_H && curH < MAX_H) {
-    var todayIdx = dayList.findIndex(function(d){ return d.getTime()===today.getTime(); });
+    var todayIdx = filteredDayList.findIndex(function(d){ return d.getTime()===today.getTime(); });
     if (todayIdx !== -1) {
       var topNow = (curH - MIN_H) * ROW_H;
       nowHtml = '<div class="pcal-now" style="top:'+topNow+'px;left:'+(todayIdx*colW)+'px;width:'+colW+'px">'
@@ -811,6 +836,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px">'+cols+nowHtml+'</div>'
     +'</div></div>';
 }
+
 
 function calGoToday() {
   calAnchor = startOfWeek(new Date());
@@ -845,9 +871,14 @@ function vPerfil() {
     ${children.map(c => `
     <div style="background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:16px;padding:16px;margin-bottom:12px">
       <div class="sec-lbl" style="margin-bottom:12px">${c.icon} ${c.name}</div>
-      <label class="field-label">Nombre del alumno</label>
+      <label class="field-label">Nombre</label>
       <input class="fsm" id="pf-cname-${c.id}" type="text" value="${c.name}" autocomplete="off">
-      <button class="btn-grn" style="background:rgba(0,0,0,0.08);color:#111" onclick="saveChildName(${c.id})">Guardar nombre</button>
+      <label class="field-label">Nueva contraseña del alumno</label>
+      <input class="fsm" id="pf-cpin-${c.id}" type="password" inputmode="numeric" maxlength="6" placeholder="Dejar vacío para no cambiar" autocomplete="off">
+      <label class="field-label">Confirmar contraseña</label>
+      <input class="fsm" id="pf-cpin2-${c.id}" type="password" inputmode="numeric" maxlength="6" placeholder="Repetir PIN" autocomplete="off">
+      <div id="pf-cerr-${c.id}" style="color:#333;font-size:11px;font-weight:700;display:none;margin-bottom:8px;padding:8px 10px;background:rgba(0,0,0,0.05);border-radius:8px"></div>
+      <button class="btn-grn" style="background:rgba(0,0,0,0.08);color:#111" onclick="saveChildProfile(${c.id})">Guardar</button>
     </div>`).join('')}
 
     <button class="btn-ghost" style="margin-top:8px;border-color:rgba(0,0,0,0.2);color:rgba(0,0,0,0.5)" onclick="logout()">⎋ Cerrar sesión</button>
@@ -870,16 +901,30 @@ function savePerfil() {
   showToast('Perfil actualizado ✓');
 }
 
-function saveChildName(childId) {
-  const input = document.getElementById('pf-cname-' + childId);
-  if (!input) return;
-  const name = input.value.trim();
-  if (!name) { showToast('El nombre no puede estar vacío.'); return; }
+function saveChildProfile(childId) {
+  const name  = (document.getElementById('pf-cname-' + childId)||{}).value.trim();
+  const pin   = (document.getElementById('pf-cpin-'  + childId)||{}).value.trim();
+  const pin2  = (document.getElementById('pf-cpin2-' + childId)||{}).value.trim();
+  const err   = document.getElementById('pf-cerr-'   + childId);
+  if (!name) { if(err){err.textContent='El nombre no puede estar vacío.';err.style.display='block';} return; }
+  if (pin && pin !== pin2) { if(err){err.textContent='Las contraseñas no coinciden.';err.style.display='block';} return; }
+  if (pin && (pin.length < 4 || !/^\d+$/.test(pin))) { if(err){err.textContent='PIN debe ser numérico, mínimo 4 dígitos.';err.style.display='block';} return; }
+  if (err) err.style.display = 'none';
   if (DATA.students[childId]) DATA.students[childId].name = name;
-  REF.set({ students: DATA.students }, { merge: true })
-    .catch(e => { console.error(e); showToast('Error al guardar.'); });
-  showToast('Nombre actualizado ✓');
+  REF.set({ students: DATA.students }, { merge: true }).catch(function(e){ console.error(e); });
+  if (pin) {
+    SORTEO_REF.get().then(function(snap) {
+      const ov = (snap.exists ? snap.data().overrides : null) || {};
+      if (!ov[String(childId)]) ov[String(childId)] = {};
+      ov[String(childId)].pin = pin;
+      return SORTEO_REF.set({ overrides: ov }, { merge: true });
+    }).then(function(){ showToast('Contraseña actualizada ✓'); })
+     .catch(function(e){ console.error(e); showToast('Error al guardar PIN.'); });
+  } else {
+    showToast('Perfil guardado ✓');
+  }
 }
+
 
 function vCalendario() {
   const parentId = getLoggedParent();
