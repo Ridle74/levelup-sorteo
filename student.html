@@ -545,6 +545,7 @@ let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progre
 let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 let horWeekOffset  = 0;   // 0 = semana actual, ±N = semanas adelante/atrás en la vista de horarios
+let horDayOffset   = 0;   // mobile 3-day view: day offset from start of current week
 // ── MESSAGES ─────────────────────────────────────────────
 let msgsGroupArr  = [];   // [{id,from,fromName,text,att,ts}] sorted by ts
 let msgsDmObj     = {};   // {studentId: [...]} loaded on-demand
@@ -2568,26 +2569,40 @@ function renderHorariosCalendar() {
   const MONTHS_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
   const DAY_NAMES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
-  const getWD = (off) => {
+  // Mon of current week + offset
+  const getMon = (weekOff) => {
     const tod = new Date(); tod.setHours(0,0,0,0);
     const dow = tod.getDay();
-    const mon = new Date(tod); mon.setDate(tod.getDate() + (dow===0?-6:1-dow) + off*7);
-    return [1,2,3,4,5,6,0].map((_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+    const mon = new Date(tod); mon.setDate(tod.getDate() + (dow===0?-6:1-dow) + weekOff*7);
+    return mon;
   };
-  const fmtWL = (dates) => {
-    const a=dates[0],b=dates[6];
-    if(a.getMonth()===b.getMonth()) return `${a.getDate()}–${b.getDate()} ${MONTHS_S[a.getMonth()]} ${a.getFullYear()}`;
-    return `${a.getDate()} ${MONTHS_S[a.getMonth()]} – ${b.getDate()} ${MONTHS_S[b.getMonth()]}`;
+  // Get N days starting from absolute day offset (from this week's Monday)
+  const getDays = (weekOff, startDay, count) => {
+    const mon = getMon(weekOff);
+    return Array.from({length: count}, (_, i) => {
+      const d = new Date(mon); d.setDate(mon.getDate() + startDay + i); return d;
+    });
+  };
+  const fmtRange = (dates) => {
+    const a=dates[0], b=dates[dates.length-1];
+    if(a.getMonth()===b.getMonth()) return a.getDate()+'–'+b.getDate()+' '+MONTHS_S[a.getMonth()]+' '+a.getFullYear();
+    return a.getDate()+' '+MONTHS_S[a.getMonth()]+' – '+b.getDate()+' '+MONTHS_S[b.getMonth()];
   };
   const addM = (t, m) => {
     const [h,mn]=t.split(':').map(Number), tot=h*60+mn+m;
-    return `${String(Math.floor(tot/60)%24).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+    return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0');
   };
   const toH = t => { const [h,m]=t.split(':').map(Number); return h+m/60; };
 
   const today = new Date(); today.setHours(0,0,0,0);
-  const dates = getWD(horWeekOffset);
-  const wLabel = fmtWL(dates);
+  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
+  const isMobile = appW < 640;
+  const daysCount = isMobile ? 3 : 7;
+  const dates = isMobile
+    ? getDays(horWeekOffset, horDayOffset, 3)
+    : getDays(horWeekOffset, 0, 7);
+  const wLabel = fmtRange(dates);
+  const colW = Math.max(Math.floor((appW - 44) / daysCount), isMobile ? 90 : 72);
 
   // Build slotMap: group by day+start, multiple students per slot
   const slotMap = {};
@@ -2596,7 +2611,7 @@ function renderHorariosCalendar() {
     const pSt = pStudents[sid];
     if (!pSt || !pSt.name || !s.start) return;
     const lms  = lmsMap[normName(pSt.name)] || {};
-    const key  = `${s.day}|${s.start}`;
+    const key  = s.day+'|'+s.start;
     if (!slotMap[key]) slotMap[key] = { day:Number(s.day), start:s.start, maxDur:0, students:[] };
     const dur = s.dur || 60;
     if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
@@ -2613,59 +2628,54 @@ function renderHorariosCalendar() {
   const wlEl = document.getElementById('hor-week-lbl');
   if (wlEl) wlEl.textContent = wLabel;
 
-  // Column width
-  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  const colW = Math.max(Math.floor((appW - 44) / 7), 72);
-
   // Day headers
   const hdrEl = document.getElementById('hor-days-header');
-  if (hdrEl) hdrEl.innerHTML = dates.map(date => {
+  if (hdrEl) hdrEl.innerHTML = dates.map(function(date) {
     const isPast = date < today, isTod = date.getTime()===today.getTime();
     const cls = 'hor-day-head' + (isTod?' is-today':'') + (isPast?' is-past':'');
-    return `<div class="${cls}" style="width:${colW}px">
-      <div class="hor-dh-name">${DAY_NAMES[date.getDay()]}</div>
-      <div class="hor-dh-num">${date.getDate()}</div>
-      ${isTod ? '<div><span class="hor-dh-hoy">HOY</span></div>' : ''}
-    </div>`;
+    return '<div class="'+cls+'" style="width:'+colW+'px">'
+      +'<div class="hor-dh-name">'+DAY_NAMES[date.getDay()]+'</div>'
+      +'<div class="hor-dh-num">'+date.getDate()+'</div>'
+      +(isTod ? '<div><span class="hor-dh-hoy">HOY</span></div>' : '')
+      +'</div>';
   }).join('');
 
   // Time labels
   const tlEl = document.getElementById('hor-time-labels');
-  if (tlEl) tlEl.innerHTML = HOURS.map(h =>
-    `<div class="hor-tl-slot" style="height:${ROW_H}px">${String(h).padStart(2,'0')}:00</div>`
-  ).join('');
+  if (tlEl) tlEl.innerHTML = HOURS.map(function(h) {
+    return '<div class="hor-tl-slot" style="height:'+ROW_H+'px">'+String(h).padStart(2,'0')+':00</div>';
+  }).join('');
 
   // Day columns
   const bodyEl = document.getElementById('hor-days-body');
   if (!bodyEl) return;
   const totalH = HOURS.length * ROW_H;
 
-  bodyEl.innerHTML = dates.map(date => {
+  bodyEl.innerHTML = dates.map(function(date) {
     const jsDay = date.getDay();
     const isPast = date < today, isTod = date.getTime()===today.getTime();
     const cls = 'hor-day-col' + (isTod?' is-today':'') + (isPast?' is-past':'');
-    const lines = HOURS.map(() => `<div class="hor-hour-line" style="height:${ROW_H}px"></div>`).join('');
+    const lines = HOURS.map(function() { return '<div class="hor-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
 
-    const slots = Object.values(slotMap).filter(sl => sl.day === jsDay);
-    const cards = slots.flatMap(slot => {
+    const slots = Object.values(slotMap).filter(function(sl) { return sl.day === jsDay; });
+    const cards = slots.flatMap(function(slot) {
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
       const hPx   = (slot.maxDur / 60) * ROW_H - 3;
       const total = slot.students.length;
-      return slot.students.map((st, idx) => {
+      return slot.students.map(function(st, idx) {
         const end  = addM(slot.start, st.dur);
         const lPx  = 2 + Math.round((colW-4) * (idx/total));
         const wPx  = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short = hPx < 44;
-        return `<div class="hor-ev-card" style="top:${topPx}px;height:${hPx}px;left:${lPx}px;width:${wPx}px;background:linear-gradient(160deg,${st.color}30,${st.color}12);border:1px solid ${st.color}55;box-shadow:0 0 14px -6px ${st.color}60 inset">
-          <div class="hor-ev-icon">${st.icon}</div>
-          <div class="hor-ev-name">${st.name}</div>
-          ${short?'':` <div class="hor-ev-time" style="color:${st.color}">${slot.start}–${end}</div>
-          <div class="hor-ev-badge">${st.modality}</div>`}
-        </div>`;
+        return '<div class="hor-ev-card" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:linear-gradient(160deg,'+st.color+'30,'+st.color+'12);border:1px solid '+st.color+'55;box-shadow:0 0 14px -6px '+st.color+'60 inset">'
+          +'<div class="hor-ev-icon">'+st.icon+'</div>'
+          +'<div class="hor-ev-name">'+st.name+'</div>'
+          +(short?'':'<div class="hor-ev-time" style="color:'+st.color+'">'+slot.start+'–'+end+'</div><div class="hor-ev-badge">'+st.modality+'</div>')
+          +'</div>';
       });
     }).join('');
 
-    return `<div class="${cls}" style="width:${colW}px;height:${totalH}px">${lines}${cards}</div>`;
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+'</div>';
   }).join('');
 
   renderHorariosTimeNow();
@@ -2679,17 +2689,21 @@ function renderHorariosTimeNow() {
   const curH = now.getHours() + now.getMinutes()/60;
   if (curH < MIN_H || curH >= MAX_H) return;
   const today = new Date(); today.setHours(0,0,0,0);
-  const getWD = (off) => {
-    const tod = new Date(); tod.setHours(0,0,0,0);
-    const dow = tod.getDay();
-    const mon = new Date(tod); mon.setDate(tod.getDate() + (dow===0?-6:1-dow) + off*7);
-    return [1,2,3,4,5,6,0].map((_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; });
+  const getMon2 = (weekOff) => {
+    const tod2 = new Date(); tod2.setHours(0,0,0,0);
+    const dow2 = tod2.getDay();
+    const m = new Date(tod2); m.setDate(tod2.getDate() + (dow2===0?-6:1-dow2) + weekOff*7); return m;
   };
-  const dates = getWD(horWeekOffset);
-  const todayIdx = dates.findIndex(d => d.getTime()===today.getTime());
+  const mon2 = getMon2(horWeekOffset);
+  const dates = Array.from({length: isMob?3:7}, function(_, i) {
+    const d = new Date(mon2); d.setDate(mon2.getDate() + (isMob?horDayOffset:0) + i); return d;
+  });
+  const todayIdx = dates.findIndex(function(d) { return d.getTime()===today.getTime(); });
   if (todayIdx === -1) return;
   const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  const colW = Math.max(Math.floor((appW - 44) / 7), 72);
+  const isMob = appW < 640;
+  const dCnt = isMob ? 3 : 7;
+  const colW = Math.max(Math.floor((appW - 44) / dCnt), isMob ? 90 : 72);
   const el = document.createElement('div');
   el.id = 'hor-time-now';
   el.className = 'hor-time-now';
@@ -3084,11 +3098,20 @@ async function perfilSavePin() {
 }
 
 function changeHorWeek(delta) {
-  horWeekOffset += delta;
+  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
+  if (appW < 640) {
+    horDayOffset += delta;
+    // when going beyond week boundaries, shift the week
+    if (horDayOffset > 4) { horWeekOffset += 1; horDayOffset -= 7; }
+    if (horDayOffset < 0) { horWeekOffset -= 1; horDayOffset += 7; }
+  } else {
+    horWeekOffset += delta;
+  }
   renderHorariosCalendar();
 }
 function horGoToday() {
   horWeekOffset = 0;
+  horDayOffset = 0;
   renderHorariosCalendar();
 }
 
