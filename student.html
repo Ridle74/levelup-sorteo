@@ -2857,7 +2857,7 @@ function vPerfil() {
   }).join('');
   const iconGrid =
     '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+_catPills+'</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;max-height:270px;overflow-y:auto;padding-right:2px">'
+    +'<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:300px;overflow-y:auto;padding-right:2px">'
     +_iconList.map(function(ico){
       return '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" data-ico="'+ico+'" onclick="perfilPickIcon(this.dataset.ico)">'+ico+'</button>';
     }).join('')+'</div>';
@@ -2903,7 +2903,7 @@ function vPerfil() {
 
   const saveBtn=_perfilTab!=='pin'?'<button onclick="perfilSaveProfile()" style="width:100%;margin-top:14px;padding:13px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:15px">Guardar cambios</button>':'';
 
-  return '<div style="max-width:440px;margin:0 auto;padding:16px">'
+  return '<div style="max-width:600px;margin:0 auto;padding:16px">'
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
     +'<button onclick="go(&quot;dashboard&quot;)" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
     +'<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>'
