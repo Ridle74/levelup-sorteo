@@ -246,18 +246,18 @@ select { -webkit-appearance: none; appearance: none; }
   box-sizing: border-box;
 }
 #board-overlay.show { display: flex; }
-.overlay-icon  { font-size: 40px; margin-bottom: 16px; }
-.overlay-title { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 10px; }
-.overlay-sub   { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.8; margin-bottom: 20px; }
+.overlay-icon  { font-size: 36px; margin-bottom: 10px; }
+.overlay-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 8px; white-space: nowrap; }
+.overlay-sub   { color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.8; margin-bottom: 12px; }
 .overlay-start {
   background: linear-gradient(135deg,rgba(249,115,22,0.3),rgba(249,115,22,0.08));
-  border: 2px solid rgba(249,115,22,0.4); border-radius: 18px; padding: 14px 18px; margin-bottom: 12px;
+  border: 2px solid rgba(249,115,22,0.4); border-radius: 18px; padding: 10px 16px; margin-bottom: 10px;
 }
 .overlay-start-label { color: #fb923c; font-size: 8px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 6px; }
-.overlay-start-date  { font-size: 14px; font-weight: 900; text-transform: uppercase; line-height: 1.4; }
-.clock-box  { background: rgba(0,0,0,0.4); border-radius: 14px; padding: 14px 18px; border: 1px solid rgba(255,255,255,0.05); }
+.overlay-start-date  { font-size: 11px; font-weight: 900; text-transform: uppercase; line-height: 1.4; white-space: nowrap; }
+.clock-box  { background: rgba(0,0,0,0.4); border-radius: 14px; padding: 10px 16px; border: 1px solid rgba(255,255,255,0.05); }
 .clock-lbl  { font-size: 8px; color: var(--dim); font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
-#live-clock { font-size: 30px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; color: var(--accent); letter-spacing: 0.15em; }
+#live-clock { font-size: 22px; font-family: 'Barlow Condensed', sans-serif; font-weight: 900; color: var(--accent); letter-spacing: 0.1em; white-space: nowrap; }
 
 /* ââ PALETA DE COLORES ââ */
 .color-palette {

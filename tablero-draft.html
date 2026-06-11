@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero – Borrador</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0c1a;
+    font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── RESIZE HANDLE ── */
+  .resizable {
+    position: relative;
+    overflow: visible;
+  }
+  .resize-handle {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 12px;
+    background: rgba(251,146,60,0.6);
+    border-radius: 6px;
+    cursor: ns-resize;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #fff;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .resize-handle:hover { background: rgba(251,146,60,1); }
+  .resize-label {
+    position: absolute;
+    top: 50%;
+    right: -8px;
+    transform: translateY(-50%) translateX(100%);
+    background: rgba(251,146,60,0.85);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── NAV ── */
+  #nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: #111320;
+    padding: 0 12px;
+    display: flex; align-items: center; gap: 8px;
+    height: 48px;
+    z-index: 999;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-arrow {
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #fff; cursor: pointer;
+  }
+
+  /* ── PAGE SCROLL CONTAINER ── */
+  #page { margin-top: 48px; padding: 0; }
+
+  /* ── 1. HEADER ── */
+  #el-header {
+    margin: 12px 12px 10px;
+    border-radius: 20px;
+    padding: 0 18px;
+    background: linear-gradient(115deg, #7a1f1f 0%, #a8501a 55%, #b8861f 100%);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+    height: 64px; /* ADJUSTABLE */
+    overflow: hidden;
+  }
+  .hdr-left { display: flex; align-items: center; gap: 10px; }
+  .header-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 900; letter-spacing: 0.06em;
+    color: #39ff7a; text-shadow: 0 0 14px rgba(57,255,122,0.6);
+  }
+  .sorteo-badge {
+    background: rgba(251,146,60,0.18);
+    border: 1px solid rgba(251,146,60,0.45);
+    color: #fb923c;
+    font-size: 13px; font-weight: 900;
+    padding: 6px 14px; border-radius: 20px;
+    letter-spacing: 0.06em; white-space: nowrap;
+    text-shadow: 0 0 10px rgba(251,146,60,0.5);
+  }
+  .user-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08);
+    padding: 6px 12px; border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 11px; font-weight: 700;
+  }
+
+  /* ── 2. TABS ── */
+  #el-tabs {
+    display: flex; gap: 0; margin: 0 0 0 0;
+    height: 50px; /* ADJUSTABLE */
+    overflow: hidden;
+  }
+  .tab-btn {
+    flex: 1; border: none; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 900; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: background 0.15s;
+  }
+  .tab-btn.active {
+    background: transparent;
+    color: #39ff7a;
+    border: 2px solid #39ff7a;
+    box-shadow: 0 0 18px -4px rgba(57,255,122,0.5);
+  }
+  .tab-btn:not(.active) {
+    background: rgba(0,128,80,0.12);
+    color: rgba(57,255,122,0.5);
+    border: 2px solid rgba(57,255,122,0.15);
+  }
+
+  /* ── 3. PROGRESS CARD (student bar) ── */
+  #el-progress {
+    margin: 10px 0 0;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 14px;
+    height: 52px; /* ADJUSTABLE */
+    overflow: hidden;
+  }
+  .student-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #8B5CF6;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .student-name { font-size: 13px; font-weight: 900; letter-spacing: 0.06em; }
+  .student-pts { margin-left: auto; color: #fb923c; font-size: 18px; font-weight: 900; }
+  .progress-bar-wrap { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.06); }
+  .progress-bar-fill { height: 100%; width: 30%; background: #8B5CF6; border-radius: 2px; }
+
+  /* ── 4. OVERLAY CARD (espera tu turno) ── */
+  #el-overlay-card {
+    margin: 8px 0 0;
+    background: rgba(15,17,38,0.96);
+    border: 1px solid rgba(176,107,255,0.35);
+    border-radius: 20px;
+    box-shadow: 0 0 50px -10px rgba(34,229,255,0.35) inset;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 32px 24px;
+    height: 340px; /* ADJUSTABLE */
+    overflow: hidden;
+  }
+  .overlay-inner { width: 100%; max-width: 320px; }
+  .overlay-icon { font-size: 40px; margin-bottom: 16px; display: block; }
+  .overlay-title {
+    font-size: 30px; font-weight: 900; text-transform: uppercase;
+    letter-spacing: -0.02em; margin-bottom: 10px;
+    text-shadow: 0 0 12px rgba(139,92,246,0.8);
+  }
+  .overlay-sub {
+    color: rgba(255,255,255,0.45); font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px;
+  }
+  .overlay-start {
+    background: linear-gradient(135deg,rgba(249,115,22,0.3),rgba(249,115,22,0.08));
+    border: 2px solid rgba(249,115,22,0.4); border-radius: 18px;
+    padding: 14px 18px; margin-bottom: 12px;
+  }
+  .overlay-start-label { color: #fb923c; font-size: 8px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; margin-bottom: 6px; }
+  .overlay-start-date  { font-size: 14px; font-weight: 900; text-transform: uppercase; }
+  .clock-box {
+    background: rgba(34,229,255,0.07); border: 1px solid rgba(34,229,255,0.2);
+    border-radius: 12px; padding: 14px 18px;
+  }
+  .clock-lbl { font-size: 8px; color: rgba(255,255,255,0.4); font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 4px; }
+  #live-clock { font-size: 30px; font-weight: 900; color: #22e5ff; letter-spacing: 0.15em; }
+
+  /* ── BOTTOM NAV ── */
+  #bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #111320; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; height: 60px;
+    z-index: 999;
+  }
+  .bnav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; border: none; background: transparent;
+    color: rgba(255,255,255,0.4); cursor: pointer; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .bnav-btn.active { color: #4fb6ff; }
+  .bnav-ico { font-size: 20px; }
+
+  /* ── SIZE DISPLAY ── */
+  .size-tag {
+    position: absolute;
+    top: 6px; left: 12px;
+    font-size: 10px; color: rgba(251,146,60,0.7);
+    font-weight: 900; letter-spacing: 0.05em;
+    pointer-events: none;
+  }
+
+  /* ── INSTRUCTIONS ── */
+  #instructions {
+    position: fixed; top: 58px; right: 10px;
+    background: rgba(251,146,60,0.12);
+    border: 1px solid rgba(251,146,60,0.3);
+    border-radius: 12px; padding: 10px 14px;
+    font-size: 11px; color: rgba(255,255,255,0.7);
+    line-height: 1.7; z-index: 500;
+    max-width: 180px;
+  }
+  #instructions strong { color: #fb923c; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div id="nav">
+  <div class="nav-arrow">◄</div>
+  <div class="nav-arrow">🏠</div>
+  <div class="nav-arrow">►</div>
+</div>
+
+<!-- INSTRUCTIONS -->
+<div id="instructions">
+  <strong>↕ Arrastra</strong> la barra naranja de cada elemento para cambiar su alto.<br><br>
+  El número muestra el alto actual en px.
+</div>
+
+<div id="page">
+
+  <!-- 1. HEADER -->
+  <div class="resizable" id="wrap-header" style="position:relative;margin:12px 12px 0">
+    <div id="el-header">
+      <div class="hdr-left">
+        <div class="header-title">LEVEL UP</div>
+        <div class="sorteo-badge">🎲 SORTEO: 5 JUL</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="user-pill">👤 JOAO</div>
+        <div style="width:32px;height:32px;background:rgba(153,27,27,0.3);border:1px solid rgba(153,27,27,0.4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">→</div>
+      </div>
+    </div>
+    <div class="size-tag" id="size-header">64 px</div>
+    <div class="resize-handle" data-target="el-header" data-size="size-header">⠿</div>
+  </div>
+
+  <!-- 2. TABS -->
+  <div class="resizable" id="wrap-tabs" style="position:relative;margin:10px 0 0">
+    <div id="el-tabs">
+      <button class="tab-btn active">🎮 TABLERO</button>
+      <button class="tab-btn">👑 RANKING</button>
+    </div>
+    <div class="size-tag" id="size-tabs">50 px</div>
+    <div class="resize-handle" data-target="el-tabs" data-size="size-tabs">⠿</div>
+  </div>
+
+  <!-- 3. PROGRESS (student bar) -->
+  <div class="resizable" id="wrap-progress" style="position:relative;margin:10px 0 0">
+    <div id="el-progress" style="position:relative">
+      <div class="student-icon">👤</div>
+      <div>
+        <div class="student-name">JOAO PRADO</div>
+      </div>
+      <div class="student-pts">0 / 0</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill"></div></div>
+    </div>
+    <div class="size-tag" id="size-progress">52 px</div>
+    <div class="resize-handle" data-target="el-progress" data-size="size-progress">⠿</div>
+  </div>
+
+  <!-- 4. OVERLAY CARD -->
+  <div class="resizable" id="wrap-overlay" style="position:relative;margin:8px 0 0">
+    <div id="el-overlay-card">
+      <div class="overlay-inner">
+        <span class="overlay-icon">⏳</span>
+        <div class="overlay-title">ESPERA TU TURNO</div>
+        <div class="overlay-sub">Los turnos se habilitan de 3 PM a 9 PM.</div>
+        <div class="overlay-start">
+          <div class="overlay-start-label">COMIENZA EL</div>
+          <div class="overlay-start-date">LUNES, 29 DE JUNIO A LAS 03:00 P. M.</div>
+        </div>
+        <div class="clock-box">
+          <div class="clock-lbl">HORA ACTUAL</div>
+          <div id="live-clock">11:03:42 p. m.</div>
+        </div>
+      </div>
+    </div>
+    <div class="size-tag" id="size-overlay">340 px</div>
+    <div class="resize-handle" data-target="el-overlay-card" data-size="size-overlay">⠿</div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div id="bottom-nav">
+  <button class="bnav-btn active"><span class="bnav-ico">🏠</span>INICIO</button>
+  <button class="bnav-btn"><span class="bnav-ico">🎮</span>TABLERO</button>
+  <button class="bnav-btn"><span class="bnav-ico">📋</span>TAREAS</button>
+  <button class="bnav-btn"><span class="bnav-ico">⚡</span>PUNTOS</button>
+  <button class="bnav-btn"><span class="bnav-ico">👑</span>RANKING</button>
+</div>
+
+<script>
+  // Clock
+  function tick() {
+    document.getElementById('live-clock').textContent =
+      new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Resize logic
+  let dragging = null;
+  let startY = 0, startH = 0;
+
+  document.querySelectorAll('.resize-handle').forEach(handle => {
+    handle.addEventListener('mousedown', e => {
+      const targetId = handle.dataset.target;
+      const sizeId   = handle.dataset.size;
+      const el = document.getElementById(targetId);
+      dragging = { el, sizeId };
+      startY = e.clientY;
+      startH = el.getBoundingClientRect().height;
+      e.preventDefault();
+    });
+
+    // Touch support
+    handle.addEventListener('touchstart', e => {
+      const targetId = handle.dataset.target;
+      const sizeId   = handle.dataset.size;
+      const el = document.getElementById(targetId);
+      dragging = { el, sizeId };
+      startY = e.touches[0].clientY;
+      startH = el.getBoundingClientRect().height;
+      e.preventDefault();
+    }, { passive: false });
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const delta = e.clientY - startY;
+    const newH = Math.max(30, startH + delta);
+    dragging.el.style.height = newH + 'px';
+    document.getElementById(dragging.sizeId).textContent = Math.round(newH) + ' px';
+  });
+
+  document.addEventListener('mouseup', () => { dragging = null; });
+
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const delta = e.touches[0].clientY - startY;
+    const newH = Math.max(30, startH + delta);
+    dragging.el.style.height = newH + 'px';
+    document.getElementById(dragging.sizeId).textContent = Math.round(newH) + ' px';
+  }, { passive: false });
+
+  document.addEventListener('touchend', () => { dragging = null; });
+</script>
+</body>
+</html>
