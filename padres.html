@@ -736,8 +736,8 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     if (endH > dynMax) dynMax = endH;
   });
   const hasSlots = Object.keys(slotMap).length > 0;
-  const MIN_H = hasSlots ? Math.max(0,  Math.floor(dynMin) - 1) : 8;
-  const MAX_H = hasSlots ? Math.min(24, Math.ceil(dynMax)  + 1) : 22;
+  const MIN_H = hasSlots ? Math.max(0,  Math.floor(dynMin)) : 8;
+  const MAX_H = hasSlots ? Math.min(24, Math.ceil(dynMax))  : 22;
   const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
   const totalH = HOURS.length * ROW_H;
 
