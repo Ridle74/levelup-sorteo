@@ -7,109 +7,115 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 <style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #0a0a0a; color: #fff; font-family: 'Barlow', sans-serif; -webkit-font-smoothing: antialiased; }
 #app { min-height: 100dvh; }
 body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
-#initial-loading { position: fixed; inset: 0; z-index: 9999; background: #050d1a; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+
+#initial-loading { position: fixed; inset: 0; z-index: 9999; background: #0a0a0a; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
 #initial-loading.hidden { display: none; }
 .vw { animation: vIn 0.18s ease-out; }
 @keyframes vIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
 
-#bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: rgba(5,13,26,0.97); backdrop-filter: blur(16px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: env(safe-area-inset-bottom); }
+#bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200; background: rgba(10,10,10,0.97); backdrop-filter: blur(16px) saturate(120%); border-top: 1px solid rgba(255,255,255,0.08); padding-bottom: env(safe-area-inset-bottom); }
 #bottom-nav.visible { display: block; }
 
-#hist-bar { display:none; position: fixed; top: 0; left: 0; right: 0; z-index: 200; gap:8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: rgba(5,13,26,0.92); backdrop-filter: blur(16px) saturate(180%); border-bottom: 1px solid rgba(255,255,255,0.08); }
+#hist-bar { display:none; position: fixed; top: 0; left: 0; right: 0; z-index: 200; gap:8px; padding: calc(8px + env(safe-area-inset-top)) 12px 8px; background: rgba(10,10,10,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); }
 #hist-bar.visible { display:flex; }
 .hist-btn { border:none; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); width:38px; height:34px; border-radius:10px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: background 0.15s, color 0.15s, opacity 0.15s; -webkit-tap-highlight-color: transparent; }
-.hist-btn:not(:disabled):active { background: rgba(74,222,128,0.18); color:#4ade80; }
+.hist-btn:not(:disabled):active { background: rgba(255,255,255,0.14); color:#fff; }
 .hist-btn:disabled { opacity:0.3; cursor:default; }
-#hist-home { background: rgba(74,222,128,0.12); color:#4ade80; }
+#hist-home { background: rgba(255,255,255,0.1); color:#fff; }
 body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
-.nav-row { display: flex; max-width: 600px; margin: 0 auto; }
-.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 10px 2px 8px; border: none; background: none; cursor: pointer; color: rgba(255,255,255,0.35); font-family: 'Barlow Condensed', sans-serif; font-size: 8px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.15s; -webkit-tap-highlight-color: transparent; }
-.nav-btn .ni { font-size: 22px; line-height: 1; display: block; }
-.nav-btn.active { color: #4ade80; }
-.nav-btn.active .ni { filter: drop-shadow(0 0 5px rgba(74,222,128,0.5)); }
 
-.dash-hero { background: linear-gradient(135deg,#14532d,#16a34a 50%,#22c55e); border-radius: 20px; padding: 20px; margin-bottom: 10px; position: relative; overflow: hidden; }
-.dash-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
-.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
-.fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:11px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; box-sizing:border-box; margin-bottom:10px; outline:none; }
-.fsm:focus { border-color:rgba(74,222,128,0.5); }
-.btn-grn { width:100%; border:none; border-radius:12px; padding:13px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; letter-spacing:0.12em; text-transform:uppercase; background:linear-gradient(135deg,#16a34a,#22c55e); color:#fff; }
-.btn-ghost { width:100%; border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.7); margin-top:8px; }
+.nav-row { display: flex; max-width: 600px; margin: 0 auto; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 10px 2px 8px; border: none; background: none; cursor: pointer; color: rgba(255,255,255,0.3); font-family: 'Barlow Condensed', sans-serif; font-size: 8px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.15s; -webkit-tap-highlight-color: transparent; }
+.nav-btn .ni { font-size: 22px; line-height: 1; display: block; }
+.nav-btn.active { color: #fff; }
+.nav-btn.active .ni { filter: none; }
+
+.dash-hero { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; margin-bottom: 10px; position: relative; overflow: hidden; }
+.dash-hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.015) 20px,rgba(255,255,255,0.015) 40px); }
+.sec-lbl { font-size:9px; font-weight:900; color:rgba(255,255,255,0.35); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
+
+.fsm { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:11px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; box-sizing:border-box; margin-bottom:10px; outline:none; }
+.fsm:focus { border-color:rgba(255,255,255,0.45); }
+.btn-grn { width:100%; border:none; border-radius:12px; padding:13px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; letter-spacing:0.12em; text-transform:uppercase; background:#fff; color:#0a0a0a; transition: opacity 0.15s; }
+.btn-grn:active { opacity: 0.85; }
+.btn-ghost { width:100%; border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.6); margin-top:8px; }
 
 /* Child chips */
 .child-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
-.child-chip { display:flex; align-items:center; gap:6px; border:2px solid rgba(255,255,255,0.12); border-radius:14px; padding:8px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:rgba(255,255,255,0.55); transition:all .15s; -webkit-tap-highlight-color:transparent; }
-.child-chip.csel { border-color:#22c55e; color:#86efac; background:rgba(34,197,94,0.12); }
+.child-chip { display:flex; align-items:center; gap:6px; border:1px solid rgba(255,255,255,0.15); border-radius:14px; padding:8px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; color:rgba(255,255,255,0.45); transition:all .15s; -webkit-tap-highlight-color:transparent; }
+.child-chip.csel { border-color:#fff; color:#fff; background:rgba(255,255,255,0.08); }
 
 /* ── Time-grid calendar ─────────────────────────────────── */
-.pcal-outer { display:flex; flex-direction:column; height:calc(100dvh - 58px - env(safe-area-inset-bottom)); overflow:hidden; background:transparent; }
+.pcal-outer { display:flex; flex-direction:column; height:calc(100dvh - 64px - env(safe-area-inset-bottom)); overflow:hidden; background:transparent; }
 .pcal-toolbar { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:10px 14px 6px; }
 .pcal-toggle { display:flex; border:1px solid rgba(255,255,255,0.12); border-radius:10px; overflow:hidden; }
-.pcal-toggle button { border:none; background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.45); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s; }
-.pcal-toggle button.on { background:rgba(34,197,94,0.18); color:#86efac; }
-.pcal-today-btn { border:1px solid rgba(34,197,94,0.35); background:rgba(34,197,94,0.06); color:#86efac; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 12px; border-radius:8px; cursor:pointer; }
+.pcal-toggle button { border:none; background:transparent; color:rgba(255,255,255,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s; }
+.pcal-toggle button.on { background:rgba(255,255,255,0.1); color:#fff; }
+.pcal-today-btn { border:1px solid rgba(255,255,255,0.2); background:transparent; color:rgba(255,255,255,0.7); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 12px; border-radius:8px; cursor:pointer; }
 .pcal-nav { margin-left:auto; display:flex; gap:6px; }
-.pcal-nav button { border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); color:#fff; border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer; }
-.pcal-range-bar { flex-shrink:0; padding:0 14px 8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:rgba(255,255,255,0.5); letter-spacing:0.08em; text-transform:uppercase; }
+.pcal-nav button { border:1px solid rgba(255,255,255,0.12); background:transparent; color:#fff; border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer; }
+.pcal-range-bar { flex-shrink:0; padding:0 14px 8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.08em; text-transform:uppercase; }
 .pcal-child-bar { flex-shrink:0; padding:0 14px 8px; display:flex; flex-wrap:wrap; gap:6px; }
 .pcal-head-row { flex-shrink:0; display:flex; border-bottom:1px solid rgba(255,255,255,0.08); }
 .pcal-gutter { flex-shrink:0; width:42px; }
 .pcal-days-hdr { display:flex; overflow:hidden; flex:1; }
 .pcal-dh { flex-shrink:0; text-align:center; padding:5px 2px 7px; border-left:1px solid rgba(255,255,255,0.05); }
-.pcal-dh-name { font-size:9px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.38); }
-.pcal-dh-num  { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; line-height:1.1; color:rgba(255,255,255,0.6); }
-.pcal-dh-hoy  { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#22c55e; color:#052e16; padding:1px 6px; border-radius:5px; display:inline-block; margin-top:1px; }
-.pcal-dh.is-today .pcal-dh-name { color:#4ade80; }
+.pcal-dh-name { font-size:9px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.3); }
+.pcal-dh-num  { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; line-height:1.1; color:rgba(255,255,255,0.5); }
+.pcal-dh-hoy  { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; background:#fff; color:#0a0a0a; padding:1px 6px; border-radius:5px; display:inline-block; margin-top:1px; }
+.pcal-dh.is-today .pcal-dh-name { color:rgba(255,255,255,0.7); }
 .pcal-dh.is-today .pcal-dh-num  { color:#fff; }
-.pcal-dh.is-past .pcal-dh-name,.pcal-dh.is-past .pcal-dh-num { opacity:0.3; }
-.pcal-body-scroll { flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(34,197,94,0.15) transparent; }
+.pcal-dh.is-past .pcal-dh-name,.pcal-dh.is-past .pcal-dh-num { opacity:0.25; }
+.pcal-body-scroll { flex:1; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent; }
 .pcal-body-inner { display:flex; }
 .pcal-tl { flex-shrink:0; width:42px; }
-.pcal-tl-slot { display:flex; align-items:flex-start; justify-content:flex-end; padding-right:7px; padding-top:3px; font-size:9px; font-weight:700; color:rgba(255,255,255,0.25); letter-spacing:0.03em; }
+.pcal-tl-slot { display:flex; align-items:flex-start; justify-content:flex-end; padding-right:7px; padding-top:3px; font-size:9px; font-weight:700; color:rgba(255,255,255,0.2); letter-spacing:0.03em; }
 .pcal-days-body { display:flex; position:relative; flex:1; }
-.pcal-day-col { flex-shrink:0; position:relative; border-left:1px solid rgba(255,255,255,0.05); }
+.pcal-day-col { flex-shrink:0; position:relative; border-left:1px solid rgba(255,255,255,0.04); }
 .pcal-hour-line { border-bottom:1px solid rgba(255,255,255,0.04); }
-.pcal-day-col.is-today { background:rgba(34,197,94,0.018); border-left:1px solid rgba(34,197,94,0.25); }
-.pcal-day-col.is-past  { opacity:0.38; }
+.pcal-day-col.is-today { background:rgba(255,255,255,0.02); border-left:1px solid rgba(255,255,255,0.18); }
+.pcal-day-col.is-past  { opacity:0.3; }
 .pcal-ev { position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden; }
-.pcal-ev-parent { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.5); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pcal-ev-parent { font-size:7px; font-weight:900; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.45); line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .pcal-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; color:#fff; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.pcal-ev-time  { font-size:8px; font-weight:700; color:rgba(255,255,255,0.7); margin-top:1px; white-space:nowrap; }
-.pcal-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.42); margin-top:1px; }
+.pcal-ev-time  { font-size:8px; font-weight:700; color:rgba(255,255,255,0.65); margin-top:1px; white-space:nowrap; }
+.pcal-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-top:1px; }
 .pcal-now { position:absolute; z-index:10; pointer-events:none; display:flex; align-items:center; }
-.pcal-now-dot  { flex-shrink:0; width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow:0 0 8px 2px rgba(34,197,94,0.7); margin-left:-4px; }
-.pcal-now-line { flex:1; height:1px; background:rgba(34,197,94,0.55); }
-/* legacy slot (still used in solicitar view) */
+.pcal-now-dot  { flex-shrink:0; width:8px; height:8px; border-radius:50%; background:#fff; box-shadow:0 0 6px 2px rgba(255,255,255,0.4); margin-left:-4px; }
+.pcal-now-line { flex:1; height:1px; background:rgba(255,255,255,0.4); }
+/* legacy slot */
 .cal-slot { border-radius:10px; padding:9px 11px; margin-bottom:6px; border-left:4px solid; }
 .cal-slot .cs-time { font-family:'Barlow',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.01em; }
-.cs-meta { font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; color:rgba(255,255,255,0.65); margin-top:3px; letter-spacing:0.02em; text-transform:none; line-height:1.5; }
+.cs-meta { font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; color:rgba(255,255,255,0.55); margin-top:3px; letter-spacing:0.02em; text-transform:none; line-height:1.5; }
 
 /* Request card */
-.req-card { background:rgba(34,197,94,0.06); border:1px solid rgba(34,197,94,0.18); border-radius:16px; padding:16px; margin-top:14px; }
+.req-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:16px; margin-top:14px; }
 .req-row { display:flex; gap:8px; margin-bottom:8px; }
 .req-row select, .req-row input { flex:1; }
 .req-list-item { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
 .req-status { font-size:9px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; padding:4px 10px; border-radius:8px; flex-shrink:0; }
-.req-status.pend { background:rgba(234,179,8,0.15); color:#fde047; }
-.req-status.appr { background:rgba(34,197,94,0.18); color:#86efac; }
-.req-status.rej  { background:rgba(239,68,68,0.15); color:#f87171; }
+.req-status.pend { background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); }
+.req-status.appr { background:rgba(255,255,255,0.12); color:#fff; }
+.req-status.rej  { background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.4); }
 
 /* Login */
 .login-wrap { max-width:380px; margin:0 auto; padding-top:12vh; }
 .login-logo { text-align:center; margin-bottom:28px; }
-.login-logo .lt { font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.4); }
+.login-logo .lt { font-family:'Barlow Condensed',sans-serif; font-size:13px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.35); }
 .login-logo .ll { font-family:'Barlow Condensed',sans-serif; font-size:30px; font-weight:900; color:#fff; margin-top:2px; }
-.field-label { font-size:10px; font-weight:900; color:#6b7280; letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px; display:block; }
+.field-label { font-size:10px; font-weight:900; color:rgba(255,255,255,0.4); letter-spacing:0.18em; text-transform:uppercase; margin-bottom:6px; display:block; }
 .tab-row { display:flex; gap:8px; margin-bottom:18px; }
-.tab-row button { flex:1; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.03); color:rgba(255,255,255,0.45); border-radius:12px; padding:10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; }
-.tab-row button.on { background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.35); color:#86efac; }
+.tab-row button { flex:1; border:1px solid rgba(255,255,255,0.1); background:transparent; color:rgba(255,255,255,0.4); border-radius:12px; padding:10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; }
+.tab-row button.on { background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.3); color:#fff; }
 
 .dash-link { display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:14px 16px; margin-bottom:8px; cursor:pointer; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; transition:background 0.12s; -webkit-tap-highlight-color:transparent; }
 .dash-link:active { background:rgba(255,255,255,0.09); }
 .dl-ico { font-size:24px; flex-shrink:0; }
-.dl-arr { margin-left:auto; color:rgba(255,255,255,0.25); font-size:20px; }
+.dl-arr { margin-left:auto; color:rgba(255,255,255,0.2); font-size:20px; }
 </style>
 </head>
 <body>
@@ -179,18 +185,18 @@ const SEED = {
   cycleName: "MATHS ONEX",
   cycleEnd:  "2026-07-05",
   parents: {
-    "fprado":      { name:"Sr. Fernando Prado",     pin:"6611", phone:"", children:[3,4,10,16,17] },
-    "vera":        { name:"Sra. Julissa Vera",      pin:"6622", phone:"", children:[8] },
-    "paredes":     { name:"Sra. Dora Paredes",      pin:"6633", phone:"", children:[5] },
-    "valdez":      { name:"Sra. Jenifer Valdez",    pin:"6644", phone:"", children:[6] },
-    "zambrano":    { name:"Sra. Lady Zambrano",     pin:"6623", phone:"", children:[9] },
-    "benites":     { name:"Sra. Marissa Benites",   pin:"6655", phone:"", children:[1,2] },
-    "garcia":      { name:"Sra. Diana García",      pin:"6666", phone:"", children:[12] },
-    "wvillalobos": { name:"Sr. Walther Villalobos", pin:"6677", phone:"", children:[7] },
-    "ruizcaro":    { name:"Sra. Claudia Ruizcaro",  pin:"6688", phone:"", children:[11] },
-    "villanueva":  { name:"Sra. Paola Villanueva",  pin:"6699", phone:"", children:[14] },
-    "urena":       { name:"Sra. Mercedes Ureña",    pin:"6600", phone:"", children:[13] },
-    "rivas":       { name:"Sra. Sol Rivas",         pin:"6612", phone:"", children:[15] }
+    "fprado":      { name:"Fernando Prado",     pin:"6611", phone:"", children:[3,4,10,16,17] },
+    "vera":        { name:"Julissa Vera",      pin:"6622", phone:"", children:[8] },
+    "paredes":     { name:"Dora Paredes",      pin:"6633", phone:"", children:[5] },
+    "valdez":      { name:"Jenifer Valdez",    pin:"6644", phone:"", children:[6] },
+    "zambrano":    { name:"Lady Zambrano",     pin:"6623", phone:"", children:[9] },
+    "benites":     { name:"Marissa Benites",   pin:"6655", phone:"", children:[1,2] },
+    "garcia":      { name:"Diana García",      pin:"6666", phone:"", children:[12] },
+    "wvillalobos": { name:"Walther Villalobos", pin:"6677", phone:"", children:[7] },
+    "ruizcaro":    { name:"Claudia Ruizcaro",  pin:"6688", phone:"", children:[11] },
+    "villanueva":  { name:"Paola Villanueva",  pin:"6699", phone:"", children:[14] },
+    "urena":       { name:"Mercedes Ureña",    pin:"6600", phone:"", children:[13] },
+    "rivas":       { name:"Sol Rivas",         pin:"6612", phone:"", children:[15] }
   },
   students: {
     "1":  { name:"Rafaela Villena",   color:"#9333ea", icon:"🐨",  modality:"Virtual" },
@@ -203,7 +209,7 @@ const SEED = {
     "8":  { name:"Santiago Quinto",   color:"#9333ea", icon:"🏃🏻", modality:"Virtual" },
     "9":  { name:"Brunella Varillas", color:"#10b981", icon:"🦋",  modality:"Virtual" },
     "10": { name:"Joanna Prado",      color:"#d97706", icon:"👧🏻", modality:"Domicilio" },
-    "11": { name:"Tiago Poma",        color:"#16a34a", icon:"🐶",  modality:"Domicilio" },
+    "11": { name:"Tiago Poma",        color:"rgba(255,255,255,0.55)", icon:"🐶",  modality:"Domicilio" },
     "12": { name:"Mateo Ríos",        color:"#2563eb", icon:"🐧",  modality:"Virtual" },
     "13": { name:"Jorge Ureña",       color:"#2563eb", icon:"👦🏻", modality:"Virtual" },
     "14": { name:"Catalina Vera",     color:"#0d9488", icon:"🐱",  modality:"Virtual" },
@@ -500,11 +506,11 @@ function bindView() {
       const sel = document.getElementById('sel-parent');
       if (sel && sel.options.length === 1) {
         Object.entries(DATA.parents)
-          .sort(([,a],[,b]) => stripTitle(a.name).localeCompare(stripTitle(b.name), 'es'))
+          .sort(([,a],[,b]) => a.name.localeCompare(b.name, 'es'))
           .forEach(([id, p]) => {
             const o = document.createElement('option');
             o.value = id;
-            const parts = stripTitle(p.name).split(' ');
+            const parts = p.name.split(' ');
             o.textContent = parts.slice(0, 2).join(' ');
             sel.appendChild(o);
           });
@@ -611,7 +617,7 @@ function vLogin() {
         Completa estos datos para solicitar tu cuenta de familia. El profesor revisará la solicitud, verificará a tu hijo(a) en su lista de alumnos y te enviará tu clave de acceso.
       </p>
       <label class="field-label">Tu nombre (padre / madre / apoderado)</label>
-      <input class="fsm" id="cr-parent" type="text" placeholder="Ej: Sra. Rodríguez" autocomplete="off" required>
+      <input class="fsm" id="cr-parent" type="text" placeholder="Ej: María Rodríguez" autocomplete="off" required>
       <label class="field-label">Teléfono / WhatsApp (opcional)</label>
       <input class="fsm" id="cr-phone" type="tel" placeholder="Ej: 999 999 999" autocomplete="off">
       <label class="field-label">Primer nombre del hijo(a)</label>
@@ -657,14 +663,14 @@ function vInicio() {
     <div class="dash-hero">
       <div style="position:relative;z-index:1">
         <div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.7)">Bienvenido</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-top:2px">${stripTitle(parent.name)}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#fff;margin-top:2px">${parent.name}</div>
         <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:6px">${children.length} ${children.length===1?'hijo registrado':'hijos registrados'} · ${pendCount} ${pendCount===1?'solicitud pendiente':'solicitudes pendientes'}</div>
       </div>
     </div>
 
     ${DATA.cycleEnd ? `
-    <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.35);border-radius:14px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#86efac">Ciclo actual${DATA.cycleName ? ' · '+DATA.cycleName : ''}</div>
+    <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.7)">Ciclo actual${DATA.cycleName ? ' · '+DATA.cycleName : ''}</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-top:4px;line-height:1.5">Los horarios semanales vigentes corresponden a este ciclo. La última clase es el <strong style="color:#fff">${fmtCycleDate(DATA.cycleEnd)}</strong>.</div>
     </div>` : ''}
 
@@ -704,7 +710,7 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused) {
 }
 
 function buildPadCalGrid(dayList, activeSids, showParent) {
-  const ROW_H = 56, MIN_H = 8, MAX_H = 21;
+  const ROW_H = 56, MIN_H = 8, MAX_H = 22;
   const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
   const totalH = HOURS.length * ROW_H;
   const today = new Date(); today.setHours(0,0,0,0);
@@ -725,7 +731,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   if (showParent) {
     Object.entries(DATA.parents).forEach(function(e) {
       var pid = e[0], p = e[1];
-      (p.children||[]).forEach(function(cid){ studentParent[String(cid)] = stripTitle(p.name); });
+      (p.children||[]).forEach(function(cid){ studentParent[String(cid)] = p.name; });
     });
   }
 
@@ -767,13 +773,13 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       const total = slot.students.length;
       return slot.students.map(function(st, idx) {
         const stData = DATA.students[st.sid] || {};
-        const col    = stData.color || '#22c55e';
+        const col    = stData.color || 'rgba(255,255,255,0.55)';
         const end    = addM(slot.start, st.dur);
         const lPx    = 2 + Math.round((colW-4)*(idx/total));
         const wPx    = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short  = hPx < 42;
         const pName  = showParent ? (studentParent[String(st.sid)]||'') : '';
-        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:linear-gradient(160deg,'+col+'28,'+col+'12);border:1px solid '+col+'50;box-shadow:0 2px 8px -4px '+col+'55 inset">'
+        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14)">'
           +(pName?'<div class="pcal-ev-parent">'+pName+'</div>':'')
           +'<div class="pcal-ev-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+'</div>'
           +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
@@ -801,7 +807,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     +'<div class="pcal-days-hdr" style="width:'+(colW*numCols)+'px">'+hdrs+'</div>'
     +'</div>'
     +'<div class="pcal-body-scroll" id="pcal-scroll">'
-    +'<div class="pcal-body-inner">'
+    +'<div class="pcal-body-inner" style="padding-bottom:24px">'
     +'<div class="pcal-tl">'+tls+'</div>'
     +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px">'+cols+nowHtml+'</div>'
     +'</div></div>';
@@ -828,14 +834,16 @@ function vCalendario() {
   const dayList    = Array.from({length: days}, (_, i) => addDays(rangeStart, i));
   const activeSids = selectedChild !== null ? [Number(selectedChild)] : childIds.map(Number);
 
-  const allChip = '<div class="child-chip'+(selectedChild===null?' csel':'')+'" onclick="selectChild(null)">👨‍👩‍👧‍👦 Todos</div>';
   const childChips = children.map(c =>
     '<div class="child-chip'+(selectedChild===c.id?' csel':'')+'" onclick="selectChild('+c.id+')">'+c.icon+' '+c.name.split(' ')[0]+'</div>'
   ).join('');
+  const allChip = children.length > 1
+    ? '<div class="child-chip'+(selectedChild===null?' csel':'')+'" onclick="selectChild(null)">👨‍👩‍👧‍👦 Mis hijos</div>'
+    : '';
 
   return '<div class="pcal-outer">'
     + buildPadCalNav(rangeStart, rangeEnd, false)
-    + '<div class="pcal-child-bar">'+allChip+childChips+'</div>'
+    + (children.length > 1 ? '<div class="pcal-child-bar">'+allChip+childChips+'</div>' : '')
     + buildPadCalGrid(dayList, activeSids, false)
     + '</div>';
 }
@@ -1043,7 +1051,7 @@ function vAdminSolicitudes() {
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${r.parentName}</div>
           <div class="cs-meta" style="margin-top:3px">Hijo(a): ${r.childFirstName} ${r.childFirstSurname}${r.phone?' · 📱 '+r.phone:''}</div>
           ${r.note?`<div class="cs-meta" style="margin-top:2px;color:rgba(255,255,255,0.4)">"${r.note}"</div>`:''}
-          ${r.status==='aprobada' ? `<div class="cs-meta" style="margin-top:4px;color:#86efac">Clave asignada: <strong>${r.assignedPin}</strong></div>` : ''}
+          ${r.status==='aprobada' ? `<div class="cs-meta" style="margin-top:4px;color:rgba(255,255,255,0.7)">Clave asignada: <strong>${r.assignedPin}</strong></div>` : ''}
           ${r.status==='pendiente' ? `
             <div style="display:flex;gap:8px;margin-top:10px">
               <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="approveAccountRequest(${r.id})">✓ Aprobar y crear cuenta</button>
@@ -1060,7 +1068,7 @@ function vAdminSolicitudes() {
       return `<div class="req-list-item" style="align-items:flex-start">
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${st?st.icon:''} ${st?st.name:''} · ${DAY_NAMES[r.day]} ${r.start}</div>
-          <div class="cs-meta" style="margin-top:3px">${r.dur} min · ${r.modality}${par?' · Familia: '+stripTitle(par.name):''}${r.note?' · '+r.note:''}</div>
+          <div class="cs-meta" style="margin-top:3px">${r.dur} min · ${r.modality}${par?' · Familia: '+par.name:''}${r.note?' · '+r.note:''}</div>
           ${r.status==='pendiente' ? `
             <div style="display:flex;gap:8px;margin-top:10px">
               <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="setClassRequestStatus(${r.id},'aprobada')">✓ Aprobar</button>
@@ -1117,7 +1125,7 @@ function vAdminCuentas() {
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditParentPin()">Cancelar</button>
             </div>` : `
             <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
-              <span class="cs-meta">Clave actual: <strong style="color:#86efac">${p.pin}</strong></span>
+              <span class="cs-meta">Clave actual: <strong style="color:rgba(255,255,255,0.7)">${p.pin}</strong></span>
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:7px 14px;font-size:10px" onclick="startEditParentPin('${id}')">✏️ Cambiar clave</button>
             </div>`}
         </div>
