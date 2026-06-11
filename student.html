@@ -527,10 +527,10 @@ const DEFAULT_STUDENTS = [
 ];
 const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
 const COLOR_PALETTE = [
-  "#FF0055","#FF3300","#FF6600","#FF9900","#FFEE00",
-  "#AAFF00","#00FF44","#00FFAA","#00FFFF","#00AAFF",
-  "#0055FF","#6600FF","#AA00FF","#FF00FF","#FF0099",
-  "#FF6EC7","#FFFFFF","#39FF14","#FFFF33","#FF4500"
+  "#FF0055","#FF3300","#FF6600","#FF9900","#FFEE00","#CCFF00",
+  "#39FF14","#00FF44","#00FFAA","#00FFFF","#00CCFF","#0088FF",
+  "#0044FF","#7700FF","#BB00FF","#FF00FF","#FF0099","#FF0055",
+  "#FF6EC7","#FFFF33","#FF4500","#00FF99","#FF1177","#FFFFFF"
 ];
 
 // ════════════════════════════════════════════════════════
@@ -2852,8 +2852,8 @@ function vPerfil() {
       +(active?'background:#7c3aed;color:#fff;':'background:rgba(255,255,255,0.07);color:#aaa;')+'">'+(active?'▸ ':'')+cat+'</button>';
   }).join('');
   const iconGrid =
-    '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">'+_catPills+'</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:300px;overflow-y:auto;padding-right:2px">'
+    '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">'+_catPills+'</div>'
+    +'<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:210px;overflow-y:auto;padding-right:2px">'
     +_iconList.map(function(ico){
       return '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" data-ico="'+ico+'" onclick="perfilPickIcon(this.dataset.ico)">'+ico+'</button>';
     }).join('')+'</div>';
@@ -2897,16 +2897,16 @@ function vPerfil() {
     '<button data-tab="'+t.id+'" onclick="perfilSwitchTab(this.dataset.tab)" style="flex:1;padding:7px 2px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:700;background:'+(_perfilTab===t.id?'#7c3aed':'#1a1a2e')+';color:'+(_perfilTab===t.id?'#fff':'#888')+'">'+t.label+'</button>'
   ).join('');
 
-  const saveBtn=_perfilTab!=='pin'?'<button onclick="perfilSaveProfile()" style="width:100%;margin-top:14px;padding:13px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:15px">Guardar cambios</button>':'';
+  const saveBtn=_perfilTab!=='pin'?'<button onclick="perfilSaveProfile()" style="width:100%;margin-top:10px;padding:11px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px">Guardar cambios</button>':'';
 
-  return '<div style="max-width:600px;margin:0 auto;padding:16px">'
+  return '<div style="max-width:600px;margin:0 auto;padding:10px">'
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
     +'<button onclick="go(&quot;dashboard&quot;)" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
     +'<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>'
-    +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:12px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,80)+'</div>'
+    +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:8px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,60)+'</div>'
     +'<div style="text-align:center;font-size:15px;font-weight:600;margin-bottom:18px;color:#ccc">'+(st.name||'')+'</div>'
     +'<div style="display:flex;gap:4px;margin-bottom:12px;overflow-x:auto">'+tabButtons+'</div>'
-    +'<div id="perfil-tab-body" style="background:#111;border-radius:14px;padding:14px;min-height:120px">'+(tabContents[_perfilTab]||'')+'</div>'
+    +'<div id="perfil-tab-body" style="background:#111;border-radius:12px;padding:10px;min-height:80px">'+(tabContents[_perfilTab]||'')+'</div>'
     +saveBtn+'</div>';
 }
 
@@ -3055,10 +3055,9 @@ async function perfilSaveProfile() {
   _refreshHeaderAvatar(ov[key]);
   _perfilPendingIcon=null;_perfilPendingColor=null;_perfilPendingFrame=null;_perfilPendingPhoto=null;
   showToast('Perfil guardado ✓');
-  vPerfilRefresh();
-  // Refresh tablero so avatars update everywhere
   renderAll(getLoggedId());
   if (document.getElementById('pane-ranking') && document.getElementById('pane-ranking').style.display!=='none') renderTableroRanking();
+  setTimeout(function(){ history.back(); }, 900);
 }
 
 async function perfilSavePin() {
