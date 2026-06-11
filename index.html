@@ -352,9 +352,9 @@ body {
   var ctx = canvas.getContext('2d');
   var W, H;
 
-  // Light blue winter palette
-  var LEAF_COLORS  = ['#7EC8E3','#5AADE0','#A8D8EA','#4FA8D0','#6EC0DC','#B0D9F0','#3E9ABF','#89CCE8'];
-  var SNOW_COLORS  = ['#C8E8F8','#DAEFFE','#B0D8F0','#E4F4FF','#CFE9FA'];
+  // Autumn/winter palette: mustard-brown leaves, subtle grey snowflakes
+  var LEAF_COLORS  = ['#C8860A','#D4962A','#B87012','#E0A840','#A05C08','#CC9020','#BF7A10','#D4A035'];
+  var SNOW_COLORS  = ['#AAAAAA','#BBBBBB','#C8C8C8','#999999','#B5B5B5'];
 
   function resize() {
     W = canvas.width  = window.innerWidth;
@@ -419,26 +419,42 @@ body {
     return {
       x: rand(0, W),
       y: fromTop ? rand(-30, -5) : rand(0, H),
-      r: rand(1.5, 5.5),
+      r: rand(6, 16),
+      rot: rand(0, Math.PI * 2),
+      vr: rand(-0.008, 0.008),
       vx: rand(-0.3, 0.3),
-      vy: rand(0.3, 1.1),
+      vy: rand(0.3, 1.0),
       sway: rand(0, Math.PI * 2),
-      swaySpeed: rand(0.006, 0.018),
-      swayAmp: rand(0.2, 0.7),
+      swaySpeed: rand(0.006, 0.016),
+      swayAmp: rand(0.2, 0.6),
       color: SNOW_COLORS[Math.floor(Math.random() * SNOW_COLORS.length)],
-      alpha: rand(0.30, 0.70)
+      alpha: rand(0.50, 0.85)
     };
   }
 
   function drawFlake(f) {
     ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.rotate(f.rot || 0);
     ctx.globalAlpha = f.alpha;
-    ctx.fillStyle = f.color;
-    ctx.shadowColor = '#A8D8F0';
-    ctx.shadowBlur = f.r * 2;
-    ctx.beginPath();
-    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.strokeStyle = f.color;
+    ctx.lineWidth = f.r * 0.35;
+    ctx.lineCap = 'round';
+    // 6-armed snowflake
+    for (var a = 0; a < 6; a++) {
+      ctx.save();
+      ctx.rotate(a * Math.PI / 3);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -f.r);
+      // two side branches at 60% of arm
+      ctx.moveTo(0, -f.r * 0.6);
+      ctx.lineTo( f.r * 0.25, -f.r * 0.85);
+      ctx.moveTo(0, -f.r * 0.6);
+      ctx.lineTo(-f.r * 0.25, -f.r * 0.85);
+      ctx.stroke();
+      ctx.restore();
+    }
     ctx.restore();
   }
 
@@ -463,6 +479,7 @@ body {
       f.sway += f.swaySpeed;
       f.x += f.vx + Math.sin(f.sway) * f.swayAmp;
       f.y += f.vy;
+      f.rot = (f.rot || 0) + (f.vr || 0);
       if (f.y > H + 20) flakes[j] = newFlake(true);
       drawFlake(f);
     }
