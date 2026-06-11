@@ -2597,12 +2597,12 @@ function renderHorariosCalendar() {
   const today = new Date(); today.setHours(0,0,0,0);
   const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
   const isMobile = appW < 640;
-  const daysCount = isMobile ? 3 : 7;
+  const daysCount = isMobile ? 2 : 7;
   const dates = isMobile
-    ? getDays(horWeekOffset, horDayOffset, 3)
+    ? getDays(horWeekOffset, horDayOffset, 2)
     : getDays(horWeekOffset, 0, 7);
   const wLabel = fmtRange(dates);
-  const colW = Math.max(Math.floor((appW - 44) / daysCount), isMobile ? 90 : 72);
+  const colW = Math.max(Math.floor((appW - 44) / daysCount), isMobile ? 120 : 72);
 
   // Build slotMap: group by day+start, multiple students per slot
   const slotMap = {};
@@ -2695,14 +2695,14 @@ function renderHorariosTimeNow() {
     const m = new Date(tod2); m.setDate(tod2.getDate() + (dow2===0?-6:1-dow2) + weekOff*7); return m;
   };
   const mon2 = getMon2(horWeekOffset);
-  const dates = Array.from({length: isMob?3:7}, function(_, i) {
+  const dates = Array.from({length: isMob?2:7}, function(_, i) {
     const d = new Date(mon2); d.setDate(mon2.getDate() + (isMob?horDayOffset:0) + i); return d;
   });
   const todayIdx = dates.findIndex(function(d) { return d.getTime()===today.getTime(); });
   if (todayIdx === -1) return;
   const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
   const isMob = appW < 640;
-  const dCnt = isMob ? 3 : 7;
+  const dCnt = isMob ? 2 : 7;
   const colW = Math.max(Math.floor((appW - 44) / dCnt), isMob ? 90 : 72);
   const el = document.createElement('div');
   el.id = 'hor-time-now';
@@ -3102,7 +3102,7 @@ function changeHorWeek(delta) {
   if (appW < 640) {
     horDayOffset += delta;
     // when going beyond week boundaries, shift the week
-    if (horDayOffset > 4) { horWeekOffset += 1; horDayOffset -= 7; }
+    if (horDayOffset > 5) { horWeekOffset += 1; horDayOffset -= 7; }
     if (horDayOffset < 0) { horWeekOffset -= 1; horDayOffset += 7; }
   } else {
     horWeekOffset += delta;
