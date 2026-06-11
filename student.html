@@ -1482,18 +1482,34 @@ function renderStudentCronograma() {
   const sch = computeSorteoSchedule();
   const lid = getLoggedId();
   const ps  = !isAdmin() ? getPersonalStart(lid) : null;
-  const pill = (ico,lbl,val,col) =>
-    '<div style="flex:1;min-width:80px;background:rgba(0,0,0,0.28);border-radius:10px;padding:9px 11px;border:1px solid rgba(255,255,255,0.06)">'
-    +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:3px">'+ico+' '+lbl+'</div>'
-    +'<div style="font-size:13px;font-weight:400;color:'+col+';line-height:1.3">'+formatFullDate(val)+'</div>'
-    +'</div>';
+  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
+  const mob = appW < 640;
+  function fmtDate(val) {
+    if (!val) return 'No definida';
+    const dt = val instanceof Date ? val : new Date(val);
+    if (isNaN(dt)) return 'Fecha Inválida';
+    if (mob) {
+      const d = String(dt.getDate()).padStart(2,'0');
+      const m = String(dt.getMonth()+1).padStart(2,'0');
+      const y = String(dt.getFullYear()).slice(-2);
+      const ts = dt.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',hour12:true}).toUpperCase();
+      return d+'/'+m+'/'+y+'<br>'+ts;
+    }
+    return formatFullDate(val);
+  }
+  const pill = function(ico,lbl,val) {
+    return '<div style="flex:1;min-width:'+(mob?'70px':'80px')+';background:rgba(0,0,0,0.28);border-radius:10px;padding:9px 11px;border:1px solid rgba(255,255,255,0.06)">'
+      +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:3px">'+ico+' '+lbl+'</div>'
+      +'<div style="font-size:'+(mob?'12px':'13px')+';font-weight:400;color:#ffffff;line-height:1.4">'+fmtDate(val)+'</div>'
+      +'</div>';
+  };
   el.innerHTML = '<div class="card" style="padding:11px 13px;margin-bottom:10px">'
     +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:9px">📅 CRONOGRAMA DEL SORTEO</div>'
     +'<div style="display:flex;gap:7px;flex-wrap:wrap">'
-    +pill('🔓','Apertura',sch.start,'#39ff7a')
-    +pill('🔒','Cierre',sch.end,'#ff5c7a')
-    +pill('🎉','Sorteo',sch.draw,'#ffd23f')
-    +(ps ? pill('⏱️','Mi turno',ps,'#22e5ff') : '')
+    +pill('🔓','Apertura',sch.start)
+    +pill('🔒','Cierre',sch.end)
+    +pill('🎉','Sorteo',sch.draw)
+    +(ps ? pill('⏱️','Mi turno',ps) : '')
     +'</div></div>';
 }
 function renderCronograma() {
