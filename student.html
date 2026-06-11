@@ -297,6 +297,8 @@ textarea.fsm { resize:none; height:64px; }
 #app #header .header-title { text-shadow: 0 0 14px rgba(57,255,122,0.55); }
 
 /* ── PESTAÑAS (Tablero/Ranking) y RANKING DE TURNOS — arcade neón ── */
+.tabs { display:flex; gap:6px; padding:10px 12px 0; }
+.tabs .tab-btn { flex:1; white-space:nowrap; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; padding:9px 4px; border-radius:12px; cursor:pointer; text-align:center; }
 #app .tab-btn {
   background: linear-gradient(160deg, rgba(34,229,255,0.06), rgba(176,107,255,0.04));
   border: 1px solid rgba(34,229,255,0.18);
@@ -1766,8 +1768,12 @@ function vNumerosSetup() {
   if (sub) sub.textContent='MATHS LEVEL UP · '+getSorteoMonth().toUpperCase();
   const list=document.getElementById('numeros-page-list'); if (!list) return;
   const students=getStudents();
+  // Si la apertura del sorteo aún no ha comenzado, ignorar allocations del sorteo anterior
+  const sorteoAbierto = new Date() >= computeSorteoSchedule().start;
   list.innerHTML=students.map(s=>{
-    const nums=Object.entries(allocations).filter(([,id])=>String(id)===String(s.id)).map(([n])=>parseInt(n)).sort((a,b)=>a-b);
+    const nums=sorteoAbierto
+      ? Object.entries(allocations).filter(([,id])=>String(id)===String(s.id)).map(([n])=>parseInt(n)).sort((a,b)=>a-b)
+      : [];
     const count=nums.length; const totalPts=getTotalPts(s.id); const pct=Math.min(100,(count/(totalPts||1))*100); const full=count>=totalPts&&totalPts>0;
     const numsHtml=nums.length>0
       ?nums.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:${s.color};color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;box-shadow:0 2px 6px ${s.color}66">${n}</span>`).join('')
