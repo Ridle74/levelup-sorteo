@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MATHS LEVEL UP — Estudiante</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -57,6 +58,7 @@ body.nav-visible .vw { padding-bottom: calc(88px + env(safe-area-inset-bottom));
 .hist-btn:not(:disabled):active { background: rgba(79,182,255,0.18); color:#4fb6ff; }
 .hist-btn:disabled { opacity:0.3; cursor:default; }
 #hist-home { background: rgba(79,182,255,0.12); color:#4fb6ff; }
+.hist-em { background:#8cb800 !important; color:#fff !important; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:-0.01em; margin-left:auto; }
 body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .nav-row { display: flex; max-width: 600px; margin: 0 auto; }
 .nav-btn {
@@ -472,6 +474,7 @@ textarea.fsm { resize:none; height:64px; }
   <button class="hist-btn" id="hist-back" onclick="navBack()" title="Atrás">◀</button>
   <button class="hist-btn" id="hist-home" onclick="navHome()" title="Inicio">🏠</button>
   <button class="hist-btn" id="hist-fwd" onclick="navForward()" title="Adelante">▶</button>
+  <button class="hist-btn hist-em" onclick="window.open('https://emaths.me/','_blank')" title="easyMaths">eM</button>
 </div>
 
 <!-- APP -->

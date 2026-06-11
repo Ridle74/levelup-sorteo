@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MATHS LEVEL UP — Portal de Padres</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 <style>
@@ -26,6 +27,7 @@ body.nav-visible { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
 .hist-btn:not(:disabled):active { background: rgba(0,0,0,0.14); }
 .hist-btn:disabled { opacity:0.3; cursor:default; }
 #hist-home { background: rgba(0,0,0,0.08); color:#111; }
+.hist-em { background:#8cb800 !important; color:#fff !important; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:-0.01em; margin-left:auto; }
 body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 
 .nav-row { display: flex; max-width: 600px; margin: 0 auto; }
@@ -137,6 +139,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
   <button class="hist-btn" id="hist-back" onclick="navBack()" title="Atrás">◀</button>
   <button class="hist-btn" id="hist-home" onclick="navHome()" title="Inicio">🏠</button>
   <button class="hist-btn" id="hist-fwd" onclick="navForward()" title="Adelante">▶</button>
+  <button class="hist-btn hist-em" onclick="window.open('https://emaths.me/','_blank')" title="easyMaths">eM</button>
 </div>
 <div id="app"></div>
 <div id="bottom-nav"><div class="nav-row" id="nav-row"></div></div>
