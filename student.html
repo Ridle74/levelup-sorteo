@@ -2746,7 +2746,7 @@ function makeAvatarHTML(icon, color, photo, frameId, size) {
   const bStyle = (fid!=='none') ? 'border:3px solid '+border+';' : '';
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0">'
     +'<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+(color||'#8B5CF6')+';'+bStyle+'display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
-    +(img?'<div style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;background:url(''+img+'') center/contain no-repeat;pointer-events:none"></div>':'')
+    +(img?'<img src="'+img+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
     +'</div>';
 }
 
@@ -2788,7 +2788,7 @@ function vPerfil() {
     return '<div class="perfil-frame-opt'+(curFrame===f.id?' selected':'')+'" onclick="perfilPickFrame(''+f.id+'')" style="display:flex;flex-direction:column;align-items:center;cursor:pointer">'
       +'<div style="position:relative;width:60px;height:60px">'
       +'<div style="width:60px;height:60px;border-radius:50%;background:'+curColor+';'+(f.id==='none'?'border:2px dashed #444;':'border:2px solid '+fb+';')+'display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;box-sizing:border-box">'+(curPhoto?'<img src="'+curPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%">':curIcon)+'</div>'
-      +(fi?'<div style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;background:url(''+fi+'') center/contain no-repeat;pointer-events:none"></div>':'')
+      +(fi?'<img src="'+fi+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
       +'</div><div style="font-size:10px;margin-top:4px;color:'+(curFrame===f.id?'#fff':'#777')+';text-align:center">'+f.label+'</div></div>';
   }).join('');
 
