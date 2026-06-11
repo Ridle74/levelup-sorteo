@@ -851,7 +851,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
         const pName  = showParent ? (studentParent[String(st.sid)]||'') : '';
         const editIco = (showParent && calEditMode && st.sessionId)
           ? '<div class="pcal-ev-edit-ico" onclick="openEditSession('+st.sessionId+',false);event.stopPropagation()">✏️</div>' : '';
-        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12);position:relative">'
+        return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12)">'
           +editIco
           +(pName?'<div class="pcal-ev-parent">'+pName+'</div>':'')
           +'<div class="pcal-ev-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+'</div>'
