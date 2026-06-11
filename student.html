@@ -1857,7 +1857,7 @@ function _renderMsgsInPlace(){
   el.innerHTML = _buildMsgsBubbles(); _scrollMsgsToBottom(); refreshMsgsBadge();
 }
 function _scrollMsgsToBottom(){
-  setTimeout(()=>{ const el=document.getElementById('msgs-body'); if(el) el.scrollTop=el.scrollHeight; },60);
+  setTimeout(()=>{ window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); },60);
 }
 function _buildMsgsBubbles(){
   const me = isAdmin() ? 'teacher' : String(getLoggedId());
@@ -1914,7 +1914,7 @@ function vMensajes(){
     </div>
     <div id="msgs-ch-lbl" style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">${_getMsgsChLabel()}</div>
   </div>
-  <div id="msgs-body" style="overflow-y:auto;padding:0 12px 6px;display:flex;flex-direction:column;gap:1px;min-height:120px;max-height:62dvh">
+  <div id="msgs-body" style="padding:0 12px 6px;display:flex;flex-direction:column;gap:1px">
     ${_buildMsgsBubbles()}
   </div>
   <div style="padding:8px 12px 4px;border-top:1px solid rgba(255,255,255,0.07)">
