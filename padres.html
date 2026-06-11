@@ -829,14 +829,19 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
 
   // Day columns
   const freeSlotList = DATA.freeSlots || [];
+  const cycleEndDate = DATA.cycleEnd ? new Date(DATA.cycleEnd+'T00:00:00') : null;
   const cols = filteredDayList.map(function(d) {
     const dow  = d.getDay();
     const dstr = _dStr(d);
     const isPast = d < today, isTod = d.getTime()===today.getTime();
     const cls = 'pcal-day-col'+(isTod?' is-today':'')+(isPast?' is-past':'');
     const lines = HOURS.map(function(){ return '<div class="pcal-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
+    // Recurring sessions only show within the cycle; one-time sessions always show on their date
+    const afterCycle = cycleEndDate && d > cycleEndDate;
     const slots = Object.values(slotMap).filter(function(sl){
-      return sl.oneTimeDate ? sl.oneTimeDate===dstr : sl.day===dow;
+      if (sl.oneTimeDate) return sl.oneTimeDate === dstr;
+      if (afterCycle) return false;
+      return sl.day === dow;
     });
     const cards = slots.flatMap(function(slot) {
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
@@ -862,7 +867,9 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     }).join('');
     const freeCards = freeSlotList.filter(function(fs){
       if (!showParent && fs.bookedBy) return false;
-      return (fs.recurring===false && fs.date) ? fs.date===dstr : Number(fs.day)===dow;
+      if (fs.recurring===false && fs.date) return fs.date === dstr;
+      if (afterCycle) return false;
+      return Number(fs.day) === dow;
     }).map(function(fs){
       const topPx = Math.max((toH(fs.start) - MIN_H) * ROW_H, 0);
       const hPx   = Math.max((fs.dur / 60) * ROW_H - 3, 28);
