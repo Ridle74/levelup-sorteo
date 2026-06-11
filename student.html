@@ -1869,10 +1869,15 @@ function _buildMsgsBubbles(){
       else if (m.att.type==='image') attHtml=`<img src="${m.att.url}" class="msg-att-img" alt="${m.att.name||'imagen'}" onclick="openImgViewer('${m.att.url}','${(m.att.name||'imagen').replace(/'/g,'')}')">`;
       else if (m.att.type==='file')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${m.att.name||'Archivo'}</a>`;
     }
-    return `<div class="msg-wrap ${mine?'mine':'other'}"><div class="msg-inner">
-      ${!mine&&sender?`<div class="msg-name">${sender}</div>`:''}
-      <div class="msg-bubble">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
-    </div></div>`;
+    const canDel = mine || isAdmin();
+    return `<div class="msg-wrap ${mine?'mine':'other'}" style="align-items:flex-end;gap:4px">
+      ${mine&&canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" style="background:none;border:none;color:rgba(255,255,255,0.2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1" onmouseover="this.style.color='#ff4757'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">🗑</button>`:''}
+      <div class="msg-inner">
+        ${!mine&&sender?`<div class="msg-name">${sender}</div>`:''}
+        <div class="msg-bubble">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
+      </div>
+      ${!mine&&canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" style="background:none;border:none;color:rgba(255,255,255,0.2);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1" onmouseover="this.style.color='#ff4757'" onmouseout="this.style.color='rgba(255,255,255,0.2)'">🗑</button>`:''}
+    </div>`;
   }).join('');
 }
 function setMsgsDmView(v){
@@ -1936,6 +1941,17 @@ function onMsgsFileSelect(input){
   _msgsFileObj = input.files[0];
   const r=document.getElementById('msgs-file-row'); if(r) r.style.display='flex';
   const n=document.getElementById('msgs-file-name'); if(n) n.textContent=_msgsFileObj.name;
+}
+async function deleteMsg(msgId){
+  if (!confirm('¿Eliminar este mensaje?')) return;
+  const docKey = msgsDmView===null ? 'group' : 'dm_'+msgsDmView;
+  const ref = MSGS_COL.doc(docKey);
+  try {
+    const snap = await ref.get();
+    if (!snap.exists) return;
+    const msgs = (snap.data().msgs||[]).filter(m => m.id !== msgId);
+    await ref.update({ msgs });
+  } catch(e){ showToast('Error al eliminar.'); }
 }
 function cancelMsgsFile(){ _msgsFileObj=null; const r=document.getElementById('msgs-file-row'); if(r) r.style.display='none'; const i=document.getElementById('msgs-file-input'); if(i) i.value=''; }
 // Compress image to base64 (max 900px, JPEG quality 0.72)
