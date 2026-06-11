@@ -664,25 +664,25 @@ function vInicio() {
       <div style="position:relative;z-index:1">
         <div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,0,0,0.6)">Bienvenido</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#111;margin-top:2px">${parent.name}</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:6px">${children.length} ${children.length===1?'hijo registrado':'hijos registrados'} · ${pendCount} ${pendCount===1?'solicitud pendiente':'solicitudes pendientes'}</div>
+        <div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:6px">${children.length} ${children.length===1?'hijo registrado':'hijos registrados'} · ${pendCount} ${pendCount===1?'solicitud pendiente':'solicitudes pendientes'}</div>
       </div>
     </div>
 
     ${DATA.cycleEnd ? `
-    <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(0,0,0,0.12);border-radius:14px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.6)">Ciclo actual${DATA.cycleName ? ' · '+DATA.cycleName : ''}</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.8);margin-top:4px;line-height:1.5">Los horarios semanales vigentes corresponden a este ciclo. La última clase es el <strong style="color:#111">${fmtCycleDate(DATA.cycleEnd)}</strong>.</div>
+    <div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px 14px;margin-bottom:14px">
+      <div style="font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Ciclo actual${DATA.cycleName ? ' · '+DATA.cycleName : ''}</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-top:4px;line-height:1.5">Los horarios semanales vigentes corresponden a este ciclo. La última clase es el <strong style="color:#111">${fmtCycleDate(DATA.cycleEnd)}</strong>.</div>
     </div>` : ''}
 
     <div class="sec-lbl">Tus hijos</div>
     <div class="child-row">
-      ${children.map(c => `<div class="child-chip csel" style="border-color:${c.color}55;color:${c.color}">${c.icon} ${c.name.split(' ')[0]}</div>`).join('')}
+      ${children.map(c => `<div class="child-chip csel">${c.icon} ${c.name.split(' ')[0]}</div>`).join('')}
     </div>
 
     <div class="sec-lbl" style="margin-top:6px">Próximas clases</div>
     ${next3.length ? next3.map(s => {
       const st = DATA.students[s.studentId];
-      return `<div class="cal-slot" style="border-left-color:${st.color};background:${st.color}14">
+      return `<div class="cal-slot" style="border-left-color:rgba(0,0,0,0.25);background:rgba(0,0,0,0.04)">
         <div class="cs-time">${st.icon} ${st.name.split(' ')[0]} · ${s.start} (${s.dur} min)</div>
         <div class="cs-meta">${s.isToday?'Hoy':DAY_NAMES[s.day]+' · '+fmtDM(s.date)} · ${s.modality} · ${s.topic}</div>
       </div>`;
@@ -1081,7 +1081,7 @@ function vAdminInicio() {
       <div style="position:relative;z-index:1">
         <div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,0,0,0.6)">Modo administrador</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;color:#111;margin-top:2px">Panel del profesor</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:6px">${totalFam} familias · ${totalAlum} alumnos registrados</div>
+        <div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:6px">${totalFam} familias · ${totalAlum} alumnos registrados</div>
       </div>
     </div>
 
