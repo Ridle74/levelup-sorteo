@@ -1306,7 +1306,7 @@ function updateBoardOverlay(loggedId) {
   if (boardHdr) boardHdr.style.display = 'none';
   // Give the card a fixed height so the overlay is visible
   const card = overlay.parentElement;
-  if (card) card.style.minHeight = '414px';
+  if (card) card.style.minHeight = '400px';
   document.getElementById('overlay-icon').textContent  = '⏳';
   document.getElementById('overlay-title').textContent = 'ESPERA TU TURNO';
   document.getElementById('overlay-sub').textContent   = 'Los turnos se habilitan de 3 PM a 9 PM.';
