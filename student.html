@@ -408,6 +408,31 @@ textarea.fsm { resize:none; height:64px; }
 .hor-pts-wrap { flex:1; min-height:0; overflow-y:auto; padding:10px 14px 80px; -webkit-overflow-scrolling:touch; }
 .hor-pts-inner { max-width:520px; margin:0 auto; }
 .hor-sec-lbl { font-size:9px; font-weight:900; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.38); margin:14px 0 8px; }
+
+/* ── MESSAGES ──────────────────────────────────────────── */
+.msg-wrap{display:flex;margin-bottom:6px}.msg-wrap.mine{justify-content:flex-end}.msg-wrap.other{justify-content:flex-start}
+.msg-inner{max-width:78%}.msg-name{font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:3px}
+.msg-bubble{padding:8px 12px;border-radius:16px;font-size:13px;line-height:1.45;word-break:break-word}
+.msg-wrap.mine .msg-bubble{background:rgba(79,182,255,0.22);border:1px solid rgba(79,182,255,0.3);border-bottom-right-radius:4px}
+.msg-wrap.other .msg-bubble{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-bottom-left-radius:4px}
+.msg-time{font-size:9px;color:rgba(255,255,255,0.28);margin-top:4px;text-align:right}
+.msg-att-link{display:block;margin-top:6px;padding:7px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(79,182,255,0.25);border-radius:10px;color:#4fb6ff;text-decoration:none;font-size:11px;font-weight:700;word-break:break-all}
+.msg-att-img{max-width:100%;border-radius:10px;margin-top:6px;display:block;cursor:pointer}
+.msg-att-file{display:block;margin-top:6px;padding:7px 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.75);text-decoration:none;font-size:11px;font-weight:700}
+.msgs-badge{position:absolute;top:-5px;right:-5px;min-width:16px;height:16px;background:#ff4757;border-radius:8px;font-size:9px;font-weight:900;color:#fff;display:inline-flex;align-items:center;justify-content:center;padding:0 3px;pointer-events:none}
+.nav-notif{position:absolute;top:4px;right:calc(50% - 16px);min-width:15px;height:15px;background:#ff4757;border-radius:8px;font-size:8px;font-weight:900;color:#fff;display:none;align-items:center;justify-content:center;padding:0 2px;pointer-events:none}
+.msgs-input-txt{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;color:#fff;font-size:13px;padding:9px 12px;resize:none;font-family:inherit;box-sizing:border-box;line-height:1.4}
+.msgs-input-txt:focus{outline:none;border-color:rgba(79,182,255,0.4)}
+.msgs-btn-icon{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border-radius:10px;padding:9px 11px;cursor:pointer;font-size:15px;line-height:1}
+.msgs-btn-send{background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:10px;padding:9px 14px;font-weight:900;font-size:16px;cursor:pointer;line-height:1}
+.msgs-btn-send:disabled{opacity:0.4;cursor:default}
+.msgs-link-row{display:none;gap:6px;margin-bottom:8px;align-items:center}
+.msgs-link-row input{flex:1;margin-bottom:0 !important;font-size:12px}
+.msgs-file-row{display:none;align-items:center;gap:8px;margin-bottom:8px;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px}
+.msgs-file-row span{font-size:12px;color:rgba(255,255,255,0.7);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msgs-dm-pill{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.msgs-dm-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:700;cursor:pointer;position:relative;white-space:nowrap}
+.msgs-dm-btn.active{background:rgba(79,182,255,0.18);border-color:rgba(79,182,255,0.4);color:#4fb6ff}
 </style>
 </head>
 <body>
@@ -438,6 +463,7 @@ textarea.fsm { resize:none; height:64px; }
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <script>
 // ════════════════════════════════════════════════════════
 // FIREBASE
@@ -451,8 +477,10 @@ const firebaseConfig = {
   appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
 };
 firebase.initializeApp(firebaseConfig);
-const db  = firebase.firestore();
-const REF = db.collection('sorteo').doc('main');
+const db      = firebase.firestore();
+const storage  = firebase.storage();
+const REF      = db.collection('sorteo').doc('main');
+const MSGS_COL = db.collection('msgs');
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
@@ -495,6 +523,12 @@ let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progre
 let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 let horWeekOffset  = 0;   // 0 = semana actual, ±N = semanas adelante/atrás en la vista de horarios
+// ── MESSAGES ─────────────────────────────────────────────
+let msgsGroupArr  = [];   // [{id,from,fromName,text,att,ts}] sorted by ts
+let msgsDmObj     = {};   // {studentId: [...]} loaded on-demand
+let msgsListeners = {};   // active onSnapshot unsubscribers
+let msgsDmView    = null; // null=group channel, or String(studentId) for DM
+let msgsUploading = false;
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let padresRaw        = { students: {}, sessions: [] }; // snapshot crudo de /padres para la grilla de horarios
@@ -899,9 +933,11 @@ function buildNav(active) {
         { r:'puntos',    i:'⚡', l:'Puntos' },
         { r:'ranking',   i:'👑', l:'Ranking' },
       ];
+  const _unread = totalMsgsUnread();
   document.getElementById('nav-row').innerHTML = navItems.map(n =>
-    `<button class="nav-btn${n.r===active?' active':''}" data-r="${n.r}" onclick="go('${n.r}')">
+    `<button class="nav-btn${n.r===active?' active':''}" data-r="${n.r}" onclick="go('${n.r}')" style="position:relative">
       <span class="ni">${n.i}</span>${n.l}
+      ${n.r==='tareas' ? `<span class="nav-notif" id="nav-badge-tareas" style="display:${_unread>0?'flex':'none'}">${_unread>9?'9+':String(_unread||'')}</span>` : ''}
     </button>`
   ).join('');
 }
@@ -1697,6 +1733,7 @@ function vTareas() {
     <div class="tabs">
       <button class="tab-btn${taskFilter==='pending'?' active':''}" onclick="setTaskFilter('pending')">📌 PENDIENTES (${pendingCount})</button>
       <button class="tab-btn${taskFilter==='done'?' active':''}" onclick="setTaskFilter('done')">✅ COMPLETADAS (${completedCount})</button>
+      <button class="tab-btn${taskFilter==='msgs'?' active':''}" onclick="setTaskFilter('msgs')" style="position:relative">💬 MENSAJES${totalMsgsUnread()>0?` <span class="msgs-badge">${totalMsgsUnread()>9?'9+':totalMsgsUnread()}</span>`:''}</button>
     </div>
 
     ${isAdmin()?`
@@ -1720,11 +1757,13 @@ function vTareas() {
       <button class="btn-sm btn-primary" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
     </div>`:''}
 
+    ${taskFilter==='msgs' ? '' : `
     <div id="tasks-list">
       ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskFilter==='done'?'SIN TAREAS COMPLETADAS':'SIN TAREAS PENDIENTES'}</div></div>`
       : sorted.map(t => renderTask(t, loggedId)).join('')}
-    </div>
-  </div>`;
+    </div>`}
+  </div>
+  ${taskFilter==='msgs' ? vMensajes() : ''}`;
 }
 function renderTask(t, loggedId) {
   const done = (t.completedBy||[]).includes(loggedId);
@@ -1747,7 +1786,191 @@ function renderTask(t, loggedId) {
     </div>
   </div>`;
 }
-function vTareasSetup() {}
+function vTareasSetup() {
+  startMsgsListeners();
+  if (taskFilter === 'msgs') {
+    _scrollMsgsToBottom();
+    setMsgLastRead(msgsDmView === null ? 'group' : 'dm_' + msgsDmView);
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// MESSAGES
+// ════════════════════════════════════════════════════════
+function getMsgLastRead(k){ return parseInt(localStorage.getItem('msgRead_'+k)||'0'); }
+function setMsgLastRead(k){ localStorage.setItem('msgRead_'+k, String(Date.now())); }
+function msgsUnreadCount(arr, k){
+  const lr = getMsgLastRead(k);
+  const me = isAdmin() ? 'teacher' : String(getLoggedId());
+  return arr.filter(m => m.ts > lr && m.from !== me).length;
+}
+function totalMsgsUnread(){
+  if (!getLoggedId()) return 0;
+  let n = msgsUnreadCount(msgsGroupArr, 'group');
+  if (!isAdmin()){
+    n += msgsUnreadCount(msgsDmObj[String(getLoggedId())]||[], 'dm_'+getLoggedId());
+  } else {
+    Object.entries(msgsDmObj).forEach(([sid,arr]) => { n += msgsUnreadCount(arr,'dm_'+sid); });
+  }
+  return n;
+}
+function refreshMsgsBadge(){
+  const n = totalMsgsUnread();
+  const el = document.getElementById('nav-badge-tareas');
+  if (el){ el.textContent = n>9?'9+':String(n||''); el.style.display = n>0?'flex':'none'; }
+}
+function startMsgsListeners(){
+  if (msgsListeners['group']) return;
+  const loggedId = getLoggedId(); if (!loggedId) return;
+  msgsListeners['group'] = MSGS_COL.doc('group').onSnapshot(snap => {
+    msgsGroupArr = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
+    refreshMsgsBadge();
+    if (taskFilter==='msgs' && msgsDmView===null) _renderMsgsInPlace();
+  });
+  if (!isAdmin()){
+    const sid = String(loggedId);
+    msgsListeners['dm_'+sid] = MSGS_COL.doc('dm_'+sid).onSnapshot(snap => {
+      msgsDmObj[sid] = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
+      refreshMsgsBadge();
+      if (taskFilter==='msgs' && msgsDmView===sid) _renderMsgsInPlace();
+    });
+  } else {
+    getStudents().forEach(s => {
+      const sid = String(s.id);
+      if (msgsListeners['dm_'+sid]) return;
+      msgsListeners['dm_'+sid] = MSGS_COL.doc('dm_'+sid).onSnapshot(snap => {
+        msgsDmObj[sid] = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
+        refreshMsgsBadge();
+        if (taskFilter==='msgs' && msgsDmView===sid) _renderMsgsInPlace();
+      });
+    });
+  }
+}
+function _renderMsgsInPlace(){
+  const el = document.getElementById('msgs-body'); if (!el) return;
+  el.innerHTML = _buildMsgsBubbles(); _scrollMsgsToBottom(); refreshMsgsBadge();
+}
+function _scrollMsgsToBottom(){
+  setTimeout(()=>{ const el=document.getElementById('msgs-body'); if(el) el.scrollTop=el.scrollHeight; },60);
+}
+function _buildMsgsBubbles(){
+  const me = isAdmin() ? 'teacher' : String(getLoggedId());
+  const arr = msgsDmView===null ? msgsGroupArr : (msgsDmObj[msgsDmView]||[]);
+  if (!arr.length) return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:36px;margin-bottom:8px">💬</div><div style="font-size:13px">Sin mensajes aún</div></div>`;
+  return arr.map(m => {
+    const mine = m.from===me;
+    const ts = new Date(m.ts);
+    const timeStr = ts.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+    const dateStr = ts.toLocaleDateString('es-ES',{day:'numeric',month:'short'});
+    const sender = mine ? '' : (m.from==='teacher' ? '👨‍🏫 Profe' : (getStudents().find(s=>String(s.id)===m.from)?.name||'Alumno'));
+    let attHtml = '';
+    if (m.att){
+      if (m.att.type==='link')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${m.att.name||m.att.url}</a>`;
+      else if (m.att.type==='image') attHtml=`<img src="${m.att.url}" class="msg-att-img" alt="imagen" onclick="window.open('${m.att.url}','_blank')">`;
+      else if (m.att.type==='file')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${m.att.name||'Archivo'}</a>`;
+    }
+    return `<div class="msg-wrap ${mine?'mine':'other'}"><div class="msg-inner">
+      ${!mine&&sender?`<div class="msg-name">${sender}</div>`:''}
+      <div class="msg-bubble">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
+    </div></div>`;
+  }).join('');
+}
+function setMsgsDmView(v){
+  msgsDmView = (v==='null'||v===null) ? null : String(v);
+  document.querySelectorAll('.msgs-dm-btn').forEach(b => b.classList.toggle('active', b.dataset.v===String(v)));
+  _renderMsgsInPlace();
+  setMsgLastRead(msgsDmView===null ? 'group' : 'dm_'+msgsDmView);
+  const lbl=document.getElementById('msgs-ch-lbl'); if(lbl) lbl.textContent=_getMsgsChLabel();
+}
+function _getMsgsChLabel(){
+  if (msgsDmView===null) return '📢 Canal Grupal — todos los alumnos';
+  if (isAdmin()){ const s=getStudents().find(s=>String(s.id)===msgsDmView); return `💬 Chat con ${s?.name||''}  ${s?.icon||''}`; }
+  return '💬 Chat privado con el profe';
+}
+function vMensajes(){
+  const loggedId = getLoggedId();
+  const admin = isAdmin();
+  const sid = String(loggedId);
+  const groupU = msgsUnreadCount(msgsGroupArr,'group');
+  const dmU = admin ? 0 : msgsUnreadCount(msgsDmObj[sid]||[],'dm_'+sid);
+  setMsgLastRead(msgsDmView===null ? 'group' : 'dm_'+(msgsDmView||sid));
+  const dmBtns = admin
+    ? getStudents().map(s=>{ const u=msgsUnreadCount(msgsDmObj[String(s.id)]||[],'dm_'+s.id); return `<button class="msgs-dm-btn${msgsDmView===String(s.id)?' active':''}" data-v="${s.id}" onclick="setMsgsDmView('${s.id}')" style="position:relative">${s.icon} ${s.name.split(' ')[0]}${u>0?` <span class="msgs-badge">${u}</span>`:''}</button>`; }).join('')
+    : `<button class="msgs-dm-btn${msgsDmView!==null?' active':''}" data-v="${sid}" onclick="setMsgsDmView('${sid}')" style="position:relative">💬 MI CHAT${dmU>0?` <span class="msgs-badge">${dmU}</span>`:''}</button>`;
+  return `<div style="padding:12px 12px 6px">
+    <div class="msgs-dm-pill">
+      <button class="msgs-dm-btn${msgsDmView===null?' active':''}" data-v="null" onclick="setMsgsDmView('null')" style="position:relative">📢 CANAL${groupU>0?` <span class="msgs-badge">${groupU}</span>`:''}</button>
+      ${dmBtns}
+    </div>
+    <div id="msgs-ch-lbl" style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">${_getMsgsChLabel()}</div>
+  </div>
+  <div id="msgs-body" style="overflow-y:auto;padding:0 12px 6px;display:flex;flex-direction:column;gap:2px;min-height:120px;max-height:52dvh">
+    ${_buildMsgsBubbles()}
+  </div>
+  <div style="padding:8px 12px 4px;border-top:1px solid rgba(255,255,255,0.07)">
+    <div class="msgs-link-row" id="msgs-link-row">
+      <input type="text" id="msgs-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;font-size:12px">
+      <input type="text" id="msgs-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;font-size:12px">
+      <button onclick="cancelMsgsLink()" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;padding:5px 9px;cursor:pointer">✕</button>
+    </div>
+    <div class="msgs-file-row" id="msgs-file-row">
+      <span id="msgs-file-name">—</span>
+      <button onclick="cancelMsgsFile()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:18px;line-height:1">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:flex-end">
+      <textarea id="msgs-text" class="msgs-input-txt" placeholder="Escribe un mensaje..." rows="2" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleMsgsLink()">🔗</button>
+        <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('msgs-file-input').click()">📎</button>
+        <button class="msgs-btn-send" id="msgs-send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+    <input type="file" id="msgs-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onMsgsFileSelect(this)">
+  </div>`;
+}
+let _msgsFileObj = null;
+function toggleMsgsLink(){ const r=document.getElementById('msgs-link-row'); if(r) r.style.display=r.style.display==='flex'?'none':'flex'; }
+function cancelMsgsLink(){ const r=document.getElementById('msgs-link-row'); if(r) r.style.display='none'; ['msgs-link-url','msgs-link-name'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
+function onMsgsFileSelect(input){
+  if (!input.files?.[0]) return;
+  _msgsFileObj = input.files[0];
+  const r=document.getElementById('msgs-file-row'); if(r) r.style.display='flex';
+  const n=document.getElementById('msgs-file-name'); if(n) n.textContent=_msgsFileObj.name;
+}
+function cancelMsgsFile(){ _msgsFileObj=null; const r=document.getElementById('msgs-file-row'); if(r) r.style.display='none'; const i=document.getElementById('msgs-file-input'); if(i) i.value=''; }
+async function sendMsg(){
+  if (msgsUploading) return;
+  const text=(document.getElementById('msgs-text')?.value||'').trim();
+  const linkUrl=(document.getElementById('msgs-link-url')?.value||'').trim();
+  const linkName=(document.getElementById('msgs-link-name')?.value||'').trim();
+  if (!text && !linkUrl && !_msgsFileObj){ showToast('Escribe un mensaje o adjunta algo.'); return; }
+  const me = isAdmin() ? 'teacher' : String(getLoggedId());
+  const myName = isAdmin() ? '👨‍🏫 Profe' : (getStudents().find(s=>String(s.id)===me)?.name||'Alumno');
+  let att = null;
+  if (_msgsFileObj){
+    msgsUploading = true;
+    const btn=document.getElementById('msgs-send-btn'); if(btn){btn.disabled=true;btn.textContent='⏳';}
+    try {
+      const ref = storage.ref('msgs/'+Date.now()+'_'+_msgsFileObj.name);
+      const snap = await ref.put(_msgsFileObj);
+      const url = await snap.ref.getDownloadURL();
+      att = { type: _msgsFileObj.type.startsWith('image/') ? 'image' : 'file', url, name: _msgsFileObj.name };
+    } catch(e){
+      showToast('Error al subir. Activa Firebase Storage en la consola.');
+      msgsUploading=false; const btn2=document.getElementById('msgs-send-btn'); if(btn2){btn2.disabled=false;btn2.textContent='➤';} return;
+    }
+    msgsUploading=false; const btn2=document.getElementById('msgs-send-btn'); if(btn2){btn2.disabled=false;btn2.textContent='➤';}
+  } else if (linkUrl){
+    att = { type:'link', url:/^https?:\/\//i.test(linkUrl)?linkUrl:'https://'+linkUrl, name:linkName||linkUrl };
+  }
+  const msg = { id:String(Date.now()), from:me, fromName:myName, text, att, ts:Date.now() };
+  const docKey = msgsDmView===null ? 'group' : 'dm_'+msgsDmView;
+  try {
+    await MSGS_COL.doc(docKey).set({ msgs: firebase.firestore.FieldValue.arrayUnion(msg) }, { merge:true });
+    const textEl=document.getElementById('msgs-text'); if(textEl) textEl.value='';
+    cancelMsgsLink(); cancelMsgsFile();
+  } catch(e){ showToast('Error al enviar mensaje.'); }
+}
 function setTaskFilter(f) {
   taskFilter = f;
   router();
