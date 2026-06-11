@@ -683,15 +683,17 @@ function vInicio() {
 
 // ── Shared calendar helpers ──────────────────────────────────────
 function buildPadCalNav(rangeStart, rangeEnd, _unused) {
+  const m4 = calMode === '4dias' ? ' on' : '';
+  const mw = calMode === 'week'  ? ' on' : '';
   return '<div class="pcal-toolbar">'
     + '<div class="pcal-toggle">'
-    + '<button class="'+(calMode==='4dias'?'on':'')+'" onclick="setCalMode('4dias')">4 días</button>'
-    + '<button class="'+(calMode==='week'?'on':'')+'" onclick="setCalMode('week')">Semana</button>'
+    + '<button class="' + m4 + '" onclick="setCalMode(\'4dias\')">4 días</button>'
+    + '<button class="' + mw + '" onclick="setCalMode(\'week\')">Semana</button>'
     + '</div>'
     + '<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
     + '<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
     + '</div>'
-    + '<div class="pcal-range-bar">'+fmtDM(rangeStart)+' — '+fmtDM(rangeEnd)+'</div>';
+    + '<div class="pcal-range-bar">' + fmtDM(rangeStart) + ' — ' + fmtDM(rangeEnd) + '</div>';
 }
 
 function buildPadCalGrid(dayList, activeSids, showParent) {
