@@ -27,7 +27,6 @@
 /* ── SPA SHELL ─────────────────────────────────────── */
 #app { min-height: 100dvh; }
 body.nav-visible { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
-body.nav-visible .vw > div[style*="padding:12px"] { padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important; }
 
 /* ── INITIAL LOADING ──────────────────────────────── */
 #initial-loading {
@@ -2567,4 +2566,8 @@ REF.onSnapshot(doc => {
   document.getElementById('initial-loading').classList.add('hidden');
   appReady = true;
   router();
-  showToast('No se pudo conectar a Fire
+  showToast('No se pudo conectar a Firebase.');
+});
+</script>
+</body>
+</html>
