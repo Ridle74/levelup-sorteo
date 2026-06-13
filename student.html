@@ -578,7 +578,8 @@ let currentView = viewFromLocation();
 let taskFilter       = 'pending'; // 'pending' | 'done' | 'msgs'
 let taskSort         = 'recent';  // 'recent' | 'old' | 'student'
 let taskStudentView  = null;      // null = todos, o String(id) = alumno específico
-let prompts          = {};        // { [studentId]: [{id,name,text,ts}] }
+let prompts          = {};        // { [studentId]: [{id,name,text,ts,sharedId?,history:[{name,text,ts}]}] }
+let _promptHistOpen  = null;     // id del prompt con historial expandido
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
 
 // Atrás/adelante del navegador: releer la vista desde la URL y renderizar
@@ -1893,11 +1894,29 @@ function vTareas() {
         </div>
       </div>
       ${(prompts[taskStudentView]||[]).map(p=>`
-      <div style="display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:5px">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}${p.sharedId?'<span style="margin-left:5px;font-size:9px;color:rgba(255,255,255,0.3);font-weight:700">🔗</span>':''}</div>
-        <button onclick="openEditPrompt('${p.id}','${taskStudentView}')" style="background:rgba(255,190,50,0.1);border:1px solid rgba(255,190,50,0.25);color:#fbbf24;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">✏️</button>
-        <button onclick="copyPrompt('${p.id}','${taskStudentView}')" style="background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);color:#4fb6ff;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">📋</button>
-        <button onclick="deletePrompt('${taskStudentView}','${p.id}')" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;padding:0">🗑</button>
+      <div style="margin-bottom:5px">
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:${_promptHistOpen===p.id&&p.history?.length?'10px 10px 0 0':'10px'}">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}${p.sharedId?'<span style="margin-left:5px;font-size:9px;color:rgba(255,255,255,0.3);font-weight:700">🔗</span>':''}</div>
+          ${p.history?.length?`<button onclick="togglePromptHistory('${p.id}')" style="background:${_promptHistOpen===p.id?'rgba(139,92,246,0.2)':'rgba(255,255,255,0.05)'};border:1px solid ${_promptHistOpen===p.id?'rgba(139,92,246,0.4)':'rgba(255,255,255,0.1)'};color:${_promptHistOpen===p.id?'#a78bfa':'rgba(255,255,255,0.3)'};border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0" title="Ver historial">🕐 ${p.history.length}</button>`:''}
+          <button onclick="openEditPrompt('${p.id}','${taskStudentView}')" style="background:rgba(255,190,50,0.1);border:1px solid rgba(255,190,50,0.25);color:#fbbf24;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">✏️</button>
+          <button onclick="copyPrompt('${p.id}','${taskStudentView}')" style="background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);color:#4fb6ff;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">📋</button>
+          <button onclick="deletePrompt('${taskStudentView}','${p.id}')" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;padding:0">🗑</button>
+        </div>
+        ${_promptHistOpen===p.id&&p.history?.length?`
+        <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-top:none;border-radius:0 0 10px 10px;padding:8px 10px">
+          <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">VERSIONES ANTERIORES</div>
+          ${[...p.history].reverse().map((h,ri)=>{
+            const realIdx = p.history.length-1-ri;
+            const d = new Date(h.ts).toLocaleDateString('es-ES',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+            return `<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+              <div style="flex:1;min-width:0">
+                <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:1px">${d}</div>
+              </div>
+              <button onclick="restorePromptVersion('${p.id}','${taskStudentView}',${realIdx})" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;border-radius:8px;padding:4px 9px;cursor:pointer;font-size:10px;font-weight:900;flex-shrink:0">↩️ Restaurar</button>
+            </div>`;
+          }).join('')}
+        </div>`:``}
       </div>`).join('')}
       ${(prompts[taskStudentView]||[]).length===0?`<div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;padding:8px 0">Sin prompts aún</div>`:''}
       <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px">
@@ -2300,14 +2319,16 @@ function savePrompt(studentId) {
       }
     }
 
-    // Actualizar todas las copias vinculadas
+    // Actualizar todas las copias vinculadas, guardando versión anterior en history
     getStudents().forEach(s => {
       const sid = String(s.id);
       if (!prompts[sid]) return;
       prompts[sid] = prompts[sid].map(p => {
-        if (p.id === editingId) return { ...p, name, text };
-        if (sharedId && p.sharedId === sharedId) return { ...p, name, text };
-        return p;
+        const match = p.id === editingId || (sharedId && p.sharedId === sharedId);
+        if (!match) return p;
+        const hist = [...(p.history||[]), { name: p.name, text: p.text, ts: p.ts||Date.now() }]
+          .slice(-10); // máximo 10 versiones
+        return { ...p, name, text, ts: Date.now(), history: hist };
       });
     });
     saveLms();
@@ -2332,6 +2353,38 @@ function savePrompt(studentId) {
   });
   saveLms();
   showToast('Prompt guardado.', 'success');
+  router();
+}
+function togglePromptHistory(promptId) {
+  _promptHistOpen = _promptHistOpen === promptId ? null : promptId;
+  router();
+}
+function restorePromptVersion(promptId, studentId, histIdx) {
+  // Find sharedId
+  let sharedId = null;
+  for (const sid of Object.keys(prompts)) {
+    const found = (prompts[sid]||[]).find(p => p.id === promptId);
+    if (found) { sharedId = found.sharedId || null; break; }
+  }
+  // Restore across all linked students
+  getStudents().forEach(s => {
+    const sid = String(s.id);
+    if (!prompts[sid]) return;
+    prompts[sid] = prompts[sid].map(p => {
+      const match = p.id === promptId || (sharedId && p.sharedId === sharedId);
+      if (!match) return p;
+      const hist = p.history || [];
+      const version = hist[histIdx];
+      if (!version) return p;
+      // Save current as new history entry, then restore
+      const newHist = [...hist.filter((_,i)=>i!==histIdx), { name: p.name, text: p.text, ts: p.ts }]
+        .slice(-10); // máximo 10 versiones
+      return { ...p, name: version.name, text: version.text, ts: Date.now(), history: newHist };
+    });
+  });
+  saveLms();
+  showToast('Versión restaurada.', 'success');
+  _promptHistOpen = null;
   router();
 }
 function openEditPrompt(promptId, studentId) {
