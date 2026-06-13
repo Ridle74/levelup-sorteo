@@ -299,11 +299,11 @@ textarea.fsm { resize:none; height:64px; }
 #app #header .header-title { text-shadow: 0 0 14px rgba(57,255,122,0.55); }
 
 /* ── PESTAÑAS (Tablero/Ranking) y RANKING DE TURNOS — arcade neón ── */
-.tabs { display:flex; gap:6px; padding:10px 12px 0; }
-.tabs .tab-btn { flex:1; white-space:nowrap; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; padding:9px 4px; border-radius:12px; cursor:pointer; text-align:center; }
+.tabs { display:flex; gap:6px; padding:6px; margin:10px 12px 10px; }
+.tabs .tab-btn { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; padding:9px 4px; border-radius:10px; cursor:pointer; text-align:center; }
 #app .tab-btn {
   background: linear-gradient(160deg, rgba(34,229,255,0.06), rgba(176,107,255,0.04));
-  border: 1px solid rgba(34,229,255,0.18);
+  border: 2px solid rgba(34,229,255,0.18);
   color: rgba(255,255,255,0.55);
   transition: all 0.25s;
 }
