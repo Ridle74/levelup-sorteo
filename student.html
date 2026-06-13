@@ -1993,7 +1993,9 @@ function _buildMsgsBubbles(){
     const ts = new Date(m.ts);
     const timeStr = ts.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
     const dateStr = ts.toLocaleDateString('es-ES',{day:'numeric',month:'short'});
-    const sender = mine ? '' : (m.from==='teacher' ? '👨‍🏫 Profe' : (getStudents().find(s=>String(s.id)===m.from)?.name||'Alumno'));
+    const senderStudent = m.from!=='teacher' ? getStudents().find(s=>String(s.id)===m.from) : null;
+    const senderColor = senderStudent?.color || null;
+    const sender = mine ? '' : (m.from==='teacher' ? '👨‍🏫 Profe' : (senderStudent?.name||'Alumno'));
     let attHtml = '';
     if (m.att){
       if (m.att.type==='link')  attHtml=`<a href="${m.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${m.att.name||m.att.url}</a>`;
@@ -2003,7 +2005,7 @@ function _buildMsgsBubbles(){
     const canDel = mine || isAdmin();
     return `<div class="msg-wrap ${mine?'mine':'other'}">
       <div class="msg-inner">
-        ${!mine&&sender?`<div class="msg-name">${sender}</div>`:''}
+        ${!mine&&sender?`<div class="msg-name" style="${senderColor?`color:${senderColor}`:''}">${sender}</div>`:''}
         <div class="msg-bubble">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
         ${canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" class="msg-del">🗑</button>`:''}
       </div>
