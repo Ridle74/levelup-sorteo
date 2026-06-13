@@ -2227,7 +2227,7 @@ function refreshTaskPromptList(preselect) {
   const assignVal = getTaskAssignTo();
   const sid = assignVal === 'all' ? null : (Array.isArray(assignVal) ? null : String(assignVal));
   const sids = assignVal === 'all' ? null : (Array.isArray(assignVal) ? assignVal : [String(assignVal)]);
-  // Build list: one student, multiple students, or all
+  // Build list: one student, multiple students, or all — deduplicando compartidos
   let list = [];
   if (sid) {
     list = (prompts[sid] || []).map(p => ({ ...p, _label: p.name }));
@@ -2235,10 +2235,18 @@ function refreshTaskPromptList(preselect) {
     const targetStudents = sids
       ? getStudents().filter(s => sids.includes(String(s.id)))
       : getStudents();
-    const needLabel = !sids || sids.length > 1;
+    const seenShared = new Set(); // sharedId ya agregados
+    const seenNames  = new Set(); // nombres ya agregados (para prompts viejos sin sharedId)
     targetStudents.forEach(s => {
       (prompts[String(s.id)] || []).forEach(p => {
-        list.push({ ...p, _label: needLabel ? p.name + ' · ' + s.name.split(' ')[0] : p.name });
+        if (p.sharedId) {
+          if (seenShared.has(p.sharedId)) return; // duplicado compartido
+          seenShared.add(p.sharedId);
+        } else {
+          if (seenNames.has(p.name)) return; // mismo nombre = mismo prompt viejo
+          seenNames.add(p.name);
+        }
+        list.push({ ...p, _label: p.name });
       });
     });
   }
@@ -2492,6 +2500,15 @@ async function addTask() {
     att = { type:'link', url:/^https?:\/\//i.test(linkUrl)?linkUrl:'https://'+linkUrl, name:linkName||linkUrl };
   }
   const assignTo = getTaskAssignTo();
+  // Resolver prompt seleccionado
+  const promptId = document.getElementById('t-prompt')?.value || '';
+  let promptEntry = null;
+  if (promptId) {
+    for (const sid of Object.keys(prompts)) {
+      promptEntry = (prompts[sid]||[]).find(p => p.id === promptId);
+      if (promptEntry) break;
+    }
+  }
   const taskData = {
     title,
     desc:     (document.getElementById('t-desc')?.value||'').trim(),
