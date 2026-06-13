@@ -2276,7 +2276,28 @@ function refreshTaskPromptList(preselect) {
   wrap.style.display = 'block';
   sel.innerHTML = '<option value="">— Sin prompt —</option>' +
     list.map(p => `<option value="${p.id}">${p._label}</option>`).join('');
-  if (preselect) sel.value = preselect;
+  if (preselect) {
+    sel.value = preselect;
+    // Si no matchea directo (prompt compartido guardado con otro id), buscar por sharedId
+    if (!sel.value) {
+      let sharedId = null;
+      for (const sid of Object.keys(prompts)) {
+        const found = (prompts[sid]||[]).find(p => p.id === preselect);
+        if (found) { sharedId = found.sharedId || null; break; }
+      }
+      if (sharedId) {
+        for (const opt of sel.options) {
+          if (!opt.value) continue;
+          let matched = false;
+          for (const sid of Object.keys(prompts)) {
+            const p = (prompts[sid]||[]).find(x => x.id === opt.value);
+            if (p?.sharedId === sharedId) { matched = true; break; }
+          }
+          if (matched) { sel.value = opt.value; break; }
+        }
+      }
+    }
+  }
 }
 function setTaskSort(s) {
   taskSort = s;
