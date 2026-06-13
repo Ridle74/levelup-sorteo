@@ -1893,23 +1893,28 @@ function vTareas() {
         </div>
       </div>
       ${(prompts[taskStudentView]||[]).map(p=>`
-      <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:5px">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
-        <button onclick="copyPrompt('${p.id}','${taskStudentView}')" style="background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);color:#4fb6ff;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">📋 Copiar</button>
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:5px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}${p.sharedId?'<span style="margin-left:5px;font-size:9px;color:rgba(255,255,255,0.3);font-weight:700">🔗</span>':''}</div>
+        <button onclick="openEditPrompt('${p.id}','${taskStudentView}')" style="background:rgba(255,190,50,0.1);border:1px solid rgba(255,190,50,0.25);color:#fbbf24;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">✏️</button>
+        <button onclick="copyPrompt('${p.id}','${taskStudentView}')" style="background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);color:#4fb6ff;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">📋</button>
         <button onclick="deletePrompt('${taskStudentView}','${p.id}')" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;padding:0">🗑</button>
       </div>`).join('')}
       ${(prompts[taskStudentView]||[]).length===0?`<div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;padding:8px 0">Sin prompts aún</div>`:''}
       <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px">
+        <input type="hidden" id="prompt-editing-id" value="">
         <input type="text" id="prompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
         <textarea id="prompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:6px;resize:vertical;min-height:70px"></textarea>
-        <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:</div>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px" id="prompt-also-list">
-          ${students.filter(s=>String(s.id)!==taskStudentView).map(s=>`
-          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
-            <input type="checkbox" data-sid="${s.id}" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
-          </label>`).join('')}
+        <div id="prompt-also-section">
+          <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px" id="prompt-also-list">
+            ${students.filter(s=>String(s.id)!==taskStudentView).map(s=>`
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
+              <input type="checkbox" data-sid="${s.id}" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
+            </label>`).join('')}
+          </div>
         </div>
-        <button class="btn-sm btn-primary" onclick="savePrompt('${taskStudentView}')" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
+        <button class="btn-sm btn-primary" id="prompt-save-btn" onclick="savePrompt('${taskStudentView}')" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
+        <button id="prompt-cancel-btn" onclick="cancelEditPrompt()" style="display:none;width:100%;margin-top:6px;padding:7px;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:rgba(255,255,255,0.4);font-size:11px;font-weight:900;letter-spacing:0.1em;cursor:pointer">✕ CANCELAR EDICIÓN</button>
       </div>
     </div>` : ''}
 
@@ -2256,22 +2261,78 @@ function savePrompt(studentId) {
   const text = (document.getElementById('prompt-text')?.value||'').trim();
   if (!name) { showToast('Escribe un nombre para el prompt.'); return; }
   if (!text) { showToast('Escribe el texto del prompt.'); return; }
-  const id = Date.now().toString();
-  const entry = { id, name, text, ts: Date.now() };
-  // Add to primary student
+
+  const editingId = document.getElementById('prompt-editing-id')?.value || '';
+
+  if (editingId) {
+    // EDIT MODE — find sharedId then update all matching copies
+    let sharedId = null;
+    for (const sid of Object.keys(prompts)) {
+      const found = (prompts[sid]||[]).find(p => p.id === editingId);
+      if (found) { sharedId = found.sharedId || null; break; }
+    }
+    getStudents().forEach(s => {
+      const sid = String(s.id);
+      if (!prompts[sid]) return;
+      prompts[sid] = prompts[sid].map(p => {
+        if (p.id === editingId) return { ...p, name, text };
+        if (sharedId && p.sharedId === sharedId) return { ...p, name, text };
+        return p;
+      });
+    });
+    saveLms();
+    showToast('Prompt actualizado.' + (sharedId ? ' (aplicado a todos los alumnos compartidos)' : ''), 'success');
+    router();
+    return;
+  }
+
+  // CREATE MODE
+  const checks = document.querySelectorAll('#prompt-also-list input[type=checkbox]:checked');
+  const alsoSids = [...checks].map(cb => String(cb.dataset.sid));
+  const isShared = alsoSids.length > 0;
+  const sharedId = isShared ? Date.now().toString() : undefined;
+  const id = Date.now().toString() + '_' + String(studentId);
+  const entry = { id, name, text, ts: Date.now(), ...(isShared ? {sharedId} : {}) };
   const key = String(studentId);
   if (!prompts[key]) prompts[key] = [];
   prompts[key].push(entry);
-  // Add to additional students if checked
-  const checks = document.querySelectorAll('#prompt-also-list input[type=checkbox]:checked');
-  checks.forEach(cb => {
-    const sid = String(cb.dataset.sid);
+  alsoSids.forEach((sid, i) => {
     if (!prompts[sid]) prompts[sid] = [];
-    prompts[sid].push({...entry, id: Date.now().toString()+sid});
+    prompts[sid].push({ ...entry, id: sharedId + '_' + i + '_' + sid });
   });
   saveLms();
-  showToast('Prompt guardado.','success');
+  showToast('Prompt guardado.', 'success');
   router();
+}
+function openEditPrompt(promptId, studentId) {
+  // Search prompt across all students (in case called from a different student's view)
+  let p = null;
+  for (const sid of Object.keys(prompts)) {
+    p = (prompts[sid]||[]).find(x => x.id === promptId);
+    if (p) break;
+  }
+  if (!p) return;
+  const nameEl = document.getElementById('prompt-name');
+  const textEl = document.getElementById('prompt-text');
+  const eidEl  = document.getElementById('prompt-editing-id');
+  const saveBtn = document.getElementById('prompt-save-btn');
+  const cancelBtn = document.getElementById('prompt-cancel-btn');
+  const alsoSec = document.getElementById('prompt-also-section');
+  if (nameEl) nameEl.value = p.name;
+  if (textEl) textEl.value = p.text;
+  if (eidEl)  eidEl.value  = promptId;
+  if (saveBtn) saveBtn.textContent = '✏️ ACTUALIZAR PROMPT';
+  if (cancelBtn) cancelBtn.style.display = 'block';
+  if (alsoSec) alsoSec.style.display = 'none'; // no aplica en edición
+  nameEl?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  nameEl?.focus();
+}
+function cancelEditPrompt() {
+  ['prompt-name','prompt-text'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  const eid = document.getElementById('prompt-editing-id'); if(eid) eid.value='';
+  const saveBtn = document.getElementById('prompt-save-btn'); if(saveBtn) saveBtn.textContent='💾 GUARDAR PROMPT';
+  const cancelBtn = document.getElementById('prompt-cancel-btn'); if(cancelBtn) cancelBtn.style.display='none';
+  const alsoSec = document.getElementById('prompt-also-section'); if(alsoSec) alsoSec.style.display='block';
 }
 function copyPrompt(promptId, studentId) {
   const p = (prompts[String(studentId)]||[]).find(x=>x.id===promptId);
