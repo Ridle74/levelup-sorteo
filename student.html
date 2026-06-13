@@ -2006,7 +2006,7 @@ function _buildMsgsBubbles(){
     return `<div class="msg-wrap ${mine?'mine':'other'}">
       <div class="msg-inner">
         ${!mine&&sender?`<div class="msg-name" style="${senderColor?`color:${senderColor}`:''}">${sender}</div>`:''}
-        <div class="msg-bubble">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
+        <div class="msg-bubble" ${!mine&&senderColor?`style="background:${senderColor}22;border-color:${senderColor}55"`:''}">${m.text?`<div>${m.text.replace(/\n/g,'<br>')}</div>`:''}${attHtml}<div class="msg-time">${dateStr} · ${timeStr}</div></div>
         ${canDel?`<button onclick="deleteMsg('${m.id}')" title="Eliminar" class="msg-del">🗑</button>`:''}
       </div>
     </div>`;
