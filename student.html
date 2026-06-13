@@ -1927,7 +1927,7 @@ function refreshMsgsBadge(){
 }
 function startMsgsListeners(){
   if (msgsListeners['group']) return;
-  const loggedId = getLoggedId(); if (!loggedId) return;
+  const loggedId = getLoggedId(); if (loggedId === null) return;
   msgsListeners['group'] = MSGS_COL.doc('group').onSnapshot(snap => {
     msgsGroupArr = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
     refreshMsgsBadge();
