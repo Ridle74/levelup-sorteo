@@ -575,7 +575,10 @@ function viewFromLocation() {
 }
 
 let currentView = viewFromLocation();
-let taskFilter  = 'pending'; // 'pending' | 'done' — filtro de la pestaña Tareas
+let taskFilter       = 'pending'; // 'pending' | 'done' | 'msgs'
+let taskSort         = 'recent';  // 'recent' | 'old' | 'student'
+let taskStudentView  = null;      // null = todos, o String(id) = alumno específico
+let prompts          = {};        // { [studentId]: [{id,name,text,ts}] }
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
 
 // Atrás/adelante del navegador: releer la vista desde la URL y renderizar
@@ -830,7 +833,7 @@ function saveAllocationChange(num, action, ownerId) {
 }
 
 function saveLms() {
-  REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers, pointsHistory } }, { merge:true })
+  REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers, pointsHistory, prompts } }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
 
@@ -1812,15 +1815,36 @@ function captureNumeros() {
 // ════════════════════════════════════════════════════════
 function vTareas() {
   const loggedId = getLoggedId();
-  const myTasks  = isAdmin()
+  const admin = isAdmin();
+  const allMyTasks = admin
     ? tasks
     : tasks.filter(t => t.assignTo==='all' || String(t.assignTo)===String(loggedId));
-  const pendingCount   = myTasks.filter(t => !(t.completedBy||[]).includes(loggedId)).length;
-  const completedCount = myTasks.length - pendingCount;
+
+  // Admin: filter by student view
+  const myTasks = admin && taskStudentView
+    ? allMyTasks.filter(t => t.assignTo==='all' || String(t.assignTo)===taskStudentView)
+    : allMyTasks;
+
+  const pendingCount   = allMyTasks.filter(t => !(t.completedBy||[]).includes(loggedId)).length;
+  const completedCount = allMyTasks.length - pendingCount;
   const filtered = taskFilter==='done'
     ? myTasks.filter(t => (t.completedBy||[]).includes(loggedId))
     : myTasks.filter(t => !(t.completedBy||[]).includes(loggedId));
-  const sorted   = [...filtered].sort((a,b)=>(a.due||'').localeCompare(b.due||''));
+
+  // Apply sort
+  const sorted = [...filtered].sort((a,b) => {
+    if (taskSort === 'recent') return parseInt(b.id||0) - parseInt(a.id||0);
+    if (taskSort === 'old')    return parseInt(a.id||0) - parseInt(b.id||0);
+    if (taskSort === 'student') {
+      const sa = a.assignTo==='all'?'zzz':String(a.assignTo);
+      const sb = b.assignTo==='all'?'zzz':String(b.assignTo);
+      return sa.localeCompare(sb) || parseInt(b.id||0)-parseInt(a.id||0);
+    }
+    return 0;
+  });
+
+  const students = getStudents();
+  const svStudent = taskStudentView ? students.find(s=>String(s.id)===taskStudentView) : null;
   return `
   <div style="padding:12px">
     <div class="task-hero">
@@ -1842,6 +1866,57 @@ function vTareas() {
       <button class="tab-btn${taskFilter==='done'?' active':''}" onclick="setTaskFilter('done')">✅ COMPLETADAS (${completedCount})</button>
       <button class="tab-btn${taskFilter==='msgs'?' active':''}" onclick="setTaskFilter('msgs')" style="position:relative">💬 MENSAJES${totalMsgsUnread()>0?` <span class="msgs-badge">${totalMsgsUnread()>9?'9+':totalMsgsUnread()}</span>`:''}</button>
     </div>
+
+    ${admin && taskFilter!=='msgs' ? `
+    <div style="margin-bottom:8px">
+      <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+        <button onclick="setTaskSort('recent')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='recent'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='recent'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='recent'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕐 RECIENTES</button>
+        <button onclick="setTaskSort('old')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='old'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='old'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='old'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕰 ANTIGUAS</button>
+        <button onclick="setTaskSort('student')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='student'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='student'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='student'?'#4fb6ff':'rgba(255,255,255,0.5)'}">👤 ALUMNO</button>
+      </div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">FILTRAR POR ALUMNO</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button onclick="setTaskStudentView(null)" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${!taskStudentView?'rgba(186,255,41,0.5)':'rgba(255,255,255,0.1)'};background:${!taskStudentView?'rgba(186,255,41,0.1)':'rgba(255,255,255,0.04)'};color:${!taskStudentView?'#baff29':'rgba(255,255,255,0.5)'}">🌍 Todos</button>
+        ${students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">
+          ${s.icon} ${s.name.split(' ')[0]}
+        </button>`).join('')}
+      </div>
+    </div>` : ''}
+
+    ${admin && taskStudentView && svStudent ? `
+    <div style="background:${svStudent.color}11;border:1px solid ${svStudent.color}33;border-radius:16px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:36px;height:36px;border-radius:10px;background:${svStudent.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${svStudent.icon}</div>
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900">${svStudent.name}</div>
+          <div style="font-size:10px;color:${svStudent.color};font-weight:700;letter-spacing:0.1em;text-transform:uppercase">PROMPTS PERSONALIZADOS</div>
+        </div>
+      </div>
+      ${(prompts[taskStudentView]||[]).map(p=>`
+      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 12px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em">${p.name}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;line-height:1.4;white-space:pre-wrap">${p.text}</div>
+          </div>
+          <button onclick="deletePrompt('${taskStudentView}','${p.id}')" style="background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:16px;line-height:1;flex-shrink:0;padding:0">🗑</button>
+        </div>
+      </div>`).join('')}
+      ${(prompts[taskStudentView]||[]).length===0?`<div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;padding:8px 0">Sin prompts aún</div>`:''}
+      <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px">
+        <input type="text" id="prompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
+        <textarea id="prompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:6px;resize:vertical;min-height:70px"></textarea>
+        <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px" id="prompt-also-list">
+          ${students.filter(s=>String(s.id)!==taskStudentView).map(s=>`
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
+            <input type="checkbox" data-sid="${s.id}" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
+          </label>`).join('')}
+        </div>
+        <button class="btn-sm btn-primary" onclick="savePrompt('${taskStudentView}')" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
+      </div>
+    </div>` : ''}
 
     ${isAdmin()?`
     <div id="add-task-box" class="add-task-box" style="display:none">
@@ -1875,11 +1950,17 @@ function vTareas() {
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <div style="flex:1">
           <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">ASIGNAR A</div>
-          <select class="fsm" id="t-assign" style="margin-bottom:0">
+          <select class="fsm" id="t-assign" style="margin-bottom:0" onchange="refreshTaskPromptList()">
             <option value="all">🌍 Todos</option>
             ${getStudents().map(s=>`<option value="${s.id}">${s.icon} ${s.name}</option>`).join('')}
           </select>
         </div>
+      </div>
+      <div id="t-prompt-wrap" style="display:none;margin-bottom:8px">
+        <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PROMPT USADO</div>
+        <select class="fsm" id="t-prompt" style="margin-bottom:0">
+          <option value="">— Sin prompt —</option>
+        </select>
       </div>
       <input type="hidden" id="t-editing-id" value="">
       <button class="btn-sm btn-primary" id="t-save-btn" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
@@ -1904,6 +1985,7 @@ function renderTask(t, loggedId) {
   <div class="task-card${done?' tdone':''}" id="tc-${t.id}">
     <div class="task-t${done?' tdt':''}">${t.title}</div>
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
+    ${t.promptName?`<div style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:3px 8px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);color:#a78bfa;font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">🧠 ${t.promptName}</div>`:''}
     ${t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:6px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${t.att.name||'Archivo'}</a>`) : ''}
     <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
       ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}${timeText?' · '+timeText:''}</span>`:''}
@@ -2138,6 +2220,57 @@ function setTaskFilter(f) {
   taskFilter = f;
   router();
 }
+function refreshTaskPromptList(preselect) {
+  const wrap = document.getElementById('t-prompt-wrap');
+  const sel  = document.getElementById('t-prompt');
+  const assignVal = document.getElementById('t-assign')?.value || 'all';
+  if (!wrap || !sel) return;
+  // Collect prompts for the assigned student (or empty if "all")
+  const sid = assignVal === 'all' ? null : String(assignVal);
+  const list = sid ? (prompts[sid] || []) : [];
+  if (!list.length) { wrap.style.display = 'none'; sel.value = ''; return; }
+  wrap.style.display = 'block';
+  sel.innerHTML = '<option value="">— Sin prompt —</option>' +
+    list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  if (preselect) sel.value = preselect;
+}
+function setTaskSort(s) {
+  taskSort = s;
+  router();
+}
+function setTaskStudentView(id) {
+  taskStudentView = id ? String(id) : null;
+  router();
+}
+function savePrompt(studentId) {
+  const name = (document.getElementById('prompt-name')?.value||'').trim();
+  const text = (document.getElementById('prompt-text')?.value||'').trim();
+  if (!name) { showToast('Escribe un nombre para el prompt.'); return; }
+  if (!text) { showToast('Escribe el texto del prompt.'); return; }
+  const id = Date.now().toString();
+  const entry = { id, name, text, ts: Date.now() };
+  // Add to primary student
+  const key = String(studentId);
+  if (!prompts[key]) prompts[key] = [];
+  prompts[key].push(entry);
+  // Add to additional students if checked
+  const checks = document.querySelectorAll('#prompt-also-list input[type=checkbox]:checked');
+  checks.forEach(cb => {
+    const sid = String(cb.dataset.sid);
+    if (!prompts[sid]) prompts[sid] = [];
+    prompts[sid].push({...entry, id: Date.now().toString()+sid});
+  });
+  saveLms();
+  showToast('Prompt guardado.','success');
+  router();
+}
+function deletePrompt(studentId, promptId) {
+  const key = String(studentId);
+  if (!prompts[key]) return;
+  prompts[key] = prompts[key].filter(p => p.id !== promptId);
+  saveLms();
+  router();
+}
 function setPuntosTab(t) {
   puntosTab = t;
   router();
@@ -2154,6 +2287,7 @@ function toggleAddTask() {
     const eid=document.getElementById('t-editing-id'); if(eid) eid.value='';
     const btn=document.getElementById('t-save-btn'); if(btn) btn.textContent='GUARDAR TAREA';
     cancelTaskLink(); cancelTaskFile();
+    refreshTaskPromptList();
   }
 }
 let _taskFileObj = null;
@@ -2176,6 +2310,8 @@ function openEditTask(id) {
   document.getElementById('t-editing-id').value = id;
   const btn = document.getElementById('t-save-btn');
   if (btn) btn.textContent = 'ACTUALIZAR TAREA';
+  // pre-fill prompt
+  refreshTaskPromptList(t.promptId||'');
   // pre-fill attachment if link
   cancelTaskLink(); cancelTaskFile();
   if (t.att?.type === 'link') {
@@ -2212,12 +2348,17 @@ async function addTask() {
   } else if (linkUrl) {
     att = { type:'link', url:/^https?:\/\//i.test(linkUrl)?linkUrl:'https://'+linkUrl, name:linkName||linkUrl };
   }
+  const assignTo = document.getElementById('t-assign')?.value||'all';
+  const promptId = document.getElementById('t-prompt')?.value||'';
+  const sid = assignTo !== 'all' ? String(assignTo) : null;
+  const promptEntry = sid && promptId ? (prompts[sid]||[]).find(p=>p.id===promptId) : null;
   const taskData = {
     title,
     desc:     (document.getElementById('t-desc')?.value||'').trim(),
     due:       document.getElementById('t-due')?.value||'',
     time:      document.getElementById('t-time')?.value||'',
-    assignTo:  document.getElementById('t-assign')?.value||'all',
+    assignTo,
+    ...(promptEntry ? {promptId: promptEntry.id, promptName: promptEntry.name} : {promptId:'', promptName:''}),
     ...(att ? {att} : {})
   };
   if (editingId) {
@@ -3352,6 +3493,7 @@ REF.onSnapshot(doc => {
   pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
   pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
   taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
+  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
   archiveMonthIfNeeded();
   // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
   // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
