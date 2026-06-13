@@ -2265,12 +2265,34 @@ function savePrompt(studentId) {
   const editingId = document.getElementById('prompt-editing-id')?.value || '';
 
   if (editingId) {
-    // EDIT MODE — find sharedId then update all matching copies
-    let sharedId = null;
+    // EDIT MODE — find the original prompt
+    let origPrompt = null;
     for (const sid of Object.keys(prompts)) {
       const found = (prompts[sid]||[]).find(p => p.id === editingId);
-      if (found) { sharedId = found.sharedId || null; break; }
+      if (found) { origPrompt = found; break; }
     }
+    if (!origPrompt) { showToast('Prompt no encontrado.'); return; }
+
+    let sharedId = origPrompt.sharedId || null;
+
+    // Prompts viejos sin sharedId: detectar copias por nombre+texto y vincularlas
+    if (!sharedId) {
+      const origName = origPrompt.name;
+      const origText = origPrompt.text;
+      const matchingSids = getStudents()
+        .map(s => String(s.id))
+        .filter(sid => (prompts[sid]||[]).some(p => p.name === origName && p.text === origText));
+      if (matchingSids.length > 1) {
+        sharedId = 'shared_' + Date.now().toString();
+        matchingSids.forEach(sid => {
+          prompts[sid] = prompts[sid].map(p =>
+            p.name === origName && p.text === origText ? { ...p, sharedId } : p
+          );
+        });
+      }
+    }
+
+    // Actualizar todas las copias vinculadas
     getStudents().forEach(s => {
       const sid = String(s.id);
       if (!prompts[sid]) return;
