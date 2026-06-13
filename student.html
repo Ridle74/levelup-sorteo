@@ -970,11 +970,14 @@ function buildNav(active) {
         { r:'horarios',  i:'📅', l:'Horarios' },
         { r:'ranking',   i:'👑', l:'Ranking' },
       ];
-  const _unread = totalMsgsUnread();
+  const loggedId2 = getLoggedId();
+  const _pendingTasks = isAdmin()
+    ? tasks.filter(t => (t.completedBy||[]).length < getStudents().length).length
+    : tasks.filter(t => taskAssignedTo(t, loggedId2) && !(t.completedBy||[]).includes(loggedId2)).length;
   document.getElementById('nav-row').innerHTML = navItems.map(n =>
     `<button class="nav-btn${n.r===active?' active':''}" data-r="${n.r}" onclick="go('${n.r}')" style="position:relative">
       <span class="ni">${n.i}</span>${n.l}
-      ${n.r==='tareas' ? `<span class="nav-notif" id="nav-badge-tareas" style="display:${_unread>0?'flex':'none'}">${_unread>9?'9+':String(_unread||'')}</span>` : ''}
+      ${n.r==='tareas' ? `<span class="nav-notif" id="nav-badge-tareas" style="display:${_pendingTasks>0?'flex':'none'}">${_pendingTasks>9?'9+':String(_pendingTasks)}</span>` : ''}
     </button>`
   ).join('');
 }
