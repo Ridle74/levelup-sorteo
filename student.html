@@ -1846,7 +1846,21 @@ function vTareas() {
     <div id="add-task-box" class="add-task-box" style="display:none">
       <div class="sec-lbl">NUEVA TAREA</div>
       <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60">
-      <textarea class="fsm" id="t-desc" placeholder="Descripción (opcional)..."></textarea>
+      <div class="msgs-link-row" id="task-link-row">
+        <input type="text" id="task-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;font-size:12px">
+        <input type="text" id="task-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;font-size:12px">
+        <button onclick="cancelTaskLink()" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;padding:5px 9px;cursor:pointer">✕</button>
+      </div>
+      <div class="msgs-file-row" id="task-file-row">
+        <span id="task-file-name">—</span>
+        <button onclick="cancelTaskFile()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:18px;line-height:1">✕</button>
+      </div>
+      <div style="display:flex;gap:5px;align-items:flex-end;margin-bottom:8px">
+        <textarea class="fsm" id="t-desc" placeholder="Descripción (opcional)..." style="flex:1;margin-bottom:0;resize:vertical;min-height:60px"></textarea>
+        <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleTaskLink()">🔗</button>
+        <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('task-file-input').click()">📎</button>
+        <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <div style="flex:1">
           <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">FECHA LÍMITE</div>
@@ -1881,6 +1895,7 @@ function renderTask(t, loggedId) {
   <div class="task-card${done?' tdone':''}" id="tc-${t.id}">
     <div class="task-t${done?' tdt':''}">${t.title}</div>
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
+    ${t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:6px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${t.att.name||'Archivo'}</a>`) : ''}
     <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
       ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}</span>`:''}
       ${isAdmin()&&t.assignTo==='all'?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,229,255,0.12);color:#7dd3ff;border:1px solid rgba(34,229,255,0.2)">${assignLabel}</span>`:''}
@@ -2119,19 +2134,50 @@ function toggleAddTask() {
   const box=document.getElementById('add-task-box');
   if (box) box.style.display=box.style.display==='none'?'block':'none';
 }
-function addTask() {
+let _taskFileObj = null;
+function toggleTaskLink(){ const r=document.getElementById('task-link-row'); if(r) r.style.display=r.style.display==='flex'?'none':'flex'; }
+function cancelTaskLink(){ const r=document.getElementById('task-link-row'); if(r) r.style.display='none'; ['task-link-url','task-link-name'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
+function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const r=document.getElementById('task-file-row'); if(r) r.style.display='flex'; const n=document.getElementById('task-file-name'); if(n) n.textContent=_taskFileObj.name; }
+function cancelTaskFile(){ _taskFileObj=null; const r=document.getElementById('task-file-row'); if(r) r.style.display='none'; const i=document.getElementById('task-file-input'); if(i) i.value=''; }
+
+async function addTask() {
   const title=(document.getElementById('t-title')?.value||'').trim();
   if (!title) { showToast('Escribe un título.'); return; }
+  // Resolve attachment
+  let att = null;
+  const linkUrl=(document.getElementById('task-link-url')?.value||'').trim();
+  const linkName=(document.getElementById('task-link-name')?.value||'').trim();
+  if (_taskFileObj) {
+    const isImg = _taskFileObj.type.startsWith('image/');
+    if (isImg) {
+      try {
+        const b64 = await _compressImgB64(_taskFileObj,900,0.72);
+        if (b64.length > 700000){ showToast('Imagen muy grande. Usa una de menor resolución.'); return; }
+        att = { type:'image', url:b64, name:_taskFileObj.name };
+      } catch(e){ showToast('Error al procesar imagen.'); return; }
+    } else {
+      try {
+        const ref = firebase.storage().ref('task-files/'+Date.now()+'_'+_taskFileObj.name);
+        const snap = await ref.put(_taskFileObj);
+        const url = await snap.ref.getDownloadURL();
+        att = { type:'file', url, name:_taskFileObj.name };
+      } catch(e){ showToast('Error al subir archivo.'); return; }
+    }
+  } else if (linkUrl) {
+    att = { type:'link', url:/^https?:\/\//i.test(linkUrl)?linkUrl:'https://'+linkUrl, name:linkName||linkUrl };
+  }
   const newTask = {
     id: Date.now().toString(),
     title,
     desc:     (document.getElementById('t-desc')?.value||'').trim(),
     due:       document.getElementById('t-due')?.value||'',
     assignTo:  document.getElementById('t-assign')?.value||'all',
-    completedBy: []
+    completedBy: [],
+    ...(att ? {att} : {})
   };
   tasks.push(newTask);
   saveLms();
+  _taskFileObj = null;
   go('tareas');
   showToast('Tarea guardada.','success');
 }
