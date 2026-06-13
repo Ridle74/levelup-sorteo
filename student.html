@@ -1894,14 +1894,10 @@ function vTareas() {
         </div>
       </div>
       ${(prompts[taskStudentView]||[]).map(p=>`
-      <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 12px;margin-bottom:6px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-          <div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em">${p.name}</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;line-height:1.4;white-space:pre-wrap">${p.text}</div>
-          </div>
-          <button onclick="deletePrompt('${taskStudentView}','${p.id}')" style="background:none;border:none;color:rgba(255,255,255,0.25);cursor:pointer;font-size:16px;line-height:1;flex-shrink:0;padding:0">🗑</button>
-        </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.07);border-radius:10px;margin-bottom:5px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:${svStudent.color};letter-spacing:0.05em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</div>
+        <button onclick="copyPrompt('${p.id}','${taskStudentView}')" style="background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);color:#4fb6ff;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">📋 Copiar</button>
+        <button onclick="deletePrompt('${taskStudentView}','${p.id}')" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;padding:0">🗑</button>
       </div>`).join('')}
       ${(prompts[taskStudentView]||[]).length===0?`<div style="font-size:12px;color:rgba(255,255,255,0.25);text-align:center;padding:8px 0">Sin prompts aún</div>`:''}
       <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:10px">
@@ -2263,6 +2259,12 @@ function savePrompt(studentId) {
   saveLms();
   showToast('Prompt guardado.','success');
   router();
+}
+function copyPrompt(promptId, studentId) {
+  const p = (prompts[String(studentId)]||[]).find(x=>x.id===promptId);
+  if (!p) return;
+  const txt = p.name + '\n\n' + p.text;
+  navigator.clipboard.writeText(txt).then(()=>showToast('Prompt copiado.','success')).catch(()=>showToast('No se pudo copiar.'));
 }
 function deletePrompt(studentId, promptId) {
   const key = String(studentId);
