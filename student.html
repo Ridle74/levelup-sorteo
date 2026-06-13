@@ -1047,7 +1047,8 @@ function vDashboard() {
   const student   = getFullList().find(s => s.id === loggedId);
   if (!student) return vLogin();
   const firstName = student.name.split(' ')[0];
-  const counts    = getPickCounts();
+  const sorteoAbierto = new Date() >= computeSorteoSchedule().start;
+  const counts    = sorteoAbierto ? getPickCounts() : {};
   const myCount   = counts[loggedId] || 0;
   const myMax     = student.max || 0;
   const pct       = myMax > 0 ? Math.min(100, Math.round((myCount/myMax)*100)) : 0;
@@ -1867,6 +1868,12 @@ function vTareas() {
           <input type="date" class="fsm" id="t-due" style="margin-bottom:0">
         </div>
         <div style="flex:1">
+          <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">HORA LÍMITE</div>
+          <input type="time" class="fsm" id="t-time" style="margin-bottom:0">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
           <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">ASIGNAR A</div>
           <select class="fsm" id="t-assign" style="margin-bottom:0">
             <option value="all">🌍 Todos</option>
@@ -1874,7 +1881,8 @@ function vTareas() {
           </select>
         </div>
       </div>
-      <button class="btn-sm btn-primary" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
+      <input type="hidden" id="t-editing-id" value="">
+      <button class="btn-sm btn-primary" id="t-save-btn" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
     </div>`:''}
 
     ${taskFilter==='msgs' ? '' : `
@@ -1888,6 +1896,7 @@ function vTareas() {
 function renderTask(t, loggedId) {
   const done = (t.completedBy||[]).includes(loggedId);
   const dueText = t.due ? new Date(t.due+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}).toUpperCase() : '';
+  const timeText = t.time ? t.time : '';
   const assignLabel = t.assignTo==='all' ? '🌍 Todos'
     : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
   const completedCount = (t.completedBy||[]).length;
@@ -1897,12 +1906,13 @@ function renderTask(t, loggedId) {
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
     ${t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:6px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${t.att.name||'Archivo'}</a>`) : ''}
     <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
-      ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}</span>`:''}
+      ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}${timeText?' · '+timeText:''}</span>`:''}
       ${isAdmin()&&t.assignTo==='all'?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,229,255,0.12);color:#7dd3ff;border:1px solid rgba(34,229,255,0.2)">${assignLabel}</span>`:''}
       ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:#39ff7a;border:1px solid rgba(34,197,94,0.15)">✓ ${completedCount}/${getStudents().length}</span>`:''}
     </div>
     <div class="task-btns">
       <button class="btn-dg ${done?'on':'off'}" onclick="toggleTaskDone('${t.id}')">${done?'✓ COMPLETADA':'MARCAR COMO HECHA'}</button>
+      ${isAdmin()?`<button class="btn-dt" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" onclick="openEditTask('${t.id}')">✏️</button>`:''}
       ${isAdmin()?`<button class="btn-dt" onclick="deleteTask('${t.id}')">🗑️</button>`:''}
     </div>
   </div>`;
@@ -2132,7 +2142,17 @@ function setPuntosTab(t) {
 }
 function toggleAddTask() {
   const box=document.getElementById('add-task-box');
-  if (box) box.style.display=box.style.display==='none'?'block':'none';
+  if (!box) return;
+  const opening = box.style.display==='none';
+  box.style.display = opening ? 'block' : 'none';
+  if (opening) {
+    // reset to "new task" mode
+    ['t-title','t-desc','t-due','t-time'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    const assign=document.getElementById('t-assign'); if(assign) assign.value='all';
+    const eid=document.getElementById('t-editing-id'); if(eid) eid.value='';
+    const btn=document.getElementById('t-save-btn'); if(btn) btn.textContent='GUARDAR TAREA';
+    cancelTaskLink(); cancelTaskFile();
+  }
 }
 let _taskFileObj = null;
 function toggleTaskLink(){ const r=document.getElementById('task-link-row'); if(r) r.style.display=r.style.display==='flex'?'none':'flex'; }
@@ -2140,9 +2160,33 @@ function cancelTaskLink(){ const r=document.getElementById('task-link-row'); if(
 function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const r=document.getElementById('task-file-row'); if(r) r.style.display='flex'; const n=document.getElementById('task-file-name'); if(n) n.textContent=_taskFileObj.name; }
 function cancelTaskFile(){ _taskFileObj=null; const r=document.getElementById('task-file-row'); if(r) r.style.display='none'; const i=document.getElementById('task-file-input'); if(i) i.value=''; }
 
+function openEditTask(id) {
+  const t = tasks.find(x=>x.id===id); if (!t) return;
+  const box = document.getElementById('add-task-box');
+  if (!box) return;
+  box.style.display = 'block';
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  document.getElementById('t-title').value = t.title||'';
+  document.getElementById('t-desc').value  = t.desc||'';
+  document.getElementById('t-due').value   = t.due||'';
+  document.getElementById('t-time').value  = t.time||'';
+  document.getElementById('t-assign').value = t.assignTo||'all';
+  document.getElementById('t-editing-id').value = id;
+  const btn = document.getElementById('t-save-btn');
+  if (btn) btn.textContent = 'ACTUALIZAR TAREA';
+  // pre-fill attachment if link
+  cancelTaskLink(); cancelTaskFile();
+  if (t.att?.type === 'link') {
+    document.getElementById('task-link-url').value  = t.att.url||'';
+    document.getElementById('task-link-name').value = t.att.name||'';
+    const r = document.getElementById('task-link-row'); if(r) r.style.display='flex';
+  }
+}
+
 async function addTask() {
   const title=(document.getElementById('t-title')?.value||'').trim();
   if (!title) { showToast('Escribe un título.'); return; }
+  const editingId = document.getElementById('t-editing-id')?.value||'';
   // Resolve attachment
   let att = null;
   const linkUrl=(document.getElementById('task-link-url')?.value||'').trim();
@@ -2166,20 +2210,25 @@ async function addTask() {
   } else if (linkUrl) {
     att = { type:'link', url:/^https?:\/\//i.test(linkUrl)?linkUrl:'https://'+linkUrl, name:linkName||linkUrl };
   }
-  const newTask = {
-    id: Date.now().toString(),
+  const taskData = {
     title,
     desc:     (document.getElementById('t-desc')?.value||'').trim(),
     due:       document.getElementById('t-due')?.value||'',
+    time:      document.getElementById('t-time')?.value||'',
     assignTo:  document.getElementById('t-assign')?.value||'all',
-    completedBy: [],
     ...(att ? {att} : {})
   };
-  tasks.push(newTask);
+  if (editingId) {
+    const idx = tasks.findIndex(t=>t.id===editingId);
+    if (idx > -1) { tasks[idx] = { ...tasks[idx], ...taskData }; if (!att) delete tasks[idx].att; }
+    showToast('Tarea actualizada.','success');
+  } else {
+    tasks.push({ id: Date.now().toString(), completedBy: [], ...taskData });
+    showToast('Tarea guardada.','success');
+  }
   saveLms();
   _taskFileObj = null;
   go('tareas');
-  showToast('Tarea guardada.','success');
 }
 function deleteTask(id) {
   tasks=tasks.filter(t=>t.id!==id);
