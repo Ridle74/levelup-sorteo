@@ -511,9 +511,8 @@ const MSGS_COL = db.collection('msgs');
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
-// Lectura del horario semanal de /padres — sirve para saber qué días tiene
-// clase cada alumno y así habilitar el registro de Puntos por fecha. También
-// se usa para sincronizar el nombre de un alumno hacia /padres cuando se edita aquí.
+// Lectura del horario semanal de /padres (solo lectura) — sirve para saber
+// qué días tiene clase cada alumno y así habilitar el registro de Puntos por fecha.
 const PADRES_REF = db.collection('padres').doc('main');
 
 // ════════════════════════════════════════════════════════
@@ -808,27 +807,37 @@ function saveMeta() {
 }
 let _sd = null;
 function saveDebounced() { clearTimeout(_sd); _sd = setTimeout(saveMeta, 600); }
-let _psd = {}; // debounce de sync de nombre hacia /padres, por studentId
-function syncNameToPadres(k, value) {
-  clearTimeout(_psd[k]);
-  _psd[k] = setTimeout(() => {
-    PADRES_REF.get().then(snap => {
-      const d = snap.exists ? snap.data() : {};
-      const pStudents = d.students || {};
-      if (!pStudents[k]) return;
-      pStudents[k].name = value;
-      return PADRES_REF.set({ students: pStudents }, { merge:true });
-    }).catch(e => console.error('[sync nombre -> padres]', e));
-  }, 600);
-}
 function setOverride(id, field, value) {
   const k = String(id); if (!overrides[k]) overrides[k]={};
   overrides[k][field] = value; saveDebounced();
-  // El nombre también se usa en /padres (espejo students[id].name) para
-  // emparejar horarios por nombre — mantenerlo sincronizado en ambos sentidos.
-  if (field === 'name' && padresRaw.students && padresRaw.students[k]) {
-    syncNameToPadres(k, value);
-  }
+}
+// ── Sync de nombre alumno → /padres ─────────────────────────────────────
+// IMPORTANTE: los ids de alumno de /student y de /padres son espacios de
+// numeración INDEPENDIENTES (el mismo alumno puede tener id distinto en cada
+// sistema) — nunca sincronizar por id. Se busca por NOMBRE (el que tenía
+// ANTES de empezar a editar, capturado en foco) para hallar al alumno
+// correspondiente del otro lado. Si no hay exactamente una coincidencia, no
+// se toca nada (fail-safe) para evitar corromper a otro alumno.
+let _nameEditOld = {};
+function _curStudentName(id) {
+  const k = String(id);
+  if (overrides[k] && overrides[k].name !== undefined) return overrides[k].name;
+  const base = DEFAULT_STUDENTS.find(d => d.id === id);
+  return base ? base.name : '';
+}
+function snapshotNameEdit(id) { _nameEditOld[String(id)] = _curStudentName(id); }
+function commitNameSyncToPadres(id) {
+  const k = String(id);
+  const oldName = _nameEditOld[k];
+  const newName = _curStudentName(id);
+  if (!oldName || normName(oldName) === normName(newName)) return;
+  const oldKey = normName(oldName);
+  const pStudents = padresRaw.students || {};
+  const matches = Object.keys(pStudents).filter(sid => pStudents[sid] && normName(pStudents[sid].name) === oldKey);
+  if (matches.length !== 1) return;
+  const path = {};
+  path['students.' + matches[0] + '.name'] = newName;
+  PADRES_REF.update(path).catch(e => console.error('[sync nombre -> padres]', e));
 }
 
 function saveAllocationChange(num, action, ownerId) {
@@ -1598,7 +1607,7 @@ function renderStudentList() {
       </div>
       <div style="display:flex;gap:6px;margin-bottom:8px">
         <input type="text" value="${s.icon||''}" placeholder="emoji" class="mini-input" style="width:42px;text-align:center;font-size:16px;padding:6px 4px" oninput="setOverride(${s.id},'icon',this.value)">
-        <input type="text" value="${s.name||''}" placeholder="Nombre" class="mini-input" style="flex:1;padding:6px 10px;font-size:12px;text-transform:uppercase" oninput="setOverride(${s.id},'name',this.value)">
+        <input type="text" value="${s.name||''}" placeholder="Nombre" class="mini-input" style="flex:1;padding:6px 10px;font-size:12px;text-transform:uppercase" onfocus="snapshotNameEdit(${s.id})" oninput="setOverride(${s.id},'name',this.value)" onblur="commitNameSyncToPadres(${s.id})">
       </div>
       <div style="display:flex;gap:6px">
         <div style="flex:1">

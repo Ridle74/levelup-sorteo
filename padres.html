@@ -169,6 +169,48 @@ const SORTEO_REF = db.collection('sorteo').doc('main');
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
 
+// ── Sync de nombre alumno → /student ────────────────────────────────────
+// IMPORTANTE: los ids de alumno de /padres y de /student son espacios de
+// numeración INDEPENDIENTES (el mismo alumno puede tener id distinto en cada
+// sistema). Por eso nunca se debe sincronizar por id — se busca por NOMBRE
+// (antes de la edición) para encontrar al alumno correspondiente del otro lado.
+// STUDENT_DEFAULT_NAMES son los 10 alumnos originales de /student (mismos
+// que DEFAULT_STUDENTS en student.html); cualquier alumno agregado después
+// solo existe como override en sorteo/main.overrides.
+const STUDENT_DEFAULT_NAMES = {
+  1:"Mikela Villena", 2:"Lucio Prado", 3:"Joanna Prado", 4:"Manuel Villacorta",
+  5:"Maria Villalobos", 6:"Augusto Giuffra", 7:"Santiago Quinto", 8:"Tiago Poma",
+  9:"Mateo Ríos", 10:"Rafaela Villena"
+};
+function normName(s) {
+  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+}
+// Busca, dentro de los overrides de /student, el id cuyo nombre actual (antes
+// de la edición) coincide con oldName. Si encuentra exactamente un candidato,
+// actualiza su nombre. Si no hay coincidencia única, no hace nada (fail-safe).
+function syncNameToStudent(oldName, newName) {
+  if (!oldName || normName(oldName) === normName(newName)) return;
+  const oldKey = normName(oldName);
+  SORTEO_REF.get().then(function(snap) {
+    const overrides = (snap.exists ? snap.data().overrides : null) || {};
+    const allIds = new Set([
+      ...Object.keys(STUDENT_DEFAULT_NAMES),
+      ...Object.keys(overrides)
+    ]);
+    const matches = [];
+    allIds.forEach(function(idStr) {
+      const ov = overrides[idStr] || {};
+      if (ov.deleted) return;
+      const curName = ov.name !== undefined ? ov.name : STUDENT_DEFAULT_NAMES[idStr];
+      if (curName && normName(curName) === oldKey) matches.push(idStr);
+    });
+    if (matches.length !== 1) return; // ambiguo o sin coincidencia: no tocar nada
+    const path = {};
+    path['overrides.' + matches[0] + '.name'] = newName;
+    return SORTEO_REF.update(path);
+  }).catch(function(e){ console.error('[sync nombre -> student]', e); });
+}
+
 // ════════════════════════════════════════════════════════
 // ESQUEMA DE DATOS (diseño)
 // ────────────────────────────────────────────────────────
@@ -990,18 +1032,21 @@ function saveChildProfile(childId) {
   if (pin && pin !== pin2) { if(err){err.textContent='Las contraseñas no coinciden.';err.style.display='block';} return; }
   if (pin && (pin.length < 4 || !/^\d+$/.test(pin))) { if(err){err.textContent='PIN debe ser numérico, mínimo 4 dígitos.';err.style.display='block';} return; }
   if (err) err.style.display = 'none';
+  const oldName = DATA.students[childId] && DATA.students[childId].name;
   if (DATA.students[childId]) DATA.students[childId].name = name;
   REF.set({ students: DATA.students }, { merge: true }).catch(function(e){ console.error(e); });
-  // Reflejar también el nombre (y el PIN, si cambia) en /student, que guarda
-  // su propio espejo de alumnos en sorteo/main → overrides.
-  SORTEO_REF.get().then(function(snap) {
-    const ov = (snap.exists ? snap.data().overrides : null) || {};
-    if (!ov[String(childId)]) ov[String(childId)] = {};
-    ov[String(childId)].name = name;
-    if (pin) ov[String(childId)].pin = pin;
-    return SORTEO_REF.set({ overrides: ov }, { merge: true });
-  }).then(function(){ showToast(pin ? 'Perfil y contraseña actualizados ✓' : 'Perfil guardado ✓'); })
-   .catch(function(e){ console.error(e); showToast('Error al guardar.'); });
+  syncNameToStudent(oldName, name);
+  if (pin) {
+    SORTEO_REF.get().then(function(snap) {
+      const ov = (snap.exists ? snap.data().overrides : null) || {};
+      if (!ov[String(childId)]) ov[String(childId)] = {};
+      ov[String(childId)].pin = pin;
+      return SORTEO_REF.set({ overrides: ov }, { merge: true });
+    }).then(function(){ showToast('Contraseña actualizada ✓'); })
+     .catch(function(e){ console.error(e); showToast('Error al guardar PIN.'); });
+  } else {
+    showToast('Perfil guardado ✓');
+  }
 }
 
 
