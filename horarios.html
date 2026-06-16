@@ -146,7 +146,7 @@ firebase.initializeApp({
 var db = firebase.firestore();
 
 /* ── State ─────────────────────────────────────────── */
-var DATA     = { sessions:[], freeSlots:[], cycleEnd:null };
+var DATA     = { sessions:[], freeSlots:[], cycleEnd:null, students:{} };
 var calMode  = '4dias';
 var calAnchor;
 var ROW_H    = 56;
@@ -164,6 +164,15 @@ function fmtDM(d) { return d.toLocaleDateString('es-PE',{day:'numeric',month:'sh
 function toH(t)   { var p=t.split(':').map(Number); return p[0]+p[1]/60; }
 function addM(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); }
 function dStr(d)  { return d.toISOString().slice(0,10); }
+function slotNames(studentIds) {
+  var names=(studentIds||[]).map(function(id){
+    var st=DATA.students[id]||DATA.students[String(id)];
+    return st&&st.name?st.name:null;
+  }).filter(Boolean);
+  if(!names.length) return 'Clase';
+  if(names.length===1) return names[0];
+  return names.slice(0,-1).join(', ')+' y '+names[names.length-1];
+}
 
 calAnchor = startOfWeek(new Date());
 
@@ -211,9 +220,10 @@ function buildGrid(dayList) {
   DATA.sessions.forEach(function(s){
     var isOne=s.recurring===false && s.date;
     var key=isOne?(s.date+'|'+s.start):('d'+s.day+'|'+s.start);
-    if(!slotMap[key]) slotMap[key]={day:Number(s.day),oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual'};
+    if(!slotMap[key]) slotMap[key]={day:Number(s.day),oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual',studentIds:[]};
     if((s.dur||60)>slotMap[key].dur) slotMap[key].dur=s.dur||60;
     if((s.modality||'').toLowerCase().includes('dom')) slotMap[key].modality='Domicilio';
+    if(s.studentId!==undefined && s.studentId!==null && slotMap[key].studentIds.indexOf(s.studentId)===-1) slotMap[key].studentIds.push(s.studentId);
   });
 
   var freeList=DATA.freeSlots||[];
@@ -281,7 +291,7 @@ function buildGrid(dayList) {
       var brd =isDom?'rgba(239,68,68,0.45)':'rgba(79,182,255,0.45)';
       var nameC=isDom?'#b91c1c':'#1d6fa4';
       return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px;background:'+bg+';border:1px solid '+brd+'">'
-        +'<div class="pcal-ev-name" style="color:'+nameC+'">Clase</div>'
+        +'<div class="pcal-ev-name" style="color:'+nameC+'">'+slotNames(slot.studentIds)+'</div>'
         +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
         +(short?'':'<div class="pcal-ev-badge">'+slot.modality+'</div>')
         +'</div>';
@@ -349,6 +359,7 @@ db.collection('padres').doc('main').get().then(function(doc){
     DATA.sessions =d.sessions ||[];
     DATA.freeSlots=d.freeSlots||[];
     DATA.cycleEnd =d.cycleEnd ||null;
+    DATA.students =d.students ||{};
   }
   render();
 }).catch(function(){ render(); });
