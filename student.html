@@ -511,8 +511,9 @@ const MSGS_COL = db.collection('msgs');
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
-// Lectura del horario semanal de /padres (solo lectura) — sirve para saber
-// qué días tiene clase cada alumno y así habilitar el registro de Puntos por fecha.
+// Lectura del horario semanal de /padres — sirve para saber qué días tiene
+// clase cada alumno y así habilitar el registro de Puntos por fecha. También
+// se usa para sincronizar el nombre de un alumno hacia /padres cuando se edita aquí.
 const PADRES_REF = db.collection('padres').doc('main');
 
 // ════════════════════════════════════════════════════════
@@ -807,9 +808,27 @@ function saveMeta() {
 }
 let _sd = null;
 function saveDebounced() { clearTimeout(_sd); _sd = setTimeout(saveMeta, 600); }
+let _psd = {}; // debounce de sync de nombre hacia /padres, por studentId
+function syncNameToPadres(k, value) {
+  clearTimeout(_psd[k]);
+  _psd[k] = setTimeout(() => {
+    PADRES_REF.get().then(snap => {
+      const d = snap.exists ? snap.data() : {};
+      const pStudents = d.students || {};
+      if (!pStudents[k]) return;
+      pStudents[k].name = value;
+      return PADRES_REF.set({ students: pStudents }, { merge:true });
+    }).catch(e => console.error('[sync nombre -> padres]', e));
+  }, 600);
+}
 function setOverride(id, field, value) {
   const k = String(id); if (!overrides[k]) overrides[k]={};
   overrides[k][field] = value; saveDebounced();
+  // El nombre también se usa en /padres (espejo students[id].name) para
+  // emparejar horarios por nombre — mantenerlo sincronizado en ambos sentidos.
+  if (field === 'name' && padresRaw.students && padresRaw.students[k]) {
+    syncNameToPadres(k, value);
+  }
 }
 
 function saveAllocationChange(num, action, ownerId) {

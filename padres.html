@@ -992,17 +992,16 @@ function saveChildProfile(childId) {
   if (err) err.style.display = 'none';
   if (DATA.students[childId]) DATA.students[childId].name = name;
   REF.set({ students: DATA.students }, { merge: true }).catch(function(e){ console.error(e); });
-  if (pin) {
-    SORTEO_REF.get().then(function(snap) {
-      const ov = (snap.exists ? snap.data().overrides : null) || {};
-      if (!ov[String(childId)]) ov[String(childId)] = {};
-      ov[String(childId)].pin = pin;
-      return SORTEO_REF.set({ overrides: ov }, { merge: true });
-    }).then(function(){ showToast('Contraseña actualizada ✓'); })
-     .catch(function(e){ console.error(e); showToast('Error al guardar PIN.'); });
-  } else {
-    showToast('Perfil guardado ✓');
-  }
+  // Reflejar también el nombre (y el PIN, si cambia) en /student, que guarda
+  // su propio espejo de alumnos en sorteo/main → overrides.
+  SORTEO_REF.get().then(function(snap) {
+    const ov = (snap.exists ? snap.data().overrides : null) || {};
+    if (!ov[String(childId)]) ov[String(childId)] = {};
+    ov[String(childId)].name = name;
+    if (pin) ov[String(childId)].pin = pin;
+    return SORTEO_REF.set({ overrides: ov }, { merge: true });
+  }).then(function(){ showToast(pin ? 'Perfil y contraseña actualizados ✓' : 'Perfil guardado ✓'); })
+   .catch(function(e){ console.error(e); showToast('Error al guardar.'); });
 }
 
 
