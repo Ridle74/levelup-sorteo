@@ -1201,7 +1201,7 @@ function vTablero() {
     </div>
     <div id="admin-buttons" class="admin-row" style="display:${student.role==='admin'?'flex':'none'}">
       <button id="btn-toggle-config" class="btn-admin btn-neon-cfg" onclick="toggleAdminPanel()">⚡ CONFIG</button>
-      <button class="btn-admin btn-neon-rep" onclick="exportTxt()">🎯 REPORTE</button>
+      <button class="btn-admin btn-neon-rep" onclick="openReportModal()">🎯 REPORTE</button>
       <button class="btn-admin btn-neon-rst" onclick="openReset()">💥 RESET</button>
     </div>
   </header>
@@ -1293,6 +1293,29 @@ function vTablero() {
       <div class="modal-sub">Se perderán todas las selecciones permanentemente.</div>
       <button class="btn-reset-confirm" onclick="doReset()">REINICIAR</button>
       <button class="btn-reset-cancel"  onclick="closeReset()">CANCELAR</button>
+    </div>
+  </div>
+
+  <div id="report-modal">
+    <div class="modal-card info">
+      <div class="modal-icon">🎯</div>
+      <div class="modal-title">DESCARGAR REPORTE</div>
+      <div class="modal-sub">Elige qué quieres descargar, o sube un backup para restaurarlo.</div>
+      <button class="btn-reset-confirm info" onclick="exportTxt(); closeReportModal();">📋 SOLO NÚMEROS DEL TABLERO</button>
+      <button class="btn-reset-confirm info" onclick="exportFullBackup(); closeReportModal();">🗄️ TODA LA BASE DE DATOS</button>
+      <button class="btn-reset-confirm info" onclick="triggerBackupUpload();">📤 SUBIR BASE DE DATOS</button>
+      <button class="btn-reset-cancel"  onclick="closeReportModal()">CANCELAR</button>
+    </div>
+  </div>
+  <input type="file" id="backup-file-input" accept="application/json,.json" style="display:none" onchange="handleBackupFileSelected(event)">
+
+  <div id="restore-confirm-modal">
+    <div class="modal-card">
+      <div class="modal-icon">⚠️</div>
+      <div class="modal-title">RESTAURAR BACKUP</div>
+      <div class="modal-sub" id="restore-confirm-sub">Esto reemplazará TODOS los datos actuales (tablero, tareas, puntos, prompts) con los del archivo. Esta acción no se puede deshacer.</div>
+      <button class="btn-reset-confirm" onclick="confirmRestoreBackup()">⚠️ SÍ, RESTAURAR</button>
+      <button class="btn-reset-cancel"  onclick="closeRestoreConfirm()">CANCELAR</button>
     </div>
   </div>`;
 }
@@ -1716,6 +1739,83 @@ function exportTxt() {
     c+=`${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNúmeros: ${nums.join(', ')||'-'}\n\n`;
   });
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([c],{type:'text/plain'})); a.download='sorteo_levelup.txt'; a.click();
+}
+function openReportModal()  { document.getElementById('report-modal').classList.add('show'); }
+function closeReportModal() { document.getElementById('report-modal').classList.remove('show'); }
+function exportFullBackup() {
+  // Exporta TODO el documento de Firestore (sorteo/main) tal cual está cargado en memoria,
+  // como JSON. Sirve tanto de respaldo manual (no hay backups automáticos en el plan gratuito
+  // de Firebase) como para revisar/restaurar datos a mano si algo vuelve a salir mal.
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    month: getSorteoMonth(),
+    allocations,
+    overrides,
+    config: appConfig,
+    lms: { tasks, points, pointsLog, pointsHistory, taskMultipliers, prompts }
+  };
+  const json = JSON.stringify(backup, null, 2);
+  const stamp = new Date().toISOString().slice(0,10);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([json],{type:'application/json'})); a.download=`backup_emaths_${stamp}.json`; a.click();
+  showToast('Backup completo descargado.','success');
+}
+
+let _pendingRestoreData = null;
+function triggerBackupUpload() {
+  document.getElementById('backup-file-input').click();
+}
+function handleBackupFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  event.target.value = ''; // permite volver a elegir el mismo archivo más adelante
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); }
+    catch (e) { showToast('El archivo no es un backup válido (JSON corrupto).'); return; }
+    if (!data || typeof data !== 'object' || !('allocations' in data) || !('lms' in data)) {
+      showToast('El archivo no tiene el formato esperado de un backup de emaths.');
+      return;
+    }
+    _pendingRestoreData = data;
+    const dateTxt = data.exportedAt ? new Date(data.exportedAt).toLocaleString('es-ES') : 'fecha desconocida';
+    const sub = document.getElementById('restore-confirm-sub');
+    if (sub) sub.textContent = `Vas a restaurar el backup del ${dateTxt}. Esto reemplazará TODOS los datos actuales (tablero, tareas, puntos, prompts) con los del archivo. Esta acción no se puede deshacer.`;
+    closeReportModal();
+    document.getElementById('restore-confirm-modal').classList.add('show');
+  };
+  reader.readAsText(file);
+}
+function closeRestoreConfirm() {
+  document.getElementById('restore-confirm-modal').classList.remove('show');
+  _pendingRestoreData = null;
+}
+function confirmRestoreBackup() {
+  if (!_pendingRestoreData) return;
+  const data = _pendingRestoreData;
+  const lms  = data.lms || {};
+  // OJO: aquí SÍ se usa .set() SIN merge a propósito — restaurar un backup significa reemplazar
+  // todo el documento por el contenido del archivo, no combinarlo con lo que hay ahora. El
+  // listener onSnapshot ya activo se encarga de refrescar todo el estado en memoria y la vista.
+  REF.set({
+    allocations: data.allocations || {},
+    overrides:   data.overrides   || {},
+    config:      data.config      || { startTime:'', endTime:'', totalNumbers: 200 },
+    lms: {
+      tasks:           Array.isArray(lms.tasks) ? lms.tasks : [],
+      points:          lms.points          || {},
+      pointsLog:       lms.pointsLog       || {},
+      pointsHistory:   lms.pointsHistory   || {},
+      taskMultipliers: lms.taskMultipliers || {},
+      prompts:         lms.prompts         || {}
+    }
+  }).then(() => {
+    showToast('Backup restaurado correctamente.','success');
+    closeRestoreConfirm();
+  }).catch(err => {
+    console.error('[restore]', err);
+    showToast('Error al restaurar el backup.');
+  });
 }
 
 // ════════════════════════════════════════════════════════
