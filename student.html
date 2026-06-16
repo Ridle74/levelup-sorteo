@@ -623,13 +623,26 @@ function getStudents() {
     const base = baseMap[id] || { id, name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:"#888888" };
     const ov   = overrides[idStr] || {};
     if (ov.deleted) return;
+    // El nombre y apellido ya NO se editan desde /student. Si esta cuenta está vinculada
+    // a un alumno de /padres (padresId, guardado al "aceptar" la solicitud), el nombre se
+    // toma SIEMPRE en vivo de /padres — así una edición ahí se refleja aquí sin tocar nada.
+    // Si todavía no hay vínculo (cuentas viejas migradas), se usa el nombre guardado en overrides.
+    const padresId   = ov.padresId !== undefined ? ov.padresId : base.padresId;
+    const pStudent   = (padresId !== undefined && padresId !== null) ? (padresRaw.students || {})[String(padresId)] : null;
+    // linkBroken: tenía un padresId pero ese alumno ya no existe en /padres (lo borraron).
+    // La cuenta de sorteo SIGUE ACTIVA (cupo, PIN, números, puntos) — solo queda "libre",
+    // sin padre vinculado, hasta que el admin la vuelva a vincular manualmente.
+    const linkBroken = (padresId !== undefined && padresId !== null) && !pStudent;
+    const liveName   = (pStudent && pStudent.name) ? pStudent.name : (ov.name !== undefined ? ov.name : base.name);
     list.push({
       id,
-      name:  toTitleCase(ov.name  !== undefined ? ov.name  : base.name),
+      name:  toTitleCase(liveName),
       icon:  ov.icon  !== undefined ? ov.icon  : base.icon,
       max:   ov.max   !== undefined ? ov.max   : base.max,
       pin:   ov.pin   !== undefined ? ov.pin   : base.pin,
       color: ov.color !== undefined ? ov.color : base.color,
+      padresId,
+      linkBroken,
     });
   });
   // Orden: mayor puntaje del mes en curso primero.
@@ -813,34 +826,14 @@ function setOverride(id, field, value) {
   const k = String(id); if (!overrides[k]) overrides[k]={};
   overrides[k][field] = value; saveDebounced();
 }
-// ── Sync de nombre alumno → /padres ─────────────────────────────────────
+// ── Vínculo alumno ←→ /padres ────────────────────────────────────────────
 // IMPORTANTE: los ids de alumno de /student y de /padres son espacios de
 // numeración INDEPENDIENTES (el mismo alumno puede tener id distinto en cada
-// sistema) — nunca sincronizar por id. Se busca por NOMBRE (el que tenía
-// ANTES de empezar a editar, capturado en foco) para hallar al alumno
-// correspondiente del otro lado. Si no hay exactamente una coincidencia, no
-// se toca nada (fail-safe) para evitar corromper a otro alumno.
-let _nameEditOld = {};
-function _curStudentName(id) {
-  const k = String(id);
-  if (overrides[k] && overrides[k].name !== undefined) return overrides[k].name;
-  const base = DEFAULT_STUDENTS.find(d => d.id === id);
-  return base ? base.name : '';
-}
-function snapshotNameEdit(id) { _nameEditOld[String(id)] = _curStudentName(id); }
-function commitNameSyncToPadres(id) {
-  const k = String(id);
-  const oldName = _nameEditOld[k];
-  const newName = _curStudentName(id);
-  if (!oldName || normName(oldName) === normName(newName)) return;
-  const oldKey = normName(oldName);
-  const pStudents = padresRaw.students || {};
-  const matches = Object.keys(pStudents).filter(sid => pStudents[sid] && normName(pStudents[sid].name) === oldKey);
-  if (matches.length !== 1) return;
-  const path = {};
-  path['students.' + matches[0] + '.name'] = newName;
-  PADRES_REF.update(path).catch(e => console.error('[sync nombre -> padres]', e));
-}
+// sistema) — nunca vincular por id. El vínculo se guarda UNA SOLA VEZ como
+// overrides[id].padresId (string = id del alumno en /padres), ya sea por el
+// auto-link de nombres (syncPadresLinks) o al "aceptar" una solicitud nueva
+// (acceptPadresStudent). A partir de ahí el nombre y apellido se editan
+// SOLO desde /padres — /student ya no escribe nombres hacia /padres.
 
 function saveAllocationChange(num, action, ownerId) {
   return db.runTransaction(async tx => {
@@ -1214,9 +1207,9 @@ function vTablero() {
         <div class="tp-wrap" id="tp-end-wrap"></div>
       </div>
       <div id="admin-alumnos-section">
+        <div id="padres-requests-section"></div>
         <div class="section-label">⏳ ALUMNOS</div>
         <div class="student-list"><div id="student-list"></div></div>
-        <button class="btn-add-student" onclick="addStudent()">➕ AGREGAR ALUMNO</button>
         <div id="admin-summary-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap">
           <div style="background:rgba(0,0,0,0.25);border-radius:14px;padding:10px 16px;border:1px solid rgba(255,255,255,0.06);flex:1;min-width:140px">
             <div style="font-size:8px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">SUMA TOTAL DE CUPOS</div>
@@ -1543,9 +1536,12 @@ function updateAdminSummary() {
   });
 }
 function renderAdminPanel() {
+  syncPadresLinks();
+  cacheLiveNames();
   updateAdminSummary();
   renderCronograma();
   renderStudentList();
+  renderPadresRequests();
 }
 // Cronograma 100% automático — ya no se configura a mano. Se calcula según
 // la regla fija: apertura = primer lunes del mes (3 PM), cierre = sábado de
@@ -1613,9 +1609,14 @@ function renderCronograma() {
 function renderStudentList() {
   const list=document.getElementById('student-list'); if (!list) return;
   list.innerHTML='';
+  const unlinkedOptions = getUnlinkedPadresStudents();
   getStudents().forEach((s,idx) => {
     const row=document.createElement('div');
     row.className='student-row';
+    const linkedOk = s.padresId !== undefined && s.padresId !== null && !s.linkBroken;
+    const nameTitle = linkedOk
+      ? 'El nombre se edita desde emaths.me/padres'
+      : (s.linkBroken ? 'Vínculo roto: este alumno fue eliminado de /padres. La cuenta sigue activa — vuelve a vincularla abajo.' : 'Alumno sin vínculo a /padres.');
     row.innerHTML=`
       <div class="student-row-top">
         <div style="display:flex;align-items:center;gap:6px">
@@ -1637,7 +1638,13 @@ function renderStudentList() {
       </div>
       <div style="display:flex;gap:6px;margin-bottom:8px">
         <input type="text" value="${s.icon||''}" placeholder="emoji" class="mini-input" style="width:42px;text-align:center;font-size:16px;padding:6px 4px" oninput="setOverride(${s.id},'icon',this.value)">
-        <input type="text" value="${s.name||''}" placeholder="Nombre" class="mini-input" style="flex:1;padding:6px 10px;font-size:12px;text-transform:uppercase" onfocus="snapshotNameEdit(${s.id})" oninput="setOverride(${s.id},'name',this.value)" onblur="commitNameSyncToPadres(${s.id})">
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <div class="mini-input" title="${nameTitle}" style="padding:6px 10px;font-size:12px;text-transform:uppercase;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.18);color:rgba(255,255,255,0.78);cursor:default">${s.name||''}${linkedOk?' 🔒':' ⚠️'}</div>
+          ${!linkedOk ? `<select onchange="relinkToPadres(${s.id},this.value)" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,193,7,0.4);border-radius:8px;color:#ffc107;font-size:10px;padding:5px 6px;font-weight:700">
+            <option value="">🔗 ${s.linkBroken ? 'volver a vincular con /padres…' : 'vincular con /padres…'}</option>
+            ${unlinkedOptions.map(r=>`<option value="${r.pid}">${r.name}</option>`).join('')}
+          </select>` : ''}
+        </div>
       </div>
       <div style="display:flex;gap:6px">
         <div style="flex:1">
@@ -1667,12 +1674,118 @@ function pickUniqueColor() {
   const used=getStudents().map(s=>s.color.toLowerCase());
   return COLOR_PALETTE.find(c=>!used.includes(c.toLowerCase()))||COLOR_PALETTE[Math.floor(Math.random()*COLOR_PALETTE.length)];
 }
-function addStudent() {
+function nextLocalStudentId() {
   const allIds=[...DEFAULT_STUDENTS.map(s=>s.id),...Object.keys(overrides).map(Number).filter(n=>!isNaN(n))];
-  const newId=allIds.length>0?Math.max(...allIds)+1:11;
-  overrides[String(newId)]={ name:"Nuevo Alumno", icon:"👤", max:0, pin:"1234", color:pickUniqueColor(), deleted:false };
-  saveMeta(); renderStudentList(); renderAll(getLoggedId());
-  showToast('Alumno agregado.','success');
+  return allIds.length>0?Math.max(...allIds)+1:11;
+}
+// ── Detección automática de alumnos nuevos en /padres ───────────────────
+// Ya no se agregan alumnos a mano: cuando un padre se registra (o el admin de
+// /padres agrega un alumno) en emaths.me/padres, aparece aquí como "solicitud
+// nueva" y el admin solo tiene que ACEPTARLA para crear su cuenta de sorteo
+// (cupo, PIN, color, ícono). El nombre queda vinculado (padresId) y a partir
+// de ahí se sincroniza en vivo desde /padres — no se vuelve a tocar aquí.
+function syncPadresLinks() {
+  const pStudents = padresRaw.students || {};
+  let changed = false;
+  getStudents().forEach(s => {
+    const k = String(s.id);
+    const hasLink = (overrides[k] && overrides[k].padresId !== undefined) ||
+                    (DEFAULT_STUDENTS.find(d => d.id === s.id) || {}).padresId !== undefined;
+    if (hasLink) return;
+    const key = normName(s.name);
+    if (!key) return;
+    const matches = Object.keys(pStudents).filter(pid => pStudents[pid] && normName(pStudents[pid].name) === key);
+    if (matches.length === 1) {
+      if (!overrides[k]) overrides[k] = {};
+      overrides[k].padresId = matches[0];
+      changed = true;
+    }
+  });
+  if (changed) saveMeta();
+}
+function getLinkedPadresIds() {
+  const linked = new Set();
+  Object.keys(overrides).forEach(k => { if (overrides[k] && overrides[k].padresId !== undefined && overrides[k].padresId !== null) linked.add(String(overrides[k].padresId)); });
+  DEFAULT_STUDENTS.forEach(d => { if (d.padresId !== undefined && d.padresId !== null) linked.add(String(d.padresId)); });
+  return linked;
+}
+// Alumnos de /padres que todavía no están vinculados a NINGUNA cuenta de sorteo
+// (ni siquiera a una que esté con el vínculo roto). Sirve tanto para la lista de
+// "solicitudes nuevas" como para el selector de "volver a vincular".
+function getUnlinkedPadresStudents() {
+  const pStudents = padresRaw.students || {};
+  const linked    = getLinkedPadresIds();
+  return Object.keys(pStudents)
+    .filter(pid => pStudents[pid] && pStudents[pid].name && !linked.has(String(pid)))
+    .map(pid => ({ pid: String(pid), name: pStudents[pid].name }));
+}
+function getPendingPadresRequests() {
+  const dismissed = new Set((appConfig.dismissedPadresIds || []).map(String));
+  return getUnlinkedPadresStudents().filter(r => !dismissed.has(r.pid));
+}
+// Si /padres borra al alumno vinculado, la cuenta de sorteo NO se borra ni se
+// renombra silenciosamente — sigue activa (cupo, PIN, números, puntos) pero
+// queda "libre" (vínculo roto). Esto la vuelve a conectar con un alumno de
+// /padres (el mismo que se volvió a registrar, u otro) sin perder nada.
+function relinkToPadres(studentId, pid) {
+  if (!pid) return;
+  const ps = (padresRaw.students || {})[String(pid)];
+  if (!ps) { showToast('Ese alumno ya no existe en /padres.'); renderStudentList(); return; }
+  const k = String(studentId);
+  if (!overrides[k]) overrides[k] = {};
+  overrides[k].padresId = String(pid);
+  overrides[k].name     = ps.name; // se cachea como respaldo si vuelve a romperse el vínculo
+  saveMeta(); renderStudentList(); renderPadresRequests(); renderAll(getLoggedId());
+  showToast(`Vinculado con ${ps.name}.`, 'success');
+}
+// Cachea el nombre vigente de /padres en overrides[id].name mientras el vínculo
+// esté sano, para que si luego se rompe (lo borran en /padres) la cuenta no
+// vuelva a "Nuevo Alumno" sino que muestre el último nombre conocido.
+function cacheLiveNames() {
+  let changed = false;
+  Object.keys(overrides).forEach(k => {
+    const pid = overrides[k] && overrides[k].padresId;
+    if (pid === undefined || pid === null) return;
+    const ps = (padresRaw.students || {})[String(pid)];
+    if (ps && ps.name && overrides[k].name !== ps.name) {
+      overrides[k].name = ps.name;
+      changed = true;
+    }
+  });
+  if (changed) saveMeta();
+}
+function renderPadresRequests() {
+  const box = document.getElementById('padres-requests-section');
+  if (!box) return;
+  const reqs = getPendingPadresRequests();
+  if (reqs.length === 0) { box.innerHTML = ''; return; }
+  box.innerHTML = `
+    <div class="section-label" style="color:#39ff7a">🆕 SOLICITUDES NUEVAS (${reqs.length})</div>
+    <div style="margin-bottom:14px">
+      ${reqs.map(r => `
+        <div style="background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);border-radius:14px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:120px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;text-transform:uppercase">${r.name}</div>
+          <div style="display:flex;gap:6px">
+            <button onclick="acceptPadresStudent('${r.pid}')" style="background:rgba(57,255,122,0.25);border:1px solid rgba(57,255,122,0.4);color:#39ff7a;border-radius:8px;padding:7px 12px;font-weight:900;font-size:11px;cursor:pointer;letter-spacing:0.05em">✅ ACEPTAR</button>
+            <button onclick="dismissPadresStudent('${r.pid}')" title="Ignorar" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);border-radius:8px;padding:7px 12px;font-weight:900;font-size:11px;cursor:pointer">✕</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+function acceptPadresStudent(pid) {
+  const ps = (padresRaw.students || {})[String(pid)];
+  if (!ps || !ps.name) { showToast('Ese alumno ya no existe en /padres.'); renderPadresRequests(); return; }
+  const newId = nextLocalStudentId();
+  overrides[String(newId)] = { name:ps.name, icon:"👤", max:0, pin:"1234", color:pickUniqueColor(), deleted:false, padresId:String(pid) };
+  saveMeta(); renderPadresRequests(); renderStudentList(); renderAll(getLoggedId());
+  showToast(`Cuenta creada para ${ps.name}. Asígnale cupo, PIN, ícono y color.`, 'success');
+}
+function dismissPadresStudent(pid) {
+  if (!Array.isArray(appConfig.dismissedPadresIds)) appConfig.dismissedPadresIds = [];
+  if (!appConfig.dismissedPadresIds.includes(String(pid))) appConfig.dismissedPadresIds.push(String(pid));
+  saveMeta(); renderPadresRequests();
+  showToast('Solicitud ignorada.', 'success');
 }
 function buildTimePicker(containerId,label,isoValue,onChangeFn) {
   const wrap=document.getElementById(containerId); if (!wrap) return;
@@ -3925,6 +4038,15 @@ PADRES_REF.onSnapshot(doc => {
     const app=document.getElementById('app');
     if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
     renderHorariosSidebar();
+  }
+  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
+  // nombres vinculados (un padre puede registrarse o editar un nombre en
+  // cualquier momento mientras el admin tiene el panel abierto).
+  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
+    syncPadresLinks();
+    cacheLiveNames();
+    renderStudentList();
+    renderPadresRequests();
   }
 }, err => console.error('[Firebase padres]', err));
 
