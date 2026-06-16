@@ -2251,6 +2251,7 @@ function vTareas() {
       ${renderReviewQueue(sorted)}
     </div>` : taskFilter==='prompts' ? `
     <div id="tasks-list">
+      ${renderGlobalPromptForm()}
       ${renderAllPromptsList(allPromptGroups)}
     </div>` : `
     <div id="tasks-list">
@@ -2839,6 +2840,48 @@ function deleteAllLinkedPrompt(promptId) {
   });
   saveLms();
   showToast('Prompt eliminado.', 'success');
+  router();
+}
+// Formulario para crear un prompt nuevo directamente desde la pestaña PROMPTS,
+// sin necesidad de filtrar primero por un alumno (a diferencia del formulario
+// que vive dentro de la ficha de un alumno puntual). Usa ids propios
+// (gprompt-*) para no chocar con el formulario por-alumno si ambos llegaran a
+// estar en pantalla a la vez.
+function renderGlobalPromptForm() {
+  const students = getStudents();
+  return `
+  <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:14px;padding:12px;margin-bottom:14px">
+    <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">➕ NUEVO PROMPT</div>
+    <input type="text" id="gprompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
+    <textarea id="gprompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:8px;resize:vertical;min-height:70px"></textarea>
+    <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px" id="gprompt-assign-list">
+      ${students.map(s=>`
+      <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
+        <input type="checkbox" data-sid="${s.id}" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
+      </label>`).join('')}
+    </div>
+    <button class="btn-sm btn-primary" onclick="saveGlobalPrompt()" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
+  </div>`;
+}
+function saveGlobalPrompt() {
+  const name = (document.getElementById('gprompt-name')?.value||'').trim();
+  const text = (document.getElementById('gprompt-text')?.value||'').trim();
+  if (!name) { showToast('Escribe un nombre para el prompt.'); return; }
+  if (!text) { showToast('Escribe el texto del prompt.'); return; }
+  const checks = document.querySelectorAll('#gprompt-assign-list input[type=checkbox]:checked');
+  const sids = [...checks].map(cb => String(cb.dataset.sid));
+  if (sids.length === 0) { showToast('Selecciona al menos un alumno.'); return; }
+  const ts = Date.now();
+  const isShared = sids.length > 1;
+  const sharedId = isShared ? String(ts) : undefined;
+  sids.forEach((sid, i) => {
+    const entry = { id: ts + '_' + i + '_' + sid, name, text, ts, ...(isShared ? {sharedId} : {}) };
+    if (!prompts[sid]) prompts[sid] = [];
+    prompts[sid].push(entry);
+  });
+  saveLms();
+  showToast('Prompt guardado.', 'success');
   router();
 }
 function setPuntosTab(t) {
