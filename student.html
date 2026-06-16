@@ -2105,6 +2105,7 @@ function vTareas() {
 
   const students = getStudents();
   const svStudent = taskStudentView ? students.find(s=>String(s.id)===taskStudentView) : null;
+  const allPromptGroups = admin ? getAllUniquePrompts() : [];
   return `
   <div style="padding:12px">
     <div class="task-hero">
@@ -2125,10 +2126,11 @@ function vTareas() {
       <button class="tab-btn${taskFilter==='pending'?' active':''}" onclick="setTaskFilter('pending')">📌 PENDIENTES (${pendingCount})</button>
       <button class="tab-btn${taskFilter==='done'?' active':''}" onclick="setTaskFilter('done')">✅ COMPLETADAS (${completedCount})</button>
       ${admin?`<button class="tab-btn${taskFilter==='review'?' active':''}" onclick="setTaskFilter('review')" style="position:relative">📝 APROBAR${reviewCount>0?` <span class="msgs-badge">${reviewCount>9?'9+':reviewCount}</span>`:''}</button>`:''}
+      ${admin?`<button class="tab-btn${taskFilter==='prompts'?' active':''}" onclick="setTaskFilter('prompts')">🧠 PROMPTS${allPromptGroups.length>0?` (${allPromptGroups.length})`:''}</button>`:''}
       <button class="tab-btn${taskFilter==='msgs'?' active':''}" onclick="setTaskFilter('msgs')" style="position:relative">💬 MENSAJES${totalMsgsUnread()>0?` <span class="msgs-badge">${totalMsgsUnread()>9?'9+':totalMsgsUnread()}</span>`:''}</button>
     </div>
 
-    ${admin && taskFilter!=='msgs' && taskFilter!=='review' ? `
+    ${admin && taskFilter!=='msgs' && taskFilter!=='review' && taskFilter!=='prompts' ? `
     <div style="margin-bottom:8px">
       <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
@@ -2247,6 +2249,9 @@ function vTareas() {
     ${taskFilter==='msgs' ? '' : taskFilter==='review' ? `
     <div id="tasks-list">
       ${renderReviewQueue(sorted)}
+    </div>` : taskFilter==='prompts' ? `
+    <div id="tasks-list">
+      ${renderAllPromptsList(allPromptGroups)}
     </div>` : `
     <div id="tasks-list">
       ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskFilter==='done'?'SIN TAREAS COMPLETADAS':'SIN TAREAS PENDIENTES'}</div></div>`
@@ -2737,6 +2742,103 @@ function deletePrompt(studentId, promptId) {
   if (!prompts[key]) return;
   prompts[key] = prompts[key].filter(p => p.id !== promptId);
   saveLms();
+  router();
+}
+// ── Vista "todos los prompts" (tab PROMPTS) ──────────────────────────────
+// Junta en una sola lista los prompts de todos los alumnos, sin repetir las
+// copias compartidas (mismo sharedId, o mismo nombre para prompts viejos sin
+// sharedId — mismo criterio que refreshTaskPromptList). Cada tarjeta muestra
+// con qué alumnos está vinculado el prompt.
+function getAllUniquePrompts() {
+  const groups = [];
+  const idxByKey = {};
+  getStudents().forEach(s => {
+    (prompts[String(s.id)] || []).forEach(p => {
+      const key = p.sharedId ? ('s:' + p.sharedId) : ('n:' + p.name);
+      if (idxByKey[key] !== undefined) {
+        groups[idxByKey[key]].students.push(s);
+        return;
+      }
+      idxByKey[key] = groups.length;
+      groups.push({ id: p.id, name: p.name, text: p.text, ts: p.ts, history: p.history, students: [s] });
+    });
+  });
+  return groups.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+}
+function renderAllPromptsList(groups) {
+  groups = groups || getAllUniquePrompts();
+  if (groups.length === 0) {
+    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">🧠</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN PROMPTS AÚN</div></div>`;
+  }
+  return groups.map(g => `
+    <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 12px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:#a78bfa;letter-spacing:0.05em">${g.name}${g.ts?`<span style="margin-left:8px;font-size:9px;color:rgba(255,255,255,0.28);font-weight:400;font-family:'Barlow',sans-serif;letter-spacing:0">${new Date(g.ts).toLocaleDateString('es-ES',{day:'numeric',month:'short'})}, ${new Date(g.ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</span>`:''}</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px">
+            ${g.students.map(s=>`<span title="${s.name}" style="font-size:11px;background:${s.color}22;border:1px solid ${s.color}55;color:${s.color};border-radius:8px;padding:2px 6px;font-weight:700">${s.icon} ${s.name.split(' ')[0]}</span>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${g.history?.length?`<button onclick="togglePromptHistory('${g.id}')" style="background:${_promptHistOpen===g.id?'rgba(139,92,246,0.2)':'rgba(255,255,255,0.05)'};border:1px solid ${_promptHistOpen===g.id?'rgba(139,92,246,0.4)':'rgba(255,255,255,0.1)'};color:${_promptHistOpen===g.id?'#a78bfa':'rgba(255,255,255,0.3)'};border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0" title="Ver historial">🕐 ${g.history.length}</button>`:''}
+          <button onclick="editPromptGlobal('${g.id}','${g.students[0].id}')" style="background:rgba(255,190,50,0.1);border:1px solid rgba(255,190,50,0.25);color:#fbbf24;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">✏️</button>
+          <button onclick="copyPromptGlobal('${g.id}')" style="background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);color:#4fb6ff;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px;font-weight:900;flex-shrink:0">📋</button>
+          <button onclick="deleteAllLinkedPrompt('${g.id}')" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;font-size:15px;line-height:1;flex-shrink:0;padding:0">🗑</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);white-space:pre-wrap;line-height:1.4">${g.text}</div>
+      ${_promptHistOpen===g.id&&g.history?.length?`
+      <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:8px 10px;margin-top:8px">
+        <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">VERSIONES ANTERIORES</div>
+        ${[...g.history].reverse().map((h,ri)=>{
+          const realIdx = g.history.length-1-ri;
+          const d = new Date(h.ts).toLocaleDateString('es-ES',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+          return `<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.name}</div>
+              <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-top:1px">${d}</div>
+            </div>
+            <button onclick="restorePromptVersion('${g.id}','${g.students[0].id}',${realIdx})" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);color:#a78bfa;border-radius:8px;padding:4px 9px;cursor:pointer;font-size:10px;font-weight:900;flex-shrink:0">↩️ Restaurar</button>
+          </div>`;
+        }).join('')}
+      </div>`:''}
+    </div>
+  `).join('');
+}
+// Atajo: selecciona al alumno (para que se renderice el formulario de edición
+// de prompts) y abre el formulario ya precargado con este prompt.
+function editPromptGlobal(promptId, anyStudentId) {
+  taskStudentView = String(anyStudentId);
+  router();
+  openEditPrompt(promptId, anyStudentId);
+}
+function copyPromptGlobal(promptId) {
+  let p = null;
+  for (const sid of Object.keys(prompts)) {
+    p = (prompts[sid]||[]).find(x => x.id === promptId);
+    if (p) break;
+  }
+  if (!p) return;
+  const txt = p.name + '\n\n' + p.text;
+  navigator.clipboard.writeText(txt).then(()=>showToast('Prompt copiado.','success')).catch(()=>showToast('No se pudo copiar.'));
+}
+// Borra el prompt de TODOS los alumnos vinculados (mismo sharedId), a diferencia
+// de deletePrompt() que solo borra la copia de un alumno puntual.
+function deleteAllLinkedPrompt(promptId) {
+  let sharedId = null;
+  for (const sid of Object.keys(prompts)) {
+    const found = (prompts[sid]||[]).find(p => p.id === promptId);
+    if (found) { sharedId = found.sharedId || null; break; }
+  }
+  Object.keys(prompts).forEach(sid => {
+    prompts[sid] = (prompts[sid]||[]).filter(p => {
+      if (p.id === promptId) return false;
+      if (sharedId && p.sharedId === sharedId) return false;
+      return true;
+    });
+  });
+  saveLms();
+  showToast('Prompt eliminado.', 'success');
   router();
 }
 function setPuntosTab(t) {
