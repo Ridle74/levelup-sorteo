@@ -566,6 +566,13 @@ let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha
 let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evita re-render brusco al recibir el propio guardado)
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
 let appReady    = false;
+// true SOLO después de que REF.onSnapshot recibió con éxito el documento real de Firestore
+// al menos una vez en esta sesión. Mientras sea false, saveLms()/saveMeta() y cualquier
+// REF.set() que toque overrides/config/allocations se BLOQUEAN — así, si el listener de
+// Firestore falla al conectar (red lenta, dispositivo nuevo, wifi restrictivo, etc.), la app
+// no puede guardar por accidente el estado local vacío/por-defecto y borrar los datos reales
+// en la nube. Este es el fix para el bug recurrente de "los Puntos de todos se resetean".
+let lmsDataLoaded = false;
 let clockTimer  = null;
 // La vista actual se obtiene directo de la URL: /student/<vista>
 // (también acepta ?view=<vista> por compatibilidad).
@@ -816,7 +823,19 @@ function showToast(msg, type='error') {
 // ════════════════════════════════════════════════════════
 // FIREBASE SAVE
 // ════════════════════════════════════════════════════════
+// Bloquea cualquier guardado mientras no se haya recibido al menos un snapshot real de
+// Firestore en esta sesión (ver lmsDataLoaded arriba). Sin esto, un fallo de conexión al
+// cargar (típico en un dispositivo/red nueva) deja las variables locales en su valor por
+// defecto vacío, y un guardado en ese momento borraría los datos reales en la nube.
+function firestoreDataReady() {
+  if (!lmsDataLoaded) {
+    showToast('Sin conexión con la base de datos todavía — espera unos segundos y vuelve a intentar. (Esto evita borrar datos por accidente.)');
+    return false;
+  }
+  return true;
+}
 function saveMeta() {
+  if (!firestoreDataReady()) return;
   REF.set({ overrides, config: appConfig }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
@@ -857,6 +876,7 @@ function saveAllocationChange(num, action, ownerId) {
 }
 
 function saveLms() {
+  if (!firestoreDataReady()) return;
   REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers, pointsHistory, prompts } }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
@@ -1517,6 +1537,7 @@ function toggleAdminPanel() {
   if (isOpen) renderAdminPanel();
 }
 function setTotalNumbers(n) {
+  if (!firestoreDataReady()) return;
   appConfig.totalNumbers=n;
   Object.keys(allocations).forEach(k=>{ if(parseInt(k)>n) delete allocations[k]; });
   // IMPORTANTE: usar merge:true y NO incluir 'lms' aquí. Sin merge, .set() reemplaza
@@ -1835,6 +1856,7 @@ function copyMsg(studentId,type) {
 function openReset()  { document.getElementById('reset-modal').classList.add('show'); }
 function closeReset() { document.getElementById('reset-modal').classList.remove('show'); }
 function doReset() {
+  if (!firestoreDataReady()) { closeReset(); return; }
   allocations={};
   // IMPORTANTE: merge:true y sin 'lms' — ver nota en setTotalNumbers(). Este botón
   // ("Reiniciar Tablero") es la causa más probable de que los Puntos de un mes hayan
@@ -4208,16 +4230,26 @@ REF.onSnapshot(doc => {
   pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
   taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
   prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
-  archiveMonthIfNeeded();
-  // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
-  // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
-  (function seedJoannaMult(){
-    const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
-    if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
-      taskMultipliers[String(joanna.id)] = 3;
-      saveLms();
-    }
-  })();
+  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
+  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
+  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
+  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
+  // sobrescriben datos reales con el estado vacío por defecto.
+  if (doc.exists) {
+    lmsDataLoaded = true;
+    archiveMonthIfNeeded();
+    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
+    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
+    (function seedJoannaMult(){
+      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
+      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
+        taskMultipliers[String(joanna.id)] = 3;
+        saveLms();
+      }
+    })();
+  } else {
+    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
+  }
 
   if (!appReady) {
     appReady = true;
@@ -4256,9 +4288,14 @@ REF.onSnapshot(doc => {
 }, err => {
   console.error('[Firebase]', err);
   document.getElementById('initial-loading').classList.add('hidden');
+  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
+  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea saveLms()/saveMeta()
+  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
+  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
+  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
   appReady = true;
   router();
-  showToast('No se pudo conectar a Firebase.');
+  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
 });
 
 // Image viewer modal
