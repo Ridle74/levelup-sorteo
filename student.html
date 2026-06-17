@@ -3407,8 +3407,15 @@ function vHorarios() {
   lmsStudents.forEach(s => { lmsMap[normName(s.name)] = s; });
 
   const todayCount = (() => {
-    const d = new Date().getDay();
-    return sessions.filter(s => Number(s.day) === d).length;
+    const td = new Date(); td.setHours(0,0,0,0);
+    const dstr = td.toISOString().slice(0,10);
+    const d = td.getDay();
+    return sessions.filter(s => {
+      const isOneTime = s.recurring === false && s.date;
+      if (isOneTime) return s.date === dstr;
+      if (Array.isArray(s.skipDates) && s.skipDates.includes(dstr)) return false;
+      return Number(s.day) === d;
+    }).length;
   })();
 
   const MONTHS_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -3597,15 +3604,17 @@ function renderHorariosCalendar() {
   const wLabel = fmtRange(dates);
   const colW = Math.max(Math.floor((appW - 44) / daysCount), isMobile ? 120 : 72);
 
-  // Build slotMap: group by day+start, multiple students per slot
+  // Build slotMap: group by day+start (recurring) or date+start (excepción puntual),
+  // multiple students por slot — mismo patrón que buildPadCalGrid() en padres.html.
   const slotMap = {};
   sessions.forEach(s => {
     const sid = String(s.studentId);
     const pSt = pStudents[sid];
     if (!pSt || !pSt.name || !s.start) return;
     const lms  = lmsMap[normName(pSt.name)] || {};
-    const key  = s.day+'|'+s.start;
-    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), start:s.start, maxDur:0, students:[] };
+    const isOneTime = s.recurring === false && s.date;
+    const key  = isOneTime ? (s.date+'|'+s.start) : ('d'+s.day+'|'+s.start);
+    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
     const dur = s.dur || 60;
     if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
     slotMap[key].students.push({
@@ -3613,7 +3622,8 @@ function renderHorariosCalendar() {
       icon: lms.icon  || '👤',
       color: lms.color || '#4fb6ff',
       modality: s.modality || '',
-      dur
+      dur,
+      skipDates: Array.isArray(s.skipDates) ? s.skipDates : []
     });
   });
 
@@ -3643,19 +3653,35 @@ function renderHorariosCalendar() {
   const bodyEl = document.getElementById('hor-days-body');
   if (!bodyEl) return;
   const totalH = HOURS.length * ROW_H;
+  const _dStr = function(d){ return d.toISOString().slice(0,10); };
+  const cycleEndDate = padresRaw.cycleEnd ? new Date(padresRaw.cycleEnd+'T00:00:00') : null;
 
   bodyEl.innerHTML = dates.map(function(date) {
     const jsDay = date.getDay();
+    const dstr = _dStr(date);
     const isPast = date < today, isTod = date.getTime()===today.getTime();
     const cls = 'hor-day-col' + (isTod?' is-today':'') + (isPast?' is-past':'');
     const lines = HOURS.map(function() { return '<div class="hor-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
 
-    const slots = Object.values(slotMap).filter(function(sl) { return sl.day === jsDay; });
+    // Las sesiones recurrentes solo se muestran dentro del ciclo; las de una sola
+    // fecha (excepción) siempre se muestran en su fecha exacta.
+    const afterCycle = cycleEndDate && date > cycleEndDate;
+    const slots = Object.values(slotMap).filter(function(sl) {
+      if (sl.oneTimeDate) return sl.oneTimeDate === dstr;
+      if (afterCycle) return false;
+      return sl.day === jsDay;
+    });
     const cards = slots.flatMap(function(slot) {
+      // Si la sesión es recurrente, en esta fecha puntual se excluye a los alumnos cuya
+      // sesión tiene este día en skipDates (porque se editó "solo esta fecha" — ya tienen
+      // su propia tarjeta de una sola vez con los valores nuevos, en otra entrada del slotMap).
+      const activeStudents = slot.oneTimeDate ? slot.students
+        : slot.students.filter(function(st){ return !st.skipDates.includes(dstr); });
+      if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
       const hPx   = (slot.maxDur / 60) * ROW_H - 3;
-      const total = slot.students.length;
-      return slot.students.map(function(st, idx) {
+      const total = activeStudents.length;
+      return activeStudents.map(function(st, idx) {
         const end  = addM(slot.start, st.dur);
         const lPx  = 2 + Math.round((colW-4) * (idx/total));
         const wPx  = Math.round((colW-4)/total) - (idx<total-1?2:0);
@@ -4178,7 +4204,7 @@ PADRES_REF.onSnapshot(doc => {
   const d = doc.exists ? doc.data() : {};
   const pStudents = d.students || {};
   const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  padresRaw = { students: pStudents, sessions: pSessions };
+  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
   const map = {}, slotMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
     // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
