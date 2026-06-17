@@ -1632,8 +1632,20 @@ function deleteSessionFromModal() {
     btn.dataset.confirmed = '1';
     return;
   }
+  // Si la regla sigue siendo semanal y se eligió "Solo esta fecha", NO se borra toda la
+  // serie — solo se agrega smEditOccDate a skipDates[] para cancelar esa ocurrencia puntual;
+  // el resto de semanas del ciclo siguen intactas.
+  var scopeBtn = document.querySelector('#sm-scope-seg .on');
+  var onlyThisDate = !!smEditOccDate && scopeBtn && scopeBtn.dataset.scope === 'one';
   if (smEditFree) {
-    DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id!=smEditId; });
+    var baseFs = (DATA.freeSlots||[]).find(function(s){ return s.id==smEditId; });
+    if (onlyThisDate && baseFs && baseFs.recurring !== false) {
+      if (!Array.isArray(baseFs.skipDates)) baseFs.skipDates = [];
+      if (baseFs.skipDates.indexOf(smEditOccDate) === -1) baseFs.skipDates.push(smEditOccDate);
+    } else {
+      onlyThisDate = false;
+      DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id!=smEditId; });
+    }
     saveFreeSlots();
   } else {
     DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
@@ -1641,7 +1653,7 @@ function deleteSessionFromModal() {
   }
   closeSessionModal();
   render();
-  showToast('Eliminado.', 'success');
+  showToast(onlyThisDate ? 'Horario libre cancelado solo para esa fecha.' : 'Eliminado.', 'success');
 }
 
 function bookFreeSlot(fsId) {
