@@ -220,10 +220,16 @@ function buildGrid(dayList) {
   DATA.sessions.forEach(function(s){
     var isOne=s.recurring===false && s.date;
     var key=isOne?(s.date+'|'+s.start):('d'+s.day+'|'+s.start);
-    if(!slotMap[key]) slotMap[key]={day:Number(s.day),oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual',studentIds:[]};
+    if(!slotMap[key]) slotMap[key]={day:Number(s.day),oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual',studentIds:[],students:[]};
     if((s.dur||60)>slotMap[key].dur) slotMap[key].dur=s.dur||60;
     if((s.modality||'').toLowerCase().includes('dom')) slotMap[key].modality='Domicilio';
-    if(s.studentId!==undefined && s.studentId!==null && slotMap[key].studentIds.indexOf(s.studentId)===-1) slotMap[key].studentIds.push(s.studentId);
+    if(s.studentId!==undefined && s.studentId!==null){
+      if(slotMap[key].studentIds.indexOf(s.studentId)===-1) slotMap[key].studentIds.push(s.studentId);
+      // se guarda por separado (no solo el id) para poder excluir SOLO a este alumno en una
+      // fecha puntual si su sesión tiene una excepción (skipDates) para ese día — el resto de
+      // alumnos que comparten el mismo horario día+hora no se ven afectados.
+      slotMap[key].students.push({ sid:s.studentId, skipDates:Array.isArray(s.skipDates)?s.skipDates:[] });
+    }
   });
 
   var freeList=DATA.freeSlots||[];
@@ -282,6 +288,12 @@ function buildGrid(dayList) {
       if(afterCycle) return false;
       return sl.day===dow;
     }).map(function(slot){
+      // Si la sesión es recurrente, se excluye en esta fecha a los alumnos cuya sesión
+      // tiene este día puntual en skipDates (porque ese alumno tiene una excepción —
+      // se editó solo para esta fecha y ya aparece como tarjeta de una sola vez aparte).
+      var activeIds = slot.oneTimeDate ? slot.studentIds
+        : slot.students.filter(function(st){ return st.skipDates.indexOf(ds)===-1; }).map(function(st){ return st.sid; });
+      if(!activeIds.length) return '';
       var topPx=(toH(slot.start)-MIN_H)*ROW_H;
       var hPx=Math.max((slot.dur/60)*ROW_H-3,28);
       var end=addM(slot.start,slot.dur);
@@ -291,7 +303,7 @@ function buildGrid(dayList) {
       var brd =isDom?'rgba(239,68,68,0.45)':'rgba(79,182,255,0.45)';
       var nameC=isDom?'#b91c1c':'#1d6fa4';
       return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px;background:'+bg+';border:1px solid '+brd+'">'
-        +'<div class="pcal-ev-name" style="color:'+nameC+'">'+slotNames(slot.studentIds)+'</div>'
+        +'<div class="pcal-ev-name" style="color:'+nameC+'">'+slotNames(activeIds)+'</div>'
         +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
         +(short?'':'<div class="pcal-ev-badge">'+slot.modality+'</div>')
         +'</div>';
@@ -302,6 +314,7 @@ function buildGrid(dayList) {
       if(fs.bookedBy) return false;
       if(fs.recurring===false && fs.date) return fs.date===ds;
       if(afterCycle) return false;
+      if(Array.isArray(fs.skipDates) && fs.skipDates.indexOf(ds)!==-1) return false;
       return Number(fs.day)===dow;
     }).map(function(fs){
       var topPx=Math.max((toH(fs.start)-MIN_H)*ROW_H,0);

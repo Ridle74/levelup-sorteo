@@ -223,9 +223,14 @@ function syncNameToStudent(oldName, newName) {
 //   students: {            // espejo ligero de los alumnos (nombre + color + icono)
 //     "<studentId>": { name, color, icon, modality: 'Virtual' | 'Domicilio' }
 //   },
-//   sessions: [            // clases programadas (recurrentes semanales)
+//   sessions: [            // clases programadas (recurrentes semanales, o de una sola vez)
 //     { id, studentId, day: 0-6 (0=Dom), start:"HH:MM", dur: minutos,
-//       modality:'Virtual'|'Domicilio', topic }
+//       modality:'Virtual'|'Domicilio', topic,
+//       recurring: true|false, date:"YYYY-MM-DD"|null,   // false+date = clase suelta de una sola vez
+//       skipDates: ["YYYY-MM-DD", ...] }                 // fechas puntuales en las que esta regla
+//                                                          // semanal NO se debe generar (porque esa
+//                                                          // fecha se editó "solo esta fecha" y existe
+//                                                          // como otra entrada one-time con id distinto)
 //   ],
 //   requests: [            // solicitudes de clases adicionales hechas por padres
 //     { id, parentId, studentId, day, start, dur, modality, note,
@@ -364,6 +369,10 @@ let calEditMode = false;       // admin: modo edición del calendario
 let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
 let smEditFree  = false;       // true si se edita un freeSlot
 let smType      = 'session';   // 'session' | 'free'
+// Fecha (YYYY-MM-DD) de la ocurrencia concreta que se tocó en el calendario para editar.
+// Solo se llena cuando se abre el editor desde una tarjeta ya dibujada en una fecha visible;
+// permite ofrecer "aplicar solo a esta fecha" en vez de reescribir toda la regla semanal.
+let smEditOccDate = null;
 
 function startOfWeek(d) {
   const x = new Date(d); const day = x.getDay();
@@ -804,7 +813,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     if (!slotMap[key]) slotMap[key] = { day:Number(s.day), oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
     const dur = s.dur || 60;
     if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
-    slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id });
+    slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id, skipDates:Array.isArray(s.skipDates)?s.skipDates:[] });
   });
 
   // ── Smart time range: fit to actual sessions ─────────────────
@@ -889,10 +898,16 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       return sl.day === dow;
     });
     const cards = slots.flatMap(function(slot) {
+      // Si la sesión es recurrente, en esta fecha puntual se excluye a los alumnos cuya
+      // sesión tiene este día en skipDates (porque se editó "solo esta fecha" — ya tienen
+      // su propia tarjeta de una sola vez en otro lugar con los valores nuevos).
+      const activeStudents = slot.oneTimeDate ? slot.students
+        : slot.students.filter(function(st){ return !st.skipDates.includes(dstr); });
+      if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
       const hPx   = Math.max((slot.maxDur / 60) * ROW_H - 3, 28);
-      const total = slot.students.length;
-      return slot.students.map(function(st, idx) {
+      const total = activeStudents.length;
+      return activeStudents.map(function(st, idx) {
         const stData = DATA.students[st.sid] || {};
         const end    = addM(slot.start, st.dur);
         const lPx    = 2 + Math.round((colW-4)*(idx/total));
@@ -900,7 +915,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
         const short  = hPx < 42;
         const pName  = showParent ? (studentParent[String(st.sid)]||'') : '';
         const editIco = (showParent && calEditMode && st.sessionId)
-          ? '<div class="pcal-ev-edit-ico" onclick="openEditSession('+st.sessionId+',false);event.stopPropagation()">✏️</div>' : '';
+          ? '<div class="pcal-ev-edit-ico" onclick="openEditSession('+st.sessionId+',false,\''+dstr+'\');event.stopPropagation()">✏️</div>' : '';
         return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.12)">'
           +editIco
           +(pName?'<div class="pcal-ev-parent">'+pName+'</div>':'')
@@ -914,6 +929,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       if (!showParent && fs.bookedBy) return false;
       if (fs.recurring===false && fs.date) return fs.date === dstr;
       if (afterCycle) return false;
+      if (Array.isArray(fs.skipDates) && fs.skipDates.includes(dstr)) return false;
       return Number(fs.day) === dow;
     }).map(function(fs){
       const topPx = Math.max((toH(fs.start) - MIN_H) * ROW_H, 0);
@@ -923,7 +939,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       const bookedSt = booked ? (DATA.students[fs.bookedBy.studentId]||{}) : null;
       const clsFree = 'pcal-free-slot'+(booked?' pcal-free-booked':'');
       const editIco = (showParent && calEditMode)
-        ? '<div class="pcal-ev-edit-ico" onclick="openEditSession(\''+fs.id+'\',true);event.stopPropagation()">✏️</div>' : '';
+        ? '<div class="pcal-ev-edit-ico" onclick="openEditSession(\''+fs.id+'\',true,\''+dstr+'\');event.stopPropagation()">✏️</div>' : '';
       const bookTap = (!showParent && !booked) ? ' onclick="bookFreeSlot(\''+fs.id+'\')"' : '';
       return '<div class="'+clsFree+'" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px;position:absolute"'+bookTap+'>'
         +editIco
@@ -1466,6 +1482,15 @@ function _buildSM(prefill, isEdit) {
     +'<label class="field-label">Fecha específica</label>'
     +'<input class="fsm" id="sm-date" type="date" value="'+(p.date||'')+'">'
     +'</div>'
+    +(isEdit && smEditOccDate
+      ? '<div id="sm-scope-wrap" style="display:'+(recVal?'':'none')+'">'
+        +'<label class="field-label">Aplicar este cambio a</label>'
+        +'<div class="sm-seg" id="sm-scope-seg">'
+        +'<button class="on" data-scope="all" onclick="smToggleSeg(\'sm-scope-seg\',this)">Todas las semanas</button>'
+        +'<button data-scope="one" onclick="smToggleSeg(\'sm-scope-seg\',this)">Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00'))+'</button>'
+        +'</div>'
+        +'</div>'
+      : '')
     +'<button class="btn-grn" style="margin-top:4px" onclick="submitSessionModal()">'+(isEdit?'Guardar cambios':'Crear')+'</button>'
     +(isEdit ? '<button class="sm-del-btn" onclick="deleteSessionFromModal()">⊘ Eliminar este horario</button>' : '')
     +'</div></div>';
@@ -1475,13 +1500,14 @@ function _buildSM(prefill, isEdit) {
 }
 
 function openNewSession(opts) {
-  smEditId = null; smEditFree = false;
+  smEditId = null; smEditFree = false; smEditOccDate = null;
   smType = (opts && opts.type) || 'session';
   _buildSM(opts && opts.prefill, false);
 }
 
-function openEditSession(id, isFree) {
+function openEditSession(id, isFree, occDate) {
   smEditId = id; smEditFree = !!isFree;
+  smEditOccDate = occDate || null;
   smType = isFree ? 'free' : 'session';
   var src = isFree
     ? (DATA.freeSlots||[]).find(function(s){ return s.id==id; }) || {}
@@ -1498,7 +1524,7 @@ function openEditSession(id, isFree) {
 
 function closeSessionModal() {
   document.getElementById('session-modal').style.display = 'none';
-  smEditId = null; smEditFree = false;
+  smEditId = null; smEditFree = false; smEditOccDate = null;
 }
 
 function smSetType(t) {
@@ -1516,6 +1542,11 @@ function smToggleRec(btn, rec) {
   document.querySelectorAll('#sm-rec-seg button').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
   document.getElementById('sm-date-wrap').style.display = rec ? 'none' : '';
+  // El selector "aplicar a todas las semanas / solo esta fecha" únicamente tiene sentido
+  // mientras la regla sigue siendo semanal — si se cambia a "Solo una vez" ya se está
+  // convirtiendo toda la regla, así que se oculta.
+  var scopeWrap = document.getElementById('sm-scope-wrap');
+  if (scopeWrap) scopeWrap.style.display = rec ? '' : 'none';
 }
 
 function smUpdateStudents() {
@@ -1539,14 +1570,31 @@ function submitSessionModal() {
   var date     = recurring ? null : (dateEl ? dateEl.value || null : null);
   if (!recurring && !date) { showToast('Indica la fecha específica.'); return; }
   var curEditId = smEditId;
+  // "Solo esta fecha": al editar una clase/horario que sigue siendo semanal, en vez de
+  // reescribir la regla completa (lo que afectaría TODAS las semanas del ciclo) se le
+  // agrega smEditOccDate al skipDates[] de la regla base (para que esa fecha puntual deje
+  // de generarse con los valores viejos) y se crea una entrada nueva de una sola vez con
+  // los valores editados. El resto de semanas de la serie quedan intactas.
+  var scopeBtn = document.querySelector('#sm-scope-seg .on');
+  var onlyThisDate = recurring && curEditId !== null && !!smEditOccDate
+    && scopeBtn && scopeBtn.dataset.scope === 'one';
   if (smType === 'free') {
-    var fs = { id: curEditId !== null ? curEditId : ('fs_'+Date.now()), day:day, start:start, dur:dur, modality:modality, recurring:recurring, date:date, bookedBy:null };
     if (!DATA.freeSlots) DATA.freeSlots = [];
-    if (curEditId !== null) {
-      var idx = DATA.freeSlots.findIndex(function(s){ return s.id==curEditId; });
-      if (idx>=0) { fs.bookedBy = DATA.freeSlots[idx].bookedBy; DATA.freeSlots[idx]=fs; }
-      else DATA.freeSlots.push(fs);
-    } else { DATA.freeSlots.push(fs); }
+    if (onlyThisDate) {
+      var baseFs = DATA.freeSlots.find(function(s){ return s.id==curEditId; });
+      if (baseFs) {
+        if (!Array.isArray(baseFs.skipDates)) baseFs.skipDates = [];
+        if (baseFs.skipDates.indexOf(smEditOccDate) === -1) baseFs.skipDates.push(smEditOccDate);
+      }
+      DATA.freeSlots.push({ id:'fs_'+Date.now(), day:day, start:start, dur:dur, modality:modality, recurring:false, date:smEditOccDate, bookedBy:null });
+    } else {
+      var fs = { id: curEditId !== null ? curEditId : ('fs_'+Date.now()), day:day, start:start, dur:dur, modality:modality, recurring:recurring, date:date, bookedBy:null };
+      if (curEditId !== null) {
+        var idx = DATA.freeSlots.findIndex(function(s){ return s.id==curEditId; });
+        if (idx>=0) { fs.bookedBy = DATA.freeSlots[idx].bookedBy; DATA.freeSlots[idx]=fs; }
+        else DATA.freeSlots.push(fs);
+      } else { DATA.freeSlots.push(fs); }
+    }
     saveFreeSlots();
   } else {
     var parEl = document.getElementById('sm-parent');
@@ -1554,16 +1602,25 @@ function submitSessionModal() {
     if (!parEl || !stuEl || !stuEl.value) { showToast('Selecciona padre y alumno.'); return; }
     var studentId = parseInt(stuEl.value);
     var topic = modality === 'Virtual' ? 'One to One' : 'One to Family';
-    var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
-    if (curEditId !== null) {
-      var idx2 = DATA.sessions.findIndex(function(s){ return s.id==curEditId; });
-      if (idx2>=0) DATA.sessions[idx2]=sess; else DATA.sessions.push(sess);
-    } else { DATA.sessions.push(sess); }
+    if (onlyThisDate) {
+      var baseSess = DATA.sessions.find(function(s){ return s.id==curEditId; });
+      if (baseSess) {
+        if (!Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
+        if (baseSess.skipDates.indexOf(smEditOccDate) === -1) baseSess.skipDates.push(smEditOccDate);
+      }
+      DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:smEditOccDate });
+    } else {
+      var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
+      if (curEditId !== null) {
+        var idx2 = DATA.sessions.findIndex(function(s){ return s.id==curEditId; });
+        if (idx2>=0) DATA.sessions[idx2]=sess; else DATA.sessions.push(sess);
+      } else { DATA.sessions.push(sess); }
+    }
     saveSessions();
   }
   closeSessionModal();
   render();
-  showToast(curEditId !== null ? 'Cambios guardados.' : 'Creado correctamente.', 'success');
+  showToast(onlyThisDate ? 'Cambios guardados solo para esa fecha.' : (curEditId !== null ? 'Cambios guardados.' : 'Creado correctamente.'), 'success');
 }
 
 function deleteSessionFromModal() {
