@@ -1634,7 +1634,8 @@ function deleteSessionFromModal() {
   }
   // Si la regla sigue siendo semanal y se eligió "Solo esta fecha", NO se borra toda la
   // serie — solo se agrega smEditOccDate a skipDates[] para cancelar esa ocurrencia puntual;
-  // el resto de semanas del ciclo siguen intactas.
+  // el resto de semanas del ciclo siguen intactas. Aplica tanto a horarios libres como a
+  // horarios ya tomados (por alumno/padre de familia).
   var scopeBtn = document.querySelector('#sm-scope-seg .on');
   var onlyThisDate = !!smEditOccDate && scopeBtn && scopeBtn.dataset.scope === 'one';
   if (smEditFree) {
@@ -1648,12 +1649,19 @@ function deleteSessionFromModal() {
     }
     saveFreeSlots();
   } else {
-    DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
+    var baseSess = (DATA.sessions||[]).find(function(s){ return s.id==smEditId; });
+    if (onlyThisDate && baseSess && baseSess.recurring !== false) {
+      if (!Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
+      if (baseSess.skipDates.indexOf(smEditOccDate) === -1) baseSess.skipDates.push(smEditOccDate);
+    } else {
+      onlyThisDate = false;
+      DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
+    }
     saveSessions();
   }
   closeSessionModal();
   render();
-  showToast(onlyThisDate ? 'Horario libre cancelado solo para esa fecha.' : 'Eliminado.', 'success');
+  showToast(onlyThisDate ? 'Horario cancelado solo para esa fecha.' : 'Eliminado.', 'success');
 }
 
 function bookFreeSlot(fsId) {
