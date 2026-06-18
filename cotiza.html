@@ -235,23 +235,25 @@ rebuildHoursGrids();
 
 // Agrupa las horas seleccionadas por día y las junta en rangos legibles,
 // p.ej. "Lun: 08:00–11:00, 17:00–18:00".
-function buildScheduleLines() {
+// Agrupa los minutos seleccionados de un día en rangos contiguos
+// [inicio, fin) en minutos desde medianoche.
+function dayRanges(di) {
   const step = czGranularity;
-  const byDay = {};
-  czSelected.forEach(key => {
-    const [di, m] = key.split('-').map(Number);
-    (byDay[di] = byDay[di] || []).push(m);
-  });
-  return Object.keys(byDay).map(Number).sort((a,b)=>a-b).map(di => {
-    const mins = byDay[di].sort((a,b)=>a-b);
-    const ranges = [];
-    let start = mins[0], prev = mins[0];
-    for (let i=1; i<mins.length; i++) {
-      if (mins[i] === prev+step) { prev = mins[i]; }
-      else { ranges.push([start,prev]); start = mins[i]; prev = mins[i]; }
-    }
-    ranges.push([start,prev]);
-    const rangeStr = ranges.map(([a,b]) => `${fmtMin(a)}–${fmtMin(b+step)}`).join(', ');
+  const mins = [...czSelected].filter(k => k.startsWith(di+'-')).map(k => Number(k.split('-')[1])).sort((a,b)=>a-b);
+  if (!mins.length) return [];
+  const ranges = [];
+  let start = mins[0], prev = mins[0];
+  for (let i=1; i<mins.length; i++) {
+    if (mins[i] === prev+step) { prev = mins[i]; }
+    else { ranges.push([start, prev+step]); start = mins[i]; prev = mins[i]; }
+  }
+  ranges.push([start, prev+step]);
+  return ranges;
+}
+function buildScheduleLines() {
+  const days = [...new Set([...czSelected].map(k => Number(k.split('-')[0])))].sort((a,b)=>a-b);
+  return days.map(di => {
+    const rangeStr = dayRanges(di).map(([a,b]) => `${fmtMin(a)}–${fmtMin(b)}`).join(', ');
     return `${CZ_DAYS[di]}: ${rangeStr}`;
   });
 }
@@ -286,6 +288,30 @@ function hasLoneHalfHour() {
     return runLen === 1;
   });
 }
+// Domicilio: costo de movilidad por "viaje" al día (no depende del día de
+// la semana). La primera clase de cada día cuesta S/. 30 (viaje completo).
+// Si se agrega otra clase ese mismo día con un margen de hasta 30 min antes
+// o después de otra clase ya registrada, esa clase extra cuesta solo S/. 15
+// (mismo viaje); si el hueco es mayor a 30 min, es un viaje aparte: S/. 30.
+function movilidadInfo() {
+  if (CZ.tipo !== 'presencial') return { n30:0, n15:0, weekly:0 };
+  const days = [...new Set([...czSelected].map(k => Number(k.split('-')[0])))];
+  let n30 = 0, n15 = 0;
+  days.forEach(di => {
+    const ranges = dayRanges(di);
+    ranges.forEach((r, i) => {
+      if (i === 0) { n30++; return; }
+      if (r[0] - ranges[i-1][1] <= 30) n15++; else n30++;
+    });
+  });
+  return { n30, n15, weekly: n30*30 + n15*15 };
+}
+function movilidadParts(mov) {
+  const parts = [];
+  if (mov.n30) parts.push(`${mov.n30} viaje${mov.n30>1?'s':''} × S/. 30`);
+  if (mov.n15) parts.push(`${mov.n15} clase${mov.n15>1?'s':''} adicional${mov.n15>1?'es':''} (≤30 min de otra) × S/. 15`);
+  return parts.join(' + ');
+}
 function calc() {
   const res = document.getElementById('cz-result');
   const horas = czSelected.size * (czGranularity/60);
@@ -301,7 +327,9 @@ function calc() {
   const factor   = czFactor(CZ.tipo, CZ.n);
   const perHour  = Math.round(base*factor*100)/100;
   const perHourStudent = Math.round((perHour/CZ.n)*100)/100;
-  const weekly   = Math.round(perHour*horas);
+  const classWeekly = Math.round(perHour*horas);
+  const mov      = movilidadInfo();
+  const weekly   = classWeekly + mov.weekly;
   const total    = weekly*4;
   const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
@@ -311,6 +339,9 @@ function calc() {
     ? `<span style="text-decoration:line-through;opacity:.55;">Tarifa regular: S/. ${base}/h por estudiante</span><br>`
     : `<strong>Tarifa regular: S/. ${base}/h por estudiante</strong><br>`;
   const sesionLbl = CZ.n>1 ? 'Tarifa de oferta de la sesión' : 'Tarifa de la sesión';
+  const horasLine = mov.weekly>0
+    ? `Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = S/. ${classWeekly}/semana<br>Movilidad: ${movilidadParts(mov)} = S/. ${mov.weekly}/semana<br><strong>Total: S/. ${weekly}</strong>/semana<br>`
+    : `Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>`;
   res.innerHTML = `
   <div class="res">
     <div class="res-main">
@@ -326,7 +357,7 @@ function calc() {
       ${regularLine}
       ${CZ.n>1 ? `<strong>Tarifa oferta por estudiante: S/. ${perHourStudent}/h</strong><br>` : ''}
       ${sesionLbl}: S/. ${perHour}/h en total<br>
-      Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>
+      ${horasLine}
       Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual
     </div>
   </div>`;
@@ -342,7 +373,9 @@ function copyCZ(perHour, horas, weekly, total) {
   const regularLine = CZ.n>1 ? `~Tarifa regular: S/. ${base}/h por estudiante~\n` : `*Tarifa regular: S/. ${base}/h por estudiante*\n`;
   const studentLine = CZ.n>1 ? `*Tarifa oferta por estudiante: S/. ${perHourStudent}/h*\n` : '';
   const sesionLbl = CZ.n>1 ? 'Tarifa de oferta de la sesión' : 'Tarifa de la sesión';
-  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nHorario cotizado:\n${scheduleText}\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\n${regularLine}${studentLine}${sesionLbl}: S/. ${perHour}/h en total\n\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual\n\n¡Contáctanos para reservar tu horario!`;
+  const mov = movilidadInfo();
+  const movLine = mov.weekly>0 ? `Movilidad: ${movilidadParts(mov)} = S/. ${mov.weekly}/semana\n` : '';
+  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nHorario cotizado:\n${scheduleText}\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\n${regularLine}${studentLine}${sesionLbl}: S/. ${perHour}/h en total\n${movLine}\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual\n\n¡Contáctanos para reservar tu horario!`;
   navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
 }
 </script>
