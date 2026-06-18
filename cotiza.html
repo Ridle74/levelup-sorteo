@@ -25,8 +25,10 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
 .hint { font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:10px; line-height:1.5; }
 .pills { display:flex; flex-wrap:wrap; gap:6px; }
-.pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:9px 15px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; }
+.pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:9px 15px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; white-space:nowrap; }
 .pill.psel { border-color:#06b6d4; color:#67e8f9; background:rgba(6,182,212,0.14); }
+.hours-cols { display:flex; flex-direction:column; gap:14px; }
+.hcol-title { font-size:10px; font-weight:900; color:rgba(103,232,249,0.8); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
 .hgrid-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
 .hgrid { display:grid; grid-template-columns:42px repeat(7,32px); gap:3px; width:max-content; }
 .hcell-day { font-size:9px; font-weight:900; text-align:center; color:rgba(255,255,255,0.5); padding:3px 0; text-transform:uppercase; }
@@ -40,6 +42,28 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .price-det { font-size:12px; color:rgba(255,255,255,0.55); margin-top:12px; line-height:1.85; text-align:left; }
 .cta { margin-top:16px; width:100%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 20px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; }
 .empty { text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
+
+/* ===== ESCRITORIO: todo más compacto y en columnas para que entre sin
+   tanto scroll vertical ===== */
+@media (min-width: 860px) {
+  .wrap { max-width:980px; padding:18px 24px 40px; }
+  .hero { padding:16px 22px; margin-bottom:12px; display:flex; align-items:center; gap:16px; }
+  .hero-ico { font-size:26px; }
+  .hero-t { font-size:21px; margin-top:0; }
+  .hero-s { margin-top:2px; }
+  .top-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; align-items:start; }
+  .top-row .blk { margin-bottom:0; padding:12px 14px; }
+  .lbl { margin-bottom:7px; }
+  .pill { padding:7px 12px; font-size:12px; }
+  .hours-blk { padding:14px 16px; margin-bottom:10px; }
+  .hint { margin-bottom:8px; }
+  .hours-cols { flex-direction:row; gap:18px; }
+  .hours-cols .hcol { flex:1; min-width:0; }
+  .res { padding:16px 22px; display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:center; text-align:left; }
+  .res-main { text-align:center; }
+  .price-det { margin-top:0; }
+  .cta { margin-top:10px; width:auto; padding:10px 22px; }
+}
 </style>
 </head>
 <body>
@@ -52,40 +76,53 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
   <a class="back" href="/">‹ Volver al inicio</a>
   <div class="hero">
     <div class="hero-ico">🧮</div>
-    <div class="hero-t">COTIZA TU CLASE</div>
-    <div class="hero-s">Virtual o a domicilio · Calcula el costo del Pre Ciclo 2 (Lun 06 Jul – Dom 02 Ago, 2026).</div>
-  </div>
-
-  <div class="blk">
-    <div class="lbl">1. Tipo de clase</div>
-    <div class="pills" id="cz-tipo">
-      <div class="pill" data-v="virtual">💻 Virtual (One to One)</div>
-      <div class="pill" data-v="presencial">🏠 Domicilio (One to Family)</div>
+    <div>
+      <div class="hero-t">COTIZA TU CLASE</div>
+      <div class="hero-s">Virtual o a domicilio · Calcula el costo del Pre Ciclo 2 (Lun 06 Jul – Dom 02 Ago, 2026).</div>
     </div>
   </div>
 
-  <div class="blk">
-    <div class="lbl">2. N° de estudiantes</div>
-    <div class="pills" id="cz-n">
-      <div class="pill" data-v="1">👤 Individual</div>
-      <div class="pill" data-v="2">👥 Dúo</div>
-      <div class="pill" data-v="3">👨‍👩‍👧 Trío</div>
+  <div class="top-row">
+    <div class="blk">
+      <div class="lbl">1. Tipo de clase</div>
+      <div class="pills" id="cz-tipo">
+        <div class="pill" data-v="virtual">💻 Virtual (One to One)</div>
+        <div class="pill" data-v="presencial">🏠 Domicilio (One to Family)</div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">2. N° de estudiantes</div>
+      <div class="pills" id="cz-n">
+        <div class="pill" data-v="1">👤 Individual</div>
+        <div class="pill" data-v="2">👥 Dúo</div>
+        <div class="pill" data-v="3">👨‍👩‍👧 Trío</div>
+      </div>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">3. Nivel</div>
+      <div class="pills" id="cz-nivel">
+        <div class="pill" data-v="primaria">🏫 Primaria</div>
+        <div class="pill" data-v="secundaria">🎒 Secundaria</div>
+        <div class="pill" data-v="preuni">🎓 Pre-Uni</div>
+      </div>
     </div>
   </div>
 
-  <div class="blk">
-    <div class="lbl">3. Nivel</div>
-    <div class="pills" id="cz-nivel">
-      <div class="pill" data-v="primaria">🏫 Primaria</div>
-      <div class="pill" data-v="secundaria">🎒 Secundaria</div>
-      <div class="pill" data-v="preuni">🎓 Pre-Uni</div>
-    </div>
-  </div>
-
-  <div class="blk">
+  <div class="blk hours-blk">
     <div class="lbl">4. Horas — Pre Ciclo 2</div>
     <div class="hint">Marca las horas de la semana que tomarás clase (se repiten igual las 4 semanas del ciclo, del 06 de julio al 02 de agosto).</div>
-    <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid"></div></div>
+    <div class="hours-cols">
+      <div class="hcol">
+        <div class="hcol-title">☀️ Mañana · 08:00 – 14:00</div>
+        <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid-am"></div></div>
+      </div>
+      <div class="hcol">
+        <div class="hcol-title">🌆 Tarde · 15:00 – 21:00</div>
+        <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid-pm"></div></div>
+      </div>
+    </div>
     <div class="hsel-count" id="cz-hours-count">0 horas/semana seleccionadas</div>
   </div>
 
@@ -98,8 +135,9 @@ const CZ_RATE = {
   virtual:    { primaria:20, secundaria:25, preuni:30 },
   presencial: { primaria:20, secundaria:30, preuni:40 }
 };
-const CZ_DAYS  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-const CZ_HOURS = []; for (let h=8; h<=20; h++) CZ_HOURS.push(h);
+const CZ_DAYS    = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const CZ_HOURS_AM = [8,9,10,11,12,13];   // bloques 08:00-09:00 ... 13:00-14:00
+const CZ_HOURS_PM = [15,16,17,18,19,20]; // bloques 15:00-16:00 ... 20:00-21:00
 const CZ = { tipo:null, n:null, nivel:null };
 const czSelected = new Set(); // claves "diaIdx-hora"
 
@@ -117,11 +155,11 @@ bindPills('cz-tipo','tipo');
 bindPills('cz-n','n', v => parseInt(v,10));
 bindPills('cz-nivel','nivel');
 
-function buildHoursGrid() {
-  const g = document.getElementById('cz-hours-grid');
+function buildHoursGrid(containerId, hours) {
+  const g = document.getElementById(containerId);
   let html = '<div></div>';
   CZ_DAYS.forEach(d => html += `<div class="hcell-day">${d}</div>`);
-  CZ_HOURS.forEach(h => {
+  hours.forEach(h => {
     html += `<div class="hcell-hour">${String(h).padStart(2,'0')}:00</div>`;
     CZ_DAYS.forEach((d,di) => {
       const key = di+'-'+h;
@@ -138,7 +176,8 @@ function toggleHour(key) {
   document.getElementById('cz-hours-count').textContent = n + (n===1 ? ' hora/semana seleccionada' : ' horas/semana seleccionadas');
   calc();
 }
-buildHoursGrid();
+buildHoursGrid('cz-hours-grid-am', CZ_HOURS_AM);
+buildHoursGrid('cz-hours-grid-pm', CZ_HOURS_PM);
 
 // Virtual: el precio POR ESTUDIANTE tiene descuento (Dúo -25%, Trío -50%);
 // la tarifa total de la sesión es ese precio por estudiante × n° de estudiantes.
@@ -168,8 +207,11 @@ function calc() {
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
   res.innerHTML = `
   <div class="res">
-    <div class="price-lbl">TOTAL PRE CICLO 2 (4 SEMANAS)</div>
-    <div class="price-big">S/. ${total}</div>
+    <div class="res-main">
+      <div class="price-lbl">TOTAL PRE CICLO 2 (4 SEMANAS)</div>
+      <div class="price-big">S/. ${total}</div>
+      <button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>
+    </div>
     <div class="price-det">
       Tipo: ${tipoLbl[CZ.tipo]} · ${nLbl[CZ.n]} · ${nivelLbl[CZ.nivel]}<br>
       Tarifa base: S/. ${base}/h por estudiante<br>
@@ -177,7 +219,6 @@ function calc() {
       Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong> por semana<br>
       Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): <strong>S/. ${total}</strong>
     </div>
-    <button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>
   </div>`;
 }
 function copyCZ(perHour, horas, weekly, total) {
