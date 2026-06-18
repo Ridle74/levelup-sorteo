@@ -51,20 +51,27 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
   .hero-ico { font-size:26px; }
   .hero-t { font-size:21px; margin-top:0; }
   .hero-s { margin-top:2px; }
-  .sections { display:flex; flex-direction:column; gap:14px; margin-top:14px; }
-  .top-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; align-items:stretch; }
-  .top-row .blk { margin-bottom:0; padding:12px 14px; display:flex; flex-direction:column; }
+  /* grid de 3 columnas x 2 filas: fila 1 = Tipo/N°/Nivel; fila 2 = Horas (cols 1-2) + Resultado (col 3) */
+  .sections { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; align-items:stretch; }
+  .top-row { display:contents; }
+  .top-row .blk { grid-row:1; margin-bottom:0; padding:12px 14px; display:flex; flex-direction:column; }
+  .top-row .blk:nth-child(1) { grid-column:1; }
+  .top-row .blk:nth-child(2) { grid-column:2; }
+  .top-row .blk:nth-child(3) { grid-column:3; }
   .lbl { margin-bottom:7px; }
   .top-row .pills { flex-wrap:nowrap; gap:5px; }
   .top-row .pill { padding:7px 10px; font-size:11px; }
-  .hours-blk { padding:14px 16px; margin-bottom:0; }
+  .hours-blk { grid-column:1 / 3; grid-row:2; padding:14px 16px; margin-bottom:0; display:flex; flex-direction:column; }
   .hint { margin-bottom:8px; }
   .hours-cols { flex-direction:row; gap:18px; }
   .hours-cols .hcol { flex:1; min-width:0; }
-  #cz-result .res { margin-top:0; padding:16px 22px; display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:center; text-align:left; }
+  #cz-result { grid-column:3; grid-row:2; }
+  #cz-result .res, #cz-result .empty { height:100%; box-sizing:border-box; }
+  #cz-result .res { margin-top:0; padding:16px 18px; display:flex; flex-direction:column; justify-content:center; }
+  #cz-result .empty { display:flex; align-items:center; justify-content:center; padding:16px; }
   .res-main { text-align:center; }
-  .price-det { margin-top:0; }
-  .cta { margin-top:10px; width:auto; padding:10px 22px; }
+  .price-det { margin-top:10px; font-size:11px; line-height:1.6; }
+  .cta { margin-top:10px; width:100%; padding:10px 14px; }
 }
 </style>
 </head>
