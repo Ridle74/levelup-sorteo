@@ -3729,6 +3729,18 @@ function renderHorariosTimeNow() {
   const curH = now.getHours() + now.getMinutes()/60;
   if (curH < MIN_H || curH >= MAX_H) return;
   const today = new Date(); today.setHours(0,0,0,0);
+  // Mismo cálculo de ancho de columna que renderHorariosCalendar(): medido sobre
+  // hor-body-scroll (que reserva el scrollbar vertical de forma estable), no sobre #app.
+  // Antes esto se calculaba por separado con la fórmula vieja, así que la línea de
+  // "ahora" quedaba desalineada con las columnas reales tras el fix del scroll horizontal.
+  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
+  const scrollEl = document.getElementById('hor-body-scroll');
+  const containerW = scrollEl && scrollEl.clientWidth ? scrollEl.clientWidth : appW;
+  const isMob = appW < 640;
+  const dCnt = isMob ? 2 : 7;
+  const colW = isMob
+    ? Math.max(Math.floor((containerW - 44) / dCnt), 120)
+    : Math.floor((containerW - 44) / dCnt);
   const getMon2 = (weekOff) => {
     const tod2 = new Date(); tod2.setHours(0,0,0,0);
     const dow2 = tod2.getDay();
@@ -3740,10 +3752,6 @@ function renderHorariosTimeNow() {
   });
   const todayIdx = dates.findIndex(function(d) { return d.getTime()===today.getTime(); });
   if (todayIdx === -1) return;
-  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  const isMob = appW < 640;
-  const dCnt = isMob ? 2 : 7;
-  const colW = Math.max(Math.floor((appW - 44) / dCnt), isMob ? 90 : 72);
   const el = document.createElement('div');
   el.id = 'hor-time-now';
   el.className = 'hor-time-now';
