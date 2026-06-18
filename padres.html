@@ -365,6 +365,7 @@ let navHistory = [];   // pila de vistas visitadas, para los botones atrás/adel
 let navIndex = -1;     // posición actual dentro de navHistory
 let loginTab = 'familia';      // 'familia' | 'crear'  (pestañas de la pantalla de login)
 let editingParentId = null;    // id de padre cuyo PIN se está editando en el panel admin
+let editingNamesId  = null;    // id de familia cuyos nombres (padre/hijos) se están editando en el panel admin
 let calEditMode = false;       // admin: modo edición del calendario
 let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
 let smEditFree  = false;       // true si se edita un freeSlot
@@ -1238,6 +1239,39 @@ function saveParentPin(id) {
   showToast('Clave actualizada.', 'success');
   render();
 }
+function startEditNames(id) { editingNamesId = id; render(); }
+function cancelEditNames() { editingNamesId = null; render(); }
+function saveFamilyNames(id) {
+  const p = DATA.parents[id];
+  if (!p) return;
+  const nameInput = document.getElementById('edit-pname-' + id);
+  if (!nameInput) return;
+  const newParentName = nameInput.value.trim();
+  if (!newParentName) { showToast('El nombre del padre/madre no puede estar vacío.'); return; }
+  const kids = (p.children||[]).map(cid => ({ cid, s: DATA.students[cid] })).filter(x => x.s);
+  const kidUpdates = [];
+  for (const { cid, s } of kids) {
+    const input = document.getElementById('edit-cname-' + id + '-' + cid);
+    if (!input) continue;
+    const newName = input.value.trim();
+    if (!newName) { showToast('El nombre de ' + s.name + ' no puede estar vacío.'); return; }
+    kidUpdates.push({ cid, oldName: s.name, newName });
+  }
+  p.name = newParentName;
+  saveParents();
+  kidUpdates.forEach(({ cid, oldName, newName }) => {
+    if (oldName !== newName) {
+      DATA.students[cid].name = newName;
+      syncNameToStudent(oldName, newName);
+    }
+  });
+  if (kidUpdates.length) {
+    REF.set({ students: DATA.students }, { merge: true }).catch(e => { console.error(e); });
+  }
+  editingNamesId = null;
+  showToast('Nombres actualizados.', 'success');
+  render();
+}
 
 // ════════════════════════════════════════════════════════
 // ADMIN — VISTAS
@@ -1356,12 +1390,25 @@ function vAdminCuentas() {
 
     <div class="sec-lbl" style="margin-top:20px">Familias registradas (${parents.length})</div>
     ${parents.map(([id, p]) => {
-      const kids = (p.children||[]).map(cid => DATA.students[cid]).filter(Boolean);
+      const kids = (p.children||[]).map(cid => ({ cid, s: DATA.students[cid] })).filter(x => x.s);
       const editing = editingParentId === id;
+      const editingNames = editingNamesId === id;
       return `<div class="req-list-item" style="align-items:flex-start">
         <div style="flex:1">
-          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${p.name}</div>
-          <div class="cs-meta" style="margin-top:3px">${kids.map(k=>k.icon+' '+k.name).join(' · ')||'Sin hijos asignados'}${p.phone?' · 📱 '+p.phone:''}</div>
+          ${editingNames ? `
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <input class="fsm" id="edit-pname-${id}" type="text" value="${p.name}" placeholder="Nombre del padre/madre" style="margin-bottom:0">
+              ${kids.map(({cid, s}) => `<input class="fsm" id="edit-cname-${id}-${cid}" type="text" value="${s.name}" placeholder="Nombre del hijo/a" style="margin-bottom:0">`).join('')}
+              <div style="display:flex;gap:8px">
+                <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveFamilyNames('${id}')">Guardar nombres</button>
+                <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditNames()">Cancelar</button>
+              </div>
+            </div>` : `
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${p.name}</div>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="startEditNames('${id}')">✏️ Editar nombres</button>
+            </div>
+            <div class="cs-meta" style="margin-top:3px">${kids.map(({s})=>s.icon+' '+s.name).join(' · ')||'Sin hijos asignados'}${p.phone?' · 📱 '+p.phone:''}</div>`}
           ${editing ? `
             <div style="display:flex;gap:8px;margin-top:10px">
               <input class="fsm" id="edit-pin-${id}" type="text" inputmode="numeric" maxlength="6" value="${p.pin}" style="margin-bottom:0">
