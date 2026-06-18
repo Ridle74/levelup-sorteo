@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MATHS LEVEL UP — Cotiza tu Clase</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { margin:0; min-height:100dvh; background:#050d1a; color:#fff; font-family:'Barlow',sans-serif; }
+.wrap { max-width:520px; margin:0 auto; padding:22px 18px 60px; }
+.back { display:inline-flex; align-items:center; gap:6px; color:rgba(255,255,255,0.5); text-decoration:none; font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:18px; }
+body { padding-top: calc(50px + env(safe-area-inset-top)); }
+#hist-bar { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; gap:8px; padding: calc(8px + env(safe-area-inset-top)) 18px 8px; background:rgba(5,13,26,0.92); backdrop-filter:blur(16px) saturate(180%); border-bottom:1px solid rgba(255,255,255,0.08); }
+.hist-btn { border:none; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85); width:38px; height:34px; border-radius:10px; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.15s,color 0.15s; -webkit-tap-highlight-color:transparent; }
+.hist-btn:active { background:rgba(99,102,241,0.18); color:#a5b4fc; }
+#hist-home { background:rgba(99,102,241,0.14); color:#a5b4fc; }
+.hero { background:linear-gradient(135deg,#312e81,#4338ca 50%,#06b6d4); border-radius:20px; padding:22px; margin-bottom:18px; position:relative; overflow:hidden; }
+.hero::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(255,255,255,0.025) 20px,rgba(255,255,255,0.025) 40px); }
+.hero-ico { font-size:30px; }
+.hero-t { font-family:'Barlow Condensed',sans-serif; font-size:26px; font-weight:900; line-height:1.05; margin-top:6px; }
+.hero-s { font-size:12px; color:rgba(255,255,255,0.8); margin-top:6px; }
+.blk { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:16px; margin-bottom:12px; }
+.lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
+.hint { font-size:11px; color:rgba(255,255,255,0.4); margin-bottom:10px; line-height:1.5; }
+.pills { display:flex; flex-wrap:wrap; gap:6px; }
+.pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:9px 15px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; }
+.pill.psel { border-color:#06b6d4; color:#67e8f9; background:rgba(6,182,212,0.14); }
+.hgrid-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
+.hgrid { display:grid; grid-template-columns:42px repeat(7,32px); gap:3px; width:max-content; }
+.hcell-day { font-size:9px; font-weight:900; text-align:center; color:rgba(255,255,255,0.5); padding:3px 0; text-transform:uppercase; }
+.hcell-hour { font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:flex-end; padding-right:4px; white-space:nowrap; }
+.hcell { height:24px; border-radius:5px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); cursor:pointer; transition:background .12s,border-color .12s; }
+.hcell.hsel { background:#06b6d4; border-color:#67e8f9; box-shadow:0 0 8px -2px #06b6d4; }
+.hsel-count { font-size:11px; color:rgba(103,232,249,0.85); font-weight:700; margin-top:10px; text-align:center; }
+.res { background:linear-gradient(135deg,rgba(6,182,212,0.15),rgba(67,56,202,0.12)); border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:6px; }
+.price-big { font-family:'Barlow Condensed',sans-serif; font-size:42px; font-weight:900; color:#67e8f9; line-height:1; }
+.price-lbl { font-size:10px; color:rgba(103,232,249,0.7); font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-top:4px; }
+.price-det { font-size:12px; color:rgba(255,255,255,0.55); margin-top:12px; line-height:1.85; text-align:left; }
+.cta { margin-top:16px; width:100%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 20px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; }
+.empty { text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
+</style>
+</head>
+<body>
+<div id="hist-bar">
+  <button class="hist-btn" onclick="history.back()" title="Atrás">◀</button>
+  <button class="hist-btn" id="hist-home" onclick="location.href='/'" title="Inicio">🏠</button>
+  <button class="hist-btn" onclick="history.forward()" title="Adelante">▶</button>
+</div>
+<div class="wrap">
+  <a class="back" href="/">‹ Volver al inicio</a>
+  <div class="hero">
+    <div class="hero-ico">🧮</div>
+    <div class="hero-t">COTIZA TU CLASE</div>
+    <div class="hero-s">Virtual o a domicilio · Calcula el costo del Pre Ciclo 2 (Lun 06 Jul – Dom 02 Ago, 2026).</div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">1. Tipo de clase</div>
+    <div class="pills" id="cz-tipo">
+      <div class="pill" data-v="virtual">💻 Virtual (One to One)</div>
+      <div class="pill" data-v="presencial">🏠 Domicilio (One to Family)</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">2. N° de estudiantes</div>
+    <div class="pills" id="cz-n">
+      <div class="pill" data-v="1">👤 Individual</div>
+      <div class="pill" data-v="2">👥 Dúo</div>
+      <div class="pill" data-v="3">👨‍👩‍👧 Trío</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">3. Nivel</div>
+    <div class="pills" id="cz-nivel">
+      <div class="pill" data-v="primaria">🏫 Primaria</div>
+      <div class="pill" data-v="secundaria">🎒 Secundaria</div>
+      <div class="pill" data-v="preuni">🎓 Pre-Uni</div>
+    </div>
+  </div>
+
+  <div class="blk">
+    <div class="lbl">4. Horas — Pre Ciclo 2</div>
+    <div class="hint">Marca las horas de la semana que tomarás clase (se repiten igual las 4 semanas del ciclo, del 06 de julio al 02 de agosto).</div>
+    <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid"></div></div>
+    <div class="hsel-count" id="cz-hours-count">0 horas/semana seleccionadas</div>
+  </div>
+
+  <div id="cz-result"></div>
+</div>
+
+<script>
+// Tarifas base (S/.) por hora y por estudiante, según tipo y nivel.
+const CZ_RATE = {
+  virtual:    { primaria:20, secundaria:25, preuni:30 },
+  presencial: { primaria:20, secundaria:30, preuni:40 }
+};
+const CZ_DAYS  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const CZ_HOURS = []; for (let h=8; h<=20; h++) CZ_HOURS.push(h);
+const CZ = { tipo:null, n:null, nivel:null };
+const czSelected = new Set(); // claves "diaIdx-hora"
+
+function bindPills(containerId, key, cast) {
+  const c = document.getElementById(containerId);
+  c.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      CZ[key] = cast ? cast(p.dataset.v) : p.dataset.v;
+      c.querySelectorAll('.pill').forEach(x => x.classList.toggle('psel', x===p));
+      calc();
+    });
+  });
+}
+bindPills('cz-tipo','tipo');
+bindPills('cz-n','n', v => parseInt(v,10));
+bindPills('cz-nivel','nivel');
+
+function buildHoursGrid() {
+  const g = document.getElementById('cz-hours-grid');
+  let html = '<div></div>';
+  CZ_DAYS.forEach(d => html += `<div class="hcell-day">${d}</div>`);
+  CZ_HOURS.forEach(h => {
+    html += `<div class="hcell-hour">${String(h).padStart(2,'0')}:00</div>`;
+    CZ_DAYS.forEach((d,di) => {
+      const key = di+'-'+h;
+      html += `<div class="hcell" data-k="${key}" onclick="toggleHour('${key}')"></div>`;
+    });
+  });
+  g.innerHTML = html;
+}
+function toggleHour(key) {
+  if (czSelected.has(key)) czSelected.delete(key); else czSelected.add(key);
+  const cell = document.querySelector('.hcell[data-k="'+key+'"]');
+  if (cell) cell.classList.toggle('hsel', czSelected.has(key));
+  const n = czSelected.size;
+  document.getElementById('cz-hours-count').textContent = n + (n===1 ? ' hora/semana seleccionada' : ' horas/semana seleccionadas');
+  calc();
+}
+buildHoursGrid();
+
+// Virtual: el precio POR ESTUDIANTE tiene descuento (Dúo -25%, Trío -50%);
+// la tarifa total de la sesión es ese precio por estudiante × n° de estudiantes.
+// Domicilio: el primer estudiante paga el precio completo, cada estudiante
+// adicional tiene 50% de descuento (estilo "hermanos").
+function czFactor(tipo, n) {
+  if (tipo === 'virtual') {
+    const perStudent = n===1 ? 1 : (n===2 ? 0.75 : 0.5);
+    return perStudent * n;
+  }
+  return 1 + 0.5*(n-1);
+}
+function calc() {
+  const res = document.getElementById('cz-result');
+  const horas = czSelected.size;
+  if (!CZ.tipo || !CZ.n || !CZ.nivel || horas <= 0) {
+    res.innerHTML = `<div class="empty">SELECCIONA TIPO, N° DE ESTUDIANTES, NIVEL Y MARCA TUS HORAS PARA VER TU COTIZACIÓN</div>`;
+    return;
+  }
+  const base    = CZ_RATE[CZ.tipo][CZ.nivel];
+  const factor  = czFactor(CZ.tipo, CZ.n);
+  const perHour = Math.round(base*factor*100)/100;
+  const weekly  = Math.round(perHour*horas);
+  const total   = weekly*4;
+  const tipoLbl  = { virtual:'Virtual (One to One)', presencial:'Domicilio (One to Family)' };
+  const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
+  const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
+  res.innerHTML = `
+  <div class="res">
+    <div class="price-lbl">TOTAL PRE CICLO 2 (4 SEMANAS)</div>
+    <div class="price-big">S/. ${total}</div>
+    <div class="price-det">
+      Tipo: ${tipoLbl[CZ.tipo]} · ${nLbl[CZ.n]} · ${nivelLbl[CZ.nivel]}<br>
+      Tarifa base: S/. ${base}/h por estudiante<br>
+      Tarifa de la sesión (con descuento de grupo): S/. ${perHour}/h<br>
+      Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong> por semana<br>
+      Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): <strong>S/. ${total}</strong>
+    </div>
+    <button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>
+  </div>`;
+}
+function copyCZ(perHour, horas, weekly, total) {
+  const tipoLbl  = { virtual:'Virtual (One to One)', presencial:'Domicilio (One to Family)' };
+  const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
+  const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
+  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\nHoras por semana: ${horas}\n\nTarifa de la sesión: S/. ${perHour}/h\nCosto semanal: S/. ${weekly}\nTOTAL PRE CICLO 2 (06 jul – 02 ago, 4 semanas): S/. ${total}\n\n¡Contáctanos para reservar tu horario!`;
+  navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
+}
+</script>
+</body>
+</html>

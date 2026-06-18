@@ -268,13 +268,13 @@ body {
     color: #9a9588; text-align: center; position: relative; z-index: 1;
   }
 
-  /* Orden visual validado: fila 1 = Padres, Horarios, Estudiantes / fila 2 = Cotiza a domicilio, Cat&#225;logo 2026, Cotiza virtual */
+  /* Orden visual validado: fila 1 = Padres, Horarios, Estudiantes / fila 2 = Cat&#225;logo 2026, Cotiza, Ganadores */
   .btn-wrapper:nth-child(1) { order: 2; } /* Horarios -> arriba centro */
   .btn-wrapper:nth-child(2) { order: 1; } /* Padres -> arriba izquierda */
   .btn-wrapper:nth-child(3) { order: 3; } /* Estudiantes -> arriba derecha */
-  .btn-wrapper:nth-child(4) { order: 5; } /* Cat&#225;logo 2026 -> abajo centro */
-  .btn-wrapper:nth-child(5) { order: 4; } /* Cotiza a Domicilio -> abajo izquierda */
-  .btn-wrapper:nth-child(6) { order: 6; } /* Cotiza Virtual -> abajo derecha */
+  .btn-wrapper:nth-child(4) { order: 5; } /* Cotiza -> abajo centro */
+  .btn-wrapper:nth-child(5) { order: 4; } /* Cat&#225;logo 2026 -> abajo izquierda */
+  .btn-wrapper:nth-child(6) { order: 6; } /* Ganadores -> abajo derecha */
 
   .refs-section { display: block; margin-top: 70px; width: 100%; max-width: 980px; }
   .refs-title {
@@ -566,7 +566,19 @@ body {
         <span class="btn-sub">Tu panel de progreso</span>
       </button>
     </div>
-    <!-- 4. CATALOGO 2026 -->
+    <!-- 4. COTIZA -->
+    <div class="btn-wrapper">
+      <button class="btn-main" onclick="ripple(event,this)">
+        <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 10h2M12 10h2M16 10h2"/><path d="M8 14h2M12 14h2M16 14h2"/><path d="M8 18h8"/></svg></span>
+        <span class="btn-text">Cotiza</span>
+        <span class="btn-sub">Domicilio o Virtual</span>
+      </button>
+    </div>
+    <!-- 5. CATALOGO 2026 -->
     <div class="btn-wrapper">
       <button class="btn-main" onclick="ripple(event,this)">
         <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
@@ -578,28 +590,16 @@ body {
         <span class="btn-sub">M&#225;s detalles</span>
       </button>
     </div>
-    <!-- 5. COTIZA A DOMICILIO -->
+    <!-- 6. GANADORES -->
     <div class="btn-wrapper">
       <button class="btn-main" onclick="ripple(event,this)">
         <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <span class="btn-icon"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg></span>
-        <span class="btn-text">Cotiza a Domicilio</span>
-        <span class="btn-sub">Individuales o grupales</span>
-      </button>
-    </div>
-    <!-- 6. COTIZA VIRTUAL -->
-    <div class="btn-wrapper">
-      <button class="btn-main" onclick="ripple(event,this)">
-        <svg class="btn-leaf tl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <svg class="btn-leaf tr" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
-        <span class="btn-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="m8 10 3 2-3 2"/><path d="M13 14h3"/></svg></span>
-        <span class="btn-text">Cotiza Virtual</span>
-        <span class="btn-sub">Individuales o grupales</span>
+        <span class="btn-icon"><svg viewBox="0 0 24 24"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5a2 2 0 0 0 0 4h.5"/><path d="M16 5h3a2 2 0 0 1 0 4h-.5"/><path d="M12 12v3"/><path d="M9 20h6"/><path d="M9 20c0-2 1-3 3-3s3 1 3 3"/></svg></span>
+        <span class="btn-text">Ganadores</span>
+        <span class="btn-sub">Maths Level Up</span>
       </button>
     </div>
   </div>
@@ -705,13 +705,13 @@ function ripple(e, btn) {
         var btnP = label.closest('button');
         if (btnP) btnP.addEventListener('click', function () { location.href = '/padres'; });
       }
-      if (label.textContent.trim() === 'Cotiza Virtual') {
-        var btnCV = label.closest('button');
-        if (btnCV) btnCV.addEventListener('click', function () { location.href = '/cotiza-virtual'; });
+      if (label.textContent.trim() === 'Cotiza') {
+        var btnCZ = label.closest('button');
+        if (btnCZ) btnCZ.addEventListener('click', function () { location.href = '/cotiza'; });
       }
-      if (label.textContent.trim() === 'Cotiza a Domicilio') {
-        var btnCD = label.closest('button');
-        if (btnCD) btnCD.addEventListener('click', function () { location.href = '/cotiza-domicilio'; });
+      if (label.textContent.trim() === 'Ganadores') {
+        var btnG = label.closest('button');
+        if (btnG) btnG.addEventListener('click', function () { location.href = '/ganadores'; });
       }
       if (label.textContent.trim() === 'Horarios') {
         var btnH = label.closest('button');

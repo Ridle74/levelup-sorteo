@@ -1,6 +1,7 @@
 /tablero   /student/tablero   301
 /ranking   /student/ranking   301
 /numeros   /student/numeros   301
+/ganadores /student/ganadores 301
 /student   /student.html      200
 /student/* /student.html      200
 /padres    /padres.html       200
@@ -9,4 +10,5 @@
 /cotiza-domicilio  /cotiza-domicilio.html  200
 /horarios          /horarios.html          200
 /catalogo-2026     /catalogo-2026.html     200
+/cotiza            /cotiza.html            200
 /*         /index.html        200

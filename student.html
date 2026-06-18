@@ -1002,7 +1002,7 @@ function descargarImagen(canvas, nombre='imagen.png') {
 // ════════════════════════════════════════════════════════
 // ROUTER
 // ════════════════════════════════════════════════════════
-const PUBLIC_ROUTES = new Set(['login','ranking','numeros']);
+const PUBLIC_ROUTES = new Set(['login','ranking','numeros','ganadores']);
 const ADMIN_ROUTES  = new Set([]);
 
 function go(view) {
@@ -1034,7 +1034,7 @@ function router() {
 
   const views = {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
-    ranking: vRankingPage, numeros: vNumerosPage,
+    ranking: vRankingPage, numeros: vNumerosPage, ganadores: vGanadoresPage,
     tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
@@ -1059,7 +1059,7 @@ function router() {
 
   const setup = {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
-    ranking:vRankingSetup, numeros:vNumerosSetup,
+    ranking:vRankingSetup, numeros:vNumerosSetup, ganadores:vGanadoresSetup,
     tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{}
   };
   if (setup[hash]) setup[hash]();
@@ -2165,6 +2165,72 @@ function captureNumeros() {
       if (navigator.clipboard&&window.ClipboardItem) {
         navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(()=>showToast('¡Imagen copiada!','success')).catch(()=>descargarImagen(canvas,'numeros-sorteo.png'));
       } else descargarImagen(canvas,'numeros-sorteo.png');
+    },'image/png');
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// VIEW: GANADORES PAGE (público)
+// ════════════════════════════════════════════════════════
+function vGanadoresPage() {
+  const loggedId = getLoggedId();
+  return `
+  <div style="background:radial-gradient(ellipse at top,#7a5c00 0%,#3d2e00 40%,#1a1300 100%);min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:12px">
+    <div class="pub-wrap" style="border:1px solid rgba(255,210,63,0.3)">
+      <div class="pub-hdr" id="ganadores-card" style="background:linear-gradient(135deg,#92400e,#d97706 50%,#ffd23f)">
+        <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
+          <div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#fff">🏆</span> <span style="color:#fff">GANADORES</span></div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DEL SORTEO</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+            ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
+            <button onclick="captureGanadores()" style="background:#1a1300;box-shadow:0 0 14px -3px rgba(255,210,63,0.6);border:none;border-radius:10px;padding:7px 10px;color:#ffd23f;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.15em;white-space:nowrap;">📸 COPIAR</button>
+          </div>
+        </div>
+      </div>
+      <div id="ganadores-page-list" class="pub-list" style="background:linear-gradient(180deg,#3d2e00,#1a1300)"></div>
+    </div>
+  </div>`;
+}
+function vGanadoresSetup() {
+  const list=document.getElementById('ganadores-page-list'); if (!list) return;
+  // Listamos cada mes desde abril 2026 (mes en que arrancó el registro de
+  // ganadores) hasta el mes actual, tomando el nombre desde SORTEO_WINNERS.
+  // Si el mes todavía no tiene ganador registrado (p.ej. el mes en curso),
+  // se muestra como "Sorteo en curso" en vez de dejarlo vacío.
+  const now = new Date();
+  const start = new Date(2026,3,1); // Abril 2026
+  const limit = new Date(now.getFullYear(),now.getMonth(),1);
+  const months = [];
+  let cur = new Date(start.getFullYear(),start.getMonth(),1);
+  while (cur<=limit) {
+    months.push(cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0'));
+    cur = new Date(cur.getFullYear(),cur.getMonth()+1,1);
+  }
+  list.innerHTML = months.slice().reverse().map(key=>{
+    const winner = SORTEO_WINNERS[key];
+    const [y,m] = key.split('-');
+    const mesLabel = MESES_ES[parseInt(m,10)-1];
+    const isPending = !winner;
+    return `<div style="background:${isPending?'rgba(255,255,255,0.03)':'linear-gradient(135deg,rgba(255,210,63,0.16),rgba(255,210,63,0.04))'};border:1px solid ${isPending?'rgba(255,255,255,0.08)':'rgba(255,210,63,0.3)'};border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:10px;background:${isPending?'rgba(255,255,255,0.06)':'#ffd23f'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;${isPending?'':'box-shadow:0 4px 12px rgba(255,210,63,0.45)'}">${isPending?'⏳':'🏆'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:9px;color:rgba(255,255,255,0.45);font-weight:700;letter-spacing:0.15em;text-transform:uppercase">${mesLabel} ${y}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isPending?'rgba(255,255,255,0.4)':'#fff'}">${winner||'Sorteo en curso'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function captureGanadores() {
+  const card=document.getElementById('ganadores-card'); if (!card) return;
+  showToast('Generando imagen...','success');
+  html2canvas(card,{scale:2,useCORS:true,backgroundColor:null,logging:false}).then(canvas=>{
+    canvas.toBlob(blob=>{
+      if (navigator.clipboard&&window.ClipboardItem) {
+        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(()=>showToast('¡Imagen copiada!','success')).catch(()=>descargarImagen(canvas,'ganadores-sorteo.png'));
+      } else descargarImagen(canvas,'ganadores-sorteo.png');
     },'image/png');
   });
 }
