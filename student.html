@@ -561,6 +561,9 @@ let msgsDmView    = null; // null=group channel, or String(studentId) for DM
 let msgsUploading = false;
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
+let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
+                            // (con recurring/date/skipDates intactos), usado para calcular fechas exactas de
+                            // clase respetando excepciones puntuales (ver getClassDatesForStudent).
 let padresRaw        = { students: {}, sessions: [] }; // snapshot crudo de /padres para la grilla de horarios
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
 let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evita re-render brusco al recibir el propio guardado)
@@ -881,14 +884,16 @@ function saveLms() {
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
 
-// Devuelve [{date:Date, key:'YYYY-MM-DD', hours:N}] de las fechas del mes (con offset) en que el alumno
-// tiene clase, junto con el total de horas de clase ese día — según el horario semanal sincronizado
-// desde /padres (classDaysByName: { "<nombre>": {"<díaSemana>": horas} }). Si no hay match, devuelve [].
+// Devuelve [{date:Date, key:'YYYY-MM-DD', hours:N, slots}] de las fechas del mes (con offset) en que
+// el alumno tiene clase, junto con el total de horas de clase ese día — calculado fecha por fecha desde
+// las sesiones crudas sincronizadas desde /padres (classSessByName), respetando excepciones puntuales:
+// una sesión de una sola vez (recurring:false + date) solo cuenta en su fecha exacta, y una sesión
+// semanal se omite en cualquier fecha presente en su propio skipDates (porque esa fecha ya quedó
+// cancelada/movida a una sesión de una sola vez en otro lugar). Si no hay match, devuelve [].
 function getClassDatesForStudent(studentName, monthOffset=0) {
   const nn = normName(studentName);
-  const hoursByDay = classDaysByName[nn];
-  const slotsByDay = classSlotsByName[nn] || {};
-  if (!hoursByDay || !Object.keys(hoursByDay).length) return [];
+  const mySessions = classSessByName[nn] || [];
+  if (!mySessions.length) return [];
   const base = new Date();
   base.setMonth(base.getMonth()+monthOffset);
   const y = base.getFullYear(), m = base.getMonth();
@@ -896,10 +901,17 @@ function getClassDatesForStudent(studentName, monthOffset=0) {
   const out = [];
   for (let d=1; d<=last; d++) {
     const dt = new Date(y, m, d);
-    const h = hoursByDay[dt.getDay()];
-    if (h) {
-      const key   = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-      const slots = slotsByDay[dt.getDay()] || [];
+    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const todays = mySessions.filter(s => {
+      const isOneTime = s.recurring === false && s.date;
+      if (isOneTime) return s.date === key;
+      if (Array.isArray(s.skipDates) && s.skipDates.includes(key)) return false;
+      return Number(s.day) === dt.getDay();
+    });
+    if (todays.length) {
+      const h = todays.reduce((sum,s) => sum + Math.max(1, Math.round((s.dur||60)/60)), 0);
+      const slots = todays.map(s => ({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' }))
+        .sort((a,b) => (a.start||'').localeCompare(b.start||''));
       out.push({ date:dt, key, hours:h, slots });
     }
   }
@@ -4205,11 +4217,16 @@ PADRES_REF.onSnapshot(doc => {
   const pStudents = d.students || {};
   const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
   padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
-  const map = {}, slotMap = {};
+  const map = {}, slotMap = {}, sessMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
+    const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
     // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
+    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
+    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
+    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
+    // recurring/date/skipDates fecha por fecha.
     const hoursByDay = {}, slotsByDay = {};
-    pSessions.filter(s => String(s.studentId)===String(sid)).forEach(s => {
+    mySessions.forEach(s => {
       const h = Math.max(1, Math.round((s.dur||60)/60));
       hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
       if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
@@ -4220,9 +4237,11 @@ PADRES_REF.onSnapshot(doc => {
     const key = normName(st.name);
     map[key] = hoursByDay;
     slotMap[key] = slotsByDay;
+    sessMap[key] = mySessions;
   });
   classDaysByName  = map;
   classSlotsByName = slotMap;
+  classSessByName  = sessMap;
   if (currentView === 'puntos') {
     const app=document.getElementById('app');
     if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
