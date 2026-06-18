@@ -190,6 +190,28 @@ function toggleHour(key) {
 buildHoursGrid('cz-hours-grid-am', CZ_HOURS_AM);
 buildHoursGrid('cz-hours-grid-pm', CZ_HOURS_PM);
 
+// Agrupa las horas seleccionadas por día y las junta en rangos legibles,
+// p.ej. "Lun: 08:00–11:00, 17:00–18:00".
+function buildScheduleLines() {
+  const byDay = {};
+  czSelected.forEach(key => {
+    const [di, h] = key.split('-').map(Number);
+    (byDay[di] = byDay[di] || []).push(h);
+  });
+  return Object.keys(byDay).map(Number).sort((a,b)=>a-b).map(di => {
+    const hours = byDay[di].sort((a,b)=>a-b);
+    const ranges = [];
+    let start = hours[0], prev = hours[0];
+    for (let i=1; i<hours.length; i++) {
+      if (hours[i] === prev+1) { prev = hours[i]; }
+      else { ranges.push([start,prev]); start = hours[i]; prev = hours[i]; }
+    }
+    ranges.push([start,prev]);
+    const rangeStr = ranges.map(([a,b]) => `${String(a).padStart(2,'0')}:00–${String(b+1).padStart(2,'0')}:00`).join(', ');
+    return `${CZ_DAYS[di]}: ${rangeStr}`;
+  });
+}
+
 // Virtual: el precio POR ESTUDIANTE tiene descuento (Dúo -25%, Trío -50%);
 // la tarifa total de la sesión es ese precio por estudiante × n° de estudiantes.
 // Domicilio: el primer estudiante paga el precio completo, cada estudiante
@@ -208,27 +230,32 @@ function calc() {
     res.innerHTML = `<div class="empty">SELECCIONA TIPO, N° DE ESTUDIANTES, NIVEL Y MARCA TUS HORAS PARA VER TU COTIZACIÓN</div>`;
     return;
   }
-  const base    = CZ_RATE[CZ.tipo][CZ.nivel];
-  const factor  = czFactor(CZ.tipo, CZ.n);
-  const perHour = Math.round(base*factor*100)/100;
-  const weekly  = Math.round(perHour*horas);
-  const total   = weekly*4;
+  const base     = CZ_RATE[CZ.tipo][CZ.nivel];
+  const factor   = czFactor(CZ.tipo, CZ.n);
+  const perHour  = Math.round(base*factor*100)/100;
+  const perHourStudent = Math.round((perHour/CZ.n)*100)/100;
+  const weekly   = Math.round(perHour*horas);
+  const total    = weekly*4;
   const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
+  const scheduleLines = buildScheduleLines();
   res.innerHTML = `
   <div class="res">
     <div class="res-main">
-      <div class="price-lbl">TOTAL PRE CICLO 2 (4 SEMANAS)</div>
-      <div class="price-big">S/. ${total}</div>
+      <div class="price-lbl">COSTO SEMANAL · PAGO ADELANTADO</div>
+      <div class="price-big">S/. ${weekly}</div>
       <button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>
     </div>
     <div class="price-det">
       Tipo: ${tipoLbl[CZ.tipo]} · ${nLbl[CZ.n]} · ${nivelLbl[CZ.nivel]}<br>
-      Tarifa base: S/. ${base}/h por estudiante<br>
+      Tarifa regular: S/. ${base}/h por estudiante<br>
+      ${CZ.n>1 ? `Tarifa oferta por estudiante: S/. ${perHourStudent}/h<br>` : ''}
       Tarifa de la sesión (con descuento de grupo): S/. ${perHour}/h<br>
-      Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong> por semana<br>
-      Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): <strong>S/. ${total}</strong>
+      Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana (pago adelantado)<br>
+      Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} en total<br><br>
+      Horario cotizado:<br>
+      ${scheduleLines.map(l=>'• '+l).join('<br>')}
     </div>
   </div>`;
 }
@@ -236,7 +263,12 @@ function copyCZ(perHour, horas, weekly, total) {
   const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
-  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\nHoras por semana: ${horas}\n\nTarifa de la sesión: S/. ${perHour}/h\nCosto semanal: S/. ${weekly}\nTOTAL PRE CICLO 2 (06 jul – 02 ago, 4 semanas): S/. ${total}\n\n¡Contáctanos para reservar tu horario!`;
+  const base = CZ_RATE[CZ.tipo][CZ.nivel];
+  const perHourStudent = Math.round((perHour/CZ.n)*100)/100;
+  const scheduleLines = buildScheduleLines();
+  const scheduleText = scheduleLines.map(l=>'- '+l).join('\n');
+  const studentLine = CZ.n>1 ? `Tarifa oferta por estudiante: S/. ${perHourStudent}/h\n` : '';
+  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\nHorario cotizado (${horas} h/semana):\n${scheduleText}\n\nTarifa regular: S/. ${base}/h por estudiante\n${studentLine}Tarifa de la sesión (grupo): S/. ${perHour}/h\n\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total}\n\n¡Contáctanos para reservar tu horario!`;
   navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
 }
 </script>
