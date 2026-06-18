@@ -47,6 +47,11 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .price-note { font-size:11px; color:rgba(255,255,255,0.45); font-weight:600; margin-top:6px; }
 .price-det { font-size:12px; color:rgba(255,255,255,0.55); margin-top:12px; line-height:1.85; text-align:left; }
 .cta { margin-top:16px; width:100%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 20px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; }
+.cta:disabled { opacity:0.5; cursor:default; }
+.cz-reserve { margin-top:16px; text-align:left; }
+.cz-reserve-lbl { font-size:10px; font-weight:900; color:rgba(103,232,249,0.7); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
+.cz-child-sel, .cz-child-input { width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:10px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; margin-bottom:8px; outline:none; box-sizing:border-box; }
+.cz-child-sel option { color:#111; }
 .empty { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
 
 /* ===== ESCRITORIO: todo más compacto y en columnas para que entre sin
@@ -150,7 +155,25 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+// ════════════════════════════════════════════════════════
+// FIREBASE (mismo proyecto que /padres) — solo para detectar si hay una
+// sesión de padre abierta y, de ser así, enviar la solicitud de reserva.
+// ════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey:            "AIzaSyB8M29ujqCEatEZMaNHbGEyDmfygipG_Y0",
+  authDomain:        "maths-level-up.firebaseapp.com",
+  projectId:         "maths-level-up",
+  storageBucket:     "maths-level-up.firebasestorage.app",
+  messagingSenderId: "854549565666",
+  appId:             "1:854549565666:web:2613613306c6cb16b30ebb"
+};
+firebase.initializeApp(firebaseConfig);
+const db  = firebase.firestore();
+const REF = db.collection('padres').doc('main');
+
 // Tarifas base (S/.) por hora y por estudiante, según tipo y nivel.
 const CZ_RATE = {
   virtual:    { primaria:20, secundaria:25, preuni:30 },
@@ -162,6 +185,32 @@ const CZ_HOURS_PM = [15,16,17,18,19,20]; // bloques 15:00-16:00 ... 20:00-21:00
 const CZ = { tipo:null, n:null, nivel:null };
 const czSelected = new Set(); // claves "diaIdx-minutoDeInicio"
 let czGranularity = 60; // minutos por bloque seleccionable: 60 = por hora, 30 = por media hora
+
+// Sesión de padre (si la hay) — detectada vía localStorage, igual que /padres.
+let czParentId       = null;
+let czParentName      = '';
+let czParentChildren  = [];   // [{id, name, icon}]
+let czQuoteChildSel   = null; // studentId (string) seleccionado en el dropdown, o 'new'
+let czNewChildName    = '';
+
+(function initParentSession() {
+  const pid = localStorage.getItem('padresLoggedId');
+  if (!pid) return;
+  REF.get().then(snap => {
+    if (!snap.exists) return;
+    const d = snap.data();
+    const parent = (d.parents || {})[pid];
+    if (!parent) return;
+    czParentId = pid;
+    czParentName = parent.name || '';
+    czParentChildren = (parent.children || []).map(cid => {
+      const s = (d.students || {})[cid] || {};
+      return { id: cid, name: s.name || ('Alumno ' + cid), icon: s.icon || '👤' };
+    });
+    czQuoteChildSel = czParentChildren.length ? String(czParentChildren[0].id) : 'new';
+    calc();
+  }).catch(e => console.error(e));
+})();
 
 function fmtMin(m) {
   const h = Math.floor(m/60), mm = m%60;
@@ -342,13 +391,14 @@ function calc() {
   const horasLine = mov.weekly>0
     ? `Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = S/. ${classWeekly}/semana<br>Movilidad: ${movilidadParts(mov)} = S/. ${mov.weekly}/semana<br><strong>Total: S/. ${weekly}</strong>/semana<br>`
     : `Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>`;
+  const actionHtml = czParentId ? buildReserveBlock(perHour,horas,weekly,total) : `<button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>`;
   res.innerHTML = `
   <div class="res">
     <div class="res-main">
       <div class="price-lbl">COSTO SEMANAL · PAGO ADELANTADO</div>
       <div class="price-big">S/. ${weekly}</div>
       ${czGranularity===30 ? '<div class="price-note">Mínimo 1 hora de clase por día.</div>' : ''}
-      <button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>
+      ${actionHtml}
     </div>
     <div class="price-det">
       Horario cotizado:<br>
@@ -377,6 +427,61 @@ function copyCZ(perHour, horas, weekly, total) {
   const movLine = mov.weekly>0 ? `Movilidad: ${movilidadParts(mov)} = S/. ${mov.weekly}/semana\n` : '';
   const text = `COTIZACIÓN — MATHS LEVEL UP\n\nHorario cotizado:\n${scheduleText}\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\n${regularLine}${studentLine}${sesionLbl}: S/. ${perHour}/h en total\n${movLine}\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual\n\n¡Contáctanos para reservar tu horario!`;
   navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
+}
+
+// Si hay una sesión de padre abierta (localStorage, igual que /padres), en
+// vez de "Copiar cotización" se muestra esta solicitud para reservar.
+function buildReserveBlock(perHour, horas, weekly, total) {
+  const childOpts = czParentChildren.map(c =>
+    `<option value="${c.id}"${String(c.id)===String(czQuoteChildSel)?' selected':''}>${c.icon} ${c.name}</option>`
+  ).join('') + `<option value="new"${czQuoteChildSel==='new'?' selected':''}>➕ Hijo/a nuevo (aún no registrado)</option>`;
+  const newNameInput = czQuoteChildSel==='new'
+    ? `<input class="cz-child-input" type="text" placeholder="Nombre del hijo/a" value="${(czNewChildName||'').replace(/"/g,'&quot;')}" oninput="czNewChildName=this.value">`
+    : '';
+  return `
+  <div class="cz-reserve">
+    <div class="cz-reserve-lbl">Solicitar reserva para:</div>
+    <select class="cz-child-sel" onchange="selectQuoteChild(this.value)">${childOpts}</select>
+    ${newNameInput}
+    <button class="cta" id="cz-reserve-btn" onclick="submitQuoteRequest(${perHour},${horas},${weekly},${total})">📤 Solicitud para reservar</button>
+  </div>`;
+}
+function selectQuoteChild(val) {
+  czQuoteChildSel = val;
+  calc();
+}
+function submitQuoteRequest(perHour, horas, weekly, total) {
+  if (!czParentId) return;
+  let studentId = null, newChildName = null;
+  if (czQuoteChildSel === 'new') {
+    newChildName = (czNewChildName||'').trim();
+    if (!newChildName) { alert('Escribe el nombre del hijo/a nuevo.'); return; }
+  } else {
+    studentId = parseInt(czQuoteChildSel, 10);
+  }
+  const mov = movilidadInfo();
+  const req = {
+    id: Date.now(),
+    parentId: czParentId,
+    parentName: czParentName,
+    studentId, newChildName,
+    tipo: CZ.tipo, n: CZ.n, nivel: CZ.nivel,
+    granularity: czGranularity,
+    schedule: buildScheduleLines(),
+    perHour, horas, weekly, total,
+    movilidad: mov,
+    status: 'pendiente',
+    createdAt: new Date().toISOString()
+  };
+  const btn = document.getElementById('cz-reserve-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+  REF.set({ quoteRequests: firebase.firestore.FieldValue.arrayUnion(req) }, { merge:true })
+    .then(() => alert('Solicitud de reserva enviada. Te contactaremos para confirmar tu horario.'))
+    .catch(e => {
+      console.error(e);
+      alert('Hubo un error al enviar la solicitud. Inténtalo de nuevo.');
+      if (btn) { btn.disabled = false; btn.textContent = '📤 Solicitud para reservar'; }
+    });
 }
 </script>
 </body>

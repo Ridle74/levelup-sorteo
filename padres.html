@@ -327,7 +327,9 @@ const SEED = {
   freeSlots: [],
   // Solicitudes de creación de cuenta hechas por padres nuevos (auto-registro).
   // El admin las revisa y aprueba/rechaza desde el panel de administración.
-  accountRequests: []
+  accountRequests: [],
+  // Solicitudes de reserva enviadas desde /cotiza por padres con sesión abierta.
+  quoteRequests: []
 };
 const ADMIN_PIN_DEFAULT = '80808'; // misma clave admin que /student (editable luego desde aquí)
 const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
@@ -412,6 +414,7 @@ function loadData() {
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
         DATA.freeSlots       = d.freeSlots       || [];
+        DATA.quoteRequests   = d.quoteRequests   || [];
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
         // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
         // explícitamente con FieldValue.delete() antes de escribir los nuevos.
@@ -432,6 +435,7 @@ function loadData() {
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
         DATA.freeSlots       = d.freeSlots       || [];
+        DATA.quoteRequests   = d.quoteRequests   || [];
       }
     } else {
       // Primera vez: sembrar Firestore con datos base.
@@ -465,6 +469,10 @@ function saveRequests() {
 function saveAccountRequests() {
   REF.set({ accountRequests: DATA.accountRequests }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar la solicitud.'); });
+}
+function saveQuoteRequests() {
+  REF.set({ quoteRequests: DATA.quoteRequests }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar la cotización.'); });
 }
 function saveParents() {
   REF.set({ parents: DATA.parents }, { merge:true })
@@ -555,7 +563,7 @@ function render() {
   }
 
   const views = adminMode
-    ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario }
+    ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario, 'a-cotizaciones': vAdminCotizaciones }
     : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar, perfil: vPerfil };
   app.innerHTML = `<div class="vw">${(views[currentView]||(adminMode?vAdminInicio:vLogin))()}</div>`;
 
@@ -564,10 +572,11 @@ function render() {
     nav.classList.add('visible');
     const navItems = adminMode
       ? [
-          {r:'a-inicio',      i:'🛠️', l:'Inicio'},
-          {r:'a-calendario',  i:'📅', l:'Calendario'},
-          {r:'a-solicitudes', i:'📥', l:'Solicitudes'},
-          {r:'a-cuentas',     i:'🔑', l:'Cuentas'}
+          {r:'a-inicio',       i:'🛠️', l:'Inicio'},
+          {r:'a-calendario',   i:'📅', l:'Calendario'},
+          {r:'a-solicitudes',  i:'📥', l:'Solicitudes'},
+          {r:'a-cotizaciones', i:'🧾', l:'Cotizaciones'},
+          {r:'a-cuentas',      i:'🔑', l:'Cuentas'}
         ]
       : [
           {r:'inicio',     i:'🏠', l:'Inicio'},
@@ -1226,6 +1235,14 @@ function setClassRequestStatus(reqId, status) {
   showToast(status==='aprobada' ? 'Solicitud de clase aprobada.' : 'Solicitud marcada como no disponible.', 'success');
   render();
 }
+function setQuoteRequestStatus(reqId, status) {
+  const r = DATA.quoteRequests.find(x => x.id === reqId);
+  if (!r) return;
+  r.status = status;
+  saveQuoteRequests();
+  showToast(status==='aprobada' ? 'Cotización aprobada.' : 'Cotización marcada como rechazada.', 'success');
+  render();
+}
 function startEditParentPin(id) { editingParentId = id; render(); }
 function cancelEditParentPin() { editingParentId = null; render(); }
 function saveParentPin(id) {
@@ -1293,6 +1310,7 @@ function vAdminCalendario() {
 function vAdminInicio() {
   const pendCuentas = DATA.accountRequests.filter(r => r.status==='pendiente').length;
   const pendClases  = DATA.requests.filter(r => r.status==='pendiente').length;
+  const pendCotiz   = (DATA.quoteRequests||[]).filter(r => r.status==='pendiente').length;
   const totalFam    = Object.keys(DATA.parents).length;
   const totalAlum   = Object.keys(DATA.students).length;
   return `
@@ -1309,6 +1327,7 @@ function vAdminInicio() {
     <div class="dash-link" onclick="go('a-calendario')"><span class="dl-ico">📅</span>Calendario de todos los alumnos<span class="dl-arr">›</span></div>
     <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">📝</span>Solicitudes de cuenta nuevas<span class="req-status pend" style="margin-left:auto">${pendCuentas}</span></div>
     <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">🗓️</span>Solicitudes de clase adicional<span class="req-status pend" style="margin-left:auto">${pendClases}</span></div>
+    <div class="dash-link" onclick="go('a-cotizaciones')"><span class="dl-ico">🧾</span>Cotizaciones para reservar<span class="req-status pend" style="margin-left:auto">${pendCotiz}</span></div>
     <div class="dash-link" onclick="go('a-cuentas')"><span class="dl-ico">🔑</span>Cuentas, claves y contraseñas<span class="dl-arr">›</span></div>
     <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
   </div>`;
@@ -1356,6 +1375,41 @@ function vAdminSolicitudes() {
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`;
     }).join('') : `<div class="cal-empty">No hay solicitudes de clase.</div>`}
+  </div>`;
+}
+
+function vAdminCotizaciones() {
+  const statusLabel = { pendiente:'Pendiente', aprobada:'Aprobada', rechazada:'Rechazada' };
+  const statusClass = { pendiente:'pend', aprobada:'appr', rechazada:'rej' };
+  const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
+  const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
+  const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
+  const list = (DATA.quoteRequests||[]).slice().reverse();
+
+  return `
+  <div style="padding:16px;max-width:640px;margin:0 auto">
+    <div class="sec-lbl">Cotizaciones para reservar (desde /cotiza)</div>
+    ${list.length ? list.map(r => {
+      const childLbl = r.studentId
+        ? (DATA.students[r.studentId] ? `${DATA.students[r.studentId].icon} ${DATA.students[r.studentId].name}` : `Alumno #${r.studentId}`)
+        : `🆕 ${r.newChildName || 'Hijo/a nuevo'} (sin registrar)`;
+      const movLine = r.movilidad && r.movilidad.weekly ? `<div class="cs-meta" style="margin-top:2px">Movilidad: S/. ${r.movilidad.weekly}/semana</div>` : '';
+      return `<div class="req-list-item" style="align-items:flex-start">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${childLbl}</div>
+          <div class="cs-meta">Familia: ${r.parentName||''} · ${tipoLbl[r.tipo]||r.tipo} · ${nLbl[r.n]||r.n} · ${nivelLbl[r.nivel]||r.nivel}</div>
+          <div class="cs-meta">${(r.schedule||[]).join(' · ')}</div>
+          <div class="cs-meta">S/. ${r.weekly}/semana · S/. ${r.total} mensual (4 semanas)</div>
+          ${movLine}
+          ${r.status==='pendiente' ? `
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="setQuoteRequestStatus(${r.id},'aprobada')">✓ Aprobar</button>
+              <button class="btn-ghost" style="margin-top:0;padding:8px 14px;font-size:11px;width:auto" onclick="setQuoteRequestStatus(${r.id},'rechazada')">✕ Rechazar</button>
+            </div>` : ''}
+        </div>
+        <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
+      </div>`;
+    }).join('') : `<div class="cal-empty">No hay cotizaciones enviadas.</div>`}
   </div>`;
 }
 
