@@ -240,6 +240,10 @@ function calc() {
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
   const scheduleLines = buildScheduleLines();
+  const regularLine = CZ.n>1
+    ? `<span style="text-decoration:line-through;opacity:.55;">Tarifa regular: S/. ${base}/h por estudiante</span><br>`
+    : `Tarifa regular: S/. ${base}/h por estudiante<br>`;
+  const sesionLbl = CZ.n>1 ? 'Tarifa de oferta de la sesión' : 'Tarifa de la sesión';
   res.innerHTML = `
   <div class="res">
     <div class="res-main">
@@ -249,12 +253,12 @@ function calc() {
     </div>
     <div class="price-det">
       Tipo: ${tipoLbl[CZ.tipo]} · ${nLbl[CZ.n]} · ${nivelLbl[CZ.nivel]}<br>
-      Tarifa regular: S/. ${base}/h por estudiante<br>
+      ${regularLine}
       ${CZ.n>1 ? `Tarifa oferta por estudiante: S/. ${perHourStudent}/h<br>` : ''}
-      Tarifa de la sesión (con descuento de grupo): S/. ${perHour}/h<br>
-      Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana (pago adelantado)<br>
-      Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} en total<br><br>
-      Horario cotizado:<br>
+      ${sesionLbl}: S/. ${perHour}/h en total<br>
+      Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>
+      Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual<br><br>
+      Horario cotizado (pago semanal por adelantado):<br>
       ${scheduleLines.map(l=>'• '+l).join('<br>')}
     </div>
   </div>`;
@@ -267,8 +271,10 @@ function copyCZ(perHour, horas, weekly, total) {
   const perHourStudent = Math.round((perHour/CZ.n)*100)/100;
   const scheduleLines = buildScheduleLines();
   const scheduleText = scheduleLines.map(l=>'- '+l).join('\n');
+  const regularLine = CZ.n>1 ? `~Tarifa regular: S/. ${base}/h por estudiante~\n` : `Tarifa regular: S/. ${base}/h por estudiante\n`;
   const studentLine = CZ.n>1 ? `Tarifa oferta por estudiante: S/. ${perHourStudent}/h\n` : '';
-  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\nHorario cotizado (${horas} h/semana):\n${scheduleText}\n\nTarifa regular: S/. ${base}/h por estudiante\n${studentLine}Tarifa de la sesión (grupo): S/. ${perHour}/h\n\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total}\n\n¡Contáctanos para reservar tu horario!`;
+  const sesionLbl = CZ.n>1 ? 'Tarifa de oferta de la sesión' : 'Tarifa de la sesión';
+  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\nHorario cotizado (pago semanal por adelantado):\n${scheduleText}\n\n${regularLine}${studentLine}${sesionLbl}: S/. ${perHour}/h en total\n\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual\n\n¡Contáctanos para reservar tu horario!`;
   navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
 }
 </script>
