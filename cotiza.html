@@ -36,11 +36,12 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .hgrid { display:grid; grid-template-columns:42px repeat(7,32px); gap:3px; width:max-content; }
 .hcell-day { font-size:9px; font-weight:900; text-align:center; color:rgba(255,255,255,0.5); padding:3px 0; text-transform:uppercase; }
 .hcell-hour { position:relative; }
-.hcell-hour span { position:absolute; top:0; right:4px; transform:translateY(-50%); font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); white-space:nowrap; }
+.hcell-hour span { position:absolute; top:0; right:4px; transform:translateY(-50%); font-size:9px; font-weight:900; color:rgba(255,255,255,0.55); white-space:nowrap; }
 .hcell { height:24px; border-radius:5px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); cursor:pointer; transition:background .12s,border-color .12s; }
 .hcell.hsel { background:#06b6d4; border-color:#67e8f9; box-shadow:0 0 8px -2px #06b6d4; }
 .hgrid.gran-half .hcell { height:16px; }
-.hgrid.gran-half .hcell-hour span { font-size:8px; }
+.hcell-end { height:1px; }
+.hcell-hour-end { height:1px; }
 .hsel-count { font-size:11px; color:rgba(103,232,249,0.85); font-weight:700; margin-top:10px; text-align:center; }
 .res { background:linear-gradient(135deg,rgba(6,182,212,0.15),rgba(67,56,202,0.12)); border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:6px; }
 .price-big { font-family:'Barlow Condensed',sans-serif; font-size:42px; font-weight:900; color:#67e8f9; line-height:1; }
@@ -203,6 +204,11 @@ function buildHoursGrid(containerId, hours) {
       html += `<div class="hcell" data-k="${key}" onclick="toggleHour('${key}')"></div>`;
     });
   });
+  // Fila de cierre: muestra solo la hora final (límite inferior del calendario,
+  // ej. 14:00 o 21:00), sin celdas seleccionables, para que se vea hasta qué hora llega.
+  const endMin = (hours[hours.length-1]+1)*60;
+  html += `<div class="hcell-hour hcell-hour-end"><span>${fmtMin(endMin)}</span></div>`;
+  CZ_DAYS.forEach(() => html += `<div class="hcell-end"></div>`);
   g.innerHTML = html;
 }
 function toggleHour(key) {
