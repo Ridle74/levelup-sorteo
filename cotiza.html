@@ -27,14 +27,20 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .pills { display:flex; flex-wrap:wrap; gap:6px; }
 .pill { border:2px solid rgba(255,255,255,0.12); border-radius:12px; padding:9px 15px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; text-transform:uppercase; color:rgba(255,255,255,0.5); transition:all 0.15s; white-space:nowrap; }
 .pill.psel { border-color:#06b6d4; color:#67e8f9; background:rgba(6,182,212,0.14); }
+.gran-toggle { display:flex; gap:6px; margin-bottom:10px; }
+.gran-btn { border:2px solid rgba(255,255,255,0.12); border-radius:10px; padding:6px 12px; cursor:pointer; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:0.05em; color:rgba(255,255,255,0.5); transition:all .15s; }
+.gran-btn.gsel { border-color:#06b6d4; color:#67e8f9; background:rgba(6,182,212,0.14); }
 .hours-cols { display:flex; flex-direction:column; gap:14px; }
 .hcol-title { font-size:10px; font-weight:900; color:rgba(103,232,249,0.8); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
 .hgrid-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px; }
 .hgrid { display:grid; grid-template-columns:42px repeat(7,32px); gap:3px; width:max-content; }
 .hcell-day { font-size:9px; font-weight:900; text-align:center; color:rgba(255,255,255,0.5); padding:3px 0; text-transform:uppercase; }
-.hcell-hour { font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); display:flex; align-items:center; justify-content:flex-end; padding-right:4px; white-space:nowrap; }
+.hcell-hour { position:relative; }
+.hcell-hour span { position:absolute; top:0; right:4px; transform:translateY(-50%); font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); white-space:nowrap; }
 .hcell { height:24px; border-radius:5px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); cursor:pointer; transition:background .12s,border-color .12s; }
 .hcell.hsel { background:#06b6d4; border-color:#67e8f9; box-shadow:0 0 8px -2px #06b6d4; }
+.hgrid.gran-half .hcell { height:16px; }
+.hgrid.gran-half .hcell-hour span { font-size:8px; }
 .hsel-count { font-size:11px; color:rgba(103,232,249,0.85); font-weight:700; margin-top:10px; text-align:center; }
 .res { background:linear-gradient(135deg,rgba(6,182,212,0.15),rgba(67,56,202,0.12)); border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:6px; }
 .price-big { font-family:'Barlow Condensed',sans-serif; font-size:42px; font-weight:900; color:#67e8f9; line-height:1; }
@@ -123,6 +129,10 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
     <div class="blk hours-blk">
       <div class="lbl">4. Horas — Pre Ciclo 2</div>
       <div class="hint">Marca las horas de la semana que tomarás clase (se repiten igual las 4 semanas del ciclo, del 06 de julio al 02 de agosto).</div>
+      <div class="gran-toggle" id="cz-gran">
+        <div class="gran-btn gsel" data-v="60">Por hora</div>
+        <div class="gran-btn" data-v="30">Por 30 min</div>
+      </div>
       <div class="hours-cols">
         <div class="hcol">
           <div class="hcol-title">☀️ Mañana · 08:00 – 14:00</div>
@@ -150,7 +160,16 @@ const CZ_DAYS    = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 const CZ_HOURS_AM = [8,9,10,11,12,13];   // bloques 08:00-09:00 ... 13:00-14:00
 const CZ_HOURS_PM = [15,16,17,18,19,20]; // bloques 15:00-16:00 ... 20:00-21:00
 const CZ = { tipo:null, n:null, nivel:null };
-const czSelected = new Set(); // claves "diaIdx-hora"
+const czSelected = new Set(); // claves "diaIdx-minutoDeInicio"
+let czGranularity = 60; // minutos por bloque seleccionable: 60 = por hora, 30 = por media hora
+
+function fmtMin(m) {
+  const h = Math.floor(m/60), mm = m%60;
+  return String(h).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+}
+function fmtHoras(h) {
+  return (h % 1 === 0) ? String(h) : h.toFixed(1);
+}
 
 function bindPills(containerId, key, cast) {
   const c = document.getElementById(containerId);
@@ -168,12 +187,19 @@ bindPills('cz-nivel','nivel');
 
 function buildHoursGrid(containerId, hours) {
   const g = document.getElementById(containerId);
+  const step = czGranularity;
+  const slots = [];
+  hours.forEach(h => { for (let m=h*60; m<(h+1)*60; m+=step) slots.push(m); });
   let html = '<div></div>';
   CZ_DAYS.forEach(d => html += `<div class="hcell-day">${d}</div>`);
-  hours.forEach(h => {
-    html += `<div class="hcell-hour">${String(h).padStart(2,'0')}:00</div>`;
+  slots.forEach(m => {
+    // Solo se etiqueta el límite de cada hora (no cada media hora): así el
+    // eje de horas marca el borde entre bloques, igual en ambos modos, y la
+    // cantidad de filas entre etiquetas indica si se está viendo por hora o por 30 min.
+    const showLabel = (m % 60 === 0);
+    html += `<div class="hcell-hour">${showLabel ? `<span>${fmtMin(m)}</span>` : ''}</div>`;
     CZ_DAYS.forEach((d,di) => {
-      const key = di+'-'+h;
+      const key = di+'-'+m;
       html += `<div class="hcell" data-k="${key}" onclick="toggleHour('${key}')"></div>`;
     });
   });
@@ -183,31 +209,49 @@ function toggleHour(key) {
   if (czSelected.has(key)) czSelected.delete(key); else czSelected.add(key);
   const cell = document.querySelector('.hcell[data-k="'+key+'"]');
   if (cell) cell.classList.toggle('hsel', czSelected.has(key));
-  const n = czSelected.size;
-  document.getElementById('cz-hours-count').textContent = n + (n===1 ? ' hora/semana seleccionada' : ' horas/semana seleccionadas');
+  const totalHoras = czSelected.size * (czGranularity/60);
+  document.getElementById('cz-hours-count').textContent = fmtHoras(totalHoras) + (totalHoras===1 ? ' hora/semana seleccionada' : ' horas/semana seleccionadas');
   calc();
 }
-buildHoursGrid('cz-hours-grid-am', CZ_HOURS_AM);
-buildHoursGrid('cz-hours-grid-pm', CZ_HOURS_PM);
+function rebuildHoursGrids() {
+  document.getElementById('cz-hours-grid-am').classList.toggle('gran-half', czGranularity===30);
+  document.getElementById('cz-hours-grid-pm').classList.toggle('gran-half', czGranularity===30);
+  buildHoursGrid('cz-hours-grid-am', CZ_HOURS_AM);
+  buildHoursGrid('cz-hours-grid-pm', CZ_HOURS_PM);
+}
+document.querySelectorAll('#cz-gran .gran-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    const v = parseInt(b.dataset.v,10);
+    if (v === czGranularity) return;
+    czGranularity = v;
+    document.querySelectorAll('#cz-gran .gran-btn').forEach(x => x.classList.toggle('gsel', x===b));
+    czSelected.clear();
+    rebuildHoursGrids();
+    document.getElementById('cz-hours-count').textContent = '0 horas/semana seleccionadas';
+    calc();
+  });
+});
+rebuildHoursGrids();
 
 // Agrupa las horas seleccionadas por día y las junta en rangos legibles,
 // p.ej. "Lun: 08:00–11:00, 17:00–18:00".
 function buildScheduleLines() {
+  const step = czGranularity;
   const byDay = {};
   czSelected.forEach(key => {
-    const [di, h] = key.split('-').map(Number);
-    (byDay[di] = byDay[di] || []).push(h);
+    const [di, m] = key.split('-').map(Number);
+    (byDay[di] = byDay[di] || []).push(m);
   });
   return Object.keys(byDay).map(Number).sort((a,b)=>a-b).map(di => {
-    const hours = byDay[di].sort((a,b)=>a-b);
+    const mins = byDay[di].sort((a,b)=>a-b);
     const ranges = [];
-    let start = hours[0], prev = hours[0];
-    for (let i=1; i<hours.length; i++) {
-      if (hours[i] === prev+1) { prev = hours[i]; }
-      else { ranges.push([start,prev]); start = hours[i]; prev = hours[i]; }
+    let start = mins[0], prev = mins[0];
+    for (let i=1; i<mins.length; i++) {
+      if (mins[i] === prev+step) { prev = mins[i]; }
+      else { ranges.push([start,prev]); start = mins[i]; prev = mins[i]; }
     }
     ranges.push([start,prev]);
-    const rangeStr = ranges.map(([a,b]) => `${String(a).padStart(2,'0')}:00–${String(b+1).padStart(2,'0')}:00`).join(', ');
+    const rangeStr = ranges.map(([a,b]) => `${fmtMin(a)}–${fmtMin(b+step)}`).join(', ');
     return `${CZ_DAYS[di]}: ${rangeStr}`;
   });
 }
@@ -225,7 +269,7 @@ function czFactor(tipo, n) {
 }
 function calc() {
   const res = document.getElementById('cz-result');
-  const horas = czSelected.size;
+  const horas = czSelected.size * (czGranularity/60);
   if (!CZ.tipo || !CZ.n || !CZ.nivel || horas <= 0) {
     res.innerHTML = `<div class="empty">SELECCIONA TIPO, N° DE ESTUDIANTES, NIVEL Y MARCA TUS HORAS PARA VER TU COTIZACIÓN</div>`;
     return;
@@ -258,7 +302,7 @@ function calc() {
       ${regularLine}
       ${CZ.n>1 ? `<strong>Tarifa oferta por estudiante: S/. ${perHourStudent}/h</strong><br>` : ''}
       ${sesionLbl}: S/. ${perHour}/h en total<br>
-      Horas: ${horas} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>
+      Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>
       Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual
     </div>
   </div>`;
