@@ -48,12 +48,12 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .price-det { font-size:12px; color:rgba(255,255,255,0.55); margin-top:12px; line-height:1.85; text-align:left; }
 .cta { margin-top:16px; width:100%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 20px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; }
 .cta:disabled { opacity:0.5; cursor:default; }
-.cz-reserve { margin-top:16px; text-align:left; }
-.cz-reserve-lbl { font-size:10px; font-weight:900; color:rgba(103,232,249,0.7); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
-.cz-child-sel, .cz-child-input { width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:10px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; margin-bottom:8px; outline:none; box-sizing:border-box; }
+.cz-child-sel, .cz-child-input { width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:10px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; outline:none; box-sizing:border-box; }
 .cz-child-sel option { color:#111; }
-.cz-slot { margin-bottom:10px; }
-.cz-slot-lbl { font-size:9px; font-weight:800; color:rgba(255,255,255,0.4); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
+.cz-slots-row { display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+.cz-slot { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:10px 12px; }
+.cz-slot-lbl { font-size:9px; font-weight:800; color:rgba(255,255,255,0.4); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+.cz-slot .cz-child-input { margin-top:8px; }
 .empty { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
 
 /* ===== ESCRITORIO: todo más compacto y en columnas para que entre sin
@@ -85,6 +85,11 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
   .res-main { text-align:center; }
   .price-det { margin-top:10px; font-size:11px; line-height:1.6; }
   .cta { margin-top:10px; width:100%; padding:10px 14px; }
+  /* fila 3, ancho completo (izq = borde de Horas, der = borde de Resultado) */
+  #cz-students { grid-column:1 / 4; grid-row:3; }
+  .cz-students-blk { padding:14px 16px; margin-bottom:0; }
+  .cz-slots-row { flex-direction:row; gap:12px; }
+  .cz-slots-row .cz-slot { flex:1; min-width:0; }
 }
 </style>
 </head>
@@ -154,6 +159,7 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
     </div>
 
     <div id="cz-result"></div>
+    <div id="cz-students" style="display:none"></div>
   </div>
 </div>
 
@@ -361,15 +367,22 @@ function movilidadParts(mov) {
   if (mov.n15) parts.push(`${mov.n15} clase${mov.n15>1?'s':''} adicional${mov.n15>1?'es':''} (≤30 min de otra) × S/. 15`);
   return parts.join(' + ');
 }
+function hideStudentsSection() {
+  const stuBox = document.getElementById('cz-students');
+  stuBox.style.display = 'none';
+  stuBox.innerHTML = '';
+}
 function calc() {
   const res = document.getElementById('cz-result');
   const horas = czSelected.size * (czGranularity/60);
   if (hasLoneHalfHour()) {
     res.innerHTML = `<div class="empty">MÍNIMO 1 HORA DE CLASE POR DÍA<br>SELECCIONA OTRA MEDIA HORA EN ESE DÍA PARA PODER COTIZAR</div>`;
+    hideStudentsSection();
     return;
   }
   if (!CZ.tipo || !CZ.n || !CZ.nivel || horas <= 0) {
     res.innerHTML = `<div class="empty">SELECCIONA TIPO, N° DE ESTUDIANTES, NIVEL Y MARCA TUS HORAS PARA VER TU COTIZACIÓN</div>`;
+    hideStudentsSection();
     return;
   }
   const base     = CZ_RATE[CZ.tipo][CZ.nivel];
@@ -391,7 +404,7 @@ function calc() {
   const horasLine = mov.weekly>0
     ? `Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = S/. ${classWeekly}/semana<br>Movilidad: ${movilidadParts(mov)} = S/. ${mov.weekly}/semana<br><strong>Total: S/. ${weekly}</strong>/semana<br>`
     : `Horas: ${fmtHoras(horas)} h/semana × S/. ${perHour} = <strong>S/. ${weekly}</strong>/semana<br>`;
-  const actionHtml = czParentId ? buildReserveBlock(perHour,horas,weekly,total) : `<button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>`;
+  const actionHtml = czParentId ? '' : `<button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>`;
   res.innerHTML = `
   <div class="res">
     <div class="res-main">
@@ -411,6 +424,17 @@ function calc() {
       Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual
     </div>
   </div>`;
+
+  // Sección "6. Estudiantes" — separada del precio, para que la altura de
+  // este card de precio quede fija sin importar cuántos espacios de
+  // estudiante haya (Individual/Dúo/Trío) ni si hay sesión de padre o no.
+  const stuBox = document.getElementById('cz-students');
+  if (czParentId) {
+    stuBox.style.display = '';
+    stuBox.innerHTML = buildReserveBlock(perHour,horas,weekly,total);
+  } else {
+    hideStudentsSection();
+  }
 }
 function copyCZ(perHour, horas, weekly, total) {
   const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
@@ -443,9 +467,10 @@ function ensureSlots() {
   czSlots.length = n;
 }
 
-// Si hay una sesión de padre abierta (localStorage, igual que /padres), en
-// vez de "Copiar cotización" se muestra esta solicitud para reservar — con
-// un espacio de estudiante por cada uno de los CZ.n alumnos de la cotización.
+// Si hay una sesión de padre abierta (localStorage, igual que /padres), se
+// muestra esta sección — separada del card de precio — con un espacio de
+// estudiante por cada uno de los CZ.n alumnos de la cotización, y el botón
+// para enviar la solicitud de reserva.
 function buildReserveBlock(perHour, horas, weekly, total) {
   ensureSlots();
   const usedIds = czSlots.map(s => s.type==='child' ? String(s.studentId) : null);
@@ -469,9 +494,10 @@ function buildReserveBlock(perHour, horas, weekly, total) {
     </div>`;
   }).join('');
   return `
-  <div class="cz-reserve">
-    <div class="cz-reserve-lbl">Solicitar reserva para:</div>
-    ${slotsHtml}
+  <div class="blk cz-students-blk">
+    <div class="lbl">6. Estudiantes</div>
+    <div class="hint">Indica quién tomará la clase. Puedes elegir un hijo/a registrado, agregar uno nuevo, o reservar un espacio para un invitado de otra familia (coordinamos su nombre directamente).</div>
+    <div class="cz-slots-row">${slotsHtml}</div>
     <button class="cta" id="cz-reserve-btn" onclick="submitQuoteRequest(${perHour},${horas},${weekly},${total})">📤 Solicitud para reservar</button>
   </div>`;
 }
