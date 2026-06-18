@@ -413,6 +413,7 @@ textarea.fsm { resize:none; height:64px; }
 .hor-hour-line { border-bottom:1px solid rgba(255,255,255,0.04); }
 .hor-day-col.is-today { background:rgba(79,182,255,0.022); border-left:1px solid rgba(79,182,255,0.28); }
 .hor-day-col.is-past  { opacity:0.38; }
+.hor-hours-past-ovl   { position:absolute; top:0; left:0; width:100%; background:rgba(10,11,22,0.55); pointer-events:none; }
 .hor-ev-card { position:absolute; border-radius:9px; padding:5px 6px 4px; overflow:hidden; }
 .hor-ev-icon  { font-size:13px; line-height:1; }
 .hor-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; color:#fff; margin-top:2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -3607,6 +3608,8 @@ function renderHorariosCalendar() {
   const toH = t => { const [h,m]=t.split(':').map(Number); return h+m/60; };
 
   const today = new Date(); today.setHours(0,0,0,0);
+  const nowDt = new Date();
+  const curHNow = nowDt.getHours() + nowDt.getMinutes()/60;
   const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
   // Medimos el ancho REAL del contenedor que hace scroll (hor-body-scroll), no el de #app.
   // hor-body-scroll reserva siempre el espacio de su scrollbar vertical (overflow-y:scroll),
@@ -3715,7 +3718,15 @@ function renderHorariosCalendar() {
       });
     }).join('');
 
-    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+'</div>';
+    // En el día de hoy, las horas ya pasadas se ven apagadas (igual que los días
+    // anteriores), y las horas que faltan se ven con normalidad ("vivas").
+    let pastOvl = '';
+    if (isTod) {
+      const pastH = curHNow <= MIN_H ? 0 : (curHNow >= MAX_H ? totalH : (curHNow - MIN_H) * ROW_H);
+      if (pastH > 0) pastOvl = '<div class="hor-hours-past-ovl" style="height:'+pastH+'px"></div>';
+    }
+
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+pastOvl+'</div>';
   }).join('');
 
   renderHorariosTimeNow();
@@ -3778,6 +3789,16 @@ function setHorariosTab(t) {
 }
 
 function vHorariosSetup() {
+  // Al entrar a Horarios, ubicar siempre el día actual — en móvil (vista de 2 días)
+  // antes se quedaba fijo en lunes sin importar qué día era hoy realmente.
+  horWeekOffset = 0;
+  const appW0 = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
+  if (appW0 < 640) {
+    const dow0 = new Date().getDay();
+    horDayOffset = (dow0 === 0 ? 6 : dow0 - 1); // Mon=0 … Sun=6
+  } else {
+    horDayOffset = 0;
+  }
   renderHorariosCalendar();
   renderHorariosSidebar();
   setInterval(renderHorariosTimeNow, 60000);
