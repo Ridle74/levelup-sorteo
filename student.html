@@ -594,6 +594,10 @@ let taskStudentView  = null;      // null = todos, o String(id) = alumno especí
 let prompts          = {};        // { [studentId]: [{id,name,text,ts,sharedId?,history:[{name,text,ts}]}] }
 let _promptHistOpen  = null;     // id del prompt con historial expandido
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
+// Durante el traslape de mes (ver computeSorteoSchedule/getCupoMonthOffset), Ranking y Puntos
+// permiten alternar entre el mes oficial (el que se está sorteando, congelado, el mismo que
+// usa CUPO) y el mes actual (en curso, vista previa). null = todavía no se eligió → oficial.
+let pubMonthChoice = null; // null='oficial' | 'actual'
 
 // Atrás/adelante del navegador: releer la vista desde la URL y renderizar
 // sin recargar la página.
@@ -649,7 +653,9 @@ function getStudents() {
       id,
       name:  toTitleCase(liveName),
       icon:  ov.icon  !== undefined ? ov.icon  : base.icon,
-      max:   ov.max   !== undefined ? ov.max   : base.max,
+      // El cupo SIEMPRE es igual a los puntos actuales del mes (getTotalPts) — ya no es un
+      // valor editable a mano. Así nunca se puede desincronizar del puntaje real del alumno.
+      max:   getTotalPts(id),
       pin:   ov.pin   !== undefined ? ov.pin   : base.pin,
       color: ov.color !== undefined ? ov.color : base.color,
       padresId,
@@ -702,19 +708,77 @@ function getSorteoDate(year, month) {
 function computeSorteoSchedule(refDate) {
   const ref = refDate || new Date();
   const m = ref.getMonth(), y = ref.getFullYear();
+
+  // Si el sorteo del ciclo del MES ANTERIOR todavía no ocurrió, ese ciclo sigue
+  // siendo el vigente — aunque su ventana de elección (start–end) ya haya cerrado.
+  // Esto cubre tanto los días en que la ventana sigue abierta y cae ya en el mes
+  // nuevo (ej. ciclo de junio: abre 29 jun, cierra 4 jul 9pm) como las horas entre
+  // ese cierre y el sorteo mismo (4 jul 9pm → 5 jul 12pm), para que el cupo/estado
+  // no salte a julio antes de que se sepa el resultado del sorteo de junio.
+  const pm = m === 0 ? 11 : m - 1;
+  const py = m === 0 ? y - 1 : y;
+  const prevSorteo = getSorteoDate(py, pm);
+  const prevDraw   = new Date(prevSorteo); prevDraw.setHours(12, 0, 0, 0);
+  if (ref <= prevDraw) {
+    const prevEnd   = new Date(prevSorteo); prevEnd.setDate(prevEnd.getDate() - 1); prevEnd.setHours(21, 0, 0, 0);
+    const prevStart = new Date(prevSorteo); prevStart.setDate(prevStart.getDate() - 6); prevStart.setHours(15, 0, 0, 0);
+    return { start: prevStart, end: prevEnd, draw: prevDraw, ptsYear: py, ptsMonth: pm };
+  }
+
   // sorteo del mes actual
-  let sorteo = getSorteoDate(y, m);
-  let end    = new Date(sorteo); end.setDate(end.getDate() - 1); end.setHours(21, 0, 0, 0);
+  let sorteo  = getSorteoDate(y, m);
+  let end     = new Date(sorteo); end.setDate(end.getDate() - 1); end.setHours(21, 0, 0, 0);
+  let ptsYear = y, ptsMonth = m;
   // si ya pasó el cierre → usar mes siguiente
   if (ref > end) {
     const nm = m === 11 ? 0 : m + 1;
     const ny = m === 11 ? y + 1 : y;
-    sorteo = getSorteoDate(ny, nm);
-    end    = new Date(sorteo); end.setDate(end.getDate() - 1); end.setHours(21, 0, 0, 0);
+    sorteo  = getSorteoDate(ny, nm);
+    end     = new Date(sorteo); end.setDate(end.getDate() - 1); end.setHours(21, 0, 0, 0);
+    ptsYear = ny; ptsMonth = nm;
   }
   const start = new Date(sorteo); start.setDate(start.getDate() - 6); start.setHours(15, 0, 0, 0);
   const draw  = new Date(sorteo); draw.setHours(12, 0, 0, 0);
-  return { start, end, draw };
+  return { start, end, draw, ptsYear, ptsMonth };
+}
+
+// Offset (en meses, relativo al mes calendario real de "ahora") del mes de puntos
+// que corresponde al ciclo de sorteo vigente — normalmente 0, pero -1 durante los
+// días de traslape descritos arriba (ver computeSorteoSchedule). getStudentPoints
+// usa esto como su offset por defecto, así que CUPO, ranking y "Puntos" se quedan
+// mostrando el mes que se está sorteando hasta que el sorteo realmente ocurre.
+function getCupoMonthOffset() {
+  const now = new Date();
+  const sch = computeSorteoSchedule(now);
+  return (sch.ptsYear - now.getFullYear()) * 12 + (sch.ptsMonth - now.getMonth());
+}
+
+// true en los días de traslape: el mes anterior todavía no tuvo su sorteo, así que hay dos
+// meses "candidatos" para mostrar en Ranking/Puntos — el oficial (congelado, el de CUPO) y
+// el actual (en curso, vista previa de cómo van los puntos para el próximo sorteo).
+function isTraslape() { return getCupoMonthOffset() !== 0; }
+
+// Offset a usar en Ranking/Puntos: igual al oficial salvo que, durante el traslape, el
+// usuario haya elegido explícitamente ver el mes actual (pubMonthChoice==='actual').
+function getPubMonthOffset() {
+  // Fuera de traslape no hay nada que elegir: se resetea la elección para que, la próxima
+  // vez que haya traslape (el mes siguiente), vuelva a partir del oficial por defecto.
+  if (!isTraslape()) { pubMonthChoice = null; return 0; }
+  return pubMonthChoice === 'actual' ? 0 : getCupoMonthOffset();
+}
+function setPubMonthChoice(c) { pubMonthChoice = c; router(); }
+
+// Misma lista de getStudents() (con su s.max = cupo oficial intacto, sin tocar) pero, si el
+// offset pedido no es el oficial, reordenada por los puntos de ese otro mes — para que el
+// "mes actual" en vista previa muestre el orden real de ese mes y no el del mes oficial.
+function getStudentsForView(offset) {
+  const students = getStudents();
+  if (offset === getCupoMonthOffset()) return students;
+  return [...students].sort((a,b) => {
+    const pA = getTotalPts2(a.id, offset), pB = getTotalPts2(b.id, offset);
+    if (pB !== pA) return pB - pA;
+    return getDateReachedScore(a.id, pA, offset) - getDateReachedScore(b.id, pB, offset);
+  });
 }
 
 // Reparte proporcionalmente (en horas enteras, sin decimales) la ventana total
@@ -776,7 +840,7 @@ function getSorteoMonth() {
 // Cuenta las marcas (true) del mes actual en pointsLog para un alumno: { hours, progress, tasks }
 // Cada entrada de hours/progress/tasks ahora es un arreglo de booleanos (uno por cuadradito).
 // Para Joanna Prado, cada cuadradito de Tareas marcado vale ×3 (cursos de nivel más avanzado).
-function getStudentPoints(id, monthOffset=0) {
+function getStudentPoints(id, monthOffset=getCupoMonthOffset()) {
   const log = pointsLog[String(id)] || {};
   const taskMult = getTaskMult(id);
   const base = new Date(); base.setMonth(base.getMonth()+monthOffset);
@@ -797,9 +861,9 @@ function getTotalPts(id) { const p=getStudentPoints(id); return p.hours+p.progre
 // Devuelve la fecha (ms) en que el alumno llegó por primera vez a targetScore este mes.
 // Usa pointsLog[id][dateKey] ordenado cronológicamente.
 // Si nunca llegó → Number.MAX_SAFE_INTEGER (queda último en desempate).
-function getDateReachedScore(id, targetScore) {
+function getDateReachedScore(id, targetScore, monthOffset=getCupoMonthOffset()) {
   if (targetScore <= 0) return 0;
-  const now = new Date();
+  const now = new Date(); now.setMonth(now.getMonth()+monthOffset);
   const prefix = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   const log = pointsLog[id] || {};
   const keys = Object.keys(log).filter(k => k.startsWith(prefix)).sort();
@@ -1682,8 +1746,8 @@ function renderStudentList() {
       </div>
       <div style="display:flex;gap:6px">
         <div style="flex:1">
-          <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">CUPO</div>
-          <input type="number" value="${s.max||0}" class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px" oninput="setOverride(${s.id},'max',parseInt(this.value)||0)">
+          <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px" title="El cupo es siempre igual a los puntos actuales del mes — se calcula solo, no se edita.">CUPO 🔒</div>
+          <div class="mini-input" style="width:100%;text-align:center;font-size:13px;padding:6px;background:rgba(0,0,0,0.18);color:rgba(255,255,255,0.78);cursor:default">${s.max||0}</div>
         </div>
         <div style="flex:1">
           <div style="font-size:7px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PIN</div>
@@ -1813,7 +1877,7 @@ function acceptPadresStudent(pid) {
   const newId = nextLocalStudentId();
   overrides[String(newId)] = { name:ps.name, icon:"👤", max:0, pin:"1234", color:pickUniqueColor(), deleted:false, padresId:String(pid) };
   saveMeta(); renderPadresRequests(); renderStudentList(); renderAll(getLoggedId());
-  showToast(`Cuenta creada para ${ps.name}. Asígnale cupo, PIN, ícono y color.`, 'success');
+  showToast(`Cuenta creada para ${ps.name}. Asígnale PIN, ícono y color (el cupo se calcula solo).`, 'success');
 }
 function dismissPadresStudent(pid) {
   if (!Array.isArray(appConfig.dismissedPadresIds)) appConfig.dismissedPadresIds = [];
@@ -1987,20 +2051,25 @@ function vRankingPage() {
           </div>
         </div>
       </div>
+      ${isTraslape() ? `<div class="tabs" style="background:linear-gradient(180deg,#0a3320,#071f14);margin:0;padding:10px 12px 0">
+        <button class="tab-btn${pubMonthChoice!=='actual'?' active':''}" onclick="setPubMonthChoice(null)">📌 ${fmtPtsMonth(getCupoMonthOffset())} · oficial</button>
+        <button class="tab-btn${pubMonthChoice==='actual'?' active':''}" onclick="setPubMonthChoice('actual')">🔄 ${fmtPtsMonth(0)} · en curso</button>
+      </div>` : ''}
       <div id="ranking-page-list" class="pub-list" style="background:linear-gradient(180deg,#0a3320,#071f14)"></div>
     </div>
   </div>`;
 }
 function vRankingSetup() {
+  const offset = getPubMonthOffset();
   const sub=document.getElementById('rank-subtitle');
-  if (sub) sub.textContent='MATHS LEVEL UP · '+getSorteoMonth().toUpperCase();
+  if (sub) sub.textContent='MATHS LEVEL UP · '+(isTraslape()&&pubMonthChoice==='actual'?fmtPtsMonth(0):getSorteoMonth()).toUpperCase();
   const list=document.getElementById('ranking-page-list'); if (!list) return;
-  const students=getStudents(); const counts=getPickCounts();
+  const students=getStudentsForView(offset); const counts=getPickCounts();
   const medals=['🥇','🥈','🥉'];
   const podBg=['linear-gradient(135deg,rgba(255,215,0,0.18),rgba(255,215,0,0.05))','linear-gradient(135deg,rgba(192,192,192,0.15),rgba(192,192,192,0.04))','linear-gradient(135deg,rgba(205,127,50,0.15),rgba(205,127,50,0.04))'];
   const podBorder=['rgba(255,215,0,0.4)','rgba(192,192,192,0.3)','rgba(205,127,50,0.3)'];
   list.innerHTML=students.map((s,idx)=>{
-    const pts=getTotalPts(s.id); const pct=Math.min(100,(pts/(s.max||1))*100);
+    const pts=getTotalPts2(s.id, offset); const pct=Math.min(100,(pts/(s.max||1))*100);
     const isPod=idx<3; const bg=isPod?podBg[idx]:'rgba(255,255,255,0.03)'; const border=isPod?podBorder[idx]:'rgba(255,255,255,0.07)';
     const rankEl=isPod?`<span style="font-size:22px;line-height:1;flex-shrink:0">${medals[idx]}</span>`
       :`<span style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:rgba(255,255,255,0.3);width:22px;text-align:center;flex-shrink:0">${idx+1}</span>`;
@@ -3136,8 +3205,8 @@ function rejectTask(id, studentId) {
 // ════════════════════════════════════════════════════════
 function vPuntos() {
   const loggedId = getLoggedId();
-  const students = getStudents();
-  const sorted   = [...students].sort((a,b)=>getTotalPts(b.id)-getTotalPts(a.id));
+  const offset   = getPubMonthOffset();
+  const sorted   = getStudentsForView(offset);
   const medals   = ['🥇','🥈','🥉'];
   const admin    = isAdmin();
 
@@ -3154,11 +3223,16 @@ function vPuntos() {
           </div>
           <div style="flex:1;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;text-align:center">
             <div style="font-size:8px;color:rgba(134,239,172,0.6);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">MÁX PUNTOS</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#39ff7a;margin-top:2px">${sorted[0]?getTotalPts(sorted[0].id):0}</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#39ff7a;margin-top:2px">${sorted[0]?getTotalPts2(sorted[0].id,offset):0}</div>
           </div>
         </div>
       </div>
     </div>
+
+    ${isTraslape() ? `<div class="tabs">
+      <button class="tab-btn${pubMonthChoice!=='actual'?' active':''}" onclick="setPubMonthChoice(null)">📌 ${fmtPtsMonth(getCupoMonthOffset())} · oficial</button>
+      <button class="tab-btn${pubMonthChoice==='actual'?' active':''}" onclick="setPubMonthChoice('actual')">🔄 ${fmtPtsMonth(0)} · en curso</button>
+    </div>` : ''}
 
     <div class="tabs">
       <button class="tab-btn${puntosTab==='resumen'?' active':''}" onclick="setPuntosTab('resumen')">⭐ RESUMEN</button>
@@ -3167,7 +3241,7 @@ function vPuntos() {
 
     ${puntosTab==='historial' ? vPuntosHistorial() : `
     ${sorted.map((s,idx) => {
-      const p     = getStudentPoints(s.id);
+      const p     = getStudentPoints(s.id, offset);
       const total = p.hours+p.progress+p.tasks;
       const isMe  = s.id===loggedId;
       const medal = idx<3 ? medals[idx] : `<span style="font-size:12px;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;font-weight:900">${idx+1}</span>`;
@@ -3328,7 +3402,7 @@ function setTaskMult(studentId, value) {
   const v = Math.max(1, Math.min(10, Math.round(value||1)));
   taskMultipliers[String(studentId)] = v;
   const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts(studentId);
+  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   clearTimeout(_multTimer);
   _multTimer=setTimeout(()=>{ saveLms(); showToast('Multiplicador de Tareas guardado.','success'); },800);
 }
@@ -4213,7 +4287,7 @@ function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   entry[field][idx]=!!checked;
   // Refresca el total mostrado en la cabecera de la fila sin re-render completo
   const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts(studentId);
+  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   clearTimeout(_ptsTimer);
   _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },800);
 }
@@ -4229,7 +4303,7 @@ function toggleAbsent(studentId, dateKey, checked) {
   entry.absent = !!checked;
   if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
   const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts(studentId);
+  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   const cont=document.getElementById(`pts-dates-${studentId}`);
   const st=getStudents().find(x=>String(x.id)===key);
   if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
