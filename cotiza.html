@@ -267,9 +267,32 @@ function czFactor(tipo, n) {
   }
   return 1 + 0.5*(n-1);
 }
+// Por 30 min, ningún día puede quedar con una sola casillita suelta (clase
+// mínima = 1 hora). Si pasa, no se cotiza nada: solo se avisa.
+function hasLoneHalfHour() {
+  if (czGranularity !== 30) return false;
+  const byDay = {};
+  czSelected.forEach(key => {
+    const [di, m] = key.split('-').map(Number);
+    (byDay[di] = byDay[di] || []).push(m);
+  });
+  return Object.keys(byDay).some(di => {
+    const mins = byDay[di].sort((a,b)=>a-b);
+    let runLen = 1;
+    for (let i=1; i<mins.length; i++) {
+      if (mins[i] === mins[i-1]+czGranularity) { runLen++; }
+      else { if (runLen===1) return true; runLen = 1; }
+    }
+    return runLen === 1;
+  });
+}
 function calc() {
   const res = document.getElementById('cz-result');
   const horas = czSelected.size * (czGranularity/60);
+  if (hasLoneHalfHour()) {
+    res.innerHTML = `<div class="empty">MÍNIMO 1 HORA DE CLASE POR DÍA<br>SELECCIONA OTRA MEDIA HORA EN ESE DÍA PARA PODER COTIZAR</div>`;
+    return;
+  }
   if (!CZ.tipo || !CZ.n || !CZ.nivel || horas <= 0) {
     res.innerHTML = `<div class="empty">SELECCIONA TIPO, N° DE ESTUDIANTES, NIVEL Y MARCA TUS HORAS PARA VER TU COTIZACIÓN</div>`;
     return;
