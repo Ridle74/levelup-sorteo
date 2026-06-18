@@ -1390,9 +1390,20 @@ function vAdminCotizaciones() {
   <div style="padding:16px;max-width:640px;margin:0 auto">
     <div class="sec-lbl">Cotizaciones para reservar (desde /cotiza)</div>
     ${list.length ? list.map(r => {
-      const childLbl = r.studentId
-        ? (DATA.students[r.studentId] ? `${DATA.students[r.studentId].icon} ${DATA.students[r.studentId].name}` : `Alumno #${r.studentId}`)
-        : `🆕 ${r.newChildName || 'Hijo/a nuevo'} (sin registrar)`;
+      // students[] (nuevo formato, varios alumnos por solicitud) — con fallback
+      // al formato anterior (studentId/newChildName, un solo alumno) por si
+      // quedó alguna solicitud vieja guardada antes de este cambio.
+      const studentsArr = r.students || (r.studentId || r.newChildName
+        ? [r.studentId ? { type:'child', studentId:r.studentId } : { type:'new', name:r.newChildName }]
+        : []);
+      const childLbl = studentsArr.map(s => {
+        if (s.type === 'child') {
+          const st = DATA.students[s.studentId];
+          return st ? `${st.icon} ${st.name}` : `Alumno #${s.studentId}`;
+        }
+        if (s.type === 'new') return `🆕 ${s.name || 'Hijo/a nuevo'} (sin registrar)`;
+        return `👥 Invitado (coordinar por conversación)`;
+      }).join(' · ') || '—';
       const movLine = r.movilidad && r.movilidad.weekly ? `<div class="cs-meta" style="margin-top:2px">Movilidad: S/. ${r.movilidad.weekly}/semana</div>` : '';
       return `<div class="req-list-item" style="align-items:flex-start">
         <div>

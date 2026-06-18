@@ -52,6 +52,8 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .cz-reserve-lbl { font-size:10px; font-weight:900; color:rgba(103,232,249,0.7); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
 .cz-child-sel, .cz-child-input { width:100%; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:10px; padding:10px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; margin-bottom:8px; outline:none; box-sizing:border-box; }
 .cz-child-sel option { color:#111; }
+.cz-slot { margin-bottom:10px; }
+.cz-slot-lbl { font-size:9px; font-weight:800; color:rgba(255,255,255,0.4); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px; }
 .empty { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
 
 /* ===== ESCRITORIO: todo más compacto y en columnas para que entre sin
@@ -190,8 +192,7 @@ let czGranularity = 60; // minutos por bloque seleccionable: 60 = por hora, 30 =
 let czParentId       = null;
 let czParentName      = '';
 let czParentChildren  = [];   // [{id, name, icon}]
-let czQuoteChildSel   = null; // studentId (string) seleccionado en el dropdown, o 'new'
-let czNewChildName    = '';
+let czSlots           = [];   // [{type:'child'|'new'|'guest', studentId, name}] — uno por estudiante (según CZ.n)
 
 (function initParentSession() {
   const pid = localStorage.getItem('padresLoggedId');
@@ -207,7 +208,6 @@ let czNewChildName    = '';
       const s = (d.students || {})[cid] || {};
       return { id: cid, name: s.name || ('Alumno ' + cid), icon: s.icon || '👤' };
     });
-    czQuoteChildSel = czParentChildren.length ? String(czParentChildren[0].id) : 'new';
     calc();
   }).catch(e => console.error(e));
 })();
@@ -429,42 +429,83 @@ function copyCZ(perHour, horas, weekly, total) {
   navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
 }
 
+// Ajusta czSlots para que tenga exactamente CZ.n espacios (Individual=1,
+// Dúo=2, Trío=3), conservando lo ya elegido y rellenando los nuevos con el
+// siguiente hijo/a registrado disponible, o "invitado" si ya no quedan.
+function ensureSlots() {
+  const n = CZ.n || 0;
+  while (czSlots.length < n) {
+    const i = czSlots.length;
+    const usedIds = czSlots.filter(s=>s.type==='child').map(s=>String(s.studentId));
+    const child = czParentChildren.find(c => !usedIds.includes(String(c.id)));
+    czSlots.push(child ? { type:'child', studentId:String(child.id), name:'' } : { type:'guest', studentId:null, name:'' });
+  }
+  czSlots.length = n;
+}
+
 // Si hay una sesión de padre abierta (localStorage, igual que /padres), en
-// vez de "Copiar cotización" se muestra esta solicitud para reservar.
+// vez de "Copiar cotización" se muestra esta solicitud para reservar — con
+// un espacio de estudiante por cada uno de los CZ.n alumnos de la cotización.
 function buildReserveBlock(perHour, horas, weekly, total) {
-  const childOpts = czParentChildren.map(c =>
-    `<option value="${c.id}"${String(c.id)===String(czQuoteChildSel)?' selected':''}>${c.icon} ${c.name}</option>`
-  ).join('') + `<option value="new"${czQuoteChildSel==='new'?' selected':''}>➕ Hijo/a nuevo (aún no registrado)</option>`;
-  const newNameInput = czQuoteChildSel==='new'
-    ? `<input class="cz-child-input" type="text" placeholder="Nombre del hijo/a" value="${(czNewChildName||'').replace(/"/g,'&quot;')}" oninput="czNewChildName=this.value">`
-    : '';
+  ensureSlots();
+  const usedIds = czSlots.map(s => s.type==='child' ? String(s.studentId) : null);
+  const slotsHtml = czSlots.map((slot, i) => {
+    const childOpts = czParentChildren
+      .filter(c => (slot.type==='child' && String(slot.studentId)===String(c.id)) || !usedIds.includes(String(c.id)))
+      .map(c => `<option value="${c.id}"${slot.type==='child'&&String(slot.studentId)===String(c.id)?' selected':''}>${c.icon} ${c.name}</option>`)
+      .join('');
+    const newNameInput = slot.type==='new'
+      ? `<input class="cz-child-input" type="text" placeholder="Nombre del hijo/a" value="${(slot.name||'').replace(/"/g,'&quot;')}" oninput="setSlotName(${i},this.value)">`
+      : '';
+    return `
+    <div class="cz-slot">
+      <div class="cz-slot-lbl">Estudiante ${i+1}</div>
+      <select class="cz-child-sel" onchange="selectSlotChild(${i},this.value)">
+        ${childOpts}
+        <option value="new"${slot.type==='new'?' selected':''}>➕ Hijo/a nuevo (aún no registrado)</option>
+        <option value="guest"${slot.type==='guest'?' selected':''}>👥 Invitado de otra familia (lo coordino directamente)</option>
+      </select>
+      ${newNameInput}
+    </div>`;
+  }).join('');
   return `
   <div class="cz-reserve">
     <div class="cz-reserve-lbl">Solicitar reserva para:</div>
-    <select class="cz-child-sel" onchange="selectQuoteChild(this.value)">${childOpts}</select>
-    ${newNameInput}
+    ${slotsHtml}
     <button class="cta" id="cz-reserve-btn" onclick="submitQuoteRequest(${perHour},${horas},${weekly},${total})">📤 Solicitud para reservar</button>
   </div>`;
 }
-function selectQuoteChild(val) {
-  czQuoteChildSel = val;
+function selectSlotChild(i, val) {
+  if (val === 'new')        czSlots[i] = { type:'new', studentId:null, name:czSlots[i] ? czSlots[i].name : '' };
+  else if (val === 'guest') czSlots[i] = { type:'guest', studentId:null, name:'' };
+  else                       czSlots[i] = { type:'child', studentId:val, name:'' };
   calc();
+}
+function setSlotName(i, val) {
+  if (czSlots[i]) czSlots[i].name = val;
 }
 function submitQuoteRequest(perHour, horas, weekly, total) {
   if (!czParentId) return;
-  let studentId = null, newChildName = null;
-  if (czQuoteChildSel === 'new') {
-    newChildName = (czNewChildName||'').trim();
-    if (!newChildName) { alert('Escribe el nombre del hijo/a nuevo.'); return; }
-  } else {
-    studentId = parseInt(czQuoteChildSel, 10);
+  ensureSlots();
+  const seen = new Set();
+  for (const slot of czSlots) {
+    if (slot.type === 'child') {
+      if (seen.has(slot.studentId)) { alert('No puedes seleccionar el mismo hijo/a en dos espacios.'); return; }
+      seen.add(slot.studentId);
+    }
+    if (slot.type === 'new' && !(slot.name||'').trim()) { alert('Escribe el nombre del hijo/a nuevo, o cámbialo a "Invitado" si aún no lo sabes.'); return; }
   }
+  const students = czSlots.map(slot => {
+    if (slot.type === 'child') return { type:'child', studentId: parseInt(slot.studentId,10) };
+    if (slot.type === 'new')   return { type:'new', name: slot.name.trim() };
+    return { type:'guest' };
+  });
   const mov = movilidadInfo();
   const req = {
     id: Date.now(),
     parentId: czParentId,
     parentName: czParentName,
-    studentId, newChildName,
+    students,
     tipo: CZ.tipo, n: CZ.n, nivel: CZ.nivel,
     granularity: czGranularity,
     schedule: buildScheduleLines(),
