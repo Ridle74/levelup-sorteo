@@ -46,20 +46,22 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 /* ===== ESCRITORIO: todo más compacto y en columnas para que entre sin
    tanto scroll vertical ===== */
 @media (min-width: 860px) {
-  .wrap { max-width:980px; padding:18px 24px 40px; }
-  .hero { padding:16px 22px; margin-bottom:12px; display:flex; align-items:center; gap:16px; }
+  .wrap { max-width:1080px; padding:18px 22px 40px; }
+  .hero { padding:16px 22px; margin-bottom:0; display:flex; align-items:center; gap:16px; }
   .hero-ico { font-size:26px; }
   .hero-t { font-size:21px; margin-top:0; }
   .hero-s { margin-top:2px; }
-  .top-row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; align-items:start; }
-  .top-row .blk { margin-bottom:0; padding:12px 14px; }
+  .sections { display:flex; flex-direction:column; gap:14px; margin-top:14px; }
+  .top-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; align-items:stretch; }
+  .top-row .blk { margin-bottom:0; padding:12px 14px; display:flex; flex-direction:column; }
   .lbl { margin-bottom:7px; }
-  .pill { padding:7px 12px; font-size:12px; }
-  .hours-blk { padding:14px 16px; margin-bottom:10px; }
+  .top-row .pills { flex-wrap:nowrap; gap:5px; }
+  .top-row .pill { padding:7px 10px; font-size:11px; }
+  .hours-blk { padding:14px 16px; margin-bottom:0; }
   .hint { margin-bottom:8px; }
   .hours-cols { flex-direction:row; gap:18px; }
   .hours-cols .hcol { flex:1; min-width:0; }
-  .res { padding:16px 22px; display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:center; text-align:left; }
+  #cz-result .res { margin-top:0; padding:16px 22px; display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:center; text-align:left; }
   .res-main { text-align:center; }
   .price-det { margin-top:0; }
   .cta { margin-top:10px; width:auto; padding:10px 22px; }
@@ -82,51 +84,53 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
     </div>
   </div>
 
-  <div class="top-row">
-    <div class="blk">
-      <div class="lbl">1. Tipo de clase</div>
-      <div class="pills" id="cz-tipo">
-        <div class="pill" data-v="virtual">💻 Virtual (One to One)</div>
-        <div class="pill" data-v="presencial">🏠 Domicilio (One to Family)</div>
+  <div class="sections">
+    <div class="top-row">
+      <div class="blk">
+        <div class="lbl">1. Tipo de clase</div>
+        <div class="pills" id="cz-tipo">
+          <div class="pill" data-v="virtual">💻 Virtual</div>
+          <div class="pill" data-v="presencial">🏠 Domicilio</div>
+        </div>
+      </div>
+
+      <div class="blk">
+        <div class="lbl">2. N° de estudiantes</div>
+        <div class="pills" id="cz-n">
+          <div class="pill" data-v="1">👤 Individual</div>
+          <div class="pill" data-v="2">👥 Dúo</div>
+          <div class="pill" data-v="3">👨‍👩‍👧 Trío</div>
+        </div>
+      </div>
+
+      <div class="blk">
+        <div class="lbl">3. Nivel</div>
+        <div class="pills" id="cz-nivel">
+          <div class="pill" data-v="primaria">🏫 Primaria</div>
+          <div class="pill" data-v="secundaria">🎒 Secundaria</div>
+          <div class="pill" data-v="preuni">🎓 Pre-Uni</div>
+        </div>
       </div>
     </div>
 
-    <div class="blk">
-      <div class="lbl">2. N° de estudiantes</div>
-      <div class="pills" id="cz-n">
-        <div class="pill" data-v="1">👤 Individual</div>
-        <div class="pill" data-v="2">👥 Dúo</div>
-        <div class="pill" data-v="3">👨‍👩‍👧 Trío</div>
+    <div class="blk hours-blk">
+      <div class="lbl">4. Horas — Pre Ciclo 2</div>
+      <div class="hint">Marca las horas de la semana que tomarás clase (se repiten igual las 4 semanas del ciclo, del 06 de julio al 02 de agosto).</div>
+      <div class="hours-cols">
+        <div class="hcol">
+          <div class="hcol-title">☀️ Mañana · 08:00 – 14:00</div>
+          <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid-am"></div></div>
+        </div>
+        <div class="hcol">
+          <div class="hcol-title">🌆 Tarde · 15:00 – 21:00</div>
+          <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid-pm"></div></div>
+        </div>
       </div>
+      <div class="hsel-count" id="cz-hours-count">0 horas/semana seleccionadas</div>
     </div>
 
-    <div class="blk">
-      <div class="lbl">3. Nivel</div>
-      <div class="pills" id="cz-nivel">
-        <div class="pill" data-v="primaria">🏫 Primaria</div>
-        <div class="pill" data-v="secundaria">🎒 Secundaria</div>
-        <div class="pill" data-v="preuni">🎓 Pre-Uni</div>
-      </div>
-    </div>
+    <div id="cz-result"></div>
   </div>
-
-  <div class="blk hours-blk">
-    <div class="lbl">4. Horas — Pre Ciclo 2</div>
-    <div class="hint">Marca las horas de la semana que tomarás clase (se repiten igual las 4 semanas del ciclo, del 06 de julio al 02 de agosto).</div>
-    <div class="hours-cols">
-      <div class="hcol">
-        <div class="hcol-title">☀️ Mañana · 08:00 – 14:00</div>
-        <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid-am"></div></div>
-      </div>
-      <div class="hcol">
-        <div class="hcol-title">🌆 Tarde · 15:00 – 21:00</div>
-        <div class="hgrid-wrap"><div class="hgrid" id="cz-hours-grid-pm"></div></div>
-      </div>
-    </div>
-    <div class="hsel-count" id="cz-hours-count">0 horas/semana seleccionadas</div>
-  </div>
-
-  <div id="cz-result"></div>
 </div>
 
 <script>
@@ -202,7 +206,7 @@ function calc() {
   const perHour = Math.round(base*factor*100)/100;
   const weekly  = Math.round(perHour*horas);
   const total   = weekly*4;
-  const tipoLbl  = { virtual:'Virtual (One to One)', presencial:'Domicilio (One to Family)' };
+  const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
   res.innerHTML = `
@@ -222,7 +226,7 @@ function calc() {
   </div>`;
 }
 function copyCZ(perHour, horas, weekly, total) {
-  const tipoLbl  = { virtual:'Virtual (One to One)', presencial:'Domicilio (One to Family)' };
+  const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
   const text = `COTIZACIÓN — MATHS LEVEL UP\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\nHoras por semana: ${horas}\n\nTarifa de la sesión: S/. ${perHour}/h\nCosto semanal: S/. ${weekly}\nTOTAL PRE CICLO 2 (06 jul – 02 ago, 4 semanas): S/. ${total}\n\n¡Contáctanos para reservar tu horario!`;
