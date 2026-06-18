@@ -44,6 +44,7 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
 .res { background:linear-gradient(135deg,rgba(6,182,212,0.15),rgba(67,56,202,0.12)); border:1px solid rgba(6,182,212,0.3); border-radius:20px; padding:24px; text-align:center; margin-top:6px; }
 .price-big { font-family:'Barlow Condensed',sans-serif; font-size:42px; font-weight:900; color:#67e8f9; line-height:1; }
 .price-lbl { font-size:10px; color:rgba(103,232,249,0.7); font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-top:4px; }
+.price-note { font-size:11px; color:rgba(255,255,255,0.45); font-weight:600; margin-top:6px; }
 .price-det { font-size:12px; color:rgba(255,255,255,0.55); margin-top:12px; line-height:1.85; text-align:left; }
 .cta { margin-top:16px; width:100%; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:12px 20px; color:#fff; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.15em; text-transform:uppercase; }
 .empty { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center; padding:24px; color:rgba(255,255,255,0.3); font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; letter-spacing:0.05em; }
@@ -204,50 +205,10 @@ function buildHoursGrid(containerId, hours) {
   });
   g.innerHTML = html;
 }
-// Por 30 min no se puede dejar una sola casillita suelta en un día (clase
-// mínima = 1 hora). Al seleccionar, se completa el par automáticamente;
-// al deseleccionar, se quita también la casillita huérfana que quede sola.
-function czRangeFor(m) {
-  const amLo = CZ_HOURS_AM[0]*60, amHi = (CZ_HOURS_AM[CZ_HOURS_AM.length-1]+1)*60;
-  const pmLo = CZ_HOURS_PM[0]*60, pmHi = (CZ_HOURS_PM[CZ_HOURS_PM.length-1]+1)*60;
-  return (m >= amLo && m < amHi) ? [amLo, amHi] : [pmLo, pmHi];
-}
-function dayRuns(di) {
-  const step = czGranularity;
-  const mins = [...czSelected].filter(k => k.startsWith(di+'-')).map(k => Number(k.split('-')[1])).sort((a,b)=>a-b);
-  const runs = [];
-  mins.forEach(m => {
-    const last = runs[runs.length-1];
-    if (last && m === last[last.length-1]+step) last.push(m);
-    else runs.push([m]);
-  });
-  return runs;
-}
-function enforceMinBlock(key, wasAdded) {
-  const [di, m] = key.split('-').map(Number);
-  const step = czGranularity;
-  const runs = dayRuns(di);
-  if (wasAdded) {
-    const lone = runs.find(r => r.length===1 && r[0]===m);
-    if (lone) {
-      const [lo,hi] = czRangeFor(m);
-      if (m+step < hi) czSelected.add(di+'-'+(m+step));
-      else if (m-step >= lo) czSelected.add(di+'-'+(m-step));
-    }
-  } else {
-    runs.filter(r => r.length===1).forEach(r => czSelected.delete(di+'-'+r[0]));
-  }
-}
-function refreshHourCellsVisual() {
-  document.querySelectorAll('.hcell[data-k]').forEach(cell => {
-    cell.classList.toggle('hsel', czSelected.has(cell.dataset.k));
-  });
-}
 function toggleHour(key) {
-  const wasAdded = !czSelected.has(key);
-  if (wasAdded) czSelected.add(key); else czSelected.delete(key);
-  if (czGranularity === 30) enforceMinBlock(key, wasAdded);
-  refreshHourCellsVisual();
+  if (czSelected.has(key)) czSelected.delete(key); else czSelected.add(key);
+  const cell = document.querySelector('.hcell[data-k="'+key+'"]');
+  if (cell) cell.classList.toggle('hsel', czSelected.has(key));
   const totalHoras = czSelected.size * (czGranularity/60);
   document.getElementById('cz-hours-count').textContent = fmtHoras(totalHoras) + (totalHoras===1 ? ' hora/semana seleccionada' : ' horas/semana seleccionadas');
   calc();
@@ -332,6 +293,7 @@ function calc() {
     <div class="res-main">
       <div class="price-lbl">COSTO SEMANAL · PAGO ADELANTADO</div>
       <div class="price-big">S/. ${weekly}</div>
+      ${czGranularity===30 ? '<div class="price-note">Mínimo 1 hora de clase por día.</div>' : ''}
       <button class="cta" onclick="copyCZ(${perHour},${horas},${weekly},${total})">📋 Copiar cotización</button>
     </div>
     <div class="price-det">
