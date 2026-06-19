@@ -397,6 +397,17 @@ function fmtCycleDate(iso) {
   const s = d.toLocaleDateString('es-PE',{ weekday:'long', day:'numeric', month:'long', year:'numeric' });
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
+// Duración en semanas de un ciclo (solo calculable si tiene inicio Y fin definidos).
+function fmtCycleWeeks(start, end) {
+  if (!start || !end) return '';
+  const s = new Date(start+'T00:00:00');
+  const e = new Date(end+'T00:00:00');
+  const days = Math.round((e - s) / 86400000) + 1; // inclusivo
+  if (days <= 0) return '';
+  const weeks = Math.round((days / 7) * 10) / 10;
+  const label = (weeks % 1 === 0) ? String(weeks) : weeks.toFixed(1);
+  return ' · ' + label + (weeks === 1 ? ' semana' : ' semanas');
+}
 
 // ════════════════════════════════════════════════════════
 // CICLOS DEL CURSO — el admin define libremente nombre + fecha de inicio/fin de
@@ -1574,7 +1585,7 @@ function vAdminCuentas() {
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="startEditCycle('${c.id}')">✏️ Editar</button>
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="deleteCycle(this,'${c.id}')">🗑️ Eliminar</button>
             </div>
-            <div class="cs-meta" style="margin-top:3px">${c.start ? fmtCycleDate(c.start) : 'Sin fecha de inicio'} → ${c.end ? fmtCycleDate(c.end) : 'Sin fecha de fin'}</div>
+            <div class="cs-meta" style="margin-top:3px">${c.start ? fmtCycleDate(c.start) : 'Sin fecha de inicio'} → ${c.end ? fmtCycleDate(c.end) : 'Sin fecha de fin'}${fmtCycleWeeks(c.start, c.end)}</div>
           </div>
         </div>`;
       }).join('')}
