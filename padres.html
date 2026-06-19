@@ -836,7 +836,9 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   });
   const hasSlots = Object.keys(slotMap).length > 0;
   // ── Smart day filter: single child → only their class days ───
-  const singleChild = activeSids.length === 1 && !showParent;
+  // (Solo aplica en vista "4 días": en "Semana" siempre se ven los 7 días,
+  // de lunes a domingo, sin importar si ese alumno tiene clase ese día.)
+  const singleChild = activeSids.length === 1 && !showParent && calMode !== 'week';
   // MIN_H: if session starts on exact hour go one earlier, else floor
   const rawMinH = hasSlots ? (Number.isInteger(dynMin) ? dynMin - 1 : Math.floor(dynMin)) : 8;
   const MIN_H = Math.max(0, rawMinH);
@@ -1552,6 +1554,18 @@ function _buildSM(prefill, isEdit) {
   var parOpts = Object.entries(DATA.parents)
     .sort(function(a,b){ return a[1].name.localeCompare(b[1].name); })
     .map(function(e){ return '<option value="'+e[0]+'"'+(e[0]===initPid?' selected':'')+'>'+e[1].name+'</option>'; }).join('');
+  // Reprogramación rápida: al editar un horario libre, permite elegir la clase semanal de
+  // un alumno y la intercambia con este horario libre (el alumno se muda aquí, y su horario
+  // anterior queda libre).
+  var swapOpts = (isEdit && smType === 'free')
+    ? DATA.sessions.filter(function(s){ return s.recurring !== false; })
+        .slice()
+        .sort(function(a,b){ return a.day - b.day || a.start.localeCompare(b.start); })
+        .map(function(s){
+          var st = DATA.students[s.studentId] || {};
+          return '<option value="'+s.id+'">'+(st.icon||'')+' '+(st.name||('Alumno '+s.studentId))+' — '+DAY_NAMES[s.day]+' '+s.start+'</option>';
+        }).join('')
+    : '';
   var html = '<div class="sm-overlay" onclick="if(event.target===this)closeSessionModal()">'
     +'<div class="sm-sheet">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">'
@@ -1601,6 +1615,17 @@ function _buildSM(prefill, isEdit) {
         +'<button class="on" data-scope="all" onclick="smToggleSeg(\'sm-scope-seg\',this)">Todas las semanas</button>'
         +'<button data-scope="one" onclick="smToggleSeg(\'sm-scope-seg\',this)">Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00'))+'</button>'
         +'</div>'
+        +'</div>'
+      : '')
+    +(isEdit && smType==='free'
+      ? '<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.08)">'
+        +'<label class="field-label">🔄 Reprogramar un alumno a este horario</label>'
+        +'<select class="fsm" id="sm-swap-session" style="appearance:auto">'
+          +'<option value="">— Elegir alumno y horario actual —</option>'
+          +swapOpts
+        +'</select>'
+        +'<button class="btn-grn" style="margin-top:8px;background:rgba(0,0,0,0.85)" onclick="swapFreeSlotWithSession()">Intercambiar horarios</button>'
+        +'<div style="font-size:11px;color:rgba(0,0,0,0.45);margin-top:6px;line-height:1.4">El horario actual del alumno seleccionado quedará libre, y este horario libre pasará a ser su nueva clase. Útil para reprogramaciones.</div>'
         +'</div>'
       : '')
     +'<button class="btn-grn" style="margin-top:4px" onclick="submitSessionModal()">'+(isEdit?'Guardar cambios':'Crear')+'</button>'
@@ -1666,6 +1691,18 @@ function smUpdateStudents() {
   document.getElementById('sm-student').innerHTML = _smStudentOpts(pid, null);
 }
 
+// Cuando se edita "solo esta fecha" y se cambia el día de la semana, la excepción de una
+// sola vez debe caer en la fecha real correspondiente a ese nuevo día (dentro de la misma
+// semana lunes-domingo), no quedarse en la fecha original. Ej: sábado 20 → domingo, debe
+// dar la fecha del domingo 21, no seguir guardando el 20.
+function _shiftDateToDow(dateStr, newDow) {
+  var d = new Date(dateStr + 'T00:00:00');
+  var isoOrig = d.getDay() === 0 ? 7 : d.getDay();
+  var isoNew  = newDow === 0 ? 7 : newDow;
+  d.setDate(d.getDate() + (isoNew - isoOrig));
+  return d.toISOString().slice(0, 10);
+}
+
 function submitSessionModal() {
   var dayEl   = document.getElementById('sm-day');
   var startEl = document.getElementById('sm-start');
@@ -1698,7 +1735,7 @@ function submitSessionModal() {
         if (!Array.isArray(baseFs.skipDates)) baseFs.skipDates = [];
         if (baseFs.skipDates.indexOf(smEditOccDate) === -1) baseFs.skipDates.push(smEditOccDate);
       }
-      DATA.freeSlots.push({ id:'fs_'+Date.now(), day:day, start:start, dur:dur, modality:modality, recurring:false, date:smEditOccDate, bookedBy:null });
+      DATA.freeSlots.push({ id:'fs_'+Date.now(), day:day, start:start, dur:dur, modality:modality, recurring:false, date:_shiftDateToDow(smEditOccDate, day), bookedBy:null });
     } else {
       var fs = { id: curEditId !== null ? curEditId : ('fs_'+Date.now()), day:day, start:start, dur:dur, modality:modality, recurring:recurring, date:date, bookedBy:null };
       if (curEditId !== null) {
@@ -1720,7 +1757,7 @@ function submitSessionModal() {
         if (!Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
         if (baseSess.skipDates.indexOf(smEditOccDate) === -1) baseSess.skipDates.push(smEditOccDate);
       }
-      DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:smEditOccDate });
+      DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:_shiftDateToDow(smEditOccDate, day) });
     } else {
       var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
       if (curEditId !== null) {
@@ -1733,6 +1770,31 @@ function submitSessionModal() {
   closeSessionModal();
   render();
   showToast(onlyThisDate ? 'Cambios guardados solo para esa fecha.' : (curEditId !== null ? 'Cambios guardados.' : 'Creado correctamente.'), 'success');
+}
+
+// Reprogramación rápida: intercambia el horario libre que se está editando con la clase
+// semanal de un alumno seleccionado. El horario libre pasa a tener el día/hora/duración/
+// modalidad que tenía esa clase (queda libre ahí), y la clase del alumno se muda al día/
+// hora que tenía este horario libre (conserva su propia duración y modalidad).
+function swapFreeSlotWithSession() {
+  var sel = document.getElementById('sm-swap-session');
+  if (!sel || !sel.value) { showToast('Selecciona un alumno y horario para reprogramar.'); return; }
+  if (smEditId == null) return;
+  var sessionId = parseInt(sel.value);
+  var fsIdx   = (DATA.freeSlots||[]).findIndex(function(s){ return s.id == smEditId; });
+  var sessIdx = (DATA.sessions||[]).findIndex(function(s){ return s.id === sessionId; });
+  if (fsIdx < 0 || sessIdx < 0) { showToast('No se encontró el horario seleccionado.'); return; }
+  var fs   = DATA.freeSlots[fsIdx];
+  var sess = DATA.sessions[sessIdx];
+  var newFreeDay = sess.day, newFreeStart = sess.start, newFreeDur = sess.dur, newFreeMod = sess.modality;
+  var newSessDay = fs.day, newSessStart = fs.start;
+  DATA.freeSlots[fsIdx] = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
+  DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
+  saveFreeSlots();
+  saveSessions();
+  closeSessionModal();
+  render();
+  showToast('Horario reprogramado: el alumno se mudó, y su horario anterior ahora está libre.', 'success');
 }
 
 function deleteSessionFromModal() {
