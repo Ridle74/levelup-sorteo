@@ -246,9 +246,13 @@ function syncNameToStudent(oldName, newName) {
 // (0=Domingo … 6=Sábado, igual que Date.getDay()/dateOffset original);
 // modality 'One to One' → Virtual y 'One to Family' → Domicilio.
 const SEED = {
-  // Ciclo vigente — última clase de los horarios actuales ("MATHS ONEX") es el 5 de julio 2026.
-  cycleName: "MATHS ONEX",
-  cycleEnd:  "2026-07-05",
+  // Ciclos del curso — cada uno con nombre propio, fecha de inicio y fecha de fin. El admin
+  // puede editarlos/renombrarlos libremente desde el panel (Cuentas → Ciclos del curso). El
+  // horario semanal recurrente solo se muestra hasta el final del ciclo más lejano definido
+  // aquí (ver getCycleHorizon()); start=null significa "sin límite inferior".
+  cycles: [
+    { id:1, name:"MATHS ONEX", start:null, end:"2026-07-05" }
+  ],
   parents: {
     "fprado":      { name:"Fernando Prado",     pin:"6611", phone:"", children:[3,4,10,16,17] },
     "vera":        { name:"Julissa Vera",      pin:"6622", phone:"", children:[8] },
@@ -368,6 +372,7 @@ let navIndex = -1;     // posición actual dentro de navHistory
 let loginTab = 'familia';      // 'familia' | 'crear'  (pestañas de la pantalla de login)
 let editingParentId = null;    // id de padre cuyo PIN se está editando en el panel admin
 let editingNamesId  = null;    // id de familia cuyos nombres (padre/hijos) se están editando en el panel admin
+let editingCycleId  = null;    // id del ciclo que se está editando en el panel admin (null=ninguno, 'new'=nuevo ciclo sin guardar)
 let calEditMode = false;       // admin: modo edición del calendario
 let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
 let smEditFree  = false;       // true si se edita un freeSlot
@@ -394,6 +399,38 @@ function fmtCycleDate(iso) {
 }
 
 // ════════════════════════════════════════════════════════
+// CICLOS DEL CURSO — el admin define libremente nombre + fecha de inicio/fin de
+// cada ciclo o preciclo. "Ciclo actual" es el que contiene hoy; el horario semanal
+// recurrente se muestra hasta getCycleHorizon() (el fin más lejano de todos los ciclos).
+// ════════════════════════════════════════════════════════
+function getCurrentCycle(list) {
+  list = list || DATA.cycles || [];
+  const t = new Date(); t.setHours(0,0,0,0);
+  for (let i=0;i<list.length;i++){
+    const c = list[i];
+    const s = c.start ? new Date(c.start+'T00:00:00') : null;
+    const e = c.end   ? new Date(c.end+'T00:00:00')   : null;
+    if ((!s || t>=s) && (!e || t<=e)) return c;
+  }
+  return null;
+}
+function getCycleHorizon(list) {
+  list = list || DATA.cycles || [];
+  let max = null;
+  list.forEach(c => {
+    if (!c.end) return;
+    const e = new Date(c.end+'T00:00:00');
+    if (!max || e>max) max = e;
+  });
+  return max; // Date u null
+}
+function cycleHorizonISO(list) {
+  const d = getCycleHorizon(list);
+  if (!d) return null;
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+// ════════════════════════════════════════════════════════
 // FIREBASE LOAD / SAVE
 // ════════════════════════════════════════════════════════
 function loadData() {
@@ -409,8 +446,13 @@ function loadData() {
         DATA.parents         = SEED.parents;
         DATA.students        = SEED.students;
         DATA.sessions        = SEED.sessions;
-        DATA.cycleName       = SEED.cycleName;
-        DATA.cycleEnd        = SEED.cycleEnd;
+        // Los ciclos NO se pisan con SEED en un bump de versión — son datos que el admin
+        // edita libremente desde el panel, así que se preservan igual que freeSlots/requests.
+        // Si el documento es de antes de esta funcionalidad (sin campo cycles todavía), se
+        // migran una sola vez desde los campos viejos cycleName/cycleEnd.
+        DATA.cycles          = d.cycles || (d.cycleName || d.cycleEnd
+          ? [{ id:1, name: d.cycleName || 'Ciclo actual', start:null, end: d.cycleEnd || null }]
+          : SEED.cycles);
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
         DATA.freeSlots       = d.freeSlots       || [];
@@ -424,22 +466,30 @@ function loadData() {
         const cleanup = Object.keys(delFields).length ? REF.update(delFields).catch(()=>{}) : Promise.resolve();
         cleanup.then(() => REF.set({
           parents: SEED.parents, students: SEED.students, sessions: SEED.sessions,
-          cycleName: SEED.cycleName, cycleEnd: SEED.cycleEnd, seedVersion: SEED_VERSION
+          cycles: DATA.cycles,
+          cycleEnd: cycleHorizonISO(DATA.cycles), cycleName: (getCurrentCycle(DATA.cycles)||{}).name || null,
+          seedVersion: SEED_VERSION
         }, { merge:true })).catch(()=>{});
       } else {
         DATA.parents         = d.parents         || SEED.parents;
         DATA.students        = d.students        || SEED.students;
         DATA.sessions        = d.sessions        || SEED.sessions;
-        DATA.cycleName       = d.cycleName       || SEED.cycleName;
-        DATA.cycleEnd        = d.cycleEnd        || SEED.cycleEnd;
+        // Migración igual que arriba para documentos que aún no tienen el campo cycles.
+        DATA.cycles          = d.cycles || (d.cycleName || d.cycleEnd
+          ? [{ id:1, name: d.cycleName || 'Ciclo actual', start:null, end: d.cycleEnd || null }]
+          : SEED.cycles);
         DATA.requests        = d.requests        || [];
         DATA.accountRequests = d.accountRequests || [];
         DATA.freeSlots       = d.freeSlots       || [];
         DATA.quoteRequests   = d.quoteRequests   || [];
       }
     } else {
-      // Primera vez: sembrar Firestore con datos base.
-      REF.set(Object.assign({}, SEED, { seedVersion: SEED_VERSION })).catch(()=>{});
+      // Primera vez: sembrar Firestore con datos base. DATA ya es una copia de SEED
+      // (ver declaración de DATA), así que DATA.cycles ya está poblado.
+      REF.set(Object.assign({}, SEED, {
+        seedVersion: SEED_VERSION,
+        cycleEnd: cycleHorizonISO(SEED.cycles), cycleName: (getCurrentCycle(SEED.cycles)||{}).name || null
+      })).catch(()=>{});
     }
     done();
   }).catch(e => {
@@ -465,6 +515,16 @@ function loadData() {
 function saveRequests() {
   REF.set({ requests: DATA.requests }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar la solicitud.'); });
+}
+function saveCycles() {
+  // Junto con "cycles" se escriben los campos viejos cycleEnd/cycleName derivados (horizonte
+  // y ciclo vigente) en la MISMA escritura, para que horarios.html y student.html —que todavía
+  // leen solo esos dos campos sueltos— sigan funcionando sin tocar esos archivos.
+  REF.set({
+    cycles: DATA.cycles,
+    cycleEnd: cycleHorizonISO(DATA.cycles),
+    cycleName: (getCurrentCycle(DATA.cycles)||{}).name || null
+  }, { merge:true }).catch(e => { console.error(e); showToast('Error al guardar los ciclos.'); });
 }
 function saveAccountRequests() {
   REF.set({ accountRequests: DATA.accountRequests }, { merge:true })
@@ -763,11 +823,11 @@ function vInicio() {
       </div>
     </div>
 
-    ${DATA.cycleEnd ? `
+    ${(() => { const cur = getCurrentCycle(); return cur ? `
     <div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px 14px;margin-bottom:14px">
-      <div style="font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Ciclo actual${DATA.cycleName ? ' · '+DATA.cycleName : ''}</div>
-      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-top:4px;line-height:1.5">Los horarios semanales vigentes corresponden a este ciclo. La última clase es el <strong style="color:#111">${fmtCycleDate(DATA.cycleEnd)}</strong>.</div>
-    </div>` : ''}
+      <div style="font-size:9px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Ciclo actual · ${cur.name}</div>
+      <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-top:4px;line-height:1.5">Los horarios semanales vigentes corresponden a este ciclo.${cur.end ? ` La última clase es el <strong style="color:#111">${fmtCycleDate(cur.end)}</strong>.` : ''}</div>
+    </div>` : ''; })()}
 
     <div class="sec-lbl">Tus hijos</div>
     <div class="child-row">
@@ -895,7 +955,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
 
   // Day columns
   const freeSlotList = DATA.freeSlots || [];
-  const cycleEndDate = DATA.cycleEnd ? new Date(DATA.cycleEnd+'T00:00:00') : null;
+  const cycleEndDate = getCycleHorizon();
   const cols = filteredDayList.map(function(d) {
     const dow  = d.getDay();
     const dstr = _dStr(d);
@@ -1291,6 +1351,43 @@ function saveFamilyNames(id) {
   showToast('Nombres actualizados.', 'success');
   render();
 }
+function startEditCycle(id) { editingCycleId = String(id); render(); }
+function cancelEditCycle() { editingCycleId = null; render(); }
+function saveCycleEdit(id) {
+  const nameInput  = document.getElementById('cyc-name-'  + id);
+  const startInput = document.getElementById('cyc-start-' + id);
+  const endInput   = document.getElementById('cyc-end-'   + id);
+  if (!nameInput) return;
+  const name  = nameInput.value.trim();
+  if (!name) { showToast('El ciclo necesita un nombre.'); return; }
+  const start = startInput.value || null;
+  const end   = endInput.value   || null;
+  if (start && end && start > end) { showToast('La fecha de inicio no puede ser posterior a la fecha de fin.'); return; }
+  if (id === 'new') {
+    const newId = (DATA.cycles||[]).reduce((max,c) => Math.max(max, +c.id||0), 0) + 1;
+    if (!DATA.cycles) DATA.cycles = [];
+    DATA.cycles.push({ id:newId, name, start, end });
+  } else {
+    const c = (DATA.cycles||[]).find(c => String(c.id) === String(id));
+    if (!c) return;
+    c.name = name; c.start = start; c.end = end;
+  }
+  saveCycles();
+  editingCycleId = null;
+  showToast('Ciclo guardado.', 'success');
+  render();
+}
+function deleteCycle(btn, id) {
+  if (!btn.dataset.confirmed) {
+    btn.textContent = '¿Confirmar?';
+    btn.dataset.confirmed = '1';
+    return;
+  }
+  DATA.cycles = (DATA.cycles||[]).filter(c => String(c.id) !== String(id));
+  saveCycles();
+  showToast('Ciclo eliminado.', 'success');
+  render();
+}
 
 // ════════════════════════════════════════════════════════
 // ADMIN — VISTAS
@@ -1431,6 +1528,7 @@ function vAdminCuentas() {
   const assignedIds = new Set();
   parents.forEach(([, p]) => (p.children||[]).forEach(cid => assignedIds.add(String(cid))));
   const orphanStudents = Object.entries(DATA.students).filter(([sid]) => !assignedIds.has(String(sid)));
+  const cycles = (DATA.cycles||[]).slice().sort((a,b) => (a.start||'').localeCompare(b.start||''));
   return `
   <div style="padding:16px;max-width:640px;margin:0 auto">
     <div class="sec-lbl">Clave del administrador</div>
@@ -1442,6 +1540,63 @@ function vAdminCuentas() {
         <input class="fsm" id="admin-pin-new" type="text" inputmode="numeric" maxlength="6" placeholder="Nueva clave admin" style="margin-bottom:0">
         <button class="btn-grn" style="width:auto;padding:11px 18px" onclick="changeAdminPin()">Guardar</button>
       </div>
+    </div>
+
+    <div class="sec-lbl" style="margin-top:20px">Ciclos del curso (${cycles.length})</div>
+    <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.2)">
+      <p style="font-size:11px;color:rgba(0,0,0,0.45);line-height:1.6;margin:0 0 10px">
+        Define el nombre y las fechas (inicio y fin) de cada ciclo o preciclo. El horario semanal recurrente se muestra hasta el fin del ciclo más lejano que definas aquí.
+      </p>
+      ${cycles.map(c => {
+        const isEditing = editingCycleId === String(c.id);
+        return isEditing ? `
+        <div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px">
+          <input class="fsm" id="cyc-name-${c.id}" type="text" value="${c.name||''}" placeholder="Nombre del ciclo (ej. Max1X)" style="margin-bottom:0">
+          <div style="display:flex;gap:8px">
+            <div style="flex:1">
+              <label class="field-label" style="margin-top:0">Inicio</label>
+              <input class="fsm" id="cyc-start-${c.id}" type="date" value="${c.start||''}" style="margin-bottom:0">
+            </div>
+            <div style="flex:1">
+              <label class="field-label" style="margin-top:0">Fin</label>
+              <input class="fsm" id="cyc-end-${c.id}" type="date" value="${c.end||''}" style="margin-bottom:0">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveCycleEdit('${c.id}')">Guardar</button>
+            <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditCycle()">Cancelar</button>
+          </div>
+        </div>` : `
+        <div class="req-list-item" style="align-items:flex-start">
+          <div style="flex:1">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${c.name}</div>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="startEditCycle('${c.id}')">✏️ Editar</button>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="deleteCycle(this,'${c.id}')">🗑️ Eliminar</button>
+            </div>
+            <div class="cs-meta" style="margin-top:3px">${c.start ? fmtCycleDate(c.start) : 'Sin fecha de inicio'} → ${c.end ? fmtCycleDate(c.end) : 'Sin fecha de fin'}</div>
+          </div>
+        </div>`;
+      }).join('')}
+      ${editingCycleId === 'new' ? `
+      <div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px">
+        <input class="fsm" id="cyc-name-new" type="text" placeholder="Nombre del ciclo (ej. Max1X)" style="margin-bottom:0">
+        <div style="display:flex;gap:8px">
+          <div style="flex:1">
+            <label class="field-label" style="margin-top:0">Inicio</label>
+            <input class="fsm" id="cyc-start-new" type="date" style="margin-bottom:0">
+          </div>
+          <div style="flex:1">
+            <label class="field-label" style="margin-top:0">Fin</label>
+            <input class="fsm" id="cyc-end-new" type="date" style="margin-bottom:0">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveCycleEdit('new')">Guardar</button>
+          <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditCycle()">Cancelar</button>
+        </div>
+      </div>` : `
+      <button class="btn-ghost" style="margin-top:4px" onclick="startEditCycle('new')">+ Agregar ciclo</button>`}
     </div>
 
     ${orphanStudents.length ? `
@@ -1601,7 +1756,7 @@ function _buildSM(prefill, isEdit) {
     +'</div>'
     +'<label class="field-label">Frecuencia</label>'
     +'<div class="sm-seg" id="sm-rec-seg">'
-    +'<button class="'+(recVal?'on':'')+'" data-rec="true" onclick="smToggleRec(this,true)">Semanal (ciclo MATHS ONEX)</button>'
+    +'<button class="'+(recVal?'on':'')+'" data-rec="true" onclick="smToggleRec(this,true)">Semanal'+((getCurrentCycle()||{}).name ? ' (ciclo '+getCurrentCycle().name+')' : '')+'</button>'
     +'<button class="'+(recVal?'':'on')+'" data-rec="false" onclick="smToggleRec(this,false)">Solo una vez</button>'
     +'</div>'
     +'<div id="sm-date-wrap" style="display:'+(recVal?'none':'')+'">'
