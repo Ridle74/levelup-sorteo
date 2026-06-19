@@ -1776,6 +1776,11 @@ function submitSessionModal() {
 // semanal de un alumno seleccionado. El horario libre pasa a tener el día/hora/duración/
 // modalidad que tenía esa clase (queda libre ahí), y la clase del alumno se muda al día/
 // hora que tenía este horario libre (conserva su propia duración y modalidad).
+// Respeta el mismo selector "Aplicar este cambio a" (Todas las semanas / Solo esa fecha)
+// que usa la edición normal de horario: si se eligió "Solo esa fecha", el intercambio NO
+// toca las reglas semanales de ninguno de los dos — solo crea excepciones puntuales para
+// esa semana (vía skipDates + una entrada de una sola vez), igual que el resto del ciclo
+// sigue normal.
 function swapFreeSlotWithSession() {
   var sel = document.getElementById('sm-swap-session');
   if (!sel || !sel.value) { showToast('Selecciona un alumno y horario para reprogramar.'); return; }
@@ -1786,15 +1791,35 @@ function swapFreeSlotWithSession() {
   if (fsIdx < 0 || sessIdx < 0) { showToast('No se encontró el horario seleccionado.'); return; }
   var fs   = DATA.freeSlots[fsIdx];
   var sess = DATA.sessions[sessIdx];
-  var newFreeDay = sess.day, newFreeStart = sess.start, newFreeDur = sess.dur, newFreeMod = sess.modality;
-  var newSessDay = fs.day, newSessStart = fs.start;
-  DATA.freeSlots[fsIdx] = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
-  DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
+
+  var recBtn   = document.querySelector('#sm-rec-seg .on');
+  var recurring = recBtn ? recBtn.dataset.rec !== 'false' : true;
+  var scopeBtn = document.querySelector('#sm-scope-seg .on');
+  var onlyThisDate = recurring && !!smEditOccDate && scopeBtn && scopeBtn.dataset.scope === 'one';
+
+  if (onlyThisDate) {
+    // Fecha del alumno (su ocurrencia semanal normal) dentro de la misma semana que la
+    // fecha del horario libre que se está editando — la que va a quedar libre.
+    var sessOccDate = _shiftDateToDow(smEditOccDate, sess.day);
+    if (!Array.isArray(fs.skipDates)) fs.skipDates = [];
+    if (fs.skipDates.indexOf(smEditOccDate) === -1) fs.skipDates.push(smEditOccDate);
+    if (!Array.isArray(sess.skipDates)) sess.skipDates = [];
+    if (sess.skipDates.indexOf(sessOccDate) === -1) sess.skipDates.push(sessOccDate);
+    // Ese día, el horario que normalmente tiene el alumno queda libre por una sola vez.
+    DATA.freeSlots.push({ id:'fs_'+Date.now(), day:sess.day, start:sess.start, dur:sess.dur, modality:sess.modality, recurring:false, date:sessOccDate, bookedBy:null });
+    // Y el alumno toma, por una sola vez, el horario que estaba libre.
+    DATA.sessions.push({ id:Date.now(), studentId:sess.studentId, day:fs.day, start:fs.start, dur:sess.dur, modality:sess.modality, topic:sess.topic, recurring:false, date:smEditOccDate });
+  } else {
+    var newFreeDay = sess.day, newFreeStart = sess.start, newFreeDur = sess.dur, newFreeMod = sess.modality;
+    var newSessDay = fs.day, newSessStart = fs.start;
+    DATA.freeSlots[fsIdx] = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
+    DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
+  }
   saveFreeSlots();
   saveSessions();
   closeSessionModal();
   render();
-  showToast('Horario reprogramado: el alumno se mudó, y su horario anterior ahora está libre.', 'success');
+  showToast(onlyThisDate ? 'Horario reprogramado solo para esa fecha.' : 'Horario reprogramado: el alumno se mudó, y su horario anterior ahora está libre.', 'success');
 }
 
 function deleteSessionFromModal() {
