@@ -161,6 +161,11 @@ function startOfWeek(d) {
   return r;
 }
 function addDays(d,n) { var r=new Date(d); r.setDate(r.getDate()+n); return r; }
+function todayMidnight() { var d=new Date(); d.setHours(0,0,0,0); return d; }
+// En "Semana" siempre se ancla al lunes (de lunes a domingo). En "4 días" se ancla a hoy
+// mismo, para que la primera columna sea siempre el día actual y las otras 3 sean las que
+// le siguen (ej. si hoy es sábado 20: sáb 20, dom 21, lun 22, mar 23).
+function defaultAnchor(mode) { return mode==='week' ? startOfWeek(new Date()) : todayMidnight(); }
 function fmtDM(d) { return d.toLocaleDateString('es-PE',{day:'numeric',month:'short'}); }
 function toH(t)   { var p=t.split(':').map(Number); return p[0]+p[1]/60; }
 function addM(t,m){ var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m; return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0'); }
@@ -175,17 +180,23 @@ function slotNames(studentIds) {
   return names.slice(0,-1).join(', ')+' y '+names[names.length-1];
 }
 
-calAnchor = startOfWeek(new Date());
+calAnchor = defaultAnchor(calMode);
 
 /* ── Controls ───────────────────────────────────────── */
-function setCalMode(m) { calMode=m; render(); }
+function setCalMode(m) {
+  // Si se cambia a "Semana" desde "4 días", hay que realinear el ancla al lunes de esa
+  // semana (calAnchor pudo haber quedado en cualquier día por la navegación en modo "4 días").
+  if (m === 'week' && calMode !== 'week') calAnchor = startOfWeek(calAnchor);
+  calMode = m;
+  render();
+}
 function calStep(dir) {
   var span = calMode==='week' ? 7 : 4;
   calAnchor = addDays(calAnchor, dir*span);
   render();
 }
 function calGoToday() {
-  calAnchor = startOfWeek(new Date());
+  calAnchor = defaultAnchor(calMode);
   render();
   setTimeout(function(){
     var sc=document.getElementById('pcal-scroll');
