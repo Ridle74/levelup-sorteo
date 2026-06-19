@@ -70,7 +70,7 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
 /* HEAD ROW */
 .pcal-head-row { flex-shrink:0; display:flex; border-bottom:1px solid rgba(0,0,0,0.08); background:#f2f2f2; }
 .pcal-gutter { flex-shrink:0; width:42px; }
-.pcal-days-hdr { display:flex; overflow:hidden; flex:1; }
+.pcal-days-hdr { display:flex; overflow:hidden; flex:0 0 auto; }
 .pcal-dh { flex-shrink:0; text-align:center; padding:5px 2px 7px; border-left:1px solid rgba(0,0,0,0.06); }
 .pcal-dh-name { font-size:9px; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(0,0,0,0.35); }
 .pcal-dh-num  { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; line-height:1.1; color:rgba(0,0,0,0.6); }
@@ -91,7 +91,7 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
   padding-right:7px; padding-top:3px;
   font-size:9px; font-weight:700; color:rgba(0,0,0,0.25); letter-spacing:0.03em;
 }
-.pcal-days-body { display:flex; position:relative; flex:1; }
+.pcal-days-body { display:flex; position:relative; flex:0 0 auto; }
 .pcal-day-col { flex-shrink:0; position:relative; border-left:1px solid rgba(0,0,0,0.05); }
 .pcal-hour-line { border-bottom:1px solid rgba(0,0,0,0.05); }
 .pcal-day-col.is-today { background:rgba(0,0,0,0.02); border-left:1px solid rgba(0,0,0,0.2); }
@@ -264,7 +264,14 @@ function buildGrid(dayList) {
   var scrollElPrev=document.getElementById('pcal-scroll');
   var containerW=(scrollElPrev&&scrollElPrev.clientWidth)?scrollElPrev.clientWidth:(appW-16);
   var numCols=dayList.length;
-  var colW=Math.max(Math.floor((containerW-42)/numCols),58);
+  // El mínimo de columna era fijo en 58px sin importar cuántos días se muestran. En vista
+  // "Semana" (7 columnas) eso fuerza un ancho total mayor al disponible en la mayoría de
+  // celulares (7×58=406px + 42px de gutter = 448px, más de lo que cabe en pantallas típicas
+  // de ~360-410px), y como no hay scroll horizontal, el último día (domingo) queda recortado
+  // y no se puede ver. El mínimo ahora se escala según la cantidad de columnas para que las
+  // 7 siempre quepan sin necesidad de scroll.
+  var minColW = numCols>=6 ? 40 : 58;
+  var colW=Math.max(Math.floor((containerW-42)/numCols),minColW);
 
   var cycleEnd=DATA.cycleEnd?new Date(DATA.cycleEnd+'T00:00:00'):null;
 
