@@ -1815,8 +1815,16 @@ function swapFreeSlotWithSession() {
     DATA.freeSlots[fsIdx] = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
     DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
   }
-  saveFreeSlots();
-  saveSessions();
+  // Importante: freeSlots y sessions se guardan en UNA sola escritura (no dos llamadas
+  // separadas a saveFreeSlots()/saveSessions()). Si se guardan por separado, el snapshot
+  // de Firestore puede "hacer eco" del primer guardado antes de que el segundo se complete,
+  // y ese eco trae de vuelta el campo que todavía no se guardó con su valor viejo —
+  // pisando localmente el cambio recién hecho y haciendo que el horario anterior reaparezca
+  // en el desplegable de "Reprogramar alumno" (o en el calendario) por un momento, o de forma
+  // persistente si la segunda escritura nunca llega a aplicarse bien. Una sola escritura
+  // atómica con ambos campos evita esa condición de carrera.
+  REF.set({ freeSlots: DATA.freeSlots, sessions: DATA.sessions }, { merge:true })
+    .catch(function(e){ console.error(e); showToast('Error al guardar el cambio.'); });
   closeSessionModal();
   render();
   showToast(onlyThisDate ? 'Horario reprogramado solo para esa fecha.' : 'Horario reprogramado: el alumno se mudó, y su horario anterior ahora está libre.', 'success');
