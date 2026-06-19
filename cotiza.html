@@ -105,7 +105,7 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
     <div class="hero-ico">🧮</div>
     <div>
       <div class="hero-t">COTIZA TU CLASE</div>
-      <div class="hero-s">Virtual o a domicilio · Calcula el costo del Pre Ciclo 2 (Lun 06 Jul – Dom 02 Ago, 2026).</div>
+      <div class="hero-s" id="cz-hero-sub">Virtual o a domicilio · Calcula el costo de tu clase.</div>
     </div>
   </div>
 
@@ -139,8 +139,8 @@ body { padding-top: calc(50px + env(safe-area-inset-top)); }
     </div>
 
     <div class="blk hours-blk">
-      <div class="lbl">4. Horas — Pre Ciclo 2</div>
-      <div class="hint">Marca las horas de la semana que tomarás clase (se repiten igual las 4 semanas del ciclo, del 06 de julio al 02 de agosto).</div>
+      <div class="lbl" id="cz-hours-lbl">4. Horas</div>
+      <div class="hint" id="cz-hours-hint">Marca las horas de la semana que tomarás clase.</div>
       <div class="gran-toggle" id="cz-gran">
         <div class="gran-btn gsel" data-v="60">Por hora</div>
         <div class="gran-btn" data-v="30">Por 30 min</div>
@@ -200,22 +200,107 @@ let czParentName      = '';
 let czParentChildren  = [];   // [{id, name, icon}]
 let czSlots           = [];   // [{type:'child'|'new'|'guest', studentId, name}] — uno por estudiante (según CZ.n)
 
-(function initParentSession() {
-  const pid = localStorage.getItem('padresLoggedId');
-  if (!pid) return;
+// ════════════════════════════════════════════════════════
+// CICLOS — misma lógica de sugerencia que /padres (pickCycleForNewSession):
+// el ciclo "actual", o el siguiente si al actual ya le quedan ≤14 días,
+// en cascada. Así la cotización siempre habla del ciclo que de verdad
+// se podrá reservar.
+// ════════════════════════════════════════════════════════
+const CZ_CYCLE_LOOKAHEAD_DAYS = 14;
+const CZ_MONTHS_ABBR = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const CZ_MONTHS_FULL = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+let czCycle = null; // {id,name,start,end} del ciclo sugerido, o null si no hay ciclos cargados
+
+function czPickCycle(list) {
+  list = (list || []).slice().sort(function(a,b){
+    if (!a.start && !b.start) return 0;
+    if (!a.start) return -1;
+    if (!b.start) return 1;
+    return a.start.localeCompare(b.start);
+  });
+  if (!list.length) return null;
+  const t = new Date(); t.setHours(0,0,0,0);
+  let idx = list.findIndex(function(c){
+    const s = c.start ? new Date(c.start+'T00:00:00') : null;
+    const e = c.end   ? new Date(c.end+'T00:00:00')   : null;
+    return (!s || t>=s) && (!e || t<=e);
+  });
+  if (idx === -1) {
+    idx = list.findIndex(function(c){ return c.start && new Date(c.start+'T00:00:00') > t; });
+    if (idx === -1) return list[list.length-1];
+  }
+  while (idx < list.length - 1) {
+    const c = list[idx];
+    if (!c.end) return c;
+    const daysLeft = Math.round((new Date(c.end+'T00:00:00') - t) / 86400000);
+    if (daysLeft > CZ_CYCLE_LOOKAHEAD_DAYS) return c;
+    idx++;
+  }
+  return list[idx];
+}
+function czCycleWeeks(c) {
+  if (!c || !c.start || !c.end) return 4; // sin fechas: 4 semanas por defecto (comportamiento anterior)
+  const days = Math.round((new Date(c.end+'T00:00:00') - new Date(c.start+'T00:00:00')) / 86400000) + 1;
+  return Math.max(1, Math.round(days/7));
+}
+function czFmtShort(iso) { // "06 Jul"
+  const d = new Date(iso+'T00:00:00');
+  return String(d.getDate()).padStart(2,'0')+' '+CZ_MONTHS_ABBR[d.getMonth()];
+}
+function czFmtLong(iso) { // "06 de julio"
+  const d = new Date(iso+'T00:00:00');
+  return String(d.getDate()).padStart(2,'0')+' de '+CZ_MONTHS_FULL[d.getMonth()];
+}
+function czCycleHeroRange(c) { // "Lun 06 Jul – Dom 02 Ago, 2026"
+  if (!c || !c.start || !c.end) return '';
+  const sd = new Date(c.start+'T00:00:00'), ed = new Date(c.end+'T00:00:00');
+  const dowS = CZ_DAYS[(sd.getDay()+6)%7], dowE = CZ_DAYS[(ed.getDay()+6)%7];
+  return dowS+' '+czFmtShort(c.start)+' – '+dowE+' '+czFmtShort(c.end)+', '+ed.getFullYear();
+}
+function czCycleSummaryLabel(c, weeks) { // "Maths Three X (17 ago – 11 oct, 8 semanas)"
+  if (!c) return 'Ciclo';
+  const weeksLbl = weeks===1 ? '1 semana' : weeks+' semanas';
+  const range = (c.start && c.end) ? ' ('+czFmtShort(c.start).toLowerCase()+' – '+czFmtShort(c.end).toLowerCase()+', '+weeksLbl+')' : '';
+  return c.name + range;
+}
+function applyCycleLabels() {
+  const heroEl = document.getElementById('cz-hero-sub');
+  const lblEl  = document.getElementById('cz-hours-lbl');
+  const hintEl = document.getElementById('cz-hours-hint');
+  if (czCycle) {
+    const range = czCycleHeroRange(czCycle);
+    const weeks = czCycleWeeks(czCycle);
+    const weeksLbl = weeks===1 ? '1 semana' : weeks+' semanas';
+    if (heroEl) heroEl.textContent = 'Virtual o a domicilio · Calcula el costo de '+czCycle.name+(range?' ('+range+')':'')+'.';
+    if (lblEl)  lblEl.textContent  = '4. Horas — '+czCycle.name;
+    if (hintEl) hintEl.textContent = 'Marca las horas de la semana que tomarás clase (se repiten igual las '+weeksLbl+' del ciclo'+(czCycle.start&&czCycle.end ? ', del '+czFmtLong(czCycle.start)+' al '+czFmtLong(czCycle.end) : '')+').';
+  } else {
+    if (heroEl) heroEl.textContent = 'Virtual o a domicilio · Calcula el costo de tu clase.';
+    if (lblEl)  lblEl.textContent  = '4. Horas';
+    if (hintEl) hintEl.textContent = 'Marca las horas de la semana que tomarás clase.';
+  }
+}
+
+(function initData() {
   REF.get().then(snap => {
-    if (!snap.exists) return;
+    if (!snap.exists) { applyCycleLabels(); calc(); return; }
     const d = snap.data();
-    const parent = (d.parents || {})[pid];
-    if (!parent) return;
-    czParentId = pid;
-    czParentName = parent.name || '';
-    czParentChildren = (parent.children || []).map(cid => {
-      const s = (d.students || {})[cid] || {};
-      return { id: cid, name: s.name || ('Alumno ' + cid), icon: s.icon || '👤' };
-    });
+    czCycle = czPickCycle(d.cycles || []);
+    applyCycleLabels();
+    const pid = localStorage.getItem('padresLoggedId');
+    if (pid) {
+      const parent = (d.parents || {})[pid];
+      if (parent) {
+        czParentId = pid;
+        czParentName = parent.name || '';
+        czParentChildren = (parent.children || []).map(cid => {
+          const s = (d.students || {})[cid] || {};
+          return { id: cid, name: s.name || ('Alumno ' + cid), icon: s.icon || '👤' };
+        });
+      }
+    }
     calc();
-  }).catch(e => console.error(e));
+  }).catch(e => { console.error(e); applyCycleLabels(); });
 })();
 
 function fmtMin(m) {
@@ -392,7 +477,8 @@ function calc() {
   const classWeekly = Math.round(perHour*horas);
   const mov      = movilidadInfo();
   const weekly   = classWeekly + mov.weekly;
-  const total    = weekly*4;
+  const cycleWeeks = czCycleWeeks(czCycle);
+  const total    = weekly*cycleWeeks;
   const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
   const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
   const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
@@ -421,7 +507,7 @@ function calc() {
       ${CZ.n>1 ? `<strong>Tarifa oferta por estudiante: S/. ${perHourStudent}/h</strong><br>` : ''}
       ${sesionLbl}: S/. ${perHour}/h en total<br>
       ${horasLine}
-      Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual
+      ${czCycleSummaryLabel(czCycle, cycleWeeks)}: S/. ${total} mensual
     </div>
   </div>`;
 
@@ -449,7 +535,8 @@ function copyCZ(perHour, horas, weekly, total) {
   const sesionLbl = CZ.n>1 ? 'Tarifa de oferta de la sesión' : 'Tarifa de la sesión';
   const mov = movilidadInfo();
   const movLine = mov.weekly>0 ? `Movilidad: ${movilidadParts(mov)} = S/. ${mov.weekly}/semana\n` : '';
-  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nHorario cotizado:\n${scheduleText}\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\n${regularLine}${studentLine}${sesionLbl}: S/. ${perHour}/h en total\n${movLine}\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal Pre Ciclo 2 (06 jul – 02 ago, 4 semanas): S/. ${total} mensual\n\n¡Contáctanos para reservar tu horario!`;
+  const cycleWeeks = czCycleWeeks(czCycle);
+  const text = `COTIZACIÓN — MATHS LEVEL UP\n\nHorario cotizado:\n${scheduleText}\n\nTipo de clase: ${tipoLbl[CZ.tipo]}\nN° de estudiantes: ${nLbl[CZ.n]}\nNivel: ${nivelLbl[CZ.nivel]}\n\n${regularLine}${studentLine}${sesionLbl}: S/. ${perHour}/h en total\n${movLine}\nCOSTO SEMANAL (pago adelantado): S/. ${weekly}\nTotal ${czCycleSummaryLabel(czCycle, cycleWeeks)}: S/. ${total} mensual\n\n¡Contáctanos para reservar tu horario!`;
   navigator.clipboard.writeText(text).then(()=>alert('Cotización copiada al portapapeles.')).catch(()=>{});
 }
 
