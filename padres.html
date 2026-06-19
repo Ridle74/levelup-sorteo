@@ -440,6 +440,64 @@ function cycleHorizonISO(list) {
   if (!d) return null;
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
+// Ciclo sugerido para una clase/horario NUEVO: si el ciclo vigente hoy está a 14 días o menos
+// de terminar, se adelanta al siguiente ciclo cronológico (y así sucesivamente, por si ese
+// también es muy corto) — así las clases que se crean cerca del cambio de ciclo ya quedan
+// asignadas al ciclo que sigue, en vez de al que está por terminar.
+const CYCLE_LOOKAHEAD_DAYS = 14;
+function pickCycleForNewSession(list) {
+  list = (list || DATA.cycles || []).slice().sort(function(a,b){
+    if (!a.start && !b.start) return 0;
+    if (!a.start) return -1;
+    if (!b.start) return 1;
+    return a.start.localeCompare(b.start);
+  });
+  if (!list.length) return null;
+  const t = new Date(); t.setHours(0,0,0,0);
+  let idx = list.findIndex(function(c){
+    const s = c.start ? new Date(c.start+'T00:00:00') : null;
+    const e = c.end   ? new Date(c.end+'T00:00:00')   : null;
+    return (!s || t>=s) && (!e || t<=e);
+  });
+  if (idx === -1) {
+    idx = list.findIndex(function(c){ return c.start && new Date(c.start+'T00:00:00') > t; });
+    if (idx === -1) return list[list.length-1];
+  }
+  while (idx < list.length - 1) {
+    const c = list[idx];
+    if (!c.end) return c;
+    const daysLeft = Math.round((new Date(c.end+'T00:00:00') - t) / 86400000);
+    if (daysLeft > CYCLE_LOOKAHEAD_DAYS) return c;
+    idx++;
+  }
+  return list[idx];
+}
+// Fecha límite hasta la que debe mostrarse una clase/horario recurrente: el fin de SU propio
+// ciclo asignado (cycleId). Si no tiene cycleId (no debería pasar tras migrateCycleIds, pero
+// por si acaso) cae al horizonte global, igual que antes de esta funcionalidad.
+function cycleCutoffDate(cycleId) {
+  if (cycleId != null) {
+    const c = (DATA.cycles||[]).find(function(cc){ return String(cc.id) === String(cycleId); });
+    if (c) return c.end ? new Date(c.end+'T00:00:00') : null;
+  }
+  return getCycleHorizon();
+}
+// Migración única: clases/horarios libres recurrentes creados antes de esta funcionalidad no
+// tienen cycleId, así que sin esto seguirían repitiéndose más allá del fin de su ciclo (ver
+// cycleCutoffDate). Se les asigna el ciclo vigente HOY, una sola vez; después de eso el campo
+// queda fijo (no se reasigna aunque cambie el "ciclo actual" en visitas futuras).
+function migrateCycleIds() {
+  const curId = (getCurrentCycle(DATA.cycles)||{}).id;
+  const cid = curId != null ? curId : null;
+  let changed = false;
+  (DATA.sessions||[]).forEach(function(s){
+    if (s.recurring !== false && s.cycleId === undefined) { s.cycleId = cid; changed = true; }
+  });
+  (DATA.freeSlots||[]).forEach(function(fs){
+    if (fs.recurring !== false && fs.cycleId === undefined) { fs.cycleId = cid; changed = true; }
+  });
+  return changed;
+}
 
 // ════════════════════════════════════════════════════════
 // FIREBASE LOAD / SAVE
@@ -501,6 +559,9 @@ function loadData() {
         seedVersion: SEED_VERSION,
         cycleEnd: cycleHorizonISO(SEED.cycles), cycleName: (getCurrentCycle(SEED.cycles)||{}).name || null
       })).catch(()=>{});
+    }
+    if (migrateCycleIds()) {
+      REF.set({ sessions: DATA.sessions, freeSlots: DATA.freeSlots }, { merge:true }).catch(()=>{});
     }
     done();
   }).catch(e => {
@@ -894,7 +955,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     if (!slotMap[key]) slotMap[key] = { day:Number(s.day), oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
     const dur = s.dur || 60;
     if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
-    slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id, skipDates:Array.isArray(s.skipDates)?s.skipDates:[] });
+    slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId });
   });
 
   // ── Smart time range: fit to actual sessions ─────────────────
@@ -966,18 +1027,16 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
 
   // Day columns
   const freeSlotList = DATA.freeSlots || [];
-  const cycleEndDate = getCycleHorizon();
   const cols = filteredDayList.map(function(d) {
     const dow  = d.getDay();
     const dstr = _dStr(d);
     const isPast = d < today, isTod = d.getTime()===today.getTime();
     const cls = 'pcal-day-col'+(isTod?' is-today':'')+(isPast?' is-past':'');
     const lines = HOURS.map(function(){ return '<div class="pcal-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
-    // Recurring sessions only show within the cycle; one-time sessions always show on their date
-    const afterCycle = cycleEndDate && d > cycleEndDate;
+    // Las clases recurrentes solo se muestran dentro de SU propio ciclo (cycleId → ver
+    // cycleCutoffDate); las de una sola vez siempre se muestran en su fecha puntual.
     const slots = Object.values(slotMap).filter(function(sl){
       if (sl.oneTimeDate) return sl.oneTimeDate === dstr;
-      if (afterCycle) return false;
       return sl.day === dow;
     });
     const cards = slots.flatMap(function(slot) {
@@ -985,7 +1044,11 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       // sesión tiene este día en skipDates (porque se editó "solo esta fecha" — ya tienen
       // su propia tarjeta de una sola vez en otro lugar con los valores nuevos).
       const activeStudents = slot.oneTimeDate ? slot.students
-        : slot.students.filter(function(st){ return !st.skipDates.includes(dstr); });
+        : slot.students.filter(function(st){
+            if (st.skipDates.includes(dstr)) return false;
+            const cutoff = cycleCutoffDate(st.cycleId);
+            return !(cutoff && d > cutoff);
+          });
       if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
       const hPx   = Math.max((slot.maxDur / 60) * ROW_H - 3, 28);
@@ -1011,8 +1074,9 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     const freeCards = freeSlotList.filter(function(fs){
       if (!showParent && fs.bookedBy) return false;
       if (fs.recurring===false && fs.date) return fs.date === dstr;
-      if (afterCycle) return false;
       if (Array.isArray(fs.skipDates) && fs.skipDates.includes(dstr)) return false;
+      const fsCutoff = cycleCutoffDate(fs.cycleId);
+      if (fsCutoff && d > fsCutoff) return false;
       return Number(fs.day) === dow;
     }).map(function(fs){
       const topPx = Math.max((toH(fs.start) - MIN_H) * ROW_H, 0);
@@ -1715,6 +1779,14 @@ function _buildSM(prefill, isEdit) {
   var durVal = p.dur || 60;
   var modVal = p.modality || 'Virtual';
   var recVal = p.recurring !== false;
+  // Ciclo al que queda atado este horario semanal: si se está editando uno que ya tiene
+  // cycleId, se respeta ese (no se reasigna solo por reabrir el modal); si es nuevo, se
+  // sugiere el ciclo correspondiente vía pickCycleForNewSession (adelanta al siguiente ciclo
+  // si el actual está por terminar).
+  var smCycle = (isEdit && p.cycleId != null)
+    ? (DATA.cycles||[]).find(function(c){ return String(c.id) === String(p.cycleId); })
+    : null;
+  if (!smCycle) smCycle = pickCycleForNewSession();
   var initPid = p.parentId || Object.keys(DATA.parents)[0] || '';
   var stuOpts = smType === 'session' ? _smStudentOpts(initPid, p.studentId) : '';
   var parOpts = Object.entries(DATA.parents)
@@ -1765,9 +1837,10 @@ function _buildSM(prefill, isEdit) {
     +'<button class="'+(modVal==='Virtual'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Virtual</button>'
     +'<button class="'+(modVal==='Domicilio'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Domicilio</button>'
     +'</div>'
+    +'<input type="hidden" id="sm-cycle-id" value="'+(smCycle?smCycle.id:'')+'">'
     +'<label class="field-label">Frecuencia</label>'
     +'<div class="sm-seg" id="sm-rec-seg">'
-    +'<button class="'+(recVal?'on':'')+'" data-rec="true" onclick="smToggleRec(this,true)">Semanal'+((getCurrentCycle()||{}).name ? ' (ciclo '+getCurrentCycle().name+')' : '')+'</button>'
+    +'<button class="'+(recVal?'on':'')+'" data-rec="true" onclick="smToggleRec(this,true)">Semanal'+(smCycle&&smCycle.name ? ' (ciclo '+smCycle.name+')' : '')+'</button>'
     +'<button class="'+(recVal?'':'on')+'" data-rec="false" onclick="smToggleRec(this,false)">Solo una vez</button>'
     +'</div>'
     +'<div id="sm-date-wrap" style="display:'+(recVal?'none':'')+'">'
@@ -1881,6 +1954,8 @@ function submitSessionModal() {
   var modality = modBtn ? modBtn.textContent.trim() : 'Virtual';
   var recBtn   = document.querySelector('#sm-rec-seg .on');
   var recurring = recBtn ? recBtn.dataset.rec !== 'false' : true;
+  var cycleIdEl  = document.getElementById('sm-cycle-id');
+  var cycleIdVal = cycleIdEl && cycleIdEl.value !== '' ? cycleIdEl.value : null;
   var dateEl   = document.getElementById('sm-date');
   var date     = recurring ? null : (dateEl ? dateEl.value || null : null);
   if (!recurring && !date) { showToast('Indica la fecha específica.'); return; }
@@ -1904,6 +1979,7 @@ function submitSessionModal() {
       DATA.freeSlots.push({ id:'fs_'+Date.now(), day:day, start:start, dur:dur, modality:modality, recurring:false, date:_shiftDateToDow(smEditOccDate, day), bookedBy:null });
     } else {
       var fs = { id: curEditId !== null ? curEditId : ('fs_'+Date.now()), day:day, start:start, dur:dur, modality:modality, recurring:recurring, date:date, bookedBy:null };
+      if (recurring) fs.cycleId = cycleIdVal;
       if (curEditId !== null) {
         var idx = DATA.freeSlots.findIndex(function(s){ return s.id==curEditId; });
         if (idx>=0) { fs.bookedBy = DATA.freeSlots[idx].bookedBy; DATA.freeSlots[idx]=fs; }
@@ -1926,6 +2002,7 @@ function submitSessionModal() {
       DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:_shiftDateToDow(smEditOccDate, day) });
     } else {
       var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
+      if (recurring) sess.cycleId = cycleIdVal;
       if (curEditId !== null) {
         var idx2 = DATA.sessions.findIndex(function(s){ return s.id==curEditId; });
         if (idx2>=0) DATA.sessions[idx2]=sess; else DATA.sessions.push(sess);
@@ -1978,7 +2055,9 @@ function swapFreeSlotWithSession() {
   } else {
     var newFreeDay = sess.day, newFreeStart = sess.start, newFreeDur = sess.dur, newFreeMod = sess.modality;
     var newSessDay = fs.day, newSessStart = fs.start;
-    DATA.freeSlots[fsIdx] = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
+    var newFs = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
+    if (fs.cycleId != null) newFs.cycleId = fs.cycleId;
+    DATA.freeSlots[fsIdx] = newFs;
     DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
   }
   // Importante: freeSlots y sessions se guardan en UNA sola escritura (no dos llamadas
