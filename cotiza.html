@@ -251,16 +251,31 @@ function czFmtLong(iso) { // "06 de julio"
   const d = new Date(iso+'T00:00:00');
   return String(d.getDate()).padStart(2,'0')+' de '+CZ_MONTHS_FULL[d.getMonth()];
 }
+function czTodayISO() {
+  const t = new Date();
+  return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+}
+// Si el ciclo ya empezó (su fecha de inicio real ya pasó), para mostrarle al
+// padre se usa HOY como "inicio" en vez de la fecha real — así no parece que
+// se le va a cobrar desde una fecha ya pasada. Esto es solo de despliegue:
+// no afecta el cálculo de semanas/total, que sigue usando las fechas reales.
+function czEffectiveStart(c) {
+  if (!c || !c.start) return c ? c.start : null;
+  const todayISO = czTodayISO();
+  return (c.start < todayISO) ? todayISO : c.start;
+}
 function czCycleHeroRange(c) { // "Lun 06 Jul – Dom 02 Ago, 2026"
   if (!c || !c.start || !c.end) return '';
-  const sd = new Date(c.start+'T00:00:00'), ed = new Date(c.end+'T00:00:00');
+  const startISO = czEffectiveStart(c);
+  const sd = new Date(startISO+'T00:00:00'), ed = new Date(c.end+'T00:00:00');
   const dowS = CZ_DAYS[(sd.getDay()+6)%7], dowE = CZ_DAYS[(ed.getDay()+6)%7];
-  return dowS+' '+czFmtShort(c.start)+' – '+dowE+' '+czFmtShort(c.end)+', '+ed.getFullYear();
+  return dowS+' '+czFmtShort(startISO)+' – '+dowE+' '+czFmtShort(c.end)+', '+ed.getFullYear();
 }
 function czCycleSummaryLabel(c, weeks) { // "Maths Three X (17 ago – 11 oct, 8 semanas)"
   if (!c) return 'Ciclo';
   const weeksLbl = weeks===1 ? '1 semana' : weeks+' semanas';
-  const range = (c.start && c.end) ? ' ('+czFmtShort(c.start).toLowerCase()+' – '+czFmtShort(c.end).toLowerCase()+', '+weeksLbl+')' : '';
+  const startISO = czEffectiveStart(c);
+  const range = (c.start && c.end) ? ' ('+czFmtShort(startISO).toLowerCase()+' – '+czFmtShort(c.end).toLowerCase()+', '+weeksLbl+')' : '';
   return c.name + range;
 }
 function applyCycleLabels() {
@@ -273,7 +288,7 @@ function applyCycleLabels() {
     const weeksLbl = weeks===1 ? '1 semana' : weeks+' semanas';
     if (heroEl) heroEl.textContent = 'Virtual o a domicilio · Calcula el costo de '+czCycle.name+(range?' ('+range+')':'')+'.';
     if (lblEl)  lblEl.textContent  = '4. Horas — '+czCycle.name;
-    if (hintEl) hintEl.textContent = 'Marca las horas de la semana que tomarás clase (se repiten igual las '+weeksLbl+' del ciclo'+(czCycle.start&&czCycle.end ? ', del '+czFmtLong(czCycle.start)+' al '+czFmtLong(czCycle.end) : '')+').';
+    if (hintEl) hintEl.textContent = 'Marca las horas de la semana que tomarás clase (se repiten igual las '+weeksLbl+' del ciclo'+(czCycle.start&&czCycle.end ? ', del '+czFmtLong(czEffectiveStart(czCycle))+' al '+czFmtLong(czCycle.end) : '')+').';
   } else {
     if (heroEl) heroEl.textContent = 'Virtual o a domicilio · Calcula el costo de tu clase.';
     if (lblEl)  lblEl.textContent  = '4. Horas';
@@ -627,6 +642,14 @@ function submitQuoteRequest(perHour, horas, weekly, total) {
     status: 'pendiente',
     createdAt: new Date().toISOString()
   };
+  // Snapshot del ciclo sugerido al momento de cotizar, para que en /padres
+  // (pestaña Cotizaciones) se vea para qué ciclo fue esta solicitud, aunque
+  // el ciclo cambie de nombre o se elimine después.
+  if (czCycle) {
+    req.cycleId    = czCycle.id;
+    req.cycleName  = czCycle.name;
+    req.cycleWeeks = czCycleWeeks(czCycle);
+  }
   const btn = document.getElementById('cz-reserve-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
   REF.set({ quoteRequests: firebase.firestore.FieldValue.arrayUnion(req) }, { merge:true })
