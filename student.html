@@ -419,7 +419,6 @@ textarea.fsm { resize:none; height:64px; }
 .hor-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; color:#fff; margin-top:2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .hor-ev-time  { font-size:8px; font-weight:700; margin-top:1px; white-space:nowrap; }
 .hor-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-top:2px; }
-.hor-ev-link-dot { position:absolute; top:3px; right:4px; font-size:9px; line-height:1; opacity:0.9; filter:drop-shadow(0 0 2px rgba(0,0,0,0.6)); }
 /* ── VENTANA EMERGENTE DE CLASE (popover) ────────────────── */
 .hor-pop { position:fixed; z-index:500; width:230px; max-width:calc(100vw - 16px); background:linear-gradient(160deg,#11142a,#0a0c18); border:1px solid rgba(79,182,255,0.35); border-radius:14px; padding:12px 14px; box-shadow:0 12px 32px -8px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.03); animation:horPopIn 0.12s ease-out; }
 @keyframes horPopIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
@@ -3878,17 +3877,10 @@ function renderHorariosCalendar() {
         const lPx  = 2 + Math.round((colW-4) * (idx/total));
         const wPx  = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short = hPx < 44;
-        // El enlace de videollamada solo se ve si: la clase es Virtual (no a domicilio) Y
-        // (quien mira es admin O es el propio alumno dueño de esa clase) — privacidad.
-        const isDom = (st.modality||'').toLowerCase().includes('dom');
-        const sLink = st.id!=null ? ((overrides[String(st.id)]||{}).link || '') : '';
-        const canSeeLink = st.id!=null && (isAdmin() || getLoggedId()===st.id);
-        const showLinkDot = !isDom && canSeeLink && !!sLink;
         return '<div class="hor-ev-card" data-sid="'+(st.id==null?'':st.id)+'" data-date="'+dstr+'" data-start="'+slot.start+'" data-end="'+end+'" data-modality="'+escAttr(st.modality)+'" data-name="'+escAttr(st.name)+'" data-icon="'+escAttr(st.icon)+'" data-color="'+escAttr(st.color)+'" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:linear-gradient(160deg,'+st.color+'30,'+st.color+'12);border:1px solid '+st.color+'55;box-shadow:0 0 14px -6px '+st.color+'60 inset" onclick="openHorPop(event,this)">'
           +'<div class="hor-ev-icon">'+st.icon+'</div>'
           +'<div class="hor-ev-name">'+st.name+'</div>'
           +(short?'':'<div class="hor-ev-time" style="color:'+st.color+'">'+slot.start+'–'+end+'</div><div class="hor-ev-badge">'+st.modality+'</div>')
-          +(showLinkDot?'<div class="hor-ev-link-dot">🔗</div>':'')
           +'</div>';
       });
     }).join('');
