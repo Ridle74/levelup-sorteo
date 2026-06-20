@@ -414,11 +414,31 @@ textarea.fsm { resize:none; height:64px; }
 .hor-day-col.is-today { background:rgba(79,182,255,0.022); border-left:1px solid rgba(79,182,255,0.28); }
 .hor-day-col.is-past  { opacity:0.38; }
 .hor-hours-past-ovl   { position:absolute; top:0; left:0; width:100%; background:rgba(10,11,22,0.55); pointer-events:none; }
-.hor-ev-card { position:absolute; border-radius:9px; padding:5px 6px 4px; overflow:hidden; }
+.hor-ev-card { position:absolute; border-radius:9px; padding:5px 6px 4px; overflow:hidden; cursor:pointer; }
 .hor-ev-icon  { font-size:13px; line-height:1; }
 .hor-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; color:#fff; margin-top:2px; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .hor-ev-time  { font-size:8px; font-weight:700; margin-top:1px; white-space:nowrap; }
 .hor-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-top:2px; }
+.hor-ev-link-dot { position:absolute; top:3px; right:4px; font-size:9px; line-height:1; opacity:0.9; filter:drop-shadow(0 0 2px rgba(0,0,0,0.6)); }
+/* ── VENTANA EMERGENTE DE CLASE (popover) ────────────────── */
+.hor-pop { position:fixed; z-index:500; width:230px; max-width:calc(100vw - 16px); background:linear-gradient(160deg,#11142a,#0a0c18); border:1px solid rgba(79,182,255,0.35); border-radius:14px; padding:12px 14px; box-shadow:0 12px 32px -8px rgba(0,0,0,0.65),0 0 0 1px rgba(255,255,255,0.03); animation:horPopIn 0.12s ease-out; }
+@keyframes horPopIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+.hor-pop-head { display:flex; align-items:flex-start; gap:8px; }
+.hor-pop-icon { font-size:20px; line-height:1.2; }
+.hor-pop-name { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:900; color:#fff; line-height:1.1; }
+.hor-pop-sub  { font-size:10px; font-weight:700; color:rgba(255,255,255,0.45); margin-top:2px; }
+.hor-pop-badge{ display:inline-block; font-size:8px; font-weight:900; letter-spacing:0.08em; text-transform:uppercase; padding:2px 7px; border-radius:6px; margin-top:4px; }
+.hor-pop-sec  { margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); }
+.hor-pop-lbl  { font-size:8px; font-weight:900; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:6px; }
+.hor-pop-pts-row { display:flex; gap:6px; }
+.hor-pop-pts-chip{ flex:1; text-align:center; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:6px 4px; }
+.hor-pop-pts-v { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; line-height:1; }
+.hor-pop-pts-l { font-size:7px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-top:2px; }
+.hor-pop-medals { display:flex; flex-wrap:wrap; gap:4px; }
+.hor-pop-medal { font-size:10px; font-weight:700; background:rgba(255,210,63,0.1); border:1px solid rgba(255,210,63,0.3); color:#ffd23f; padding:2px 7px; border-radius:6px; }
+.hor-pop-link-input { width:100%; box-sizing:border-box; background:#0a0a0a; border:1px solid #333; border-radius:8px; color:#fff; font-size:12px; padding:7px 9px; margin-bottom:6px; }
+.hor-pop-link-btn { width:100%; background:rgba(79,182,255,0.18); border:1px solid rgba(79,182,255,0.4); color:#4fb6ff; border-radius:8px; padding:8px; font-weight:900; font-size:12px; cursor:pointer; }
+.hor-pop-link-join { display:block; text-align:center; width:100%; box-sizing:border-box; background:linear-gradient(135deg,#1a3a8f,#06b6d4); color:#fff; border-radius:8px; padding:10px; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; text-decoration:none; letter-spacing:0.04em; }
 .hor-time-now { position:absolute; z-index:10; pointer-events:none; display:flex; align-items:center; }
 .hor-time-now-dot  { flex-shrink:0; width:9px; height:9px; border-radius:50%; background:#4fb6ff; box-shadow:0 0 8px 2px rgba(79,182,255,0.7); margin-left:-4px; }
 .hor-time-now-line { flex:1; height:1px; background:rgba(79,182,255,0.6); box-shadow:0 0 6px rgba(79,182,255,0.4); }
@@ -822,6 +842,8 @@ function toTitleCase(str) {
   if (!str) return str;
   return str.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase(); }).join(' ');
 }
+// Escapa comillas para insertar texto dentro de un atributo HTML delimitado por comillas dobles.
+function escAttr(s) { return String(s==null?'':s).replace(/"/g,'&quot;'); }
 function formatFullDate(d) {
   if (!d) return 'No definida';
   const dt = d instanceof Date ? d : new Date(d);
@@ -3711,6 +3733,7 @@ function renderHorariosSidebar() {
 }
 
 function renderHorariosCalendar() {
+  closeHorPop(); // evita dejar una ventana emergente abierta apuntando a una tarjeta que ya no existe
   const sessions    = padresRaw.sessions || [];
   const pStudents   = padresRaw.students || {};
   const lmsStudents = getStudents();
@@ -3787,7 +3810,10 @@ function renderHorariosCalendar() {
       color: lms.color || '#4fb6ff',
       modality: s.modality || '',
       dur,
-      skipDates: Array.isArray(s.skipDates) ? s.skipDates : []
+      skipDates: Array.isArray(s.skipDates) ? s.skipDates : [],
+      // id del alumno en /student (LMS) — null si no hay match por nombre con /padres.
+      // Necesario para la ventana emergente: saber de quién son los puntos/podios/enlace.
+      id: lms.id !== undefined ? lms.id : null
     });
   });
 
@@ -3850,10 +3876,17 @@ function renderHorariosCalendar() {
         const lPx  = 2 + Math.round((colW-4) * (idx/total));
         const wPx  = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short = hPx < 44;
-        return '<div class="hor-ev-card" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:linear-gradient(160deg,'+st.color+'30,'+st.color+'12);border:1px solid '+st.color+'55;box-shadow:0 0 14px -6px '+st.color+'60 inset">'
+        // El enlace de videollamada solo se ve si: la clase es Virtual (no a domicilio) Y
+        // (quien mira es admin O es el propio alumno dueño de esa clase) — privacidad.
+        const isDom = (st.modality||'').toLowerCase().includes('dom');
+        const sLink = st.id!=null ? ((overrides[String(st.id)]||{}).link || '') : '';
+        const canSeeLink = st.id!=null && (isAdmin() || getLoggedId()===st.id);
+        const showLinkDot = !isDom && canSeeLink && !!sLink;
+        return '<div class="hor-ev-card" data-sid="'+(st.id==null?'':st.id)+'" data-date="'+dstr+'" data-start="'+slot.start+'" data-end="'+end+'" data-modality="'+escAttr(st.modality)+'" data-name="'+escAttr(st.name)+'" data-icon="'+escAttr(st.icon)+'" data-color="'+escAttr(st.color)+'" style="top:'+topPx+'px;height:'+hPx+'px;left:'+lPx+'px;width:'+wPx+'px;background:linear-gradient(160deg,'+st.color+'30,'+st.color+'12);border:1px solid '+st.color+'55;box-shadow:0 0 14px -6px '+st.color+'60 inset" onclick="openHorPop(event,this)">'
           +'<div class="hor-ev-icon">'+st.icon+'</div>'
           +'<div class="hor-ev-name">'+st.name+'</div>'
           +(short?'':'<div class="hor-ev-time" style="color:'+st.color+'">'+slot.start+'–'+end+'</div><div class="hor-ev-badge">'+st.modality+'</div>')
+          +(showLinkDot?'<div class="hor-ev-link-dot">🔗</div>':'')
           +'</div>';
       });
     }).join('');
@@ -4304,6 +4337,163 @@ async function perfilSavePin() {
   document.getElementById('perfil-pin-old').value='';
   document.getElementById('perfil-pin-new').value='';
   document.getElementById('perfil-pin-new2').value='';
+}
+
+// ════════════════════════════════════════════════════════
+// VENTANA EMERGENTE DE CLASE (calendario de Horarios)
+// Se abre al hacer clic en una tarjeta de clase; se cierra al hacer clic afuera
+// o al alejar el mouse de la tarjeta y de la propia ventana (estilo hover-card).
+// Puntos y podios anteriores los puede ver cualquiera. El enlace de videollamada
+// solo lo ve el admin o el propio alumno dueño de esa clase, y solo si es Virtual.
+// ════════════════════════════════════════════════════════
+let _horPopEl = null, _horPopCard = null, _horPopCloseTimer = null;
+
+function openHorPop(evt, cardEl) {
+  evt.stopPropagation();
+  closeHorPop();
+
+  const sidRaw = cardEl.dataset.sid;
+  const sid    = sidRaw === '' ? null : Number(sidRaw);
+  const date   = cardEl.dataset.date;
+  const start  = cardEl.dataset.start;
+  const end    = cardEl.dataset.end;
+  const modality = cardEl.dataset.modality;
+  const name   = cardEl.dataset.name;
+  const icon   = cardEl.dataset.icon;
+  const color  = cardEl.dataset.color || '#4fb6ff';
+
+  const pop = document.createElement('div');
+  pop.className = 'hor-pop';
+  pop.innerHTML = renderHorPopContent(sid, name, icon, color, date, start, end, modality);
+  document.body.appendChild(pop);
+  positionHorPop(pop, cardEl);
+
+  const scheduleClose = function(){ _horPopCloseTimer = setTimeout(closeHorPop, 260); };
+  const cancelClose   = function(){ clearTimeout(_horPopCloseTimer); };
+  cardEl.addEventListener('mouseleave', scheduleClose);
+  cardEl.addEventListener('mouseenter', cancelClose);
+  pop.addEventListener('mouseleave', scheduleClose);
+  pop.addEventListener('mouseenter', cancelClose);
+
+  _horPopEl = pop;
+  _horPopCard = cardEl;
+  document.addEventListener('click', _horPopOutsideHandler);
+}
+
+function _horPopOutsideHandler(e) {
+  if (!_horPopEl) return;
+  if (_horPopEl.contains(e.target) || (_horPopCard && _horPopCard.contains(e.target))) return;
+  closeHorPop();
+}
+
+function closeHorPop() {
+  clearTimeout(_horPopCloseTimer);
+  if (_horPopEl && _horPopEl.parentNode) _horPopEl.parentNode.removeChild(_horPopEl);
+  _horPopEl = null;
+  _horPopCard = null;
+  document.removeEventListener('click', _horPopOutsideHandler);
+}
+
+function positionHorPop(pop, anchorEl) {
+  const r = anchorEl.getBoundingClientRect();
+  const margin = 8;
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let left = r.left;
+  let top  = r.bottom + margin;
+  if (left + pw > window.innerWidth - margin) left = window.innerWidth - pw - margin;
+  if (left < margin) left = margin;
+  if (top + ph > window.innerHeight - margin) top = r.top - ph - margin; // sin espacio abajo: se abre hacia arriba
+  if (top < margin) top = margin;
+  pop.style.left = left + 'px';
+  pop.style.top  = top + 'px';
+}
+
+function renderHorPopContent(sid, name, icon, color, date, start, end, modality) {
+  const isDom = (modality||'').toLowerCase().includes('dom');
+  const dt = new Date(date+'T00:00:00');
+  const DAY_NAMES_L = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const dayLbl = DAY_NAMES_L[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1);
+
+  let html = '<div class="hor-pop-head">'
+    +'<div class="hor-pop-icon">'+icon+'</div>'
+    +'<div><div class="hor-pop-name">'+name+'</div>'
+    +'<div class="hor-pop-sub">'+dayLbl+' · '+start+'–'+end+'</div>'
+    +'<span class="hor-pop-badge" style="background:'+(isDom?'rgba(239,68,68,0.15)':'rgba(79,182,255,0.15)')+';color:'+(isDom?'#ef4444':'#4fb6ff')+'">'+modality+'</span>'
+    +'</div></div>';
+
+  if (sid != null && !isNaN(sid)) {
+    const pts = getStudentPoints(sid);
+    html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Puntos de este mes</div>'
+      +'<div class="hor-pop-pts-row">'
+      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.hours+'</div><div class="hor-pop-pts-l">Horas</div></div>'
+      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.progress+'</div><div class="hor-pop-pts-l">Avance</div></div>'
+      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.tasks+'</div><div class="hor-pop-pts-l">Tareas</div></div>'
+      +'</div></div>';
+
+    const podiums = getStudentPodiumHistory(sid, name);
+    if (podiums.length) {
+      html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Podios anteriores</div>'
+        +'<div class="hor-pop-medals">'+podiums.map(function(p){ return '<span class="hor-pop-medal">'+p.medal+' '+p.label+'</span>'; }).join('')+'</div></div>';
+    }
+
+    if (!isDom) {
+      const canSee = isAdmin() || getLoggedId()===sid;
+      if (canSee) {
+        const link = (overrides[String(sid)]||{}).link || '';
+        if (isAdmin()) {
+          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
+            +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
+            +'<button class="hor-pop-link-btn" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
+        } else if (link) {
+          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
+            +'<a class="hor-pop-link-join" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
+        } else {
+          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
+            +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
+        }
+      }
+    }
+  }
+  return html;
+}
+
+// Busca en pointsHistory (archivado automático) y en HISTORIAL_SEED (meses previos al
+// archivado) si este alumno quedó 1°/2°/3° en algún mes anterior. Empareja por id cuando
+// está disponible; los meses semilla (sin id) emparejan por nombre normalizado.
+function getStudentPodiumHistory(id, name) {
+  const now = new Date();
+  const MESES_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const medals = ['🥇','🥈','🥉'];
+  const results = [];
+  for (let off = -1; off >= -12; off--) {
+    const d = new Date(now); d.setMonth(d.getMonth()+off);
+    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const podio = pointsHistory[ym] || HISTORIAL_SEED[ym];
+    if (!podio) continue;
+    const idx = podio.findIndex(function(p){
+      return (p.id!=null && p.id===id) || (p.id==null && normName(p.nombre)===normName(name));
+    });
+    if (idx === -1) continue;
+    results.push({ ym, medal: medals[idx], label: MESES_S[d.getMonth()]+' '+d.getFullYear() });
+  }
+  return results;
+}
+
+// Guarda/actualiza el enlace de videollamada de un alumno (uno por alumno, compartido
+// entre todas sus clases virtuales). Mismo patrón de lectura+merge que perfilSaveProfile().
+async function saveHorPopLink(sid) {
+  const inp = document.getElementById('hor-pop-link-inp');
+  if (!inp) return;
+  const val = inp.value.trim();
+  const snap = await REF.get();
+  const data = snap.exists ? snap.data() : {};
+  const ov = data.overrides || {};
+  const key = String(sid);
+  ov[key] = ov[key] || {};
+  ov[key].link = val;
+  await REF.set({ overrides: ov }, { merge: true });
+  overrides = ov;
+  showToast('Enlace guardado ✓');
 }
 
 function changeHorWeek(delta) {
