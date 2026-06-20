@@ -4368,6 +4368,10 @@ function openHorPop(evt, cardEl) {
   const pop = document.createElement('div');
   pop.className = 'hor-pop';
   pop.innerHTML = renderHorPopContent(_horPopState);
+  // Tiñe el borde/resplandor de la ventana con el color elegido en el perfil del alumno
+  // (el mismo que ya se usa en su tarjeta del calendario), para que sea reconocible.
+  pop.style.borderColor = _horPopState.color + '55';
+  pop.style.boxShadow = '0 12px 32px -8px rgba(0,0,0,0.65), 0 0 22px -4px '+_horPopState.color+'45, 0 0 0 1px rgba(255,255,255,0.03)';
   document.body.appendChild(pop);
   positionHorPop(pop, cardEl);
 
@@ -4434,7 +4438,11 @@ function positionHorPop(pop, anchorEl) {
 
 // Activa/desactiva el modo edición del enlace (botón "Editar" arriba a la derecha, en la
 // misma línea que el nombre del alumno). Vuelve a pintar el contenido sin cerrar la ventana.
-function toggleHorPopLinkEdit() {
+function toggleHorPopLinkEdit(evt) {
+  // Evita que el clic burbujee hasta el listener "click afuera cierra la ventana": como esta
+  // función reemplaza el innerHTML de _horPopEl en el mismo tick, el botón original quedaría
+  // desconectado del DOM y _horPopEl.contains(e.target) daría falso, cerrando la ventana sola.
+  if (evt) evt.stopPropagation();
   if (!_horPopState || !_horPopEl) return;
   _horPopState.linkEditing = !_horPopState.linkEditing;
   _horPopEl.innerHTML = renderHorPopContent(_horPopState);
@@ -4458,7 +4466,7 @@ function renderHorPopContent(st) {
     +'<div style="flex:1;min-width:0">'
     +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">'
     +'<div class="hor-pop-name">'+name+'</div>'
-    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit()">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button>':'')
+    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit(event)">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button>':'')
     +'</div>'
     +'<div class="hor-pop-sub">'+dayLbl+' · '+start+'–'+end+'</div>'
     +'<span class="hor-pop-badge" style="background:'+(isDom?'rgba(239,68,68,0.15)':'rgba(79,182,255,0.15)')+';color:'+(isDom?'#ef4444':'#4fb6ff')+'">'+modality+'</span>'
@@ -4489,14 +4497,14 @@ function renderHorPopContent(st) {
           if (!link || linkEditing) {
             html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
               +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
-              +'<button class="hor-pop-link-btn" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
+              +'<button class="hor-pop-link-btn" style="background:'+color+'26;border-color:'+color+'66;color:'+color+'" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
           } else {
             html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<a class="hor-pop-link-join" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
+              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
           }
         } else if (link) {
           html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<a class="hor-pop-link-join" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
+            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
         } else {
           html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
             +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
