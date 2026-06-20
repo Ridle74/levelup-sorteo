@@ -4368,8 +4368,10 @@ function openHorPop(evt, cardEl) {
   const pop = document.createElement('div');
   pop.className = 'hor-pop';
   pop.innerHTML = renderHorPopContent(_horPopState);
-  // Tiñe el borde/resplandor de la ventana con el color elegido en el perfil del alumno
-  // (el mismo que ya se usa en su tarjeta del calendario), para que sea reconocible.
+  // Tiñe el fondo, borde y resplandor de la ventana con el color elegido en el perfil del
+  // alumno (el mismo que ya se usa en su tarjeta del calendario), para que sea reconocible.
+  // El degradado oscuro de abajo asegura que siga siendo opaco y legible (texto blanco).
+  pop.style.background = 'linear-gradient(160deg,'+_horPopState.color+'38,'+_horPopState.color+'12), linear-gradient(160deg,#11142a,#0a0c18)';
   pop.style.borderColor = _horPopState.color + '55';
   pop.style.boxShadow = '0 12px 32px -8px rgba(0,0,0,0.65), 0 0 22px -4px '+_horPopState.color+'45, 0 0 0 1px rgba(255,255,255,0.03)';
   document.body.appendChild(pop);
