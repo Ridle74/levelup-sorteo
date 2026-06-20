@@ -426,6 +426,8 @@ textarea.fsm { resize:none; height:64px; }
 .hor-pop-head { display:flex; align-items:flex-start; gap:8px; }
 .hor-pop-icon { font-size:20px; line-height:1.2; }
 .hor-pop-name { font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:900; color:#fff; line-height:1.1; }
+.hor-pop-edit-link-btn { flex-shrink:0; font-size:9px; font-weight:800; color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.14); border-radius:6px; padding:3px 8px; cursor:pointer; white-space:nowrap; }
+.hor-pop-edit-link-btn:hover { color:#fff; border-color:rgba(255,255,255,0.3); }
 .hor-pop-sub  { font-size:10px; font-weight:700; color:rgba(255,255,255,0.45); margin-top:2px; }
 .hor-pop-badge{ display:inline-block; font-size:8px; font-weight:900; letter-spacing:0.08em; text-transform:uppercase; padding:2px 7px; border-radius:6px; margin-top:4px; }
 .hor-pop-sec  { margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); }
@@ -4346,7 +4348,10 @@ async function perfilSavePin() {
 // Puntos y podios anteriores los puede ver cualquiera. El enlace de videollamada
 // solo lo ve el admin o el propio alumno dueño de esa clase, y solo si es Virtual.
 // ════════════════════════════════════════════════════════
-let _horPopEl = null, _horPopCard = null, _horPopCloseTimer = null;
+let _horPopEl = null, _horPopCard = null, _horPopCloseTimer = null, _horPopState = null;
+// Margen (px) de tolerancia: la ventana solo se cierra si el mouse se aleja BASTANTE de la
+// tarjeta + la propia ventana, no si se aleja un poquito (cruzando el espacio entre ambas).
+const HOR_POP_BUFFER = 70;
 
 function openHorPop(evt, cardEl) {
   evt.stopPropagation();
@@ -4354,30 +4359,22 @@ function openHorPop(evt, cardEl) {
 
   const sidRaw = cardEl.dataset.sid;
   const sid    = sidRaw === '' ? null : Number(sidRaw);
-  const date   = cardEl.dataset.date;
-  const start  = cardEl.dataset.start;
-  const end    = cardEl.dataset.end;
-  const modality = cardEl.dataset.modality;
-  const name   = cardEl.dataset.name;
-  const icon   = cardEl.dataset.icon;
-  const color  = cardEl.dataset.color || '#4fb6ff';
+  _horPopState = {
+    sid, date: cardEl.dataset.date, start: cardEl.dataset.start, end: cardEl.dataset.end,
+    modality: cardEl.dataset.modality, name: cardEl.dataset.name, icon: cardEl.dataset.icon,
+    color: cardEl.dataset.color || '#4fb6ff', linkEditing: false
+  };
 
   const pop = document.createElement('div');
   pop.className = 'hor-pop';
-  pop.innerHTML = renderHorPopContent(sid, name, icon, color, date, start, end, modality);
+  pop.innerHTML = renderHorPopContent(_horPopState);
   document.body.appendChild(pop);
   positionHorPop(pop, cardEl);
-
-  const scheduleClose = function(){ _horPopCloseTimer = setTimeout(closeHorPop, 260); };
-  const cancelClose   = function(){ clearTimeout(_horPopCloseTimer); };
-  cardEl.addEventListener('mouseleave', scheduleClose);
-  cardEl.addEventListener('mouseenter', cancelClose);
-  pop.addEventListener('mouseleave', scheduleClose);
-  pop.addEventListener('mouseenter', cancelClose);
 
   _horPopEl = pop;
   _horPopCard = cardEl;
   document.addEventListener('click', _horPopOutsideHandler);
+  document.addEventListener('mousemove', _horPopMoveHandler);
 }
 
 function _horPopOutsideHandler(e) {
@@ -4386,12 +4383,39 @@ function _horPopOutsideHandler(e) {
   closeHorPop();
 }
 
+// Calcula qué tan lejos está el mouse del rectángulo combinado (tarjeta + ventana emergente)
+// y solo programa el cierre si esa distancia supera HOR_POP_BUFFER — así moverse un poco
+// (incluso por el espacio vacío entre la tarjeta y la ventana) no la cierra de golpe.
+function _horPopMoveHandler(e) {
+  if (!_horPopEl || !_horPopCard) return;
+  const r1 = _horPopCard.getBoundingClientRect();
+  const r2 = _horPopEl.getBoundingClientRect();
+  const u = {
+    left:   Math.min(r1.left, r2.left),
+    right:  Math.max(r1.right, r2.right),
+    top:    Math.min(r1.top, r2.top),
+    bottom: Math.max(r1.bottom, r2.bottom)
+  };
+  const dx = Math.max(u.left - e.clientX, 0, e.clientX - u.right);
+  const dy = Math.max(u.top - e.clientY, 0, e.clientY - u.bottom);
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist > HOR_POP_BUFFER) {
+    if (!_horPopCloseTimer) _horPopCloseTimer = setTimeout(closeHorPop, 220);
+  } else {
+    clearTimeout(_horPopCloseTimer);
+    _horPopCloseTimer = null;
+  }
+}
+
 function closeHorPop() {
   clearTimeout(_horPopCloseTimer);
+  _horPopCloseTimer = null;
   if (_horPopEl && _horPopEl.parentNode) _horPopEl.parentNode.removeChild(_horPopEl);
   _horPopEl = null;
   _horPopCard = null;
+  _horPopState = null;
   document.removeEventListener('click', _horPopOutsideHandler);
+  document.removeEventListener('mousemove', _horPopMoveHandler);
 }
 
 function positionHorPop(pop, anchorEl) {
@@ -4408,20 +4432,39 @@ function positionHorPop(pop, anchorEl) {
   pop.style.top  = top + 'px';
 }
 
-function renderHorPopContent(sid, name, icon, color, date, start, end, modality) {
+// Activa/desactiva el modo edición del enlace (botón "Editar" arriba a la derecha, en la
+// misma línea que el nombre del alumno). Vuelve a pintar el contenido sin cerrar la ventana.
+function toggleHorPopLinkEdit() {
+  if (!_horPopState || !_horPopEl) return;
+  _horPopState.linkEditing = !_horPopState.linkEditing;
+  _horPopEl.innerHTML = renderHorPopContent(_horPopState);
+  if (_horPopCard) positionHorPop(_horPopEl, _horPopCard);
+}
+
+function renderHorPopContent(st) {
+  const { sid, name, icon, color, date, start, end, modality, linkEditing } = st;
   const isDom = (modality||'').toLowerCase().includes('dom');
   const dt = new Date(date+'T00:00:00');
   const DAY_NAMES_L = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   const dayLbl = DAY_NAMES_L[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1);
+  const hasSid = sid != null && !isNaN(sid);
+  const link = hasSid ? ((overrides[String(sid)]||{}).link || '') : '';
+  // El botón "Editar" solo aparece si el admin ve una clase virtual que YA tiene enlace
+  // guardado (si no tiene enlace, el formulario de guardar ya está visible directamente).
+  const showEditBtn = hasSid && isAdmin() && !isDom && !!link;
 
   let html = '<div class="hor-pop-head">'
     +'<div class="hor-pop-icon">'+icon+'</div>'
-    +'<div><div class="hor-pop-name">'+name+'</div>'
+    +'<div style="flex:1;min-width:0">'
+    +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">'
+    +'<div class="hor-pop-name">'+name+'</div>'
+    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit()">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button>':'')
+    +'</div>'
     +'<div class="hor-pop-sub">'+dayLbl+' · '+start+'–'+end+'</div>'
     +'<span class="hor-pop-badge" style="background:'+(isDom?'rgba(239,68,68,0.15)':'rgba(79,182,255,0.15)')+';color:'+(isDom?'#ef4444':'#4fb6ff')+'">'+modality+'</span>'
     +'</div></div>';
 
-  if (sid != null && !isNaN(sid)) {
+  if (hasSid) {
     const pts = getStudentPoints(sid);
     html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Puntos de este mes</div>'
       +'<div class="hor-pop-pts-row">'
@@ -4439,11 +4482,18 @@ function renderHorPopContent(sid, name, icon, color, date, start, end, modality)
     if (!isDom) {
       const canSee = isAdmin() || getLoggedId()===sid;
       if (canSee) {
-        const link = (overrides[String(sid)]||{}).link || '';
         if (isAdmin()) {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
-            +'<button class="hor-pop-link-btn" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
+          // Botón "Guardar enlace" solo si todavía no tiene enlace, o si se entró en modo
+          // edición desde el botón "Editar" de arriba — si ya tiene y no se está editando,
+          // se muestra el enlace guardado en su lugar (sin botón de guardar).
+          if (!link || linkEditing) {
+            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
+              +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
+              +'<button class="hor-pop-link-btn" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
+          } else {
+            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
+              +'<a class="hor-pop-link-join" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
+          }
         } else if (link) {
           html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
             +'<a class="hor-pop-link-join" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
@@ -4494,6 +4544,11 @@ async function saveHorPopLink(sid) {
   await REF.set({ overrides: ov }, { merge: true });
   overrides = ov;
   showToast('Enlace guardado ✓');
+  if (_horPopState && _horPopState.sid === sid && _horPopEl) {
+    _horPopState.linkEditing = false;
+    _horPopEl.innerHTML = renderHorPopContent(_horPopState);
+    positionHorPop(_horPopEl, _horPopCard);
+  }
 }
 
 function changeHorWeek(delta) {
