@@ -845,6 +845,16 @@ function toTitleCase(str) {
 }
 // Escapa comillas para insertar texto dentro de un atributo HTML delimitado por comillas dobles.
 function escAttr(s) { return String(s==null?'':s).replace(/"/g,'&quot;'); }
+// Asegura que un enlace tenga esquema (https://) — si no lo tiene, un <a href="meet.google.com/...">
+// se interpreta como ruta RELATIVA a la página actual (ej: https://emaths.me/student/meet.google.com/...)
+// en vez de abrir el sitio externo. Se usa al guardar y también al mostrar, por si quedó algún
+// enlace viejo guardado sin esquema.
+function normalizeLinkUrl(u) {
+  u = String(u==null?'':u).trim();
+  if (!u) return '';
+  if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
+  return u;
+}
 function formatFullDate(d) {
   if (!d) return 'No definida';
   const dt = d instanceof Date ? d : new Date(d);
@@ -4494,11 +4504,11 @@ function renderHorPopContent(st) {
               +'<button class="hor-pop-link-btn" style="background:'+color+'26;border-color:'+color+'66;color:'+color+'" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
           } else {
             html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
+              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
           }
         } else if (link) {
           html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(link)+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
+            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
         } else {
           html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
             +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
@@ -4536,7 +4546,7 @@ function getStudentPodiumHistory(id, name) {
 async function saveHorPopLink(sid) {
   const inp = document.getElementById('hor-pop-link-inp');
   if (!inp) return;
-  const val = inp.value.trim();
+  const val = normalizeLinkUrl(inp.value);
   const snap = await REF.get();
   const data = snap.exists ? snap.data() : {};
   const ov = data.overrides || {};
