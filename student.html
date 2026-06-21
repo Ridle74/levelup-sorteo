@@ -628,6 +628,14 @@ let taskGroupOpen    = null;      // null = mostrando los 3 grupos alfabéticos,
 let taskSearchQuery  = '';        // texto de búsqueda por título de tarea (pestañas Pendientes/Completadas)
 let prompts          = {};        // { [studentId]: [{id,name,text,ts,sharedId?,history:[{name,text,ts}]}] }
 let _promptHistOpen  = null;     // id del prompt con historial expandido
+// Acordeón alfabético del checkbox "ASIGNAR A" del formulario NUEVO PROMPT (pestaña Prompts).
+// groupOpen: null = colapsado (solo pills) | 'all' = mostrando todos | índice = grupo expandido.
+// checked: Set de sids marcados, vive aparte del DOM para no perderse al cambiar de grupo.
+let gpromptGroupOpen = null;
+let gpromptChecked   = new Set();
+// Mismo patrón para el checkbox "AGREGAR TAMBIÉN A:" del panel de prompts por alumno.
+let padGroupOpen     = null;
+let padChecked       = new Set();
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
 // Durante el traslape de mes (ver computeSorteoSchedule/getCupoMonthOffset), Ranking y Puntos
 // permiten alternar entre el mes oficial (el que se está sorteando, congelado, el mismo que
@@ -2372,6 +2380,30 @@ function computeAlphaGroups(students, numGroups) {
   }
   return groups;
 }
+// Acordeón reutilizable para listas de checkboxes "ASIGNAR A" / "AGREGAR TAMBIÉN A": en vez de
+// mostrar todos los checkboxes a la vez (se desbordan a varias líneas), muestra "🌍 Todos" + las
+// etiquetas alfabéticas (mismo patrón que FILTRAR POR ALUMNO en Tareas) en una sola línea, y al
+// hacer clic en una expande solo los checkboxes de ese grupo. Los marcados viven en `state.checked`
+// (Set), no en el DOM, para no perderse al cambiar de grupo (el refresh reescribe el HTML).
+function _renderAssignAccordion(students, state, opts) {
+  const alphaGroups = computeAlphaGroups(students, 3);
+  const visible = state.groupOpen === 'all' ? students
+    : (state.groupOpen !== null && alphaGroups[state.groupOpen]) ? alphaGroups[state.groupOpen].students
+    : [];
+  const pillOn  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff";
+  const pillOff = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)";
+  const pillsHtml = state.groupOpen === null
+    ? `<button onclick="${opts.toggleFn}('all')" style="${pillOff}">🌍 Todos</button>`
+      + alphaGroups.map((g,i)=>`<button onclick="${opts.toggleFn}(${i})" style="${pillOff}">🔤 ${g.label}</button>`).join('')
+    : `<button onclick="${opts.toggleFn}(null)" style="${pillOn}">${state.groupOpen==='all'?'🌍 Todos':'🔤 '+alphaGroups[state.groupOpen].label} ✕</button>`;
+  const boxesHtml = visible.map(s=>`
+    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
+      <input type="checkbox" data-sid="${s.id}" ${state.checked.has(String(s.id))?'checked':''} onchange="${opts.checkFn}('${s.id}',this.checked)" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
+    </label>`).join('');
+  const emptyHtml = visible.length===0 ? `<div style="font-size:10px;color:rgba(255,255,255,0.3);padding:4px 0">Elige Todos o un grupo ↑</div>` : '';
+  return `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">${pillsHtml}</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${boxesHtml}${emptyHtml}</div>`;
+}
 // Filtra (por taskSort: activas/vencidas/alumno/aprobar, y búsqueda de título) y ordena
 // la lista de tareas de un alumno/admin. ACTIVAS/VENCIDAS reemplazan a las antiguas
 // pestañas Pendientes/Completadas: VENCIDAS ahora también incluye las completadas y las
@@ -2516,13 +2548,8 @@ function vTareas() {
         <input type="text" id="prompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
         <textarea id="prompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:6px;resize:vertical;min-height:70px"></textarea>
         <div id="prompt-also-section">
-          <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:</div>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px" id="prompt-also-list">
-            ${students.filter(s=>String(s.id)!==taskStudentView).map(s=>`
-            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
-              <input type="checkbox" data-sid="${s.id}" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
-            </label>`).join('')}
-          </div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:${padChecked.size>0?` (${padChecked.size})`:''}</div>
+          <div id="prompt-also-list">${_renderAssignAccordion(students.filter(s=>String(s.id)!==taskStudentView), {groupOpen:padGroupOpen, checked:padChecked}, {toggleFn:'togglePadGroup', checkFn:'togglePadCheck'})}</div>
         </div>
         <button class="btn-sm btn-primary" id="prompt-save-btn" onclick="savePrompt('${taskStudentView}')" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
         <button id="prompt-cancel-btn" onclick="cancelEditPrompt()" style="display:none;width:100%;margin-top:6px;padding:7px;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:rgba(255,255,255,0.4);font-size:11px;font-weight:900;letter-spacing:0.1em;cursor:pointer">✕ CANCELAR EDICIÓN</button>
@@ -2928,6 +2955,9 @@ function setTaskStudentView(id) {
   // Clic sobre el alumno ya seleccionado = deseleccionar (toggle), no solo "seleccionar otra vez".
   taskStudentView = (idStr !== null && taskStudentView === idStr) ? null : idStr;
   if (!taskStudentView) taskGroupOpen = null;
+  // El panel "AGREGAR TAMBIÉN A:" es por alumno — al cambiar de alumno se limpia su selección.
+  padGroupOpen = null;
+  padChecked = new Set();
   router();
 }
 function toggleTaskGroup(i) {
@@ -2940,6 +2970,35 @@ function closeTaskGroup() {
   taskGroupOpen = null;
   taskStudentView = null;
   router();
+}
+// ── Acordeón "ASIGNAR A" del formulario NUEVO PROMPT (pestaña Prompts) ──
+// Reescriben SOLO #gprompt-assign-list, sin pasar por router(), para no perder lo ya
+// escrito en nombre/texto del prompt mientras se elige a quién asignarlo.
+function toggleGPromptGroup(g) {
+  gpromptGroupOpen = (gpromptGroupOpen === g) ? null : g;
+  _refreshGPromptAssign();
+}
+function toggleGPromptCheck(sid, checked) {
+  sid = String(sid);
+  if (checked) gpromptChecked.add(sid); else gpromptChecked.delete(sid);
+}
+function _refreshGPromptAssign() {
+  const el = document.getElementById('gprompt-assign-list'); if (!el) return;
+  el.innerHTML = _renderAssignAccordion(getStudents(), {groupOpen:gpromptGroupOpen, checked:gpromptChecked}, {toggleFn:'toggleGPromptGroup', checkFn:'toggleGPromptCheck'});
+}
+// ── Acordeón "AGREGAR TAMBIÉN A:" del panel de prompts por alumno ──
+function togglePadGroup(g) {
+  padGroupOpen = (padGroupOpen === g) ? null : g;
+  _refreshPadAssign();
+}
+function togglePadCheck(sid, checked) {
+  sid = String(sid);
+  if (checked) padChecked.add(sid); else padChecked.delete(sid);
+}
+function _refreshPadAssign() {
+  const el = document.getElementById('prompt-also-list'); if (!el) return;
+  const students = getStudents().filter(s=>String(s.id)!==taskStudentView);
+  el.innerHTML = _renderAssignAccordion(students, {groupOpen:padGroupOpen, checked:padChecked}, {toggleFn:'togglePadGroup', checkFn:'togglePadCheck'});
 }
 // Igual que _renderMsgsInPlace: reescribe SOLO #tasks-list, sin pasar por router(), para que
 // el input de búsqueda nunca pierda el foco mientras el usuario está escribiendo.
@@ -3041,8 +3100,7 @@ function savePrompt(studentId) {
   }
 
   // CREATE MODE
-  const checks = document.querySelectorAll('#prompt-also-list input[type=checkbox]:checked');
-  const alsoSids = [...checks].map(cb => String(cb.dataset.sid));
+  const alsoSids = [...padChecked];
   const isShared = alsoSids.length > 0;
   const ts = Date.now();
   const sharedId = isShared ? ts.toString() : undefined;
@@ -3050,6 +3108,8 @@ function savePrompt(studentId) {
   const entry = { id, name, text, ts, ...(isShared ? {sharedId} : {}) };
   prompts = _applyCreatePrompt(prompts, studentId, alsoSids, entry, sharedId);
   savePrompts(fresh => _applyCreatePrompt(fresh, studentId, alsoSids, entry, sharedId));
+  padGroupOpen = null;
+  padChecked = new Set();
   showToast('Prompt guardado.', 'success');
   router();
 }
@@ -3252,13 +3312,8 @@ function renderGlobalPromptForm() {
     <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">➕ NUEVO PROMPT</div>
     <input type="text" id="gprompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
     <textarea id="gprompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:8px;resize:vertical;min-height:70px"></textarea>
-    <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px" id="gprompt-assign-list">
-      ${students.map(s=>`
-      <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
-        <input type="checkbox" data-sid="${s.id}" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
-      </label>`).join('')}
-    </div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A${gpromptChecked.size>0?` (${gpromptChecked.size})`:''}</div>
+    <div id="gprompt-assign-list">${_renderAssignAccordion(students, {groupOpen:gpromptGroupOpen, checked:gpromptChecked}, {toggleFn:'toggleGPromptGroup', checkFn:'toggleGPromptCheck'})}</div>
     <button class="btn-sm btn-primary" onclick="saveGlobalPrompt()" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
   </div>`;
 }
@@ -3277,14 +3332,15 @@ function saveGlobalPrompt() {
   const text = (document.getElementById('gprompt-text')?.value||'').trim();
   if (!name) { showToast('Escribe un nombre para el prompt.'); return; }
   if (!text) { showToast('Escribe el texto del prompt.'); return; }
-  const checks = document.querySelectorAll('#gprompt-assign-list input[type=checkbox]:checked');
-  const sids = [...checks].map(cb => String(cb.dataset.sid));
+  const sids = [...gpromptChecked];
   if (sids.length === 0) { showToast('Selecciona al menos un alumno.'); return; }
   const ts = Date.now();
   const isShared = sids.length > 1;
   const sharedId = isShared ? String(ts) : undefined;
   prompts = _applyGlobalPrompt(prompts, sids, ts, isShared, sharedId, name, text);
   savePrompts(fresh => _applyGlobalPrompt(fresh, sids, ts, isShared, sharedId, name, text));
+  gpromptGroupOpen = null;
+  gpromptChecked = new Set();
   showToast('Prompt guardado.', 'success');
   router();
 }
