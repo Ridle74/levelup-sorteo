@@ -592,8 +592,9 @@ let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evit
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
 let appReady    = false;
 // true SOLO después de que REF.onSnapshot recibió con éxito el documento real de Firestore
-// al menos una vez en esta sesión. Mientras sea false, saveLms()/saveMeta() y cualquier
-// REF.set() que toque overrides/config/allocations se BLOQUEAN — así, si el listener de
+// al menos una vez en esta sesión. Mientras sea false, saveTasks()/savePointsLog()/savePrompts()/
+// saveTaskMultipliers()/savePointsHistory()/saveMeta() y cualquier REF.set() que toque
+// overrides/config/allocations se BLOQUEAN — así, si el listener de
 // Firestore falla al conectar (red lenta, dispositivo nuevo, wifi restrictivo, etc.), la app
 // no puede guardar por accidente el estado local vacío/por-defecto y borrar los datos reales
 // en la nube. Este es el fix para el bug recurrente de "los Puntos de todos se resetean".
@@ -976,11 +977,28 @@ function saveAllocationChange(num, action, ownerId) {
   });
 }
 
-function saveLms() {
+// Guarda SOLO un sub-campo puntual de "lms" (notación de punto de Firestore: 'lms.tasks',
+// 'lms.prompts', etc.), en vez de reescribir el mapa "lms" completo de una sola vez.
+// ANTES: saveLms() mandaba {tasks, points, pointsLog, taskMultipliers, pointsHistory, prompts}
+// juntos en un solo bloque. Firestore reemplaza ese bloque entero al recibirlo así (merge:true
+// no protege sub-campos dentro de un mismo valor de campo) — si CUALQUIERA de esas 6 variables
+// estaba desactualizada en memoria al guardar (ej. por otra pestaña/dispositivo conectado al
+// mismo tiempo), se sobreescribían también las otras 5, aunque el usuario solo hubiera tocado
+// una. Eso causó episodios reales de pérdida de datos donde editar Puntos borraba Tareas y
+// Prompts sin relación lógica entre sí — solo estaban "pegados" en el mismo paquete de guardado.
+// AHORA: cada función guarda únicamente el sub-campo que realmente cambió; Firestore deja
+// todos los demás sub-campos de "lms" intactos sin importar qué tan vieja esté la copia local
+// de esos otros campos.
+function saveLmsField(field, value) {
   if (!firestoreDataReady()) return;
-  REF.set({ lms:{ tasks, points, pointsLog, taskMultipliers, pointsHistory, prompts } }, { merge:true })
+  return REF.update({ ['lms.'+field]: value })
     .catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
+function saveTasks()           { return saveLmsField('tasks', tasks); }
+function savePointsLog()       { return saveLmsField('pointsLog', pointsLog); }
+function saveTaskMultipliers() { return saveLmsField('taskMultipliers', taskMultipliers); }
+function savePointsHistory()   { return saveLmsField('pointsHistory', pointsHistory); }
+function savePrompts()         { return saveLmsField('prompts', prompts); }
 
 // Devuelve [{date:Date, key:'YYYY-MM-DD', hours:N, slots}] de las fechas del mes (con offset) en que
 // el alumno tiene clase, junto con el total de horas de clase ese día — calculado fecha por fecha desde
@@ -2849,7 +2867,7 @@ function savePrompt(studentId) {
         return { ...p, name, text, ts: Date.now(), history: hist };
       });
     });
-    saveLms();
+    savePrompts();
     showToast('Prompt actualizado.' + (sharedId ? ' (aplicado a todos los alumnos compartidos)' : ''), 'success');
     router();
     return;
@@ -2869,7 +2887,7 @@ function savePrompt(studentId) {
     if (!prompts[sid]) prompts[sid] = [];
     prompts[sid].push({ ...entry, id: sharedId + '_' + i + '_' + sid });
   });
-  saveLms();
+  savePrompts();
   showToast('Prompt guardado.', 'success');
   router();
 }
@@ -2900,7 +2918,7 @@ function restorePromptVersion(promptId, studentId, histIdx) {
       return { ...p, name: version.name, text: version.text, ts: Date.now(), history: newHist };
     });
   });
-  saveLms();
+  savePrompts();
   showToast('Versión restaurada.', 'success');
   _promptHistOpen = null;
   router();
@@ -2945,7 +2963,7 @@ function deletePrompt(studentId, promptId) {
   const key = String(studentId);
   if (!prompts[key]) return;
   prompts[key] = prompts[key].filter(p => p.id !== promptId);
-  saveLms();
+  savePrompts();
   router();
 }
 // ── Vista "todos los prompts" (tab PROMPTS) ──────────────────────────────
@@ -3041,7 +3059,7 @@ function deleteAllLinkedPrompt(promptId) {
       return true;
     });
   });
-  saveLms();
+  savePrompts();
   showToast('Prompt eliminado.', 'success');
   router();
 }
@@ -3083,7 +3101,7 @@ function saveGlobalPrompt() {
     if (!prompts[sid]) prompts[sid] = [];
     prompts[sid].push(entry);
   });
-  saveLms();
+  savePrompts();
   showToast('Prompt guardado.', 'success');
   router();
 }
@@ -3236,13 +3254,13 @@ async function addTask() {
     tasks.push({ id: Date.now().toString(), completedBy: [], pendingReview: [], ...taskData });
     showToast('Tarea guardada.','success');
   }
-  saveLms();
+  saveTasks();
   _taskFileObj = null;
   go('tareas');
 }
 function deleteTask(id) {
   tasks=tasks.filter(t=>t.id!==id);
-  saveLms();
+  saveTasks();
   const el=document.getElementById('tc-'+id);
   if (el) el.remove();
   showToast('Tarea eliminada.','success');
@@ -3272,7 +3290,7 @@ function toggleTaskDone(id) {
       showToast('Marcada como hecha. Esperando aprobación del profesor.','success');
     }
   }
-  saveLms();
+  saveTasks();
   router(); // re-render completo para que el filtro Pendientes/Completadas se aplique correctamente
 }
 function approveTask(id, studentId) {
@@ -3285,7 +3303,7 @@ function approveTask(id, studentId) {
   const storedId = ri>-1 ? task.pendingReview[ri] : studentId;
   if (ri>-1) task.pendingReview.splice(ri,1);
   if (!task.completedBy.some(x=>String(x)===String(storedId))) task.completedBy.push(storedId);
-  saveLms();
+  saveTasks();
   showToast('Tarea aprobada.','success');
   router();
 }
@@ -3294,7 +3312,7 @@ function rejectTask(id, studentId) {
   if (!task.pendingReview) task.pendingReview=[];
   const ri=task.pendingReview.findIndex(x=>String(x)===String(studentId));
   if (ri>-1) task.pendingReview.splice(ri,1);
-  saveLms();
+  saveTasks();
   showToast('Entrega devuelta al alumno.','success');
   router();
 }
@@ -3416,7 +3434,7 @@ function archiveMonthIfNeeded() {
       pointsHistory[ym] = top3;
       changed = true;
     }
-    if (changed && isAdmin()) saveLms();
+    if (changed && isAdmin()) savePointsHistory();
   } catch(e) { /* silencioso: no debe romper la carga si algo falla aquí */ }
 }
 
@@ -3503,7 +3521,7 @@ function setTaskMult(studentId, value) {
   const totalEl=document.getElementById(`pts-total-${studentId}`);
   if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   clearTimeout(_multTimer);
-  _multTimer=setTimeout(()=>{ saveLms(); showToast('Multiplicador de Tareas guardado.','success'); },800);
+  _multTimer=setTimeout(()=>{ saveTaskMultipliers(); showToast('Multiplicador de Tareas guardado.','success'); },800);
 }
 
 // Genera N casillas (checkboxes) para un campo (hours/progress/tasks) de una fecha, según el arreglo guardado.
@@ -4612,7 +4630,7 @@ function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   const totalEl=document.getElementById(`pts-total-${studentId}`);
   if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ saveLms(); showToast('Puntos guardados.','success'); },800);
+  _ptsTimer=setTimeout(()=>{ savePointsLog(); showToast('Puntos guardados.','success'); },800);
 }
 
 // Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
@@ -4631,7 +4649,7 @@ function toggleAbsent(studentId, dateKey, checked) {
   const st=getStudents().find(x=>String(x.id)===key);
   if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
   clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ saveLms(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
+  _ptsTimer=setTimeout(()=>{ savePointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
 }
 
 // ════════════════════════════════════════════════════════
@@ -4724,7 +4742,7 @@ REF.onSnapshot(doc => {
       const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
       if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
         taskMultipliers[String(joanna.id)] = 3;
-        saveLms();
+        saveTaskMultipliers();
       }
     })();
   } else {
@@ -4769,7 +4787,7 @@ REF.onSnapshot(doc => {
   console.error('[Firebase]', err);
   document.getElementById('initial-loading').classList.add('hidden');
   // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
-  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea saveLms()/saveMeta()
+  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
   // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
   // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
   // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
