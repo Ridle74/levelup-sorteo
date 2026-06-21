@@ -2461,14 +2461,14 @@ function vTareas() {
         <button onclick="setTaskSort('student')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='student'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='student'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='student'?'#4fb6ff':'rgba(255,255,255,0.5)'}">👤 ALUMNO</button>
         <button onclick="setTaskStudentView(null)" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${!taskStudentView?'rgba(186,255,41,0.5)':'rgba(255,255,255,0.1)'};background:${!taskStudentView?'rgba(186,255,41,0.1)':'rgba(255,255,255,0.04)'};color:${!taskStudentView?'#baff29':'rgba(255,255,255,0.5)'}">🌍 Todos</button>
         ${groupOpen===null ? alphaGroups.map((g,i)=>`<button onclick="toggleTaskGroup(${i})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">🔤 ${g.label}</button>`).join('')
-          : `<button onclick="toggleTaskGroup(${groupOpen})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
+          : `<button onclick="closeTaskGroup()" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
             + alphaGroups[groupOpen].students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">${s.icon} ${s.name.split(' ')[0]}</button>`).join('')
         }
         <input type="text" id="task-search-input" placeholder="🔍 Buscar tarea por título / tema..." value="${String(taskSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setTaskSearch(this.value)" style="flex:1 1 160px;min-width:160px;box-sizing:border-box;padding:7px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif">
       </div>
     </div>` : ''}
 
-    ${admin && taskStudentView && svStudent ? `
+    ${admin && taskStudentView && svStudent && taskFilter==='prompts' ? `
     <div style="background:${svStudent.color}11;border:1px solid ${svStudent.color}33;border-radius:16px;padding:14px;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <div style="width:36px;height:36px;border-radius:10px;background:${svStudent.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${svStudent.icon}</div>
@@ -2916,12 +2916,21 @@ function setTaskSort(s) {
   router();
 }
 function setTaskStudentView(id) {
-  taskStudentView = id ? String(id) : null;
-  if (!id) taskGroupOpen = null;
+  const idStr = id ? String(id) : null;
+  // Clic sobre el alumno ya seleccionado = deseleccionar (toggle), no solo "seleccionar otra vez".
+  taskStudentView = (idStr !== null && taskStudentView === idStr) ? null : idStr;
+  if (!taskStudentView) taskGroupOpen = null;
   router();
 }
 function toggleTaskGroup(i) {
   taskGroupOpen = (taskGroupOpen === i) ? null : i;
+  router();
+}
+// La "✕" del grupo abierto cierra el grupo Y quita cualquier alumno seleccionado dentro de él
+// (siempre es uno de ese mismo grupo) — así siempre hay una salida clara para "quitar" al alumno.
+function closeTaskGroup() {
+  taskGroupOpen = null;
+  taskStudentView = null;
   router();
 }
 // Igual que _renderMsgsInPlace: reescribe SOLO #tasks-list, sin pasar por router(), para que
