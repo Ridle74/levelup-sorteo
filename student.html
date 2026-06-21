@@ -621,8 +621,8 @@ function viewFromLocation() {
 }
 
 let currentView = viewFromLocation();
-let taskFilter       = 'pending'; // 'pending' | 'done' | 'review' | 'msgs'
-let taskSort         = 'recent';  // 'recent' | 'old' | 'student' — recent/old ahora son estado (activa/vencida), no solo orden
+let taskFilter       = 'tasks';   // 'tasks' | 'prompts' | 'msgs'
+let taskSort         = 'recent';  // 'recent' (ACTIVAS) | 'old' (VENCIDAS) | 'student' (ALUMNO) | 'review' (APROBAR, admin)
 let taskStudentView  = null;      // null = todos, o String(id) = alumno específico
 let taskGroupOpen    = null;      // null = mostrando los 3 grupos alfabéticos, o índice del grupo expandido
 let taskSearchQuery  = '';        // texto de búsqueda por título de tarea (pestañas Pendientes/Completadas)
@@ -1187,14 +1187,14 @@ function buildNav(active) {
     ? [
         { r:'dashboard', i:'🏠', l:'Inicio' },
         { r:'tablero',   i:'🎮', l:'Tablero' },
-        { r:'tareas',    i:'📜', l:'Tareas' },
+        { r:'tareas',    i:'📜', l:'Actividad' },
         { r:'puntos',    i:'⚡', l:'Puntos' },
         { r:'horarios',  i:'📅', l:'Horarios' },
       ]
     : [
         { r:'dashboard', i:'🏠', l:'Inicio' },
         { r:'tablero',   i:'🎮', l:'Tablero' },
-        { r:'tareas',    i:'📜', l:'Tareas' },
+        { r:'tareas',    i:'📜', l:'Actividad' },
         { r:'puntos',    i:'⚡', l:'Puntos' },
         { r:'horarios',  i:'📅', l:'Horarios' },
         { r:'ranking',   i:'👑', l:'Ranking' },
@@ -2372,27 +2372,35 @@ function computeAlphaGroups(students, numGroups) {
   }
   return groups;
 }
-// Filtra (por taskFilter, búsqueda de título y, en pendientes/completadas, por vencimiento)
-// y ordena la lista de tareas de un alumno/admin. 'recent'/'old' dejaron de ser solo un orden:
-// ahora 'recent' = tareas activas (sin vencer o sin fecha límite) y 'old' = tareas ya vencidas.
+// Filtra (por taskSort: activas/vencidas/alumno/aprobar, y búsqueda de título) y ordena
+// la lista de tareas de un alumno/admin. ACTIVAS/VENCIDAS reemplazan a las antiguas
+// pestañas Pendientes/Completadas: VENCIDAS ahora también incluye las completadas y las
+// que esperan aprobación (ya no están "activas"). APROBAR reemplaza a la pestaña Aprobar.
 function _computeSortedTasks(myTasks, loggedId) {
-  let filtered = taskFilter==='done'
-    ? myTasks.filter(t => (t.completedBy||[]).includes(loggedId) || (t.pendingReview||[]).includes(loggedId))
-    : taskFilter==='review'
-      ? myTasks.filter(t => (t.pendingReview||[]).length > 0)
-      : myTasks.filter(t => !(t.completedBy||[]).includes(loggedId) && !(t.pendingReview||[]).includes(loggedId));
-
-  const searchableTabs = taskFilter==='pending' || taskFilter==='done';
-
-  if (searchableTabs && taskSearchQuery && taskSearchQuery.trim()) {
-    const q = normName(taskSearchQuery);
-    filtered = filtered.filter(t => normName(t.title).includes(q));
+  const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en hora local
+  let filtered;
+  if (taskSort === 'review') {
+    filtered = myTasks.filter(t => (t.pendingReview||[]).length > 0);
+  } else if (taskSort === 'old') {
+    filtered = myTasks.filter(t =>
+      (t.completedBy||[]).includes(loggedId) ||
+      (t.pendingReview||[]).includes(loggedId) ||
+      (t.due && t.due < todayStr)
+    );
+  } else if (taskSort === 'student') {
+    filtered = myTasks; // todas, sin filtrar por estado — el orden las agrupa por alumno
+  } else {
+    // 'recent' / ACTIVAS (default): ni completada, ni esperando aprobación, ni vencida
+    filtered = myTasks.filter(t =>
+      !(t.completedBy||[]).includes(loggedId) &&
+      !(t.pendingReview||[]).includes(loggedId) &&
+      (!t.due || t.due >= todayStr)
+    );
   }
 
-  if (searchableTabs) {
-    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en hora local
-    if (taskSort === 'recent') filtered = filtered.filter(t => !t.due || t.due >= todayStr);
-    else if (taskSort === 'old') filtered = filtered.filter(t => t.due && t.due < todayStr);
+  if (taskSort !== 'review' && taskSearchQuery && taskSearchQuery.trim()) {
+    const q = normName(taskSearchQuery);
+    filtered = filtered.filter(t => normName(t.title).includes(q));
   }
 
   return [...filtered].sort((a,b) => {
@@ -2433,7 +2441,7 @@ function vTareas() {
     <div class="task-hero">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.8)">📋 TAREAS</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.8)">📋 ACTIVIDAD</div>
           <div style="font-size:10px;color:rgba(255,255,255,0.75);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,0.7)">MATHS LEVEL UP</div>
         </div>
         <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:8px 16px;text-align:center">
@@ -2445,19 +2453,18 @@ function vTareas() {
     </div>
 
     <div class="tabs">
-      <button class="tab-btn${taskFilter==='pending'?' active':''}" onclick="setTaskFilter('pending')">📌 PENDIENTES (${pendingCount})</button>
-      <button class="tab-btn${taskFilter==='done'?' active':''}" onclick="setTaskFilter('done')">✅ COMPLETADAS (${completedCount})</button>
-      ${admin?`<button class="tab-btn${taskFilter==='review'?' active':''}" onclick="setTaskFilter('review')" style="position:relative">📝 APROBAR${reviewCount>0?` <span class="msgs-badge">${reviewCount>9?'9+':reviewCount}</span>`:''}</button>`:''}
+      <button class="tab-btn${taskFilter==='tasks'?' active':''}" onclick="setTaskFilter('tasks')">📌 TAREAS (${pendingCount})</button>
       ${admin?`<button class="tab-btn${taskFilter==='prompts'?' active':''}" onclick="setTaskFilter('prompts')">🧠 PROMPTS${allPromptGroups.length>0?` (${allPromptGroups.length})`:''}</button>`:''}
       <button class="tab-btn${taskFilter==='msgs'?' active':''}" onclick="setTaskFilter('msgs')" style="position:relative">💬 MENSAJES${totalMsgsUnread()>0?` <span class="msgs-badge">${totalMsgsUnread()>9?'9+':totalMsgsUnread()}</span>`:''}</button>
     </div>
 
-    ${admin && taskFilter!=='msgs' && taskFilter!=='review' && taskFilter!=='prompts' ? `
+    ${taskFilter==='tasks' ? `
     <div style="margin-bottom:8px">
-      <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR Y FILTRAR POR ALUMNO</div>
+      <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">${admin?'ORDENAR Y FILTRAR POR ALUMNO':'ORDENAR'}</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
-        <button onclick="setTaskSort('recent')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='recent'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='recent'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='recent'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕐 RECIENTES</button>
-        <button onclick="setTaskSort('old')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='old'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='old'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='old'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕰 ANTIGUAS</button>
+        <button onclick="setTaskSort('recent')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='recent'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='recent'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='recent'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🟢 ACTIVAS</button>
+        <button onclick="setTaskSort('old')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='old'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='old'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='old'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕰 VENCIDAS</button>
+        ${admin?`<button onclick="setTaskSort('review')" style="position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='review'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='review'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='review'?'#4fb6ff':'rgba(255,255,255,0.5)'}">📝 APROBAR${reviewCount>0?` <span class="msgs-badge">${reviewCount>9?'9+':reviewCount}</span>`:''}</button>
         <button onclick="setTaskSort('student')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='student'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='student'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='student'?'#4fb6ff':'rgba(255,255,255,0.5)'}">👤 ALUMNO</button>
         <button onclick="setTaskStudentView(null)" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${!taskStudentView?'rgba(186,255,41,0.5)':'rgba(255,255,255,0.1)'};background:${!taskStudentView?'rgba(186,255,41,0.1)':'rgba(255,255,255,0.04)'};color:${!taskStudentView?'#baff29':'rgba(255,255,255,0.5)'}">🌍 Todos</button>
         ${groupOpen===null ? alphaGroups.map((g,i)=>`<button onclick="toggleTaskGroup(${i})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">🔤 ${g.label}</button>`).join('')
@@ -2465,6 +2472,7 @@ function vTareas() {
             + alphaGroups[groupOpen].students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">${s.icon} ${s.name.split(' ')[0]}</button>`).join('')
         }
         <input type="text" id="task-search-input" placeholder="🔍 Buscar tarea por título / tema..." value="${String(taskSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setTaskSearch(this.value)" style="flex:1 1 160px;min-width:160px;box-sizing:border-box;padding:7px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif">
+        `:''}
       </div>
     </div>` : ''}
 
@@ -2567,16 +2575,16 @@ function vTareas() {
       <button class="btn-sm btn-primary" id="t-save-btn" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
     </div>`:''}
 
-    ${taskFilter==='msgs' ? '' : taskFilter==='review' ? `
-    <div id="tasks-list">
-      ${renderReviewQueue(sorted)}
-    </div>` : taskFilter==='prompts' ? `
+    ${taskFilter==='msgs' ? '' : taskFilter==='prompts' ? `
     <div id="tasks-list">
       ${renderGlobalPromptForm()}
       ${renderAllPromptsList(allPromptGroups)}
+    </div>` : taskSort==='review' ? `
+    <div id="tasks-list">
+      ${renderReviewQueue(sorted)}
     </div>` : `
     <div id="tasks-list">
-      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskFilter==='done'?'SIN TAREAS COMPLETADAS':'SIN TAREAS PENDIENTES'}</div></div>`
+      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskSort==='old'?'SIN TAREAS VENCIDAS':taskSort==='student'?'SIN TAREAS':'SIN TAREAS ACTIVAS'}</div></div>`
       : sorted.map(t => renderTask(t, loggedId)).join('')}
     </div>`}
   </div>
@@ -2945,7 +2953,7 @@ function refreshTasksListInPlace() {
     : allMyTasks;
   const sorted = _computeSortedTasks(myTasks, loggedId);
   el.innerHTML = sorted.length===0
-    ? `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskFilter==='done'?'SIN TAREAS COMPLETADAS':'SIN TAREAS PENDIENTES'}</div></div>`
+    ? `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskSort==='old'?'SIN TAREAS VENCIDAS':taskSort==='student'?'SIN TAREAS':'SIN TAREAS ACTIVAS'}</div></div>`
     : sorted.map(t => renderTask(t, loggedId)).join('');
 }
 function setTaskSearch(value) {
