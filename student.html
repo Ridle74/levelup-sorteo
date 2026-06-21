@@ -622,8 +622,10 @@ function viewFromLocation() {
 
 let currentView = viewFromLocation();
 let taskFilter       = 'pending'; // 'pending' | 'done' | 'review' | 'msgs'
-let taskSort         = 'recent';  // 'recent' | 'old' | 'student'
+let taskSort         = 'recent';  // 'recent' | 'old' | 'student' — recent/old ahora son estado (activa/vencida), no solo orden
 let taskStudentView  = null;      // null = todos, o String(id) = alumno específico
+let taskGroupOpen    = null;      // null = mostrando los 3 grupos alfabéticos, o índice del grupo expandido
+let taskSearchQuery  = '';        // texto de búsqueda por título de tarea (pestañas Pendientes/Completadas)
 let prompts          = {};        // { [studentId]: [{id,name,text,ts,sharedId?,history:[{name,text,ts}]}] }
 let _promptHistOpen  = null;     // id del prompt con historial expandido
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
@@ -2345,6 +2347,62 @@ function captureGanadores() {
 // ════════════════════════════════════════════════════════
 // VIEW: TAREAS
 // ════════════════════════════════════════════════════════
+// Agrupa a los alumnos en `numGroups` grupos contiguos por orden alfabético de primer nombre,
+// repartidos de forma pareja por CANTIDAD de alumnos (no por cantidad de letras), para que
+// "Todos" + las etiquetas de grupo siempre quepan en una sola línea sin importar cuántos
+// alumnos haya. Usa normName() para que acentos no afecten el orden ni el rótulo.
+function computeAlphaGroups(students, numGroups) {
+  const withFirst = students
+    .map(s => ({ s, first: s.name.split(' ')[0] || '' }))
+    .sort((a,b) => normName(a.first).localeCompare(normName(b.first)));
+  const n = withFirst.length;
+  const groups = [];
+  let start = 0;
+  for (let i = 0; i < numGroups && start < n; i++) {
+    const remaining = numGroups - i;
+    const size = Math.ceil((n - start) / remaining);
+    const slice = withFirst.slice(start, start + size);
+    const firstLetter = (normName(slice[0].first)[0] || '?').toUpperCase();
+    const lastLetter  = (normName(slice[slice.length-1].first)[0] || '?').toUpperCase();
+    groups.push({
+      label: firstLetter === lastLetter ? firstLetter : `${firstLetter}-${lastLetter}`,
+      students: slice.map(x => x.s)
+    });
+    start += size;
+  }
+  return groups;
+}
+// Filtra (por taskFilter, búsqueda de título y, en pendientes/completadas, por vencimiento)
+// y ordena la lista de tareas de un alumno/admin. 'recent'/'old' dejaron de ser solo un orden:
+// ahora 'recent' = tareas activas (sin vencer o sin fecha límite) y 'old' = tareas ya vencidas.
+function _computeSortedTasks(myTasks, loggedId) {
+  let filtered = taskFilter==='done'
+    ? myTasks.filter(t => (t.completedBy||[]).includes(loggedId) || (t.pendingReview||[]).includes(loggedId))
+    : taskFilter==='review'
+      ? myTasks.filter(t => (t.pendingReview||[]).length > 0)
+      : myTasks.filter(t => !(t.completedBy||[]).includes(loggedId) && !(t.pendingReview||[]).includes(loggedId));
+
+  const searchableTabs = taskFilter==='pending' || taskFilter==='done';
+
+  if (searchableTabs && taskSearchQuery && taskSearchQuery.trim()) {
+    const q = normName(taskSearchQuery);
+    filtered = filtered.filter(t => normName(t.title).includes(q));
+  }
+
+  if (searchableTabs) {
+    const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD en hora local
+    if (taskSort === 'recent') filtered = filtered.filter(t => !t.due || t.due >= todayStr);
+    else if (taskSort === 'old') filtered = filtered.filter(t => t.due && t.due < todayStr);
+  }
+
+  return [...filtered].sort((a,b) => {
+    if (taskSort === 'student') {
+      const getKey = t => !t.assignTo || t.assignTo==='all' ? 'zzz' : Array.isArray(t.assignTo) ? t.assignTo[0] : String(t.assignTo);
+      return getKey(a).localeCompare(getKey(b)) || parseInt(b.id||0)-parseInt(a.id||0);
+    }
+    return parseInt(b.id||0) - parseInt(a.id||0);
+  });
+}
 function vTareas() {
   const loggedId = getLoggedId();
   const admin = isAdmin();
@@ -2363,24 +2421,11 @@ function vTareas() {
   const pendingCount   = allMyTasks.filter(t => !(t.completedBy||[]).includes(loggedId) && !(t.pendingReview||[]).includes(loggedId)).length;
   const completedCount = allMyTasks.length - pendingCount;
   const reviewCount    = admin ? myTasks.reduce((acc,t) => acc + ((t.pendingReview||[]).length), 0) : 0;
-  const filtered = taskFilter==='done'
-    ? myTasks.filter(t => (t.completedBy||[]).includes(loggedId) || (t.pendingReview||[]).includes(loggedId))
-    : taskFilter==='review'
-      ? myTasks.filter(t => (t.pendingReview||[]).length > 0)
-      : myTasks.filter(t => !(t.completedBy||[]).includes(loggedId) && !(t.pendingReview||[]).includes(loggedId));
-
-  // Apply sort
-  const sorted = [...filtered].sort((a,b) => {
-    if (taskSort === 'recent') return parseInt(b.id||0) - parseInt(a.id||0);
-    if (taskSort === 'old')    return parseInt(a.id||0) - parseInt(b.id||0);
-    if (taskSort === 'student') {
-      const getKey = t => !t.assignTo || t.assignTo==='all' ? 'zzz' : Array.isArray(t.assignTo) ? t.assignTo[0] : String(t.assignTo);
-      return getKey(a).localeCompare(getKey(b)) || parseInt(b.id||0)-parseInt(a.id||0);
-    }
-    return 0;
-  });
+  const sorted = _computeSortedTasks(myTasks, loggedId);
 
   const students = getStudents();
+  const alphaGroups = computeAlphaGroups(students, 3);
+  const groupOpen = (taskGroupOpen!==null && alphaGroups[taskGroupOpen]) ? taskGroupOpen : null;
   const svStudent = taskStudentView ? students.find(s=>String(s.id)===taskStudentView) : null;
   const allPromptGroups = admin ? getAllUniquePrompts() : [];
   return `
@@ -2409,6 +2454,7 @@ function vTareas() {
 
     ${admin && taskFilter!=='msgs' && taskFilter!=='review' && taskFilter!=='prompts' ? `
     <div style="margin-bottom:8px">
+      <input type="text" id="task-search-input" placeholder="🔍 Buscar tarea por título / tema..." value="${String(taskSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setTaskSearch(this.value)" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif;margin-bottom:10px">
       <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
         <button onclick="setTaskSort('recent')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='recent'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='recent'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='recent'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕐 RECIENTES</button>
@@ -2416,11 +2462,12 @@ function vTareas() {
         <button onclick="setTaskSort('student')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='student'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='student'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='student'?'#4fb6ff':'rgba(255,255,255,0.5)'}">👤 ALUMNO</button>
       </div>
       <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">FILTRAR POR ALUMNO</div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
         <button onclick="setTaskStudentView(null)" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${!taskStudentView?'rgba(186,255,41,0.5)':'rgba(255,255,255,0.1)'};background:${!taskStudentView?'rgba(186,255,41,0.1)':'rgba(255,255,255,0.04)'};color:${!taskStudentView?'#baff29':'rgba(255,255,255,0.5)'}">🌍 Todos</button>
-        ${students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">
-          ${s.icon} ${s.name.split(' ')[0]}
-        </button>`).join('')}
+        ${groupOpen===null ? alphaGroups.map((g,i)=>`<button onclick="toggleTaskGroup(${i})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">🔤 ${g.label}</button>`).join('')
+          : `<button onclick="toggleTaskGroup(${groupOpen})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
+            + alphaGroups[groupOpen].students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">${s.icon} ${s.name.split(' ')[0]}</button>`).join('')
+        }
       </div>
     </div>` : ''}
 
@@ -2873,7 +2920,31 @@ function setTaskSort(s) {
 }
 function setTaskStudentView(id) {
   taskStudentView = id ? String(id) : null;
+  if (!id) taskGroupOpen = null;
   router();
+}
+function toggleTaskGroup(i) {
+  taskGroupOpen = (taskGroupOpen === i) ? null : i;
+  router();
+}
+// Igual que _renderMsgsInPlace: reescribe SOLO #tasks-list, sin pasar por router(), para que
+// el input de búsqueda nunca pierda el foco mientras el usuario está escribiendo.
+function refreshTasksListInPlace() {
+  const el = document.getElementById('tasks-list'); if (!el) return;
+  const loggedId = getLoggedId();
+  const admin = isAdmin();
+  const allMyTasks = admin ? tasks : tasks.filter(t => taskAssignedTo(t, loggedId));
+  const myTasks = admin && taskStudentView
+    ? allMyTasks.filter(t => taskAssignedTo(t, taskStudentView))
+    : allMyTasks;
+  const sorted = _computeSortedTasks(myTasks, loggedId);
+  el.innerHTML = sorted.length===0
+    ? `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskFilter==='done'?'SIN TAREAS COMPLETADAS':'SIN TAREAS PENDIENTES'}</div></div>`
+    : sorted.map(t => renderTask(t, loggedId)).join('');
+}
+function setTaskSearch(value) {
+  taskSearchQuery = value;
+  refreshTasksListInPlace();
 }
 // Lógica pura de "editar prompt" sobre UN objeto prompts dado (no toca variables globales):
 // reusada para la actualización local optimista y dentro de la transacción de guardado (sobre
