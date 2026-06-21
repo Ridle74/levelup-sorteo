@@ -598,6 +598,17 @@ let appReady    = false;
 // Firestore falla al conectar (red lenta, dispositivo nuevo, wifi restrictivo, etc.), la app
 // no puede guardar por accidente el estado local vacío/por-defecto y borrar los datos reales
 // en la nube. Este es el fix para el bug recurrente de "los Puntos de todos se resetean".
+// IMPORTANTE: este chequeo ahora se hace en DOS puntos, no solo uno: (1) cada función mutadora
+// (addTask, deleteTask, toggleTaskDone, approveTask, rejectTask, togglePointMark, toggleAbsent,
+// setTaskMult, savePrompt, restorePromptVersion, deletePrompt, deleteAllLinkedPrompt,
+// saveGlobalPrompt) ahora llama firestoreDataReady() ANTES de tocar cualquier variable local, no
+// solo al momento de guardar — así una edición ni siquiera se aplica en memoria si todavía no
+// llegó un snapshot real; y (2) saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/
+// savePointsHistory ahora guardan dentro de una TRANSACCIÓN de Firestore (saveLmsFieldTx) que
+// vuelve a leer el valor más reciente del servidor antes de escribir, en vez de confiar en la
+// copia local — así, aunque la copia local de un dispositivo esté desactualizada (típico al
+// recién conectar desde un dispositivo nuevo, con red lenta, o tras dejar una sesión abierta
+// varios días), nunca se pisa con datos viejos lo que ya quedó guardado en el servidor.
 let lmsDataLoaded = false;
 let clockTimer  = null;
 // La vista actual se obtiene directo de la URL: /student/<vista>
@@ -986,19 +997,64 @@ function saveAllocationChange(num, action, ownerId) {
 // mismo tiempo), se sobreescribían también las otras 5, aunque el usuario solo hubiera tocado
 // una. Eso causó episodios reales de pérdida de datos donde editar Puntos borraba Tareas y
 // Prompts sin relación lógica entre sí — solo estaban "pegados" en el mismo paquete de guardado.
-// AHORA: cada función guarda únicamente el sub-campo que realmente cambió; Firestore deja
-// todos los demás sub-campos de "lms" intactos sin importar qué tan vieja esté la copia local
-// de esos otros campos.
-function saveLmsField(field, value) {
-  if (!firestoreDataReady()) return;
-  return REF.update({ ['lms.'+field]: value })
-    .catch(e => { console.error(e); showToast('Error al guardar.'); });
+// AHORA cada función guarda únicamente el sub-campo que realmente cambió, Y ADEMÁS lo hace
+// dentro de una TRANSACCIÓN de Firestore (igual patrón que ya usa saveAllocationChange arriba):
+// en vez de escribir directo lo que esta pestaña tiene en memoria, primero vuelve a LEER
+// (tx.get(REF)) el valor más reciente de ese campo en el servidor, y aplica la modificación
+// del usuario sobre ESE dato fresco — nunca sobre la copia local, que pudo quedarse atrás si
+// otro dispositivo guardó algo mientras esta pestaña todavía no había recibido esa actualización
+// (el caso típico: dejar una sesión abierta varios días en un dispositivo, mientras se edita
+// desde otro). Esto cierra el hueco de raíz: aunque la copia local esté desactualizada, nunca se
+// pisa con datos viejos lo que ya quedó guardado en el servidor.
+// "transformFn" recibe el valor ACTUAL en el servidor (no el de esta pestaña) y devuelve el
+// nuevo valor a guardar; al terminar, sincroniza también la variable local con el resultado
+// real, por si el servidor tenía algo más nuevo que la copia local no tenía.
+function saveLmsFieldTx(field, transformFn) {
+  if (!firestoreDataReady()) return Promise.resolve();
+  return db.runTransaction(async tx => {
+    const snap  = await tx.get(REF);
+    const data  = snap.exists ? snap.data() : {};
+    const fresh = (data.lms || {})[field];
+    const updated = transformFn(fresh);
+    tx.update(REF, { ['lms.'+field]: updated });
+    return updated;
+  }).catch(e => { console.error(e); showToast('Error al guardar.'); });
 }
-function saveTasks()           { return saveLmsField('tasks', tasks); }
-function savePointsLog()       { return saveLmsField('pointsLog', pointsLog); }
-function saveTaskMultipliers() { return saveLmsField('taskMultipliers', taskMultipliers); }
-function savePointsHistory()   { return saveLmsField('pointsHistory', pointsHistory); }
-function savePrompts()         { return saveLmsField('prompts', prompts); }
+function saveTasks(transformFn) {
+  return saveLmsFieldTx('tasks', fresh => {
+    const updated = transformFn(Array.isArray(fresh) ? fresh : []);
+    tasks = updated;
+    return updated;
+  });
+}
+function savePointsLog(transformFn) {
+  return saveLmsFieldTx('pointsLog', fresh => {
+    const updated = transformFn((fresh && typeof fresh==='object') ? fresh : {});
+    pointsLog = updated;
+    return updated;
+  });
+}
+function saveTaskMultipliers(transformFn) {
+  return saveLmsFieldTx('taskMultipliers', fresh => {
+    const updated = transformFn((fresh && typeof fresh==='object') ? fresh : {});
+    taskMultipliers = updated;
+    return updated;
+  });
+}
+function savePointsHistory(transformFn) {
+  return saveLmsFieldTx('pointsHistory', fresh => {
+    const updated = transformFn((fresh && typeof fresh==='object') ? fresh : {});
+    pointsHistory = updated;
+    return updated;
+  });
+}
+function savePrompts(transformFn) {
+  return saveLmsFieldTx('prompts', fresh => {
+    const updated = transformFn((fresh && typeof fresh==='object') ? fresh : {});
+    prompts = updated;
+    return updated;
+  });
+}
 
 // Devuelve [{date:Date, key:'YYYY-MM-DD', hours:N, slots}] de las fechas del mes (con offset) en que
 // el alumno tiene clase, junto con el total de horas de clase ese día — calculado fecha por fecha desde
@@ -2819,7 +2875,67 @@ function setTaskStudentView(id) {
   taskStudentView = id ? String(id) : null;
   router();
 }
+// Lógica pura de "editar prompt" sobre UN objeto prompts dado (no toca variables globales):
+// reusada para la actualización local optimista y dentro de la transacción de guardado (sobre
+// el dato fresco del servidor), para que ninguna de las dos copias pueda desincronizarse.
+// getStudents() es una lista independiente (no forma parte del documento de Firestore que se
+// está leyendo/escribiendo aquí), así que es seguro usarla igual en ambas llamadas.
+function _applyEditPrompt(promptsObj, editingId, name, text) {
+  const p = JSON.parse(JSON.stringify(promptsObj || {}));
+  let origPrompt = null;
+  for (const sid of Object.keys(p)) {
+    const found = (p[sid]||[]).find(x => x.id === editingId);
+    if (found) { origPrompt = found; break; }
+  }
+  if (!origPrompt) return { prompts: p, sharedId: null, found: false };
+
+  let sharedId = origPrompt.sharedId || null;
+  // Prompts viejos sin sharedId: detectar copias por nombre+texto y vincularlas
+  if (!sharedId) {
+    const origName = origPrompt.name;
+    const origText = origPrompt.text;
+    const matchingSids = getStudents()
+      .map(s => String(s.id))
+      .filter(sid => (p[sid]||[]).some(x => x.name === origName && x.text === origText));
+    if (matchingSids.length > 1) {
+      sharedId = 'shared_' + Date.now().toString();
+      matchingSids.forEach(sid => {
+        p[sid] = p[sid].map(x =>
+          x.name === origName && x.text === origText ? { ...x, sharedId } : x
+        );
+      });
+    }
+  }
+  // Actualizar todas las copias vinculadas, guardando versión anterior en history
+  getStudents().forEach(s => {
+    const sid = String(s.id);
+    if (!p[sid]) return;
+    p[sid] = p[sid].map(x => {
+      const match = x.id === editingId || (sharedId && x.sharedId === sharedId);
+      if (!match) return x;
+      const hist = [...(x.history||[]), { name: x.name, text: x.text, ts: x.ts||Date.now() }]
+        .slice(-10); // máximo 10 versiones
+      return { ...x, name, text, ts: Date.now(), history: hist };
+    });
+  });
+  return { prompts: p, sharedId, found: true };
+}
+// Igual idea para "crear prompt": lógica pura sobre un objeto prompts dado. id/sharedId/ts se
+// calculan UNA SOLA VEZ afuera (no con Date.now() adentro) para que el resultado sea idéntico
+// sin importar cuántas veces Firestore tenga que reintentar la transacción internamente.
+function _applyCreatePrompt(promptsObj, studentId, alsoSids, entry, sharedId) {
+  const p = JSON.parse(JSON.stringify(promptsObj || {}));
+  const key = String(studentId);
+  if (!p[key]) p[key] = [];
+  p[key].push({ ...entry });
+  alsoSids.forEach((sid, i) => {
+    if (!p[sid]) p[sid] = [];
+    p[sid].push({ ...entry, id: sharedId + '_' + i + '_' + sid });
+  });
+  return p;
+}
 function savePrompt(studentId) {
+  if (!firestoreDataReady()) return;
   const name = (document.getElementById('prompt-name')?.value||'').trim();
   const text = (document.getElementById('prompt-text')?.value||'').trim();
   if (!name) { showToast('Escribe un nombre para el prompt.'); return; }
@@ -2828,47 +2944,13 @@ function savePrompt(studentId) {
   const editingId = document.getElementById('prompt-editing-id')?.value || '';
 
   if (editingId) {
-    // EDIT MODE — find the original prompt
-    let origPrompt = null;
-    for (const sid of Object.keys(prompts)) {
-      const found = (prompts[sid]||[]).find(p => p.id === editingId);
-      if (found) { origPrompt = found; break; }
-    }
-    if (!origPrompt) { showToast('Prompt no encontrado.'); return; }
-
-    let sharedId = origPrompt.sharedId || null;
-
-    // Prompts viejos sin sharedId: detectar copias por nombre+texto y vincularlas
-    if (!sharedId) {
-      const origName = origPrompt.name;
-      const origText = origPrompt.text;
-      const matchingSids = getStudents()
-        .map(s => String(s.id))
-        .filter(sid => (prompts[sid]||[]).some(p => p.name === origName && p.text === origText));
-      if (matchingSids.length > 1) {
-        sharedId = 'shared_' + Date.now().toString();
-        matchingSids.forEach(sid => {
-          prompts[sid] = prompts[sid].map(p =>
-            p.name === origName && p.text === origText ? { ...p, sharedId } : p
-          );
-        });
-      }
-    }
-
-    // Actualizar todas las copias vinculadas, guardando versión anterior en history
-    getStudents().forEach(s => {
-      const sid = String(s.id);
-      if (!prompts[sid]) return;
-      prompts[sid] = prompts[sid].map(p => {
-        const match = p.id === editingId || (sharedId && p.sharedId === sharedId);
-        if (!match) return p;
-        const hist = [...(p.history||[]), { name: p.name, text: p.text, ts: p.ts||Date.now() }]
-          .slice(-10); // máximo 10 versiones
-        return { ...p, name, text, ts: Date.now(), history: hist };
-      });
-    });
-    savePrompts();
-    showToast('Prompt actualizado.' + (sharedId ? ' (aplicado a todos los alumnos compartidos)' : ''), 'success');
+    const localResult = _applyEditPrompt(prompts, editingId, name, text);
+    if (!localResult.found) { showToast('Prompt no encontrado.'); return; }
+    prompts = localResult.prompts;
+    // El guardado vuelve a aplicar la misma edición sobre el dato fresco del servidor (no sobre
+    // esta copia local), dentro de una transacción — ver saveLmsFieldTx.
+    savePrompts(fresh => _applyEditPrompt(fresh, editingId, name, text).prompts);
+    showToast('Prompt actualizado.' + (localResult.sharedId ? ' (aplicado a todos los alumnos compartidos)' : ''), 'success');
     router();
     return;
   }
@@ -2877,17 +2959,12 @@ function savePrompt(studentId) {
   const checks = document.querySelectorAll('#prompt-also-list input[type=checkbox]:checked');
   const alsoSids = [...checks].map(cb => String(cb.dataset.sid));
   const isShared = alsoSids.length > 0;
-  const sharedId = isShared ? Date.now().toString() : undefined;
-  const id = Date.now().toString() + '_' + String(studentId);
-  const entry = { id, name, text, ts: Date.now(), ...(isShared ? {sharedId} : {}) };
-  const key = String(studentId);
-  if (!prompts[key]) prompts[key] = [];
-  prompts[key].push(entry);
-  alsoSids.forEach((sid, i) => {
-    if (!prompts[sid]) prompts[sid] = [];
-    prompts[sid].push({ ...entry, id: sharedId + '_' + i + '_' + sid });
-  });
-  savePrompts();
+  const ts = Date.now();
+  const sharedId = isShared ? ts.toString() : undefined;
+  const id = ts.toString() + '_' + String(studentId);
+  const entry = { id, name, text, ts, ...(isShared ? {sharedId} : {}) };
+  prompts = _applyCreatePrompt(prompts, studentId, alsoSids, entry, sharedId);
+  savePrompts(fresh => _applyCreatePrompt(fresh, studentId, alsoSids, entry, sharedId));
   showToast('Prompt guardado.', 'success');
   router();
 }
@@ -2895,30 +2972,34 @@ function togglePromptHistory(promptId) {
   _promptHistOpen = _promptHistOpen === promptId ? null : promptId;
   router();
 }
-function restorePromptVersion(promptId, studentId, histIdx) {
-  // Find sharedId
+function _applyRestorePromptVersion(promptsObj, promptId, histIdx) {
+  const p = JSON.parse(JSON.stringify(promptsObj || {}));
   let sharedId = null;
-  for (const sid of Object.keys(prompts)) {
-    const found = (prompts[sid]||[]).find(p => p.id === promptId);
+  for (const sid of Object.keys(p)) {
+    const found = (p[sid]||[]).find(x => x.id === promptId);
     if (found) { sharedId = found.sharedId || null; break; }
   }
-  // Restore across all linked students
   getStudents().forEach(s => {
     const sid = String(s.id);
-    if (!prompts[sid]) return;
-    prompts[sid] = prompts[sid].map(p => {
-      const match = p.id === promptId || (sharedId && p.sharedId === sharedId);
-      if (!match) return p;
-      const hist = p.history || [];
+    if (!p[sid]) return;
+    p[sid] = p[sid].map(x => {
+      const match = x.id === promptId || (sharedId && x.sharedId === sharedId);
+      if (!match) return x;
+      const hist = x.history || [];
       const version = hist[histIdx];
-      if (!version) return p;
+      if (!version) return x;
       // Save current as new history entry, then restore
-      const newHist = [...hist.filter((_,i)=>i!==histIdx), { name: p.name, text: p.text, ts: p.ts }]
+      const newHist = [...hist.filter((_,i)=>i!==histIdx), { name: x.name, text: x.text, ts: x.ts }]
         .slice(-10); // máximo 10 versiones
-      return { ...p, name: version.name, text: version.text, ts: Date.now(), history: newHist };
+      return { ...x, name: version.name, text: version.text, ts: Date.now(), history: newHist };
     });
   });
-  savePrompts();
+  return p;
+}
+function restorePromptVersion(promptId, studentId, histIdx) {
+  if (!firestoreDataReady()) return;
+  prompts = _applyRestorePromptVersion(prompts, promptId, histIdx);
+  savePrompts(fresh => _applyRestorePromptVersion(fresh, promptId, histIdx));
   showToast('Versión restaurada.', 'success');
   _promptHistOpen = null;
   router();
@@ -2960,10 +3041,15 @@ function copyPrompt(promptId, studentId) {
   navigator.clipboard.writeText(txt).then(()=>showToast('Prompt copiado.','success')).catch(()=>showToast('No se pudo copiar.'));
 }
 function deletePrompt(studentId, promptId) {
+  if (!firestoreDataReady()) return;
   const key = String(studentId);
   if (!prompts[key]) return;
   prompts[key] = prompts[key].filter(p => p.id !== promptId);
-  savePrompts();
+  savePrompts(fresh => {
+    const p = { ...fresh };
+    if (p[key]) p[key] = p[key].filter(x => x.id !== promptId);
+    return p;
+  });
   router();
 }
 // ── Vista "todos los prompts" (tab PROMPTS) ──────────────────────────────
@@ -3046,20 +3132,26 @@ function copyPromptGlobal(promptId) {
 }
 // Borra el prompt de TODOS los alumnos vinculados (mismo sharedId), a diferencia
 // de deletePrompt() que solo borra la copia de un alumno puntual.
-function deleteAllLinkedPrompt(promptId) {
+function _applyDeleteAllLinkedPrompt(promptsObj, promptId) {
+  const p = JSON.parse(JSON.stringify(promptsObj || {}));
   let sharedId = null;
-  for (const sid of Object.keys(prompts)) {
-    const found = (prompts[sid]||[]).find(p => p.id === promptId);
+  for (const sid of Object.keys(p)) {
+    const found = (p[sid]||[]).find(x => x.id === promptId);
     if (found) { sharedId = found.sharedId || null; break; }
   }
-  Object.keys(prompts).forEach(sid => {
-    prompts[sid] = (prompts[sid]||[]).filter(p => {
-      if (p.id === promptId) return false;
-      if (sharedId && p.sharedId === sharedId) return false;
+  Object.keys(p).forEach(sid => {
+    p[sid] = (p[sid]||[]).filter(x => {
+      if (x.id === promptId) return false;
+      if (sharedId && x.sharedId === sharedId) return false;
       return true;
     });
   });
-  savePrompts();
+  return p;
+}
+function deleteAllLinkedPrompt(promptId) {
+  if (!firestoreDataReady()) return;
+  prompts = _applyDeleteAllLinkedPrompt(prompts, promptId);
+  savePrompts(fresh => _applyDeleteAllLinkedPrompt(fresh, promptId));
   showToast('Prompt eliminado.', 'success');
   router();
 }
@@ -3085,7 +3177,17 @@ function renderGlobalPromptForm() {
     <button class="btn-sm btn-primary" onclick="saveGlobalPrompt()" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
   </div>`;
 }
+function _applyGlobalPrompt(promptsObj, sids, ts, isShared, sharedId, name, text) {
+  const p = JSON.parse(JSON.stringify(promptsObj || {}));
+  sids.forEach((sid, i) => {
+    const entry = { id: ts + '_' + i + '_' + sid, name, text, ts, ...(isShared ? {sharedId} : {}) };
+    if (!p[sid]) p[sid] = [];
+    p[sid].push(entry);
+  });
+  return p;
+}
 function saveGlobalPrompt() {
+  if (!firestoreDataReady()) return;
   const name = (document.getElementById('gprompt-name')?.value||'').trim();
   const text = (document.getElementById('gprompt-text')?.value||'').trim();
   if (!name) { showToast('Escribe un nombre para el prompt.'); return; }
@@ -3096,12 +3198,8 @@ function saveGlobalPrompt() {
   const ts = Date.now();
   const isShared = sids.length > 1;
   const sharedId = isShared ? String(ts) : undefined;
-  sids.forEach((sid, i) => {
-    const entry = { id: ts + '_' + i + '_' + sid, name, text, ts, ...(isShared ? {sharedId} : {}) };
-    if (!prompts[sid]) prompts[sid] = [];
-    prompts[sid].push(entry);
-  });
-  savePrompts();
+  prompts = _applyGlobalPrompt(prompts, sids, ts, isShared, sharedId, name, text);
+  savePrompts(fresh => _applyGlobalPrompt(fresh, sids, ts, isShared, sharedId, name, text));
   showToast('Prompt guardado.', 'success');
   router();
 }
@@ -3201,6 +3299,7 @@ function openEditTask(id) {
 }
 
 async function addTask() {
+  if (!firestoreDataReady()) return;
   const title=(document.getElementById('t-title')?.value||'').trim();
   if (!title) { showToast('Escribe un título.'); return; }
   const editingId = document.getElementById('t-editing-id')?.value||'';
@@ -3246,73 +3345,112 @@ async function addTask() {
     ...(promptEntry ? {promptId: promptEntry.id, promptName: promptEntry.name} : {promptId:'', promptName:''}),
     ...(att ? {att} : {})
   };
+  const newId = Date.now().toString();
   if (editingId) {
     const idx = tasks.findIndex(t=>t.id===editingId);
     if (idx > -1) { tasks[idx] = { ...tasks[idx], ...taskData }; if (!att) delete tasks[idx].att; }
     showToast('Tarea actualizada.','success');
   } else {
-    tasks.push({ id: Date.now().toString(), completedBy: [], pendingReview: [], ...taskData });
+    tasks.push({ id: newId, completedBy: [], pendingReview: [], ...taskData });
     showToast('Tarea guardada.','success');
   }
-  saveTasks();
+  // El transform se vuelve a aplicar sobre el arreglo FRESCO leído del servidor dentro de la
+  // transacción (saveLmsFieldTx) — no asume que "tasks" en memoria sigue siendo la fuente de
+  // verdad, así que una tarea creada/editada en otro dispositivo mientras esta pestaña estaba
+  // desactualizada no se pierde.
+  saveTasks(arr => {
+    if (editingId) {
+      return arr.map(t => {
+        if (t.id !== editingId) return t;
+        const merged = { ...t, ...taskData };
+        if (!att) delete merged.att;
+        return merged;
+      });
+    }
+    return [...arr, { id: newId, completedBy: [], pendingReview: [], ...taskData }];
+  });
   _taskFileObj = null;
   go('tareas');
 }
 function deleteTask(id) {
+  if (!firestoreDataReady()) return;
   tasks=tasks.filter(t=>t.id!==id);
-  saveTasks();
+  saveTasks(arr => arr.filter(t=>t.id!==id));
   const el=document.getElementById('tc-'+id);
   if (el) el.remove();
   showToast('Tarea eliminada.','success');
 }
-function toggleTaskDone(id) {
-  const loggedId=getLoggedId();
-  const task=tasks.find(t=>t.id===id); if (!task) return;
-  if (!task.completedBy)   task.completedBy=[];
-  if (!task.pendingReview) task.pendingReview=[];
-  if (isAdmin()) {
+// Aplica la lógica de marcar/desmarcar una tarea como hecha sobre UN objeto de tarea dado, sin
+// tocar variables globales — se usa tanto para la actualización local optimista como dentro de
+// la transacción de guardado (sobre el dato fresco del servidor), para que ambas copias se
+// calculen exactamente igual y no puedan desincronizarse entre sí.
+function _toggleTaskDoneOnTask(task, loggedId, admin) {
+  const t = { ...task, completedBy:[...(task.completedBy||[])], pendingReview:[...(task.pendingReview||[])] };
+  if (admin) {
     // El admin marca/desmarca directamente, sin pasar por aprobación (es su propio criterio).
-    const idx=task.completedBy.indexOf(loggedId);
-    if (idx>-1) task.completedBy.splice(idx,1);
-    else { task.completedBy.push(loggedId); const ri=task.pendingReview.indexOf(loggedId); if (ri>-1) task.pendingReview.splice(ri,1); }
+    const idx=t.completedBy.indexOf(loggedId);
+    if (idx>-1) t.completedBy.splice(idx,1);
+    else { t.completedBy.push(loggedId); const ri=t.pendingReview.indexOf(loggedId); if (ri>-1) t.pendingReview.splice(ri,1); }
   } else {
     // El alumno: "MARCAR COMO HECHA" envía la tarea a revisión (pendingReview), no la completa
     // directamente. Si ya está aprobada (completedBy) puede desmarcarla. Si está esperando
     // aprobación, puede cancelar su propia entrega (volver a pendiente).
-    const doneIdx = task.completedBy.indexOf(loggedId);
-    const revIdx  = task.pendingReview.indexOf(loggedId);
+    const doneIdx = t.completedBy.indexOf(loggedId);
+    const revIdx  = t.pendingReview.indexOf(loggedId);
     if (doneIdx>-1) {
-      task.completedBy.splice(doneIdx,1);
+      t.completedBy.splice(doneIdx,1);
     } else if (revIdx>-1) {
-      task.pendingReview.splice(revIdx,1);
+      t.pendingReview.splice(revIdx,1);
     } else {
-      task.pendingReview.push(loggedId);
-      showToast('Marcada como hecha. Esperando aprobación del profesor.','success');
+      t.pendingReview.push(loggedId);
     }
   }
-  saveTasks();
+  return t;
+}
+function toggleTaskDone(id) {
+  if (!firestoreDataReady()) return;
+  const loggedId=getLoggedId();
+  const idx=tasks.findIndex(t=>t.id===id); if (idx<0) return;
+  const task = tasks[idx];
+  const admin = isAdmin();
+  const wasPending = (task.pendingReview||[]).includes(loggedId);
+  const wasDone    = (task.completedBy||[]).includes(loggedId);
+  tasks[idx] = _toggleTaskDoneOnTask(task, loggedId, admin);
+  if (!admin && !wasPending && !wasDone) showToast('Marcada como hecha. Esperando aprobación del profesor.','success');
+  saveTasks(arr => arr.map(t => t.id===id ? _toggleTaskDoneOnTask(t, loggedId, admin) : t));
   router(); // re-render completo para que el filtro Pendientes/Completadas se aplique correctamente
 }
-function approveTask(id, studentId) {
-  const task=tasks.find(t=>t.id===id); if (!task) return;
-  if (!task.completedBy)   task.completedBy=[];
-  if (!task.pendingReview) task.pendingReview=[];
-  const ri=task.pendingReview.findIndex(x=>String(x)===String(studentId));
+// Igual que _toggleTaskDoneOnTask: lógica pura sobre un objeto de tarea, reusada en la
+// actualización local y dentro de la transacción de guardado.
+function _approveTaskOnTask(task, studentId) {
+  const t = { ...task, completedBy:[...(task.completedBy||[])], pendingReview:[...(task.pendingReview||[])] };
+  const ri=t.pendingReview.findIndex(x=>String(x)===String(studentId));
   // Reusar el valor ya almacenado en pendingReview (no el string del onclick) para que el tipo
   // coincida con el que el alumno usa al comparar su propio loggedId con completedBy.includes(...).
-  const storedId = ri>-1 ? task.pendingReview[ri] : studentId;
-  if (ri>-1) task.pendingReview.splice(ri,1);
-  if (!task.completedBy.some(x=>String(x)===String(storedId))) task.completedBy.push(storedId);
-  saveTasks();
+  const storedId = ri>-1 ? t.pendingReview[ri] : studentId;
+  if (ri>-1) t.pendingReview.splice(ri,1);
+  if (!t.completedBy.some(x=>String(x)===String(storedId))) t.completedBy.push(storedId);
+  return t;
+}
+function approveTask(id, studentId) {
+  if (!firestoreDataReady()) return;
+  const idx=tasks.findIndex(t=>t.id===id); if (idx<0) return;
+  tasks[idx] = _approveTaskOnTask(tasks[idx], studentId);
+  saveTasks(arr => arr.map(t => t.id===id ? _approveTaskOnTask(t, studentId) : t));
   showToast('Tarea aprobada.','success');
   router();
 }
+function _rejectTaskOnTask(task, studentId) {
+  const t = { ...task, pendingReview:[...(task.pendingReview||[])] };
+  const ri=t.pendingReview.findIndex(x=>String(x)===String(studentId));
+  if (ri>-1) t.pendingReview.splice(ri,1);
+  return t;
+}
 function rejectTask(id, studentId) {
-  const task=tasks.find(t=>t.id===id); if (!task) return;
-  if (!task.pendingReview) task.pendingReview=[];
-  const ri=task.pendingReview.findIndex(x=>String(x)===String(studentId));
-  if (ri>-1) task.pendingReview.splice(ri,1);
-  saveTasks();
+  if (!firestoreDataReady()) return;
+  const idx=tasks.findIndex(t=>t.id===id); if (idx<0) return;
+  tasks[idx] = _rejectTaskOnTask(tasks[idx], studentId);
+  saveTasks(arr => arr.map(t => t.id===id ? _rejectTaskOnTask(t, studentId) : t));
   showToast('Entrega devuelta al alumno.','success');
   router();
 }
@@ -3424,17 +3562,26 @@ function getTotalPts2(id, monthOffset) {
 function archiveMonthIfNeeded() {
   try {
     const now = new Date();
-    let changed = false;
+    const newEntries = {}; // {ym: top3} — meses detectados como pendientes de archivar
     for (let off = -1; off >= -6; off--) {
       const d = new Date(now); d.setMonth(d.getMonth()+off);
       const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-      if (pointsHistory[ym]) continue; // ya archivado
+      if (pointsHistory[ym]) continue; // ya archivado (según copia local)
       const top3 = getMonthTop3(off).filter(p => p.pts > 0);
       if (top3.length === 0) continue; // ese mes no tiene puntos registrados
-      pointsHistory[ym] = top3;
-      changed = true;
+      newEntries[ym] = top3;
     }
-    if (changed && isAdmin()) savePointsHistory();
+    const ymKeys = Object.keys(newEntries);
+    if (ymKeys.length && isAdmin()) {
+      Object.assign(pointsHistory, newEntries); // optimista local
+      // Al guardar, vuelve a leer pointsHistory fresco del servidor y solo agrega los meses que
+      // SIGAN faltando ahí — si otra pestaña ya los archivó mientras tanto, no los pisa.
+      savePointsHistory(fresh => {
+        const merged = {...fresh};
+        for (const ym of ymKeys) if (!merged[ym]) merged[ym] = newEntries[ym];
+        return merged;
+      });
+    }
   } catch(e) { /* silencioso: no debe romper la carga si algo falla aquí */ }
 }
 
@@ -3514,14 +3661,28 @@ function vPtsAdminPanel(s) {
 // Permite al admin ajustar, sin tocar código, cuánto vale cada cuadradito de Tareas para un alumno
 // (p.ej. si en el futuro otro alumno lleva temas de nivel avanzado como Joanna, basta con poner 3 aquí).
 let _multTimer=null;
+// Misma idea que _ptsPendingEdits: acumula los cambios de multiplicador todavía no guardados
+// para reproducirlos sobre el dato fresco del servidor al momento de guardar (ver saveLmsFieldTx).
+let _multPendingEdits = []; // [{studentId, value}]
+function _flushTaskMultipliers() {
+  const edits = _multPendingEdits.splice(0);
+  if (!edits.length) return;
+  saveTaskMultipliers(fresh => {
+    const obj = {...fresh};
+    for (const e of edits) obj[String(e.studentId)] = e.value;
+    return obj;
+  });
+}
 function setTaskMult(studentId, value) {
+  if (!firestoreDataReady()) return;
   _lastPtsLocalEdit = Date.now();
   const v = Math.max(1, Math.min(10, Math.round(value||1)));
   taskMultipliers[String(studentId)] = v;
+  _multPendingEdits.push({studentId, value:v});
   const totalEl=document.getElementById(`pts-total-${studentId}`);
   if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   clearTimeout(_multTimer);
-  _multTimer=setTimeout(()=>{ saveTaskMultipliers(); showToast('Multiplicador de Tareas guardado.','success'); },800);
+  _multTimer=setTimeout(()=>{ _flushTaskMultipliers(); showToast('Multiplicador de Tareas guardado.','success'); },800);
 }
 
 // Genera N casillas (checkboxes) para un campo (hours/progress/tasks) de una fecha, según el arreglo guardado.
@@ -4616,8 +4777,40 @@ function changePtsMonth(delta) {
   if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
 }
 let _ptsTimer=null;
+// Cola de ediciones de Puntos todavía no guardadas (se vacía al disparar _flushPointsLog).
+// Como togglePointMark/toggleAbsent comparten un mismo timer debounced (para no mandar un
+// guardado por cada clic), varias ediciones pueden acumularse antes de guardar. Por eso el
+// guardado real no escribe directo la copia local de "pointsLog": vuelve a leer el dato fresco
+// del servidor (saveLmsFieldTx) y "reproduce" aquí, en orden, cada edición pendiente sobre ESE
+// dato fresco — así una edición hecha desde otro dispositivo mientras esta pestaña estaba
+// desactualizada no se pierde ni se pisa.
+let _ptsPendingEdits = [];
+function _applyPtsEditsToLog(freshLog, edits) {
+  const log = JSON.parse(JSON.stringify(freshLog || {}));
+  for (const edit of edits) {
+    const key = String(edit.studentId);
+    if (!log[key]) log[key]={};
+    if (!log[key][edit.dateKey]) log[key][edit.dateKey]={hours:[],progress:[],tasks:[]};
+    const entry = log[key][edit.dateKey];
+    if (edit.type === 'mark') {
+      if (!Array.isArray(entry[edit.field])) entry[edit.field]=[];
+      while (entry[edit.field].length < edit.count) entry[edit.field].push(false);
+      entry[edit.field][edit.idx]=!!edit.checked;
+    } else { // 'absent'
+      entry.absent = !!edit.checked;
+      if (edit.checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
+    }
+  }
+  return log;
+}
+function _flushPointsLog() {
+  const edits = _ptsPendingEdits.splice(0); // toma todas las ediciones pendientes y vacía la cola
+  if (!edits.length) return;
+  savePointsLog(fresh => _applyPtsEditsToLog(fresh, edits));
+}
 // idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
 function togglePointMark(studentId, dateKey, field, idx, count, checked) {
+  if (!firestoreDataReady()) return;
   _lastPtsLocalEdit = Date.now();
   const key=String(studentId);
   if (!pointsLog[key]) pointsLog[key]={};
@@ -4626,16 +4819,18 @@ function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   if (!Array.isArray(entry[field])) entry[field]=[];
   while (entry[field].length < count) entry[field].push(false);
   entry[field][idx]=!!checked;
+  _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
   // Refresca el total mostrado en la cabecera de la fila sin re-render completo
   const totalEl=document.getElementById(`pts-total-${studentId}`);
   if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ savePointsLog(); showToast('Puntos guardados.','success'); },800);
+  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast('Puntos guardados.','success'); },800);
 }
 
 // Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
 // Horas/Progreso/Tareas de ese día y se excluye del cálculo de puntos (no suma ni resta).
 function toggleAbsent(studentId, dateKey, checked) {
+  if (!firestoreDataReady()) return;
   _lastPtsLocalEdit = Date.now();
   const key=String(studentId);
   if (!pointsLog[key]) pointsLog[key]={};
@@ -4643,13 +4838,14 @@ function toggleAbsent(studentId, dateKey, checked) {
   const entry = pointsLog[key][dateKey];
   entry.absent = !!checked;
   if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
+  _ptsPendingEdits.push({type:'absent', studentId, dateKey, checked});
   const totalEl=document.getElementById(`pts-total-${studentId}`);
   if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
   const cont=document.getElementById(`pts-dates-${studentId}`);
   const st=getStudents().find(x=>String(x.id)===key);
   if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
   clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ savePointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
+  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
 }
 
 // ════════════════════════════════════════════════════════
@@ -4742,7 +4938,7 @@ REF.onSnapshot(doc => {
       const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
       if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
         taskMultipliers[String(joanna.id)] = 3;
-        saveTaskMultipliers();
+        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
       }
     })();
   } else {
