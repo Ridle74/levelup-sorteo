@@ -2454,7 +2454,6 @@ function vTareas() {
 
     ${admin && taskFilter!=='msgs' && taskFilter!=='review' && taskFilter!=='prompts' ? `
     <div style="margin-bottom:8px">
-      <input type="text" id="task-search-input" placeholder="🔍 Buscar tarea por título / tema..." value="${String(taskSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setTaskSearch(this.value)" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif;margin-bottom:10px">
       <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR Y FILTRAR POR ALUMNO</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
         <button onclick="setTaskSort('recent')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='recent'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='recent'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='recent'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🕐 RECIENTES</button>
@@ -2465,6 +2464,7 @@ function vTareas() {
           : `<button onclick="toggleTaskGroup(${groupOpen})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
             + alphaGroups[groupOpen].students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">${s.icon} ${s.name.split(' ')[0]}</button>`).join('')
         }
+        <input type="text" id="task-search-input" placeholder="🔍 Buscar tarea por título / tema..." value="${String(taskSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setTaskSearch(this.value)" style="flex:1 1 160px;min-width:160px;box-sizing:border-box;padding:7px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif">
       </div>
     </div>` : ''}
 
