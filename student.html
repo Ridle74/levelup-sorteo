@@ -647,6 +647,9 @@ let padChecked       = new Set();
 // Mismo patrón para "ASIGNAR A" del formulario de tareas (NUEVA TAREA / EDITAR TAREA).
 let taskAssignGroupOpen = null;
 let taskAssignChecked   = new Set();
+// Etiqueta de tipo de contenido elegida al crear/editar UNA tarea (independiente del prompt
+// vinculado en t-prompt) — se guarda en la tarea para mostrar luego un badge en su tarjeta.
+let taskTag = null;
 // Etiquetas de tipo de prompt (para clasificar y luego filtrar la lista general de Prompts).
 const PROMPT_TAGS = [
   { key:'imagenes',  label:'Imágenes',    icon:'🖼️' },
@@ -2632,7 +2635,11 @@ function vTareas() {
       </div>
       <div style="margin-bottom:16px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
-        <div id="t-assign-pills" style="display:flex;flex-wrap:wrap;gap:5px">${_renderTaskAssignPills()}</div>
+        <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px">
+          <div id="t-assign-pills" style="display:flex;flex-wrap:wrap;gap:5px">${_renderTaskAssignPills()}</div>
+          <div style="width:1px;align-self:stretch;min-height:24px;background:rgba(255,255,255,0.15);flex-shrink:0"></div>
+          <div id="task-tag-list" style="display:flex;flex-wrap:wrap;gap:5px">${_renderTagPills(taskTag, 'toggleTaskTag')}</div>
+        </div>
       </div>
       <div id="t-prompt-wrap" style="display:none;margin-bottom:16px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PROMPT USADO</div>
@@ -2698,7 +2705,10 @@ function renderTask(t, loggedId) {
       <div style="flex:0 0 ${btnsColWidth}px;display:flex;justify-content:center;align-items:flex-start">${dueBadge}</div>
     </div>
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
-    ${t.promptName?`<div style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:3px 8px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);color:#a78bfa;font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">🧠 ${t.promptName}</div>`:''}
+    ${(t.promptName||t.tag)?`<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+      ${t.promptName?`<div style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);color:#a78bfa;font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">🧠 ${t.promptName}</div>`:''}
+      ${t.tag&&_tagInfo(t.tag)?`<div style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:rgba(186,255,41,0.12);border:1px solid rgba(186,255,41,0.3);color:#baff29;font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">${_tagInfo(t.tag).icon} ${_tagInfo(t.tag).label}</div>`:''}
+    </div>`:''}
     <div style="display:flex;align-items:center;gap:6px;margin-top:8px">
       <div style="flex:1;min-width:0">${attHtml}</div>
       <div class="task-btns" style="margin-top:0;flex-shrink:0">
@@ -3568,6 +3578,16 @@ function setTaskAssignState(assignTo) {
   else taskAssignChecked = new Set([String(assignTo)]);
   refreshTaskAssignList();
 }
+// Etiqueta de tipo de contenido de la tarea (mismas PROMPT_TAGS, pero independiente del
+// prompt vinculado en t-prompt) — un clic activa, clic de nuevo desactiva.
+function toggleTaskTag(key) {
+  taskTag = (taskTag === key) ? null : key;
+  refreshTaskTagList();
+}
+function refreshTaskTagList() {
+  const el = document.getElementById('task-tag-list');
+  if (el) el.innerHTML = _renderTagPills(taskTag, 'toggleTaskTag');
+}
 // ─────────────────────────────────────────────────────
 function toggleAddTask() {
   const box=document.getElementById('add-task-box');
@@ -3580,6 +3600,7 @@ function toggleAddTask() {
     const ttime=document.getElementById('t-time'); if(ttime) ttime.value='23:59';
     syncDueTimeUI();
     setTaskAssignState('all');
+    taskTag = null; refreshTaskTagList();
     const eid=document.getElementById('t-editing-id'); if(eid) eid.value='';
     const btn=document.getElementById('t-save-btn'); if(btn) btn.textContent='GUARDAR TAREA';
     const lbl=document.getElementById('add-task-label'); if(lbl) lbl.textContent='NUEVA TAREA';
@@ -3622,6 +3643,7 @@ function openEditTask(id) {
   document.getElementById('t-time').value  = t.time||'';
   syncDueTimeUI();
   setTaskAssignState(t.assignTo||'all');
+  taskTag = t.tag || null; refreshTaskTagList();
   document.getElementById('t-editing-id').value = id;
   const btn = document.getElementById('t-save-btn');
   if (btn) btn.textContent = 'ACTUALIZAR TAREA';
@@ -3684,6 +3706,7 @@ async function addTask() {
     due:       document.getElementById('t-due')?.value||'',
     time:      document.getElementById('t-time')?.value||'',
     assignTo,
+    tag: taskTag || '',
     ...(promptEntry ? {promptId: promptEntry.id, promptName: promptEntry.name} : {promptId:'', promptName:''}),
     ...(att ? {att} : {})
   };
