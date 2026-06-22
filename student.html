@@ -2619,21 +2619,16 @@ function vTareas() {
         <button class="msgs-btn-icon" title="Ver / descargar archivo" onclick="openTaskFile()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">📎</button>
         <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:flex-end">
+      <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
         <div style="flex:1;position:relative">
-          <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">FECHA LÍMITE</div>
           <input type="date" class="fsm" id="t-due" oninput="syncDueTimeUI()" style="margin-bottom:0;height:38px">
           <div id="t-due-ph" class="dt-ph" style="display:flex">Fecha límite</div>
         </div>
         <div style="flex:1;position:relative">
-          <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">HORA LÍMITE</div>
           <input type="time" class="fsm dt-has-value" id="t-time" oninput="syncDueTimeUI()" style="margin-bottom:0;height:38px" value="23:59">
           <div id="t-time-ph" class="dt-ph" style="display:none">Hora límite</div>
         </div>
-        <div style="display:flex;flex-direction:column;flex-shrink:0">
-          <div style="font-size:9px;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px;visibility:hidden">·</div>
-          <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" disabled style="width:34px;height:34px;visibility:visible;opacity:0.35;cursor:not-allowed;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
-        </div>
+        <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" disabled style="width:34px;height:38px;visibility:visible;opacity:0.35;cursor:not-allowed;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
       </div>
       <div style="margin-bottom:8px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
