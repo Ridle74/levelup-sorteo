@@ -121,7 +121,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .btn-dg.wait{ background:rgba(234,179,8,0.18); color:#fbbf24; border:2px solid rgba(234,179,8,0.35); }
 /* Variante cuadrada (icono) de marcar-como-hecha/editar/eliminar: mismo ancho y alto fijos (38px)
    para que las tres convivan en la línea del enlace/adjunto, alineadas y del mismo tamaño. */
-.btn-dg.sq, .btn-dt.sq { flex:none; flex-shrink:0; width:38px; height:38px; padding:0; font-size:14px; text-transform:none; letter-spacing:0; display:flex; align-items:center; justify-content:center; }
+.btn-dg.sq, .btn-dt.sq { flex:none; flex-shrink:0; width:38px; height:38px; padding:0; font-size:14px; font-weight:900; text-transform:none; letter-spacing:0; display:flex; align-items:center; justify-content:center; }
 .btn-dt { background:rgba(239,68,68,0.1); border:2px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; flex-shrink:0; }
 .add-task-box { background:rgba(34,229,255,0.07); border:1px solid rgba(34,229,255,0.2); border-radius:16px; padding:16px; margin-top:12px; }
 .fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:8px; outline:none; }
@@ -2630,11 +2630,11 @@ function vTareas() {
         </div>
         <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" disabled style="width:34px;height:38px;visibility:visible;opacity:0.35;cursor:not-allowed;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
       </div>
-      <div style="margin-bottom:8px">
+      <div style="margin-bottom:16px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
         <div id="t-assign-pills" style="display:flex;flex-wrap:wrap;gap:5px">${_renderTaskAssignPills()}</div>
       </div>
-      <div id="t-prompt-wrap" style="display:none;margin-bottom:8px">
+      <div id="t-prompt-wrap" style="display:none;margin-bottom:16px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">PROMPT USADO</div>
         <select class="fsm" id="t-prompt" style="margin-bottom:0">
           <option value="">— Sin prompt —</option>
