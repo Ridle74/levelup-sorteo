@@ -2432,7 +2432,7 @@ function _renderAssignAccordion(students, state, opts) {
           const on = state.checked.has(String(s.id));
           return `<button onclick="${opts.checkFn}('${s.id}')" style="${on?pillMemberOn:pillMemberOff}">${s.icon} ${s.name.split(' ')[0]}</button>`;
         }).join('');
-  return `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${todosHtml}${groupsHtml}</div>`;
+  return `<div style="display:flex;gap:5px;flex-wrap:wrap">${todosHtml}${groupsHtml}</div>`;
 }
 // Fila de pills de un solo clic para elegir la etiqueta de tipo de prompt (TIPO DE PROMPT al
 // crear, o filtro por etiqueta en la lista general). Un clic activa; clic de nuevo desactiva.
@@ -2584,13 +2584,13 @@ function vTareas() {
         <input type="hidden" id="prompt-editing-id" value="">
         <input type="text" id="prompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
         <textarea id="prompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:6px;resize:vertical;min-height:70px"></textarea>
-        <div id="prompt-tag-section">
-          <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">TIPO DE PROMPT</div>
-          <div id="prompt-tag-list" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${_renderTagPills(promptTag, 'togglePromptTag')}</div>
-        </div>
         <div id="prompt-also-section">
           <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:${padChecked.size>0?` (${padChecked.size})`:''}</div>
-          <div id="prompt-also-list">${_renderAssignAccordion(students.filter(s=>String(s.id)!==taskStudentView), {groupOpen:padGroupOpen, checked:padChecked}, {toggleFn:'togglePadGroup', checkFn:'togglePadCheck'})}</div>
+          <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;margin-bottom:10px">
+            <div id="prompt-tag-list" style="display:flex;gap:5px;flex-wrap:wrap">${_renderTagPills(promptTag, 'togglePromptTag')}</div>
+            <div style="width:1px;align-self:stretch;min-height:24px;background:rgba(255,255,255,0.15);flex-shrink:0"></div>
+            <div id="prompt-also-list">${_renderAssignAccordion(students.filter(s=>String(s.id)!==taskStudentView), {groupOpen:padGroupOpen, checked:padChecked}, {toggleFn:'togglePadGroup', checkFn:'togglePadCheck'})}</div>
+          </div>
         </div>
         <button class="btn-sm btn-primary" id="prompt-save-btn" onclick="savePrompt('${taskStudentView}')" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
         <button id="prompt-cancel-btn" onclick="cancelEditPrompt()" style="display:none;width:100%;margin-top:6px;padding:7px;background:none;border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:rgba(255,255,255,0.4);font-size:11px;font-weight:900;letter-spacing:0.1em;cursor:pointer">✕ CANCELAR EDICIÓN</button>
@@ -3459,10 +3459,12 @@ function renderGlobalPromptForm() {
     <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">➕ NUEVO PROMPT</div>
     <input type="text" id="gprompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
     <textarea id="gprompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:8px;resize:vertical;min-height:70px"></textarea>
-    <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">TIPO DE PROMPT</div>
-    <div id="gprompt-tag-list" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${_renderTagPills(gpromptTag, 'toggleGPromptTag')}</div>
     <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A${gpromptChecked.size>0?` (${gpromptChecked.size})`:''}</div>
-    <div id="gprompt-assign-list">${_renderAssignAccordion(students, {groupOpen:gpromptGroupOpen, checked:gpromptChecked}, {toggleFn:'toggleGPromptGroup', checkFn:'toggleGPromptCheck'})}</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px;margin-bottom:10px">
+      <div id="gprompt-tag-list" style="display:flex;gap:5px;flex-wrap:wrap">${_renderTagPills(gpromptTag, 'toggleGPromptTag')}</div>
+      <div style="width:1px;align-self:stretch;min-height:24px;background:rgba(255,255,255,0.15);flex-shrink:0"></div>
+      <div id="gprompt-assign-list">${_renderAssignAccordion(students, {groupOpen:gpromptGroupOpen, checked:gpromptChecked}, {toggleFn:'toggleGPromptGroup', checkFn:'toggleGPromptCheck'})}</div>
+    </div>
     <button class="btn-sm btn-primary" onclick="saveGlobalPrompt()" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
   </div>`;
 }
