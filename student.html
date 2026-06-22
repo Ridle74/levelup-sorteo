@@ -2667,7 +2667,7 @@ function renderTask(t, loggedId) {
       : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
   const completedCount = (t.completedBy||[]).length;
   const attHtml = t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link" style="margin-top:0;height:38px;box-sizing:border-box;display:flex;align-items:center">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:0;width:38px;height:38px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file" style="margin-top:0;height:38px;box-sizing:border-box;display:flex;align-items:center">📄 ${t.att.name||'Archivo'}</a>`) : '';
-  const doneIcon = awaiting ? '⏳' : (done ? '✓' : '○');
+  const doneIcon = awaiting ? '⏳' : '✓';
   const doneTitle = done ? 'Completada' : awaiting ? 'Esperando aprobación' : 'Marcar como hecha';
   // Columna derecha fija que replica el ancho real del grupo de botones (38px c/u + 6px de gap),
   // para que la fecha límite quede centrada justo encima de ellos, y el bloque alumno/progreso
@@ -2694,7 +2694,7 @@ function renderTask(t, loggedId) {
       <div class="task-btns" style="margin-top:0;flex-shrink:0">
         <button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>
         ${isAdmin()?`<button class="btn-dt sq" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''}
-        ${isAdmin()?`<button class="btn-dt sq" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);color:rgba(255,255,255,0.6)" title="Marcar como no hecha" onclick="markTaskUndone('${t.id}')">↩️</button>`:''}
+        ${isAdmin()?`<button class="btn-dt sq" title="Marcar como no hecha" onclick="markTaskUndone('${t.id}')">✕</button>`:''}
       </div>
     </div>
   </div>`;
