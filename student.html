@@ -119,7 +119,10 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .btn-dg.off { background:rgba(34,197,94,0.15); color:#39ff7a; border:1px solid rgba(34,197,94,0.25); }
 .btn-dg.on  { background:rgba(34,197,94,0.3);  color:#86efac; border:1px solid rgba(34,197,94,0.4); }
 .btn-dg.wait{ background:rgba(234,179,8,0.18); color:#fbbf24; border:1px solid rgba(234,179,8,0.35); }
-.btn-dt { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; }
+/* Variante cuadrada (icono) de marcar-como-hecha, para que viva junto a editar/eliminar en
+   la misma línea del enlace/adjunto en vez de ocupar toda la fila. Mismo tamaño/forma que .btn-dt. */
+.btn-dg.sq  { flex:none; width:auto; padding:9px 12px; font-size:14px; text-transform:none; letter-spacing:0; }
+.btn-dt { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; flex-shrink:0; }
 .add-task-box { background:rgba(34,229,255,0.07); border:1px solid rgba(34,229,255,0.2); border-radius:16px; padding:16px; margin-top:12px; }
 .fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:8px; outline:none; }
 .fsm:focus { border-color:rgba(34,229,255,0.5); }
@@ -2658,21 +2661,26 @@ function renderTask(t, loggedId) {
       ? t.assignTo.map(id => getStudents().find(s=>String(s.id)===String(id))?.name?.split(' ')[0]||'?').join(', ')
       : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
   const completedCount = (t.completedBy||[]).length;
+  const attHtml = t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link" style="margin-top:0">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:0">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file" style="margin-top:0">📄 ${t.att.name||'Archivo'}</a>`) : '';
+  const doneIcon = awaiting ? '⏳' : '✓';
+  const doneTitle = done ? 'Completada' : awaiting ? 'Esperando aprobación' : 'Marcar como hecha';
   return `
   <div class="task-card${done?' tdone':awaiting?' twait':''}" id="tc-${t.id}">
     <div class="task-t${done?' tdt':''}">${t.title}</div>
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
     ${t.promptName?`<div style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:3px 8px;border-radius:20px;background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.25);color:#a78bfa;font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">🧠 ${t.promptName}</div>`:''}
-    ${t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:6px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file">📄 ${t.att.name||'Archivo'}</a>`) : ''}
+    <div style="display:flex;align-items:flex-start;gap:6px;margin-top:8px">
+      <div style="flex:1;min-width:0">${attHtml}</div>
+      <div class="task-btns" style="margin-top:0;flex-shrink:0">
+        <button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>
+        ${isAdmin()?`<button class="btn-dt" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''}
+        ${isAdmin()?`<button class="btn-dt" title="Eliminar" onclick="deleteTask('${t.id}')">🗑️</button>`:''}
+      </div>
+    </div>
     <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
       ${t.due?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2)">📅 ${dueText}${timeText?' · '+timeText:''}</span>`:''}
       ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,229,255,0.12);color:#7dd3ff;border:1px solid rgba(34,229,255,0.2)">${assignLabel}</span>`:''}
       ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:#39ff7a;border:1px solid rgba(34,197,94,0.15)">✓ ${completedCount}/${getStudents().length}</span>`:''}
-    </div>
-    <div class="task-btns">
-      <button class="btn-dg ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} onclick="toggleTaskDone('${t.id}')">${done?'✓ COMPLETADA':awaiting?'⏳ ESPERANDO APROBACIÓN':'MARCAR COMO HECHA'}</button>
-      ${isAdmin()?`<button class="btn-dt" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" onclick="openEditTask('${t.id}')">✏️</button>`:''}
-      ${isAdmin()?`<button class="btn-dt" onclick="deleteTask('${t.id}')">🗑️</button>`:''}
     </div>
   </div>`;
 }
