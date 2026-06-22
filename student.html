@@ -2666,7 +2666,9 @@ function renderTask(t, loggedId) {
       ? t.assignTo.map(id => getStudents().find(s=>String(s.id)===String(id))?.name?.split(' ')[0]||'?').join(', ')
       : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
   const completedCount = (t.completedBy||[]).length;
-  const singleAssignSid = (t.assignTo && t.assignTo!=='all' && !Array.isArray(t.assignTo)) ? String(t.assignTo) : null;
+  const singleAssignSid = (!t.assignTo || t.assignTo === 'all') ? null
+    : Array.isArray(t.assignTo) ? (t.assignTo.length === 1 ? String(t.assignTo[0]) : null)
+    : String(t.assignTo);
   const progressLabel = singleAssignSid
     ? (() => { const st = studentMonthTaskStat(singleAssignSid); return `${st.done}/${st.total}`; })()
     : `${completedCount}/${getStudents().length}`;
