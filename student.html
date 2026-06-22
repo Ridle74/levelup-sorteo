@@ -2666,6 +2666,10 @@ function renderTask(t, loggedId) {
       ? t.assignTo.map(id => getStudents().find(s=>String(s.id)===String(id))?.name?.split(' ')[0]||'?').join(', ')
       : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
   const completedCount = (t.completedBy||[]).length;
+  const singleAssignSid = (t.assignTo && t.assignTo!=='all' && !Array.isArray(t.assignTo)) ? String(t.assignTo) : null;
+  const progressLabel = singleAssignSid
+    ? (() => { const st = studentMonthTaskStat(singleAssignSid); return `${st.done}/${st.total}`; })()
+    : `${completedCount}/${getStudents().length}`;
   const attHtml = t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link" style="margin-top:0;height:38px;box-sizing:border-box;display:flex;align-items:center">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:0;width:38px;height:38px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file" style="margin-top:0;height:38px;box-sizing:border-box;display:flex;align-items:center">📄 ${t.att.name||'Archivo'}</a>`) : '';
   const doneIcon = awaiting ? '⏳' : '✓';
   const doneTitle = done ? 'Completada' : awaiting ? 'Esperando aprobación' : 'Marcar como hecha';
@@ -2676,7 +2680,7 @@ function renderTask(t, loggedId) {
   const dueBadge = t.due ? `<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(234,179,8,0.12);color:#fbbf24;border:1px solid rgba(234,179,8,0.2);white-space:nowrap">📅 ${dueText}${timeText?' · '+timeText:''}</span>` : '';
   const sideBadgesHtml = `
       ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,229,255,0.12);color:#7dd3ff;border:1px solid rgba(34,229,255,0.2);white-space:nowrap">${assignLabel}</span>`:''}
-      ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:#39ff7a;border:1px solid rgba(34,197,94,0.15);white-space:nowrap">✓ ${completedCount}/${getStudents().length}</span>`:''}
+      ${isAdmin()?`<span style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:20px;background:rgba(34,197,94,0.1);color:#39ff7a;border:1px solid rgba(34,197,94,0.15);white-space:nowrap">✓ ${progressLabel}</span>`:''}
   `;
   return `
   <div class="task-card${done?' tdone':awaiting?' twait':''}" id="tc-${t.id}">
@@ -3493,6 +3497,19 @@ function taskAssignedTo(t, sid) {
   if (!t.assignTo || t.assignTo === 'all') return true;
   if (Array.isArray(t.assignTo)) return t.assignTo.map(String).includes(String(sid));
   return String(t.assignTo) === String(sid);
+}
+// Para tareas asignadas a un solo alumno: cuántas de SUS tareas de este mes
+// (creadas este mes, hechas o no) están completadas — en vez de "X de Y alumnos".
+function studentMonthTaskStat(sid) {
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth();
+  const list = tasks.filter(x => {
+    const ts = parseInt(x.id, 10);
+    if (!ts) return false;
+    const d = new Date(ts);
+    return d.getFullYear() === y && d.getMonth() === m && taskAssignedTo(x, sid);
+  });
+  const done = list.filter(x => (x.completedBy||[]).map(String).includes(String(sid))).length;
+  return { done, total: list.length };
 }
 function _renderTaskAssignPills() {
   const students = getStudents();
