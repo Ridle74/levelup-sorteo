@@ -653,6 +653,9 @@ let promptTag  = null;
 let promptTagFilter   = null;     // null = todas las etiquetas | key de PROMPT_TAGS
 let promptSort        = 'recent'; // 'recent' | 'old'
 let promptSearchQuery = '';
+// El formulario "NUEVO PROMPT" ahora vive colapsado por defecto: se despliega/oculta con la
+// pill "➕ NUEVO PROMPT" al final de la fila ORDENAR Y FILTRAR (mismo patrón de acordeón).
+let gpromptFormOpen = false;
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
 // Durante el traslape de mes (ver computeSorteoSchedule/getCupoMonthOffset), Ranking y Puntos
 // permiten alternar entre el mes oficial (el que se está sorteando, congelado, el mismo que
@@ -2631,8 +2634,8 @@ function vTareas() {
 
     ${taskFilter==='msgs' ? '' : taskFilter==='prompts' ? `
     <div id="tasks-list">
-      ${renderGlobalPromptForm()}
       ${_renderPromptsFilterRow()}
+      <div id="gprompt-form-wrap">${gpromptFormOpen ? renderGlobalPromptForm() : ''}</div>
       <div id="prompts-list-body">${renderAllPromptsList(_computeFilteredPrompts())}</div>
     </div>` : taskSort==='review' ? `
     <div id="tasks-list">
@@ -3263,11 +3266,25 @@ function _renderPromptsFilterRow() {
 function _renderPromptsFilterRowInner() {
   const sortOn  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff";
   const sortOff = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)";
+  // Pill "NUEVO PROMPT": mismo radio/forma que las demás, pero en el morado vivo de la sección
+  // de creación (para que se note que es la acción que abre/cierra ese formulario), no el gris
+  // neutro de las demás pills de filtro.
+  const newPromptOff = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(139,92,246,0.55);background:rgba(139,92,246,0.18);color:#c4b5fd";
+  const newPromptOn  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(139,92,246,0.9);background:rgba(139,92,246,0.32);color:#fff";
   return `
     <button onclick="setPromptSort()" style="${promptSort==='old'?sortOn:sortOff}">${promptSort==='old'?'🕰 ANTIGUOS':'🟢 RECIENTES'}</button>
     ${_renderTagPills(promptTagFilter, 'setPromptTagFilter')}
+    <button onclick="toggleGPromptForm()" style="${gpromptFormOpen?newPromptOn:newPromptOff}">${gpromptFormOpen?'✕ NUEVO PROMPT':'➕ NUEVO PROMPT'}</button>
     <input type="text" id="prompts-search-input" placeholder="🔍 Buscar por título, tema o etiqueta..." value="${String(promptSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setPromptSearch(this.value)" style="flex:1 1 160px;min-width:160px;box-sizing:border-box;padding:7px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif">
   `;
+}
+// Toggle del formulario "NUEVO PROMPT": colapsado por defecto, se despliega bajo la fila
+// ORDENAR Y FILTRAR al presionar su pill, y se oculta de nuevo al volver a presionarla.
+function toggleGPromptForm() {
+  gpromptFormOpen = !gpromptFormOpen;
+  _refreshPromptsFilterRow();
+  const el = document.getElementById('gprompt-form-wrap');
+  if (el) el.innerHTML = gpromptFormOpen ? renderGlobalPromptForm() : '';
 }
 function setPromptSort() {
   promptSort = promptSort === 'recent' ? 'old' : 'recent';
