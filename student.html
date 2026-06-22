@@ -116,8 +116,8 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
   font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px;
   letter-spacing:0.1em; text-transform:uppercase;
 }
-.btn-dg.off { background:rgba(34,197,94,0.15); color:#39ff7a; border:1px solid rgba(34,197,94,0.25); }
-.btn-dg.on  { background:rgba(34,197,94,0.3);  color:#86efac; border:1px solid rgba(34,197,94,0.4); }
+.btn-dg.off { background:rgba(239,68,68,0.15); color:#ff5c7a; border:1px solid rgba(239,68,68,0.3); }
+.btn-dg.on  { background:#22c55e; color:#06170c; border:1px solid #22c55e; }
 .btn-dg.wait{ background:rgba(234,179,8,0.18); color:#fbbf24; border:1px solid rgba(234,179,8,0.35); }
 /* Variante cuadrada (icono) de marcar-como-hecha/editar/eliminar: mismo ancho y alto fijos (38px)
    para que las tres convivan en la línea del enlace/adjunto, alineadas y del mismo tamaño. */
@@ -206,7 +206,7 @@ textarea.fsm { resize:none; height:64px; }
 .dash-stat:active, .pts-row:active, .task-card:active { transform: scale(0.985); }
 .dash-link:active { box-shadow: 0 0 24px -4px var(--nc-cyan); }
 .btn-sm:active     { box-shadow: 0 0 20px -4px var(--nc-purple); }
-.btn-dg.off { box-shadow: 0 0 0 1px rgba(186,255,41,0.16) inset; }
+.btn-dg.off { box-shadow: 0 0 0 1px rgba(239,68,68,0.2) inset; }
 .btn-dg.on  { box-shadow: 0 0 18px -3px var(--nc-lime); }
 .btn-dt:active { box-shadow: 0 0 18px -3px #ff5c5c; }
 .pill.psel { box-shadow: 0 0 16px -3px var(--nc-blue); }
@@ -2600,19 +2600,19 @@ function vTareas() {
         <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:34px;flex-shrink:0;cursor:pointer;font-size:16px">✕</button>
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-        <div class="msgs-link-row" id="task-link-row" style="flex:1;margin-bottom:0">
+        <div class="msgs-link-row" id="task-link-row" style="flex:1;margin-bottom:0;display:flex">
           <input type="text" id="task-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;font-size:12px;height:38px">
           <input type="text" id="task-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;font-size:12px;height:38px">
         </div>
-        <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleTaskLink()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">🔗</button>
-      </div>
-      <div class="msgs-file-row" id="task-file-row">
-        <span id="task-file-name">—</span>
-        <button onclick="cancelTaskFile()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:18px;line-height:1">✕</button>
+        <button class="msgs-btn-icon" title="Copiar enlace" onclick="copyTaskLink()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">🔗</button>
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-        <textarea class="fsm" id="t-desc" placeholder="Descripción (opcional)..." style="flex:1;margin-bottom:0;resize:vertical;height:38px"></textarea>
-        <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('task-file-input').click()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">📎</button>
+        <div id="task-file-row" class="msgs-file-row" style="flex:1;margin-bottom:0;display:flex;height:38px;box-sizing:border-box;padding:0 10px">
+          <span id="task-file-name">—</span>
+          <button onclick="cancelTaskFile()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:16px;line-height:1;flex-shrink:0">✕</button>
+        </div>
+        <input type="text" class="fsm" id="t-desc" placeholder="Título del archivo (opcional)..." style="flex:1;margin-bottom:0;font-size:12px;height:38px">
+        <button class="msgs-btn-icon" title="Imagen / archivo" onclick="cancelTaskFile();document.getElementById('task-file-input').click()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">📎</button>
         <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
       </div>
       <div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-end">
@@ -2667,7 +2667,7 @@ function renderTask(t, loggedId) {
       : (getStudents().find(s=>String(s.id)===String(t.assignTo))?.name || 'Alumno');
   const completedCount = (t.completedBy||[]).length;
   const attHtml = t.att ? (t.att.type==='link' ? `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-link" style="margin-top:0;height:38px;box-sizing:border-box;display:flex;align-items:center">🔗 ${t.att.name||t.att.url}</a>` : t.att.type==='image' ? `<img src="${t.att.url}" class="msg-att-img" alt="${t.att.name||'imagen'}" onclick="openImgViewer('${t.att.url}','${(t.att.name||'imagen').replace(/'/g,'')}')" style="margin-top:0;width:38px;height:38px">` : `<a href="${t.att.url}" target="_blank" rel="noopener" class="msg-att-file" style="margin-top:0;height:38px;box-sizing:border-box;display:flex;align-items:center">📄 ${t.att.name||'Archivo'}</a>`) : '';
-  const doneIcon = awaiting ? '⏳' : '✓';
+  const doneIcon = awaiting ? '⏳' : (done ? '✓' : '○');
   const doneTitle = done ? 'Completada' : awaiting ? 'Esperando aprobación' : 'Marcar como hecha';
   // Columna derecha fija que replica el ancho real del grupo de botones (38px c/u + 6px de gap),
   // para que la fecha límite quede centrada justo encima de ellos, y el bloque alumno/progreso
@@ -3563,10 +3563,14 @@ function toggleAddTask() {
   }
 }
 let _taskFileObj = null;
-function toggleTaskLink(){ const r=document.getElementById('task-link-row'); if(r) r.style.display=r.style.display==='flex'?'none':'flex'; }
-function cancelTaskLink(){ const r=document.getElementById('task-link-row'); if(r) r.style.display='none'; ['task-link-url','task-link-name'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
-function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const r=document.getElementById('task-file-row'); if(r) r.style.display='flex'; const n=document.getElementById('task-file-name'); if(n) n.textContent=_taskFileObj.name; }
-function cancelTaskFile(){ _taskFileObj=null; const r=document.getElementById('task-file-row'); if(r) r.style.display='none'; const i=document.getElementById('task-file-input'); if(i) i.value=''; }
+function copyTaskLink(){
+  const url=(document.getElementById('task-link-url')?.value||'').trim();
+  if (!url) { showToast('No hay enlace que copiar.'); return; }
+  navigator.clipboard?.writeText(url).then(()=>showToast('Enlace copiado.','success')).catch(()=>showToast('No se pudo copiar el enlace.'));
+}
+function cancelTaskLink(){ ['task-link-url','task-link-name'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
+function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const n=document.getElementById('task-file-name'); if(n) n.textContent=_taskFileObj.name; }
+function cancelTaskFile(){ _taskFileObj=null; const n=document.getElementById('task-file-name'); if(n) n.textContent='—'; const i=document.getElementById('task-file-input'); if(i) i.value=''; }
 
 function openEditTask(id) {
   const t = tasks.find(x=>x.id===id); if (!t) return;
@@ -3591,7 +3595,8 @@ function openEditTask(id) {
   if (t.att?.type === 'link') {
     document.getElementById('task-link-url').value  = t.att.url||'';
     document.getElementById('task-link-name').value = t.att.name||'';
-    const r = document.getElementById('task-link-row'); if(r) r.style.display='flex';
+  } else if (t.att?.type === 'file' || t.att?.type === 'image') {
+    const n = document.getElementById('task-file-name'); if (n) n.textContent = t.att.name||'Archivo';
   }
 }
 
