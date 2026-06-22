@@ -628,14 +628,31 @@ let taskGroupOpen    = null;      // null = mostrando los 3 grupos alfabéticos,
 let taskSearchQuery  = '';        // texto de búsqueda por título de tarea (pestañas Pendientes/Completadas)
 let prompts          = {};        // { [studentId]: [{id,name,text,ts,sharedId?,history:[{name,text,ts}]}] }
 let _promptHistOpen  = null;     // id del prompt con historial expandido
-// Acordeón alfabético del checkbox "ASIGNAR A" del formulario NUEVO PROMPT (pestaña Prompts).
-// groupOpen: null = colapsado (solo pills) | 'all' = mostrando todos | índice = grupo expandido.
+// Acordeón alfabético "ASIGNAR A" del formulario NUEVO PROMPT (pestaña Prompts).
+// groupOpen: null = colapsado (solo pills "Todos"+grupos) | índice = grupo alfabético expandido.
 // checked: Set de sids marcados, vive aparte del DOM para no perderse al cambiar de grupo.
 let gpromptGroupOpen = null;
 let gpromptChecked   = new Set();
-// Mismo patrón para el checkbox "AGREGAR TAMBIÉN A:" del panel de prompts por alumno.
+// Mismo patrón para "AGREGAR TAMBIÉN A:" del panel de prompts por alumno.
 let padGroupOpen     = null;
 let padChecked       = new Set();
+// Etiquetas de tipo de prompt (para clasificar y luego filtrar la lista general de Prompts).
+const PROMPT_TAGS = [
+  { key:'imagenes',  label:'Imágenes',    icon:'🖼️' },
+  { key:'documentos', label:'Documentos',  icon:'📄' },
+  { key:'notebook',   label:'Notebook',    icon:'📓' },
+  { key:'grabacion',  label:'Grabación',   icon:'🎙️' },
+  { key:'pasoapaso',  label:'Paso a paso', icon:'🪜' },
+];
+function _tagInfo(key) { return PROMPT_TAGS.find(t => t.key === key) || null; }
+// Etiqueta elegida al CREAR un prompt (null = sin etiqueta) — una por formulario, ya que el
+// formulario general (gprompt-*) y el de un alumno puntual (prompt-*) pueden coexistir.
+let gpromptTag = null;
+let promptTag  = null;
+// Filtro/orden de la lista general "todos los prompts" (pestaña Prompts).
+let promptTagFilter   = null;     // null = todas las etiquetas | key de PROMPT_TAGS
+let promptSort        = 'recent'; // 'recent' | 'old'
+let promptSearchQuery = '';
 let puntosTab   = 'resumen'; // 'resumen' | 'historial' — pestaña de la vista Puntos
 // Durante el traslape de mes (ver computeSorteoSchedule/getCupoMonthOffset), Ranking y Puntos
 // permiten alternar entre el mes oficial (el que se está sorteando, congelado, el mismo que
@@ -2380,29 +2397,35 @@ function computeAlphaGroups(students, numGroups) {
   }
   return groups;
 }
-// Acordeón reutilizable para listas de checkboxes "ASIGNAR A" / "AGREGAR TAMBIÉN A": en vez de
-// mostrar todos los checkboxes a la vez (se desbordan a varias líneas), muestra "🌍 Todos" + las
-// etiquetas alfabéticas (mismo patrón que FILTRAR POR ALUMNO en Tareas) en una sola línea, y al
-// hacer clic en una expande solo los checkboxes de ese grupo. Los marcados viven en `state.checked`
-// (Set), no en el DOM, para no perderse al cambiar de grupo (el refresh reescribe el HTML).
+// Acordeón reutilizable para listas "ASIGNAR A" / "AGREGAR TAMBIÉN A", mismo patrón EXACTO que
+// FILTRAR POR ALUMNO en Tareas: "🌍 Todos" + las 3 etiquetas alfabéticas en una sola línea. Clic
+// en "Todos" solo cierra el grupo abierto (no pasa nada si ya está cerrado). Clic en una etiqueta
+// la expande, mostrando a la derecha un pill por cada alumno de ese rango — clic en un pill lo
+// activa/desactiva (multi-selección). Clic de nuevo en la etiqueta (ahora con ✕) la contrae.
+// Los marcados viven en `state.checked` (Set), no en el DOM, para no perderse al cambiar de grupo.
 function _renderAssignAccordion(students, state, opts) {
   const alphaGroups = computeAlphaGroups(students, 3);
-  const visible = state.groupOpen === 'all' ? students
-    : (state.groupOpen !== null && alphaGroups[state.groupOpen]) ? alphaGroups[state.groupOpen].students
-    : [];
-  const pillOn  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff";
+  const groupOpen = (state.groupOpen !== null && alphaGroups[state.groupOpen]) ? state.groupOpen : null;
   const pillOff = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)";
-  const pillsHtml = state.groupOpen === null
-    ? `<button onclick="${opts.toggleFn}('all')" style="${pillOff}">🌍 Todos</button>`
-      + alphaGroups.map((g,i)=>`<button onclick="${opts.toggleFn}(${i})" style="${pillOff}">🔤 ${g.label}</button>`).join('')
-    : `<button onclick="${opts.toggleFn}(null)" style="${pillOn}">${state.groupOpen==='all'?'🌍 Todos':'🔤 '+alphaGroups[state.groupOpen].label} ✕</button>`;
-  const boxesHtml = visible.map(s=>`
-    <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.55);font-weight:700">
-      <input type="checkbox" data-sid="${s.id}" ${state.checked.has(String(s.id))?'checked':''} onchange="${opts.checkFn}('${s.id}',this.checked)" style="accent-color:${s.color}"> ${s.icon} ${s.name.split(' ')[0]}
-    </label>`).join('');
-  const emptyHtml = visible.length===0 ? `<div style="font-size:10px;color:rgba(255,255,255,0.3);padding:4px 0">Elige Todos o un grupo ↑</div>` : '';
-  return `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">${pillsHtml}</div>
-    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${boxesHtml}${emptyHtml}</div>`;
+  const pillClose = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff";
+  const pillMemberOn  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(34,229,255,0.5);background:rgba(34,229,255,0.18);color:#22e5ff";
+  const pillMemberOff = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4)";
+  const todosHtml = `<button onclick="${opts.toggleFn}(null)" style="${pillOff}">🌍 Todos</button>`;
+  const groupsHtml = groupOpen === null
+    ? alphaGroups.map((g,i)=>`<button onclick="${opts.toggleFn}(${i})" style="${pillOff}">🔤 ${g.label}</button>`).join('')
+    : `<button onclick="${opts.toggleFn}(${groupOpen})" style="${pillClose}">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
+      + alphaGroups[groupOpen].students.map(s=>{
+          const on = state.checked.has(String(s.id));
+          return `<button onclick="${opts.checkFn}('${s.id}')" style="${on?pillMemberOn:pillMemberOff}">${s.icon} ${s.name.split(' ')[0]}</button>`;
+        }).join('');
+  return `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${todosHtml}${groupsHtml}</div>`;
+}
+// Fila de pills de un solo clic para elegir la etiqueta de tipo de prompt (TIPO DE PROMPT al
+// crear, o filtro por etiqueta en la lista general). Un clic activa; clic de nuevo desactiva.
+function _renderTagPills(selectedKey, toggleFn) {
+  const on  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(186,255,41,0.5);background:rgba(186,255,41,0.12);color:#baff29";
+  const off = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)";
+  return PROMPT_TAGS.map(t => `<button onclick="${toggleFn}('${t.key}')" style="${selectedKey===t.key?on:off}">${t.icon} ${t.label}</button>`).join('');
 }
 // Filtra (por taskSort: activas/vencidas/alumno/aprobar, y búsqueda de título) y ordena
 // la lista de tareas de un alumno/admin. ACTIVAS/VENCIDAS reemplazan a las antiguas
@@ -2547,6 +2570,10 @@ function vTareas() {
         <input type="hidden" id="prompt-editing-id" value="">
         <input type="text" id="prompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
         <textarea id="prompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:6px;resize:vertical;min-height:70px"></textarea>
+        <div id="prompt-tag-section">
+          <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">TIPO DE PROMPT</div>
+          <div id="prompt-tag-list" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${_renderTagPills(promptTag, 'togglePromptTag')}</div>
+        </div>
         <div id="prompt-also-section">
           <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">AGREGAR TAMBIÉN A:${padChecked.size>0?` (${padChecked.size})`:''}</div>
           <div id="prompt-also-list">${_renderAssignAccordion(students.filter(s=>String(s.id)!==taskStudentView), {groupOpen:padGroupOpen, checked:padChecked}, {toggleFn:'togglePadGroup', checkFn:'togglePadCheck'})}</div>
@@ -2605,7 +2632,8 @@ function vTareas() {
     ${taskFilter==='msgs' ? '' : taskFilter==='prompts' ? `
     <div id="tasks-list">
       ${renderGlobalPromptForm()}
-      ${renderAllPromptsList(allPromptGroups)}
+      ${_renderPromptsFilterRow()}
+      <div id="prompts-list-body">${renderAllPromptsList(_computeFilteredPrompts())}</div>
     </div>` : taskSort==='review' ? `
     <div id="tasks-list">
       ${renderReviewQueue(sorted)}
@@ -2958,6 +2986,7 @@ function setTaskStudentView(id) {
   // El panel "AGREGAR TAMBIÉN A:" es por alumno — al cambiar de alumno se limpia su selección.
   padGroupOpen = null;
   padChecked = new Set();
+  promptTag = null;
   router();
 }
 function toggleTaskGroup(i) {
@@ -2978,9 +3007,10 @@ function toggleGPromptGroup(g) {
   gpromptGroupOpen = (gpromptGroupOpen === g) ? null : g;
   _refreshGPromptAssign();
 }
-function toggleGPromptCheck(sid, checked) {
+function toggleGPromptCheck(sid) {
   sid = String(sid);
-  if (checked) gpromptChecked.add(sid); else gpromptChecked.delete(sid);
+  if (gpromptChecked.has(sid)) gpromptChecked.delete(sid); else gpromptChecked.add(sid);
+  _refreshGPromptAssign();
 }
 function _refreshGPromptAssign() {
   const el = document.getElementById('gprompt-assign-list'); if (!el) return;
@@ -2991,14 +3021,24 @@ function togglePadGroup(g) {
   padGroupOpen = (padGroupOpen === g) ? null : g;
   _refreshPadAssign();
 }
-function togglePadCheck(sid, checked) {
+function togglePadCheck(sid) {
   sid = String(sid);
-  if (checked) padChecked.add(sid); else padChecked.delete(sid);
+  if (padChecked.has(sid)) padChecked.delete(sid); else padChecked.add(sid);
+  _refreshPadAssign();
 }
 function _refreshPadAssign() {
   const el = document.getElementById('prompt-also-list'); if (!el) return;
   const students = getStudents().filter(s=>String(s.id)!==taskStudentView);
   el.innerHTML = _renderAssignAccordion(students, {groupOpen:padGroupOpen, checked:padChecked}, {toggleFn:'togglePadGroup', checkFn:'togglePadCheck'});
+}
+// ── TIPO DE PROMPT (etiqueta) al crear, en ambos formularios ──
+function toggleGPromptTag(key) {
+  gpromptTag = (gpromptTag === key) ? null : key;
+  const el = document.getElementById('gprompt-tag-list'); if (el) el.innerHTML = _renderTagPills(gpromptTag, 'toggleGPromptTag');
+}
+function togglePromptTag(key) {
+  promptTag = (promptTag === key) ? null : key;
+  const el = document.getElementById('prompt-tag-list'); if (el) el.innerHTML = _renderTagPills(promptTag, 'togglePromptTag');
 }
 // Igual que _renderMsgsInPlace: reescribe SOLO #tasks-list, sin pasar por router(), para que
 // el input de búsqueda nunca pierda el foco mientras el usuario está escribiendo.
@@ -3105,11 +3145,12 @@ function savePrompt(studentId) {
   const ts = Date.now();
   const sharedId = isShared ? ts.toString() : undefined;
   const id = ts.toString() + '_' + String(studentId);
-  const entry = { id, name, text, ts, ...(isShared ? {sharedId} : {}) };
+  const entry = { id, name, text, ts, ...(isShared ? {sharedId} : {}), ...(promptTag ? {tag: promptTag} : {}) };
   prompts = _applyCreatePrompt(prompts, studentId, alsoSids, entry, sharedId);
   savePrompts(fresh => _applyCreatePrompt(fresh, studentId, alsoSids, entry, sharedId));
   padGroupOpen = null;
   padChecked = new Set();
+  promptTag = null;
   showToast('Prompt guardado.', 'success');
   router();
 }
@@ -3163,12 +3204,14 @@ function openEditPrompt(promptId, studentId) {
   const saveBtn = document.getElementById('prompt-save-btn');
   const cancelBtn = document.getElementById('prompt-cancel-btn');
   const alsoSec = document.getElementById('prompt-also-section');
+  const tagSec = document.getElementById('prompt-tag-section');
   if (nameEl) nameEl.value = p.name;
   if (textEl) textEl.value = p.text;
   if (eidEl)  eidEl.value  = promptId;
   if (saveBtn) saveBtn.textContent = '✏️ ACTUALIZAR PROMPT';
   if (cancelBtn) cancelBtn.style.display = 'block';
   if (alsoSec) alsoSec.style.display = 'none'; // no aplica en edición
+  if (tagSec) tagSec.style.display = 'none'; // no aplica en edición
   nameEl?.scrollIntoView({ behavior:'smooth', block:'nearest' });
   nameEl?.focus();
 }
@@ -3178,6 +3221,7 @@ function cancelEditPrompt() {
   const saveBtn = document.getElementById('prompt-save-btn'); if(saveBtn) saveBtn.textContent='💾 GUARDAR PROMPT';
   const cancelBtn = document.getElementById('prompt-cancel-btn'); if(cancelBtn) cancelBtn.style.display='none';
   const alsoSec = document.getElementById('prompt-also-section'); if(alsoSec) alsoSec.style.display='block';
+  const tagSec = document.getElementById('prompt-tag-section'); if(tagSec) tagSec.style.display='block';
 }
 function copyPrompt(promptId, studentId) {
   const p = (prompts[String(studentId)]||[]).find(x=>x.id===promptId);
@@ -3197,6 +3241,58 @@ function deletePrompt(studentId, promptId) {
   });
   router();
 }
+// ── ORDENAR Y FILTRAR de la lista general de Prompts (etiqueta + fecha + buscador) ──
+function _computeFilteredPrompts() {
+  let groups = getAllUniquePrompts();
+  if (promptTagFilter) groups = groups.filter(g => g.tag === promptTagFilter);
+  if (promptSearchQuery && promptSearchQuery.trim()) {
+    const q = normName(promptSearchQuery);
+    groups = groups.filter(g => normName(g.name).includes(q) || normName(g.text).includes(q) || (g.tag && normName(_tagInfo(g.tag)?.label||'').includes(q)));
+  }
+  return [...groups].sort((a,b) => promptSort === 'old' ? (a.ts||0)-(b.ts||0) : (b.ts||0)-(a.ts||0));
+}
+function _renderPromptsFilterRow() {
+  return `
+  <div style="margin-bottom:8px">
+    <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR Y FILTRAR</div>
+    <div id="prompts-filter-row" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">${_renderPromptsFilterRowInner()}</div>
+  </div>`;
+}
+// Solo el CONTENIDO del row (sin el wrapper con id), para poder refrescarlo en sitio sin
+// tocar el <input> de búsqueda (que sí conserva su propio innerHTML salvo cuando se escribe en él).
+function _renderPromptsFilterRowInner() {
+  const sortOn  = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff";
+  const sortOff = "cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)";
+  return `
+    <button onclick="setPromptSort()" style="${promptSort==='old'?sortOn:sortOff}">${promptSort==='old'?'🕰 ANTIGUOS':'🟢 RECIENTES'}</button>
+    ${_renderTagPills(promptTagFilter, 'setPromptTagFilter')}
+    <input type="text" id="prompts-search-input" placeholder="🔍 Buscar por título, tema o etiqueta..." value="${String(promptSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setPromptSearch(this.value)" style="flex:1 1 160px;min-width:160px;box-sizing:border-box;padding:7px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif">
+  `;
+}
+function setPromptSort() {
+  promptSort = promptSort === 'recent' ? 'old' : 'recent';
+  _refreshPromptsFilterRow();
+  refreshPromptsListInPlace();
+}
+function setPromptTagFilter(key) {
+  promptTagFilter = (promptTagFilter === key) ? null : key;
+  _refreshPromptsFilterRow();
+  refreshPromptsListInPlace();
+}
+function setPromptSearch(v) {
+  promptSearchQuery = v;
+  refreshPromptsListInPlace();
+}
+// Reescribe SOLO los botones de orden/etiqueta, sin tocar el <input> de búsqueda (evita perder
+// el foco/cursor si en el futuro se llamara mientras se escribe; hoy solo lo disparan clics).
+function _refreshPromptsFilterRow() {
+  const el = document.getElementById('prompts-filter-row'); if (!el) return;
+  el.innerHTML = _renderPromptsFilterRowInner();
+}
+function refreshPromptsListInPlace() {
+  const el = document.getElementById('prompts-list-body'); if (!el) return;
+  el.innerHTML = renderAllPromptsList(_computeFilteredPrompts());
+}
 // ── Vista "todos los prompts" (tab PROMPTS) ──────────────────────────────
 // Junta en una sola lista los prompts de todos los alumnos, sin repetir las
 // copias compartidas (mismo sharedId, o mismo nombre para prompts viejos sin
@@ -3213,7 +3309,7 @@ function getAllUniquePrompts() {
         return;
       }
       idxByKey[key] = groups.length;
-      groups.push({ id: p.id, name: p.name, text: p.text, ts: p.ts, history: p.history, students: [s] });
+      groups.push({ id: p.id, name: p.name, text: p.text, ts: p.ts, tag: p.tag, history: p.history, students: [s] });
     });
   });
   return groups.sort((a, b) => (b.ts || 0) - (a.ts || 0));
@@ -3229,6 +3325,7 @@ function renderAllPromptsList(groups) {
         <div style="flex:1;min-width:0">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:#a78bfa;letter-spacing:0.05em">${g.name}${g.ts?`<span style="margin-left:8px;font-size:9px;color:rgba(255,255,255,0.28);font-weight:400;font-family:'Barlow',sans-serif;letter-spacing:0">${new Date(g.ts).toLocaleDateString('es-ES',{day:'numeric',month:'short'})}, ${new Date(g.ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</span>`:''}</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px">
+            ${g.tag&&_tagInfo(g.tag)?`<span style="font-size:11px;background:rgba(186,255,41,0.12);border:1px solid rgba(186,255,41,0.35);color:#baff29;border-radius:8px;padding:2px 6px;font-weight:700">${_tagInfo(g.tag).icon} ${_tagInfo(g.tag).label}</span>`:''}
             ${g.students.map(s=>`<span title="${s.name}" style="font-size:11px;background:${s.color}22;border:1px solid ${s.color}55;color:${s.color};border-radius:8px;padding:2px 6px;font-weight:700">${s.icon} ${s.name.split(' ')[0]}</span>`).join('')}
           </div>
         </div>
@@ -3312,15 +3409,17 @@ function renderGlobalPromptForm() {
     <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">➕ NUEVO PROMPT</div>
     <input type="text" id="gprompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
     <textarea id="gprompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:8px;resize:vertical;min-height:70px"></textarea>
+    <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">TIPO DE PROMPT</div>
+    <div id="gprompt-tag-list" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">${_renderTagPills(gpromptTag, 'toggleGPromptTag')}</div>
     <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A${gpromptChecked.size>0?` (${gpromptChecked.size})`:''}</div>
     <div id="gprompt-assign-list">${_renderAssignAccordion(students, {groupOpen:gpromptGroupOpen, checked:gpromptChecked}, {toggleFn:'toggleGPromptGroup', checkFn:'toggleGPromptCheck'})}</div>
     <button class="btn-sm btn-primary" onclick="saveGlobalPrompt()" style="width:100%;font-size:12px;padding:9px">💾 GUARDAR PROMPT</button>
   </div>`;
 }
-function _applyGlobalPrompt(promptsObj, sids, ts, isShared, sharedId, name, text) {
+function _applyGlobalPrompt(promptsObj, sids, ts, isShared, sharedId, name, text, tag) {
   const p = JSON.parse(JSON.stringify(promptsObj || {}));
   sids.forEach((sid, i) => {
-    const entry = { id: ts + '_' + i + '_' + sid, name, text, ts, ...(isShared ? {sharedId} : {}) };
+    const entry = { id: ts + '_' + i + '_' + sid, name, text, ts, ...(isShared ? {sharedId} : {}), ...(tag ? {tag} : {}) };
     if (!p[sid]) p[sid] = [];
     p[sid].push(entry);
   });
@@ -3337,10 +3436,11 @@ function saveGlobalPrompt() {
   const ts = Date.now();
   const isShared = sids.length > 1;
   const sharedId = isShared ? String(ts) : undefined;
-  prompts = _applyGlobalPrompt(prompts, sids, ts, isShared, sharedId, name, text);
-  savePrompts(fresh => _applyGlobalPrompt(fresh, sids, ts, isShared, sharedId, name, text));
+  prompts = _applyGlobalPrompt(prompts, sids, ts, isShared, sharedId, name, text, gpromptTag);
+  savePrompts(fresh => _applyGlobalPrompt(fresh, sids, ts, isShared, sharedId, name, text, gpromptTag));
   gpromptGroupOpen = null;
   gpromptChecked = new Set();
+  gpromptTag = null;
   showToast('Prompt guardado.', 'success');
   router();
 }
