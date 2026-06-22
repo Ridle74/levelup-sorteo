@@ -123,6 +123,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
    para que las tres convivan en la línea del enlace/adjunto, alineadas y del mismo tamaño. */
 .btn-dg.sq, .btn-dt.sq { flex:none; flex-shrink:0; width:38px; height:38px; padding:0; font-size:14px; font-weight:900; text-transform:none; letter-spacing:0; display:flex; align-items:center; justify-content:center; }
 .btn-dt { background:rgba(239,68,68,0.1); border:2px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; flex-shrink:0; }
+.btn-dt.on { background:#ef4444; color:#06170c; border:2px solid #ef4444; }
 .add-task-box { background:rgba(34,229,255,0.07); border:1px solid rgba(34,229,255,0.2); border-radius:16px; padding:16px; margin-top:12px; }
 .fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:8px; outline:none; }
 .fsm::placeholder { color:rgba(255,255,255,0.4); font-family:'Barlow',sans-serif; font-size:13px; }
@@ -214,6 +215,7 @@ textarea.fsm { resize:none; height:64px; }
 .btn-dg.off { box-shadow: 0 0 0 1px rgba(186,255,41,0.16) inset; }
 .btn-dg.on  { box-shadow: 0 0 18px -3px var(--nc-lime); }
 .btn-dt:active { box-shadow: 0 0 18px -3px #ff5c5c; }
+.btn-dt.on { box-shadow: 0 0 18px -3px #ff5c5c; }
 .pill.psel { box-shadow: 0 0 16px -3px var(--nc-blue); }
 
 /* números y títulos clave con resplandor tipo arcade (sutil, sin perder lectura) */
@@ -2475,10 +2477,22 @@ function _computeSortedTasks(myTasks, loggedId) {
     filtered = filtered.filter(t => normName(t.title).includes(q));
   }
 
+  // VENCIDAS se agrupa en: 1) hechas (y esperando aprobación, que para el alumno ya cuenta como
+  // hecha), 2) marcadas explícitamente como no hechas (notDoneBy), 3) vencidas sin marcar.
+  const vencidasRank = t => {
+    if ((t.completedBy||[]).includes(loggedId)) return 0;
+    if ((t.pendingReview||[]).includes(loggedId)) return 1;
+    if ((t.notDoneBy||[]).includes(loggedId)) return 2;
+    return 3;
+  };
   return [...filtered].sort((a,b) => {
     if (taskSort === 'student') {
       const getKey = t => !t.assignTo || t.assignTo==='all' ? 'zzz' : Array.isArray(t.assignTo) ? t.assignTo[0] : String(t.assignTo);
       return getKey(a).localeCompare(getKey(b)) || parseInt(b.id||0)-parseInt(a.id||0);
+    }
+    if (taskSort === 'old') {
+      const r = vencidasRank(a) - vencidasRank(b);
+      if (r !== 0) return r;
     }
     return parseInt(b.id||0) - parseInt(a.id||0);
   });
@@ -2664,6 +2678,7 @@ function vTareas() {
 function renderTask(t, loggedId) {
   const done = (t.completedBy||[]).includes(loggedId);
   const awaiting = !done && (t.pendingReview||[]).includes(loggedId);
+  const notDone = !done && !awaiting && (t.notDoneBy||[]).includes(loggedId);
   const dueText = t.due ? new Date(t.due+'T00:00:00').toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'}).toUpperCase() : '';
   const timeText = t.time ? t.time : '';
   const assignLabel = !t.assignTo || t.assignTo==='all' ? '🌍 Todos'
@@ -2707,7 +2722,7 @@ function renderTask(t, loggedId) {
       <div class="task-btns" style="margin-top:0;flex-shrink:0">
         <button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>
         ${isAdmin()?`<button class="btn-dt sq" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''}
-        ${isAdmin()?`<button class="btn-dt sq" title="Marcar como no hecha" onclick="markTaskUndone('${t.id}')">✕</button>`:''}
+        ${isAdmin()?`<button class="btn-dt sq${notDone?' on':''}" title="${notDone?'Quitar marca de no hecha':'Marcar como no hecha'}" onclick="markTaskUndone('${t.id}')">✕</button>`:''}
       </div>
     </div>
   </div>`;
@@ -3639,7 +3654,7 @@ async function addTask() {
     if (idx > -1) { tasks[idx] = { ...tasks[idx], ...taskData }; if (!att) delete tasks[idx].att; }
     showToast('Tarea actualizada.','success');
   } else {
-    tasks.push({ id: newId, completedBy: [], pendingReview: [], ...taskData });
+    tasks.push({ id: newId, completedBy: [], pendingReview: [], notDoneBy: [], ...taskData });
     showToast('Tarea guardada.','success');
   }
   // El transform se vuelve a aplicar sobre el arreglo FRESCO leído del servidor dentro de la
@@ -3655,7 +3670,7 @@ async function addTask() {
         return merged;
       });
     }
-    return [...arr, { id: newId, completedBy: [], pendingReview: [], ...taskData }];
+    return [...arr, { id: newId, completedBy: [], pendingReview: [], notDoneBy: [], ...taskData }];
   });
   _taskFileObj = null;
   go('tareas');
@@ -3676,14 +3691,30 @@ function deleteTaskFromForm() {
   const box = document.getElementById('add-task-box');
   if (box) box.style.display = 'none';
 }
+// "Marcar como no hecha" es un toggle persistente (igual que el botón de hecha): el primer clic
+// guarda loggedId en notDoneBy (el botón queda en rojo sólido) y un segundo clic lo quita,
+// volviendo la tarea a su estado neutral/sin marcar. Siempre limpia completedBy/pendingReview
+// porque hecha y no-hecha son mutuamente excluyentes.
 function markTaskUndone(id) {
   if (!firestoreDataReady()) return;
   const loggedId = getLoggedId();
   const idx = tasks.findIndex(t=>t.id===id); if (idx<0) return;
-  const strip = t => ({ ...t, completedBy:(t.completedBy||[]).filter(x=>String(x)!==String(loggedId)), pendingReview:(t.pendingReview||[]).filter(x=>String(x)!==String(loggedId)) });
-  tasks[idx] = strip(tasks[idx]);
-  saveTasks(arr => arr.map(t => t.id===id ? strip(t) : t));
-  showToast('Marcada como no hecha.','success');
+  const wasMarked = (tasks[idx].notDoneBy||[]).includes(loggedId);
+  const toggle = t => {
+    const isMarked = (t.notDoneBy||[]).includes(loggedId);
+    const notDoneBy = isMarked
+      ? (t.notDoneBy||[]).filter(x=>String(x)!==String(loggedId))
+      : [...(t.notDoneBy||[]), loggedId];
+    return {
+      ...t,
+      completedBy:   (t.completedBy||[]).filter(x=>String(x)!==String(loggedId)),
+      pendingReview: (t.pendingReview||[]).filter(x=>String(x)!==String(loggedId)),
+      notDoneBy,
+    };
+  };
+  tasks[idx] = toggle(tasks[idx]);
+  saveTasks(arr => arr.map(t => t.id===id ? toggle(t) : t));
+  showToast(wasMarked ? 'Marca de no hecha quitada.' : 'Marcada como no hecha.','success');
   router();
 }
 // Aplica la lógica de marcar/desmarcar una tarea como hecha sobre UN objeto de tarea dado, sin
@@ -3691,7 +3722,9 @@ function markTaskUndone(id) {
 // la transacción de guardado (sobre el dato fresco del servidor), para que ambas copias se
 // calculen exactamente igual y no puedan desincronizarse entre sí.
 function _toggleTaskDoneOnTask(task, loggedId, admin) {
-  const t = { ...task, completedBy:[...(task.completedBy||[])], pendingReview:[...(task.pendingReview||[])] };
+  const t = { ...task, completedBy:[...(task.completedBy||[])], pendingReview:[...(task.pendingReview||[])], notDoneBy:[...(task.notDoneBy||[])] };
+  // Marcar/enviar como hecha quita cualquier marca previa de "no hecha" (son mutuamente excluyentes).
+  const ndi = t.notDoneBy.indexOf(loggedId); if (ndi>-1) t.notDoneBy.splice(ndi,1);
   if (admin) {
     // El admin marca/desmarca directamente, sin pasar por aprobación (es su propio criterio).
     const idx=t.completedBy.indexOf(loggedId);
