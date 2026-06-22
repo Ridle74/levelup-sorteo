@@ -2591,21 +2591,27 @@ function vTareas() {
 
     ${isAdmin()?`
     <div id="add-task-box" class="add-task-box" style="display:none">
-      <div class="sec-lbl">NUEVA TAREA</div>
-      <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60">
+      <div class="sec-lbl" id="add-task-label">NUEVA TAREA</div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+        <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0">
+        <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:34px;flex-shrink:0;cursor:pointer;font-size:16px">✕</button>
+      </div>
       <div class="msgs-link-row" id="task-link-row">
         <input type="text" id="task-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;font-size:12px">
         <input type="text" id="task-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;font-size:12px">
-        <button onclick="cancelTaskLink()" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;padding:5px 9px;cursor:pointer">✕</button>
+        <button onclick="cancelTaskLink()" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:34px;flex-shrink:0;cursor:pointer">✕</button>
       </div>
       <div class="msgs-file-row" id="task-file-row">
         <span id="task-file-name">—</span>
         <button onclick="cancelTaskFile()" style="background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:18px;line-height:1">✕</button>
       </div>
-      <div style="display:flex;gap:5px;align-items:flex-end;margin-bottom:8px">
+      <div style="display:flex;gap:5px;align-items:flex-start;margin-bottom:8px">
         <textarea class="fsm" id="t-desc" placeholder="Descripción (opcional)..." style="flex:1;margin-bottom:0;resize:vertical;min-height:60px"></textarea>
-        <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleTaskLink()">🔗</button>
-        <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('task-file-input').click()">📎</button>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+          <button class="msgs-btn-icon" title="Adjuntar enlace" onclick="toggleTaskLink()" style="width:34px">🔗</button>
+          <button class="msgs-btn-icon" title="Imagen / archivo" onclick="document.getElementById('task-file-input').click()" style="width:34px">📎</button>
+          <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" style="width:34px;display:none;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
+        </div>
         <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
       </div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -2689,7 +2695,7 @@ function renderTask(t, loggedId) {
       <div class="task-btns" style="margin-top:0;flex-shrink:0">
         <button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>
         ${isAdmin()?`<button class="btn-dt sq" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''}
-        ${isAdmin()?`<button class="btn-dt sq" title="Eliminar" onclick="deleteTask('${t.id}')">🗑️</button>`:''}
+        ${isAdmin()?`<button class="btn-dt sq" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.16);color:rgba(255,255,255,0.6)" title="Marcar como no hecha" onclick="markTaskUndone('${t.id}')">↩️</button>`:''}
       </div>
     </div>
   </div>`;
@@ -3539,6 +3545,8 @@ function toggleAddTask() {
     setTaskAssignPills('all');
     const eid=document.getElementById('t-editing-id'); if(eid) eid.value='';
     const btn=document.getElementById('t-save-btn'); if(btn) btn.textContent='GUARDAR TAREA';
+    const lbl=document.getElementById('add-task-label'); if(lbl) lbl.textContent='NUEVA TAREA';
+    const delBtn=document.getElementById('t-delete-btn'); if(delBtn) delBtn.style.display='none';
     cancelTaskLink(); cancelTaskFile();
     refreshTaskPromptList();
   }
@@ -3563,6 +3571,8 @@ function openEditTask(id) {
   document.getElementById('t-editing-id').value = id;
   const btn = document.getElementById('t-save-btn');
   if (btn) btn.textContent = 'ACTUALIZAR TAREA';
+  const lbl = document.getElementById('add-task-label'); if (lbl) lbl.textContent = 'EDITAR TAREA';
+  const delBtn = document.getElementById('t-delete-btn'); if (delBtn) delBtn.style.display = 'block';
   // pre-fill prompt
   refreshTaskPromptList(t.promptId||'');
   // pre-fill attachment if link
@@ -3655,6 +3665,24 @@ function deleteTask(id) {
   const el=document.getElementById('tc-'+id);
   if (el) el.remove();
   showToast('Tarea eliminada.','success');
+}
+function deleteTaskFromForm() {
+  const id = document.getElementById('t-editing-id')?.value || '';
+  if (!id) return;
+  if (!confirm('¿Eliminar esta tarea?')) return;
+  deleteTask(id);
+  const box = document.getElementById('add-task-box');
+  if (box) box.style.display = 'none';
+}
+function markTaskUndone(id) {
+  if (!firestoreDataReady()) return;
+  const loggedId = getLoggedId();
+  const idx = tasks.findIndex(t=>t.id===id); if (idx<0) return;
+  const strip = t => ({ ...t, completedBy:(t.completedBy||[]).filter(x=>String(x)!==String(loggedId)), pendingReview:(t.pendingReview||[]).filter(x=>String(x)!==String(loggedId)) });
+  tasks[idx] = strip(tasks[idx]);
+  saveTasks(arr => arr.map(t => t.id===id ? strip(t) : t));
+  showToast('Marcada como no hecha.','success');
+  router();
 }
 // Aplica la lógica de marcar/desmarcar una tarea como hecha sobre UN objeto de tarea dado, sin
 // tocar variables globales — se usa tanto para la actualización local optimista como dentro de
