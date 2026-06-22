@@ -125,6 +125,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .btn-dt { background:rgba(239,68,68,0.1); border:2px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; flex-shrink:0; }
 .add-task-box { background:rgba(34,229,255,0.07); border:1px solid rgba(34,229,255,0.2); border-radius:16px; padding:16px; margin-top:12px; }
 .fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:8px; outline:none; }
+.fsm::placeholder { color:rgba(255,255,255,0.4); font-family:'Barlow',sans-serif; font-size:13px; }
 .fsm:focus { border-color:rgba(34,229,255,0.5); }
 textarea.fsm { resize:none; height:64px; }
 
@@ -2608,7 +2609,7 @@ function vTareas() {
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
         <div id="task-file-row" style="flex:1;display:flex;gap:6px" data-url="">
-          <div id="task-file-name" onclick="cancelTaskFile();document.getElementById('task-file-input').click()" style="flex:1;cursor:pointer;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-family:'Barlow',sans-serif;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</div>
+          <div id="task-file-name" onclick="cancelTaskFile();document.getElementById('task-file-input').click()" style="flex:1;cursor:pointer;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Subir archivo...</div>
           <input type="text" class="fsm" id="t-desc" placeholder="Título del archivo" style="flex:1;margin-bottom:0;height:38px">
         </div>
         <button class="msgs-btn-icon" title="Ver / descargar archivo" onclick="openTaskFile()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">📎</button>
@@ -2623,7 +2624,7 @@ function vTareas() {
           <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:4px">HORA LÍMITE</div>
           <input type="time" class="fsm" id="t-time" style="margin-bottom:0;height:38px" value="23:59">
         </div>
-        <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" style="width:34px;height:34px;visibility:hidden;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
+        <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" disabled style="width:34px;height:34px;visibility:visible;opacity:0.35;cursor:not-allowed;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
       </div>
       <div style="margin-bottom:8px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
@@ -3575,7 +3576,7 @@ function toggleAddTask() {
     const eid=document.getElementById('t-editing-id'); if(eid) eid.value='';
     const btn=document.getElementById('t-save-btn'); if(btn) btn.textContent='GUARDAR TAREA';
     const lbl=document.getElementById('add-task-label'); if(lbl) lbl.textContent='NUEVA TAREA';
-    const delBtn=document.getElementById('t-delete-btn'); if(delBtn) delBtn.style.visibility='hidden';
+    const delBtn=document.getElementById('t-delete-btn'); if(delBtn){ delBtn.style.visibility='visible'; delBtn.disabled=true; delBtn.style.opacity='0.35'; delBtn.style.cursor='not-allowed'; }
     cancelTaskLink(); cancelTaskFile();
     refreshTaskPromptList();
   }
@@ -3587,8 +3588,8 @@ function copyTaskLink(){
   navigator.clipboard?.writeText(url).then(()=>showToast('Enlace copiado.','success')).catch(()=>showToast('No se pudo copiar el enlace.'));
 }
 function cancelTaskLink(){ ['task-link-url','task-link-name'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); }
-function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const n=document.getElementById('task-file-name'); if(n) n.textContent=_taskFileObj.name; }
-function cancelTaskFile(){ _taskFileObj=null; const n=document.getElementById('task-file-name'); if(n) n.textContent='—'; const i=document.getElementById('task-file-input'); if(i) i.value=''; const r=document.getElementById('task-file-row'); if(r) r.dataset.url=''; }
+function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const n=document.getElementById('task-file-name'); if(n){ n.textContent=_taskFileObj.name; n.style.color='#fff'; } }
+function cancelTaskFile(){ _taskFileObj=null; const n=document.getElementById('task-file-name'); if(n){ n.textContent='Subir archivo...'; n.style.color='rgba(255,255,255,0.4)'; } const i=document.getElementById('task-file-input'); if(i) i.value=''; const r=document.getElementById('task-file-row'); if(r) r.dataset.url=''; }
 function openTaskFile(){
   if (_taskFileObj) { window.open(URL.createObjectURL(_taskFileObj), '_blank'); return; }
   const url = document.getElementById('task-file-row')?.dataset.url || '';
@@ -3611,7 +3612,7 @@ function openEditTask(id) {
   const btn = document.getElementById('t-save-btn');
   if (btn) btn.textContent = 'ACTUALIZAR TAREA';
   const lbl = document.getElementById('add-task-label'); if (lbl) lbl.textContent = 'EDITAR TAREA';
-  const delBtn = document.getElementById('t-delete-btn'); if (delBtn) delBtn.style.visibility = 'visible';
+  const delBtn = document.getElementById('t-delete-btn'); if (delBtn) { delBtn.style.visibility = 'visible'; delBtn.disabled = false; delBtn.style.opacity = '1'; delBtn.style.cursor = 'pointer'; }
   // pre-fill prompt
   refreshTaskPromptList(t.promptId||'');
   // pre-fill attachment if link
@@ -3620,7 +3621,7 @@ function openEditTask(id) {
     document.getElementById('task-link-url').value  = t.att.url||'';
     document.getElementById('task-link-name').value = t.att.name||'';
   } else if (t.att?.type === 'file' || t.att?.type === 'image') {
-    const n = document.getElementById('task-file-name'); if (n) n.textContent = t.att.name||'Archivo';
+    const n = document.getElementById('task-file-name'); if (n) { n.textContent = t.att.name||'Archivo'; n.style.color = '#fff'; }
     const r = document.getElementById('task-file-row'); if (r) r.dataset.url = t.att.url||'';
   }
 }
