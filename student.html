@@ -529,6 +529,7 @@ textarea.fsm { resize:none; height:64px; }
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <script>
 // ════════════════════════════════════════════════════════
 // FIREBASE
@@ -546,6 +547,13 @@ const db      = firebase.firestore();
 const storage  = firebase.storage();
 const REF      = db.collection('sorteo').doc('main');
 const MSGS_COL = db.collection('msgs');
+// Push real (Firebase Cloud Messaging) — funciona aunque el navegador esté cerrado.
+// La VAPID_KEY se genera en Firebase Console → ⚙️ Configuración del proyecto → Cloud Messaging
+// → Certificados push web → "Generar par de claves". Sin pegarla aquí, getToken() falla.
+const VAPID_KEY = "PEGA_AQUI_TU_VAPID_KEY";
+const FCM_TOKENS_COL = db.collection('fcmTokens');
+let messaging = null;
+try { messaging = firebase.messaging(); } catch(e) { /* navegador sin soporte (Safari/iOS, etc.) */ }
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
 // así que cambiar la clave admin aquí también la cambia allá (y viceversa).
 const AUTH_REF = db.collection('shared').doc('auth');
@@ -593,7 +601,6 @@ let horDayOffset   = 0;   // mobile 3-day view: day offset from start of current
 let msgsGroupArr  = [];   // [{id,from,fromName,text,att,ts}] sorted by ts
 let msgsDmObj     = {};   // {studentId: [...]} loaded on-demand
 let msgsListeners = {};   // active onSnapshot unsubscribers
-let _notifBaseline = {};  // { 'group': tsÚltimoMsgConocido, 'dm_<sid>': ... } — fija una base al conectar para no notificar mensajes viejos, solo los que llegan de ahí en adelante
 let msgsDmView    = null; // null=group channel, or String(studentId) for DM
 let msgsUploading = false;
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
@@ -2797,51 +2804,71 @@ function refreshMsgsBadge(){
   const el = document.getElementById('nav-badge-tareas');
   if (el){ el.textContent = n>9?'9+':String(n||''); el.style.display = n>0?'flex':'none'; }
 }
-// ── Notificaciones del navegador (Web Notifications API) ──
-// Aviso en Windows/Chrome con nombre + mensaje cuando llega algo nuevo al canal general o a un chat privado.
+// ── Notificaciones push (Firebase Cloud Messaging) ──
+// Funcionan con la pestaña abierta, minimizada o con el navegador cerrado: una Cloud Function
+// detecta cada mensaje nuevo en Firestore y lo empuja por FCM a los tokens guardados en fcmTokens.
 function _notifBtnHtml(){
-  if (typeof Notification === 'undefined') return ''; // navegador sin soporte
+  if (typeof Notification === 'undefined' || !messaging) return ''; // navegador sin soporte
   const perm = Notification.permission;
   if (perm === 'granted') return `<button class="msgs-notif-btn on" disabled>🔔 Notificaciones activadas</button>`;
   if (perm === 'denied')  return `<button class="msgs-notif-btn off" onclick="showToast('Las bloqueaste desde el navegador. Para activarlas: clic en el ícono 🔒 junto a la URL y permite las notificaciones.','info')">🔕 Notificaciones bloqueadas</button>`;
   return `<button class="msgs-notif-btn" onclick="requestMsgsNotifPermission()">🔔 Activar notificaciones</button>`;
 }
-function requestMsgsNotifPermission(){
-  if (typeof Notification === 'undefined'){ showToast('Tu navegador no soporta notificaciones.','info'); return; }
-  Notification.requestPermission().then(perm => {
-    if (perm === 'granted') showToast('🔔 Notificaciones activadas.','info');
-    else if (perm === 'denied') showToast('Notificaciones bloqueadas.','info');
-    const wrap = document.getElementById('msgs-notif-wrap'); if (wrap) wrap.innerHTML = _notifBtnHtml();
-  });
-}
-// Compara contra la última marca de tiempo conocida de ese canal para detectar SOLO mensajes
-// realmente nuevos (la primera vez que se conecta el listener únicamente fija la base, no notifica).
-function _checkNewMsgsForNotify(key, arr){
-  const prevTs = _notifBaseline[key];
-  const maxTs = arr.length ? arr[arr.length-1].ts : 0;
-  _notifBaseline[key] = maxTs;
-  if (prevTs === undefined || maxTs <= prevTs) return;
+async function _saveFcmToken(token){
+  if (!token) return;
   const me = isAdmin() ? 'teacher' : String(getLoggedId());
-  arr.filter(m => m.ts > prevTs && m.from !== me).forEach(m => _fireMsgNotification(key, m));
+  await FCM_TOKENS_COL.doc(token).set({ uid: me, ts: Date.now() }, { merge:true });
 }
-function _fireMsgNotification(key, m){
-  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
-  const sid = key==='group' ? null : key.slice(3);
-  // Si ya tiene esa misma conversación abierta y la pestaña está enfocada, no hace falta notificar
-  if (document.hasFocus() && taskFilter==='msgs' && msgsDmView===sid) return;
-  const title = (key==='group' ? '📢 ' : '💬 ') + (m.fromName || 'Mensaje nuevo');
-  const body  = m.text || (m.att ? (m.att.type==='image' ? '📎 Envió una imagen' : m.att.type==='link' ? '🔗 Envió un enlace' : '📄 Envió un archivo') : '');
+async function requestMsgsNotifPermission(){
+  if (typeof Notification === 'undefined' || !messaging){ showToast('Tu navegador no soporta notificaciones push.','info'); return; }
   try {
-    const n = new Notification(title, { body, icon:'/favicon.svg', tag:key+'_'+m.id });
-    n.onclick = () => { window.focus(); go('tareas'); setTaskFilter('msgs'); setMsgsDmView(sid===null?'null':sid); n.close(); };
-  } catch(e){ console.error('[Notification]', e); }
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted'){
+      const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+      await _saveFcmToken(token);
+      showToast('🔔 Notificaciones activadas.','info');
+    } else if (perm === 'denied') {
+      showToast('Notificaciones bloqueadas.','info');
+    }
+  } catch(e){
+    console.error('[FCM]', e);
+    showToast('No se pudo activar. Revisa la consola del navegador.','info');
+  }
+  const wrap = document.getElementById('msgs-notif-wrap'); if (wrap) wrap.innerHTML = _notifBtnHtml();
+}
+// Si ya había permiso concedido en una sesión anterior, renueva el token en silencio (sin pedir
+// permiso de nuevo) cada vez que arrancan los listeners — los tokens de FCM pueden rotar/expirar.
+async function _silentlyRefreshFcmToken(){
+  if (typeof Notification === 'undefined' || !messaging || Notification.permission !== 'granted') return;
+  try {
+    const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+    await _saveFcmToken(token);
+  } catch(e){ console.error('[FCM]', e); }
+}
+// Mensaje push recibido con la pestaña abierta Y visible (Chrome no muestra notificación sola en
+// este caso — hay que crearla a mano, igual que hacía el service worker para pestaña cerrada/oculta).
+if (messaging) {
+  messaging.onMessage(payload => {
+    const data = payload.data || {};
+    const key = data.key; if (!key) return;
+    const sid = key==='group' ? null : key.slice(3);
+    if (document.hasFocus() && taskFilter==='msgs' && msgsDmView===sid) return; // ya está viendo ese chat
+    try {
+      const n = new Notification(payload.notification?.title || 'Nuevo mensaje', {
+        body: payload.notification?.body || '', icon:'/favicon.svg', tag: data.tag || key
+      });
+      n.onclick = () => { window.focus(); go('tareas'); setTaskFilter('msgs'); setMsgsDmView(sid===null?'null':sid); n.close(); };
+    } catch(e){ console.error('[Notification]', e); }
+  });
 }
 function startMsgsListeners(){
   if (msgsListeners['group']) return;
   const loggedId = getLoggedId(); if (loggedId === null) return;
+  _silentlyRefreshFcmToken();
   msgsListeners['group'] = MSGS_COL.doc('group').onSnapshot(snap => {
     msgsGroupArr = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
-    _checkNewMsgsForNotify('group', msgsGroupArr);
     refreshMsgsBadge();
     if (taskFilter==='msgs' && msgsDmView===null) _renderMsgsInPlace();
   });
@@ -2849,7 +2876,6 @@ function startMsgsListeners(){
     const sid = String(loggedId);
     msgsListeners['dm_'+sid] = MSGS_COL.doc('dm_'+sid).onSnapshot(snap => {
       msgsDmObj[sid] = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
-      _checkNewMsgsForNotify('dm_'+sid, msgsDmObj[sid]);
       refreshMsgsBadge();
       if (taskFilter==='msgs' && msgsDmView===sid) _renderMsgsInPlace();
     });
@@ -2859,7 +2885,6 @@ function startMsgsListeners(){
       if (msgsListeners['dm_'+sid]) return;
       msgsListeners['dm_'+sid] = MSGS_COL.doc('dm_'+sid).onSnapshot(snap => {
         msgsDmObj[sid] = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
-        _checkNewMsgsForNotify('dm_'+sid, msgsDmObj[sid]);
         refreshMsgsBadge();
         if (taskFilter==='msgs' && msgsDmView===sid) _renderMsgsInPlace();
       });
