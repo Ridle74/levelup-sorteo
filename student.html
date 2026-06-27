@@ -482,6 +482,9 @@ textarea.fsm { resize:none; height:64px; }
 .msgs-dm-pill{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
 .msgs-dm-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:700;cursor:pointer;position:relative;white-space:nowrap}
 .msgs-dm-btn.active{background:rgba(79,182,255,0.18);border-color:rgba(79,182,255,0.4);color:#4fb6ff}
+.msgs-notif-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.msgs-notif-btn.on{background:rgba(57,255,122,0.15);border-color:rgba(57,255,122,0.35);color:#39ff7a;cursor:default}
+.msgs-notif-btn.off{background:rgba(255,90,90,0.1);border-color:rgba(255,90,90,0.25);color:#ff5a5a}
 .msg-del{opacity:0;transition:opacity 0.15s;background:none;border:none;color:rgba(255,255,255,0.35);font-size:13px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;position:absolute;top:0}
 .msg-wrap.mine .msg-del{left:-22px}
 .msg-wrap.other .msg-del{right:-22px}
@@ -590,6 +593,7 @@ let horDayOffset   = 0;   // mobile 3-day view: day offset from start of current
 let msgsGroupArr  = [];   // [{id,from,fromName,text,att,ts}] sorted by ts
 let msgsDmObj     = {};   // {studentId: [...]} loaded on-demand
 let msgsListeners = {};   // active onSnapshot unsubscribers
+let _notifBaseline = {};  // { 'group': tsÚltimoMsgConocido, 'dm_<sid>': ... } — fija una base al conectar para no notificar mensajes viejos, solo los que llegan de ahí en adelante
 let msgsDmView    = null; // null=group channel, or String(studentId) for DM
 let msgsUploading = false;
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
@@ -2793,11 +2797,51 @@ function refreshMsgsBadge(){
   const el = document.getElementById('nav-badge-tareas');
   if (el){ el.textContent = n>9?'9+':String(n||''); el.style.display = n>0?'flex':'none'; }
 }
+// ── Notificaciones del navegador (Web Notifications API) ──
+// Aviso en Windows/Chrome con nombre + mensaje cuando llega algo nuevo al canal general o a un chat privado.
+function _notifBtnHtml(){
+  if (typeof Notification === 'undefined') return ''; // navegador sin soporte
+  const perm = Notification.permission;
+  if (perm === 'granted') return `<button class="msgs-notif-btn on" disabled>🔔 Notificaciones activadas</button>`;
+  if (perm === 'denied')  return `<button class="msgs-notif-btn off" onclick="showToast('Las bloqueaste desde el navegador. Para activarlas: clic en el ícono 🔒 junto a la URL y permite las notificaciones.','info')">🔕 Notificaciones bloqueadas</button>`;
+  return `<button class="msgs-notif-btn" onclick="requestMsgsNotifPermission()">🔔 Activar notificaciones</button>`;
+}
+function requestMsgsNotifPermission(){
+  if (typeof Notification === 'undefined'){ showToast('Tu navegador no soporta notificaciones.','info'); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') showToast('🔔 Notificaciones activadas.','info');
+    else if (perm === 'denied') showToast('Notificaciones bloqueadas.','info');
+    const wrap = document.getElementById('msgs-notif-wrap'); if (wrap) wrap.innerHTML = _notifBtnHtml();
+  });
+}
+// Compara contra la última marca de tiempo conocida de ese canal para detectar SOLO mensajes
+// realmente nuevos (la primera vez que se conecta el listener únicamente fija la base, no notifica).
+function _checkNewMsgsForNotify(key, arr){
+  const prevTs = _notifBaseline[key];
+  const maxTs = arr.length ? arr[arr.length-1].ts : 0;
+  _notifBaseline[key] = maxTs;
+  if (prevTs === undefined || maxTs <= prevTs) return;
+  const me = isAdmin() ? 'teacher' : String(getLoggedId());
+  arr.filter(m => m.ts > prevTs && m.from !== me).forEach(m => _fireMsgNotification(key, m));
+}
+function _fireMsgNotification(key, m){
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  const sid = key==='group' ? null : key.slice(3);
+  // Si ya tiene esa misma conversación abierta y la pestaña está enfocada, no hace falta notificar
+  if (document.hasFocus() && taskFilter==='msgs' && msgsDmView===sid) return;
+  const title = (key==='group' ? '📢 ' : '💬 ') + (m.fromName || 'Mensaje nuevo');
+  const body  = m.text || (m.att ? (m.att.type==='image' ? '📎 Envió una imagen' : m.att.type==='link' ? '🔗 Envió un enlace' : '📄 Envió un archivo') : '');
+  try {
+    const n = new Notification(title, { body, icon:'/favicon.svg', tag:key+'_'+m.id });
+    n.onclick = () => { window.focus(); go('tareas'); setTaskFilter('msgs'); setMsgsDmView(sid===null?'null':sid); n.close(); };
+  } catch(e){ console.error('[Notification]', e); }
+}
 function startMsgsListeners(){
   if (msgsListeners['group']) return;
   const loggedId = getLoggedId(); if (loggedId === null) return;
   msgsListeners['group'] = MSGS_COL.doc('group').onSnapshot(snap => {
     msgsGroupArr = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
+    _checkNewMsgsForNotify('group', msgsGroupArr);
     refreshMsgsBadge();
     if (taskFilter==='msgs' && msgsDmView===null) _renderMsgsInPlace();
   });
@@ -2805,6 +2849,7 @@ function startMsgsListeners(){
     const sid = String(loggedId);
     msgsListeners['dm_'+sid] = MSGS_COL.doc('dm_'+sid).onSnapshot(snap => {
       msgsDmObj[sid] = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
+      _checkNewMsgsForNotify('dm_'+sid, msgsDmObj[sid]);
       refreshMsgsBadge();
       if (taskFilter==='msgs' && msgsDmView===sid) _renderMsgsInPlace();
     });
@@ -2814,6 +2859,7 @@ function startMsgsListeners(){
       if (msgsListeners['dm_'+sid]) return;
       msgsListeners['dm_'+sid] = MSGS_COL.doc('dm_'+sid).onSnapshot(snap => {
         msgsDmObj[sid] = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
+        _checkNewMsgsForNotify('dm_'+sid, msgsDmObj[sid]);
         refreshMsgsBadge();
         if (taskFilter==='msgs' && msgsDmView===sid) _renderMsgsInPlace();
       });
@@ -2882,7 +2928,10 @@ function vMensajes(){
       <button class="msgs-dm-btn${msgsDmView===null?' active':''}" data-v="null" onclick="setMsgsDmView('null')" style="position:relative">📢 CANAL${groupU>0?` <span class="msgs-badge">${groupU}</span>`:''}</button>
       ${dmBtns}
     </div>
-    <div id="msgs-ch-lbl" style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px">${_getMsgsChLabel()}</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">
+      <div id="msgs-ch-lbl" style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">${_getMsgsChLabel()}</div>
+      <div id="msgs-notif-wrap" style="flex-shrink:0">${_notifBtnHtml()}</div>
+    </div>
   </div>
   <div id="msgs-body" style="padding:0 12px 6px;display:flex;flex-direction:column;gap:1px">
     ${_buildMsgsBubbles()}
