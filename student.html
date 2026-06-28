@@ -1594,11 +1594,21 @@ function createBingoGame() {
   if (bingoGame && bingoGame.status && bingoGame.status!=='idle') { showToast('Ya hay una partida activa, únete a esa.','error'); return; }
   bingoCreating = true;
   const me = _bingoMe();
+  // OJO: el host se agrega como jugador en la MISMA escritura (no con un joinBingoGame()
+  // encadenado después) — encadenarlo dependía de que el listener ya hubiera actualizado
+  // la variable global bingoGame antes de que corriera el .then(), y esa carrera a veces
+  // perdía, dejando al host sin unirse a su propia partida ("Aún no se unió nadie").
+  const hostPlayer = {
+    name: me.name, icon: me.icon, color: me.color,
+    card: bingoGenerateCard(), marks: [],
+    failed: { terna:false, cuaterna:false, quina:false, bingo:false },
+    won:    { terna:false, cuaterna:false, quina:false, bingo:false }
+  };
   BINGO_REF.set({
     status:'lobby', hostId: me.uid, hostName: me.name,
     createdAt: Date.now(), drawnNumbers:[], currentNumber:null,
-    nextDrawAt:null, intervalMs:4500, players:{}
-  }).then(()=>{ bingoCreating=false; joinBingoGame(); })
+    nextDrawAt:null, intervalMs:4500, players:{ [me.uid]: hostPlayer }
+  }).then(()=>{ bingoCreating=false; })
     .catch(e=>{ bingoCreating=false; showToast('No se pudo crear la partida.','error'); console.error(e); });
 }
 function joinBingoGame() {
