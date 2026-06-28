@@ -498,39 +498,53 @@ textarea.fsm { resize:none; height:64px; }
     .perfil-frame-opt{display:flex;flex-direction:column;align-items:center;cursor:pointer;opacity:0.65;transition:opacity 0.15s;padding:6px}
     .perfil-frame-opt.selected,.perfil-frame-opt:hover{opacity:1}
 
-/* ── BINGO (tab GAMING) ───────────────────────────────── */
+/* ── BINGO (tab GAMING + /student/bingo) — diseño "Neon Bingo" ───────────────────────────────── */
+.bingo-wrap{background:#0a0e1a;border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:14px;font-family:'Barlow Condensed',sans-serif;box-shadow:0 0 30px -10px rgba(124,58,237,0.25)}
+.bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bingo-titlebar .btb-ico{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;box-shadow:0 0 16px -2px #ec4899}
+.bingo-titlebar .btb-text{font-weight:900;font-size:18px;letter-spacing:0.1em;text-transform:uppercase;line-height:1;background:linear-gradient(to right,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.bingo-titlebar .btb-sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.18em;text-transform:uppercase;margin-top:2px}
 .bingo-empty{text-align:center;padding:36px 20px;color:rgba(255,255,255,0.4)}
-.bingo-empty-ico{font-size:40px;margin-bottom:10px}
-.bingo-create-btn{display:block;margin:14px auto 0;background:linear-gradient(135deg,#7c3aed,#22e5ff);color:#0a0b16;font-weight:900;border:none;border-radius:14px;padding:14px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 18px -4px #22e5ff}
-.bingo-host-badge{font-size:10px;color:#baff29;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(186,255,41,0.1);border:1px solid rgba(186,255,41,0.3);border-radius:20px;padding:4px 10px;display:inline-block}
+.bingo-empty-ico{font-size:40px;margin-bottom:10px;filter:drop-shadow(0 0 14px rgba(168,85,247,0.6))}
+.bingo-create-btn{display:block;margin:14px auto 0;background:linear-gradient(135deg,#db2777,#7c3aed);color:#fff;font-weight:900;border:none;border-radius:14px;padding:14px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 22px -4px #db2777}
+.bingo-host-badge{font-size:10px;color:#facc15;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-radius:20px;padding:4px 10px;display:inline-block}
 .bingo-players-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.bingo-player-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:4px 10px 4px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.75)}
+.bingo-player-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(132,204,22,0.25);border-radius:20px;padding:4px 10px 4px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)}
 .bingo-player-chip .bpc-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden}
-.bingo-start-btn{width:100%;background:linear-gradient(135deg,#22c55e,#39ff7a);color:#06170c;font-weight:900;border:none;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:8px}
-.bingo-end-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ff5c7a;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
-.bingo-join-btn{width:100%;background:rgba(34,229,255,0.14);border:1px solid rgba(34,229,255,0.35);color:#7dd3ff;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px}
+.bingo-start-btn{width:100%;background:linear-gradient(135deg,#84cc16,#16a34a);color:#06170c;font-weight:900;border:none;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:8px;box-shadow:0 0 18px -4px #84cc16}
+.bingo-end-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
+.bingo-join-btn{width:100%;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;box-shadow:0 0 16px -6px #22d3ee}
+.bingo-full-btn{font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 11px;cursor:pointer;flex-shrink:0}
 .bingo-draw-head{display:flex;align-items:center;gap:14px;padding:12px 4px}
-.bingo-ball{width:62px;height:62px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;flex-shrink:0;box-shadow:0 0 22px -2px currentColor,0 0 0 3px rgba(255,255,255,0.08) inset}
+.bingo-ball{width:64px;height:64px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-weight:900;flex-shrink:0;background:#050810;box-shadow:0 0 24px -2px currentColor,0 0 0 3px rgba(255,255,255,0.06) inset}
 .bingo-ball .bb-letter{font-size:11px;opacity:0.85;line-height:1}
-.bingo-ball .bb-num{font-size:21px;line-height:1.1}
+.bingo-ball .bb-num{font-size:22px;line-height:1.1}
 .bingo-countdown{font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;letter-spacing:0.04em;margin-top:2px}
 .bingo-drawn-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
-.bingo-drawn-chip{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7)}
+.bingo-drawn-chip{flex-shrink:0;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;font-family:ui-monospace,Menlo,monospace;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#a5f3fc}
+.bingo-drawn-chip.current{background:#ec4899;border-color:#ec4899;color:#fff;box-shadow:0 0 14px -2px #ec4899;transform:scale(1.12)}
 .bingo-card{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:6px 0 10px}
-.bingo-card-hdr{text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:rgba(255,255,255,0.45);padding-bottom:3px}
-.bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.08);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;color:rgba(255,255,255,0.45);cursor:pointer}
-.bingo-cell.free{background:rgba(176,107,255,0.18);border-color:rgba(176,107,255,0.4);color:#d8b4ff;cursor:default}
-.bingo-cell.avail{border-color:rgba(34,229,255,0.45);color:#7dd3ff}
-.bingo-cell.marked{background:linear-gradient(160deg,#0d9488,#39ff7a);border-color:rgba(57,255,122,0.7);color:#06281f;box-shadow:0 0 14px -2px #baff29}
-.bingo-claims-row{display:flex;gap:6px;margin-top:4px}
-.bingo-claim-btn{flex:1;border-radius:10px;padding:10px 4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10px;letter-spacing:0.02em;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12)}
-.bingo-claim-btn.won{background:rgba(57,255,122,0.18);border-color:rgba(57,255,122,0.45);color:#39ff7a}
-.bingo-claim-btn.failed{background:rgba(255,90,90,0.1);border-color:rgba(255,90,90,0.25);color:#ff5a5a;opacity:0.65}
+.bingo-card-hdr{text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:#fff;background:#050810;border-radius:6px;padding-bottom:3px;border-bottom:3px solid #a855f7}
+.bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.08);font-family:ui-monospace,Menlo,monospace;font-weight:900;font-size:15px;color:rgba(255,255,255,0.45);cursor:pointer;transition:all .2s}
+.bingo-cell.free{background:linear-gradient(135deg,#fde047,#f59e0b);border-color:#fde047;color:#451a03;cursor:default;box-shadow:0 0 14px -3px #fde047}
+.bingo-cell.avail{border-color:#facc15;color:#fde68a;box-shadow:0 0 10px -3px #facc15;animation:bingoPulse 1.6s ease-in-out infinite}
+.bingo-cell.marked{background:linear-gradient(135deg,#4ade80,#16a34a);border-color:#4ade80;color:#06280f;box-shadow:0 0 16px -2px #4ade80;transform:scale(1.04)}
+@keyframes bingoPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.bingo-claims-row{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+.bingo-claim-btn{flex:1;min-width:70px;border-radius:10px;padding:10px 4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10px;letter-spacing:0.02em;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12)}
+.bingo-claim-btn.tier-terna{background:linear-gradient(135deg,#22d3ee,#2563eb);color:#fff;border-color:transparent;box-shadow:0 0 14px -4px #22d3ee}
+.bingo-claim-btn.tier-cuaterna{background:linear-gradient(135deg,#facc15,#f97316);color:#1a1100;border-color:transparent;box-shadow:0 0 14px -4px #facc15}
+.bingo-claim-btn.tier-quina{background:linear-gradient(135deg,#fb923c,#ef4444);color:#fff;border-color:transparent;box-shadow:0 0 14px -4px #fb923c}
+.bingo-claim-btn.tier-bingo{background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;border-color:transparent;box-shadow:0 0 16px -3px #ec4899}
+.bingo-claim-btn.won{background:rgba(74,222,128,0.18)!important;border-color:rgba(74,222,128,0.5)!important;color:#4ade80!important;box-shadow:none!important}
+.bingo-claim-btn.failed{background:rgba(248,113,113,0.1)!important;border-color:rgba(248,113,113,0.3)!important;color:#f87171!important;opacity:0.6;box-shadow:none!important}
 .bingo-claim-btn:disabled{cursor:default}
-.bingo-winners-box{margin-top:12px;padding:10px 12px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);border-radius:12px}
+.bingo-winners-box{margin-top:12px;padding:10px 12px;background:rgba(250,204,21,0.06);border:1px solid rgba(250,204,21,0.25);border-radius:12px}
 .bingo-winners-box .bw-row{display:flex;gap:6px;align-items:baseline;margin-top:4px;font-size:11px;flex-wrap:wrap}
-.bingo-winners-box .bw-tier{font-weight:900;color:#ffd23f;letter-spacing:0.05em;min-width:62px}
-.bingo-ended-banner{text-align:center;padding:14px;background:rgba(255,210,63,0.1);border:1px solid rgba(255,210,63,0.3);border-radius:14px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.04em;font-size:13px}
+.bingo-winners-box .bw-tier{font-weight:900;color:#facc15;letter-spacing:0.05em;min-width:62px}
+.bingo-ended-banner{text-align:center;padding:14px;background:linear-gradient(135deg,rgba(250,204,21,0.12),rgba(236,72,153,0.12));border:1px solid rgba(250,204,21,0.35);border-radius:14px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.04em;font-size:13px}
+.bingo-full-wrap{min-height:100vh;background:#030712;padding:14px}
+.bingo-back-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:10px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -1212,6 +1226,9 @@ function descargarImagen(canvas, nombre='imagen.png') {
 // ════════════════════════════════════════════════════════
 const PUBLIC_ROUTES = new Set(['login','ranking','numeros','ganadores']);
 const ADMIN_ROUTES  = new Set([]);
+// Rutas "inmersivas": pantalla completa sin nav inferior ni barra atrás/inicio/adelante
+// (pedido explícito: que /student/bingo "solo se vea el sorteo").
+const IMMERSIVE_ROUTES = new Set(['bingo']);
 
 function go(view) {
   currentView = view;
@@ -1243,11 +1260,12 @@ function router() {
   const views = {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
     ranking: vRankingPage, numeros: vNumerosPage, ganadores: vGanadoresPage,
-    tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil
+    tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil,
+    bingo: vBingoFull
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
-  const showNav = loggedId !== null;
+  const showNav = loggedId !== null && !IMMERSIVE_ROUTES.has(hash);
   if (showNav) {
     buildNav(hash);
     nav.classList.add('visible');
@@ -1260,7 +1278,7 @@ function router() {
   // Barra atrás/inicio/adelante: visible cuando hay sesión y no estamos en el inicio (dashboard)
   const histBar = document.getElementById('hist-bar');
   if (histBar) {
-    const showHist = loggedId !== null && hash !== 'dashboard';
+    const showHist = loggedId !== null && hash !== 'dashboard' && !IMMERSIVE_ROUTES.has(hash);
     histBar.classList.toggle('visible', showHist);
     document.body.classList.toggle('hist-visible', showHist);
   }
@@ -1268,7 +1286,8 @@ function router() {
   const setup = {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
     ranking:vRankingSetup, numeros:vNumerosSetup, ganadores:vGanadoresSetup,
-    tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{}
+    tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{},
+    bingo: vBingoFullSetup
   };
   if (setup[hash]) setup[hash]();
 
@@ -1413,7 +1432,7 @@ function vDashboard() {
     </div>
 
     <div id="pane-dash-gaming" style="display:${dashTab==='gaming'?'block':'none'}">
-      <div id="bingo-pane">${_bingoPaneHtml()}</div>
+      <div id="bingo-pane" class="bingo-wrap bingo-pane-host">${_bingoPaneHtml()}</div>
     </div>
 
     <div id="pane-dash-resumen" style="display:${dashTab==='resumen'?'block':'none'}">
@@ -1557,7 +1576,18 @@ function startBingoListener() {
     // OJO: snap.exists===false significa "todavía nadie creó una partida" (estado normal, NO es
     // "sigo cargando") — por eso NO se setea a null aquí, sino a {status:'idle'}. bingoGame queda
     // en null SOLO antes de que llegue el primer snapshot (de ahí depende el "Cargando..." real).
+    const prevStatus = bingoGame ? bingoGame.status : null;
     bingoGame = snap.exists ? snap.data() : { status:'idle' };
+    // Auto-navegar a /student/bingo (pantalla completa) en cuanto el host hace clic en
+    // "Iniciar sorteo" — pedido explícito: que a todos los alumnos ya unidos se les cargue
+    // automáticamente la pantalla del sorteo sin tener que entrar manualmente a GAMING.
+    try {
+      const me = _bingoMe();
+      const amPlaying = !!(bingoGame.players && bingoGame.players[me.uid]);
+      if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying && currentView !== 'bingo') {
+        go('bingo');
+      }
+    } catch (e) { console.error('bingo auto-nav', e); }
     _renderBingoPane();
   }, err => {
     console.error('bingo listener', err);
@@ -1685,10 +1715,12 @@ function claimBingoPrize(tier) {
 // -- render --
 function _renderBingoPane() {
   _bingoEnsureTimer();
-  const el = document.getElementById('bingo-pane');
-  if (!el) return; // Dashboard no está montado ahora mismo; el listener sigue vivo igual
+  // Puede haber 0 o 1 contenedor montado a la vez (tab GAMING del dashboard, o la
+  // pantalla completa /student/bingo) — el router reemplaza el DOM completo en cada vista.
+  const hosts = document.querySelectorAll('.bingo-pane-host');
+  if (!hosts.length) return; // Ninguna vista de Bingo está montada ahora; el listener sigue vivo igual
   try {
-    el.innerHTML = _bingoPaneHtml();
+    hosts.forEach(el => { el.innerHTML = _bingoPaneHtml(); });
   } catch(e) {
     // Si el render revienta acá, antes se quedaba pegado en la pantalla anterior sin
     // ningún aviso (la escritura a Firestore podía haber funcionado igual). Mostramos
@@ -1698,11 +1730,23 @@ function _renderBingoPane() {
   }
 }
 function _bingoPaneHtml() {
-  if (!bingoGame) return `<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>Cargando...</div>`;
+  // Barra de título "Neon Bingo" — visible en todos los estados (idle/lobby/playing/ended),
+  // tanto en la pestaña GAMING como en la pantalla completa /student/bingo, para que el look
+  // sea reconocible (cartón, colores, glow neon) como el diseño de referencia.
+  const titleHtml = `
+    <div class="bingo-titlebar">
+      <div class="btb-ico">🎱</div>
+      <div>
+        <div class="btb-text">Neon Bingo</div>
+        <div class="btb-sub">En vivo · Matemáticas</div>
+      </div>
+    </div>`;
+
+  if (!bingoGame) return titleHtml + `<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>Cargando...</div>`;
   const status = bingoGame.status || 'idle';
 
   if (status==='idle') {
-    return `
+    return titleHtml + `
       <div class="bingo-empty">
         <div class="bingo-empty-ico">🎱</div>
         <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">No hay partida activa</div>
@@ -1717,25 +1761,28 @@ function _bingoPaneHtml() {
   const isHost    = bingoGame.hostId === me.uid;
   const playersArr = Object.values(players);
 
-  const hostLine = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+  const hostLine = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap">
       <span class="bingo-host-badge">👑 Host: ${bingoGame.hostName||'—'}</span>
-      ${(isHost||isAdmin()) ? `<button class="bingo-end-btn" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
+      <div style="display:flex;gap:6px">
+        ${currentView!=='bingo' ? `<button class="bingo-full-btn" onclick="go('bingo')">⛶ Pantalla completa</button>` : ''}
+        ${(isHost||isAdmin()) ? `<button class="bingo-end-btn" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
+      </div>
     </div>`;
   const playersRowHtml = playersArr.length
     ? `<div class="bingo-players-row">${playersArr.map(p=>`<span class="bingo-player-chip"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span>${p.name}</span>`).join('')}</div>`
     : `<div style="font-size:11px;color:rgba(255,255,255,0.35);margin:6px 0 10px">Aún no se unió nadie</div>`;
 
-  let body = hostLine + playersRowHtml;
+  let body = titleHtml + hostLine + playersRowHtml;
 
   if (status==='lobby') {
     body += !myPlayer
       ? `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`
-      : `<div style="font-size:11px;color:#39ff7a;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>`;
+      : `<div style="font-size:11px;color:#4ade80;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>`;
     if (isHost) body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
   } else { // 'playing' | 'ended'
     const drawn  = bingoGame.drawnNumbers || [];
     const cur    = bingoGame.currentNumber;
-    const colors = { B:'#4fa8ff', I:'#ff5cc8', N:'#b06bff', G:'#baff29', O:'#ff8a3d' };
+    const colors = { B:'#22d3ee', I:'#ec4899', N:'#a855f7', G:'#84cc16', O:'#f97316' };
     const ballColor = cur ? colors[bingoLetter(cur)] : '#888';
     const left = (status==='playing' && bingoGame.nextDrawAt) ? Math.max(0, Math.round((bingoGame.nextDrawAt-Date.now())/1000)) : null;
 
@@ -1750,7 +1797,7 @@ function _bingoPaneHtml() {
           ${left!==null ? `<div class="bingo-countdown" id="bingo-countdown">Siguiente en ${left}s</div>` : ''}
         </div>
       </div>
-      <div class="bingo-drawn-strip">${drawn.slice().reverse().map(n=>`<div class="bingo-drawn-chip">${n}</div>`).join('')}</div>
+      <div class="bingo-drawn-strip">${drawn.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':''}">${n}</div>`).join('')}</div>
     `;
 
     if (!myPlayer && status==='playing') body += `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`;
@@ -1770,7 +1817,7 @@ function _bingoPaneHtml() {
 
       body += `<div class="bingo-claims-row">${Object.keys(BINGO_TIER_LABEL).map(k=>{
         const won = myPlayer.won?.[k], failed = myPlayer.failed?.[k];
-        const cls = won?'won':(failed?'failed':'');
+        const cls = won?'won':(failed?'failed':`tier-${k}`);
         return `<button class="bingo-claim-btn ${cls}" ${(won||failed)?'disabled':''} onclick="claimBingoPrize('${k}')">${won?'✓ ':(failed?'✕ ':'')}${BINGO_TIER_LABEL[k]}</button>`;
       }).join('')}</div>`;
     }
@@ -1785,6 +1832,22 @@ function _bingoPaneHtml() {
   }
 
   return body;
+}
+
+// ── Vista completa /student/bingo: el host arranca el sorteo y todos los que ya
+// se unieron son redirigidos automáticamente acá (ver startBingoListener) ───────
+function vBingoFull() {
+  const loggedId = getLoggedId();
+  if (loggedId === null && !isAdmin()) { go('login'); return ''; }
+  return `
+    <div class="bingo-full-wrap">
+      <button class="bingo-back-btn" onclick="navHome()">← Volver al inicio</button>
+      <div id="bingo-pane-full" class="bingo-wrap bingo-pane-host">${_bingoPaneHtml()}</div>
+    </div>`;
+}
+function vBingoFullSetup() {
+  startBingoListener();
+  _renderBingoPane();
 }
 
 // ════════════════════════════════════════════════════════
