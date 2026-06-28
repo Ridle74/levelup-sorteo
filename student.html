@@ -1547,9 +1547,15 @@ function _bingoMe() {
 function startBingoListener() {
   if (bingoUnsub) return; // ya activo (se queda corriendo toda la sesión, igual que startMsgsListeners)
   bingoUnsub = BINGO_REF.onSnapshot(snap => {
-    bingoGame = snap.exists ? snap.data() : null;
+    // OJO: snap.exists===false significa "todavía nadie creó una partida" (estado normal, NO es
+    // "sigo cargando") — por eso NO se setea a null aquí, sino a {status:'idle'}. bingoGame queda
+    // en null SOLO antes de que llegue el primer snapshot (de ahí depende el "Cargando..." real).
+    bingoGame = snap.exists ? snap.data() : { status:'idle' };
     _renderBingoPane();
-  }, err => console.error('bingo listener', err));
+  }, err => {
+    console.error('bingo listener', err);
+    showToast('No se pudo conectar al Bingo (' + (err.code||err.message||'error') + ')', 'error');
+  });
 }
 function _bingoEnsureTimer() {
   const need = !!(bingoGame && bingoGame.status === 'playing');
