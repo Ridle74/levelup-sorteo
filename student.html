@@ -497,6 +497,40 @@ textarea.fsm { resize:none; height:64px; }
     .perfil-color-dot.selected,.perfil-color-dot:hover{border-color:#fff}
     .perfil-frame-opt{display:flex;flex-direction:column;align-items:center;cursor:pointer;opacity:0.65;transition:opacity 0.15s;padding:6px}
     .perfil-frame-opt.selected,.perfil-frame-opt:hover{opacity:1}
+
+/* ── BINGO (tab GAMING) ───────────────────────────────── */
+.bingo-empty{text-align:center;padding:36px 20px;color:rgba(255,255,255,0.4)}
+.bingo-empty-ico{font-size:40px;margin-bottom:10px}
+.bingo-create-btn{display:block;margin:14px auto 0;background:linear-gradient(135deg,#7c3aed,#22e5ff);color:#0a0b16;font-weight:900;border:none;border-radius:14px;padding:14px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 18px -4px #22e5ff}
+.bingo-host-badge{font-size:10px;color:#baff29;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(186,255,41,0.1);border:1px solid rgba(186,255,41,0.3);border-radius:20px;padding:4px 10px;display:inline-block}
+.bingo-players-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.bingo-player-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:4px 10px 4px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.75)}
+.bingo-player-chip .bpc-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden}
+.bingo-start-btn{width:100%;background:linear-gradient(135deg,#22c55e,#39ff7a);color:#06170c;font-weight:900;border:none;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:8px}
+.bingo-end-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#ff5c7a;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
+.bingo-join-btn{width:100%;background:rgba(34,229,255,0.14);border:1px solid rgba(34,229,255,0.35);color:#7dd3ff;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px}
+.bingo-draw-head{display:flex;align-items:center;gap:14px;padding:12px 4px}
+.bingo-ball{width:62px;height:62px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;flex-shrink:0;box-shadow:0 0 22px -2px currentColor,0 0 0 3px rgba(255,255,255,0.08) inset}
+.bingo-ball .bb-letter{font-size:11px;opacity:0.85;line-height:1}
+.bingo-ball .bb-num{font-size:21px;line-height:1.1}
+.bingo-countdown{font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;letter-spacing:0.04em;margin-top:2px}
+.bingo-drawn-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
+.bingo-drawn-chip{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7)}
+.bingo-card{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:6px 0 10px}
+.bingo-card-hdr{text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:rgba(255,255,255,0.45);padding-bottom:3px}
+.bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.08);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;color:rgba(255,255,255,0.45);cursor:pointer}
+.bingo-cell.free{background:rgba(176,107,255,0.18);border-color:rgba(176,107,255,0.4);color:#d8b4ff;cursor:default}
+.bingo-cell.avail{border-color:rgba(34,229,255,0.45);color:#7dd3ff}
+.bingo-cell.marked{background:linear-gradient(160deg,#0d9488,#39ff7a);border-color:rgba(57,255,122,0.7);color:#06281f;box-shadow:0 0 14px -2px #baff29}
+.bingo-claims-row{display:flex;gap:6px;margin-top:4px}
+.bingo-claim-btn{flex:1;border-radius:10px;padding:10px 4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10px;letter-spacing:0.02em;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12)}
+.bingo-claim-btn.won{background:rgba(57,255,122,0.18);border-color:rgba(57,255,122,0.45);color:#39ff7a}
+.bingo-claim-btn.failed{background:rgba(255,90,90,0.1);border-color:rgba(255,90,90,0.25);color:#ff5a5a;opacity:0.65}
+.bingo-claim-btn:disabled{cursor:default}
+.bingo-winners-box{margin-top:12px;padding:10px 12px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);border-radius:12px}
+.bingo-winners-box .bw-row{display:flex;gap:6px;align-items:baseline;margin-top:4px;font-size:11px;flex-wrap:wrap}
+.bingo-winners-box .bw-tier{font-weight:900;color:#ffd23f;letter-spacing:0.05em;min-width:62px}
+.bingo-ended-banner{text-align:center;padding:14px;background:rgba(255,210,63,0.1);border:1px solid rgba(255,210,63,0.3);border-radius:14px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.04em;font-size:13px}
 </style>
 </head>
 <body>
@@ -552,6 +586,8 @@ const MSGS_COL = db.collection('msgs');
 // → Certificados push web → "Generar par de claves". Sin pegarla aquí, getToken() falla.
 const VAPID_KEY = "PEGA_AQUI_TU_VAPID_KEY";
 const FCM_TOKENS_COL = db.collection('fcmTokens');
+// Bingo multijugador en vivo (tab GAMING) — un solo documento = una sola partida compartida.
+const BINGO_REF = db.collection('bingo').doc('main');
 let messaging = null;
 try { messaging = firebase.messaging(); } catch(e) { /* navegador sin soporte (Safari/iOS, etc.) */ }
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
@@ -603,6 +639,13 @@ let msgsDmObj     = {};   // {studentId: [...]} loaded on-demand
 let msgsListeners = {};   // active onSnapshot unsubscribers
 let msgsDmView    = null; // null=group channel, or String(studentId) for DM
 let msgsUploading = false;
+// ── BINGO (juego multijugador en vivo, tab GAMING del Dashboard) ─
+let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
+let bingoGame     = null;      // snapshot en vivo de BINGO_REF (null = todavía no llegó el primer snapshot)
+let bingoUnsub    = null;      // unsubscribe del listener de BINGO_REF (se queda activo toda la sesión, como msgsListeners)
+let bingoTickTimer = null;     // setInterval de 1s: refresca cuenta atrás y dispara el sorteo si soy el host
+let bingoCreating  = false;    // evita doble-click en "Crear partida"
+let _bingoDrawing  = false;    // evita doble-sorteo si el tick se solapa con un write pendiente
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -1365,10 +1408,15 @@ function vDashboard() {
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active">🏠 RESUMEN</button>
-      <button class="tab-btn" onclick="showToast('🎮 GAMING: muy pronto la plataforma donde se transmitirá el sorteo en vivo.','info')">🎮 GAMING</button>
+      <button class="tab-btn ${dashTab==='resumen'?'active':''}" id="dash-tab-resumen" onclick="setDashTab('resumen')">🏠 RESUMEN</button>
+      <button class="tab-btn ${dashTab==='gaming'?'active':''}" id="dash-tab-gaming" onclick="setDashTab('gaming')">🎮 GAMING</button>
     </div>
 
+    <div id="pane-dash-gaming" style="display:${dashTab==='gaming'?'block':'none'}">
+      <div id="bingo-pane">${_bingoPaneHtml()}</div>
+    </div>
+
+    <div id="pane-dash-resumen" style="display:${dashTab==='resumen'?'block':'none'}">
     ${!isAdmin() ? `
     <div class="dash-grid">
       <div class="dash-stat">
@@ -1426,9 +1474,274 @@ function vDashboard() {
       <div><div>Números del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ver todos los números</div></div>
       <span class="dl-arr">›</span>
     </div>
+    </div>
   </div>`;
 }
-function vDashboardSetup() {}
+function vDashboardSetup() {
+  startBingoListener();
+  _renderBingoPane();
+}
+function setDashTab(tab) {
+  dashTab = tab;
+  const pr = document.getElementById('pane-dash-resumen');
+  const pg = document.getElementById('pane-dash-gaming');
+  const tr = document.getElementById('dash-tab-resumen');
+  const tg = document.getElementById('dash-tab-gaming');
+  if (pr) pr.style.display = tab==='resumen' ? 'block' : 'none';
+  if (pg) pg.style.display = tab==='gaming' ? 'block' : 'none';
+  if (tr) tr.classList.toggle('active', tab==='resumen');
+  if (tg) tg.classList.toggle('active', tab==='gaming');
+  if (tab==='gaming') _renderBingoPane();
+}
+
+// ════════════════════════════════════════════════════════
+// BINGO MULTIJUGADOR EN VIVO (tab GAMING)
+// — Una sola partida compartida (BINGO_REF): cualquiera (alumno o profe)
+//   puede crearla; el host la dirige (sortea los números) y todos los demás
+//   son simples espectadores/jugadores via onSnapshot, así que el timing de
+//   cada número sale exactamente igual para todos. Sin retos ni poderes (v1).
+// ════════════════════════════════════════════════════════
+
+// -- lógica pura, sin Firestore/DOM (portada de neon-bingo) --
+const _bGetRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const _bGetColumnNumbers = (min, max, count) => {
+  const nums = new Set();
+  while (nums.size < count) nums.add(_bGetRandomInt(min, max));
+  return Array.from(nums);
+};
+function bingoGenerateCard() {
+  const b  = _bGetColumnNumbers(1, 15, 5).sort((a,b)=>a-b);
+  const i  = _bGetColumnNumbers(16, 30, 5).sort((a,b)=>a-b);
+  const nN = _bGetColumnNumbers(31, 45, 4).sort((a,b)=>a-b);
+  const g  = _bGetColumnNumbers(46, 60, 5).sort((a,b)=>a-b);
+  const o  = _bGetColumnNumbers(61, 75, 5).sort((a,b)=>a-b);
+  nN.splice(2, 0, 0); // espacio libre en el centro de la columna N
+  const card = [];
+  for (let row=0; row<5; row++) card.push([b[row], i[row], nN[row], g[row], o[row]]);
+  return card;
+}
+function bingoEvaluate(card, marksSet) {
+  let maxLine = 0, isFull = true;
+  const isOn = n => n===0 || marksSet.has(n);
+  const checkLine = line => { const c = line.filter(isOn).length; if (c>maxLine) maxLine = c; };
+  for (let r=0; r<5; r++) { checkLine(card[r]); checkLine(card.map(row=>row[r])); }
+  checkLine([card[0][0],card[1][1],card[2][2],card[3][3],card[4][4]]);
+  checkLine([card[0][4],card[1][3],card[2][2],card[3][1],card[4][0]]);
+  for (let r=0; r<5; r++) for (let c=0; c<5; c++) if (!isOn(card[r][c])) isFull = false;
+  return { maxLine, isFull };
+}
+function bingoLetter(num) {
+  if (num<=15) return 'B'; if (num<=30) return 'I'; if (num<=45) return 'N'; if (num<=60) return 'G'; return 'O';
+}
+const BINGO_TIER_REQ = { terna:3, cuaterna:4, quina:5 }; // 'bingo' se valida aparte (isFull)
+const BINGO_TIER_LABEL = { terna:'Terna', cuaterna:'Cuaterna', quina:'Línea', bingo:'Bingo' };
+
+// Identidad del jugador actual, reutilizando la misma convención uid que mensajería/FCM.
+function _bingoMe() {
+  if (isAdmin()) return { uid:'teacher', name: ADMIN.name.split(' ')[0], icon: ADMIN.icon, color: ADMIN.color };
+  const s = getFullList().find(x => x.id === getLoggedId());
+  return { uid:String(getLoggedId()), name:(s?.name||'Alumno').split(' ')[0], icon: s?.icon||'👤', color: s?.color||'#888888' };
+}
+
+// -- Firestore: listener en vivo + temporizador de sorteo/cuenta atrás --
+function startBingoListener() {
+  if (bingoUnsub) return; // ya activo (se queda corriendo toda la sesión, igual que startMsgsListeners)
+  bingoUnsub = BINGO_REF.onSnapshot(snap => {
+    bingoGame = snap.exists ? snap.data() : null;
+    _renderBingoPane();
+  }, err => console.error('bingo listener', err));
+}
+function _bingoEnsureTimer() {
+  const need = !!(bingoGame && bingoGame.status === 'playing');
+  if (need && !bingoTickTimer) bingoTickTimer = setInterval(_bingoTick, 1000);
+  else if (!need && bingoTickTimer) { clearInterval(bingoTickTimer); bingoTickTimer = null; }
+}
+function _bingoTick() {
+  if (!bingoGame || bingoGame.status !== 'playing') { _bingoEnsureTimer(); return; }
+  _renderBingoPane(); // refresca la cuenta atrás visible para todos por igual
+  const me = _bingoMe();
+  if (bingoGame.hostId === me.uid && Date.now() >= (bingoGame.nextDrawAt || 0)) _bingoHostDrawNext();
+}
+function _bingoHostDrawNext() {
+  if (_bingoDrawing) return;
+  _bingoDrawing = true;
+  const drawn = bingoGame.drawnNumbers || [];
+  if (drawn.length >= 75) {
+    BINGO_REF.update({ status:'ended', nextDrawAt:null }).catch(e=>console.error('bingo end-draw',e)).finally(()=>{ _bingoDrawing=false; });
+    return;
+  }
+  const drawnSet = new Set(drawn);
+  let next; do { next = _bGetRandomInt(1,75); } while (drawnSet.has(next));
+  const newDrawn = [...drawn, next];
+  const patch = {
+    drawnNumbers: newDrawn,
+    currentNumber: next,
+    nextDrawAt: newDrawn.length>=75 ? null : Date.now() + (bingoGame.intervalMs||4500),
+    status: newDrawn.length>=75 ? 'ended' : 'playing'
+  };
+  BINGO_REF.update(patch).catch(e=>console.error('bingo draw',e)).finally(()=>{ _bingoDrawing=false; });
+}
+
+// -- acciones del jugador/host --
+function createBingoGame() {
+  if (bingoCreating) return;
+  if (bingoGame && bingoGame.status && bingoGame.status!=='idle') { showToast('Ya hay una partida activa, únete a esa.','error'); return; }
+  bingoCreating = true;
+  const me = _bingoMe();
+  BINGO_REF.set({
+    status:'lobby', hostId: me.uid, hostName: me.name,
+    createdAt: Date.now(), drawnNumbers:[], currentNumber:null,
+    nextDrawAt:null, intervalMs:4500, players:{}
+  }).then(()=>{ bingoCreating=false; joinBingoGame(); })
+    .catch(e=>{ bingoCreating=false; showToast('No se pudo crear la partida.','error'); console.error(e); });
+}
+function joinBingoGame() {
+  if (!bingoGame || bingoGame.status==='idle' || bingoGame.status==='ended') return;
+  const me = _bingoMe();
+  if (bingoGame.players && bingoGame.players[me.uid]) return; // ya está dentro
+  const player = {
+    name: me.name, icon: me.icon, color: me.color,
+    card: bingoGenerateCard(), marks: [],
+    failed: { terna:false, cuaterna:false, quina:false, bingo:false },
+    won:    { terna:false, cuaterna:false, quina:false, bingo:false }
+  };
+  BINGO_REF.update({ [`players.${me.uid}`]: player })
+    .catch(e=>{ showToast('No se pudo unir a la partida.','error'); console.error(e); });
+}
+function startBingoDraw() {
+  const me = _bingoMe();
+  if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
+  if (!Object.keys(bingoGame.players||{}).length) { showToast('Espera a que se unan jugadores.','error'); return; }
+  BINGO_REF.update({ status:'playing', nextDrawAt: Date.now()+1500 })
+    .catch(e=>console.error('bingo start',e));
+}
+function endBingoGame() {
+  const me = _bingoMe();
+  if (!bingoGame) return;
+  if (bingoGame.hostId!==me.uid && !isAdmin()) return;
+  BINGO_REF.set({ status:'idle', updatedAt:Date.now() })
+    .catch(e=>console.error('bingo end',e));
+}
+function markBingoCell(num) {
+  if (!bingoGame || num===0) return;
+  const me = _bingoMe();
+  const player = (bingoGame.players||{})[me.uid];
+  if (!player) return;
+  if (!(bingoGame.drawnNumbers||[]).includes(num)) { showToast('Ese número aún no ha salido.','error'); return; }
+  const marks = new Set(player.marks||[]);
+  if (marks.has(num)) marks.delete(num); else marks.add(num);
+  BINGO_REF.update({ [`players.${me.uid}.marks`]: Array.from(marks) })
+    .catch(e=>console.error('bingo mark',e));
+}
+function claimBingoPrize(tier) {
+  if (!bingoGame) return;
+  const me = _bingoMe();
+  const player = (bingoGame.players||{})[me.uid];
+  if (!player || player.won?.[tier] || player.failed?.[tier]) return; // ya resuelto, sin reintentos
+  const marksSet = new Set(player.marks||[]);
+  const { maxLine, isFull } = bingoEvaluate(player.card, marksSet);
+  const ok = tier==='bingo' ? isFull : maxLine >= BINGO_TIER_REQ[tier];
+  BINGO_REF.update({ [`players.${me.uid}.${ok?'won':'failed'}.${tier}`]: true })
+    .then(()=> showToast(ok ? `🎉 ¡${BINGO_TIER_LABEL[tier]} validada!` : `❌ Todavía no tienes ${BINGO_TIER_LABEL[tier]}. Ya no podrás reclamarla.`, ok?'success':'error'))
+    .catch(e=>console.error('bingo claim',e));
+}
+
+// -- render --
+function _renderBingoPane() {
+  _bingoEnsureTimer();
+  const el = document.getElementById('bingo-pane');
+  if (!el) return; // Dashboard no está montado ahora mismo; el listener sigue vivo igual
+  el.innerHTML = _bingoPaneHtml();
+}
+function _bingoPaneHtml() {
+  if (!bingoGame) return `<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>Cargando...</div>`;
+  const status = bingoGame.status || 'idle';
+
+  if (status==='idle') {
+    return `
+      <div class="bingo-empty">
+        <div class="bingo-empty-ico">🎱</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">No hay partida activa</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Cualquiera puede crear el bingo en vivo — alumnos o profe</div>
+        <button class="bingo-create-btn" onclick="createBingoGame()">🎲 Crear partida de Bingo</button>
+      </div>`;
+  }
+
+  const me        = _bingoMe();
+  const players   = bingoGame.players || {};
+  const myPlayer  = players[me.uid] || null;
+  const isHost    = bingoGame.hostId === me.uid;
+  const playersArr = Object.values(players);
+
+  const hostLine = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px">
+      <span class="bingo-host-badge">👑 Host: ${bingoGame.hostName||'—'}</span>
+      ${(isHost||isAdmin()) ? `<button class="bingo-end-btn" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
+    </div>`;
+  const playersRowHtml = playersArr.length
+    ? `<div class="bingo-players-row">${playersArr.map(p=>`<span class="bingo-player-chip"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span>${p.name}</span>`).join('')}</div>`
+    : `<div style="font-size:11px;color:rgba(255,255,255,0.35);margin:6px 0 10px">Aún no se unió nadie</div>`;
+
+  let body = hostLine + playersRowHtml;
+
+  if (status==='lobby') {
+    body += !myPlayer
+      ? `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`
+      : `<div style="font-size:11px;color:#39ff7a;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>`;
+    if (isHost) body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
+  } else { // 'playing' | 'ended'
+    const drawn  = bingoGame.drawnNumbers || [];
+    const cur    = bingoGame.currentNumber;
+    const colors = { B:'#4fa8ff', I:'#ff5cc8', N:'#b06bff', G:'#baff29', O:'#ff8a3d' };
+    const ballColor = cur ? colors[bingoLetter(cur)] : '#888';
+    const left = (status==='playing' && bingoGame.nextDrawAt) ? Math.max(0, Math.round((bingoGame.nextDrawAt-Date.now())/1000)) : null;
+
+    if (status==='ended') body += `<div class="bingo-ended-banner">🏁 ¡Partida terminada! Se sortearon ${drawn.length} números.</div>`;
+
+    body += `
+      <div class="bingo-draw-head">
+        ${cur ? `<div class="bingo-ball" style="color:${ballColor}"><span class="bb-letter">${bingoLetter(cur)}</span><span class="bb-num">${cur}</span></div>` : ''}
+        <div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em">Números sorteados</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900">${drawn.length}<span style="font-size:13px;color:rgba(255,255,255,0.3)">/75</span></div>
+          ${left!==null ? `<div class="bingo-countdown" id="bingo-countdown">Siguiente en ${left}s</div>` : ''}
+        </div>
+      </div>
+      <div class="bingo-drawn-strip">${drawn.slice().reverse().map(n=>`<div class="bingo-drawn-chip">${n}</div>`).join('')}</div>
+    `;
+
+    if (!myPlayer && status==='playing') body += `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`;
+
+    if (myPlayer) {
+      const marksSet = new Set(myPlayer.marks||[]);
+      const drawnSet = new Set(drawn);
+      body += `<div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
+      for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
+        const num = myPlayer.card[r][c];
+        if (num===0) { body += `<div class="bingo-cell free">★</div>`; continue; }
+        const isMarked = marksSet.has(num);
+        const isAvail  = drawnSet.has(num) && !isMarked;
+        body += `<div class="bingo-cell ${isMarked?'marked':''} ${isAvail?'avail':''}" onclick="markBingoCell(${num})">${num}</div>`;
+      }
+      body += `</div>`;
+
+      body += `<div class="bingo-claims-row">${Object.keys(BINGO_TIER_LABEL).map(k=>{
+        const won = myPlayer.won?.[k], failed = myPlayer.failed?.[k];
+        const cls = won?'won':(failed?'failed':'');
+        return `<button class="bingo-claim-btn ${cls}" ${(won||failed)?'disabled':''} onclick="claimBingoPrize('${k}')">${won?'✓ ':(failed?'✕ ':'')}${BINGO_TIER_LABEL[k]}</button>`;
+      }).join('')}</div>`;
+    }
+
+    const winnersByTier = { terna:[], cuaterna:[], quina:[], bingo:[] };
+    playersArr.forEach(p => Object.keys(winnersByTier).forEach(t => { if (p.won?.[t]) winnersByTier[t].push(p.name); }));
+    if (Object.values(winnersByTier).some(arr=>arr.length)) {
+      body += `<div class="bingo-winners-box"><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em">🏆 Premios</div>
+        ${Object.entries(winnersByTier).filter(([,v])=>v.length).map(([t,v])=>`<div class="bw-row"><span class="bw-tier">${BINGO_TIER_LABEL[t]}</span><span>${v.join(', ')}</span></div>`).join('')}
+      </div>`;
+    }
+  }
+
+  return body;
+}
 
 // ════════════════════════════════════════════════════════
 // VIEW: TABLERO
