@@ -1,0 +1,22 @@
+rules_version = '2';
+
+// La app (student.html/padres.html) no usa Firebase Auth — el login es propio,
+// guardado en Firestore, no en el sistema de autenticación de Firebase. Por eso
+// las reglas por defecto de Storage (que exigen request.auth != null) rechazaban
+// SIEMPRE la subida de archivos que no fueran imágenes (las imágenes se guardan
+// como base64 directo en Firestore y nunca pasan por Storage).
+//
+// Estas reglas abren solo la carpeta task-files/ (adjuntos de tareas tipo PDF/doc/ppt)
+// para lectura y escritura pública. Todo lo demás en el bucket queda denegado por
+// defecto. Si más adelante se agrega login con Firebase Auth, esto se puede
+// endurecer a "allow read, write: if request.auth != null;".
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /task-files/{fileName} {
+      allow read, write: if true;
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

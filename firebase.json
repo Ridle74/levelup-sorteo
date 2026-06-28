@@ -5,5 +5,8 @@
       "codebase": "default",
       "runtime": "nodejs20"
     }
-  ]
+  ],
+  "storage": {
+    "rules": "storage.rules"
+  }
 }
