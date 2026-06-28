@@ -1516,18 +1516,25 @@ function bingoGenerateCard() {
   const g  = _bGetColumnNumbers(46, 60, 5).sort((a,b)=>a-b);
   const o  = _bGetColumnNumbers(61, 75, 5).sort((a,b)=>a-b);
   nN.splice(2, 0, 0); // espacio libre en el centro de la columna N
+  // OJO: Firestore RECHAZA arrays anidados (un array como elemento directo de otro array)
+  // — por eso el cartón se guarda como un array PLANO de 25 casillas (fila por fila), no
+  // como matriz 5x5. Esto era la causa real de "no se pudo crear/unir a la partida":
+  // antes se guardaba card[r][c] (array de arrays) y Firestore tiraba "nested arrays are
+  // not supported" en cada intento de unión. _bcAt() de abajo convierte fila/col -> índice.
   const card = [];
-  for (let row=0; row<5; row++) card.push([b[row], i[row], nN[row], g[row], o[row]]);
+  for (let row=0; row<5; row++) card.push(b[row], i[row], nN[row], g[row], o[row]);
   return card;
 }
+const _bcAt = (card, r, c) => card[r*5 + c]; // cartón plano (25) -> celda fila r, columna c
 function bingoEvaluate(card, marksSet) {
   let maxLine = 0, isFull = true;
   const isOn = n => n===0 || marksSet.has(n);
   const checkLine = line => { const c = line.filter(isOn).length; if (c>maxLine) maxLine = c; };
-  for (let r=0; r<5; r++) { checkLine(card[r]); checkLine(card.map(row=>row[r])); }
-  checkLine([card[0][0],card[1][1],card[2][2],card[3][3],card[4][4]]);
-  checkLine([card[0][4],card[1][3],card[2][2],card[3][1],card[4][0]]);
-  for (let r=0; r<5; r++) for (let c=0; c<5; c++) if (!isOn(card[r][c])) isFull = false;
+  const cols = [0,1,2,3,4];
+  for (let r=0; r<5; r++) { checkLine(cols.map(c=>_bcAt(card,r,c))); checkLine(cols.map(rr=>_bcAt(card,rr,r))); }
+  checkLine(cols.map(k=>_bcAt(card,k,k)));
+  checkLine(cols.map(k=>_bcAt(card,k,4-k)));
+  for (let r=0; r<5; r++) for (let c=0; c<5; c++) if (!isOn(_bcAt(card,r,c))) isFull = false;
   return { maxLine, isFull };
 }
 function bingoLetter(num) {
@@ -1753,7 +1760,7 @@ function _bingoPaneHtml() {
       const drawnSet = new Set(drawn);
       body += `<div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
       for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
-        const num = myPlayer.card[r][c];
+        const num = _bcAt(myPlayer.card, r, c);
         if (num===0) { body += `<div class="bingo-cell free">★</div>`; continue; }
         const isMarked = marksSet.has(num);
         const isAvail  = drawnSet.has(num) && !isMarked;
