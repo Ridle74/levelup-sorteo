@@ -515,23 +515,53 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-end-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
 .bingo-join-btn{width:100%;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;box-shadow:0 0 16px -6px #22d3ee}
 .bingo-full-btn{font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 11px;cursor:pointer;flex-shrink:0}
-.bingo-draw-head{display:flex;align-items:center;gap:14px;padding:12px 4px}
-.bingo-ball{width:64px;height:64px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-weight:900;flex-shrink:0;background:#050810;box-shadow:0 0 24px -2px currentColor,0 0 0 3px rgba(255,255,255,0.06) inset}
-.bingo-ball .bb-letter{font-size:11px;opacity:0.85;line-height:1}
-.bingo-ball .bb-num{font-size:22px;line-height:1.1}
-.bingo-countdown{font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;letter-spacing:0.04em;margin-top:2px}
-.bingo-drawn-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
-.bingo-drawn-chip{flex-shrink:0;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;font-family:ui-monospace,Menlo,monospace;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#a5f3fc}
-.bingo-drawn-chip.current{background:#ec4899;border-color:#ec4899;color:#fff;box-shadow:0 0 14px -2px #ec4899;transform:scale(1.12)}
-.bingo-drawn-chip.marked-ok{background:rgba(74,222,128,0.16);border-color:#4ade80;color:#86efac}
-.bingo-drawn-chip.marked-bad{background:rgba(239,68,68,0.16);border-color:#ef4444;color:#fca5a5}
-.bingo-card{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:6px 0 10px}
-.bingo-card-hdr{text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:#fff;background:#050810;border-radius:6px;padding-bottom:3px;border-bottom:3px solid #a855f7}
-.bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.08);font-family:ui-monospace,Menlo,monospace;font-weight:900;font-size:15px;color:rgba(255,255,255,0.45);cursor:pointer;transition:all .2s}
-.bingo-cell.free{background:linear-gradient(135deg,#fde047,#f59e0b);border-color:#fde047;color:#451a03;cursor:default;box-shadow:0 0 14px -3px #fde047}
-.bingo-cell.avail{border-color:#facc15;color:#fde68a;box-shadow:0 0 10px -3px #facc15;animation:bingoPulse 1.6s ease-in-out infinite}
-.bingo-cell.marked{background:linear-gradient(135deg,#4ade80,#16a34a);border-color:#4ade80;color:#06280f;box-shadow:0 0 16px -2px #4ade80;transform:scale(1.04)}
-@keyframes bingoPulse{0%,100%{opacity:1}50%{opacity:.55}}
+/* Caja consolidada de sorteo — calco 1:1 de neon-bingo_31.html (bg-gray-900 border-cyan-500/50 rounded-2xl p-6 gl-cyan-15) */
+.bingo-head-box{background:#111827;border:1px solid rgba(6,182,212,0.5);border-radius:16px;padding:24px;box-shadow:0 0 25px rgba(6,182,212,0.15)}
+.bdh-row{display:flex;flex-direction:column;align-items:stretch;gap:20px}
+@media(min-width:1024px){.bdh-row{flex-direction:row}}
+.bdh-ballbox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:#030712;border-radius:16px;border:2px solid #ec4899;box-shadow:0 0 30px -2px rgba(236,72,153,0.5);padding:20px 24px;text-align:center}
+.bdh-label{color:#6b7280;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+.bdh-num{color:#fff;font-size:36px;font-weight:900;letter-spacing:0.025em;white-space:nowrap;font-family:ui-monospace,Menlo,monospace}
+.bdh-num .bdh-letter{color:#22d3ee}
+@media(min-width:768px){.bdh-num{font-size:48px}}
+.bdh-calc-row{display:flex;align-items:center;gap:8px;margin-top:8px;justify-content:center;flex-wrap:wrap}
+.bdh-calc-input{width:96px;background:#111827;border:2px solid #374151;border-radius:12px;padding:10px;text-align:center;font-size:22px;font-weight:900;color:#fff;font-family:ui-monospace,Menlo,monospace}
+.bdh-calc-input.ok{border-color:#a3e635;color:#bef264}
+.bdh-calc-input.bad{border-color:#ef4444;color:#f87171}
+.bdh-calc-btn{background:linear-gradient(to right,#06b6d4,#2563eb);color:#fff;font-weight:900;border:none;border-radius:10px;padding:10px 16px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
+.bdh-side{display:flex;flex-direction:column;gap:12px}
+@media(min-width:1024px){.bdh-side{width:288px}}
+.bdh-stats{display:flex;gap:12px}
+.bdh-stat{flex:1;background:#030712;border:1px solid #1f2937;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0;box-shadow:inset 0 2px 4px rgba(0,0,0,0.3)}
+.bdh-stat-lbl{font-size:9px;color:#6b7280;text-transform:uppercase;font-weight:900;letter-spacing:0.1em}
+.bdh-stat-val{font-family:ui-monospace,Menlo,monospace;font-weight:900;font-size:14px}
+.bdh-stat-val.cyan{color:#22d3ee}
+.bdh-stat-val.yellow{color:#facc15}
+.bdh-bar{width:100%;background:#030712;border:1px solid #1f2937;border-radius:9999px;height:10px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,0.3)}
+.bdh-bar-fill{height:100%;transition:width 1s linear}
+.bdh-bar-fill.grad{background:linear-gradient(to right,#facc15,#ec4899)}
+.bdh-bar-fill.pink{background:#ec4899}
+.bdh-bar-fill.yellow{background:#facc15}
+.bdh-bar-foot{display:flex;justify-content:space-between;font-size:9px;color:#4b5563;font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
+.bdh-bar-foot .on.pink{color:#ec4899}
+.bdh-bar-foot .on.yellow{color:#eab308}
+/* Historial de sorteo — pills tipo chip (rounded-lg px-3 py-1.5 font-mono font-bold text-sm border) */
+.bingo-hist-wrap{margin-top:20px;padding-top:20px;border-top:1px solid #1f2937}
+.bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px}
+.bingo-hist-row{display:flex;align-items:center;gap:8px}
+.bingo-hist-arrow{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#1f2937;border:1px solid #374151;color:#d1d5db;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bingo-drawn-strip{display:flex;gap:8px;overflow-x:auto;flex:1;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.bingo-drawn-strip::-webkit-scrollbar{display:none}
+.bingo-drawn-chip{flex-shrink:0;white-space:nowrap;padding:6px 12px;border-radius:8px;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:14px;border:1px solid;background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:#f87171}
+.bingo-drawn-chip.current{background:rgba(236,72,153,0.2);border-color:rgba(236,72,153,0.5);color:#f9a8d4}
+.bingo-drawn-chip.marked-ok{background:rgba(132,204,22,0.2);border-color:rgba(132,204,22,0.5);color:#bef264}
+.bingo-card{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:6px 0 10px}
+@media(min-width:768px){.bingo-card{gap:8px}}
+.bingo-card-hdr{text-align:center;font-size:20px;font-weight:900;color:#fff;background:#030712;border-radius:4px;padding:8px 0;border-bottom:2px solid #84cc16;box-shadow:inset 0 2px 4px rgba(0,0,0,0.3)}
+.bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:8px;font-weight:700;font-size:16px;transition:all .2s;box-shadow:0 4px 6px rgba(0,0,0,0.3);background:#1f2937;color:#d1d5db;border:1px solid #374151;cursor:pointer}
+@media(min-width:768px){.bingo-cell{font-size:18px}}
+.bingo-cell.free{cursor:default}
+@keyframes twPulse{0%,100%{opacity:1}50%{opacity:.5}}
 .bingo-claims-row{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
 .bingo-claim-btn{flex:1;min-width:70px;border-radius:10px;padding:10px 4px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10px;letter-spacing:0.02em;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12)}
 .bingo-claim-btn.tier-terna{background:linear-gradient(135deg,#22d3ee,#2563eb);color:#fff;border-color:transparent;box-shadow:0 0 14px -4px #22d3ee}
@@ -553,30 +583,21 @@ textarea.fsm { resize:none; height:64px; }
 .bs-row select{background:#0a0e1a;color:#fff;border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:5px 8px;font-size:11px;font-family:'Barlow Condensed',sans-serif}
 .bs-toggle{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);border-radius:20px;padding:4px 12px;font-weight:900;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
 .bs-toggle.on{background:rgba(74,222,128,0.18);border-color:#4ade80;color:#4ade80}
-.bingo-calc-box{text-align:center;background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(34,211,238,0.1));border:1px solid rgba(168,85,247,0.35);border-radius:14px;padding:12px;margin:6px 0}
-.bcx-label{font-size:10px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
-.bcx-sum{font-family:ui-monospace,Menlo,monospace;font-size:24px;font-weight:900;color:#fff;margin:4px 0}
-.bcx-input{width:100px;text-align:center;background:#0a0e1a;color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:8px;font-size:14px;font-family:ui-monospace,Menlo,monospace;margin-right:6px}
-.bcx-btn{background:linear-gradient(135deg,#22d3ee,#a855f7);color:#06170c;font-weight:900;border:none;border-radius:10px;padding:9px 16px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
-.bcx-timer{font-size:11px;color:#facc15;font-weight:700;margin-top:6px}
-.bingo-cell.blocked{background:rgba(239,68,68,0.18);border-color:#ef4444;color:#fca5a5;cursor:not-allowed;opacity:0.75}
-.bingo-cell.blocked::after{content:'🔒';font-size:11px;position:absolute}
-.bingo-cell.selecting{border-color:#facc15!important;box-shadow:0 0 14px -2px #facc15!important;transform:scale(0.94)}
-.bingo-cell.hl{background:rgba(250,204,21,0.22)!important;border-color:#facc15!important;color:#fde68a!important;box-shadow:0 0 14px -3px #facc15!important;animation:bingoPulse 1s ease-in-out infinite}
-.bingo-cell.fire-1{box-shadow:0 0 6px -2px #f97316 inset}
-.bingo-cell.fire-2{box-shadow:0 0 9px -1px #f97316 inset}
-.bingo-cell.fire-3{box-shadow:0 0 12px 0px #fb923c inset}
-.bingo-cell.fire-4{box-shadow:0 0 15px 1px #ef4444 inset}
-.bingo-cell.fire-5{box-shadow:0 0 18px 2px #ef4444 inset;animation:bingoFire 1.4s ease-in-out infinite}
-@keyframes bingoFire{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
-.bingo-cell.marked.fire-1{background:linear-gradient(135deg,#a3e635,#4ade80);border-color:#a3e635}
-.bingo-cell.marked.fire-2{background:linear-gradient(135deg,#4ade80,#bef264);border-color:#bef264}
-.bingo-cell.marked.fire-3{background:linear-gradient(135deg,#bef264,#facc15);border-color:#facc15;color:#1a1100}
-.bingo-cell.marked.fire-4{background:linear-gradient(135deg,#facc15,#fb923c);border-color:#fb923c;color:#1a1100}
-.bingo-cell.marked.fire-5{background:linear-gradient(135deg,#fb923c,#f97316,#dc2626);border-color:#dc2626;color:#fff}
-.bingo-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;align-items:start}
-.bingo-card-block{position:relative;background:#0d1220;border:1px solid rgba(132,204,22,0.25);border-radius:18px;padding:14px 12px;box-shadow:0 0 24px -10px rgba(132,204,22,0.35)}
-.bcb-label{font-size:11px;color:#a3e635;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
+.bingo-cell.blocked{background:#dc2626;color:#fff;border:1px solid #f87171;cursor:not-allowed}
+.bingo-cell.selecting{background:#ef4444;color:#fff;border:2px solid #fca5a5;animation:twPulse 2s cubic-bezier(.4,0,.6,1) infinite}
+.bingo-cell.hl{background:rgba(234,179,8,0.3);color:#fef08a;border:1px solid rgba(234,179,8,0.6);animation:twPulse 2s cubic-bezier(.4,0,.6,1) infinite}
+.bingo-cell.marked{border:none;color:#000}
+.bingo-cell.marked.fire-1{background:linear-gradient(135deg,#a3e635,#4ade80);box-shadow:0 0 8px rgba(74,222,128,0.5)}
+.bingo-cell.marked.fire-2{background:linear-gradient(135deg,#4ade80,#bef264);box-shadow:0 0 10px rgba(190,242,100,0.55);transform:scale(1.05)}
+.bingo-cell.marked.fire-3{background:linear-gradient(135deg,#bef264,#facc15);box-shadow:0 0 12px rgba(250,204,21,0.65);transform:scale(1.05)}
+.bingo-cell.marked.fire-4{background:linear-gradient(135deg,#facc15,#fb923c);box-shadow:0 0 16px rgba(251,146,60,0.8);transform:scale(1.05);color:#fff}
+.bingo-cell.marked.fire-5{background:linear-gradient(135deg,#fb923c,#f97316,#dc2626);box-shadow:0 0 24px rgba(220,38,38,0.95);transform:scale(1.05);color:#fff}
+.bingo-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start}
+.bingo-card-block{position:relative;max-width:420px;width:100%;margin:0 auto;background:#111827;border:1px solid rgba(132,204,22,0.3);border-radius:16px;padding:20px;box-shadow:0 0 15px rgba(132,204,22,0.1)}
+.bingo-card-block.blocking{border-color:#ef4444}
+.bcb-label{font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;color:#a3e635}
+.bingo-card-block.blocking .bcb-label{color:#f87171}
+.bingo-cards-section-lbl{color:#a3e635;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:16px}
 .bingo-frozen-banner{text-align:center;padding:10px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.35);border-radius:12px;margin:8px 0;font-size:12px;font-weight:700;color:#67e8f9}
 .bingo-block-banner{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);border-radius:14px;padding:10px 12px;margin:10px 0}
 .bbb-title{font-size:12px;font-weight:900;color:#f87171}
@@ -608,6 +629,7 @@ textarea.fsm { resize:none; height:64px; }
 .bpx-form{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(255,255,255,0.03);border-radius:10px;padding:8px}
 .bpx-form select,.bpx-form input{background:#0a0e1a;color:#fff;border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:6px 8px;font-size:11px;font-family:'Barlow Condensed',sans-serif}
 .bpx-msg{width:100%;font-size:10.5px;color:#4ade80;margin-top:4px}
+.bcx-btn{background:linear-gradient(to right,#06b6d4,#2563eb);color:#fff;font-weight:900;border:none;border-radius:8px;padding:6px 14px;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2256,35 +2278,58 @@ function _bingoPaneHtml() {
   } else { // 'playing' | 'ended'
     const drawn  = bingoGame.drawnNumbers || [];
     const cur    = bingoGame.currentNumber;
-    const colors = { B:'#22d3ee', I:'#ec4899', N:'#a855f7', G:'#84cc16', O:'#f97316' };
-    const ballColor = cur ? colors[bingoLetter(cur)] : '#888';
-    const left = (status==='playing' && bingoGame.nextDrawAt) ? Math.max(0, Math.round((bingoGame.nextDrawAt-Date.now())/1000)) : null;
     const frozen = myPlayer ? _bingoAmFrozen(myPlayer) : false;
 
     if (status==='ended') body += `<div class="bingo-ended-banner">🏁 ¡Partida terminada! Se sortearon ${drawn.length} números.</div>`;
 
+    // Caja consolidada de sorteo — calco 1:1 del header de neon-bingo_31.html (ball box + 2 stats + 2 barras).
+    const numPhase = bingoGame.numPhase;
+    const inCalc = status==='playing' && numPhase==='calc';
+    const inMark = status==='playing' && numPhase==='mark';
+    const ballLabel = (numPhase==='calc') ? '¿Qué número salió?' : 'Número salido';
+    let ballNumHtml = '—';
+    if (cur) {
+      ballNumHtml = (numPhase==='calc' && bingoGame.currentSum!=null)
+        ? `${bingoGame.currentSum}`
+        : `<span class="bdh-letter">${bingoLetter(cur)}</span>-${cur}`;
+    }
+    const intervalDraws = bingoGame.challengeIntervalDraws || 8;
+    const nextChAt = bingoGame.nextChallengeAtDraw || 0;
+    const startAt = Math.max(0, nextChAt - intervalDraws);
+    const drawsLeft = Math.max(0, nextChAt - drawn.length);
+    const challengePct = intervalDraws>0 ? Math.min(100, Math.max(0, ((drawn.length-startAt)/intervalDraws)*100)) : 0;
+    let phasePct = 0, phaseOn = false, phaseColorClass = 'pink', phaseFootLabel = '';
+    if (inCalc || inMark) {
+      const totalSecs = inCalc ? (bingoGame.calcSeconds||5) : (bingoGame.markSeconds||10);
+      const remainSecs = Math.max(0, ((bingoGame.phaseEndsAt||0)-Date.now())/1000);
+      phasePct = totalSecs>0 ? Math.min(100, Math.max(0, (remainSecs/totalSecs)*100)) : 0;
+      phaseOn = true;
+      phaseColorClass = inCalc ? 'pink' : 'yellow';
+      phaseFootLabel = inCalc ? `Calculando ${Math.ceil(remainSecs)}s ↑` : `Marcando ${Math.ceil(remainSecs)}s ↑`;
+    }
+
     if (status==='playing' && bingoGame.challengeActive) {
       body += `<div style="font-size:11px;color:#facc15;font-weight:700;margin:4px 0">⏸ Sorteo en pausa — ¡Reto Matemático en curso!</div>`;
     } else {
-      body += `
-        <div class="bingo-draw-head">
-          ${cur ? `<div class="bingo-ball" style="color:${ballColor}"><span class="bb-letter">${bingoLetter(cur)}</span><span class="bb-num">${cur}</span></div>` : ''}
-          <div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em">Números sorteados</div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900">${drawn.length}<span style="font-size:13px;color:rgba(255,255,255,0.3)">/75</span></div>
-            ${left!==null ? `<div class="bingo-countdown" id="bingo-countdown">Siguiente en ${left}s</div>` : ''}
+      body += `<div class="bingo-head-box"><div class="bdh-row">
+          <div class="bdh-ballbox">
+            <div class="bdh-label">${ballLabel}</div>
+            <div class="bdh-num">${ballNumHtml}</div>
+            ${inCalc ? `<div class="bdh-calc-row">
+                <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?">
+                <button class="bdh-calc-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
+              </div>` : ''}
+          </div>
+          <div class="bdh-side">
+            <div class="bdh-stats">
+              <div class="bdh-stat"><div class="bdh-stat-lbl">Extraídos</div><div class="bdh-stat-val cyan">${drawn.length}/75</div></div>
+              <div class="bdh-stat"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div></div>
+            </div>
+            <div class="bdh-bar"><div class="bdh-bar-fill grad" style="width:${challengePct}%"></div></div>
+            <div class="bdh-bar" style="${phaseOn?'':'opacity:.3'}"><div class="bdh-bar-fill ${phaseColorClass}" style="width:${phaseOn?phasePct:0}%"></div></div>
+            <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
           </div>
         </div>`;
-      if (status==='playing' && bingoGame.numPhase==='calc' && bingoGame.currentSum) {
-        const remain = Math.max(0, Math.round(((bingoGame.phaseEndsAt||0)-Date.now())/1000));
-        body += `<div class="bingo-calc-box">
-            <div class="bcx-label">¿Cuánto es...?</div>
-            <div class="bcx-sum">${bingoGame.currentSum}</div>
-            <input class="bcx-input" id="bingo-calc-input" type="number" placeholder="Tu respuesta">
-            <button class="bcx-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
-            <div class="bcx-timer">⏱ ${remain}s</div>
-          </div>`;
-      }
     }
     // Verde = la marcaste en todos tus cartones que la tienen (o no la tienes); rojo = te falta marcarla
     // en al menos un cartón; rosa = es la bola actual. Mismo criterio que el diseño de referencia.
@@ -2306,7 +2351,16 @@ function _bingoPaneHtml() {
         return (!presentSomewhere || markedEverywhere) ? 'marked-ok' : 'marked-bad';
       };
     }
-    body += `<div class="bingo-drawn-strip">${drawn.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':chipStateFor(n)}">${n}</div>`).join('')}</div>`;
+    if (drawn.length > 0) {
+      body += `<div class="bingo-hist-wrap">
+          <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
+          <div class="bingo-hist-row">
+            <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
+            <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawn.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':chipStateFor(n)}">${bingoLetter(n)}-${n}</div>`).join('')}</div>
+            <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:120,behavior:'smooth'})">›</button>
+          </div>
+        </div>`;
+    }
 
     if (!myPlayer && status==='playing') body += `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`;
 
@@ -2315,28 +2369,29 @@ function _bingoPaneHtml() {
     if (myPlayer) {
       const myMarks = myPlayer.marks || [];
       const myBlocked = myPlayer.blockedMarks || [];
-      const drawnSet = new Set(drawn);
       const cardIds = Object.keys(myPlayer.cards||{}).sort((a,b)=>Number(a)-Number(b));
+      const blockingActive = !!myPlayer.pendingBlock;
+      body += `<div class="bingo-cards-section-lbl">🏆 Mis Cartones — marca los números que salieron</div>`;
       body += `<div class="bingo-cards-grid">`;
       cardIds.forEach(ci => {
         const cardIdx = Number(ci);
         const card = myPlayer.cards[ci];
         const marksSet = new Set(myMarks.filter(m=>m.c===cardIdx).map(m=>m.n));
         const blockedSet = new Set(myBlocked.filter(m=>m.c===cardIdx).map(m=>m.n));
+        // rowMarked: cuenta celdas libres + marcadas-no-bloqueadas de la fila, igual que rowColor() de referencia.
         const rowHeat = [];
-        for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||marksSet.has(n)) h++; } rowHeat.push(h); }
-        body += `<div class="bingo-card-block"><div class="bcb-label">🏆 Mi Cartón${cardIds.length>1?` #${cardIdx+1}`:''}</div>
+        for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||(marksSet.has(n) && !blockedSet.has(n))) h++; } rowHeat.push(h); }
+        body += `<div class="bingo-card-block${blockingActive?' blocking':''}"><div class="bcb-label">🏆 Mi Cartón${cardIds.length>1?` #${cardIdx+1}`:''}</div>
           <div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
         for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
           const num = _bcAt(card, r, c);
-          if (num===0) { body += `<div class="bingo-cell free fire-${rowHeat[r]}">★</div>`; continue; }
-          const isMarked = marksSet.has(num);
+          if (num===0) { body += `<div class="bingo-cell free marked fire-${rowHeat[r]}">★</div>`; continue; }
+          const isMarked = marksSet.has(num) && !blockedSet.has(num);
           const isBlocked = blockedSet.has(num);
-          const isAvail  = drawnSet.has(num) && !isMarked && !isBlocked;
           const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx && s.n===num));
           // Resalta TODA la columna de la letra recién cantada (no solo la celda exacta), igual que el diseño de referencia.
           const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked;
-          const cls = ['bingo-cell', isMarked?'marked':'', isAvail?'avail':'', isBlocked?'blocked':'', isSelecting?'selecting':'', isHl?'hl':'', `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
+          const cls = ['bingo-cell', isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))), `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
           body += `<div class="${cls}" ${frozen?'':`onclick="markBingoCell(${cardIdx},${num})"`}>${num}</div>`;
         }
         body += `</div>`;
