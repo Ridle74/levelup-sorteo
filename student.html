@@ -1875,12 +1875,24 @@ function joinBingoGame() {
   BINGO_REF.update({ [`players.${me.uid}`]: player })
     .catch(e=>{ showToast('No se pudo unir a la partida.','error'); console.error(e); });
 }
-// Ajustes del lobby (solo host, solo antes de iniciar) — los jugadores ya unidos NO se
-// re-dimensionan si el host sube cardCount después de que se unieron (caso límite aceptado).
+// Ajustes del lobby (solo host, solo antes de iniciar).
 function setBingoConfig(field, value) {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
-  BINGO_REF.update({ [field]: value }).catch(e=>console.error('bingo config',e));
+  const patch = { [field]: value };
+  // Si se cambia cardCount, hay que re-dimensionar los cartones/tiers de TODOS los jugadores
+  // ya unidos (incluido el host, que se autounie con 1 cartón al crear la partida) — si no,
+  // se quedaban con la cantidad de cartones vieja para siempre aunque el host subiera el
+  // número en el lobby. Es seguro regenerarlos acá porque en 'lobby' todavía no hay marcas
+  // ni números sorteados (no se pierde ningún progreso real).
+  if (field === 'cardCount') {
+    const players = bingoGame.players || {};
+    Object.keys(players).forEach(uid => {
+      patch[`players.${uid}.cards`] = _bingoNewCardsMap(value);
+      patch[`players.${uid}.tiers`] = _bingoNewTiersMap(value);
+    });
+  }
+  BINGO_REF.update(patch).catch(e=>console.error('bingo config',e));
 }
 function startBingoDraw() {
   const me = _bingoMe();
