@@ -526,6 +526,8 @@ textarea.fsm { resize:none; height:64px; }
 @media(min-width:768px){.bdh-num{font-size:48px}}
 .bdh-calc-row{display:flex;align-items:center;gap:8px;margin-top:8px;justify-content:center;flex-wrap:wrap}
 .bdh-calc-input{width:96px;background:#111827;border:2px solid #374151;border-radius:12px;padding:10px;text-align:center;font-size:22px;font-weight:900;color:#fff;font-family:ui-monospace,Menlo,monospace}
+.bdh-calc-input::-webkit-outer-spin-button,.bdh-calc-input::-webkit-inner-spin-button,.bcc-input::-webkit-outer-spin-button,.bcc-input::-webkit-inner-spin-button,#bingo-power-num-input::-webkit-outer-spin-button,#bingo-power-num-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.bdh-calc-input,.bcc-input,#bingo-power-num-input{-moz-appearance:textfield}
 .bdh-calc-input.ok{border-color:#a3e635;color:#bef264}
 .bdh-calc-input.bad{border-color:#ef4444;color:#f87171}
 .bdh-calc-btn{background:linear-gradient(to right,#06b6d4,#2563eb);color:#fff;font-weight:900;border:none;border-radius:10px;padding:10px 16px;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
@@ -2346,7 +2348,7 @@ function _bingoPaneHtml() {
             <div class="bdh-label">${ballLabel}</div>
             <div class="bdh-num">${ballNumHtml}</div>
             ${inCalc ? `<div class="bdh-calc-row">
-                <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?">
+                <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?" onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoCalcAnswer(this.value);}">
                 <button class="bdh-calc-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
               </div>` : ''}
           </div>
@@ -2465,7 +2467,7 @@ function _bingoPaneHtml() {
           <div class="bcc-bar"><div class="bcc-bar-fill" style="width:${pct}%"></div></div>
           <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
           ${q ? `<div class="bcc-question">${q.q}</div>
-          <input class="bcc-input" id="bingo-challenge-input" type="number" placeholder="Tu respuesta" autofocus>
+          <input class="bcc-input" id="bingo-challenge-input" type="number" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
           <button class="bcc-submit" onclick="submitBingoChallengeAnswer(document.getElementById('bingo-challenge-input').value)">Responder</button>
           <div class="bcc-foot">⏱ ${remain}s restantes · Pregunta ${bingoChallengeIdx+1}/${qs.length}</div>` : ''}
         </div></div>`;
