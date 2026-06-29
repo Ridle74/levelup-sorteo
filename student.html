@@ -523,6 +523,8 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-drawn-strip{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch}
 .bingo-drawn-chip{flex-shrink:0;width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;font-family:ui-monospace,Menlo,monospace;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#a5f3fc}
 .bingo-drawn-chip.current{background:#ec4899;border-color:#ec4899;color:#fff;box-shadow:0 0 14px -2px #ec4899;transform:scale(1.12)}
+.bingo-drawn-chip.marked-ok{background:rgba(74,222,128,0.16);border-color:#4ade80;color:#86efac}
+.bingo-drawn-chip.marked-bad{background:rgba(239,68,68,0.16);border-color:#ef4444;color:#fca5a5}
 .bingo-card{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:6px 0 10px}
 .bingo-card-hdr{text-align:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:#fff;background:#050810;border-radius:6px;padding-bottom:3px;border-bottom:3px solid #a855f7}
 .bingo-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.08);font-family:ui-monospace,Menlo,monospace;font-weight:900;font-size:15px;color:rgba(255,255,255,0.45);cursor:pointer;transition:all .2s}
@@ -560,16 +562,21 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-cell.blocked{background:rgba(239,68,68,0.18);border-color:#ef4444;color:#fca5a5;cursor:not-allowed;opacity:0.75}
 .bingo-cell.blocked::after{content:'🔒';font-size:11px;position:absolute}
 .bingo-cell.selecting{border-color:#facc15!important;box-shadow:0 0 14px -2px #facc15!important;transform:scale(0.94)}
-.bingo-cell.hl{border-color:#ec4899!important;box-shadow:0 0 18px -2px #ec4899!important;animation:bingoPulse 1s ease-in-out infinite}
+.bingo-cell.hl{background:rgba(250,204,21,0.22)!important;border-color:#facc15!important;color:#fde68a!important;box-shadow:0 0 14px -3px #facc15!important;animation:bingoPulse 1s ease-in-out infinite}
 .bingo-cell.fire-1{box-shadow:0 0 6px -2px #f97316 inset}
 .bingo-cell.fire-2{box-shadow:0 0 9px -1px #f97316 inset}
 .bingo-cell.fire-3{box-shadow:0 0 12px 0px #fb923c inset}
 .bingo-cell.fire-4{box-shadow:0 0 15px 1px #ef4444 inset}
 .bingo-cell.fire-5{box-shadow:0 0 18px 2px #ef4444 inset;animation:bingoFire 1.4s ease-in-out infinite}
 @keyframes bingoFire{0%,100%{filter:brightness(1)}50%{filter:brightness(1.35)}}
-.bingo-cards-grid{display:flex;flex-direction:column;gap:14px}
-.bingo-card-block{position:relative}
-.bcb-label{font-size:10px;color:#a855f7;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px}
+.bingo-cell.marked.fire-1{background:linear-gradient(135deg,#a3e635,#4ade80);border-color:#a3e635}
+.bingo-cell.marked.fire-2{background:linear-gradient(135deg,#4ade80,#bef264);border-color:#bef264}
+.bingo-cell.marked.fire-3{background:linear-gradient(135deg,#bef264,#facc15);border-color:#facc15;color:#1a1100}
+.bingo-cell.marked.fire-4{background:linear-gradient(135deg,#facc15,#fb923c);border-color:#fb923c;color:#1a1100}
+.bingo-cell.marked.fire-5{background:linear-gradient(135deg,#fb923c,#f97316,#dc2626);border-color:#dc2626;color:#fff}
+.bingo-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;align-items:start}
+.bingo-card-block{position:relative;background:#0d1220;border:1px solid rgba(132,204,22,0.25);border-radius:18px;padding:14px 12px;box-shadow:0 0 24px -10px rgba(132,204,22,0.35)}
+.bcb-label{font-size:11px;color:#a3e635;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
 .bingo-frozen-banner{text-align:center;padding:10px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.35);border-radius:12px;margin:8px 0;font-size:12px;font-weight:700;color:#67e8f9}
 .bingo-block-banner{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);border-radius:14px;padding:10px 12px;margin:10px 0}
 .bbb-title{font-size:12px;font-weight:900;color:#f87171}
@@ -2279,7 +2286,27 @@ function _bingoPaneHtml() {
           </div>`;
       }
     }
-    body += `<div class="bingo-drawn-strip">${drawn.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':''}">${n}</div>`).join('')}</div>`;
+    // Verde = la marcaste en todos tus cartones que la tienen (o no la tienes); rojo = te falta marcarla
+    // en al menos un cartón; rosa = es la bola actual. Mismo criterio que el diseño de referencia.
+    let chipStateFor = () => '';
+    if (myPlayer) {
+      const cardsObj = myPlayer.cards || {};
+      const myMarksArr = myPlayer.marks || [];
+      const myBlockedArr = myPlayer.blockedMarks || [];
+      const cardIdsAll = Object.keys(cardsObj);
+      chipStateFor = (n) => {
+        let presentSomewhere = false, markedEverywhere = true;
+        cardIdsAll.forEach(ci => {
+          const cardIdx = Number(ci);
+          if (!cardsObj[ci].includes(n)) return;
+          presentSomewhere = true;
+          const isMarked = myMarksArr.some(m=>m.c===cardIdx && m.n===n) && !myBlockedArr.some(m=>m.c===cardIdx && m.n===n);
+          if (!isMarked) markedEverywhere = false;
+        });
+        return (!presentSomewhere || markedEverywhere) ? 'marked-ok' : 'marked-bad';
+      };
+    }
+    body += `<div class="bingo-drawn-strip">${drawn.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':chipStateFor(n)}">${n}</div>`).join('')}</div>`;
 
     if (!myPlayer && status==='playing') body += `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`;
 
@@ -2298,7 +2325,7 @@ function _bingoPaneHtml() {
         const blockedSet = new Set(myBlocked.filter(m=>m.c===cardIdx).map(m=>m.n));
         const rowHeat = [];
         for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||marksSet.has(n)) h++; } rowHeat.push(h); }
-        body += `<div class="bingo-card-block">${cardIds.length>1?`<div class="bcb-label">Cartón ${cardIdx+1}</div>`:''}
+        body += `<div class="bingo-card-block"><div class="bcb-label">🏆 Mi Cartón${cardIds.length>1?` #${cardIdx+1}`:''}</div>
           <div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
         for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
           const num = _bcAt(card, r, c);
@@ -2307,7 +2334,8 @@ function _bingoPaneHtml() {
           const isBlocked = blockedSet.has(num);
           const isAvail  = drawnSet.has(num) && !isMarked && !isBlocked;
           const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx && s.n===num));
-          const isHl = bingoGame.numPhase==='mark' && bingoGame.currentNumber===num;
+          // Resalta TODA la columna de la letra recién cantada (no solo la celda exacta), igual que el diseño de referencia.
+          const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked;
           const cls = ['bingo-cell', isMarked?'marked':'', isAvail?'avail':'', isBlocked?'blocked':'', isSelecting?'selecting':'', isHl?'hl':'', `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
           body += `<div class="${cls}" ${frozen?'':`onclick="markBingoCell(${cardIdx},${num})"`}>${num}</div>`;
         }
