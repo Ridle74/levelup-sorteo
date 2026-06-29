@@ -2217,8 +2217,26 @@ function _renderBingoPane() {
   // pantalla completa /student/bingo) — el router reemplaza el DOM completo en cada vista.
   const hosts = document.querySelectorAll('.bingo-pane-host');
   if (!hosts.length) return; // Ninguna vista de Bingo está montada ahora; el listener sigue vivo igual
+  // _bingoTick() llama acá cada 1s mientras status==='playing' (solo para refrescar la cuenta
+  // atrás) — eso reemplazaba TODO el innerHTML del panel cada segundo, incluido el <input> donde
+  // el alumno estaba escribiendo (respuesta del Reto Matemático, del cálculo, de un poder),
+  // borrando lo escrito y el foco a mitad de tecleo ("no me deja escribir el número"). Se guarda
+  // valor/cursor del input enfocado y se restaura después de volver a pintar.
+  const active = document.activeElement;
+  let savedInput = null;
+  if (active && active.tagName === 'INPUT' && active.id && Array.from(hosts).some(h => h.contains(active))) {
+    savedInput = { id: active.id, value: active.value, selStart: active.selectionStart, selEnd: active.selectionEnd };
+  }
   try {
     hosts.forEach(el => { el.innerHTML = _bingoPaneHtml(); });
+    if (savedInput) {
+      const el = document.getElementById(savedInput.id);
+      if (el) {
+        el.value = savedInput.value;
+        el.focus();
+        if (typeof savedInput.selStart === 'number') { try { el.setSelectionRange(savedInput.selStart, savedInput.selEnd); } catch(e){} }
+      }
+    }
   } catch(e) {
     // Si el render revienta acá, antes se quedaba pegado en la pantalla anterior sin
     // ningún aviso (la escritura a Firestore podía haber funcionado igual). Mostramos
@@ -2468,7 +2486,7 @@ function _bingoPaneHtml() {
 function _bingoPowerFormHtml(key, rivalEntries, myPlayer) {
   const rivalSelect = `<select onchange="setBingoPowerForm('studentId', this.value)"><option value="">Elige un rival...</option>${rivalEntries.map(([uid,p])=>`<option value="${uid}">${p.name}</option>`).join('')}</select>`;
   const myCardOpts = Object.keys(myPlayer.cards||{}).map(ci=>`<option value="${ci}">Cartón ${Number(ci)+1}</option>`).join('');
-  const numInput = ph => `<input type="number" placeholder="${ph}" onchange="setBingoPowerForm('num', this.value)">`;
+  const numInput = ph => `<input id="bingo-power-num-input" type="number" placeholder="${ph}" onchange="setBingoPowerForm('num', this.value)">`;
   let formHtml = '';
   if (key==='sabotaje') {
     formHtml = `${rivalSelect}<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Cartón del rival...</option>${[0,1,2,3].map(i=>`<option value="${i}">Cartón ${i+1}</option>`).join('')}</select>${numInput('Número marcado del rival')}`;
