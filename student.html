@@ -574,6 +574,16 @@ textarea.fsm { resize:none; height:64px; }
 .bdh-cell-mini.drawn{background:#1f2937;border-color:#374151;color:#d1d5db}
 .bdh-cell-mini.free{background:#1f2937;border-color:#4b5563;color:#9ca3af}
 .bdh-cell-mini.frozen{background:linear-gradient(135deg,#0369a1,#0c4a6e);border-color:#38bdf8;color:#bae6fd}
+/* ── Barra de navegación de jugadores (encima de la sección de cartones) ── */
+.bingo-player-nav{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;margin-top:18px}
+.bingo-player-nav::-webkit-scrollbar{display:none}
+.bpn-pill{flex-shrink:0;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:5px 12px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:#6b7280;white-space:nowrap;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.bpn-pill:hover{border-color:#374151;color:#d1d5db}
+.bpn-pill.active{background:linear-gradient(135deg,#1e1b4b,#0a0e1a);border-color:#a855f7;color:#e2e8f0;box-shadow:0 0 10px -3px rgba(168,85,247,0.4)}
+.bpn-rank{font-size:8px;color:#6b7280;font-weight:900}
+.bpn-pill.active .bpn-rank{color:#c084fc}
+.bpn-pct{font-size:9px;color:#a855f7;font-weight:900}
+.bpn-pill.active .bpn-pct{color:#e879f9}
 /* Historial de sorteo — pills tipo chip (rounded-lg px-3 py-1.5 font-mono font-bold text-sm border) */
 .bingo-hist-wrap{margin-top:20px;padding-top:20px;border-top:1px solid #1f2937}
 .bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px}
@@ -798,6 +808,7 @@ let _bingoDrawing  = false;    // evita doble-sorteo si el tick se solapa con un
 let _prevBingoTierWinners = {};// copia anterior de tierWinners para detectar nuevos ganadores
 let _bingoRulesShown = false;  // modal de reglas ya mostrado para esta partida
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
+let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -1857,12 +1868,16 @@ function _bingoToggleExpandPlayer(uid) {
   _bingoExpandedPlayer = _bingoExpandedPlayer === uid ? null : uid;
   _renderBingoPane();
 }
+function _bingoSetViewPlayer(uid) {
+  _bingoViewingPlayer = uid; // null o uid propio → propios cartones; uid rival → espía
+  _renderBingoPane();
+}
 
 function _bingoResetLocalState() {
   bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
-  _bingoExpandedPlayer = null;
+  _bingoExpandedPlayer = null; _bingoViewingPlayer = null;
   _bingoCloseModal();
 }
 
@@ -2610,75 +2625,15 @@ function _bingoPaneHtml() {
     // Durante el reto se oculta el último número sorteado (el que disparó el reto).
     const drawnVisible = inChallenge ? drawn.slice(0, -1) : drawn;
 
-    // ── Columna izquierda: leaderboard de proximidad ──────────────────────────
-    const MINI_COLS = ['B','I','N','G','O'];
-    const drawnSet = new Set(drawn);
-    let playersHtml = '';
-    const sortedPlayers = Object.entries(bingoGame.players||{})
-      .map(([uid, p]) => ({uid, p, score: activeTier ? _bingoProximity(p, activeTier) : 0}))
-      .sort((a,b) => b.score - a.score);
-    sortedPlayers.forEach(({uid, p, score}, rankIdx) => {
-      const isExpanded = _bingoExpandedPlayer === uid;
-      const pct = Math.round(score * 100);
-      let cardExpandHtml = '';
-      if (isExpanded) {
-        Object.entries(p.cards||{}).sort((a,b)=>Number(a[0])-Number(b[0])).forEach(([ci, card], cardNum, arr) => {
-          const mSet = new Set((p.marks||[]).filter(m=>m.c===Number(ci)).map(m=>m.n));
-          const fSet = new Set((p.frozenCells||[]).filter(f=>f.c===Number(ci)).map(f=>f.n));
-          let gridRows = '';
-          for (let c=0;c<5;c++) {
-            let cells = '';
-            for (let r=0;r<5;r++) {
-              const num = card[r*5+c];
-              const isFree = num===0;
-              const isFrozen = !isFree && fSet.has(num);
-              const isMarked = isFree || mSet.has(num);
-              const isDrawn2 = !isFree && drawnSet.has(num);
-              const mc = isFrozen?'frozen':(isMarked?'marked':(isDrawn2?'drawn':''));
-              cells += `<div class="bdh-cell-mini ${mc}">${isFree?'★':num}</div>`;
-            }
-            gridRows += `<div class="bdh-card-col-row"><div class="bdh-col-letter ${MINI_COLS[c]}">${MINI_COLS[c]}</div>${cells}</div>`;
-          }
-          cardExpandHtml += `<div class="bdh-card-expand">${arr.length>1?`<div class="bdh-card-expand-title">Cartón ${cardNum+1}</div>`:''}<div class="bdh-card-grid">${gridRows}</div></div>`;
-        });
-      }
-      playersHtml += `<div class="bdh-player-row${isExpanded?' active':''}" onclick="_bingoToggleExpandPlayer('${uid}')">
-        <div class="bdh-player-head">
-          <div class="bdh-player-rank">#${rankIdx+1}</div>
-          <div class="bdh-player-name">${p.name||uid}</div>
-          <div class="bdh-player-pct-lbl">${pct}%</div>
-        </div>
-        <div class="bdh-player-prog"><div class="bdh-player-prog-fill" style="width:${pct}%"></div></div>
-        ${cardExpandHtml}
-      </div>`;
-    });
-
-    // ── Chip strip ────────────────────────────────────────────────────────────
-    const chipStripHtml = drawnVisible.length > 0 ? `<div class="bingo-hist-wrap" style="margin-top:0;padding-top:0;border-top:none">
-      <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
-      <div class="bingo-hist-row">
-        <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
-        <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawnVisible.slice().reverse().map((n,i)=>`<div class="bingo-drawn-chip ${i===0?'current':chipStateFor(n)}">${bingoLetter(n)}-${n}</div>`).join('')}</div>
-        <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:120,behavior:'smooth'})">›</button>
-      </div>
-    </div>` : '';
-
-    // ── Layout 3 columnas ─────────────────────────────────────────────────────
-    body += `<div class="bingo-head-box"><div class="bdh-three">
-      <div class="bdh-players-col">
-        <div class="bdh-players-title">🏅 Próximo: ${activeTier ? BINGO_TIER_LABEL[activeTier] : '—'}</div>
-        ${playersHtml}
-      </div>
-      <div class="bdh-center">
-        <div class="bdh-ballbox">
-          <div class="bdh-label">${ballLabel}</div>
-          <div class="bdh-num">${ballNumHtml}</div>
-          ${inCalc ? `<div class="bdh-calc-row">
-              <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?" onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoCalcAnswer(this.value);}">
-              <button class="bdh-calc-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
-            </div>` : ''}
-        </div>
-        ${chipStripHtml}
+    // ── Head box: 2 columnas (ball box izq, stats der) + chip strip debajo ──────
+    body += `<div class="bingo-head-box"><div class="bdh-row">
+      <div class="bdh-ballbox">
+        <div class="bdh-label">${ballLabel}</div>
+        <div class="bdh-num">${ballNumHtml}</div>
+        ${inCalc ? `<div class="bdh-calc-row">
+            <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?" onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoCalcAnswer(this.value);}">
+            <button class="bdh-calc-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
+          </div>` : ''}
       </div>
       <div class="bdh-side">
         <div class="bdh-stats">
@@ -2689,7 +2644,16 @@ function _bingoPaneHtml() {
         <div class="bdh-bar" style="${phaseOn?'':'opacity:.3'}"><div class="bdh-bar-fill ${phaseColorClass}" style="width:${phaseOn?phasePct:0}%"></div></div>
         <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
       </div>
-    </div></div>`;
+    </div>
+    ${drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
+      <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
+      <div class="bingo-hist-row">
+        <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
+        <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawnVisible.slice().reverse().map((n,i)=>`<div class="bingo-drawn-chip ${i===0?'current':chipStateFor(n)}">${bingoLetter(n)}-${n}</div>`).join('')}</div>
+        <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:120,behavior:'smooth'})">›</button>
+      </div>
+    </div>` : ''}
+    </div>`;
 
     if (!myPlayer && status==='playing') body += `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`;
 
@@ -2700,42 +2664,77 @@ function _bingoPaneHtml() {
       const myBlocked = myPlayer.blockedMarks || [];
       const cardIds = Object.keys(myPlayer.cards||{}).sort((a,b)=>Number(a)-Number(b));
       const blockingActive = !!myPlayer.pendingBlock;
-      body += `<div class="bingo-cards-section-lbl">🏆 Mis Cartones — marca los números que salieron</div>`;
-      body += `<div class="bingo-cards-grid">`;
-      cardIds.forEach(ci => {
-        const cardIdx = Number(ci);
-        const card = myPlayer.cards[ci];
-        const marksSet = new Set(myMarks.filter(m=>m.c===cardIdx).map(m=>m.n));
-        const blockedSet = new Set(myBlocked.filter(m=>m.c===cardIdx).map(m=>m.n));
-        // rowMarked: cuenta celdas libres + marcadas-no-bloqueadas de la fila, igual que rowColor() de referencia.
-        const rowHeat = [];
-        for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||(marksSet.has(n) && !blockedSet.has(n))) h++; } rowHeat.push(h); }
-        body += `<div class="bingo-card-block${blockingActive?' blocking':''}"><div class="bcb-label">🏆 Mi Cartón${cardIds.length>1?` #${cardIdx+1}`:''}</div>
-          <div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
-        const myFrozenCells = myPlayer.frozenCells || [];
-        for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
-          const num = _bcAt(card, r, c);
-          if (num===0) { body += `<div class="bingo-cell free marked fire-${rowHeat[r]}">★</div>`; continue; }
-          const isMarked = marksSet.has(num) && !blockedSet.has(num);
-          const isBlocked = blockedSet.has(num);
-          const frozenEntry = myFrozenCells.find(f=>f.c===cardIdx && f.n===num);
-          const isSabotaged = !!frozenEntry;
-          const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx && s.n===num));
-          // Resalta TODA la columna de la letra recién cantada (no solo la celda exacta), igual que el diseño de referencia.
-          const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
-          const cellState = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
-          const cls = ['bingo-cell', cellState, `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
-          const titleAttr = isSabotaged ? `title="❄️ ${frozenEntry.byName} congeló esta casilla hasta el próximo reto"` : '';
-          const clickFn = frozen ? '' : (isSabotaged ? `onclick="markBingoCell(${cardIdx},${num})"` : `onclick="markBingoCell(${cardIdx},${num})"`);
-          const cellContent = isSabotaged ? `❄️` : num;
-          body += `<div class="${cls}" ${clickFn} ${titleAttr}>${cellContent}</div>`;
-        }
-        body += `</div>`;
-        // Un solo botón: el del tier activo actualmente (el primero sin ganador global).
-        // Si el jugador ya ganó o falló ese tier, se muestra con el estado correspondiente.
-        // Si todos los tiers ya fueron ganados globalmente, no se muestra botón.
-        {
-          if (activeTier) {
+      // ── Barra de navegación de jugadores ─────────────────────────────────────
+      {
+        const navEntries = Object.entries(bingoGame.players||{})
+          .map(([uid, p]) => ({uid, p, score: activeTier ? _bingoProximity(p, activeTier) : 0}))
+          .sort((a,b) => b.score - a.score);
+        let navHtml = `<div class="bingo-player-nav">`;
+        navEntries.forEach(({uid, p, score}, ri) => {
+          const isSelf = uid === me.uid;
+          const isActive = _bingoViewingPlayer === uid || (_bingoViewingPlayer === null && isSelf);
+          const pct = Math.round(score * 100);
+          const label = isSelf ? `🏆 Mis cartones` : `<span class="bpn-rank">#${ri+1}</span>${p.name||uid}`;
+          navHtml += `<div class="bpn-pill${isActive?' active':''}" onclick="_bingoSetViewPlayer('${uid}')">
+            ${label}<span class="bpn-pct">${pct}%</span>
+          </div>`;
+        });
+        navHtml += `</div>`;
+        body += navHtml;
+      }
+
+      // ── Cartones: propios (interactivos) o rival (solo-lectura) ──────────────
+      {
+        const viewUid = _bingoViewingPlayer || me.uid;
+        const viewedPlayer = (bingoGame.players||{})[viewUid] || myPlayer;
+        const isSpyMode = viewUid !== me.uid;
+        const viewMarks   = viewedPlayer.marks || [];
+        const viewBlocked = viewedPlayer.blockedMarks || [];
+        const viewFrozen  = viewedPlayer.frozenCells || [];
+        const viewCardIds = Object.keys(viewedPlayer.cards||{}).sort((a,b)=>Number(a)-Number(b));
+
+        body += `<div class="bingo-cards-grid">`;
+        viewCardIds.forEach(ci => {
+          const cardIdx  = Number(ci);
+          const card     = viewedPlayer.cards[ci];
+          const marksSet   = new Set(viewMarks.filter(m=>m.c===cardIdx).map(m=>m.n));
+          const blockedSet = new Set(viewBlocked.filter(m=>m.c===cardIdx).map(m=>m.n));
+          const rowHeat = [];
+          for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||(marksSet.has(n)&&!blockedSet.has(n))) h++; } rowHeat.push(h); }
+
+          const lbl = isSpyMode
+            ? `👁 ${viewedPlayer.name||viewUid}${viewCardIds.length>1?` — Cartón ${cardIdx+1}`:''}`
+            : `🏆 Mi Cartón${viewCardIds.length>1?` #${cardIdx+1}`:''}`;
+          body += `<div class="bingo-card-block${!isSpyMode&&blockingActive?' blocking':''}"><div class="bcb-label">${lbl}</div>
+            <div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
+
+          for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
+            const num = _bcAt(card, r, c);
+            if (num===0) { body += `<div class="bingo-cell free marked fire-${rowHeat[r]}">★</div>`; continue; }
+            const isMarked   = marksSet.has(num) && !blockedSet.has(num);
+            const isBlocked  = blockedSet.has(num);
+            const frozenEntry = viewFrozen.find(f=>f.c===cardIdx && f.n===num);
+            const isSabotaged = !!frozenEntry;
+            if (isSpyMode) {
+              // Modo espía: sin onclick, sin resaltado de columna cantada
+              const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isMarked?'marked':''));
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
+              const tt = isSabotaged ? `title="❄️ Congelada por ${frozenEntry.byName}"` : '';
+              body += `<div class="${cl}" ${tt}>${isSabotaged?'❄️':num}</div>`;
+            } else {
+              // Modo propio: interactivo
+              const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx&&s.n===num));
+              const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
+              const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
+              const tt = isSabotaged ? `title="❄️ ${frozenEntry.byName} congeló esta casilla hasta el próximo reto"` : '';
+              const fn = frozen ? '' : `onclick="markBingoCell(${cardIdx},${num})"`;
+              body += `<div class="${cl}" ${fn} ${tt}>${isSabotaged?'❄️':num}</div>`;
+            }
+          }
+          body += `</div>`;
+          // Botón de premio: solo en modo propio
+          if (!isSpyMode && activeTier) {
             const t = (myPlayer.tiers||{})[ci] || {};
             const won = t.won?.[activeTier], failed = t.failed?.[activeTier];
             const globalWinner = (bingoGame.tierWinners||{})[activeTier];
@@ -2745,10 +2744,10 @@ function _bingoPaneHtml() {
             const prefix = won?'✓ ':(failed?'✕ ':(lockedByOther?'🔒 ':''));
             body += `<div class="bingo-claims-row"><button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${activeTier}')">${prefix}${BINGO_TIER_LABEL[activeTier]}</button></div>`;
           }
-        }
+          body += `</div>`;
+        });
         body += `</div>`;
-      });
-      body += `</div>`;
+      }
 
       if (myPlayer.pendingBlock) {
         const remain = Math.max(0, Math.round(((myPlayer.pendingBlock.deadline||0)-Date.now())/1000));
