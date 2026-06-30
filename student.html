@@ -2323,9 +2323,12 @@ function _bingoPaneHtml() {
     const numPhase = bingoGame.numPhase;
     const inCalc = status==='playing' && numPhase==='calc';
     const inMark = status==='playing' && numPhase==='mark';
-    const ballLabel = (numPhase==='calc') ? '¿Qué número salió?' : 'Número salido';
-    let ballNumHtml = '—';
-    if (cur) {
+    const inChallenge = status==='playing' && bingoGame.challengeActive;
+    const ballLabel = inChallenge ? '⏸ Sorteo en pausa' : (numPhase==='calc') ? '¿Qué número salió?' : 'Número salido';
+    let ballNumHtml = inChallenge
+      ? `<span style="color:#facc15;font-size:0.6em;line-height:1.3;display:block;text-align:center">🧠 Reto<br>Matemático<br>en curso</span>`
+      : '—';
+    if (!inChallenge && cur) {
       ballNumHtml = (numPhase==='calc' && bingoGame.currentSum!=null)
         ? `${bingoGame.currentSum}`
         : `<span class="bdh-letter">${bingoLetter(cur)}</span>-${cur}`;
@@ -2345,29 +2348,25 @@ function _bingoPaneHtml() {
       phaseFootLabel = inCalc ? `Calculando ${Math.ceil(remainSecs)}s ↑` : `Marcando ${Math.ceil(remainSecs)}s ↑`;
     }
 
-    if (status==='playing' && bingoGame.challengeActive) {
-      body += `<div style="font-size:11px;color:#facc15;font-weight:700;margin:4px 0">⏸ Sorteo en pausa — ¡Reto Matemático en curso!</div>`;
-    } else {
-      body += `<div class="bingo-head-box"><div class="bdh-row">
-          <div class="bdh-ballbox">
-            <div class="bdh-label">${ballLabel}</div>
-            <div class="bdh-num">${ballNumHtml}</div>
-            ${inCalc ? `<div class="bdh-calc-row">
-                <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?" onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoCalcAnswer(this.value);}">
-                <button class="bdh-calc-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
-              </div>` : ''}
+    body += `<div class="bingo-head-box"><div class="bdh-row">
+        <div class="bdh-ballbox">
+          <div class="bdh-label">${ballLabel}</div>
+          <div class="bdh-num">${ballNumHtml}</div>
+          ${inCalc ? `<div class="bdh-calc-row">
+              <input class="bdh-calc-input" id="bingo-calc-input" type="number" placeholder="?" onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoCalcAnswer(this.value);}">
+              <button class="bdh-calc-btn" onclick="submitBingoCalcAnswer(document.getElementById('bingo-calc-input').value)">Responder</button>
+            </div>` : ''}
+        </div>
+        <div class="bdh-side">
+          <div class="bdh-stats">
+            <div class="bdh-stat"><div class="bdh-stat-lbl">Extraídos</div><div class="bdh-stat-val cyan">${drawn.length}/75</div></div>
+            <div class="bdh-stat"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div></div>
           </div>
-          <div class="bdh-side">
-            <div class="bdh-stats">
-              <div class="bdh-stat"><div class="bdh-stat-lbl">Extraídos</div><div class="bdh-stat-val cyan">${drawn.length}/75</div></div>
-              <div class="bdh-stat"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div></div>
-            </div>
-            <div class="bdh-bar"><div class="bdh-bar-fill grad" style="width:${challengePct}%"></div></div>
-            <div class="bdh-bar" style="${phaseOn?'':'opacity:.3'}"><div class="bdh-bar-fill ${phaseColorClass}" style="width:${phaseOn?phasePct:0}%"></div></div>
-            <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
-          </div>
-        </div>`;
-    }
+          <div class="bdh-bar"><div class="bdh-bar-fill grad" style="width:${challengePct}%"></div></div>
+          <div class="bdh-bar" style="${phaseOn?'':'opacity:.3'}"><div class="bdh-bar-fill ${phaseColorClass}" style="width:${phaseOn?phasePct:0}%"></div></div>
+          <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
+        </div>
+      </div>`;
     // Verde = la marcaste en todos tus cartones que la tienen (o no la tienes); rojo = te falta marcarla
     // en al menos un cartón; rosa = es la bola actual. Mismo criterio que el diseño de referencia.
     let chipStateFor = () => '';
