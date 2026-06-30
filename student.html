@@ -1993,13 +1993,18 @@ function submitBingoChallengeAnswer(raw) {
   const q = (bingoGame.questions||[])[bingoChallengeIdx];
   if (!q) return;
   const val = Number(raw);
+  // Limpiar el campo ANTES de re-renderizar; si no, el mecanismo "salva/restaura foco"
+  // de _renderBingoPane() reinyecta la respuesta anterior en la siguiente pregunta.
+  const _clearInput = () => { const ci = document.getElementById('bingo-challenge-input'); if (ci) ci.value = ''; };
   if (Number.isNaN(val) || val !== q.a) {
     bingoChallengeError = true; bingoChallengeAnswer = '';
+    _clearInput();
     _renderBingoPane();
     return; // respuesta incorrecta: NO avanza, repite la misma pregunta (igual que neon-bingo)
   }
   bingoChallengeError = false; bingoChallengeAnswer = '';
   bingoChallengeIdx += 1;
+  _clearInput();
   if (bingoChallengeIdx >= bingoGame.questions.length) _bingoFinishChallenge(bingoChallengeIdx);
   else _renderBingoPane();
 }
