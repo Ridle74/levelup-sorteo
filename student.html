@@ -632,6 +632,25 @@ textarea.fsm { resize:none; height:64px; }
 .bpx-form select,.bpx-form input{background:#0a0e1a;color:#fff;border:1px solid rgba(255,255,255,0.18);border-radius:8px;padding:6px 8px;font-size:11px;font-family:'Barlow Condensed',sans-serif}
 .bpx-msg{width:100%;font-size:10.5px;color:#4ade80;margin-top:4px}
 .bcx-btn{background:linear-gradient(to right,#06b6d4,#2563eb);color:#fff;font-weight:900;border:none;border-radius:8px;padding:6px 14px;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer}
+/* ── Bingo: modales de reglas y premio ganado ─────────────────── */
+.bpm-overlay{position:fixed;inset:0;background:rgba(3,7,18,0.88);backdrop-filter:blur(6px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px}
+.bpm-box{background:#0a0e1a;border:2px solid rgba(168,85,247,0.6);border-radius:20px;padding:28px 28px 22px;max-width:460px;width:100%;color:#e2e8f0;text-align:center;box-shadow:0 0 60px -10px rgba(168,85,247,0.55);font-family:'Barlow Condensed',sans-serif}
+.bpm-title{font-size:22px;font-weight:900;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:6px}
+.bpm-sub{font-size:12px;color:#64748b;margin-bottom:18px}
+.bpm-tier-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border-radius:10px;padding:9px 12px;margin-bottom:7px;text-align:left}
+.bpm-badge{font-weight:900;font-size:11px;letter-spacing:0.07em;text-transform:uppercase;min-width:68px;padding:3px 7px;border-radius:6px;text-align:center;border:1px solid currentColor}
+.bpm-desc{flex:1;font-size:12px;color:#94a3b8;line-height:1.3}
+.bpm-prize{font-weight:900;font-size:14px;color:#facc15;white-space:nowrap}
+.bpm-hint{font-size:11px;color:#64748b;margin-top:10px;margin-bottom:0}
+.bpm-btn{margin-top:18px;background:linear-gradient(to right,#7c3aed,#2563eb);color:#fff;font-weight:900;border:none;border-radius:12px;padding:11px 36px;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+.bpm-winner{font-size:28px;font-weight:900;color:#facc15;margin:10px 0 4px;text-shadow:0 0 20px rgba(250,204,21,0.5)}
+.bpm-prize-lbl{font-size:12px;color:#64748b}
+.bpm-prize-amt{font-size:20px;font-weight:900;color:#4ade80}
+.bpm-next-box{margin-top:16px;background:rgba(255,255,255,0.04);border-radius:12px;padding:12px 16px}
+.bpm-next-lbl{font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.bpm-next-tier{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em}
+.bpm-next-desc{font-size:12px;color:#94a3b8;margin-top:3px}
+.bpm-next-prize{font-size:14px;font-weight:900;color:#facc15;margin-top:4px}
 </style>
 </head>
 <body>
@@ -747,6 +766,8 @@ let bingoUnsub    = null;      // unsubscribe del listener de BINGO_REF (se qued
 let bingoTickTimer = null;     // setInterval de 1s: refresca cuenta atrás y dispara el sorteo si soy el host
 let bingoCreating  = false;    // evita doble-click en "Crear partida"
 let _bingoDrawing  = false;    // evita doble-sorteo si el tick se solapa con un write pendiente
+let _prevBingoTierWinners = {};// copia anterior de tierWinners para detectar nuevos ganadores
+let _bingoRulesShown = false;  // modal de reglas ya mostrado para esta partida
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -1694,9 +1715,101 @@ function _bingoNewTiersMap(count) { const m={}; for (let i=0;i<count;i++) m[i]={
 let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false;
 let bingoBlockSelection = [];
 let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
+// ── Constantes y helpers de premios ──────────────────────────────────────────
+const BINGO_TIER_ORDER = ['terna','cuaterna','quina','bingo'];
+const BINGO_TIER_PRIZE = { terna:'S/ 5', cuaterna:'S/ 10', quina:'S/ 15', bingo:'S/ 80' };
+const BINGO_TIER_DESC  = {
+  terna:    '3 números en la misma fila',
+  cuaterna: '4 números en la misma fila',
+  quina:    '5 números en una fila completa',
+  bingo:    'Todos los números del cartón completo'
+};
+function _bingoBadgeColor(tier) {
+  return {terna:'#fbbf24',cuaterna:'#34d399',quina:'#60a5fa',bingo:'#f472b6'}[tier]||'#94a3b8';
+}
+
+// ── Modales de premios (overlay fuera de .bingo-pane-host) ───────────────────
+let _bingoPaused = false; // bloquea el siguiente sorteo mientras hay un modal abierto
+
+function _bingoShowModal(htmlContent) {
+  const prev = document.getElementById('bpm-overlay');
+  if (prev) prev.remove();
+  const div = document.createElement('div');
+  div.id = 'bpm-overlay';
+  div.className = 'bpm-overlay';
+  div.innerHTML = htmlContent;
+  div.onclick = e => { if (e.target === div) _bingoCloseModal(); };
+  document.body.appendChild(div);
+  // Pausar el sorteo mientras el modal esté abierto
+  _bingoPaused = true;
+  try {
+    const me = _bingoMe();
+    if (bingoGame && bingoGame.hostId === me.uid && bingoGame.status === 'playing') {
+      BINGO_REF.update({ nextDrawAt: Date.now() + 300000 }) // congelar 5 min
+        .catch(e=>console.error('bingo pause', e));
+    }
+  } catch(e) {}
+}
+
+function _bingoCloseModal() {
+  const m = document.getElementById('bpm-overlay');
+  if (m) m.remove();
+  // Reanudar el sorteo: nuevo intervalo completo desde ahora
+  _bingoPaused = false;
+  try {
+    const me = _bingoMe();
+    if (bingoGame && bingoGame.hostId === me.uid && bingoGame.status === 'playing') {
+      BINGO_REF.update({ nextDrawAt: Date.now() + (bingoGame.intervalMs || 4500) })
+        .catch(e=>console.error('bingo resume', e));
+    }
+  } catch(e) {}
+}
+
+function _bingoShowRulesModal() {
+  const rows = BINGO_TIER_ORDER.map(k => {
+    const col = _bingoBadgeColor(k);
+    return `<div class="bpm-tier-row">
+      <div class="bpm-badge" style="color:${col};border-color:${col}">${BINGO_TIER_LABEL[k].toUpperCase()}</div>
+      <div class="bpm-desc">${BINGO_TIER_DESC[k]}</div>
+      <div class="bpm-prize">${BINGO_TIER_PRIZE[k]}</div>
+    </div>`;
+  }).join('');
+  _bingoShowModal(`<div class="bpm-box">
+    <div class="bpm-title" style="color:#a78bfa">🎯 ¡Comienza el Bingo!</div>
+    <div class="bpm-sub">Los premios se otorgan en orden. ¡El primero en conseguirlo gana!</div>
+    ${rows}
+    <div class="bpm-hint">Primero vamos por la <strong style="color:#fbbf24">TERNA</strong> — ¡3 números en una misma fila!</div>
+    <button class="bpm-btn" onclick="_bingoCloseModal()">¡Entendido, a jugar!</button>
+  </div>`);
+}
+
+function _bingoShowTierWonModal(tier, winnerName) {
+  const col = _bingoBadgeColor(tier);
+  const tierIdx = BINGO_TIER_ORDER.indexOf(tier);
+  const nextTier = BINGO_TIER_ORDER[tierIdx + 1];
+  const nextHtml = nextTier
+    ? `<div class="bpm-next-box">
+        <div class="bpm-next-lbl">Ahora vamos por...</div>
+        <div class="bpm-next-tier" style="color:${_bingoBadgeColor(nextTier)}">${BINGO_TIER_LABEL[nextTier].toUpperCase()}</div>
+        <div class="bpm-next-desc">${BINGO_TIER_DESC[nextTier]}</div>
+        <div class="bpm-next-prize">${BINGO_TIER_PRIZE[nextTier]}</div>
+      </div>`
+    : `<div class="bpm-next-box"><div class="bpm-next-lbl" style="color:#facc15">🎉 ¡Fin del juego — el Bingo ha sido ganado!</div></div>`;
+  _bingoShowModal(`<div class="bpm-box">
+    <div class="bpm-title" style="color:${col}">🏆 ¡${BINGO_TIER_LABEL[tier]} canjeada!</div>
+    <div class="bpm-winner">${winnerName}</div>
+    <div class="bpm-prize-lbl">se lleva</div>
+    <div class="bpm-prize-amt">${BINGO_TIER_PRIZE[tier]}</div>
+    ${nextHtml}
+    <button class="bpm-btn" onclick="_bingoCloseModal()">Continuar</button>
+  </div>`);
+}
+
 function _bingoResetLocalState() {
   bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
+  _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
+  _bingoCloseModal();
 }
 
 // Identidad del jugador actual, reutilizando la misma convención uid que mensajería/FCM.
@@ -1727,6 +1840,25 @@ function startBingoListener() {
       if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying && currentView !== 'bingo') {
         go('bingo');
       }
+      // Modal de reglas: mostrar una sola vez cuando arranca el sorteo
+      if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying) {
+        _bingoRulesShown = false; // reset por si se reutiliza
+      }
+      if (bingoGame.status === 'playing' && amPlaying && !_bingoRulesShown) {
+        _bingoRulesShown = true;
+        setTimeout(_bingoShowRulesModal, 800);
+      }
+      // Detectar nuevo ganador de tier → modal de premio
+      const curWinners = bingoGame.tierWinners || {};
+      BINGO_TIER_ORDER.forEach(tier => {
+        if (curWinners[tier] && !_prevBingoTierWinners[tier]) {
+          const winnerUid = curWinners[tier].uid;
+          const winnerPlayer = (bingoGame.players || {})[winnerUid];
+          const winnerName = winnerPlayer ? (winnerPlayer.name || winnerUid) : winnerUid;
+          setTimeout(() => _bingoShowTierWonModal(tier, winnerName), 400);
+        }
+      });
+      _prevBingoTierWinners = Object.assign({}, curWinners);
     } catch (e) { console.error('bingo auto-nav', e); }
     _renderBingoPane();
   }, err => {
@@ -1766,6 +1898,8 @@ function _bingoTick() {
 }
 function _bingoHostDrawNext() {
   if (_bingoDrawing) return;
+  // Guarda: no sortear mientras hay un modal de premio/reglas abierto
+  if (_bingoPaused) { _bingoDrawing = false; return; }
   // Guarda defensiva: nunca sortear mientras el Reto Matemático está activo (challengeActive
   // puede llegar con hasta ~1s de retraso por el onSnapshot, así que este check evita que
   // un tick intermedio con estado obsoleto dispare el número siguiente antes de tiempo).
@@ -2468,15 +2602,20 @@ function _bingoPaneHtml() {
           body += `<div class="${cls}" ${frozen?'':`onclick="markBingoCell(${cardIdx},${num})"`}>${num}</div>`;
         }
         body += `</div>`;
-        body += `<div class="bingo-claims-row">${Object.keys(BINGO_TIER_LABEL).map(k=>{
+        body += `<div class="bingo-claims-row">${BINGO_TIER_ORDER.map(k=>{
           const t = (myPlayer.tiers||{})[ci] || {};
           const won = t.won?.[k], failed = t.failed?.[k];
           const globalWinner = (bingoGame.tierWinners||{})[k];
           // Bloqueado por otro: el tier ya fue ganado en un número ANTERIOR al actual
           const lockedByOther = !won && !failed && !!globalWinner && globalWinner.ball !== bingoGame.currentNumber;
-          const cls2 = won?'won':(failed?'failed':(lockedByOther?'failed':`tier-${k}`));
-          const isDisabled = !!(won||failed||frozen||lockedByOther);
-          return `<button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${k}')">${won?'✓ ':(failed?'✕ ':(lockedByOther?'🔒 ':''))}${BINGO_TIER_LABEL[k]}</button>`;
+          // Bloqueado por orden: el tier anterior aún no ha sido ganado por nadie
+          const tierIdx = BINGO_TIER_ORDER.indexOf(k);
+          const prevTier = tierIdx > 0 ? BINGO_TIER_ORDER[tierIdx-1] : null;
+          const notYetUnlocked = !won && !failed && !lockedByOther && !!prevTier && !(bingoGame.tierWinners||{})[prevTier];
+          const cls2 = won?'won':(failed?'failed':((lockedByOther||notYetUnlocked)?'failed':`tier-${k}`));
+          const isDisabled = !!(won||failed||frozen||lockedByOther||notYetUnlocked);
+          const prefix = won?'✓ ':(failed?'✕ ':((lockedByOther||notYetUnlocked)?'🔒 ':''));
+          return `<button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${k}')">${prefix}${BINGO_TIER_LABEL[k]}</button>`;
         }).join('')}</div></div>`;
       });
       body += `</div>`;
