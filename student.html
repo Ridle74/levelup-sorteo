@@ -584,6 +584,9 @@ textarea.fsm { resize:none; height:64px; }
 .bpn-pill.active .bpn-rank{color:#c084fc}
 .bpn-pct{font-size:12px;color:#a855f7;font-weight:900}
 .bpn-pill.active .bpn-pct{color:#e879f9}
+.bpn-pill.locked{opacity:0.55;border-color:rgba(168,85,247,0.15);color:#4b5563;cursor:pointer}
+.bpn-pill.locked:hover{border-color:rgba(168,85,247,0.35);color:#7c3aed}
+.bpn-pill.locked .bpn-pct{color:#4b5563}
 /* Historial de sorteo — pills tipo chip (rounded-lg px-3 py-1.5 font-mono font-bold text-sm border) */
 .bingo-hist-wrap{margin-top:20px;padding-top:20px;border-top:1px solid #1f2937}
 .bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px}
@@ -1737,7 +1740,8 @@ const BINGO_POWER_DEFS = [
   { key:'comodin',  icon:'🎰', label:'Relleno',        cost:2, limit:'game',       desc:'Marca de golpe todos los números ya sorteados que te faltan en tus cartones. (1 sola vez en toda la partida)' },
   { key:'robo',     icon:'📋', label:'Robo de Marca',  cost:2, limit:'game',       desc:'Intercambia un número de tu columna por uno de la misma columna de un rival. (1 sola vez en la partida)' },
   { key:'escudo',   icon:'🛡️', label:'Escudo',         cost:1, limit:'reto',       desc:'Protege una columna entera de bloqueo si fallas el próximo reto. (1 vez por reto)' },
-  { key:'vision',   icon:'🔎', label:'Visión X',       cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números, resaltado de columna cantada y avance de rivales.' },
+  { key:'ayudin',   icon:'💡', label:'Ayudín',         cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
+  { key:'vision',   icon:'🔎', label:'Visión X',       cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: ver los números marcados en los cartones de cualquier rival.' },
 ];
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
 const _bingoMakeSum = target => { const a = _bGetRandomInt(1, Math.max(1,target-1)); return `${a} + ${target-a}`; };
@@ -1886,7 +1890,14 @@ function _bingoToggleExpandPlayer(uid) {
   _renderBingoPane();
 }
 function _bingoSetViewPlayer(uid) {
-  _bingoViewingPlayer = uid; // null o uid propio → propios cartones; uid rival → espía
+  const me = _bingoMe();
+  if (uid !== me.uid) {
+    const myPlayer = (bingoGame.players||{})[me.uid];
+    if (!(myPlayer?.unlockedPowers||{}).vision) {
+      showToast('🔎 Desbloquea Visión X para ver los cartones de los rivales.','error'); return;
+    }
+  }
+  _bingoViewingPlayer = uid;
   _renderBingoPane();
 }
 
@@ -2339,13 +2350,17 @@ function _bingoFinishChallenge(correctCount) {
   const perfect = correctCount >= total;
   const patch = { [`players.${me.uid}.lastChallengeId`]: bingoGame.challengeId };
   if (perfect) {
+    const timeRemaining = Math.max(0, ((bingoGame.challengeEndsAt||0) - Date.now()) / 1000);
+    const charges = timeRemaining > 30 ? 2 : 1;
     patch[`players.${me.uid}.blockedMarks`] = []; // reto perfecto: limpia todos los bloqueos
-    patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + 1;
+    patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
   } else {
     patch[`players.${me.uid}.pendingBlock`] = { challengeId: bingoGame.challengeId, fails: total-correctCount, deadline: Date.now() + (bingoGame.blockSeconds||60)*1000 };
   }
+  const charges = patch[`players.${me.uid}.powerCharges`] !== undefined
+    ? patch[`players.${me.uid}.powerCharges`] - (player.powerCharges||0) : 0;
   BINGO_REF.update(patch)
-    .then(()=> showToast(perfect ? '🌟 ¡Reto perfecto! +1 poder y bloqueos limpiados.' : `Fallaste ${total-correctCount}. Debes bloquear ${total-correctCount} casilla(s) marcada(s).`, perfect?'success':'error'))
+    .then(()=> showToast(perfect ? `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.` : `Fallaste ${total-correctCount}. Debes bloquear ${total-correctCount} casilla(s) marcada(s).`, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
   bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoBlockSelection = [];
 }
@@ -2761,7 +2776,7 @@ function _bingoPaneHtml() {
         <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
       </div>
     </div>
-    ${(myPlayer && (myPlayer.unlockedPowers||{}).vision) && drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
+    ${(myPlayer && (myPlayer.unlockedPowers||{}).ayudin) && drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
       <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
       <div class="bingo-hist-row">
         <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
@@ -2786,13 +2801,19 @@ function _bingoPaneHtml() {
           .map(([uid, p]) => ({uid, p, score: activeTier ? _bingoProximity(p, activeTier) : 0}))
           .sort((a,b) => b.score - a.score);
         let navHtml = `<div class="bingo-player-nav">`;
+        const hasVision = !!(myPlayer?.unlockedPowers||{}).vision;
         navEntries.forEach(({uid, p, score}, ri) => {
           const isSelf = uid === me.uid;
+          const isLocked = !isSelf && !hasVision;
           const isActive = _bingoViewingPlayer === uid || (_bingoViewingPlayer === null && isSelf);
           const pct = Math.round(score * 100);
-          const label = isSelf ? `🏆 Mis cartones` : `<span class="bpn-rank">#${ri+1}</span>${p.name||uid}`;
-          navHtml += `<div class="bpn-pill${isActive?' active':''}" onclick="_bingoSetViewPlayer('${uid}')">
-            ${label}<span class="bpn-pct">${pct}%</span>
+          const label = isSelf
+            ? `🏆 Mis cartones`
+            : isLocked
+              ? `🔎 ${p.name||uid}`
+              : `<span class="bpn-rank">#${ri+1}</span>${p.name||uid}`;
+          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}" onclick="_bingoSetViewPlayer('${uid}')">
+            ${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span>
           </div>`;
         });
         navHtml += `</div>`;
@@ -2843,8 +2864,8 @@ function _bingoPaneHtml() {
             } else {
               // Modo propio: interactivo; si hay poder de casilla activo, clic usa el poder
               const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx&&s.n===num));
-              const hasVision = (myPlayer.unlockedPowers||{}).vision;
-              const isHl = hasVision && status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
+              const hasAyudin = (myPlayer.unlockedPowers||{}).ayudin;
+              const isHl = hasAyudin && status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
               const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
               const ownPowerActive = ['escudo'].includes(bingoActivePower) ||
                 (bingoActivePower==='robo' && !!_bingoPowerStep); // robo paso 2 en propio
@@ -2888,7 +2909,7 @@ function _bingoPaneHtml() {
       if (status==='playing' && !frozen) {
         body += `<div class="bingo-powers-box">
             <div class="bpx-head"><span>⚡ Poderes</span><span class="bpx-charges">${myPlayer.powerCharges||0} carga(s)</span></div>
-            <div class="bpx-hint">Reto perfecto → +1 carga · Desbloquea un poder una sola vez (cuesta cargas) · luego úsalo tocando casillas.</div>
+            <div class="bpx-hint">Reto perfecto en &lt;30s → +2 cargas · si no → +1 carga · Desbloquea poderes una sola vez · úsalos tocando casillas.</div>
             <div class="bpx-grid">${BINGO_POWER_DEFS.map(pw=>{
               const unlocked = (myPlayer.unlockedPowers||{})[pw.key];
               const available = unlocked && _bingoPowerAvailable(myPlayer, pw.key);
@@ -2915,7 +2936,7 @@ function _bingoPaneHtml() {
       const pct = Math.max(0, Math.min(100, (remain/(bingoGame.challengeSeconds||60))*100));
       body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
           <div class="bcc-title">🧠 ¡Reto Matemático!</div>
-          <div class="bcc-sub">Responde las 5 preguntas — un reto perfecto limpia tus bloqueos y te da una carga de poder.</div>
+          <div class="bcc-sub">Responde las 5 preguntas — reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.</div>
           <div class="bcc-bar"><div class="bcc-bar-fill" style="width:${pct}%"></div></div>
           <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
           ${q ? `<div class="bcc-question">${q.q}</div>
