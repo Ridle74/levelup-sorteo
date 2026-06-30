@@ -609,6 +609,8 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-challenge-card{width:100%;max-width:360px;background:#0a0e1a;border:1px solid rgba(168,85,247,0.4);border-radius:20px;padding:20px;text-align:center;box-shadow:0 0 50px -10px rgba(168,85,247,0.5);font-family:'Barlow Condensed',sans-serif}
 .bingo-challenge-card.err{border-color:#ef4444;box-shadow:0 0 50px -10px rgba(239,68,68,0.6);animation:bingoShake .3s}
 @keyframes bingoShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.bingo-cell.sabotaged{background:linear-gradient(135deg,#0369a1,#0c4a6e)!important;border-color:#38bdf8!important;color:#bae6fd!important;cursor:pointer;animation:bingoIcePulse 1.4s ease-in-out infinite}
+@keyframes bingoIcePulse{0%,100%{box-shadow:0 0 6px -1px #38bdf8,inset 0 0 8px rgba(56,189,248,0.2)}50%{box-shadow:0 0 18px -2px #7dd3fc,inset 0 0 18px rgba(56,189,248,0.35)}}
 .bcc-title{font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;background:linear-gradient(to right,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .bcc-sub{font-size:10.5px;color:rgba(255,255,255,0.45);margin-top:4px}
 .bcc-bar{height:5px;background:rgba(255,255,255,0.08);border-radius:4px;margin:12px 0 8px;overflow:hidden}
@@ -1673,7 +1675,7 @@ const BINGO_TIER_LABEL = { terna:'Terna', cuaterna:'Cuaterna', quina:'Línea', b
 // -- v2: retos matemáticos, bloqueo y poderes (portados de neon-bingo, bots → alumnos reales) --
 const BINGO_DIFF_LABEL = { 1:'Fácil (sumas)', 2:'Medio (multiplicar)', 3:'Difícil (con negativos)', 4:'Avanzado (ecuación)' };
 const BINGO_POWER_DEFS = [
-  { key:'sabotaje',    icon:'💣', label:'Sabotaje',      desc:'Quita una marca a un rival (no puede romper una línea ya completa).' },
+  { key:'sabotaje',    icon:'❄️', label:'Sabotaje',      desc:'Congela una casilla de un rival hasta que termine el próximo reto.' },
   { key:'escudo',      icon:'🛡️', label:'Escudo',        desc:'Protege un número marcado tuyo para que no se bloquee la próxima vez que falles un reto.' },
   { key:'comodin',     icon:'🃏', label:'Comodín',       desc:'Marca gratis un número que ya salió y aún no marcaste.' },
   { key:'congelar',    icon:'🥶', label:'Congelar Rival',desc:'Un rival no puede marcar ni reclamar en los próximos 3 números sorteados.' },
@@ -1958,12 +1960,17 @@ function _bingoHostStartChallenge() {
 function _bingoHostEndChallenge() {
   const drawn = bingoGame.drawnNumbers || [];
   const ended = drawn.length >= 75;
-  BINGO_REF.update({
+  const patch = {
     challengeActive:false, challengeEndsAt:null, questions:[],
     nextChallengeAtDraw: drawn.length + (bingoGame.challengeIntervalDraws||8),
     nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs||4500),
     status: ended ? 'ended' : 'playing'
-  }).catch(e=>console.error('bingo challenge-end',e));
+  };
+  // Al terminar el reto se descongelan todas las casillas saboteadas
+  Object.keys(bingoGame.players||{}).forEach(uid => {
+    patch[`players.${uid}.frozenCells`] = [];
+  });
+  BINGO_REF.update(patch).catch(e=>console.error('bingo challenge-end',e));
 }
 
 // -- acciones del jugador/host --
@@ -1971,7 +1978,7 @@ function _bingoNewPlayer(me, cardCount) {
   return {
     name: me.name, icon: me.icon, color: me.color,
     cards: _bingoNewCardsMap(cardCount||1),
-    marks: [], blockedMarks: [],
+    marks: [], blockedMarks: [], frozenCells: [],
     tiers: _bingoNewTiersMap(cardCount||1),
     powerCharges: 0, frozenUntilDraw: 0, shieldedMark: null,
     lastChallengeId: null, pendingBlock: null
@@ -2062,6 +2069,11 @@ function markBingoCell(cardIdx, num) {
   if (_bingoAmFrozen(player)) { showToast('🥶 Estás congelado, no puedes marcar todavía.','error'); return; }
   if (!(bingoGame.drawnNumbers||[]).includes(num)) { showToast('Ese número aún no ha salido.','error'); return; }
   const isBlocked = (player.blockedMarks||[]).some(m=>m.c===cardIdx && m.n===num);
+  const frozenEntry = (player.frozenCells||[]).find(f=>f.c===cardIdx && f.n===num);
+  if (frozenEntry) {
+    showToast(`❄️ ¡Te congelaron! ${frozenEntry.byName} bloqueó esta casilla hasta el próximo reto.`, 'error');
+    return;
+  }
   // Si tengo un bloqueo pendiente por resolver, tocar una casilla YA marcada mía sirve para
   // elegir cuáles bloquear, en vez de desmarcarla (mismo doble-uso del click que en neon-bingo).
   if (player.pendingBlock && (player.marks||[]).some(m=>m.c===cardIdx && m.n===num) && !isBlocked) {
@@ -2137,7 +2149,8 @@ function submitBingoCalcAnswer(raw) {
     const card = player.cards[ci];
     const already = newMarks.some(m=>m.c===cardIdx && m.n===num);
     const blocked = (player.blockedMarks||[]).some(m=>m.c===cardIdx && m.n===num);
-    if (!already && !blocked && card.includes(num)) newMarks.push({c:cardIdx, n:num});
+    const frozen = (player.frozenCells||[]).some(f=>f.c===cardIdx && f.n===num);
+    if (!already && !blocked && !frozen && card.includes(num)) newMarks.push({c:cardIdx, n:num});
   });
   BINGO_REF.update({ [`players.${me.uid}.marks`]: newMarks })
     .then(()=> showToast('✓ ¡Bien! Número marcado automáticamente.','success'))
@@ -2273,16 +2286,14 @@ function doBingoSabotaje() {
   const num = Number(bingoPowerForm.num);
   const target = targetId && (bingoGame.players||{})[targetId];
   if (!target || Number.isNaN(cardIdx) || !num) { showToast('Elige rival, cartón y número.','error'); return; }
-  const targetMarks = target.marks || [];
-  if (!targetMarks.some(m=>m.c===cardIdx && m.n===num)) { showToast('Tu rival no tiene esa casilla marcada.','error'); return; }
   const card = (target.cards||{})[cardIdx];
-  const marksSet = new Set(targetMarks.filter(m=>m.c===cardIdx).map(m=>m.n));
-  if (card && _bingoNumInCompletedLine(card, marksSet, num)) { showToast('Esa casilla ya forma parte de una línea completa — no se puede sabotear.','error'); return; }
-  const newMarks = targetMarks.filter(m=>!(m.c===cardIdx && m.n===num));
+  if (!card || !card.includes(num)) { showToast('Ese número no está en el cartón del rival.','error'); return; }
+  const existing = target.frozenCells || [];
+  if (existing.some(f=>f.c===cardIdx && f.n===num)) { showToast('Esa casilla ya está congelada.','error'); return; }
   BINGO_REF.update({
-    [`players.${targetId}.marks`]: newMarks,
+    [`players.${targetId}.frozenCells`]: [...existing, { c: cardIdx, n: num, byName: me.name }],
     [`players.${me.uid}.powerCharges`]: (player.powerCharges||0)-1
-  }).then(()=>_bingoPowerDone(`💣 Le quitaste la marca del ${num} a ${target.name}.`))
+  }).then(()=>_bingoPowerDone(`❄️ Congelaste la casilla ${num} de ${target.name} hasta el próximo reto.`))
     .catch(e=>console.error('bingo sabotaje',e));
 }
 function doBingoEscudo() {
@@ -2593,16 +2604,23 @@ function _bingoPaneHtml() {
         for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||(marksSet.has(n) && !blockedSet.has(n))) h++; } rowHeat.push(h); }
         body += `<div class="bingo-card-block${blockingActive?' blocking':''}"><div class="bcb-label">🏆 Mi Cartón${cardIds.length>1?` #${cardIdx+1}`:''}</div>
           <div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
+        const myFrozenCells = myPlayer.frozenCells || [];
         for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
           const num = _bcAt(card, r, c);
           if (num===0) { body += `<div class="bingo-cell free marked fire-${rowHeat[r]}">★</div>`; continue; }
           const isMarked = marksSet.has(num) && !blockedSet.has(num);
           const isBlocked = blockedSet.has(num);
+          const frozenEntry = myFrozenCells.find(f=>f.c===cardIdx && f.n===num);
+          const isSabotaged = !!frozenEntry;
           const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx && s.n===num));
           // Resalta TODA la columna de la letra recién cantada (no solo la celda exacta), igual que el diseño de referencia.
-          const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked;
-          const cls = ['bingo-cell', isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))), `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
-          body += `<div class="${cls}" ${frozen?'':`onclick="markBingoCell(${cardIdx},${num})"`}>${num}</div>`;
+          const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
+          const cellState = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
+          const cls = ['bingo-cell', cellState, `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
+          const titleAttr = isSabotaged ? `title="❄️ ${frozenEntry.byName} congeló esta casilla hasta el próximo reto"` : '';
+          const clickFn = frozen ? '' : (isSabotaged ? `onclick="markBingoCell(${cardIdx},${num})"` : `onclick="markBingoCell(${cardIdx},${num})"`);
+          const cellContent = isSabotaged ? `❄️` : num;
+          body += `<div class="${cls}" ${clickFn} ${titleAttr}>${cellContent}</div>`;
         }
         body += `</div>`;
         // Un solo botón: el del tier activo actualmente (el primero sin ganador global).
@@ -2695,7 +2713,7 @@ function _bingoPowerFormHtml(key, rivalEntries, myPlayer) {
 
   let formHtml = '';
   if (key==='sabotaje') {
-    formHtml = `${rivalSelect}<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Cartón del rival...</option>${rivalCardOpts}</select>${numInput('Número marcado del rival')}`;
+    formHtml = `${rivalSelect}<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Cartón del rival...</option>${rivalCardOpts}</select>${numInput('Número a congelar')}`;
   } else if (key==='escudo' || key==='comodin' || key==='intercambio') {
     formHtml = `<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Tu cartón...</option>${myCardOpts(fCardIdx)}</select>${numInput('Número')}`;
   } else if (key==='congelar' || key==='vision') {
