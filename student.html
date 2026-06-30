@@ -2401,6 +2401,9 @@ function _renderBingoPane() {
   // borrando lo escrito y el foco a mitad de tecleo ("no me deja escribir el número"). Se guarda
   // valor/cursor del input enfocado y se restaura después de volver a pintar.
   const active = document.activeElement;
+  // Si el usuario tiene un <select> abierto dentro del panel, NO re-renderizar —
+  // reemplazar innerHTML cierra el dropdown al instante e impide elegir una opción.
+  if (active && active.tagName === 'SELECT' && Array.from(hosts).some(h => h.contains(active))) return;
   let savedInput = null;
   if (active && active.tagName === 'INPUT' && active.id && Array.from(hosts).some(h => h.contains(active))) {
     savedInput = { id: active.id, value: active.value, selStart: active.selectionStart, selEnd: active.selectionEnd };
@@ -2672,19 +2675,34 @@ function _bingoPaneHtml() {
 }
 // Formulario inline del panel de poderes — cada poder pide datos distintos (rival/cartón/número).
 function _bingoPowerFormHtml(key, rivalEntries, myPlayer) {
-  const rivalSelect = `<select onchange="setBingoPowerForm('studentId', this.value)"><option value="">Elige un rival...</option>${rivalEntries.map(([uid,p])=>`<option value="${uid}">${p.name}</option>`).join('')}</select>`;
-  const myCardOpts = Object.keys(myPlayer.cards||{}).map(ci=>`<option value="${ci}">Cartón ${Number(ci)+1}</option>`).join('');
-  const numInput = ph => `<input id="bingo-power-num-input" type="number" placeholder="${ph}" onchange="setBingoPowerForm('num', this.value)">`;
+  // Leer selecciones actuales de bingoPowerForm para marcarlas con `selected`
+  // y que sobrevivan a los re-renders del tick de 1s.
+  const fStudentId = bingoPowerForm.studentId || '';
+  const fCardIdx   = bingoPowerForm.cardIndex   != null ? String(bingoPowerForm.cardIndex)       : '';
+  const fSrcCard   = bingoPowerForm.sourceCardIndex != null ? String(bingoPowerForm.sourceCardIndex) : '';
+  const fDstCard   = bingoPowerForm.targetCardIndex != null ? String(bingoPowerForm.targetCardIndex) : '';
+  const fNum       = bingoPowerForm.num != null ? bingoPowerForm.num : '';
+
+  const rivalSelect = `<select onchange="setBingoPowerForm('studentId', this.value)"><option value="">Elige un rival...</option>${rivalEntries.map(([uid,p])=>`<option value="${uid}"${fStudentId===uid?' selected':''}>${p.name}</option>`).join('')}</select>`;
+
+  const myCardOpts = (sel) => Object.keys(myPlayer.cards||{}).map(ci=>`<option value="${ci}"${sel===ci?' selected':''}>Cartón ${Number(ci)+1}</option>`).join('');
+
+  // Cartones del rival seleccionado (o 4 genéricos si aún no eligió)
+  const rivalCardCount = fStudentId ? Object.keys(((bingoGame.players||{})[fStudentId]?.cards)||{0:1}).length : 4;
+  const rivalCardOpts = Array.from({length: rivalCardCount}, (_,i) => `<option value="${i}"${fCardIdx===String(i)?' selected':''}>Cartón ${i+1}</option>`).join('');
+
+  const numInput = ph => `<input id="bingo-power-num-input" type="number" placeholder="${ph}" value="${fNum}" onchange="setBingoPowerForm('num', this.value)">`;
+
   let formHtml = '';
   if (key==='sabotaje') {
-    formHtml = `${rivalSelect}<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Cartón del rival...</option>${[0,1,2,3].map(i=>`<option value="${i}">Cartón ${i+1}</option>`).join('')}</select>${numInput('Número marcado del rival')}`;
+    formHtml = `${rivalSelect}<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Cartón del rival...</option>${rivalCardOpts}</select>${numInput('Número marcado del rival')}`;
   } else if (key==='escudo' || key==='comodin' || key==='intercambio') {
-    formHtml = `<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Tu cartón...</option>${myCardOpts}</select>${numInput('Número')}`;
+    formHtml = `<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Tu cartón...</option>${myCardOpts(fCardIdx)}</select>${numInput('Número')}`;
   } else if (key==='congelar' || key==='vision') {
     formHtml = rivalSelect;
   } else if (key==='robo') {
-    formHtml = `<select onchange="setBingoPowerForm('sourceCardIndex', this.value)"><option value="">Cartón origen...</option>${myCardOpts}</select>
-      <select onchange="setBingoPowerForm('targetCardIndex', this.value)"><option value="">Cartón destino...</option>${myCardOpts}</select>${numInput('Número marcado en el origen')}`;
+    formHtml = `<select onchange="setBingoPowerForm('sourceCardIndex', this.value)"><option value="">Cartón origen...</option>${myCardOpts(fSrcCard)}</select>
+      <select onchange="setBingoPowerForm('targetCardIndex', this.value)"><option value="">Cartón destino...</option>${myCardOpts(fDstCard)}</select>${numInput('Número marcado en el origen')}`;
   }
   const fn = 'doBingo' + key.charAt(0).toUpperCase() + key.slice(1);
   return `<div class="bpx-form">${formHtml}<button class="bcx-btn" onclick="${fn}()">Usar poder</button>${bingoPowerMsg?`<div class="bpx-msg">${bingoPowerMsg}</div>`:''}</div>`;
