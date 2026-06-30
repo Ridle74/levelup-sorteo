@@ -2665,7 +2665,7 @@ function _bingoPaneHtml() {
       <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
       <div class="bingo-hist-row">
         <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
-        <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawnVisible.slice().reverse().map((n,i)=>`<div class="bingo-drawn-chip ${i===0?'current':chipStateFor(n)}">${bingoLetter(n)}-${n}</div>`).join('')}</div>
+        <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawnVisible.slice().reverse().map((n,i)=>{const st=chipStateFor(n);return`<div class="bingo-drawn-chip ${i===0&&st!=='marked-ok'?'current':st}">${bingoLetter(n)}-${n}</div>`;}).join('')}</div>
         <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:120,behavior:'smooth'})">›</button>
       </div>
     </div>` : ''}
