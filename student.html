@@ -1766,8 +1766,17 @@ function _bingoTick() {
 }
 function _bingoHostDrawNext() {
   if (_bingoDrawing) return;
+  // Guarda defensiva: nunca sortear mientras el Reto Matemático está activo (challengeActive
+  // puede llegar con hasta ~1s de retraso por el onSnapshot, así que este check evita que
+  // un tick intermedio con estado obsoleto dispare el número siguiente antes de tiempo).
+  if (bingoGame.challengeActive) { _bingoDrawing = false; return; }
+  // Segunda guarda: si drawn.length ya alcanzó el umbral, arrancar el reto en vez de sortear.
+  const _drawn0 = bingoGame.drawnNumbers || [];
+  if (bingoGame.nextChallengeAtDraw != null && _drawn0.length >= bingoGame.nextChallengeAtDraw) {
+    _bingoDrawing = false; _bingoHostStartChallenge(); return;
+  }
   _bingoDrawing = true;
-  const drawn = bingoGame.drawnNumbers || [];
+  const drawn = _drawn0;
   if (drawn.length >= 75) {
     BINGO_REF.update({ status:'ended', nextDrawAt:null, numPhase:null, phaseEndsAt:null, highlightCol:null, currentSum:null })
       .catch(e=>console.error('bingo end-draw',e)).finally(()=>{ _bingoDrawing=false; });
