@@ -584,9 +584,19 @@ textarea.fsm { resize:none; height:64px; }
 .bpn-pill.active .bpn-rank{color:#c084fc}
 .bpn-pct{font-size:12px;color:#a855f7;font-weight:900}
 .bpn-pill.active .bpn-pct{color:#e879f9}
+.bingo-card-hdr.shielded{color:#a855f7;font-size:12px}
+.bpx-col-picker{margin-top:6px}
+.bpx-col-card-lbl{font-size:10px;color:rgba(255,255,255,0.35);margin:6px 0 3px;text-transform:uppercase;letter-spacing:0.06em}
+.bpx-col-row{display:flex;gap:6px}
+.bpx-col-btn{width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:#4b5563;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;cursor:not-allowed;transition:all .15s}
+.bpx-col-btn.eligible{border-color:rgba(74,222,128,0.45);color:#4ade80;cursor:pointer;background:rgba(74,222,128,0.07)}
+.bpx-col-btn.eligible:hover{background:rgba(74,222,128,0.18);border-color:#4ade80}
+.bpx-col-btn.shielded{border-color:rgba(168,85,247,0.4);color:#a855f7;background:rgba(168,85,247,0.08);cursor:not-allowed}
 .bpn-pill.locked{opacity:0.55;border-color:rgba(168,85,247,0.15);color:#4b5563;cursor:pointer}
 .bpn-pill.locked:hover{border-color:rgba(168,85,247,0.35);color:#7c3aed}
 .bpn-pill.locked .bpn-pct{color:#4b5563}
+.bpn-pill.power-target-pill{border-color:rgba(96,165,250,0.5);color:#93c5fd;animation:twPulse 1.2s ease-in-out infinite;cursor:crosshair}
+.bpn-pill.power-target-pill:hover{background:rgba(96,165,250,0.12);border-color:#60a5fa;color:#bfdbfe}
 /* Historial de sorteo — pills tipo chip (rounded-lg px-3 py-1.5 font-mono font-bold text-sm border) */
 .bingo-hist-wrap{margin-top:20px;padding-top:20px;border-top:1px solid #1f2937}
 .bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px}
@@ -1739,8 +1749,8 @@ const BINGO_POWER_DEFS = [
   { key:'congelar', icon:'🥶', label:'Congelar Rival', cost:2, limit:'reto',       desc:'Paraliza a un rival un turno entero: no puede marcar ni reclamar. (1 vez por reto)' },
   { key:'comodin',  icon:'🎰', label:'Relleno',        cost:2, limit:'game',       desc:'Marca de golpe todos los números ya sorteados que te faltan en tus cartones. (1 sola vez en toda la partida)' },
   { key:'robo',     icon:'📋', label:'Robo de Marca',  cost:2, limit:'game',       desc:'Intercambia un número de tu columna por uno de la misma columna de un rival. (1 sola vez en la partida)' },
-  { key:'escudo',   icon:'🛡️', label:'Escudo',         cost:1, limit:'reto',       desc:'Protege una columna entera de bloqueo si fallas el próximo reto. (1 vez por reto)' },
-  { key:'ayudin',   icon:'💡', label:'Ayudín',         cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
+  { key:'escudo',   icon:'🛡️', label:'Escudo',         cost:1, limit:'reto',       desc:'Protege una columna completa (5 números marcados) de todos los poderes rivales y propios. (1 vez por reto)' },
+  { key:'bitacora', icon:'📓', label:'Bitácora',        cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
   { key:'vision',   icon:'🔎', label:'Visión X',       cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: ver los números marcados en los cartones de cualquier rival.' },
 ];
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
@@ -1907,7 +1917,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
   const pw = bingoActivePower;
   const isRival = !!rivalUid;
   const rivalPowers = new Set(['sabotaje','congelar']);
-  const ownPowers   = new Set(['escudo','robo']);
+  const ownPowers   = new Set(['robo']);
 
   // Robo de Marca: paso 1 = casilla del rival, paso 2 = casilla propia de la misma columna
   if (pw === 'robo') {
@@ -1949,7 +1959,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
   }
 
   bingoPowerForm = { cardIndex: cardIdx, num, studentId: rivalUid||'' };
-  const doFns = { sabotaje:doBingoSabotaje, congelar:doBingoCongelar, escudo:doBingoEscudo };
+  const doFns = { sabotaje:doBingoSabotaje, congelar:doBingoCongelar };
   if (doFns[pw]) doFns[pw]();
 }
 
@@ -2016,7 +2026,7 @@ function startBingoListener() {
   });
 }
 function _bingoEnsureTimer() {
-  const need = !!(bingoGame && bingoGame.status === 'playing');
+  const need = !!(bingoGame && (bingoGame.status === 'playing' || bingoGame.status === 'lobby'));
   if (need && !bingoTickTimer) bingoTickTimer = setInterval(_bingoTick, 1000);
   else if (!need && bingoTickTimer) { clearInterval(bingoTickTimer); bingoTickTimer = null; }
 }
@@ -2026,8 +2036,9 @@ function _bingoEnsureTimer() {
 // onSnapshot, exactamente igual que antes; nada de esto corre dos veces porque _bingoTick()
 // solo actúa como host si bingoGame.hostId===me.uid. --
 function _bingoTick() {
-  if (!bingoGame || bingoGame.status !== 'playing') { _bingoEnsureTimer(); return; }
-  _renderBingoPane(); // refresca cuenta atrás/temporizadores visibles para todos por igual
+  if (!bingoGame || (bingoGame.status !== 'playing' && bingoGame.status !== 'lobby')) { _bingoEnsureTimer(); return; }
+  _renderBingoPane(); // refresca cuenta atrás/temporizadores visibles para todos por igual; en lobby refresca lista de jugadores
+  if (bingoGame.status !== 'playing') return; // en lobby no hay lógica de reto ni host
   _bingoCheckMyChallengeEnd();  // cada cliente resuelve LOCALMENTE el cierre de su propio reto
   _bingoCheckMyBlockTimeout();  // ...y el vencimiento de su propio bloqueo pendiente
   const me = _bingoMe();
@@ -2507,23 +2518,24 @@ function doBingoSabotaje() {
   }).then(()=>_bingoPowerDone(`❄️ Congelaste la casilla ${num} de ${target.name} hasta el próximo reto.`))
     .catch(e=>console.error('bingo sabotaje',e));
 }
-function doBingoEscudo() {
+function doBingoEscudo(cardIdx, col) {
   const me = _bingoMe();
   const player = _bingoPowerUseGuard('escudo');
   if (!player) return;
-  const cardIdx = Number(bingoPowerForm.cardIndex);
-  const num = Number(bingoPowerForm.num);
   const card = (player.cards||{})[cardIdx];
-  if (!card || !card.includes(num)) { showToast('Elige una casilla de tu cartón.','error'); return; }
-  const pos = card.indexOf(num);
-  const col = pos % 5;
+  if (!card) { showToast('Cartón no encontrado.','error'); return; }
+  // Solo se puede proteger si los 5 números de la columna están marcados
+  const marksSet = new Set((player.marks||[]).filter(m=>m.c===cardIdx).map(m=>m.n));
+  const colNums = [col, col+5, col+10, col+15, col+20].map(p=>card[p]);
+  const isComplete = colNums.every(n => n===0 || marksSet.has(n));
+  if (!isComplete) { showToast('Solo puedes proteger columnas con los 5 números marcados.','error'); return; }
   const colLetter = 'BINGO'[col];
   const existing = player.shieldedColumns || [];
   if (existing.some(s=>s.c===cardIdx && s.col===col)) { showToast(`La columna ${colLetter} ya está protegida.`,'error'); return; }
   BINGO_REF.update({
     [`players.${me.uid}.shieldedColumns`]: [...existing, {c: cardIdx, col}],
     [`players.${me.uid}.usedPowers.escudo`]: bingoGame.retoCount||0
-  }).then(()=>_bingoPowerDone(`🛡️ Columna ${colLetter} del Cartón ${cardIdx+1} protegida contra el próximo bloqueo.`))
+  }).then(()=>_bingoPowerDone(`🛡️ ¡Columna ${colLetter} del Cartón ${cardIdx+1} protegida! Inmune a todos los poderes.`))
     .catch(e=>console.error('bingo escudo',e));
 }
 function doBingoComodin() {
@@ -2558,14 +2570,18 @@ function doBingoCongelar() {
   if (!player) return;
   const targetId = bingoPowerForm.studentId;
   const target = targetId && (bingoGame.players||{})[targetId];
-  if (!target) { showToast('Elige un rival.','error'); return; }
+  if (!target) { showToast('Toca el nombre de un rival para congelarlo.','error'); return; }
   const drawnLen = (bingoGame.drawnNumbers||[]).length;
   const newFrozen = Math.max(target.frozenUntilDraw||0, drawnLen) + 1;
   BINGO_REF.update({
     [`players.${targetId}.frozenUntilDraw`]: newFrozen,
     [`players.${me.uid}.usedPowers.congelar`]: bingoGame.retoCount||0
-  }).then(()=>_bingoPowerDone(`🥶 Congelaste a ${target.name} durante el próximo turno.`))
+  }).then(()=>_bingoPowerDone(`🥶 ¡Congelaste a ${target.name}! No podrá marcar ni reclamar el próximo turno.`))
     .catch(e=>console.error('bingo congelar',e));
+}
+function doBingoCongelarRival(rivalUid) {
+  bingoPowerForm = { studentId: rivalUid };
+  doBingoCongelar();
 }
 // Visión X es persistente: al desbloquearse queda activa para toda la partida (sin do-function)
 function doBingoRobo() {
@@ -2583,6 +2599,11 @@ function doBingoRobo() {
   if (myPos === -1 || rivPos === -1) { showToast('Número no encontrado en el cartón.','error'); return; }
   if ((bingoGame.drawnNumbers||[]).includes(myNum)) { showToast('No puedes ceder un número ya sorteado.','error'); return; }
   if (myPos % 5 !== rivPos % 5) { showToast(`Los números deben estar en la misma columna (${'BINGO'[rivPos%5]}).`,'error'); return; }
+  // Chequear columna protegida por Escudo
+  const _rivShielded = rivalPlayer.shieldedColumns||[];
+  if (_rivShielded.some(s=>s.c===rivalCardIdx&&s.col===rivPos%5)) { showToast(`🛡️ La columna ${'BINGO'[rivPos%5]} de ${rivalPlayer.name} está protegida.`,'error'); return; }
+  const _myShielded = player.shieldedColumns||[];
+  if (_myShielded.some(s=>s.c===myCardIdx&&s.col===myPos%5)) { showToast(`🛡️ Tu columna ${'BINGO'[myPos%5]} está protegida — no puedes ceder ese número.`,'error'); return; }
   myCard[myPos]  = rivalNum;
   rivCard[rivPos] = myNum;
   const myMarks  = (player.marks||[]).filter(m=>!(m.c===myCardIdx    && m.n===myNum));
@@ -2776,7 +2797,7 @@ function _bingoPaneHtml() {
         <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
       </div>
     </div>
-    ${(myPlayer && (myPlayer.unlockedPowers||{}).ayudin) && drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
+    ${(myPlayer && (myPlayer.unlockedPowers||{}).bitacora) && drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
       <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
       <div class="bingo-hist-row">
         <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
@@ -2802,17 +2823,24 @@ function _bingoPaneHtml() {
           .sort((a,b) => b.score - a.score);
         let navHtml = `<div class="bingo-player-nav">`;
         const hasVision = !!(myPlayer?.unlockedPowers||{}).vision;
+        const congelarActive = bingoActivePower === 'congelar';
         navEntries.forEach(({uid, p, score}, ri) => {
           const isSelf = uid === me.uid;
-          const isLocked = !isSelf && !hasVision;
+          const isLocked = !isSelf && !hasVision && !congelarActive;
           const isActive = _bingoViewingPlayer === uid || (_bingoViewingPlayer === null && isSelf);
+          const isCongelarTarget = congelarActive && !isSelf;
           const pct = Math.round(score * 100);
           const label = isSelf
             ? `🏆 Mis cartones`
             : isLocked
               ? `🔎 ${p.name||uid}`
-              : `<span class="bpn-rank">#${ri+1}</span>${p.name||uid}`;
-          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}" onclick="_bingoSetViewPlayer('${uid}')">
+              : isCongelarTarget
+                ? `🥶 ${p.name||uid}`
+                : `<span class="bpn-rank">#${ri+1}</span>${p.name||uid}`;
+          const onclick = isCongelarTarget
+            ? `onclick="doBingoCongelarRival('${uid}')"`
+            : `onclick="_bingoSetViewPlayer('${uid}')"`;
+          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}" ${onclick}>
             ${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span>
           </div>`;
         });
@@ -2842,8 +2870,9 @@ function _bingoPaneHtml() {
           const lbl = isSpyMode
             ? `👁 ${viewedPlayer.name||viewUid}${viewCardIds.length>1?` — Cartón ${cardIdx+1}`:''}`
             : `🏆 Mi Cartón${viewCardIds.length>1?` #${cardIdx+1}`:''}`;
+          const _shieldSrc = isSpyMode ? (viewedPlayer?.shieldedColumns||[]) : (myPlayer?.shieldedColumns||[]);
           body += `<div class="bingo-card-block${!isSpyMode&&blockingActive?' blocking':''}"><div class="bcb-label">${lbl}</div>
-            <div class="bingo-card">${['B','I','N','G','O'].map(l=>`<div class="bingo-card-hdr">${l}</div>`).join('')}`;
+            <div class="bingo-card">${['B','I','N','G','O'].map((l,ci)=>{const sh=_shieldSrc.some(s=>s.c===cardIdx&&s.col===ci);return `<div class="bingo-card-hdr${sh?' shielded':''}">${sh?'🔒':l}</div>`;}).join('')}`;
 
           for (let r=0; r<5; r++) for (let c=0; c<5; c++) {
             const num = _bcAt(card, r, c);
@@ -2864,11 +2893,10 @@ function _bingoPaneHtml() {
             } else {
               // Modo propio: interactivo; si hay poder de casilla activo, clic usa el poder
               const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx&&s.n===num));
-              const hasAyudin = (myPlayer.unlockedPowers||{}).ayudin;
-              const isHl = hasAyudin && status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
+              const hasBitacora = (myPlayer.unlockedPowers||{}).bitacora;
+              const isHl = hasBitacora && status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
               const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
-              const ownPowerActive = ['escudo'].includes(bingoActivePower) ||
-                (bingoActivePower==='robo' && !!_bingoPowerStep); // robo paso 2 en propio
+              const ownPowerActive = (bingoActivePower==='robo' && !!_bingoPowerStep); // robo paso 2 en propio
               const isPowerSrc = bingoActivePower==='robo' && _bingoPowerStep &&
                 _bingoPowerStep.rivalCardIdx!==undefined; // robo marcado en paso 1
               const powerCls = ownPowerActive ? 'power-target' : '';
@@ -2959,10 +2987,36 @@ function _bingoPaneHtml() {
 }
 // Formulario inline del panel de poderes — cada poder pide datos distintos (rival/cartón/número).
 function _bingoPowerFormHtml(key) {
+  if (key === 'escudo') {
+    const me = _bingoMe();
+    const player = (bingoGame.players||{})[me.uid];
+    if (!player) return '';
+    const shielded = player.shieldedColumns || [];
+    const cardEntries = Object.entries(player.cards||{}).sort((a,b)=>Number(a[0])-Number(b[0]));
+    const multiCard = cardEntries.length > 1;
+    let pickerHtml = '<div class="bpx-col-picker">';
+    cardEntries.forEach(([ci, card]) => {
+      const cardIdx = Number(ci);
+      const marksSet = new Set((player.marks||[]).filter(m=>m.c===cardIdx).map(m=>m.n));
+      if (multiCard) pickerHtml += `<div class="bpx-col-card-lbl">Cartón ${cardIdx+1}</div>`;
+      pickerHtml += `<div class="bpx-col-row">`;
+      for (let col = 0; col < 5; col++) {
+        const nums = [col,col+5,col+10,col+15,col+20].map(p=>card[p]);
+        const isComplete = nums.every(n=>n===0||marksSet.has(n));
+        const isShielded = shielded.some(s=>s.c===cardIdx&&s.col===col);
+        const letter = 'BINGO'[col];
+        if (isShielded) pickerHtml += `<button class="bpx-col-btn shielded" disabled>🔒</button>`;
+        else if (isComplete) pickerHtml += `<button class="bpx-col-btn eligible" onclick="doBingoEscudo(${cardIdx},${col})">${letter}</button>`;
+        else pickerHtml += `<button class="bpx-col-btn" disabled title="Columna incompleta">${letter}</button>`;
+      }
+      pickerHtml += `</div>`;
+    });
+    pickerHtml += `</div><div class="bpx-hint-text" style="margin-top:6px;font-size:10px">Solo columnas con los 5 números marcados pueden protegerse.</div>`;
+    return `<div class="bpx-hint-box">${pickerHtml}${bingoPowerMsg?`<div class="bpx-msg">${bingoPowerMsg}</div>`:''}</div>`;
+  }
   const hints = {
     sabotaje: '👁 Ve al cartón de un rival (toca su nombre arriba) y toca la casilla que quieres congelar.',
-    congelar: '👁 Ve al cartón de un rival (toca su nombre arriba) y toca cualquier casilla para congelarlo un turno.',
-    escudo:   '🏆 Toca cualquier casilla de la columna que quieres proteger (toda esa columna quedará a salvo del bloqueo).',
+    congelar: '🥶 Toca el nombre de un rival en la barra de arriba para congelarlo — no podrá marcar ni reclamar el próximo turno.',
     robo:     _bingoPowerStep
       ? `✅ Objetivo: <b>${'BINGO'[_bingoPowerStep.col]}-${_bingoPowerStep.rivalNum}</b> — ahora ve a tus cartones y toca un número en la columna ${'BINGO'[_bingoPowerStep.col]} que quieras ceder.`
       : '👁 1.° ve al cartón de un rival y toca el número que quieres; 2.° vuelve a tus cartones y toca el número que cedes (misma columna).',
