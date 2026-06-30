@@ -1865,6 +1865,7 @@ function createBingoGame() {
       calcSeconds:5, markSeconds:10, challengeSeconds:60, challengeIntervalDraws:8, blockSeconds:60,
       numPhase:null, phaseEndsAt:null, highlightCol:null, currentSum:null,
       challengeActive:false, challengeId:null, challengeEndsAt:null, questions:[], nextChallengeAtDraw:null,
+      tierWinners:{},
       players:{ [me.uid]: _bingoNewPlayer(me, cardCount) }
     }).then(()=>{ bingoCreating=false; })
       .catch(e=>{
@@ -1909,7 +1910,7 @@ function startBingoDraw() {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
   if (!Object.keys(bingoGame.players||{}).length) { showToast('Espera a que se unan jugadores.','error'); return; }
-  BINGO_REF.update({ status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: (bingoGame.challengeIntervalDraws||8) })
+  BINGO_REF.update({ status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: (bingoGame.challengeIntervalDraws||8), tierWinners:{} })
     .catch(e=>console.error('bingo start',e));
 }
 function endBingoGame() {
@@ -1953,9 +1954,36 @@ function claimBingoPrize(cardIdx, tier) {
   const marksSet = new Set((player.marks||[]).filter(m=>m.c===Number(cardIdx)).map(m=>m.n));
   const { maxLine, isFull } = bingoEvaluate(card, marksSet);
   const ok = tier==='bingo' ? isFull : maxLine >= BINGO_TIER_REQ[tier];
-  BINGO_REF.update({ [`players.${me.uid}.tiers.${cardIdx}.${ok?'won':'failed'}.${tier}`]: true })
-    .then(()=> showToast(ok ? `🎉 ¡${BINGO_TIER_LABEL[tier]} validada!` : `❌ Todavía no tienes ${BINGO_TIER_LABEL[tier]}. Ya no podrás reclamarla.`, ok?'success':'error'))
-    .catch(e=>console.error('bingo claim',e));
+
+  if (!ok) {
+    // El jugador no tiene el tier — marcar como fallido directamente sin tocar tierWinners
+    BINGO_REF.update({ [`players.${me.uid}.tiers.${cardIdx}.failed.${tier}`]: true })
+      .then(()=> showToast(`❌ Todavía no tienes ${BINGO_TIER_LABEL[tier]}. Ya no podrás reclamarla.`, 'error'))
+      .catch(e=>console.error('bingo claim', e));
+    return;
+  }
+
+  // ok===true: verificar si el premio ya fue ganado por otro jugador
+  const currentBall = bingoGame.currentNumber;
+  const existingWinner = (bingoGame.tierWinners||{})[tier];
+
+  if (existingWinner && existingWinner.ball !== currentBall) {
+    // Otro jugador ganó este premio en un número anterior — reclamo denegado
+    BINGO_REF.update({ [`players.${me.uid}.tiers.${cardIdx}.failed.${tier}`]: true })
+      .then(()=> showToast(`❌ ${BINGO_TIER_LABEL[tier]} ya fue canjeada por otro jugador.`, 'error'))
+      .catch(e=>console.error('bingo claim', e));
+    return;
+  }
+
+  // Sin ganador previo (o reclamo simultáneo en el mismo número) → ¡gana!
+  // Si aún no hay ganador registrado, este jugador se convierte en el primero
+  const patch = { [`players.${me.uid}.tiers.${cardIdx}.won.${tier}`]: true };
+  if (!existingWinner) {
+    patch[`tierWinners.${tier}`] = { uid: me.uid, ball: currentBall };
+  }
+  BINGO_REF.update(patch)
+    .then(()=> showToast(`🎉 ¡${BINGO_TIER_LABEL[tier]} validada!`, 'success'))
+    .catch(e=>console.error('bingo claim', e));
 }
 
 // -- v2: respuesta a la suma de la fase 'calc' (marca automática de conveniencia — recordar que
@@ -2443,8 +2471,12 @@ function _bingoPaneHtml() {
         body += `<div class="bingo-claims-row">${Object.keys(BINGO_TIER_LABEL).map(k=>{
           const t = (myPlayer.tiers||{})[ci] || {};
           const won = t.won?.[k], failed = t.failed?.[k];
-          const cls2 = won?'won':(failed?'failed':`tier-${k}`);
-          return `<button class="bingo-claim-btn ${cls2}" ${(won||failed||frozen)?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${k}')">${won?'✓ ':(failed?'✕ ':'')}${BINGO_TIER_LABEL[k]}</button>`;
+          const globalWinner = (bingoGame.tierWinners||{})[k];
+          // Bloqueado por otro: el tier ya fue ganado en un número ANTERIOR al actual
+          const lockedByOther = !won && !failed && !!globalWinner && globalWinner.ball !== bingoGame.currentNumber;
+          const cls2 = won?'won':(failed?'failed':(lockedByOther?'failed':`tier-${k}`));
+          const isDisabled = !!(won||failed||frozen||lockedByOther);
+          return `<button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${k}')">${won?'✓ ':(failed?'✕ ':(lockedByOther?'🔒 ':''))}${BINGO_TIER_LABEL[k]}</button>`;
         }).join('')}</div></div>`;
       });
       body += `</div>`;
