@@ -599,7 +599,7 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-card-block.blocking{border-color:#ef4444}
 .bcb-label{font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;color:#a3e635}
 .bingo-card-block.blocking .bcb-label{color:#f87171}
-.bingo-cards-section-lbl{color:#a3e635;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.bingo-cards-section-lbl{color:#a3e635;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-size:14px;display:flex;align-items:center;gap:8px;margin-top:16px;margin-bottom:16px}
 .bingo-frozen-banner{text-align:center;padding:10px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.35);border-radius:12px;margin:8px 0;font-size:12px;font-weight:700;color:#67e8f9}
 .bingo-block-banner{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);border-radius:14px;padding:10px 12px;margin:10px 0}
 .bbb-title{font-size:12px;font-weight:900;color:#f87171}
@@ -2602,21 +2602,23 @@ function _bingoPaneHtml() {
           body += `<div class="${cls}" ${frozen?'':`onclick="markBingoCell(${cardIdx},${num})"`}>${num}</div>`;
         }
         body += `</div>`;
-        body += `<div class="bingo-claims-row">${BINGO_TIER_ORDER.map(k=>{
-          const t = (myPlayer.tiers||{})[ci] || {};
-          const won = t.won?.[k], failed = t.failed?.[k];
-          const globalWinner = (bingoGame.tierWinners||{})[k];
-          // Bloqueado por otro: el tier ya fue ganado en un número ANTERIOR al actual
-          const lockedByOther = !won && !failed && !!globalWinner && globalWinner.ball !== bingoGame.currentNumber;
-          // Bloqueado por orden: el tier anterior aún no ha sido ganado por nadie
-          const tierIdx = BINGO_TIER_ORDER.indexOf(k);
-          const prevTier = tierIdx > 0 ? BINGO_TIER_ORDER[tierIdx-1] : null;
-          const notYetUnlocked = !won && !failed && !lockedByOther && !!prevTier && !(bingoGame.tierWinners||{})[prevTier];
-          const cls2 = won?'won':(failed?'failed':((lockedByOther||notYetUnlocked)?'failed':`tier-${k}`));
-          const isDisabled = !!(won||failed||frozen||lockedByOther||notYetUnlocked);
-          const prefix = won?'✓ ':(failed?'✕ ':((lockedByOther||notYetUnlocked)?'🔒 ':''));
-          return `<button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${k}')">${prefix}${BINGO_TIER_LABEL[k]}</button>`;
-        }).join('')}</div></div>`;
+        // Un solo botón: el del tier activo actualmente (el primero sin ganador global).
+        // Si el jugador ya ganó o falló ese tier, se muestra con el estado correspondiente.
+        // Si todos los tiers ya fueron ganados globalmente, no se muestra botón.
+        {
+          const activeTier = BINGO_TIER_ORDER.find(k => !(bingoGame.tierWinners||{})[k]);
+          if (activeTier) {
+            const t = (myPlayer.tiers||{})[ci] || {};
+            const won = t.won?.[activeTier], failed = t.failed?.[activeTier];
+            const globalWinner = (bingoGame.tierWinners||{})[activeTier];
+            const lockedByOther = !won && !failed && !!globalWinner && globalWinner.ball !== bingoGame.currentNumber;
+            const cls2 = won?'won':(failed?'failed':(lockedByOther?'failed':`tier-${activeTier}`));
+            const isDisabled = !!(won||failed||frozen||lockedByOther);
+            const prefix = won?'✓ ':(failed?'✕ ':(lockedByOther?'🔒 ':''));
+            body += `<div class="bingo-claims-row"><button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${activeTier}')">${prefix}${BINGO_TIER_LABEL[activeTier]}</button></div>`;
+          }
+        }
+        body += `</div>`;
       });
       body += `</div>`;
 
