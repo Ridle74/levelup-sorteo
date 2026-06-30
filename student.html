@@ -2572,12 +2572,16 @@ function _bingoPaneHtml() {
         return (!presentSomewhere || markedEverywhere) ? 'marked-ok' : 'marked-bad';
       };
     }
-    if (drawn.length > 0) {
+    // Durante el reto se oculta el último número sorteado (el que disparó el reto):
+    // ese número "saldrá" para los jugadores sólo cuando termine el reto — mientras dura
+    // el desafío nadie debería poder verlo y llevar ventaja marcándolo antes de tiempo.
+    const drawnVisible = inChallenge ? drawn.slice(0, -1) : drawn;
+    if (drawnVisible.length > 0) {
       body += `<div class="bingo-hist-wrap">
           <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
           <div class="bingo-hist-row">
             <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:-120,behavior:'smooth'})">‹</button>
-            <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawn.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':chipStateFor(n)}">${bingoLetter(n)}-${n}</div>`).join('')}</div>
+            <div class="bingo-drawn-strip" id="bingo-hist-strip">${drawnVisible.slice().reverse().map((n,idx)=>`<div class="bingo-drawn-chip ${idx===0?'current':chipStateFor(n)}">${bingoLetter(n)}-${n}</div>`).join('')}</div>
             <button class="bingo-hist-arrow" onclick="document.getElementById('bingo-hist-strip').scrollBy({left:120,behavior:'smooth'})">›</button>
           </div>
         </div>`;
