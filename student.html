@@ -647,6 +647,10 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-challenge-card.err{border-color:#ef4444;box-shadow:0 0 50px -10px rgba(239,68,68,0.6);animation:bingoShake .3s}
 @keyframes bingoShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .bingo-cell.sabotaged{background:linear-gradient(135deg,#0369a1,#0c4a6e)!important;border-color:#38bdf8!important;color:#bae6fd!important;cursor:pointer;animation:bingoIcePulse 1.4s ease-in-out infinite}
+.bingo-cell.power-target{cursor:crosshair!important;box-shadow:0 0 0 2px rgba(168,85,247,0.7),0 0 14px rgba(168,85,247,0.35)!important;border-color:rgba(168,85,247,0.7)!important;animation:twPulse 1.2s ease-in-out infinite}
+.bingo-cell.power-source{cursor:crosshair!important;box-shadow:0 0 0 2px #fbbf24,0 0 14px rgba(251,191,36,0.5)!important;border-color:#fbbf24!important}
+.bpx-hint-box{margin-top:8px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.3);border-radius:8px;padding:10px 12px}
+.bpx-hint-text{font-size:11px;color:#c084fc;font-weight:600;line-height:1.6}
 @keyframes bingoIcePulse{0%,100%{box-shadow:0 0 6px -1px #38bdf8,inset 0 0 8px rgba(56,189,248,0.2)}50%{box-shadow:0 0 18px -2px #7dd3fc,inset 0 0 18px rgba(56,189,248,0.35)}}
 .bcc-title{font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;background:linear-gradient(to right,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .bcc-sub{font-size:10.5px;color:rgba(255,255,255,0.45);margin-top:4px}
@@ -815,6 +819,7 @@ let _prevBingoTierWinners = {};// copia anterior de tierWinners para detectar nu
 let _bingoRulesShown = false;  // modal de reglas ya mostrado para esta partida
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
+let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {srcCardIdx, srcNum})
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -1879,11 +1884,50 @@ function _bingoSetViewPlayer(uid) {
   _renderBingoPane();
 }
 
+// Clic en casilla de cartón mientras hay un poder activo
+function _bingoCellPowerClick(cardIdx, num, rivalUid) {
+  if (!bingoActivePower) return;
+  const pw = bingoActivePower;
+  const isRival = !!rivalUid;
+  const rivalPowers = new Set(['sabotaje','congelar','vision']);
+  const ownPowers   = new Set(['escudo','intercambio','robo']);
+
+  if (isRival && ownPowers.has(pw)) {
+    showToast('Este poder se usa en tus propios cartones.','error'); return;
+  }
+  if (!isRival && rivalPowers.has(pw)) {
+    showToast('Navega al cartón de un rival para usar este poder.','error'); return;
+  }
+
+  // Poder de 2 pasos: Robo de Marca
+  if (pw === 'robo') {
+    if (!_bingoPowerStep) {
+      const me = _bingoMe();
+      const player = (bingoGame.players||{})[me.uid];
+      if (!player) return;
+      const mSet = new Set((player.marks||[]).filter(m=>m.c===cardIdx).map(m=>m.n));
+      if (!mSet.has(num)) { showToast('Elige primero una casilla que ya hayas marcado (origen).','error'); return; }
+      _bingoPowerStep = { srcCardIdx: cardIdx, srcNum: num };
+      showToast(`📋 Origen: ${num} (Cartón ${cardIdx+1}) — ahora toca la casilla destino.`,'info');
+      _renderBingoPane();
+      return;
+    } else {
+      bingoPowerForm = { sourceCardIndex: _bingoPowerStep.srcCardIdx, num: _bingoPowerStep.srcNum, cardIndex: cardIdx };
+      _bingoPowerStep = null;
+      doBingoRobo(); return;
+    }
+  }
+
+  bingoPowerForm = { cardIndex: cardIdx, num, studentId: rivalUid||'' };
+  const doFns = { sabotaje:doBingoSabotaje, congelar:doBingoCongelar, vision:doBingoVision, escudo:doBingoEscudo, intercambio:doBingoIntercambio };
+  if (doFns[pw]) doFns[pw]();
+}
+
 function _bingoResetLocalState() {
   bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
-  _bingoExpandedPlayer = null; _bingoViewingPlayer = null;
+  _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
   _bingoCloseModal();
 }
 
@@ -2732,19 +2776,26 @@ function _bingoPaneHtml() {
             const frozenEntry = viewFrozen.find(f=>f.c===cardIdx && f.n===num);
             const isSabotaged = !!frozenEntry;
             if (isSpyMode) {
-              // Modo espía: sin onclick, sin resaltado de columna cantada
+              // Modo espía: onclick solo cuando hay poder de rival activo
               const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isMarked?'marked':''));
-              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
+              const rivalPowerActive = ['sabotaje','congelar','vision'].includes(bingoActivePower);
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, rivalPowerActive?'power-target':''].filter(Boolean).join(' ');
               const tt = isSabotaged ? `title="❄️ Congelada por ${frozenEntry.byName}"` : '';
-              body += `<div class="${cl}" ${tt}>${isSabotaged?'❄️':num}</div>`;
+              const fn2 = rivalPowerActive ? `onclick="_bingoCellPowerClick(${cardIdx},${num},'${viewUid}')"` : '';
+              body += `<div class="${cl}" ${fn2} ${tt}>${isSabotaged?'❄️':num}</div>`;
             } else {
-              // Modo propio: interactivo
+              // Modo propio: interactivo; si hay poder de casilla activo, clic usa el poder
               const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx&&s.n===num));
               const isHl = status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
               const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
-              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`].filter(Boolean).join(' ');
+              const ownPowerActive = ['escudo','intercambio','robo'].includes(bingoActivePower);
+              const isPowerSrc = ownPowerActive && _bingoPowerStep && _bingoPowerStep.srcCardIdx===cardIdx && _bingoPowerStep.srcNum===num;
+              const powerCls = ownPowerActive ? (isPowerSrc ? 'power-source' : 'power-target') : '';
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, powerCls].filter(Boolean).join(' ');
               const tt = isSabotaged ? `title="❄️ ${frozenEntry.byName} congeló esta casilla hasta el próximo reto"` : '';
-              const fn = frozen ? '' : `onclick="markBingoCell(${cardIdx},${num})"`;
+              const fn = frozen ? '' : (ownPowerActive
+                ? `onclick="_bingoCellPowerClick(${cardIdx},${num},null)"`
+                : `onclick="markBingoCell(${cardIdx},${num})"`);
               body += `<div class="${cl}" ${fn} ${tt}>${isSabotaged?'❄️':num}</div>`;
             }
           }
@@ -2784,7 +2835,7 @@ function _bingoPaneHtml() {
               <div class="bpx-btn-head"><span class="bpx-btn-icon">${pw.icon}</span>${pw.label}</div>
               <div class="bpx-btn-desc">${pw.desc}</div>
             </button>`).join('')}</div>
-            ${bingoActivePower ? _bingoPowerFormHtml(bingoActivePower, rivalEntries, myPlayer) : ''}
+            ${bingoActivePower ? _bingoPowerFormHtml(bingoActivePower) : ''}
           </div>`;
       }
     }
@@ -2818,40 +2869,27 @@ function _bingoPaneHtml() {
   return body;
 }
 // Formulario inline del panel de poderes — cada poder pide datos distintos (rival/cartón/número).
-function _bingoPowerFormHtml(key, rivalEntries, myPlayer) {
-  // Leer selecciones actuales de bingoPowerForm para marcarlas con `selected`
-  // y que sobrevivan a los re-renders del tick de 1s.
-  const fStudentId = bingoPowerForm.studentId || '';
-  const fCardIdx   = bingoPowerForm.cardIndex   != null ? String(bingoPowerForm.cardIndex)       : '';
-  const fSrcCard   = bingoPowerForm.sourceCardIndex != null ? String(bingoPowerForm.sourceCardIndex) : '';
-  const fDstCard   = bingoPowerForm.targetCardIndex != null ? String(bingoPowerForm.targetCardIndex) : '';
-  const fNum       = bingoPowerForm.num != null ? bingoPowerForm.num : '';
-
-  const rivalSelect = `<select onchange="setBingoPowerForm('studentId', this.value)"><option value="">Elige un rival...</option>${rivalEntries.map(([uid,p])=>`<option value="${uid}"${fStudentId===uid?' selected':''}>${p.name}</option>`).join('')}</select>`;
-
-  const myCardOpts = (sel) => Object.keys(myPlayer.cards||{}).map(ci=>`<option value="${ci}"${sel===ci?' selected':''}>Cartón ${Number(ci)+1}</option>`).join('');
-
-  // Cartones del rival seleccionado (o 4 genéricos si aún no eligió)
-  const rivalCardCount = fStudentId ? Object.keys(((bingoGame.players||{})[fStudentId]?.cards)||{0:1}).length : 4;
-  const rivalCardOpts = Array.from({length: rivalCardCount}, (_,i) => `<option value="${i}"${fCardIdx===String(i)?' selected':''}>Cartón ${i+1}</option>`).join('');
-
-  const numInput = ph => `<input id="bingo-power-num-input" type="number" placeholder="${ph}" value="${fNum}" onchange="setBingoPowerForm('num', this.value)">`;
-
-  let formHtml = '';
-  if (key==='sabotaje') {
-    formHtml = `${rivalSelect}<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Cartón del rival...</option>${rivalCardOpts}</select>${numInput('Número a congelar')}`;
-  } else if (key==='comodin') {
-    formHtml = `<div style="font-size:11px;color:#9ca3af;padding:4px 0">Marcará de golpe todos los números ya sorteados que aún no tienes en tus cartones.</div>`;
-  } else if (key==='escudo' || key==='intercambio') {
-    formHtml = `<select onchange="setBingoPowerForm('cardIndex', this.value)"><option value="">Tu cartón...</option>${myCardOpts(fCardIdx)}</select>${numInput('Número')}`;
-  } else if (key==='congelar' || key==='vision') {
-    formHtml = rivalSelect;
-  } else if (key==='robo') {
-    formHtml = `<select onchange="setBingoPowerForm('sourceCardIndex', this.value)"><option value="">Cartón origen...</option>${myCardOpts(fSrcCard)}</select>
-      <select onchange="setBingoPowerForm('targetCardIndex', this.value)"><option value="">Cartón destino...</option>${myCardOpts(fDstCard)}</select>${numInput('Número marcado en el origen')}`;
-  }
-  const fn = 'doBingo' + key.charAt(0).toUpperCase() + key.slice(1);
-  return `<div class="bpx-form">${formHtml}<button class="bcx-btn" onclick="${fn}()">Usar poder</button>${bingoPowerMsg?`<div class="bpx-msg">${bingoPowerMsg}</div>`:''}</div>`;
+function _bingoPowerFormHtml(key) {
+  // Instrucción contextual por poder (reemplaza el formulario con dropdowns)
+  const hints = {
+    sabotaje:    '👁 Ve al cartón de un rival (toca su nombre arriba) y toca la casilla que quieres congelar.',
+    congelar:    '👁 Ve al cartón de un rival (toca su nombre arriba) y toca cualquier casilla para congelarlo.',
+    vision:      '👁 Ve al cartón de un rival (toca su nombre arriba) y toca cualquier casilla para revelar su avance.',
+    escudo:      '🏆 Toca una de tus casillas marcadas (en verde) para protegerla.',
+    intercambio: '🏆 Toca una casilla sin sortearse aún para cambiarla por otra al azar en la misma columna.',
+    robo:        _bingoPowerStep
+      ? `✅ Origen: <b>${_bingoPowerStep.srcNum}</b> (Cartón ${_bingoPowerStep.srcCardIdx+1}) — ahora toca la casilla destino en otro cartón tuyo.`
+      : '🏆 1.° toca la casilla marcada (origen) · 2.° toca la casilla destino en otro cartón.',
+    comodin:     'Marcará de golpe todos los números ya sorteados que aún no tienes en tus cartones.',
+  };
+  const confirmBtn = key === 'comodin'
+    ? `<button class="bcx-btn" style="margin-top:8px;width:100%" onclick="doBingoComodin()">🎰 Aplicar Relleno ahora</button>`
+    : '';
+  return `<div class="bpx-hint-box">
+    <div class="bpx-hint-text">${hints[key]||''}</div>
+    ${confirmBtn}
+    ${bingoPowerMsg?`<div class="bpx-msg">${bingoPowerMsg}</div>`:''}
+  </div>`;
 }
 
 // ── Vista completa /student/bingo: el host arranca el sorteo y todos los que ya
