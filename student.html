@@ -1822,14 +1822,14 @@ function _bingoBadgeColor(tier) {
 // ── Modales de premios (overlay fuera de .bingo-pane-host) ───────────────────
 let _bingoPaused = false; // bloquea el siguiente sorteo mientras hay un modal abierto
 
-function _bingoShowModal(htmlContent) {
+function _bingoShowModal(htmlContent, noBackdrop) {
   const prev = document.getElementById('bpm-overlay');
   if (prev) prev.remove();
   const div = document.createElement('div');
   div.id = 'bpm-overlay';
   div.className = 'bpm-overlay';
   div.innerHTML = htmlContent;
-  div.onclick = e => { if (e.target === div) _bingoCloseModal(); };
+  if (!noBackdrop) div.onclick = e => { if (e.target === div) _bingoCloseModal(); };
   document.body.appendChild(div);
   // Pausar el sorteo mientras el modal esté abierto
   _bingoPaused = true;
@@ -1886,16 +1886,26 @@ function _bingoShowTierWonModal(tier, winnerName) {
         <div class="bpm-next-prize">${BINGO_TIER_PRIZE[nextTier]}</div>
       </div>`
     : `<div class="bpm-next-box"><div class="bpm-next-lbl" style="color:#facc15">🎉 ¡Fin del juego — el Bingo ha sido ganado!</div></div>`;
+  const btnHtml = tier === 'bingo'
+    ? `<button class="bpm-btn" onclick="_bingoToEndModal()">Ver resumen de la partida →</button>`
+    : `<button class="bpm-btn" onclick="_bingoCloseModal()">Continuar</button>`;
   _bingoShowModal(`<div class="bpm-box">
     <div class="bpm-title" style="color:${col}">🏆 ¡${BINGO_TIER_LABEL[tier]} canjeada!</div>
     <div class="bpm-winner">${winnerName}</div>
     <div class="bpm-prize-lbl">se lleva</div>
     <div class="bpm-prize-amt">${BINGO_TIER_PRIZE[tier]}</div>
     ${nextHtml}
-    <button class="bpm-btn" onclick="_bingoCloseModal()">Continuar</button>
+    ${btnHtml}
   </div>`);
 }
 
+function _bingoToEndModal() {
+  _bingoEndShown = true;      // evitar doble-show desde onSnapshot
+  _bingoPaused   = false;     // no es necesario reanudar (juego terminado), pero limpiamos el flag
+  const prev = document.getElementById('bpm-overlay');
+  if (prev) prev.remove();
+  _bingoShowEndModal(bingoGame);
+}
 function _bingoShowEndModal(game) {
   const players    = game.players    || {};
   const tierWinners = game.tierWinners || {};
@@ -1940,7 +1950,7 @@ function _bingoShowEndModal(game) {
     <div class="bem-tier-list">${tierRows||'<div class="bem-empty">Ningún premio fue canjeado</div>'}</div>
     ${totalsHtml}
     <button class="bpm-btn" style="margin-top:18px" onclick="document.getElementById('bpm-overlay').remove()">Cerrar</button>
-  </div>`);
+  </div>`, true /* noBackdrop */);
 }
 
 // ── Panel izquierdo: proximidad al próximo premio ─────────────────────────────
@@ -2358,6 +2368,8 @@ function claimBingoPrize(cardIdx, tier) {
   const patch = { [`players.${me.uid}.tiers.${cardIdx}.won.${tier}`]: true };
   if (!existingWinner) {
     patch[`tierWinners.${tier}`] = { uid: me.uid, ball: currentBall };
+    // El Bingo termina el juego inmediatamente
+    if (tier === 'bingo') { patch.status = 'ended'; patch.nextDrawAt = null; }
   }
   BINGO_REF.update(patch)
     .then(()=> showToast(`🎉 ¡${BINGO_TIER_LABEL[tier]} validada!`, 'success'))
