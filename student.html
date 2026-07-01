@@ -1906,6 +1906,17 @@ function _bingoToEndModal() {
   if (prev) prev.remove();
   _bingoShowEndModal(bingoGame);
 }
+function _bingoEndAndClose() {
+  document.getElementById('bpm-overlay')?.remove();
+  // El host finaliza la partida para todos (→ idle); los demás solo cierran el modal
+  try {
+    const me = _bingoMe();
+    if (bingoGame && (bingoGame.hostId === me.uid || isAdmin())) {
+      BINGO_REF.set({ status:'idle', updatedAt: Date.now() })
+        .catch(e => console.error('bingo end-close', e));
+    }
+  } catch(e) {}
+}
 function _bingoShowEndModal(game) {
   const players    = game.players    || {};
   const tierWinners = game.tierWinners || {};
@@ -1949,7 +1960,7 @@ function _bingoShowEndModal(game) {
     <div class="bem-section-lbl">Ganadores de esta partida</div>
     <div class="bem-tier-list">${tierRows||'<div class="bem-empty">Ningún premio fue canjeado</div>'}</div>
     ${totalsHtml}
-    <button class="bpm-btn" style="margin-top:18px" onclick="document.getElementById('bpm-overlay').remove()">Cerrar</button>
+    <button class="bpm-btn" style="margin-top:18px" onclick="_bingoEndAndClose()">Cerrar y finalizar partida</button>
   </div>`, true /* noBackdrop */);
 }
 
