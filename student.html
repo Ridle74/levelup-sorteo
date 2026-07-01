@@ -716,6 +716,19 @@ textarea.fsm { resize:none; height:64px; }
 .bpm-prize{font-weight:900;font-size:14px;color:#facc15;white-space:nowrap}
 .bpm-hint{font-size:11px;color:#64748b;margin-top:10px;margin-bottom:0}
 .bpm-btn{margin-top:18px;background:linear-gradient(to right,#7c3aed,#2563eb);color:#fff;font-weight:900;border:none;border-radius:12px;padding:11px 36px;font-size:14px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+.bem-box{text-align:center}
+.bem-big-title{font-size:32px;font-weight:900;letter-spacing:0.06em;font-family:'Barlow Condensed',sans-serif;background:linear-gradient(135deg,#f472b6,#facc15);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.bem-champ{font-size:22px;font-weight:900;color:#fff;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.04em}
+.bem-sub{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:2px}
+.bem-divider{height:1px;background:rgba(255,255,255,0.1);margin:14px 0}
+.bem-section-lbl{font-size:9px;font-weight:900;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px}
+.bem-tier-list{display:flex;flex-direction:column;gap:6px;text-align:left}
+.bem-row{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border-radius:8px;padding:7px 10px}
+.bem-tier{font-size:11px;font-weight:900;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;text-transform:uppercase;min-width:62px}
+.bem-wname{flex:1;font-size:14px;font-weight:700;color:#e2e8f0}
+.bem-prize{font-size:15px;font-weight:900;color:#4ade80;font-family:'Barlow Condensed',sans-serif}
+.bem-total-amt{font-size:16px;font-weight:900;color:#facc15;font-family:'Barlow Condensed',sans-serif}
+.bem-empty{font-size:12px;color:rgba(255,255,255,0.35);text-align:center;padding:8px 0}
 .bpm-winner{font-size:28px;font-weight:900;color:#facc15;margin:10px 0 4px;text-shadow:0 0 20px rgba(250,204,21,0.5)}
 .bpm-prize-lbl{font-size:12px;color:#64748b}
 .bpm-prize-amt{font-size:20px;font-weight:900;color:#4ade80}
@@ -841,6 +854,7 @@ let bingoCreating  = false;    // evita doble-click en "Crear partida"
 let _bingoDrawing  = false;    // evita doble-sorteo si el tick se solapa con un write pendiente
 let _prevBingoTierWinners = {};// copia anterior de tierWinners para detectar nuevos ganadores
 let _bingoRulesShown = false;  // modal de reglas ya mostrado para esta partida
+let _bingoEndShown   = false;  // modal de fin de partida ya mostrado para esta sesión
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
 let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {srcCardIdx, srcNum})
@@ -1793,7 +1807,8 @@ let bingoBlockSelection = [];
 let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
 // ── Constantes y helpers de premios ──────────────────────────────────────────
 const BINGO_TIER_ORDER = ['terna','cuaterna','quina','bingo'];
-const BINGO_TIER_PRIZE = { terna:'S/ 5', cuaterna:'S/ 10', quina:'S/ 15', bingo:'S/ 80' };
+const BINGO_TIER_PRIZE     = { terna:'S/ 5', cuaterna:'S/ 10', quina:'S/ 15', bingo:'S/ 80' };
+const BINGO_TIER_PRIZE_AMT = { terna:5,     cuaterna:10,      quina:15,      bingo:80 };
 const BINGO_TIER_DESC  = {
   terna:    '3 números en la misma fila',
   cuaterna: '4 números en la misma fila',
@@ -1878,6 +1893,53 @@ function _bingoShowTierWonModal(tier, winnerName) {
     <div class="bpm-prize-amt">${BINGO_TIER_PRIZE[tier]}</div>
     ${nextHtml}
     <button class="bpm-btn" onclick="_bingoCloseModal()">Continuar</button>
+  </div>`);
+}
+
+function _bingoShowEndModal(game) {
+  const players    = game.players    || {};
+  const tierWinners = game.tierWinners || {};
+  // Ganador del Bingo (prize principal)
+  const bingoEntry  = tierWinners.bingo;
+  const bingoWinner = bingoEntry ? (players[bingoEntry.uid]?.name || bingoEntry.uid) : null;
+  // Acumular premios por uid
+  const prizeByUid = {};
+  BINGO_TIER_ORDER.forEach(tier => {
+    const entry = tierWinners[tier];
+    if (!entry) return;
+    const uid = entry.uid;
+    if (!prizeByUid[uid]) prizeByUid[uid] = { name: players[uid]?.name || uid, total: 0, tiers: [] };
+    prizeByUid[uid].total += BINGO_TIER_PRIZE_AMT[tier] || 0;
+    prizeByUid[uid].tiers.push(tier);
+  });
+  // Filas por tier (en orden)
+  const tierRows = BINGO_TIER_ORDER.slice().reverse().map(tier => {
+    const entry = tierWinners[tier];
+    if (!entry) return '';
+    const name = players[entry.uid]?.name || entry.uid;
+    const col  = _bingoBadgeColor(tier);
+    return `<div class="bem-row">
+      <span class="bem-tier" style="color:${col}">${BINGO_TIER_LABEL[tier]}</span>
+      <span class="bem-wname">${name}</span>
+      <span class="bem-prize">${BINGO_TIER_PRIZE[tier]}</span>
+    </div>`;
+  }).filter(Boolean).join('');
+  // Totales combinados para quienes ganaron más de un premio
+  const multiWinners = Object.values(prizeByUid).filter(p => p.tiers.length > 1);
+  const totalsHtml = multiWinners.length ? `
+    <div class="bem-divider"></div>
+    <div class="bem-section-lbl">💰 Premios combinados</div>
+    ${multiWinners.map(p=>`<div class="bem-row"><span class="bem-wname">${p.name}</span><span class="bem-total-amt">S/ ${p.total}</span></div>`).join('')}` : '';
+  const headerHtml = bingoWinner
+    ? `<div class="bem-big-title">🎉 ¡BINGO!</div><div class="bem-champ">${bingoWinner}</div><div class="bem-sub">¡Felicidades!</div>`
+    : `<div class="bem-big-title">🏁 Fin de la partida</div>`;
+  _bingoShowModal(`<div class="bpm-box bem-box">
+    ${headerHtml}
+    <div class="bem-divider"></div>
+    <div class="bem-section-lbl">Ganadores de esta partida</div>
+    <div class="bem-tier-list">${tierRows||'<div class="bem-empty">Ningún premio fue canjeado</div>'}</div>
+    ${totalsHtml}
+    <button class="bpm-btn" style="margin-top:18px" onclick="document.getElementById('bpm-overlay').remove()">Cerrar</button>
   </div>`);
 }
 
@@ -1993,7 +2055,8 @@ function startBingoListener() {
     bingoGame = snap.exists ? snap.data() : { status:'idle' };
     // Si arrancó una partida nueva (o no hay ninguna) se limpia el estado efímero local del
     // reto/bloqueo/poderes — si no, podía quedar pegado el modal de un reto de la partida anterior.
-    if (bingoGame.status==='idle' || (prevStatus==='ended' && bingoGame.status==='lobby')) _bingoResetLocalState();
+    if (bingoGame.status==='idle' || (prevStatus==='ended' && bingoGame.status==='lobby')) { _bingoResetLocalState(); _bingoEndShown = false; }
+    if (prevStatus === 'lobby' && bingoGame.status === 'playing') _bingoEndShown = false;
     // Auto-navegar a /student/bingo (pantalla completa) en cuanto el host hace clic en
     // "Iniciar sorteo" — pedido explícito: que a todos los alumnos ya unidos se les cargue
     // automáticamente la pantalla del sorteo sin tener que entrar manualmente a GAMING.
@@ -2022,6 +2085,11 @@ function startBingoListener() {
         }
       });
       _prevBingoTierWinners = Object.assign({}, curWinners);
+      // Detectar fin de partida → modal resumen de ganadores
+      if (prevStatus === 'playing' && bingoGame.status === 'ended' && !_bingoEndShown) {
+        _bingoEndShown = true;
+        setTimeout(() => _bingoShowEndModal(bingoGame), 900);
+      }
     } catch (e) { console.error('bingo auto-nav', e); }
     _renderBingoPane();
   }, err => {
@@ -2752,6 +2820,14 @@ function _bingoPaneHtml() {
       phaseOn = true;
       phaseColorClass = inCalc ? 'pink' : 'yellow';
       phaseFootLabel = inCalc ? `Calculando ${Math.ceil(remainSecs)}s ↑` : `Marcando ${Math.ceil(remainSecs)}s ↑`;
+    } else if (status==='playing' && bingoGame.nextDrawAt && !inChallenge) {
+      // Intervalo entre sorteos: mostrar cuenta regresiva para el siguiente número
+      const totalMs = bingoGame.intervalMs || 4500;
+      const remainMs = Math.max(0, bingoGame.nextDrawAt - Date.now());
+      phasePct = totalMs > 0 ? Math.min(100, Math.max(0, (remainMs / totalMs) * 100)) : 0;
+      phaseOn = true;
+      phaseColorClass = 'pink';
+      phaseFootLabel = `Siguiente en ${Math.ceil(remainMs/1000)}s ↑`;
     }
 
     // ── Tier activo (primer premio aún no ganado globalmente) ───────────────────
