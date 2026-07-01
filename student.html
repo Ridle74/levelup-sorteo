@@ -2820,6 +2820,14 @@ function _bingoPaneHtml() {
       phaseOn = true;
       phaseColorClass = inCalc ? 'pink' : 'yellow';
       phaseFootLabel = inCalc ? `Calculando ${Math.ceil(remainSecs)}s ↑` : `Marcando ${Math.ceil(remainSecs)}s ↑`;
+    } else if (inChallenge && bingoGame.challengeEndsAt) {
+      // Reto Matemático activo: mostrar tiempo restante del reto
+      const totalSecs = bingoGame.challengeSeconds || 60;
+      const remainSecs = Math.max(0, (bingoGame.challengeEndsAt - Date.now()) / 1000);
+      phasePct = totalSecs > 0 ? Math.min(100, Math.max(0, (remainSecs / totalSecs) * 100)) : 0;
+      phaseOn = true;
+      phaseColorClass = 'yellow';
+      phaseFootLabel = `Reto termina en ${Math.ceil(remainSecs)}s ↑`;
     } else if (status==='playing' && bingoGame.nextDrawAt && !inChallenge) {
       // Intervalo entre sorteos: mostrar cuenta regresiva para el siguiente número
       const totalMs = bingoGame.intervalMs || 4500;
