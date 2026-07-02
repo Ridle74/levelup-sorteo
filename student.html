@@ -621,9 +621,13 @@ textarea.fsm { resize:none; height:64px; }
 /* Botón toggle emoji */
 .bep-toggle{font-size:17px;background:none;border:none;cursor:pointer;padding:0 2px;opacity:0.38;transition:opacity .15s;flex-shrink:0;line-height:1}
 .bep-toggle:hover,.bep-toggle.active{opacity:1}
-/* Emojis inline en el nav */
+/* Strip de emojis con scroll propio */
+.bep-strip{display:flex;overflow-x:hidden;flex:0 0 190px;align-items:center;gap:0;scroll-behavior:smooth}
 .bep-btn{font-size:19px;background:none;border:none;cursor:pointer;padding:1px 2px;border-radius:4px;line-height:1;transition:background .1s;flex-shrink:0}
 .bep-btn:hover{background:rgba(255,255,255,0.12)}
+/* Botones circulares de navegación ◀ ▶ */
+.bep-nav-btn{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;color:#e2e8f0;font-size:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;padding:0}
+.bep-nav-btn:hover{background:rgba(255,255,255,0.32)}
 .bpn-bot{opacity:0.65}
 /* Fila de estado editable en la partida */
 .bingo-status-row{display:flex;align-items:center;gap:7px;margin:4px 0 10px;padding:2px 0}
@@ -2364,6 +2368,7 @@ function setPlayerStatus(val) {
   } catch(e) {}
 }
 function toggleBingoEmojiPicker() { _bingoEmojiPickerOpen = !_bingoEmojiPickerOpen; _renderBingoPane(); }
+function scrollBingoEmojis(dir) { const s = document.getElementById('bingo-emoji-strip'); if (s) s.scrollBy({ left: dir * 140, behavior: 'smooth' }); }
 function insertBingoEmoji(e) {
   const inp = document.getElementById('bingo-status-input');
   if (inp) { const v = (inp.value + e).slice(0, 30); inp.value = v; setPlayerStatus(v); inp.focus(); }
@@ -3116,7 +3121,9 @@ function _bingoPaneHtml() {
         navHtml += `<input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="30" placeholder="Tu estado..." value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">`;
         if (_bingoEmojiPickerOpen) {
           const FACE_EMOJIS = ['😀','😂','🤣','😊','😇','🥰','😍','🤩','😘','😋','😎','🥳','😜','🤪','😝','🤑','🤗','🤔','😏','🙄','😒','😢','😭','😤','😡','🤯','😱','🥺','😴','🤠','👻','🤖','💀','😈','😵','🤢','😷','🥶'];
-          navHtml += FACE_EMOJIS.map(em=>`<button class="bep-btn" onclick="insertBingoEmoji(this.dataset.e)" data-e="${em}">${em}</button>`).join('');
+          navHtml += `<button class="bep-nav-btn" onclick="scrollBingoEmojis(-1)">&#9664;</button>`;
+          navHtml += `<div id="bingo-emoji-strip" class="bep-strip">${FACE_EMOJIS.map(em=>`<button class="bep-btn" onclick="insertBingoEmoji(this.dataset.e)" data-e="${em}">${em}</button>`).join('')}</div>`;
+          navHtml += `<button class="bep-nav-btn" onclick="scrollBingoEmojis(1)">&#9654;</button>`;
         }
         navHtml += `<button class="bep-toggle${_bingoEmojiPickerOpen?' active':''}" onclick="toggleBingoEmojiPicker()" title="Emojis">🙂</button>`;
         navHtml += `</div>`;
