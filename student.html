@@ -584,26 +584,27 @@ textarea.fsm { resize:none; height:64px; }
 /* ── Barra de navegación de jugadores (encima de la sección de cartones) ── */
 .bingo-player-nav{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;margin-top:18px}
 .bingo-player-nav::-webkit-scrollbar{display:none}
-.bpn-pill{flex-shrink:0;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#6b7280;transition:all .15s;display:inline-flex;flex-direction:column;align-items:stretch;gap:1px}
-.bpn-main{display:flex;align-items:center;gap:6px;white-space:nowrap}
-/* Speech bubble de estado de jugador */
-.bpn-status-bubble{position:relative;display:inline-block;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:2px 8px;font-size:9px;color:rgba(255,255,255,0.65);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;line-height:1.5;margin-top:4px}
-.bpn-status-bubble::before{content:'';position:absolute;bottom:100%;left:10px;border:4px solid transparent;border-bottom-color:rgba(255,255,255,0.14)}
-.bpn-status-bubble::after{content:'';position:absolute;bottom:calc(100% - 1px);left:10px;border:4px solid transparent;border-bottom-color:rgba(30,10,50,0.9)}
-.bpn-pill.active .bpn-status-bubble{background:rgba(168,85,247,0.16);border-color:rgba(168,85,247,0.35);color:#c084fc}
-.bpn-pill.active .bpn-status-bubble::before{border-bottom-color:rgba(168,85,247,0.35)}
-.bpn-pill.active .bpn-status-bubble::after{border-bottom-color:rgba(20,10,40,0.95)}
+/* Pill = contenedor invisible; .bpn-main = la etiqueta visual */
+.bpn-pill{flex-shrink:0;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#6b7280;transition:color .15s;display:inline-flex;flex-direction:column;align-items:flex-start;gap:0}
+.bpn-main{display:flex;align-items:center;gap:6px;white-space:nowrap;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 16px;transition:background .15s,border-color .15s,box-shadow .15s}
+.bpn-pill:hover{color:#d1d5db}
+.bpn-pill:hover .bpn-main{border-color:#374151}
+.bpn-pill.active{color:#e2e8f0}
+.bpn-pill.active .bpn-main{background:linear-gradient(135deg,#1e1b4b,#0a0e1a);border-color:#a855f7;box-shadow:0 0 10px -3px rgba(168,85,247,0.4)}
+.bpn-rank{font-size:11px;color:#6b7280;font-weight:900}
+.bpn-pill.active .bpn-rank{color:#c084fc}
+.bpn-pct{font-size:12px;color:#a855f7;font-weight:900}
+.bpn-pill.active .bpn-pct{color:#e879f9}
+/* Nubecita de estado: flota encima de .bpn-main con cola apuntando abajo */
+.bpn-status-bubble{position:relative;align-self:flex-start;background:rgba(255,255,255,0.11);border:1px solid rgba(255,255,255,0.22);border-radius:10px;padding:4px 10px;font-size:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:rgba(255,255,255,0.9);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
+.bpn-status-bubble::after{content:'';position:absolute;top:100%;left:12px;border:5px solid transparent;border-top-color:rgba(255,255,255,0.22)}
+.bpn-pill.active .bpn-status-bubble{background:rgba(168,85,247,0.2);border-color:rgba(168,85,247,0.5);color:#e9d5ff}
+.bpn-pill.active .bpn-status-bubble::after{border-top-color:rgba(168,85,247,0.5)}
 .bpn-bot{opacity:0.65}
 /* Fila de estado editable en la partida */
 .bingo-status-row{display:flex;align-items:center;gap:7px;margin:4px 0 10px;padding:2px 0}
 .bsr-ico{font-size:13px;flex-shrink:0;opacity:0.6}
 .bingo-status-input.bsr-inline{margin-top:0;flex:1;font-size:11px;padding:6px 10px}
-.bpn-pill:hover{border-color:#374151;color:#d1d5db}
-.bpn-pill.active{background:linear-gradient(135deg,#1e1b4b,#0a0e1a);border-color:#a855f7;color:#e2e8f0;box-shadow:0 0 10px -3px rgba(168,85,247,0.4)}
-.bpn-rank{font-size:11px;color:#6b7280;font-weight:900}
-.bpn-pill.active .bpn-rank{color:#c084fc}
-.bpn-pct{font-size:12px;color:#a855f7;font-weight:900}
-.bpn-pill.active .bpn-pct{color:#e879f9}
 .bingo-card-hdr.shielded{background:#fff;color:#111;border-radius:4px;font-weight:900}
 .bingo-card-hdr.fortifiable{color:#4ade80;cursor:pointer;text-shadow:0 0 6px rgba(74,222,128,0.7);animation:twPulse 1.5s ease-in-out infinite}
 .bingo-card-hdr.fortifiable:hover{background:rgba(74,222,128,0.15);border-radius:4px}
@@ -616,11 +617,15 @@ textarea.fsm { resize:none; height:64px; }
 .bpx-col-btn.eligible{border-color:rgba(74,222,128,0.45);color:#4ade80;cursor:pointer;background:rgba(74,222,128,0.07)}
 .bpx-col-btn.eligible:hover{background:rgba(74,222,128,0.18);border-color:#4ade80}
 .bpx-col-btn.shielded{border-color:rgba(168,85,247,0.4);color:#a855f7;background:rgba(168,85,247,0.08);cursor:not-allowed}
-.bpn-pill.locked{opacity:0.55;border-color:rgba(168,85,247,0.15);color:#4b5563;cursor:pointer}
-.bpn-pill.locked:hover{border-color:rgba(168,85,247,0.35);color:#7c3aed}
+.bpn-pill.locked{opacity:0.55;color:#4b5563;cursor:pointer}
+.bpn-pill.locked .bpn-main{border-color:rgba(168,85,247,0.15)}
+.bpn-pill.locked:hover{color:#7c3aed}
+.bpn-pill.locked:hover .bpn-main{border-color:rgba(168,85,247,0.35)}
 .bpn-pill.locked .bpn-pct{color:#4b5563}
-.bpn-pill.power-target-pill{border-color:rgba(96,165,250,0.5);color:#93c5fd;animation:twPulse 1.2s ease-in-out infinite;cursor:crosshair}
-.bpn-pill.power-target-pill:hover{background:rgba(96,165,250,0.12);border-color:#60a5fa;color:#bfdbfe}
+.bpn-pill.power-target-pill{color:#93c5fd;cursor:crosshair}
+.bpn-pill.power-target-pill .bpn-main{border-color:rgba(96,165,250,0.5);animation:twPulse 1.2s ease-in-out infinite}
+.bpn-pill.power-target-pill:hover{color:#bfdbfe}
+.bpn-pill.power-target-pill:hover .bpn-main{background:rgba(96,165,250,0.12);border-color:#60a5fa}
 /* Historial de sorteo — pills tipo chip (rounded-lg px-3 py-1.5 font-mono font-bold text-sm border) */
 .bingo-hist-wrap{margin-top:20px;padding-top:20px;border-top:1px solid #1f2937}
 .bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px}
@@ -3060,9 +3065,7 @@ function _bingoPaneHtml() {
             ? `onclick="doBingoCongelarRival('${uid}')"`
             : `onclick="_bingoSetViewPlayer('${uid}')"`;
           const statusLine = (!isLocked && p.playerStatus) ? `<span class="bpn-status-bubble">💬 ${p.playerStatus}</span>` : '';
-          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}>
-            <span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span>${statusLine}
-          </div>`;
+          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}>${statusLine}<span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span></div>`;
         });
         navHtml += `</div>`;
         body += navHtml;
