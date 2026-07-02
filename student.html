@@ -511,6 +511,13 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-players-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .bingo-player-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(132,204,22,0.25);border-radius:20px;padding:4px 10px 4px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)}
 .bingo-player-chip .bpc-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden}
+.bingo-player-chip .bpc-info{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.bingo-player-chip .bpc-name{font-size:11px;font-weight:700;white-space:nowrap}
+.bingo-player-chip .bpc-status{font-size:9px;color:rgba(255,255,255,0.45);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.bingo-player-chip.bpc-bot{opacity:0.7;border-color:rgba(255,255,255,0.1)}
+.bingo-status-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#e2e8f0;font-size:12px;padding:8px 12px;margin-top:7px;box-sizing:border-box;outline:none;font-family:inherit}
+.bingo-status-input::placeholder{color:rgba(255,255,255,0.28)}
+.bingo-status-input:focus{border-color:rgba(168,85,247,0.5);background:rgba(168,85,247,0.06)}
 .bingo-start-btn{width:100%;background:linear-gradient(135deg,#84cc16,#16a34a);color:#06170c;font-weight:900;border:none;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:8px;box-shadow:0 0 18px -4px #84cc16}
 .bingo-end-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
 .bingo-join-btn{width:100%;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:14px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:6px;box-shadow:0 0 16px -6px #22d3ee}
@@ -577,7 +584,10 @@ textarea.fsm { resize:none; height:64px; }
 /* ── Barra de navegación de jugadores (encima de la sección de cartones) ── */
 .bingo-player-nav{display:flex;align-items:center;gap:7px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;margin-top:18px}
 .bingo-player-nav::-webkit-scrollbar{display:none}
-.bpn-pill{flex-shrink:0;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#6b7280;white-space:nowrap;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.bpn-pill{flex-shrink:0;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#6b7280;transition:all .15s;display:inline-flex;flex-direction:column;align-items:stretch;gap:1px}
+.bpn-main{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.bpn-status{font-size:9px;color:rgba(255,255,255,0.38);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;line-height:1}
+.bpn-bot{opacity:0.65}
 .bpn-pill:hover{border-color:#374151;color:#d1d5db}
 .bpn-pill.active{background:linear-gradient(135deg,#1e1b4b,#0a0e1a);border-color:#a855f7;color:#e2e8f0;box-shadow:0 0 10px -3px rgba(168,85,247,0.4)}
 .bpn-rank{font-size:11px;color:#6b7280;font-weight:900}
@@ -1809,6 +1819,12 @@ let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
 const BINGO_TIER_ORDER = ['terna','cuaterna','quina','bingo'];
 const BINGO_TIER_PRIZE     = { terna:'S/ 5', cuaterna:'S/ 10', quina:'S/ 15', bingo:'S/ 80' };
 const BINGO_TIER_PRIZE_AMT = { terna:5,     cuaterna:10,      quina:15,      bingo:80 };
+const BINGO_BOT_CONFIG = {
+  basic:        { markProb: 0.62, claimProb: 0.28 },
+  intermediate: { markProb: 0.82, claimProb: 0.60 },
+  advanced:     { markProb: 0.96, claimProb: 0.92 },
+};
+const BINGO_BOT_NAMES = ['Botto','Robín','Pixie','Chip'];
 const BINGO_TIER_DESC  = {
   terna:    '3 números en la misma fila',
   cuaterna: '4 números en la misma fila',
@@ -2193,11 +2209,14 @@ function _bingoHostAdvancePhase() {
       .catch(e=>console.error('bingo phase->mark',e));
   } else if (bingoGame.numPhase === 'mark') {
     const ended = (bingoGame.drawnNumbers||[]).length >= 75;
-    BINGO_REF.update({
+    const botMarkPatch = _bingoBotProcessMarks();
+    BINGO_REF.update(Object.assign({
       numPhase:'done', phaseEndsAt:null, currentSum:null,
       nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs||4500),
       status: ended ? 'ended' : 'playing'
-    }).catch(e=>console.error('bingo phase->done',e));
+    }, botMarkPatch))
+      .then(() => { if (!ended) setTimeout(_bingoBotCheckClaims, 900); })
+      .catch(e=>console.error('bingo phase->done',e));
   }
 }
 function _bingoHostStartChallenge() {
@@ -2234,8 +2253,75 @@ function _bingoNewPlayer(me, cardCount) {
     tiers: _bingoNewTiersMap(cardCount||1),
     powerCharges: 0, frozenUntilDraw: 0,
     unlockedPowers: {}, usedPowers: {}, shieldedColumns: [],
-    lastChallengeId: null, pendingBlock: null
+    lastChallengeId: null, pendingBlock: null, playerStatus: ''
   };
+}
+function _bingoNewBotPlayer(name, level, cardCount) {
+  const p = _bingoNewPlayer({ name, icon:'🤖', color:'#374151' }, cardCount);
+  p.isBot = true;
+  p.botLevel = level;
+  return p;
+}
+// Calcula el parche de marcas de bots para el número actual (host-only, llamado al fin de fase mark).
+function _bingoBotProcessMarks() {
+  if (!bingoGame) return {};
+  const currentNum = bingoGame.currentNumber;
+  if (!currentNum) return {};
+  const patch = {};
+  Object.entries(bingoGame.players||{}).forEach(([uid, p]) => {
+    if (!uid.startsWith('__bot_')) return;
+    const cfg = BINGO_BOT_CONFIG[p.botLevel||'basic'] || BINGO_BOT_CONFIG.basic;
+    if (Math.random() > cfg.markProb) return; // bot falla este número
+    const existingMarks = p.marks || [];
+    const newMarks = [...existingMarks];
+    Object.entries(p.cards||{}).forEach(([ci, card]) => {
+      const cardIdx = Number(ci);
+      if (!Array.isArray(card) || !card.includes(currentNum)) return;
+      if (existingMarks.some(m => m.c===cardIdx && m.n===currentNum)) return; // ya marcado
+      newMarks.push({ c: cardIdx, n: currentNum });
+    });
+    if (newMarks.length > existingMarks.length) patch[`players.${uid}.marks`] = newMarks;
+  });
+  return patch;
+}
+// Evalúa si algún bot debe reclamar el premio activo (host-only, tras onSnapshot post-marca).
+function _bingoBotCheckClaims() {
+  if (!bingoGame) return;
+  const tierWinners = bingoGame.tierWinners || {};
+  const activeTier = BINGO_TIER_ORDER.find(k => !tierWinners[k]);
+  if (!activeTier) return;
+  const bots = Object.entries(bingoGame.players||{}).filter(([uid]) => uid.startsWith('__bot_'));
+  for (const [uid, p] of bots) {
+    const cfg = BINGO_BOT_CONFIG[p.botLevel||'basic'] || BINGO_BOT_CONFIG.basic;
+    if (Math.random() > cfg.claimProb) continue;
+    let eligible = false, claimCardIdx = 0;
+    Object.entries(p.cards||{}).forEach(([ci, card]) => {
+      if (eligible) return;
+      const marksSet = new Set((p.marks||[]).filter(m => m.c===Number(ci)).map(m => m.n));
+      const { maxLine, isFull } = bingoEvaluate(card, marksSet);
+      if (activeTier==='bingo' ? isFull : maxLine >= (BINGO_TIER_REQ[activeTier]||3)) {
+        eligible = true; claimCardIdx = Number(ci);
+      }
+    });
+    if (!eligible) continue;
+    const claimPatch = {
+      [`players.${uid}.tiers.${claimCardIdx}.won.${activeTier}`]: true,
+      [`tierWinners.${activeTier}`]: { uid, ball: bingoGame.currentNumber }
+    };
+    if (activeTier === 'bingo') { claimPatch.status = 'ended'; claimPatch.nextDrawAt = null; }
+    BINGO_REF.update(claimPatch).catch(e => console.error('bot claim', e));
+    break; // un bot reclama por vez
+  }
+}
+// Guarda el estado corto del jugador actual (máx. 30 chars).
+function setPlayerStatus(val) {
+  try {
+    const me = _bingoMe();
+    if (!bingoGame || !me || !(bingoGame.players||{})[me.uid]) return;
+    const clean = (val||'').trim().slice(0, 30);
+    BINGO_REF.update({ [`players.${me.uid}.playerStatus`]: clean })
+      .catch(e => console.error('bingo status', e));
+  } catch(e) {}
 }
 function createBingoGame() {
   if (bingoCreating) return;
@@ -2304,8 +2390,14 @@ function startBingoDraw() {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
   if (!Object.keys(bingoGame.players||{}).length) { showToast('Espera a que se unan jugadores.','error'); return; }
-  BINGO_REF.update({ status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: (bingoGame.challengeIntervalDraws||8), tierWinners:{} })
-    .catch(e=>console.error('bingo start',e));
+  const botCount = Math.max(0, Math.min(4, bingoGame.botCount||0));
+  const botLevel = bingoGame.botLevel || 'basic';
+  const cardCount = bingoGame.cardCount || 1;
+  const patch = { status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: (bingoGame.challengeIntervalDraws||8), tierWinners:{} };
+  for (let i = 0; i < botCount; i++) {
+    patch[`players.__bot_${i}`] = _bingoNewBotPlayer(BINGO_BOT_NAMES[i]||`Bot${i+1}`, botLevel, cardCount);
+  }
+  BINGO_REF.update(patch).catch(e=>console.error('bingo start',e));
 }
 function endBingoGame() {
   const me = _bingoMe();
@@ -2789,7 +2881,7 @@ function _bingoPaneHtml() {
       </div>
     </div>`;
   const playersRowHtml = playersArr.length
-    ? `<div class="bingo-players-row">${playersArr.map(p=>`<span class="bingo-player-chip"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span>${p.name}</span>`).join('')}</div>`
+    ? `<div class="bingo-players-row">${playersArr.map(p=>`<span class="bingo-player-chip${p.isBot?' bpc-bot':''}"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span><span class="bpc-info"><span class="bpc-name">${p.name}</span>${p.playerStatus?`<span class="bpc-status">${p.playerStatus}</span>`:''}</span></span>`).join('')}</div>`
     : `<div style="font-size:11px;color:rgba(255,255,255,0.35);margin:6px 0 10px">Aún no se unió nadie</div>`;
 
   let body = titleHtml + hostLine + playersRowHtml;
@@ -2804,10 +2896,17 @@ function _bingoPaneHtml() {
         <div class="bs-row"><span>Cartones por jugador</span>
           <select onchange="setBingoConfig('cardCount', Number(this.value))">${[1,2,3,4].map(n=>`<option value="${n}" ${(bingoGame.cardCount||1)===n?'selected':''}>${n}</option>`).join('')}</select>
         </div>
+        <div class="bs-row"><span>Bots 🤖</span>
+          <select onchange="setBingoConfig('botCount', Number(this.value))">${[0,1,2,3,4].map(n=>`<option value="${n}" ${(bingoGame.botCount||0)===n?'selected':''}>${n===0?'Sin bots':n+' bot'+(n>1?'s':'')}</option>`).join('')}</select>
+        </div>
+        <div class="bs-row" style="${(bingoGame.botCount||0)===0?'opacity:0.38;pointer-events:none':''}"><span>Nivel de bots</span>
+          <select onchange="setBingoConfig('botLevel', this.value)">${['basic','intermediate','advanced'].map(l=>`<option value="${l}" ${(bingoGame.botLevel||'basic')===l?'selected':''}>${{basic:'Básico',intermediate:'Intermedio',advanced:'Avanzado'}[l]}</option>`).join('')}</select>
+        </div>
       </div>`;
     body += !myPlayer
       ? `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`
-      : `<div style="font-size:11px;color:#4ade80;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>`;
+      : `<div style="font-size:11px;color:#4ade80;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>
+         <input id="bingo-status-input" class="bingo-status-input" maxlength="30" placeholder="Tu estado... (emoji o texto corto)" value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">`;
     if (isHost) body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
   } else { // 'playing' | 'ended'
     const drawn  = bingoGame.drawnNumbers || [];
@@ -2935,9 +3034,10 @@ function _bingoPaneHtml() {
         const congelarActive = bingoActivePower === 'congelar';
         navEntries.forEach(({uid, p, score}, ri) => {
           const isSelf = uid === me.uid;
-          const isLocked = !isSelf && !hasVision && !congelarActive;
+          const isBot = uid.startsWith('__bot_');
+          const isLocked = !isSelf && !isBot && !hasVision && !congelarActive;
           const isActive = _bingoViewingPlayer === uid || (_bingoViewingPlayer === null && isSelf);
-          const isCongelarTarget = congelarActive && !isSelf;
+          const isCongelarTarget = congelarActive && !isSelf && !isBot;
           const pct = Math.round(score * 100);
           const label = isSelf
             ? `🏆 Mis cartones`
@@ -2949,8 +3049,9 @@ function _bingoPaneHtml() {
           const onclick = isCongelarTarget
             ? `onclick="doBingoCongelarRival('${uid}')"`
             : `onclick="_bingoSetViewPlayer('${uid}')"`;
-          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}" ${onclick}>
-            ${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span>
+          const statusLine = (!isLocked && p.playerStatus) ? `<span class="bpn-status">${p.playerStatus}</span>` : '';
+          navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}>
+            <span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span>${statusLine}
           </div>`;
         });
         navHtml += `</div>`;
