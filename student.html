@@ -713,7 +713,7 @@ textarea.fsm { resize:none; height:64px; }
 .bbb-sub{font-size:10.5px;color:rgba(255,255,255,0.55);margin-top:4px}
 .bbb-apply{width:100%;margin-top:8px;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;font-weight:900;border:none;border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
 .bingo-modal-bg{position:fixed;inset:0;background:rgba(3,7,18,0.85);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}
-.bingo-challenge-card{width:100%;max-width:360px;background:#0a0e1a;border:1px solid rgba(168,85,247,0.4);border-radius:20px;padding:20px;text-align:center;box-shadow:0 0 50px -10px rgba(168,85,247,0.5);font-family:'Barlow Condensed',sans-serif}
+.bingo-challenge-card{width:100%;max-width:500px;background:#0a0e1a;border:1px solid rgba(168,85,247,0.4);border-radius:20px;padding:28px 32px;text-align:center;box-shadow:0 0 50px -10px rgba(168,85,247,0.5);font-family:'Barlow Condensed',sans-serif}
 .bingo-challenge-card.err{border-color:#ef4444;box-shadow:0 0 50px -10px rgba(239,68,68,0.6);animation:bingoShake .3s}
 @keyframes bingoShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .bingo-cell.sabotaged{background:linear-gradient(135deg,#0369a1,#0c4a6e)!important;border-color:#38bdf8!important;color:#bae6fd!important;cursor:pointer;animation:bingoIcePulse 1.4s ease-in-out infinite}
@@ -730,10 +730,35 @@ textarea.fsm { resize:none; height:64px; }
 .bcc-dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.15)}
 .bcc-dot.ok{background:#4ade80}
 .bcc-dot.now{background:#facc15;box-shadow:0 0 8px -1px #facc15}
-.bcc-question{font-family:ui-monospace,Menlo,monospace;font-size:22px;font-weight:900;color:#fff;margin:10px 0}
-.bcc-input{width:140px;text-align:center;background:#050810;color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:10px;font-size:16px;font-family:ui-monospace,Menlo,monospace;margin-bottom:10px}
+.bcc-question{font-family:ui-monospace,Menlo,monospace;font-size:28px;font-weight:900;color:#fff;margin:14px 0}
+.bcc-input{width:180px;text-align:center;background:#050810;color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:12px;font-size:20px;font-family:ui-monospace,Menlo,monospace;margin-bottom:12px}
 .bcc-submit{display:block;width:100%;background:linear-gradient(135deg,#db2777,#7c3aed);color:#fff;font-weight:900;border:none;border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
 .bcc-foot{font-size:10px;color:rgba(255,255,255,0.4);margin-top:10px}
+/* ── Resultado del reto (overlay verde/amarillo/rojo) ── */
+.bcc-result{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;transition:background .3s}
+.bcc-result-green{background:linear-gradient(135deg,rgba(21,128,61,0.35),rgba(34,197,94,0.15));border-color:#22c55e;box-shadow:0 0 60px -10px rgba(34,197,94,0.6)}
+.bcc-result-yellow{background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(250,204,21,0.15));border-color:#facc15;box-shadow:0 0 60px -10px rgba(250,204,21,0.5)}
+.bcc-result-red{background:linear-gradient(135deg,rgba(127,29,29,0.35),rgba(239,68,68,0.15));border-color:#ef4444;box-shadow:0 0 60px -10px rgba(239,68,68,0.5)}
+.bcc-result-ico{font-size:56px;line-height:1;margin-bottom:12px}
+.bcc-result-h{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#fff;margin-bottom:10px}
+.bcc-result-body{font-size:15px;color:rgba(255,255,255,0.8);line-height:1.4;max-width:340px}
+/* ── Lista de partidas ── */
+.bingo-games-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.bingo-game-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;cursor:pointer;transition:background .15s,border-color .15s}
+.bingo-game-card:not(.bgc-locked):hover{background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.4)}
+.bingo-game-card.bgc-locked{opacity:0.55;cursor:default}
+.bgc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.bgc-host{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:15px;color:#e2e8f0}
+.bgc-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(250,204,21,0.15);color:#facc15;border:1px solid rgba(250,204,21,0.3)}
+.bgc-badge-playing{background:rgba(74,222,128,0.15);color:#4ade80;border-color:rgba(74,222,128,0.3)}
+.bgc-meta{font-size:12px;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bgc-in{color:#4ade80;font-weight:700}
+.bgc-join-btn{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:10px;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:opacity .15s}
+.bgc-join-btn:hover:not(:disabled){opacity:0.85}
+.bgc-join-btn:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);cursor:not-allowed}
+/* ── Botón salir de partida ── */
+.bingo-leave-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.55);border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;transition:background .15s,color .15s;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.03em}
+.bingo-leave-btn:hover{background:rgba(255,255,255,0.13);color:#e2e8f0}
 .bingo-powers-box{margin-top:12px;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.3);border-radius:14px;padding:12px}
 .bpx-head{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:#fff}
 .bpx-charges{font-size:11px;color:#facc15;background:rgba(250,204,21,0.12);border:1px solid rgba(250,204,21,0.3);border-radius:20px;padding:3px 9px}
@@ -845,8 +870,8 @@ const MSGS_COL = db.collection('msgs');
 // → Certificados push web → "Generar par de claves". Sin pegarla aquí, getToken() falla.
 const VAPID_KEY = "PEGA_AQUI_TU_VAPID_KEY";
 const FCM_TOKENS_COL = db.collection('fcmTokens');
-// Bingo multijugador en vivo (tab GAMING) — un solo documento = una sola partida compartida.
-const BINGO_REF = db.collection('bingo').doc('main');
+// Bingo multijugador en vivo (tab GAMING) — colección bingo/, un doc por partida.
+let BINGO_REF = null; // ref al doc de la partida activa (null = en la lista de partidas)
 let messaging = null;
 try { messaging = firebase.messaging(); } catch(e) { /* navegador sin soporte (Safari/iOS, etc.) */ }
 // Documento compartido de autenticación admin — el MISMO usado por /padres,
@@ -912,6 +937,10 @@ let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de pro
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
 let _bingoEmojiPickerOpen = false;
 let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {srcCardIdx, srcNum})
+let _bingoGameId         = null; // ID del doc activo en la colección bingo/ (null = pantalla de lista)
+let bingoGames           = [];   // lista en vivo de partidas (lobby/playing) del listener de colección
+let bingoGamesUnsub      = null; // unsub del listener de la colección bingo/
+let _bingoChallengeResult = null; // { perfect, fast, charges, fails } — feedback visual tras el reto
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -1967,15 +1996,8 @@ function _bingoToEndModal() {
   _bingoShowEndModal(bingoGame);
 }
 function _bingoEndAndClose() {
-  document.getElementById('bpm-overlay')?.remove();
-  // El host finaliza la partida para todos (→ idle); los demás solo cierran el modal
-  try {
-    const me = _bingoMe();
-    if (bingoGame && (bingoGame.hostId === me.uid || isAdmin())) {
-      BINGO_REF.set({ status:'idle', updatedAt: Date.now() })
-        .catch(e => console.error('bingo end-close', e));
-    }
-  } catch(e) {}
+  // El modal de fin ya se mostró; salir de la partida → vuelve a la lista de partidas
+  _leaveBingoGame();
 }
 function _bingoShowEndModal(game) {
   const players    = game.players    || {};
@@ -2127,35 +2149,43 @@ function _bingoMe() {
 
 // -- Firestore: listener en vivo + temporizador de sorteo/cuenta atrás --
 function startBingoListener() {
-  if (bingoUnsub) return; // ya activo (se queda corriendo toda la sesión, igual que startMsgsListeners)
+  if (bingoGamesUnsub) return; // ya activo — escucha la colección bingo/ completa
+  bingoGamesUnsub = db.collection('bingo')
+    .where('status', 'in', ['lobby', 'playing'])
+    .onSnapshot(snap => {
+      bingoGames = snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); // más nuevas primero
+      _renderBingoPane();
+    }, err => {
+      console.error('bingo games listener', err);
+      showToast('No se pudo conectar a la lista de partidas.', 'error');
+    });
+}
+// Suscribirse a una partida específica (per-game listener).
+function _selectBingoGame(gameId) {
+  if (bingoUnsub) { bingoUnsub(); bingoUnsub = null; }
+  bingoGame = null;
+  _bingoGameId = gameId;
+  BINGO_REF = db.collection('bingo').doc(gameId);
+  _renderBingoPane();
   bingoUnsub = BINGO_REF.onSnapshot(snap => {
-    // OJO: snap.exists===false significa "todavía nadie creó una partida" (estado normal, NO es
-    // "sigo cargando") — por eso NO se setea a null aquí, sino a {status:'idle'}. bingoGame queda
-    // en null SOLO antes de que llegue el primer snapshot (de ahí depende el "Cargando..." real).
     const prevStatus = bingoGame ? bingoGame.status : null;
-    bingoGame = snap.exists ? snap.data() : { status:'idle' };
-    // Si arrancó una partida nueva (o no hay ninguna) se limpia el estado efímero local del
-    // reto/bloqueo/poderes — si no, podía quedar pegado el modal de un reto de la partida anterior.
-    if (bingoGame.status==='idle' || (prevStatus==='ended' && bingoGame.status==='lobby')) { _bingoResetLocalState(); _bingoEndShown = false; }
+    bingoGame = snap.exists ? snap.data() : { status: 'ended' };
+    if (prevStatus === 'ended' && bingoGame.status === 'lobby') { _bingoResetLocalState(); _bingoEndShown = false; }
     if (prevStatus === 'lobby' && bingoGame.status === 'playing') _bingoEndShown = false;
-    // Auto-navegar a /student/bingo (pantalla completa) en cuanto el host hace clic en
-    // "Iniciar sorteo" — pedido explícito: que a todos los alumnos ya unidos se les cargue
-    // automáticamente la pantalla del sorteo sin tener que entrar manualmente a GAMING.
     try {
       const me = _bingoMe();
       const amPlaying = !!(bingoGame.players && bingoGame.players[me.uid]);
       if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying && currentView !== 'bingo') {
         go('bingo');
       }
-      // Modal de reglas: mostrar una sola vez cuando arranca el sorteo
       if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying) {
-        _bingoRulesShown = false; // reset por si se reutiliza
+        _bingoRulesShown = false;
       }
       if (bingoGame.status === 'playing' && amPlaying && !_bingoRulesShown) {
         _bingoRulesShown = true;
         setTimeout(_bingoShowRulesModal, 800);
       }
-      // Detectar nuevo ganador de tier → modal de premio
       const curWinners = bingoGame.tierWinners || {};
       BINGO_TIER_ORDER.forEach(tier => {
         if (curWinners[tier] && !_prevBingoTierWinners[tier]) {
@@ -2166,7 +2196,6 @@ function startBingoListener() {
         }
       });
       _prevBingoTierWinners = Object.assign({}, curWinners);
-      // Detectar fin de partida → modal resumen de ganadores
       if (prevStatus === 'playing' && bingoGame.status === 'ended' && !_bingoEndShown) {
         _bingoEndShown = true;
         setTimeout(() => _bingoShowEndModal(bingoGame), 900);
@@ -2175,8 +2204,20 @@ function startBingoListener() {
     _renderBingoPane();
   }, err => {
     console.error('bingo listener', err);
-    showToast('No se pudo conectar al Bingo (' + (err.code||err.message||'error') + ')', 'error');
+    showToast('No se pudo conectar al Bingo (' + (err.code || err.message || 'error') + ')', 'error');
   });
+}
+// Salir de la partida activa y volver a la lista.
+function _leaveBingoGame() {
+  if (bingoUnsub) { bingoUnsub(); bingoUnsub = null; }
+  bingoGame = null;
+  _bingoGameId = null;
+  BINGO_REF = null;
+  _bingoResetLocalState();
+  _bingoEndShown = false;
+  _bingoChallengeResult = null;
+  document.getElementById('bpm-overlay')?.remove();
+  _renderBingoPane();
 }
 function _bingoEnsureTimer() {
   const need = !!(bingoGame && (bingoGame.status === 'playing' || bingoGame.status === 'lobby'));
@@ -2386,19 +2427,11 @@ function setBubbleShape(shape) {
 }
 function createBingoGame() {
   if (bingoCreating) return;
-  if (bingoGame && bingoGame.status && bingoGame.status!=='idle') { showToast('Ya hay una partida activa, únete a esa.','error'); return; }
   bingoCreating = true;
-  // OJO: todo el cuerpo va en try/catch — si algo revienta de forma síncrona (antes de
-  // llegar al .then/.catch de Firestore) bingoCreating se quedaba en true para siempre y
-  // el botón "Crear partida" dejaba de responder en todos los clicks futuros, en silencio.
   try {
     const me = _bingoMe();
-    const cardCount = 1; // el host puede subirlo desde el lobby antes de iniciar el sorteo
-    // El host se agrega como jugador en la MISMA escritura (no con un joinBingoGame()
-    // encadenado después) — encadenarlo dependía de que el listener ya hubiera actualizado
-    // la variable global bingoGame antes de que corriera el .then(), y esa carrera a veces
-    // perdía, dejando al host sin unirse a su propia partida ("Aún no se unió nadie").
-    BINGO_REF.set({
+    const cardCount = 1;
+    db.collection('bingo').add({
       status:'lobby', hostId: me.uid, hostName: me.name,
       createdAt: Date.now(), drawnNumbers:[], currentNumber:null,
       nextDrawAt:null, intervalMs:4500,
@@ -2408,25 +2441,34 @@ function createBingoGame() {
       challengeActive:false, challengeId:null, challengeEndsAt:null, questions:[], nextChallengeAtDraw:null,
       tierWinners:{}, retoCount:0,
       players:{ [me.uid]: _bingoNewPlayer(me, cardCount) }
-    }).then(()=>{ bingoCreating=false; })
-      .catch(e=>{
-        bingoCreating=false;
-        showToast('No se pudo crear la partida (' + (e.code||e.message||'error') + ').','error');
-        console.error('bingo create', e);
-      });
+    }).then(ref => {
+      bingoCreating = false;
+      _selectBingoGame(ref.id); // entrar a la partida recién creada
+    }).catch(e => {
+      bingoCreating = false;
+      showToast('No se pudo crear la partida (' + (e.code||e.message||'error') + ').', 'error');
+      console.error('bingo create', e);
+    });
   } catch(e) {
     bingoCreating = false;
-    showToast('No se pudo crear la partida (' + (e.message||'error') + ').','error');
+    showToast('No se pudo crear la partida (' + (e.message||'error') + ').', 'error');
     console.error('bingo create sync', e);
   }
 }
-function joinBingoGame() {
-  if (!bingoGame || bingoGame.status==='idle' || bingoGame.status==='ended') return;
+function joinBingoGame(gameId) {
+  if (!gameId) return;
+  const game = bingoGames.find(g => g.id === gameId);
+  if (!game) {
+    // Si no está en la lista (ya terminó), intentar seleccionarla directamente
+    _selectBingoGame(gameId); return;
+  }
   const me = _bingoMe();
-  if (bingoGame.players && bingoGame.players[me.uid]) return; // ya está dentro
-  const player = _bingoNewPlayer(me, bingoGame.cardCount||1);
-  BINGO_REF.update({ [`players.${me.uid}`]: player })
-    .catch(e=>{ showToast('No se pudo unir a la partida.','error'); console.error(e); });
+  if ((game.players||{})[me.uid]) { _selectBingoGame(gameId); return; } // ya está dentro
+  if (game.status === 'playing') { showToast('Esta partida ya empezó — no puedes unirte.', 'error'); return; }
+  const player = _bingoNewPlayer(me, game.cardCount||1);
+  db.collection('bingo').doc(gameId).update({ [`players.${me.uid}`]: player })
+    .then(() => _selectBingoGame(gameId))
+    .catch(e => { showToast('No se pudo unir a la partida.', 'error'); console.error(e); });
 }
 // Ajustes del lobby (solo host, solo antes de iniciar).
 function setBingoConfig(field, value) {
@@ -2462,9 +2504,9 @@ function startBingoDraw() {
 }
 function endBingoGame() {
   const me = _bingoMe();
-  if (!bingoGame) return;
+  if (!bingoGame || !BINGO_REF) return;
   if (bingoGame.hostId!==me.uid && !isAdmin()) return;
-  BINGO_REF.set({ status:'idle', updatedAt:Date.now() })
+  BINGO_REF.update({ status:'ended', updatedAt:Date.now() })
     .catch(e=>console.error('bingo end',e));
 }
 function markBingoCell(cardIdx, num) {
@@ -2607,18 +2649,23 @@ function _bingoFinishChallenge(correctCount) {
   const total = (bingoGame.questions||[]).length || 5;
   const perfect = correctCount >= total;
   const patch = { [`players.${me.uid}.lastChallengeId`]: bingoGame.challengeId };
+  let charges = 0, fast = false, fails = 0;
   if (perfect) {
     const timeRemaining = Math.max(0, ((bingoGame.challengeEndsAt||0) - Date.now()) / 1000);
-    const charges = timeRemaining > 30 ? 2 : 1;
-    patch[`players.${me.uid}.blockedMarks`] = []; // reto perfecto: limpia todos los bloqueos
+    fast = timeRemaining > 30; // > 30s restantes = usó < 30s
+    charges = fast ? 2 : 1;
+    patch[`players.${me.uid}.blockedMarks`] = [];
     patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
   } else {
-    patch[`players.${me.uid}.pendingBlock`] = { challengeId: bingoGame.challengeId, fails: total-correctCount, deadline: Date.now() + (bingoGame.blockSeconds||60)*1000 };
+    fails = total - correctCount;
+    patch[`players.${me.uid}.pendingBlock`] = { challengeId: bingoGame.challengeId, fails, deadline: Date.now() + (bingoGame.blockSeconds||60)*1000 };
   }
-  const charges = patch[`players.${me.uid}.powerCharges`] !== undefined
-    ? patch[`players.${me.uid}.powerCharges`] - (player.powerCharges||0) : 0;
+  // Mostrar resultado visual antes de que Firestore actualice el snap
+  _bingoChallengeResult = { perfect, fast, charges, fails };
+  _renderBingoPane();
+  setTimeout(() => { _bingoChallengeResult = null; _renderBingoPane(); }, 3500);
   BINGO_REF.update(patch)
-    .then(()=> showToast(perfect ? `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.` : `Fallaste ${total-correctCount}. Debes bloquear ${total-correctCount} casilla(s) marcada(s).`, perfect?'success':'error'))
+    .then(()=> showToast(perfect ? `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.` : `Fallaste ${fails}. Debes bloquear ${fails} casilla(s) marcada(s).`, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
   bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoBlockSelection = [];
 }
@@ -2915,17 +2962,40 @@ function _bingoPaneHtml() {
       </div>
     </div>`;
 
-  if (!bingoGame) return titleHtml + `<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>Cargando...</div>`;
-  const status = bingoGame.status || 'idle';
+  // ── Lista de partidas (pantalla de selección, cuando no hay partida activa) ──────
+  if (!_bingoGameId) {
+    let glHtml = '<div class="bingo-games-list">';
+    if (!bingoGames.length) {
+      glHtml += '<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>' +
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">No hay partidas activas</div>' +
+        '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Crea una nueva para empezar</div></div>';
+    } else {
+      try {
+        const _me = _bingoMe();
+        bingoGames.forEach(g => {
+          const _pc = Object.values(g.players||{}).filter(p=>!p.isBot).length;
+          const _in = !!((g.players||{})[_me.uid]);
+          const _ok = g.status==='lobby' || _in;
+          const _sb = g.status==='lobby' ? '🕐 Esperando' : '🎮 En juego';
+          const _bl = _in ? 'Continuar →' : (_ok ? 'Entrar →' : 'Ya empezó');
+          glHtml += `<div class="bingo-game-card${!_ok?' bgc-locked':''}" onclick="${_ok?`joinBingoGame('${g.id}')`:''}" >` +
+            `<div class="bgc-head"><span class="bgc-host">👑 ${g.hostName||'Anónimo'}</span>` +
+            `<span class="bgc-badge${g.status==='playing'?' bgc-badge-playing':''}">${_sb}</span></div>` +
+            `<div class="bgc-meta"><span>👥 ${_pc} jugador${_pc!==1?'es':''}</span>${_in?'<span class="bgc-in">✓ Ya estás dentro</span>':''}</div>` +
+            `<button class="bgc-join-btn"${!_ok?' disabled':''} onclick="event.stopPropagation();${_ok?`joinBingoGame('${g.id}')`:''}">${_bl}</button>` +
+            `</div>`;
+        });
+      } catch(e) {}
+    }
+    glHtml += '<button class="bingo-create-btn" style="margin-top:10px" onclick="createBingoGame()">🎲 + Crear nueva partida</button></div>';
+    return titleHtml + glHtml;
+  }
+
+  if (!bingoGame) return titleHtml + `<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>Cargando partida...</div>`;
+  const status = bingoGame.status || 'ended';
 
   if (status==='idle') {
-    return titleHtml + `
-      <div class="bingo-empty">
-        <div class="bingo-empty-ico">🎱</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">No hay partida activa</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Cualquiera puede crear el bingo en vivo — alumnos o profe</div>
-        <button class="bingo-create-btn" onclick="createBingoGame()">🎲 Crear partida de Bingo</button>
-      </div>`;
+    return titleHtml + `<div class="bingo-empty"><button class="bingo-leave-btn" onclick="_leaveBingoGame()">← Volver a partidas</button></div>`;
   }
 
   const me        = _bingoMe();
@@ -2935,7 +3005,10 @@ function _bingoPaneHtml() {
   const playersArr = Object.values(players);
 
   const hostLine = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-      <span class="bingo-host-badge">👑 Host: ${bingoGame.hostName||'—'}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="bingo-leave-btn" onclick="_leaveBingoGame()">← Salir</button>
+        <span class="bingo-host-badge">👑 Host: ${bingoGame.hostName||'—'}</span>
+      </div>
       <div style="display:flex;gap:6px">
         ${currentView!=='bingo' ? `<button class="bingo-full-btn" onclick="go('bingo')">⛶ Pantalla completa</button>` : ''}
         ${(isHost||isAdmin()) ? `<button class="bingo-end-btn" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
@@ -2965,7 +3038,7 @@ function _bingoPaneHtml() {
         </div>
       </div>`;
     body += !myPlayer
-      ? `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`
+      ? `<button class="bingo-join-btn" onclick="joinBingoGame(_bingoGameId)">🃏 Unirme a la partida</button>`
       : `<div style="font-size:11px;color:#4ade80;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>
          <div class="bingo-status-row" style="margin-top:7px">
            <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
@@ -2977,7 +3050,7 @@ function _bingoPaneHtml() {
     const cur    = bingoGame.currentNumber;
     const frozen = myPlayer ? _bingoAmFrozen(myPlayer) : false;
 
-    if (status==='ended') body += `<div class="bingo-ended-banner">🏁 ¡Partida terminada! Se sortearon ${drawn.length} números.</div>`;
+    if (status==='ended') body += `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px"><div class="bingo-ended-banner">🏁 ¡Partida terminada! Se sortearon ${drawn.length} números.</div><button class="bingo-leave-btn" onclick="_leaveBingoGame()">← Volver</button></div>`;
 
     // Caja consolidada de sorteo — calco 1:1 del header de neon-bingo_31.html (ball box + 2 stats + 2 barras).
     const numPhase = bingoGame.numPhase;
@@ -3262,21 +3335,40 @@ function _bingoPaneHtml() {
       }
     }
 
-    if (bingoGame.challengeActive && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId) {
-      const qs = bingoGame.questions || [];
-      const q = qs[bingoChallengeIdx];
-      const remain = Math.max(0, Math.round(((bingoGame.challengeEndsAt||0)-Date.now())/1000));
-      const pct = Math.max(0, Math.min(100, (remain/(bingoGame.challengeSeconds||60))*100));
-      body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
-          <div class="bcc-title">🧠 ¡Reto Matemático!</div>
-          <div class="bcc-sub">Responde las 5 preguntas — reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.</div>
-          <div class="bcc-bar"><div class="bcc-bar-fill" style="width:${pct}%"></div></div>
-          <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
-          ${q ? `<div class="bcc-question">${q.q}</div>
-          <input class="bcc-input" id="bingo-challenge-input" type="number" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
-          <button class="bcc-submit" onclick="submitBingoChallengeAnswer(document.getElementById('bingo-challenge-input').value)">Responder</button>
-          <div class="bcc-foot">⏱ ${remain}s restantes · Pregunta ${bingoChallengeIdx+1}/${qs.length}</div>` : ''}
-        </div></div>`;
+    const _showChallenge = bingoGame.challengeActive && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId;
+    const _showResult = !!_bingoChallengeResult;
+    if (_showChallenge || _showResult) {
+      if (_showResult) {
+        const _r = _bingoChallengeResult;
+        const _rC = _r.perfect && _r.fast ? 'green' : _r.perfect ? 'yellow' : 'red';
+        const _rIco = _r.perfect && _r.fast ? '🚀' : _r.perfect ? '✅' : '😓';
+        const _rH = _r.perfect && _r.fast ? '¡Rapidísimo!' : _r.perfect ? '¡Reto completo!' : 'Tiempo agotado';
+        const _rB = _r.perfect && _r.fast
+          ? `🎉 ¡Felicidades! Ganaste ${_r.charges} cargas ⚡ por hacerlo en menos de 30 segundos.`
+          : _r.perfect
+            ? `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de 30s la próxima vez para ganar 2!`
+            : `❌ Fallaste ${_r.fails} pregunta(s). Debes bloquear ${_r.fails} casilla(s) marcada(s).`;
+        body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-${_rC}">
+            <div class="bcc-result-ico">${_rIco}</div>
+            <div class="bcc-result-h">${_rH}</div>
+            <div class="bcc-result-body">${_rB}</div>
+          </div></div>`;
+      } else {
+        const qs = bingoGame.questions || [];
+        const q = qs[bingoChallengeIdx];
+        const remain = Math.max(0, Math.round(((bingoGame.challengeEndsAt||0)-Date.now())/1000));
+        const pct = Math.max(0, Math.min(100, (remain/(bingoGame.challengeSeconds||60))*100));
+        body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
+            <div class="bcc-title">🧠 ¡Reto Matemático!</div>
+            <div class="bcc-sub">Responde las 5 preguntas — reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.</div>
+            <div class="bcc-bar"><div class="bcc-bar-fill" style="width:${pct}%"></div></div>
+            <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
+            ${q ? `<div class="bcc-question">${q.q}</div>
+            <input class="bcc-input" id="bingo-challenge-input" type="number" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
+            <button class="bcc-submit" onclick="submitBingoChallengeAnswer(document.getElementById('bingo-challenge-input').value)">Responder</button>
+            <div class="bcc-foot">⏱ ${remain}s restantes · Pregunta ${bingoChallengeIdx+1}/${qs.length}</div>` : ''}
+          </div></div>`;
+      }
     }
 
     const winnersByTier = { terna:[], cuaterna:[], quina:[], bingo:[] };
