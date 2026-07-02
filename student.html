@@ -602,38 +602,27 @@ textarea.fsm { resize:none; height:64px; }
 .bpn-bubble-rect{background:rgba(255,255,255,0.11);border:1px solid rgba(255,255,255,0.22);border-radius:10px}
 .bpn-bubble-rect::before{content:'';position:absolute;bottom:100%;left:12px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:11px solid rgba(255,255,255,0.22)}
 .bpn-bubble-rect::after{content:'';position:absolute;bottom:calc(100% - 1px);left:13px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:10px solid rgba(255,255,255,0.11)}
-/* ÓVALO con cola triangular */
-.bpn-bubble-oval{background:rgba(255,255,255,0.11);border:1px solid rgba(255,255,255,0.22);border-radius:50%}
-.bpn-bubble-oval::before{content:'';position:absolute;bottom:calc(100% - 3px);left:10px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid rgba(255,255,255,0.22)}
-.bpn-bubble-oval::after{content:'';position:absolute;bottom:calc(100% - 3px);left:11px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid rgba(255,255,255,0.11)}
 /* NUBE ESPONJOSA: blob orgánico + circulitos de pensamiento */
 .bpn-bubble-cloud{background:rgba(255,255,255,0.11);border:1px solid rgba(255,255,255,0.22);border-radius:30% 70% 60% 40%/55% 45% 65% 50%}
 .bpn-bubble-cloud::before{content:'';position:absolute;bottom:calc(100% + 3px);left:12px;width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.28)}
 .bpn-bubble-cloud::after{content:'';position:absolute;bottom:calc(100% + 15px);left:16px;width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.28)}
-/* EXPLOSIÓN: estrella de 8 puntas */
-.bpn-bubble-burst{background:rgba(255,255,255,0.11);clip-path:polygon(50% 5%,55% 35%,75% 18%,62% 43%,92% 40%,70% 55%,92% 68%,62% 60%,75% 88%,52% 67%,50% 95%,48% 67%,25% 88%,38% 60%,8% 68%,30% 55%,8% 40%,38% 43%,25% 18%,45% 35%);filter:drop-shadow(0 0 1px rgba(255,255,255,0.35));padding:10px 18px}
 /* ── Variante activa (mi pill) ── */
-.bpn-pill.active .bpn-bubble-rect,.bpn-pill.active .bpn-bubble-oval,.bpn-pill.active .bpn-bubble-cloud{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5);color:#e9d5ff}
+.bpn-pill.active .bpn-bubble-rect,.bpn-pill.active .bpn-bubble-cloud{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5);color:#e9d5ff}
 .bpn-pill.active .bpn-bubble-cloud::before,.bpn-pill.active .bpn-bubble-cloud::after{background:rgba(168,85,247,0.25);border-color:rgba(168,85,247,0.55)}
-.bpn-pill.active .bpn-bubble-oval::before{border-bottom-color:rgba(168,85,247,0.5)}
-.bpn-pill.active .bpn-bubble-oval::after{border-bottom-color:rgba(168,85,247,0.18)}
 .bpn-pill.active .bpn-bubble-rect::before{border-bottom-color:rgba(168,85,247,0.5)}
 .bpn-pill.active .bpn-bubble-rect::after{border-bottom-color:rgba(168,85,247,0.18)}
-.bpn-pill.active .bpn-bubble-burst{background:rgba(168,85,247,0.22);filter:drop-shadow(0 0 2px rgba(168,85,247,0.6));color:#e9d5ff}
 /* ── Selector de forma (en fila de estado) ── */
 .bsr-shapes{display:flex;gap:5px;flex-shrink:0;align-items:center}
-.bsr-shape{width:22px;height:16px;border:none;cursor:pointer;padding:0;opacity:0.38;transition:opacity .15s,filter .15s;flex-shrink:0;background:rgba(255,255,255,0.2)}
+.bsr-shape{width:26px;height:26px;border:none;cursor:pointer;padding:0;opacity:0.38;transition:opacity .15s,filter .15s;flex-shrink:0;background:rgba(255,255,255,0.2)}
 .bsr-shape:hover{opacity:0.7}
 .bsr-shape.bsr-active{opacity:1;filter:drop-shadow(0 0 3px rgba(168,85,247,1))}
 .bsr-shape-cloud{border-radius:30% 70% 60% 40%/55% 45% 65% 50%}
-.bsr-shape-oval{border-radius:50%}
-.bsr-shape-burst{clip-path:polygon(50% 5%,55% 35%,75% 18%,62% 43%,92% 40%,70% 55%,92% 68%,62% 60%,75% 88%,52% 67%,50% 95%,48% 67%,25% 88%,38% 60%,8% 68%,30% 55%,8% 40%,38% 43%,25% 18%,45% 35%)}
 .bsr-shape-rect{border-radius:3px}
 .bpn-bot{opacity:0.65}
 /* Fila de estado editable en la partida */
 .bingo-status-row{display:flex;align-items:center;gap:7px;margin:4px 0 10px;padding:2px 0}
 .bsr-ico{font-size:13px;flex-shrink:0;opacity:0.6}
-.bingo-status-input.bsr-inline{margin-top:0;flex:1;font-size:11px;padding:6px 10px}
+.bingo-status-input.bsr-inline{margin-top:0;width:110px;flex-shrink:0;font-size:11px;padding:5px 10px;height:auto;box-sizing:border-box}
 .bingo-card-hdr.shielded{background:#fff;color:#111;border-radius:4px;font-weight:900}
 .bingo-card-hdr.fortifiable{color:#4ade80;cursor:pointer;text-shadow:0 0 6px rgba(74,222,128,0.7);animation:twPulse 1.5s ease-in-out infinite}
 .bingo-card-hdr.fortifiable:hover{background:rgba(74,222,128,0.15);border-radius:4px}
@@ -2371,7 +2360,7 @@ function setBubbleShape(shape) {
   try {
     const me = _bingoMe();
     if (!bingoGame || !me || !(bingoGame.players||{})[me.uid]) return;
-    if (!['cloud','oval','burst','rect'].includes(shape)) return;
+    if (!['cloud','rect'].includes(shape)) return;
     BINGO_REF.update({ [`players.${me.uid}.playerBubbleShape`]: shape })
       .catch(e => console.error('bingo bubble shape', e));
   } catch(e) {}
@@ -2960,7 +2949,7 @@ function _bingoPaneHtml() {
       ? `<button class="bingo-join-btn" onclick="joinBingoGame()">🃏 Unirme a la partida</button>`
       : `<div style="font-size:11px;color:#4ade80;font-weight:700;margin-top:4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>
          <div class="bingo-status-row" style="margin-top:7px">
-           <div class="bsr-shapes">${['rect','oval','cloud','burst'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',oval:'Óvalo',cloud:'Nube',burst:'Explosión'}[s]}"></button>`).join('')}</div>
+           <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
            <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="30" placeholder="Tu estado... (emoji o texto)" value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
          </div>`;
     if (isHost) body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
@@ -3109,11 +3098,11 @@ function _bingoPaneHtml() {
           const statusLine = (!isLocked && p.playerStatus) ? `<span class="bpn-status-bubble bpn-bubble-${bubbleShape}"><span class="bpn-bubble-text">${p.playerStatus}</span></span>` : '';
           navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}><span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span>${statusLine}</div>`;
         });
+        navHtml += `<div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>`;
+        navHtml += `<input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="30" placeholder="Tu estado..." value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">`;
         navHtml += `</div>`;
         body += navHtml;
       }
-      // ── Estado del jugador: editable durante toda la partida ─────────────────
-      body += `<div class="bingo-status-row"><div class="bsr-shapes">${['rect','oval','cloud','burst'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',oval:'Óvalo',cloud:'Nube',burst:'Explosión'}[s]}"></button>`).join('')}</div><input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="30" placeholder="Tu estado... (emoji o texto)" value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}"></div>`;
 
       // ── Cartones: propios (interactivos) o rival (solo-lectura) ──────────────
       {
