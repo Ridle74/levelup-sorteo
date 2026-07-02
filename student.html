@@ -586,8 +586,18 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-player-nav::-webkit-scrollbar{display:none}
 .bpn-pill{flex-shrink:0;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 16px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:#6b7280;transition:all .15s;display:inline-flex;flex-direction:column;align-items:stretch;gap:1px}
 .bpn-main{display:flex;align-items:center;gap:6px;white-space:nowrap}
-.bpn-status{font-size:9px;color:rgba(255,255,255,0.38);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;line-height:1}
+/* Speech bubble de estado de jugador */
+.bpn-status-bubble{position:relative;display:inline-block;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:2px 8px;font-size:9px;color:rgba(255,255,255,0.65);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;line-height:1.5;margin-top:4px}
+.bpn-status-bubble::before{content:'';position:absolute;bottom:100%;left:10px;border:4px solid transparent;border-bottom-color:rgba(255,255,255,0.14)}
+.bpn-status-bubble::after{content:'';position:absolute;bottom:calc(100% - 1px);left:10px;border:4px solid transparent;border-bottom-color:rgba(30,10,50,0.9)}
+.bpn-pill.active .bpn-status-bubble{background:rgba(168,85,247,0.16);border-color:rgba(168,85,247,0.35);color:#c084fc}
+.bpn-pill.active .bpn-status-bubble::before{border-bottom-color:rgba(168,85,247,0.35)}
+.bpn-pill.active .bpn-status-bubble::after{border-bottom-color:rgba(20,10,40,0.95)}
 .bpn-bot{opacity:0.65}
+/* Fila de estado editable en la partida */
+.bingo-status-row{display:flex;align-items:center;gap:7px;margin:4px 0 10px;padding:2px 0}
+.bsr-ico{font-size:13px;flex-shrink:0;opacity:0.6}
+.bingo-status-input.bsr-inline{margin-top:0;flex:1;font-size:11px;padding:6px 10px}
 .bpn-pill:hover{border-color:#374151;color:#d1d5db}
 .bpn-pill.active{background:linear-gradient(135deg,#1e1b4b,#0a0e1a);border-color:#a855f7;color:#e2e8f0;box-shadow:0 0 10px -3px rgba(168,85,247,0.4)}
 .bpn-rank{font-size:11px;color:#6b7280;font-weight:900}
@@ -3049,7 +3059,7 @@ function _bingoPaneHtml() {
           const onclick = isCongelarTarget
             ? `onclick="doBingoCongelarRival('${uid}')"`
             : `onclick="_bingoSetViewPlayer('${uid}')"`;
-          const statusLine = (!isLocked && p.playerStatus) ? `<span class="bpn-status">${p.playerStatus}</span>` : '';
+          const statusLine = (!isLocked && p.playerStatus) ? `<span class="bpn-status-bubble">💬 ${p.playerStatus}</span>` : '';
           navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}>
             <span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span>${statusLine}
           </div>`;
@@ -3057,6 +3067,8 @@ function _bingoPaneHtml() {
         navHtml += `</div>`;
         body += navHtml;
       }
+      // ── Estado del jugador: editable durante toda la partida ─────────────────
+      body += `<div class="bingo-status-row"><span class="bsr-ico">💬</span><input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="30" placeholder="Tu estado... (emoji o texto)" value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}"></div>`;
 
       // ── Cartones: propios (interactivos) o rival (solo-lectura) ──────────────
       {
