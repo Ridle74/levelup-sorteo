@@ -2757,15 +2757,32 @@ function _bingoFinishChallenge(correctCount) {
     patch[`players.${me.uid}.blockedMarks`] = [];
     patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
   } else {
-    fails = total - correctCount;
-    patch[`players.${me.uid}.pendingBlock`] = { challengeId: bingoGame.challengeId, fails, deadline: Date.now() + (bingoGame.blockSeconds||60)*1000 };
+    fails = total - correctCount; // número de preguntas no completadas
+    // Bloqueo automático: los últimos `fails` números sorteados (o todos si hay menos)
+    const _drawn = (bingoGame.drawnNumbers||[]).filter(n => n !== 0);
+    const _toBlock = _drawn.slice(-Math.min(fails, _drawn.length));
+    const _cards = player.cards || {};
+    const _newBlocked = [...(player.blockedMarks||[])];
+    _toBlock.forEach(num => {
+      Object.keys(_cards).forEach(ci => {
+        const _ci = Number(ci);
+        if ((_cards[ci]||[]).includes(num) && !_newBlocked.some(b=>b.c===_ci&&b.n===num))
+          _newBlocked.push({c:_ci, n:num});
+      });
+    });
+    // Eliminar marcas bloqueadas del array marks
+    const _newMarks = (player.marks||[]).filter(m => !_newBlocked.some(b=>b.c===m.c&&b.n===m.n));
+    patch[`players.${me.uid}.blockedMarks`] = _newBlocked;
+    patch[`players.${me.uid}.marks`]        = _newMarks;
+    patch[`players.${me.uid}.pendingBlock`]  = null;
+    fails = _toBlock.length; // real count for display
   }
   // Mostrar resultado visual antes de que Firestore actualice el snap
   _bingoChallengeResult = { perfect, fast, charges, fails };
   _renderBingoPane();
   setTimeout(() => { _bingoChallengeResult = null; _renderBingoPane(); }, 3500);
   BINGO_REF.update(patch)
-    .then(()=> showToast(perfect ? `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.` : `Fallaste ${fails}. Debes bloquear ${fails} casilla(s) marcada(s).`, perfect?'success':'error'))
+    .then(()=> showToast(perfect ? `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.` : `⛔ Bloqueamos automáticamente ${fails} número${fails!==1?'s':''} de tus cartones.`, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
   bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoBlockSelection = [];
 }
@@ -3481,7 +3498,7 @@ function _bingoPaneHtml() {
       const myMarks = myPlayer.marks || [];
       const myBlocked = myPlayer.blockedMarks || [];
       const cardIds = Object.keys(myPlayer.cards||{}).sort((a,b)=>Number(a)-Number(b));
-      const blockingActive = !!myPlayer.pendingBlock;
+      const blockingActive = false; // bloqueo ahora es automático, no requiere acción del jugador
       // ── Barra de navegación de jugadores ─────────────────────────────────────
       {
         const navEntries = Object.entries(bingoGame.players||{})
@@ -3603,7 +3620,7 @@ function _bingoPaneHtml() {
               body += `<div class="${cl}" ${fn2} ${tt}>${isSabotaged?'❄️':num}</div>`;
             } else {
               // Modo propio: interactivo; si hay poder de casilla activo, clic usa el poder
-              const isSelecting = !!(myPlayer.pendingBlock && bingoBlockSelection.some(s=>s.c===cardIdx&&s.n===num));
+              const isSelecting = false; // bloqueo automático
               const hasBitacora = (myPlayer.unlockedPowers||{}).bitacora;
               const isHl = hasBitacora && status==='playing' && (bingoGame.numPhase==='calc'||bingoGame.numPhase==='mark') && bingoGame.highlightCol===c && !isMarked && !isBlocked && !isSabotaged;
               const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isSelecting?'selecting':(isMarked?'marked':(isHl?'hl':''))));
@@ -3636,14 +3653,7 @@ function _bingoPaneHtml() {
         body += `</div>`;
       }
 
-      if (myPlayer.pendingBlock) {
-        const remain = Math.max(0, Math.round(((myPlayer.pendingBlock.deadline||0)-Date.now())/1000));
-        body += `<div class="bingo-block-banner">
-            <div class="bbb-title">⛔ Fallaste ${myPlayer.pendingBlock.fails} pregunta(s) — elige ${myPlayer.pendingBlock.fails} casilla(s) marcada(s) para bloquear</div>
-            <div class="bbb-sub">Toca tus casillas marcadas para elegir · ${bingoBlockSelection.length}/${myPlayer.pendingBlock.fails} elegidas · ⏱ ${remain}s (si se acaba, se eligen al azar)</div>
-            <button class="bbb-apply" onclick="applyBingoBlocks()">Confirmar bloqueo</button>
-          </div>`;
-      }
+      // (bloqueo de reto es ahora automático — no hay banner de selección manual)
 
       if (status==='playing' && !frozen) {
         body += `<div class="bingo-powers-box">
@@ -3766,7 +3776,7 @@ function _bingoPaneHtml() {
           ? `🎉 ¡Felicidades! Ganaste ${_r.charges} cargas ⚡ por hacerlo en menos de 30 segundos.`
           : _r.perfect
             ? `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de 30s la próxima vez para ganar 2!`
-            : `❌ Fallaste ${_r.fails} pregunta(s). Debes bloquear ${_r.fails} casilla(s) marcada(s).`;
+            : `⛔ No completaste el reto — bloqueamos automáticamente ${_r.fails} número${_r.fails!==1?'s':''} de tus cartones.`;
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-${_rC}">
             <div class="bcc-result-ico">${_rIco}</div>
             <div class="bcc-result-h">${_rH}</div>
