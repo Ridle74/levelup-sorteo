@@ -641,6 +641,18 @@ textarea.fsm { resize:none; height:64px; }
 .bcb-camufle-btn{margin-left:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);border-radius:6px;padding:2px 7px;font-size:11px;cursor:pointer;vertical-align:middle}
 .bcb-camufle-btn.active{background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.4);color:#c084fc}
 .bpx-revenge-banner{background:linear-gradient(135deg,rgba(234,179,8,0.18),rgba(251,146,60,0.1));border:1px solid rgba(234,179,8,0.4);border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#fde68a;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+/* ── Leaderboard Desafío ── */
+.bdl-overlay{position:fixed;bottom:80px;right:12px;z-index:9998;width:min(340px,calc(100vw - 24px))}
+.bdl-panel{background:#0a0e1a;border:1px solid rgba(245,158,11,0.5);border-radius:16px;padding:14px 16px;box-shadow:0 0 40px -8px rgba(245,158,11,0.35);font-family:'Barlow Condensed',sans-serif}
+.bdl-header{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:900;color:#fde68a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.bdl-close{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
+.bdl-myrow{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.bdl-rows{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto}
+.bdl-row{display:grid;grid-template-columns:18px 1fr 36px auto;align-items:center;gap:6px;padding:4px 6px;border-radius:8px;background:rgba(255,255,255,0.04)}
+.bdl-rank{font-size:10px;color:rgba(255,255,255,0.3);font-weight:900;text-align:right}
+.bdl-name{font-size:13px;color:#e2e8f0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdl-time{font-size:12px;color:#facc15;font-weight:900;text-align:right}
+.bdl-btn{background:linear-gradient(135deg,#b45309,#dc2626);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:900;cursor:pointer;font-family:'Barlow Condensed',sans-serif;white-space:nowrap}
 .bpx-revenge-btn{background:linear-gradient(135deg,#b45309,#ea580c);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .bpx-revenge-active{background:linear-gradient(135deg,rgba(234,179,8,0.25),rgba(239,68,68,0.15));border:1px solid rgba(234,179,8,0.6);border-radius:10px;padding:8px 14px;margin-bottom:8px;font-size:12px;font-weight:700;color:#fde68a;display:flex;align-items:center;flex-wrap:wrap;gap:6px;animation:twPulse 1.2s ease-in-out infinite}
 .bpx-cat-lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);margin:10px 0 5px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)}
@@ -947,6 +959,9 @@ let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espian
 let _bingoEmojiPickerOpen = false;
 let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {srcCardIdx, srcNum})
 let _bingoRevengeActive  = false; // true cuando el jugador está ejecutando su venganza
+let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
+let _bingoDuelError      = false;
+let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
 let _bingoGameId         = null; // ID del doc activo en la colección bingo/ (null = pantalla de lista)
 let bingoGames           = [];   // lista en vivo de partidas (lobby/playing) del listener de colección
 let bingoGamesUnsub      = null; // unsub del listener de la colección bingo/
@@ -1865,6 +1880,7 @@ const BINGO_POWER_DEFS = [
   { key:'venganza', icon:'⚡', label:'Venganza',        cost:3, limit:'persistent', desc:'Asigna la protección ⚡ a uno de tus cartones (puedes cambiarla en cualquier momento). Si un rival usa Sabotaje o Robo contra ese cartón, recibes una copia del mismo poder para devolvérsela a cualquier rival — aunque ya hayas agotado ese poder.' },
   { key:'bitacora', icon:'📓', label:'Bitácora',        cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
   { key:'vision',   icon:'🔎', label:'Visión X',       cost:2, limit:'persistent', desc:'Desbloquea para toda la partida: ver los números marcados en los cartones de cualquier rival.' },
+  { key:'desafio',  icon:'⚔️', label:'Desafío',         cost:2, limit:'game',       desc:'Abre el ranking de velocidad de todos los jugadores y reta a uno. Si rechaza: pierde 6 marcas. Si acepta y tú ganas el duelo de reto matemático: pierde 4 marcas. (1 vez en la partida)' },
 ];
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
 const _bingoMakeSum = target => { const a = _bGetRandomInt(1, Math.max(1,target-1)); return `${a} + ${target-a}`; };
@@ -2395,7 +2411,8 @@ function _bingoNewPlayer(me, cardCount) {
     tiers: _bingoNewTiersMap(cardCount||1),
     powerCharges: 0, frozenUntilDraw: 0,
     unlockedPowers: {}, usedPowers: {}, shieldedColumns: [],
-    lastChallengeId: null, pendingBlock: null, playerStatus: '', playerBubbleShape: 'rect'
+    lastChallengeId: null, pendingBlock: null, playerStatus: '', playerBubbleShape: 'rect',
+    lastRetoTime: null, desafiadoUntilDraw: 0
   };
 }
 function _bingoNewBotPlayer(name, level, cardCount) {
@@ -2571,6 +2588,12 @@ function markBingoCell(cardIdx, num) {
   const player = (bingoGame.players||{})[me.uid];
   if (!player) return;
   if (_bingoAmFrozen(player)) { showToast('🥶 Estás congelado, no puedes marcar todavía.','error'); return; }
+  const _drawLen = (bingoGame.drawnNumbers||[]).length;
+  if ((player.desafiadoUntilDraw||0) > _drawLen) {
+    const _remPen = (player.desafiadoUntilDraw||0) - _drawLen;
+    showToast(`⚔️ Penalizado por Desafío: no puedes marcar por ${_remPen} número${_remPen>1?'s':''} más.`, 'error');
+    return;
+  }
   if (!(bingoGame.drawnNumbers||[]).includes(num)) { showToast('Ese número aún no ha salido.','error'); return; }
   const isBlocked = (player.blockedMarks||[]).some(m=>m.c===cardIdx && m.n===num);
   const frozenEntry = (player.frozenCells||[]).find(f=>f.c===cardIdx && f.n===num);
@@ -2729,6 +2752,8 @@ function _bingoFinishChallenge(correctCount) {
     const timeRemaining = Math.max(0, ((bingoGame.challengeEndsAt||0) - Date.now()) / 1000);
     fast = timeRemaining > 30; // > 30s restantes = usó < 30s
     charges = fast ? 2 : 1;
+    const elapsed = Math.round((bingoGame.challengeSeconds||60) - timeRemaining);
+    patch[`players.${me.uid}.lastRetoTime`] = elapsed;
     patch[`players.${me.uid}.blockedMarks`] = [];
     patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
   } else {
@@ -2985,6 +3010,97 @@ function cancelarVenganza() {
   _bingoRevengeActive = false;
   bingoActivePower = null; bingoPowerForm = {}; _bingoPowerStep = null;
   _renderBingoPane();
+}
+// ── Desafío ──────────────────────────────────────────────────────────────────
+function doBingoDesafio(targetUid) {
+  const me = _bingoMe();
+  const player = _bingoPowerUseGuard('desafio');
+  if (!player) return;
+  if (targetUid === me.uid) { showToast('No puedes desafiarte a ti mismo.','error'); return; }
+  const target = (bingoGame.players||{})[targetUid];
+  if (!target) { showToast('Jugador no encontrado.','error'); return; }
+  if (bingoGame.activeChallenge && bingoGame.activeChallenge.status !== 'resolved') {
+    showToast('Ya hay un Desafío activo en esta partida.','error'); return;
+  }
+  BINGO_REF.update({
+    activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt:null, endsAt:null, fromTime:null, toTime:null },
+    [`players.${me.uid}.usedPowers.desafio`]: true,
+  }).then(()=>{ bingoActivePower=null; _bingoLeaderboardOpen=false; _renderBingoPane(); })
+    .catch(e=>console.error('desafio send',e));
+}
+function acceptBingoDesafio() {
+  const ac = bingoGame && bingoGame.activeChallenge;
+  if (!ac || ac.status !== 'pending') return;
+  const qs = _bingoGenQuestions(bingoGame.difficulty||1, 5);
+  const secs = bingoGame.challengeSeconds || 60;
+  const now = Date.now();
+  BINGO_REF.update({
+    'activeChallenge.status': 'racing',
+    'activeChallenge.questions': qs,
+    'activeChallenge.startedAt': now,
+    'activeChallenge.endsAt': now + secs * 1000,
+  }).then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _renderBingoPane(); })
+    .catch(e=>console.error('desafio accept',e));
+}
+function rechazarBingoDesafio() {
+  const me = _bingoMe();
+  const ac = bingoGame && bingoGame.activeChallenge;
+  if (!ac || ac.status !== 'pending') return;
+  const drawLen = (bingoGame.drawnNumbers||[]).length;
+  BINGO_REF.update({
+    'activeChallenge.status': 'resolved',
+    'activeChallenge.resolvedBy': 'decline',
+    [`players.${me.uid}.desafiadoUntilDraw`]: drawLen + 6,
+  }).then(()=>{ showToast('⚔️ Rechazaste el desafío — los próximos 6 números no puedes marcarlos.','error'); _renderBingoPane(); })
+    .catch(e=>console.error('desafio rechazar',e));
+}
+function submitBingoDuelAnswer(raw) {
+  const ac = bingoGame && bingoGame.activeChallenge;
+  if (!ac || ac.status !== 'racing') return;
+  const me = _bingoMe();
+  const isFrom = me.uid === ac.fromUid;
+  if (isFrom ? ac.fromTime !== null : ac.toTime !== null) return; // ya terminé
+  const qs = ac.questions || [];
+  const q = qs[_bingoDuelIdx];
+  if (!q) return;
+  const val = Number((raw||'').trim());
+  const clearInput = () => { const el = document.getElementById('bingo-duel-input'); if (el) el.value = ''; };
+  if (Number.isNaN(val) || val !== q.a) {
+    _bingoDuelError = true; clearInput(); _renderBingoPane(); return;
+  }
+  _bingoDuelError = false;
+  _bingoDuelIdx += 1;
+  clearInput();
+  if (_bingoDuelIdx >= qs.length) {
+    _bingoDuelFinish(Date.now() - ac.startedAt);
+  } else {
+    _renderBingoPane();
+  }
+}
+function _bingoDuelFinish(elapsedMs) {
+  const me = _bingoMe();
+  const ac = bingoGame && bingoGame.activeChallenge;
+  if (!ac || ac.status !== 'racing') return;
+  const isFrom = me.uid === ac.fromUid;
+  const myField = isFrom ? 'activeChallenge.fromTime' : 'activeChallenge.toTime';
+  const otherTime = isFrom ? ac.toTime : ac.fromTime;
+  const patch = { [myField]: elapsedMs };
+  if (otherTime !== null && otherTime !== undefined) {
+    // ambos terminaron — resolver ahora
+    const fromT = isFrom ? elapsedMs : ac.fromTime;
+    const toT   = isFrom ? ac.toTime  : elapsedMs;
+    patch['activeChallenge.status'] = 'resolved';
+    patch['activeChallenge.resolvedBy'] = 'race';
+    const drawLen = (bingoGame.drawnNumbers||[]).length;
+    if (fromT < toT) {
+      // challenger ganó → penalizar al desafiado
+      patch[`players.${ac.toUid}.desafiadoUntilDraw`] = drawLen + 4;
+    }
+    // si toT <= fromT: desafiado ganó — el challenger solo pierde la carga sin penalización extra
+  }
+  BINGO_REF.update(patch)
+    .then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _renderBingoPane(); })
+    .catch(e=>console.error('duel finish',e));
 }
 // doVenganza() se llama en lugar de la función normal cuando _bingoRevengeActive===true
 function doVenganza() {
@@ -3537,7 +3653,7 @@ function _bingoPaneHtml() {
               const cats = [
                 { limit:'persistent', label:'✨ Permanentes',      keys:['bitacora','vision','fortaleza','venganza'] },
                 { limit:'reto',       label:'🔄 Por reto',         keys:['sabotaje','congelar'] },
-                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo','camufle'] },
+                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo','camufle','desafio'] },
               ];
               return cats.map(cat=>{
                 const defs = BINGO_POWER_DEFS.filter(p=>cat.keys.includes(p.key));
@@ -3577,6 +3693,67 @@ function _bingoPaneHtml() {
       }
     }
 
+    // ── Desafío: leaderboard flotante ──
+    if (_bingoLeaderboardOpen && myPlayer) {
+      const _lbPlayers = Object.entries(bingoGame.players||{})
+        .map(([uid,p])=>({uid,name:p.name||uid,t:p.lastRetoTime??null}))
+        .sort((a,b)=>{ if(a.t===null&&b.t===null)return 0; if(a.t===null)return 1; if(b.t===null)return -1; return a.t-b.t; });
+      const _myT = myPlayer.lastRetoTime??null;
+      body += `<div class="bdl-overlay">
+        <div class="bdl-panel">
+          <div class="bdl-header"><span>⚔️ Ranking de Velocidad</span>
+            <button class="bdl-close" onclick="_bingoLeaderboardOpen=false;_renderBingoPane()">✕ Cerrar</button></div>
+          <div class="bdl-myrow">Tú: <b>${_myT!==null?_myT+'s':'sin registro aún'}</b></div>
+          <div class="bdl-rows">${_lbPlayers.map((r,i)=>`<div class="bdl-row">
+            <span class="bdl-rank">${i+1}</span>
+            <span class="bdl-name">${r.name}</span>
+            <span class="bdl-time">${r.t!==null?r.t+'s':'—'}</span>
+            ${r.uid!==me.uid?`<button class="bdl-btn" onclick="doBingoDesafio('${r.uid}')">⚔️ Desafiar</button>`:'<span style="color:rgba(255,255,255,0.3);font-size:11px">tú</span>'}
+          </div>`).join('')}</div>
+        </div></div>`;
+    }
+    // ── Desafío: banner y modal ──
+    const _ac = bingoGame.activeChallenge;
+    if (_ac && _ac.status !== 'resolved' && myPlayer) {
+      const _acFrom = (bingoGame.players||{})[_ac.fromUid];
+      const _acTo   = (bingoGame.players||{})[_ac.toUid];
+      if (_ac.status === 'pending') {
+        if (_ac.toUid === me.uid) {
+          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card" style="max-width:480px">
+            <div class="bcc-title" style="background:linear-gradient(to right,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">⚔️ ¡Te Desafían!</div>
+            <div style="font-size:22px;font-weight:900;color:#fff;margin:14px 0 6px">${_acFrom?.name||'Un rival'}</div>
+            <div class="bcc-sub" style="font-size:12px;margin-bottom:18px">te reta a un duelo de reto matemático.<br>Si rechazas: <b style="color:#ef4444">no podrás marcar 6 números</b>.<br>Si aceptas y pierdes: <b style="color:#f59e0b">no podrás marcar 4 números</b>.</div>
+            <div style="display:flex;gap:10px">
+              <button class="ccc-submit" style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;color:rgba(255,255,255,0.6);cursor:pointer;text-transform:uppercase" onclick="rechazarBingoDesafio()">✕ Rechazar</button>
+              <button class="bcc-submit" style="flex:2" onclick="acceptBingoDesafio()">⚔️ Aceptar Duelo</button>
+            </div></div></div>`;
+        } else if (_ac.fromUid === me.uid) {
+          body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>Desafío enviado a ${_acTo?.name||'rival'}</b> — esperando respuesta...</div>`;
+        }
+      } else if (_ac.status === 'racing') {
+        const _isParticipant = me.uid===_ac.fromUid || me.uid===_ac.toUid;
+        const _myDuelTime = me.uid===_ac.fromUid ? _ac.fromTime : _ac.toTime;
+        if (_isParticipant && (_myDuelTime===null||_myDuelTime===undefined)) {
+          const _duelRemain = Math.max(0, Math.round((((_ac.endsAt||0)-Date.now())/1000)));
+          const _duelPct = Math.min(100, Math.max(0, (_duelRemain/(bingoGame.challengeSeconds||60))*100));
+          const _duelBarCls = _duelRemain > 30 ? 'ok' : 'warn';
+          const _duelQ = (_ac.questions||[])[_bingoDuelIdx];
+          const _rivalName = me.uid===_ac.fromUid ? (_acTo?.name||'rival') : (_acFrom?.name||'rival');
+          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${_bingoDuelError?'err':''}">
+            <div class="bcc-title" style="background:linear-gradient(to right,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">⚔️ Duelo vs ${_rivalName}</div>
+            <div class="bcc-sub">Responde más rápido que tu rival para penalizarlo 4 marcas.</div>
+            <div class="bcc-bar"><div class="bcc-bar-fill ${_duelBarCls}" style="width:${_duelPct}%"></div></div>
+            <div class="bcc-dots">${(_ac.questions||[]).map((_,i)=>`<span class="bcc-dot ${i<_bingoDuelIdx?'ok':''} ${i===_bingoDuelIdx?'now':''}"></span>`).join('')}</div>
+            ${_duelQ?`<div class="bcc-question">${_duelQ.q}</div>
+            <input class="bcc-input" id="bingo-duel-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoDuelAnswer(this.value);}">
+            <button class="bcc-submit" style="background:linear-gradient(135deg,#b45309,#dc2626)" onclick="submitBingoDuelAnswer(document.getElementById('bingo-duel-input').value)">Responder</button>
+            <div class="bcc-foot">⏱ ${_duelRemain}s · Pregunta ${_bingoDuelIdx+1}/${(_ac.questions||[]).length}</div>`:''}
+          </div></div>`;
+        } else if (_isParticipant) {
+          body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>¡Terminaste el duelo!</b> Esperando que tu rival acabe...</div>`;
+        }
+      }
+    }
     const _showChallenge = bingoGame.challengeActive && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId;
     const _showResult = !!_bingoChallengeResult;
     if (_showChallenge || _showResult) {
@@ -3635,10 +3812,13 @@ function _bingoPowerFormHtml(key, isRevenge) {
       ? `✅ Objetivo: <b>${'BINGO'[_bingoPowerStep.col]}-${_bingoPowerStep.rivalNum}</b> — ahora ve a tus cartones y toca un número en la columna ${'BINGO'[_bingoPowerStep.col]} que quieras ceder.`
       : '👁 1.° ve al cartón de un rival y toca el número que quieres; 2.° vuelve a tus cartones y toca el número que cedes (misma columna).'),
     comodin:  'Marcará de golpe todos los números ya sorteados que aún no tienes en tus cartones.',
+    desafio:  '⚔️ El ranking de velocidad está abierto — elige a quién desafiar.',
   };
   const confirmBtn = key === 'comodin' && !isRevenge
     ? `<button class="bcx-btn" style="margin-top:8px;width:100%" onclick="doBingoComodin()">🎰 Aplicar Relleno ahora</button>`
-    : '';
+    : key === 'desafio' && !isRevenge
+      ? `<button class="bcx-btn" style="margin-top:8px;width:100%;background:linear-gradient(135deg,#b45309,#dc2626)" onclick="_bingoLeaderboardOpen=true;_renderBingoPane()">⚔️ Ver ranking y desafiar</button>`
+      : '';
   return `<div class="bpx-hint-box">
     <div class="bpx-hint-text">${hints[key]||''}</div>
     ${confirmBtn}
