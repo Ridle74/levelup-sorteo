@@ -2184,7 +2184,8 @@ function _selectBingoGame(gameId) {
     try {
       const me = _bingoMe();
       const amPlaying = !!(bingoGame.players && bingoGame.players[me.uid]);
-      if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying && currentView !== 'bingo') {
+      // Redirigir a /bingo: transición lobby→playing O unión en caliente (prevStatus=null, ya playing)
+      if (((prevStatus === 'lobby' && bingoGame.status === 'playing') || (prevStatus === null && bingoGame.status === 'playing')) && amPlaying && currentView !== 'bingo') {
         go('bingo');
       }
       if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying) {
@@ -2472,7 +2473,6 @@ function joinBingoGame(gameId) {
   }
   const me = _bingoMe();
   if ((game.players||{})[me.uid]) { _selectBingoGame(gameId); return; } // ya está dentro
-  if (game.status === 'playing') { showToast('Esta partida ya empezó — no puedes unirte.', 'error'); return; }
   const player = _bingoNewPlayer(me, game.cardCount||1);
   db.collection('bingo').doc(gameId).update({ [`players.${me.uid}`]: player })
     .then(() => _selectBingoGame(gameId))
@@ -3117,14 +3117,13 @@ function _bingoPaneHtml() {
         bingoGames.forEach(g => {
           const _pc = Object.values(g.players||{}).filter(p=>!p.isBot).length;
           const _in = !!((g.players||{})[_me.uid]);
-          const _ok = g.status==='lobby' || _in;
           const _sb = g.status==='lobby' ? '🕐 Esperando' : '🎮 En juego';
-          const _bl = _in ? 'Continuar →' : (_ok ? 'Entrar →' : 'Ya empezó');
-          glHtml += `<div class="bingo-game-card${!_ok?' bgc-locked':''}" onclick="${_ok?`joinBingoGame('${g.id}')`:''}" >` +
+          const _bl = _in ? 'Continuar →' : 'Entrar →';
+          glHtml += `<div class="bingo-game-card" onclick="joinBingoGame('${g.id}')" >` +
             `<div class="bgc-head"><span class="bgc-host">👑 ${g.hostName||'Anónimo'}</span>` +
             `<span class="bgc-badge${g.status==='playing'?' bgc-badge-playing':''}">${_sb}</span></div>` +
             `<div class="bgc-meta"><span>👥 ${_pc} jugador${_pc!==1?'es':''}</span>${_in?'<span class="bgc-in">✓ Ya estás dentro</span>':''}</div>` +
-            `<button class="bgc-join-btn"${!_ok?' disabled':''} onclick="event.stopPropagation();${_ok?`joinBingoGame('${g.id}')`:''}">${_bl}</button>` +
+            `<button class="bgc-join-btn" onclick="event.stopPropagation();joinBingoGame('${g.id}')">${_bl}</button>` +
             `</div>`;
         });
       } catch(e) {}
