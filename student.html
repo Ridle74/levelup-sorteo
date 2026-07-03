@@ -507,6 +507,19 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-empty{text-align:center;padding:36px 20px;color:rgba(255,255,255,0.4)}
 .bingo-empty-ico{font-size:40px;margin-bottom:10px;filter:drop-shadow(0 0 14px rgba(168,85,247,0.6))}
 .bingo-create-btn{display:block;margin:14px auto 0;background:linear-gradient(135deg,#db2777,#7c3aed);color:#fff;font-weight:900;border:none;border-radius:14px;padding:14px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 22px -4px #db2777}
+/* Tarjeta de entrada como invitado al Bingo */
+.bingo-guest-card{background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.3);border-radius:18px;padding:22px 18px;margin:8px 0;font-family:'Barlow Condensed',sans-serif}
+.bgc-title{font-size:20px;font-weight:900;color:#e2e8f0;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.bgc-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:18px}
+.bgc-name-row{display:flex;gap:8px;align-items:center;margin-bottom:14px}
+.bgc-name-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 14px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;outline:none}
+.bgc-icon-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.bgc-icon-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:20px;width:38px;height:38px;cursor:pointer;transition:background .1s,border-color .1s}
+.bgc-icon-btn.sel{background:rgba(168,85,247,0.3);border-color:#a855f7}
+.bgc-color-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.bgc-color-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .1s,transform .1s}
+.bgc-color-dot.sel{border-color:#fff;transform:scale(1.2)}
+.bgc-enter-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:900;border:none;border-radius:12px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer}
 .bingo-host-badge{font-size:10px;color:#facc15;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-radius:20px;padding:4px 10px;display:inline-block}
 .bingo-players-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .bingo-player-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(132,204,22,0.25);border-radius:20px;padding:4px 10px 4px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)}
@@ -963,6 +976,13 @@ let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
 let _bingoDuelError      = false;
 let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
 let _prevChallengeActive  = false; // detecta transición false→true (inicio de reto) para auto-aceptar Desafío
+// Identidad de invitado (sin login) — persiste en localStorage
+let _bingoGuestUid   = localStorage.getItem('bingoGuestUid')   || null;
+let _bingoGuestName  = localStorage.getItem('bingoGuestName')  || null;
+let _bingoGuestIcon  = localStorage.getItem('bingoGuestIcon')  || '🎱';
+let _bingoGuestColor = localStorage.getItem('bingoGuestColor') || '#a855f7';
+let _bingoGuestSelIcon  = null; // icono pendiente (aún no guardado)
+let _bingoGuestSelColor = null; // color pendiente
 let _bingoGameId         = null; // ID del doc activo en la colección bingo/ (null = pantalla de lista)
 let bingoGames           = [];   // lista en vivo de partidas (lobby/playing) del listener de colección
 let bingoGamesUnsub      = null; // unsub del listener de la colección bingo/
@@ -1531,7 +1551,7 @@ function descargarImagen(canvas, nombre='imagen.png') {
 // ════════════════════════════════════════════════════════
 // ROUTER
 // ════════════════════════════════════════════════════════
-const PUBLIC_ROUTES = new Set(['login','ranking','numeros','ganadores']);
+const PUBLIC_ROUTES = new Set(['login','ranking','numeros','ganadores','bingo']);
 const ADMIN_ROUTES  = new Set([]);
 // Rutas "inmersivas": pantalla completa sin nav inferior ni barra atrás/inicio/adelante
 // (pedido explícito: que /student/bingo "solo se vea el sorteo").
@@ -1668,6 +1688,9 @@ function vLogin() {
         </button>
         <button onclick="go('numeros')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
           🎲 VER NÚMEROS DEL SORTEO
+        </button>
+        <button onclick="go('bingo')" style="background:linear-gradient(135deg,rgba(124,58,237,0.25),rgba(219,39,119,0.25));border:1px solid rgba(168,85,247,0.4);color:#c084fc;border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
+          🎱 JUGAR NEON BINGO
         </button>
       </div>
     </div>
@@ -2235,11 +2258,35 @@ function _bingoResetLocalState() {
 }
 
 // Identidad del jugador actual, reutilizando la misma convención uid que mensajería/FCM.
+function _isBingoGuest() { return getLoggedId() === null && !isAdmin(); }
 function _bingoMe() {
   if (isAdmin()) return { uid:'teacher', name: ADMIN.name.split(' ')[0], icon: ADMIN.icon, color: ADMIN.color };
+  if (_isBingoGuest()) {
+    if (!_bingoGuestUid) throw new Error('No guest identity');
+    return { uid: _bingoGuestUid, name: (_bingoGuestName||'Invitado').slice(0,12), icon: _bingoGuestIcon||'🎱', color: _bingoGuestColor||'#a855f7' };
+  }
   const s = getFullList().find(x => x.id === getLoggedId());
   return { uid:String(getLoggedId()), name:(s?.name||'Alumno').split(' ')[0], icon: s?.icon||'👤', color: s?.color||'#888888' };
 }
+function setBingoGuestIdentity() {
+  const nameEl = document.getElementById('bgg-name');
+  const name = (nameEl ? nameEl.value : '').trim();
+  if (!name) { showToast('Escribe tu nombre de jugador','error'); return; }
+  if (!_bingoGuestUid) {
+    _bingoGuestUid = 'guest_' + Math.random().toString(36).slice(2,10);
+    localStorage.setItem('bingoGuestUid', _bingoGuestUid);
+  }
+  _bingoGuestName  = name.slice(0,12);
+  _bingoGuestIcon  = _bingoGuestSelIcon  || _bingoGuestIcon  || '🎱';
+  _bingoGuestColor = _bingoGuestSelColor || _bingoGuestColor || '#a855f7';
+  localStorage.setItem('bingoGuestName',  _bingoGuestName);
+  localStorage.setItem('bingoGuestIcon',  _bingoGuestIcon);
+  localStorage.setItem('bingoGuestColor', _bingoGuestColor);
+  _bingoGuestSelIcon = null; _bingoGuestSelColor = null;
+  _renderBingoPane();
+}
+function pickBingoGuestIcon(ico) { _bingoGuestSelIcon = ico; _renderBingoPane(); }
+function pickBingoGuestColor(col) { _bingoGuestSelColor = col; _renderBingoPane(); }
 
 // -- Firestore: listener en vivo + temporizador de sorteo/cuenta atrás --
 function startBingoListener() {
@@ -3367,9 +3414,38 @@ function _bingoPaneHtml() {
       </div>
     </div>`;
 
+  // ── Invitado sin identidad: pedir nombre antes de mostrar nada ───────────────────
+  if (_isBingoGuest() && !_bingoGuestUid) {
+    const _gIcons = ['🎱','😎','🦊','🐼','🐱','🤖','👾','🦁','🐸','🎮','🔥','⚡','💎','🎯','🏆'];
+    const _gColors = ['#a855f7','#3b82f6','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4','#8b5cf6'];
+    const _selIco = _bingoGuestSelIcon || _bingoGuestIcon || '🎱';
+    const _selCol = _bingoGuestSelColor || _bingoGuestColor || '#a855f7';
+    return titleHtml + `<div class="bingo-guest-card">
+      <div class="bgc-title">¡Únete al Bingo!</div>
+      <div class="bgc-sub">Elige cómo aparecer en la partida</div>
+      <div class="bgc-name-row">
+        <span style="font-size:28px;line-height:1">${_selIco}</span>
+        <input id="bgg-name" class="bgc-name-input" maxlength="12" placeholder="Tu nombre..." value="${_bingoGuestName||''}" onkeydown="if(event.key==='Enter')setBingoGuestIdentity()">
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">Icono</div>
+      <div class="bgc-icon-row">${_gIcons.map(ico=>`<button class="bgc-icon-btn${ico===_selIco?' sel':''}" onclick="pickBingoGuestIcon('${ico}')">${ico}</button>`).join('')}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.06em;text-transform:uppercase">Color</div>
+      <div class="bgc-color-row">${_gColors.map(col=>`<div class="bgc-color-dot${col===_selCol?' sel':''}" style="background:${col}" onclick="pickBingoGuestColor('${col}')"></div>`).join('')}</div>
+      <button class="bgc-enter-btn" onclick="setBingoGuestIdentity()">🎲 Entrar al Bingo</button>
+    </div>`;
+  }
+
   // ── Lista de partidas (pantalla de selección, cuando no hay partida activa) ──────
   if (!_bingoGameId) {
     let glHtml = '<div class="bingo-games-list">';
+    // Chip de identidad del invitado (con opción de cambiar nombre)
+    if (_isBingoGuest() && _bingoGuestUid) {
+      glHtml += `<div style="display:flex;align-items:center;gap:8px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.25);border-radius:12px;padding:8px 12px;margin-bottom:4px">
+        <span style="font-size:22px;line-height:1">${_bingoGuestIcon||'🎱'}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#e2e8f0;flex:1">${_bingoGuestName||'Invitado'}</span>
+        <button onclick="_bingoGuestUid=null;_renderBingoPane()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);border-radius:8px;padding:3px 8px;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer">✏️ Cambiar</button>
+      </div>`;
+    }
     if (!bingoGames.length) {
       glHtml += '<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>' +
         '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">No hay partidas activas</div>' +
