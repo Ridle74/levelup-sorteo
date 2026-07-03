@@ -636,6 +636,10 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-card-hdr.shielded{background:#fff;color:#111;border-radius:4px;font-weight:900}
 .bingo-card-hdr.fortifiable{color:#4ade80;cursor:pointer;text-shadow:0 0 6px rgba(74,222,128,0.7);animation:twPulse 1.5s ease-in-out infinite}
 .bingo-card-hdr.fortifiable:hover{background:rgba(74,222,128,0.15);border-radius:4px}
+.bcb-camufle{border:1px dashed rgba(148,163,184,0.3);border-radius:14px;overflow:hidden}
+.bcb-camufle-content{display:flex;flex-direction:column;align-items:center;justify-content:center;height:160px;font-size:44px;color:rgba(255,255,255,0.2)}
+.bcb-camufle-btn{margin-left:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);border-radius:6px;padding:2px 7px;font-size:11px;cursor:pointer;vertical-align:middle}
+.bcb-camufle-btn.active{background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.4);color:#c084fc}
 .bpx-revenge-banner{background:linear-gradient(135deg,rgba(234,179,8,0.18),rgba(251,146,60,0.1));border:1px solid rgba(234,179,8,0.4);border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:#fde68a;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .bpx-revenge-btn{background:linear-gradient(135deg,#b45309,#ea580c);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .bpx-revenge-active{background:linear-gradient(135deg,rgba(234,179,8,0.25),rgba(239,68,68,0.15));border:1px solid rgba(234,179,8,0.6);border-radius:10px;padding:8px 14px;margin-bottom:8px;font-size:12px;font-weight:700;color:#fde68a;display:flex;align-items:center;flex-wrap:wrap;gap:6px;animation:twPulse 1.2s ease-in-out infinite}
@@ -1854,6 +1858,7 @@ const BINGO_POWER_DEFS = [
   { key:'congelar', icon:'🥶', label:'Congelar Rival', cost:2, limit:'reto',       desc:'Paraliza a un rival un turno entero: no puede marcar ni reclamar. (1 vez por reto)' },
   { key:'comodin',  icon:'🎰', label:'Relleno',        cost:2, limit:'game',       desc:'Marca de golpe todos los números ya sorteados que te faltan en tus cartones. (1 sola vez en toda la partida)' },
   { key:'robo',     icon:'📋', label:'Robo de Marca',  cost:2, limit:'game',       desc:'Intercambia un número de tu columna por uno de la misma columna de un rival. (1 sola vez en la partida)' },
+  { key:'camufle',  icon:'🥷', label:'Camufle',        cost:1, limit:'game',       desc:'Oculta uno de tus cartones a los rivales con Visión X — el % que ven de ti tampoco lo cuenta. (1 sola vez en la partida). Toca el ícono del cartón para elegir cuál.' },
   { key:'fortaleza',icon:'🏰', label:'Fortaleza',       cost:1, limit:'persistent', desc:'Toca la letra B/I/N/G/O de una columna con ≥3 números marcados para protegerla permanentemente de bloqueo, sabotaje y robo. Solo 1 columna por cartón.' },
   { key:'venganza', icon:'⚡', label:'Venganza',        cost:1, limit:'persistent', desc:'Reactivo: cuando un rival usa sabotaje, robo o congelar contra ti, recibes una copia del mismo poder para usarlo contra otro rival.' },
   { key:'bitacora', icon:'📓', label:'Bitácora',        cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
@@ -2053,21 +2058,55 @@ function _bingoShowEndModal(game) {
 
 // ── Panel izquierdo: proximidad al próximo premio ─────────────────────────────
 // Devuelve 0..1 (1 = ya lo tiene, 0 = sin ningún número marcado).
-function _bingoProximity(player, tier) {
+// excludeHidden=true cuando se calcula para mostrarle a otros jugadores (excluye el cartón camuflado)
+function _bingoProximity(player, tier, excludeHidden) {
   const cards = player.cards || {};
-  let best = 0;
+  const blockedSet = new Set((player.blockedMarks||[]).map(m=>`${m.c}:${m.n}`));
+  const hiddenCard = excludeHidden ? (player.hiddenCard ?? null) : null;
+  let bestTierScore = -1, bestCardPct = 0;
   Object.entries(cards).forEach(([ci, card]) => {
-    const marksSet = new Set((player.marks||[]).filter(m=>m.c===Number(ci)).map(m=>m.n));
+    const cardIdx = Number(ci);
+    if (hiddenCard !== null && cardIdx === hiddenCard) return; // oculto: ignorar
+    const marksSet = new Set(
+      (player.marks||[])
+        .filter(m => m.c === cardIdx && !blockedSet.has(`${cardIdx}:${m.n}`))
+        .map(m => m.n)
+    );
+    // Puntaje de proximidad al tier (para elegir el mejor cartón)
+    let score;
     if (tier === 'bingo') {
-      let cnt = 0;
-      for (let i=0; i<25; i++) { if (card[i]!==0 && marksSet.has(card[i])) cnt++; }
-      best = Math.max(best, cnt / 24);
+      let cnt = 0; for (let i=0; i<25; i++) { if (card[i]!==0 && marksSet.has(card[i])) cnt++; }
+      score = cnt / 24;
     } else {
       const { maxLine } = bingoEvaluate(card, marksSet);
-      best = Math.max(best, maxLine / (BINGO_TIER_REQ[tier]||5));
+      score = maxLine / (BINGO_TIER_REQ[tier]||5);
     }
+    // % real del cartón = marcas reales / 24 celdas no-libres
+    let cnt = 0; for (let i=0; i<25; i++) { if (card[i]!==0 && marksSet.has(card[i])) cnt++; }
+    const pct = cnt / 24;
+    if (score > bestTierScore) { bestTierScore = score; bestCardPct = pct; }
   });
-  return best;
+  return bestCardPct;
+}
+function toggleCamufleCard(cardIdx) {
+  const me = _bingoMe();
+  const player = (bingoGame.players||{})[me.uid];
+  if (!player) return;
+  if (!(player.unlockedPowers||{}).camufle) { showToast('🥷 Desbloquea Camufle primero.','error'); return; }
+  if (!(player.usedPowers||{}).camufle) {
+    // Primera vez: gastar el uso y ocultar
+    BINGO_REF.update({
+      [`players.${me.uid}.hiddenCard`]: cardIdx,
+      [`players.${me.uid}.usedPowers.camufle`]: true
+    }).then(()=>{ showToast(`🥷 Cartón ${cardIdx+1} oculto para los rivales.`,'success'); _renderBingoPane(); })
+      .catch(e=>console.error('camufle',e));
+  } else {
+    // Ya usado: desactivar sin gastar nada más
+    const cur = player.hiddenCard;
+    BINGO_REF.update({ [`players.${me.uid}.hiddenCard`]: cur===cardIdx ? null : cardIdx })
+      .then(()=>_renderBingoPane())
+      .catch(e=>console.error('camufle toggle',e));
+  }
 }
 function _bingoToggleExpandPlayer(uid) {
   _bingoExpandedPlayer = _bingoExpandedPlayer === uid ? null : uid;
@@ -3305,7 +3344,7 @@ function _bingoPaneHtml() {
       // ── Barra de navegación de jugadores ─────────────────────────────────────
       {
         const navEntries = Object.entries(bingoGame.players||{})
-          .map(([uid, p]) => ({uid, p, score: activeTier ? _bingoProximity(p, activeTier) : 0}))
+          .map(([uid, p]) => ({uid, p, score: activeTier ? _bingoProximity(p, activeTier, uid !== me.uid) : 0}))
           .sort((a,b) => b.score - a.score);
         let navHtml = `<div class="bingo-player-nav">`;
         const hasVision = !!(myPlayer?.unlockedPowers||{}).vision;
@@ -3358,14 +3397,27 @@ function _bingoPaneHtml() {
         viewCardIds.forEach(ci => {
           const cardIdx  = Number(ci);
           const card     = viewedPlayer.cards[ci];
+
+          // ── Camufle: en spy mode, ocultar cartón si el rival lo camuflajó ──
+          if (isSpyMode && (viewedPlayer.hiddenCard ?? null) === cardIdx) {
+            body += `<div class="bingo-card-block bcb-camufle"><div class="bcb-label">👁 ${viewedPlayer.name||viewUid}${viewCardIds.length>1?` — Cartón ${cardIdx+1}`:''}</div>` +
+              `<div class="bcb-camufle-content">🥷<div style="font-size:14px;font-weight:900;margin-top:6px;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.5)">Cartón oculto</div></div></div>`;
+            return;
+          }
+
           const marksSet   = new Set(viewMarks.filter(m=>m.c===cardIdx).map(m=>m.n));
           const blockedSet = new Set(viewBlocked.filter(m=>m.c===cardIdx).map(m=>m.n));
           const rowHeat = [];
           for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||(marksSet.has(n)&&!blockedSet.has(n))) h++; } rowHeat.push(h); }
 
+          const _hasCamufle = !isSpyMode && !!(myPlayer?.unlockedPowers||{}).camufle;
+          const _isCamuflado = !isSpyMode && (myPlayer?.hiddenCard ?? null) === cardIdx;
+          const camufleBtn = _hasCamufle
+            ? `<button class="bcb-camufle-btn${_isCamuflado?' active':''}" onclick="toggleCamufleCard(${cardIdx})" title="${_isCamuflado?'Quitar camufle':'Ocultar este cartón'}">${_isCamuflado?'🥷 Oculto':'🥷'}</button>`
+            : '';
           const lbl = isSpyMode
             ? `👁 ${viewedPlayer.name||viewUid}${viewCardIds.length>1?` — Cartón ${cardIdx+1}`:''}`
-            : `🏆 Mi Cartón${viewCardIds.length>1?` #${cardIdx+1}`:''}`;
+            : `🏆 Mi Cartón${viewCardIds.length>1?` #${cardIdx+1}`:''}${camufleBtn}`;
           const _shieldSrc = isSpyMode ? (viewedPlayer?.shieldedColumns||[]) : (myPlayer?.shieldedColumns||[]);
           const _hasFortaleza = !isSpyMode && !!(myPlayer?.unlockedPowers||{}).fortaleza;
           body += `<div class="bingo-card-block${!isSpyMode&&blockingActive?' blocking':''}"><div class="bcb-label">${lbl}</div>
@@ -3452,7 +3504,7 @@ function _bingoPaneHtml() {
               const cats = [
                 { limit:'persistent', label:'✨ Permanentes',      keys:['bitacora','vision','fortaleza','venganza'] },
                 { limit:'reto',       label:'🔄 Por reto',         keys:['sabotaje','congelar'] },
-                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo'] },
+                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo','camufle'] },
               ];
               return cats.map(cat=>{
                 const defs = BINGO_POWER_DEFS.filter(p=>cat.keys.includes(p.key));
