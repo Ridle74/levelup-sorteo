@@ -1858,7 +1858,7 @@ const BINGO_POWER_DEFS = [
   { key:'congelar', icon:'🥶', label:'Congelar Rival', cost:2, limit:'reto',       desc:'Paraliza a un rival un turno entero: no puede marcar ni reclamar. (1 vez por reto)' },
   { key:'comodin',  icon:'🎰', label:'Relleno',        cost:2, limit:'game',       desc:'Marca de golpe todos los números ya sorteados que te faltan en tus cartones. (1 sola vez en toda la partida)' },
   { key:'robo',     icon:'📋', label:'Robo de Marca',  cost:2, limit:'game',       desc:'Intercambia un número de tu columna por uno de la misma columna de un rival. (1 sola vez en la partida)' },
-  { key:'camufle',  icon:'🥷', label:'Camufle',        cost:1, limit:'game',       desc:'Oculta uno de tus cartones a los rivales con Visión X — el % que ven de ti tampoco lo cuenta. (1 sola vez en la partida). Toca el ícono del cartón para elegir cuál.' },
+  { key:'camufle',  icon:'🥷', label:'Camufle',        cost:1, limit:'game',       desc:'Oculta uno de tus cartones a los rivales durante el próximo reto. Al terminar ese reto el camufle se levanta. (1 sola vez en la partida). Toca el ícono 🥷 del cartón para elegirlo.' },
   { key:'fortaleza',icon:'🏰', label:'Fortaleza',       cost:1, limit:'persistent', desc:'Toca la letra B/I/N/G/O de una columna con ≥3 números marcados para protegerla permanentemente de bloqueo, sabotaje y robo. Solo 1 columna por cartón.' },
   { key:'venganza', icon:'⚡', label:'Venganza',        cost:1, limit:'persistent', desc:'Reactivo: cuando un rival usa sabotaje, robo o congelar contra ti, recibes una copia del mismo poder para usarlo contra otro rival.' },
   { key:'bitacora', icon:'📓', label:'Bitácora',        cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
@@ -2062,11 +2062,12 @@ function _bingoShowEndModal(game) {
 function _bingoProximity(player, tier, excludeHidden) {
   const cards = player.cards || {};
   const blockedSet = new Set((player.blockedMarks||[]).map(m=>`${m.c}:${m.n}`));
-  const hiddenCard = excludeHidden ? (player.hiddenCard ?? null) : null;
+  const _hc = excludeHidden ? (player.hiddenCard ?? null) : null;
+  const _hcActive = _hc !== null && (bingoGame.retoCount||0) < (player.hiddenCardExpiresAt||0);
   let bestTierScore = -1, bestCardPct = 0;
   Object.entries(cards).forEach(([ci, card]) => {
     const cardIdx = Number(ci);
-    if (hiddenCard !== null && cardIdx === hiddenCard) return; // oculto: ignorar
+    if (_hcActive && cardIdx === _hc) return; // oculto y vigente: ignorar
     const marksSet = new Set(
       (player.marks||[])
         .filter(m => m.c === cardIdx && !blockedSet.has(`${cardIdx}:${m.n}`))
@@ -2093,20 +2094,15 @@ function toggleCamufleCard(cardIdx) {
   const player = (bingoGame.players||{})[me.uid];
   if (!player) return;
   if (!(player.unlockedPowers||{}).camufle) { showToast('🥷 Desbloquea Camufle primero.','error'); return; }
-  if (!(player.usedPowers||{}).camufle) {
-    // Primera vez: gastar el uso y ocultar
-    BINGO_REF.update({
-      [`players.${me.uid}.hiddenCard`]: cardIdx,
-      [`players.${me.uid}.usedPowers.camufle`]: true
-    }).then(()=>{ showToast(`🥷 Cartón ${cardIdx+1} oculto para los rivales.`,'success'); _renderBingoPane(); })
-      .catch(e=>console.error('camufle',e));
-  } else {
-    // Ya usado: desactivar sin gastar nada más
-    const cur = player.hiddenCard;
-    BINGO_REF.update({ [`players.${me.uid}.hiddenCard`]: cur===cardIdx ? null : cardIdx })
-      .then(()=>_renderBingoPane())
-      .catch(e=>console.error('camufle toggle',e));
-  }
+  if ((player.usedPowers||{}).camufle) { showToast('🥷 Camufle ya fue usado en esta partida.','error'); return; }
+  // Expira al completarse el próximo reto (retoCount aumenta 1 por cada reto finalizado)
+  const expiresAt = (bingoGame.retoCount||0) + 1;
+  BINGO_REF.update({
+    [`players.${me.uid}.hiddenCard`]: cardIdx,
+    [`players.${me.uid}.hiddenCardExpiresAt`]: expiresAt,
+    [`players.${me.uid}.usedPowers.camufle`]: true
+  }).then(()=>{ showToast(`🥷 Cartón ${cardIdx+1} oculto hasta que termine el próximo reto.`,'success'); _renderBingoPane(); })
+    .catch(e=>console.error('camufle',e));
 }
 function _bingoToggleExpandPlayer(uid) {
   _bingoExpandedPlayer = _bingoExpandedPlayer === uid ? null : uid;
@@ -2581,6 +2577,23 @@ function markBingoCell(cardIdx, num) {
   const newMarks = exists ? marks.filter(m=>!(m.c===cardIdx && m.n===num)) : [...marks, {c:cardIdx, n:num}];
   BINGO_REF.update({ [`players.${me.uid}.marks`]: newMarks })
     .catch(e=>console.error('bingo mark',e));
+}
+function _bingoConfirmClaim(cardIdx, tier) {
+  const tierLabel  = BINGO_TIER_LABEL[tier] || tier;
+  const tierReq    = { terna:'3 números en línea', cuaterna:'4 números en línea', quina:'5 números en línea (toda la fila/columna)', bingo:'todos los números del cartón' }[tier] || '';
+  const penalty    = `Si declaras ${tierLabel} sin tenerla realmente, tu botón quedará bloqueado con ✕ y <b>perderás para siempre</b> la oportunidad de canjear este premio en este cartón.`;
+  const tierColor  = { terna:'#f59e0b', cuaterna:'#fb923c', quina:'#a78bfa', bingo:'#22d3ee' }[tier] || '#a855f7';
+  _bingoShowModal(`<div class="bpm-box" style="border-color:${tierColor};box-shadow:0 0 60px -10px ${tierColor}55">
+    <div class="bpm-title" style="color:${tierColor}">🏆 ¿Canjear ${tierLabel.toUpperCase()}?</div>
+    <div class="bpm-sub" style="color:rgba(255,255,255,0.55);font-size:13px;margin-bottom:8px">Necesitas <b>${tierReq}</b> con los números ya cantados.</div>
+    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#fca5a5;line-height:1.5;margin-bottom:6px;text-align:left">
+      ⚠️ <b>Castigo si no la tienes:</b><br>${penalty}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button onclick="_bingoCloseModal()" style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;cursor:pointer;text-transform:uppercase">Cancelar</button>
+      <button onclick="_bingoCloseModal();claimBingoPrize(${cardIdx},'${tier}')" style="flex:1;background:linear-gradient(135deg,${tierColor},${tierColor}aa);color:#000;border:none;border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;cursor:pointer;text-transform:uppercase">✓ Sí, tengo ${tierLabel}</button>
+    </div>
+  </div>`);
 }
 function claimBingoPrize(cardIdx, tier) {
   if (!bingoGame) return;
@@ -3480,7 +3493,7 @@ function _bingoPaneHtml() {
             const cls2 = won?'won':(failed?'failed':(lockedByOther?'failed':`tier-${activeTier}`));
             const isDisabled = !!(won||failed||frozen||lockedByOther);
             const prefix = won?'✓ ':(failed?'✕ ':(lockedByOther?'🔒 ':''));
-            body += `<div class="bingo-claims-row"><button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="claimBingoPrize(${cardIdx},'${activeTier}')">${prefix}${BINGO_TIER_LABEL[activeTier]}</button></div>`;
+            body += `<div class="bingo-claims-row"><button class="bingo-claim-btn ${cls2}" ${isDisabled?'disabled':''} onclick="${isDisabled?'':'_bingoConfirmClaim('+cardIdx+',\''+activeTier+'\')'}">${prefix}${BINGO_TIER_LABEL[activeTier]}</button></div>`;
           }
           body += `</div>`;
         });
