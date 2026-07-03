@@ -962,6 +962,7 @@ let _bingoRevengeActive  = false; // true cuando el jugador está ejecutando su 
 let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
 let _bingoDuelError      = false;
 let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
+let _prevChallengeActive  = false; // detecta transición false→true (inicio de reto) para auto-aceptar Desafío
 let _bingoGameId         = null; // ID del doc activo en la colección bingo/ (null = pantalla de lista)
 let bingoGames           = [];   // lista en vivo de partidas (lobby/playing) del listener de colección
 let bingoGamesUnsub      = null; // unsub del listener de la colección bingo/
@@ -1926,6 +1927,27 @@ const BINGO_BOT_CONFIG = {
   advanced:     { markProb: 0.96, claimProb: 0.92 },
 };
 const BINGO_BOT_NAMES = ['Botto','Robín','Pixie','Chip'];
+// Mensajes de provocación de los bots (≤18 chars para que quepan en el chip)
+const BINGO_BOT_TAUNTS = {
+  general: [
+    'jajaja 😂','lástima 😏','qué fácil 😎','ya casi 😤',
+    '¡yo gano! 🏆','hmmm... 🤔','¡rápido! ⚡','boom 💥',
+    'te vigilo 👁️','casi casi 👀','concentración 🎯','¡me rindo! 🥲',
+    'eres más bot q yo 🤖','uy uy uy 🫣','se me hace fácil 😌',
+  ],
+  claim: [
+    '¡premio mío! 🎉','sigo ganando 😈','¡boom! gaté 💥','¡BINGO! 🥳',
+    'qué rico ganar 🏆','fácil fácil 😎',
+  ],
+  reto: [
+    'esto es pan comido 🍞','yo soy el mejor 🧠','¡me sé todas! 💡',
+    'sin problemas 😏','matemáticas=fácil 📐',
+  ],
+  lose: [
+    'suerte de novato 🙄','¡trampa! 😤','era un accidente 🤭',
+    'la próxima gano 😤','no contaba con eso 😅',
+  ],
+};
 const BINGO_TIER_DESC  = {
   terna:    '3 números en la misma fila',
   cuaterna: '4 números en la misma fila',
@@ -2266,6 +2288,8 @@ function _selectBingoGame(gameId) {
           const winnerPlayer = (bingoGame.players || {})[winnerUid];
           const winnerName = winnerPlayer ? (winnerPlayer.name || winnerUid) : winnerUid;
           setTimeout(() => _bingoShowTierWonModal(tier, winnerName), 400);
+          // Si el ganador es humano, los bots se "quejan"
+          if (!winnerUid.startsWith('__bot_')) setTimeout(() => _bingoBotSendTaunt('lose'), 1500);
         }
       });
       _prevBingoTierWinners = Object.assign({}, curWinners);
@@ -2274,6 +2298,18 @@ function _selectBingoGame(gameId) {
         setTimeout(() => _bingoShowEndModal(bingoGame), 900);
       }
     } catch (e) { console.error('bingo auto-nav', e); }
+    // Auto-aceptar Desafío si el reto matemático empieza y el jugador no respondió
+    try {
+      const _me2 = _bingoMe();
+      const _nowCA = !!(bingoGame && bingoGame.challengeActive);
+      if (_nowCA && !_prevChallengeActive) {
+        const _ac2 = bingoGame.activeChallenge;
+        if (_ac2 && _ac2.status === 'pending' && _ac2.toUid === _me2.uid) {
+          acceptBingoDesafio();
+        }
+      }
+      _prevChallengeActive = _nowCA;
+    } catch(e) { console.error('desafio auto-accept', e); }
     _renderBingoPane();
   }, err => {
     console.error('bingo listener', err);
@@ -2373,7 +2409,12 @@ function _bingoHostAdvancePhase() {
       nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs||4500),
       status: ended ? 'ended' : 'playing'
     }, botMarkPatch))
-      .then(() => { if (!ended) setTimeout(_bingoBotCheckClaims, 900); })
+      .then(() => {
+        if (!ended) {
+          setTimeout(_bingoBotCheckClaims, 900);
+          if (Math.random() < 0.20) setTimeout(() => _bingoBotSendTaunt('general'), 1200);
+        }
+      })
       .catch(e=>console.error('bingo phase->done',e));
   }
 }
@@ -2383,7 +2424,8 @@ function _bingoHostStartChallenge() {
     challengeActive:true, challengeId: Date.now(), questions,
     challengeEndsAt: Date.now() + (bingoGame.challengeSeconds||60)*1000,
     nextDrawAt: null
-  }).catch(e=>console.error('bingo challenge-start',e));
+  }).then(() => { setTimeout(() => _bingoBotSendTaunt('reto'), 800); })
+    .catch(e=>console.error('bingo challenge-start',e));
 }
 function _bingoHostEndChallenge() {
   const drawn = bingoGame.drawnNumbers || [];
@@ -2468,9 +2510,33 @@ function _bingoBotCheckClaims() {
       [`tierWinners.${activeTier}`]: { uid, ball: bingoGame.currentNumber }
     };
     if (activeTier === 'bingo') { claimPatch.status = 'ended'; claimPatch.nextDrawAt = null; }
-    BINGO_REF.update(claimPatch).catch(e => console.error('bot claim', e));
+    BINGO_REF.update(claimPatch)
+      .then(() => setTimeout(() => _bingoBotSendTaunt('claim'), 500))
+      .catch(e => console.error('bot claim', e));
     break; // un bot reclama por vez
   }
+}
+// Hace que un bot aleatorio envíe un mensaje de provocación como playerStatus (host-only).
+// trigger: 'general' | 'claim' | 'reto' | 'lose'
+function _bingoBotSendTaunt(trigger) {
+  if (!bingoGame) return;
+  try {
+    const me = _bingoMe();
+    if (bingoGame.hostId !== me.uid) return; // solo el host escribe bots
+  } catch(e) { return; }
+  const bots = Object.keys(bingoGame.players||{}).filter(uid => uid.startsWith('__bot_'));
+  if (!bots.length) return;
+  const pool = BINGO_BOT_TAUNTS[trigger] || BINGO_BOT_TAUNTS.general;
+  const botUid = bots[Math.floor(Math.random() * bots.length)];
+  const msg = pool[Math.floor(Math.random() * pool.length)];
+  BINGO_REF.update({ [`players.${botUid}.playerStatus`]: msg })
+    .catch(e => console.error('bot taunt', e));
+  // Limpiar el mensaje después de 8 segundos para que no quede fijo
+  setTimeout(() => {
+    if (!BINGO_REF) return;
+    BINGO_REF.update({ [`players.${botUid}.playerStatus`]: '' })
+      .catch(()=>{});
+  }, 8000);
 }
 // Guarda el estado corto del jugador actual (máx. 15 chars).
 function setPlayerStatus(val) {
@@ -3732,7 +3798,7 @@ function _bingoPaneHtml() {
           body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card" style="max-width:480px">
             <div class="bcc-title" style="background:linear-gradient(to right,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">⚔️ ¡Te Desafían!</div>
             <div style="font-size:22px;font-weight:900;color:#fff;margin:14px 0 6px">${_acFrom?.name||'Un rival'}</div>
-            <div class="bcc-sub" style="font-size:12px;margin-bottom:18px">te reta a un duelo de reto matemático.<br>Si rechazas: <b style="color:#ef4444">no podrás marcar 6 números</b>.<br>Si aceptas y pierdes: <b style="color:#f59e0b">no podrás marcar 4 números</b>.</div>
+            <div class="bcc-sub" style="font-size:12px;margin-bottom:18px">te reta a un duelo de reto matemático.<br>Si rechazas: <b style="color:#ef4444">no podrás marcar 6 números</b>.<br>Si aceptas y pierdes: <b style="color:#f59e0b">no podrás marcar 4 números</b>.<br><span style="color:rgba(255,255,255,0.45);font-size:11px">⚠️ Si el próximo reto matemático empieza antes de que respondas, el duelo se acepta automáticamente.</span></div>
             <div style="display:flex;gap:10px">
               <button class="ccc-submit" style="flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;color:rgba(255,255,255,0.6);cursor:pointer;text-transform:uppercase" onclick="rechazarBingoDesafio()">✕ Rechazar</button>
               <button class="bcc-submit" style="flex:2" onclick="acceptBingoDesafio()">⚔️ Aceptar Duelo</button>
