@@ -3981,11 +3981,14 @@ function _bingoPowerFormHtml(key, isRevenge) {
 // ── Vista completa /student/bingo: el host arranca el sorteo y todos los que ya
 // se unieron son redirigidos automáticamente acá (ver startBingoListener) ───────
 function vBingoFull() {
+  // Ruta pública — el router ya garantiza el acceso vía PUBLIC_ROUTES.
+  // Invitados (sin login) llegan aquí directamente desde la pantalla de inicio.
   const loggedId = getLoggedId();
-  if (loggedId === null && !isAdmin()) { go('login'); return ''; }
+  const backLabel = loggedId !== null || isAdmin() ? '← Volver al inicio' : '← Iniciar sesión';
+  const backAction = loggedId !== null || isAdmin() ? 'navHome()' : "go('login')";
   return `
     <div class="bingo-full-wrap">
-      <button class="bingo-back-btn" onclick="navHome()">← Volver al inicio</button>
+      <button class="bingo-back-btn" onclick="${backAction}">${backLabel}</button>
       <div id="bingo-pane-full" class="bingo-wrap bingo-pane-host">${_bingoPaneHtml()}</div>
     </div>`;
 }
@@ -5297,14 +5300,14 @@ function renderTask(t, loggedId) {
   if (isMobile) {
     return `
   <div class="task-card${done?' tdone':awaiting?' twait':notDone?' tnotdone':''}" id="tc-${t.id}">
-    <div style="display:flex;align-items:center;gap:6px">
-      <div class="task-t${done||notDone?' tdt':''}" style="flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
-      <div style="display:flex;gap:6px;flex-shrink:0">${btnsHtml}</div>
-    </div>
+    <div class="task-t${done||notDone?' tdt':''}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
     ${sideBadgesHtml||dueBadge?`<div style="display:flex;gap:5px;flex-wrap:nowrap;align-items:center;margin-top:5px;overflow-x:auto;-webkit-overflow-scrolling:touch">${sideBadgesHtml}${dueBadge}</div>`:''}
     ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
     ${tagHtml}
-    ${attHtml?`<div style="margin-top:7px">${attHtml}</div>`:''}
+    <div style="display:flex;align-items:center;gap:6px;margin-top:7px">
+      <div style="flex:1;min-width:0">${attHtml}</div>
+      <div style="display:flex;gap:6px;flex-shrink:0">${btnsHtml}</div>
+    </div>
   </div>`;
   }
   return `
