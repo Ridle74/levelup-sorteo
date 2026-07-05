@@ -373,6 +373,7 @@ let loginTab = 'familia';      // 'familia' | 'crear'  (pestañas de la pantalla
 let editingParentId = null;    // id de padre cuyo PIN se está editando en el panel admin
 let editingNamesId  = null;    // id de familia cuyos nombres (padre/hijos) se están editando en el panel admin
 let editingCycleId  = null;    // id del ciclo que se está editando en el panel admin (null=ninguno, 'new'=nuevo ciclo sin guardar)
+let editingTemplateId = null; // id de la plantilla de disponibilidad que se está editando (null=ninguna, 'new'=nueva)
 let calEditMode = false;       // admin: modo edición del calendario
 let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
 let smEditFree  = false;       // true si se edita un freeSlot
@@ -533,6 +534,7 @@ function loadData() {
         DATA.accountRequests = d.accountRequests || [];
         DATA.freeSlots       = d.freeSlots       || [];
         DATA.quoteRequests   = d.quoteRequests   || [];
+        DATA.templates       = d.templates       || [];
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
         // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
         // explícitamente con FieldValue.delete() antes de escribir los nuevos.
@@ -558,6 +560,7 @@ function loadData() {
         DATA.accountRequests = d.accountRequests || [];
         DATA.freeSlots       = d.freeSlots       || [];
         DATA.quoteRequests   = d.quoteRequests   || [];
+        DATA.templates       = d.templates       || [];
       }
     } else {
       // Primera vez: sembrar Firestore con datos base. DATA ya es una copia de SEED
@@ -604,6 +607,10 @@ function saveCycles() {
     cycleEnd: cycleHorizonISO(DATA.cycles),
     cycleName: (getCurrentCycle(DATA.cycles)||{}).name || null
   }, { merge:true }).catch(e => { console.error(e); showToast('Error al guardar los ciclos.'); });
+}
+function saveTemplates() {
+  REF.set({ templates: DATA.templates }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar la plantilla.'); });
 }
 function saveAccountRequests() {
   REF.set({ accountRequests: DATA.accountRequests }, { merge:true })
@@ -1476,6 +1483,118 @@ function deleteCycle(btn, id) {
   render();
 }
 
+// ── Plantillas de disponibilidad ─────────────────────────
+const _TMPL_DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+function _toMin(t) { var p=(t||'00:00').split(':').map(Number); return p[0]*60+p[1]; }
+function _toTime(m) { return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+
+function startAddTemplate()    { editingTemplateId = 'new'; render(); }
+function cancelEditTemplate()  { editingTemplateId = null;  render(); }
+
+function saveTemplateForm() {
+  const dayEl   = document.getElementById('tmpl-day');
+  const cycEl   = document.getElementById('tmpl-cycle');
+  const wsEl    = document.getElementById('tmpl-wstart');
+  const weEl    = document.getElementById('tmpl-wend');
+  const durEl   = document.getElementById('tmpl-dur');
+  const modEl   = document.getElementById('tmpl-mod');
+  const bufEl   = document.getElementById('tmpl-buf');
+  if (!wsEl.value || !weEl.value) { showToast('Indica la ventana de disponibilidad.'); return; }
+  if (_toMin(wsEl.value) >= _toMin(weEl.value)) { showToast('La hora de inicio debe ser anterior al fin.'); return; }
+  const tmpl = {
+    id:          editingTemplateId === 'new' ? ('tmpl_' + Date.now()) : editingTemplateId,
+    day:         parseInt(dayEl.value),
+    cycleId:     cycEl.value !== '' ? cycEl.value : null,
+    windowStart: wsEl.value,
+    windowEnd:   weEl.value,
+    slotDur:     parseInt(durEl.value),
+    modality:    modEl.value,
+    bufferMin:   parseInt(bufEl.value)
+  };
+  if (!DATA.templates) DATA.templates = [];
+  const idx = DATA.templates.findIndex(function(t){ return t.id === tmpl.id; });
+  if (idx >= 0) DATA.templates[idx] = tmpl; else DATA.templates.push(tmpl);
+  saveTemplates();
+  editingTemplateId = null;
+  render();
+  showToast('Plantilla guardada.', 'success');
+}
+
+function deleteTemplate(btn, id) {
+  if (!btn.dataset.confirmed) { btn.textContent = '¿Confirmar?'; btn.dataset.confirmed = '1'; return; }
+  DATA.templates = (DATA.templates||[]).filter(function(t){ return t.id !== id; });
+  saveTemplates();
+  showToast('Plantilla eliminada.', 'success');
+  render();
+}
+
+function generateFromTemplate(tmplId) {
+  const tmpl = (DATA.templates||[]).find(function(t){ return t.id === tmplId; });
+  if (!tmpl) return;
+  const winStart = _toMin(tmpl.windowStart);
+  const winEnd   = _toMin(tmpl.windowEnd);
+  const dur      = tmpl.slotDur;
+  const buf      = tmpl.bufferMin || 0;
+
+  // Sesiones recurrentes en ese día + ciclo
+  const sessions = (DATA.sessions||[]).filter(function(s){
+    return s.recurring !== false && Number(s.day) === tmpl.day &&
+           (tmpl.cycleId == null || String(s.cycleId) === String(tmpl.cycleId));
+  });
+  // Horarios libres recurrentes ya existentes en ese día + ciclo (para no duplicar)
+  const existingFS = (DATA.freeSlots||[]).filter(function(fs){
+    return fs.recurring !== false && Number(fs.day) === tmpl.day &&
+           (tmpl.cycleId == null || String(fs.cycleId) === String(tmpl.cycleId));
+  });
+
+  // Intervalos ocupados [start, end] en minutos
+  var occupied = [];
+  sessions.forEach(function(s){
+    var st = _toMin(s.start); var en = st + (s.dur||60) + buf;
+    occupied.push([st, en]);
+  });
+  existingFS.forEach(function(fs){
+    var st = _toMin(fs.start); var en = st + (fs.dur||60);
+    occupied.push([st, en]);
+  });
+
+  // Ordenar y unir solapamientos
+  occupied.sort(function(a,b){ return a[0]-b[0]; });
+  var merged = [];
+  occupied.forEach(function(iv){
+    if (!merged.length || iv[0] >= merged[merged.length-1][1]) merged.push([iv[0],iv[1]]);
+    else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1],iv[1]);
+  });
+
+  // Huecos dentro de la ventana
+  var gaps = []; var cursor = winStart;
+  merged.forEach(function(iv){
+    var s = Math.max(iv[0], winStart); var e = Math.min(iv[1], winEnd);
+    if (s > cursor) gaps.push([cursor, s]);
+    if (e > cursor) cursor = e;
+  });
+  if (cursor < winEnd) gaps.push([cursor, winEnd]);
+
+  // Generar bloques de dur minutos en cada hueco
+  var newSlots = [];
+  gaps.forEach(function(gap){
+    var t = gap[0];
+    while (t + dur <= gap[1]) {
+      newSlots.push({ id:'fs_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+        day:tmpl.day, start:_toTime(t), dur:dur, modality:tmpl.modality,
+        recurring:true, cycleId:tmpl.cycleId, bookedBy:null });
+      t += dur;
+    }
+  });
+
+  if (!newSlots.length) { showToast('No hay huecos disponibles — todos los bloques ya existen o están ocupados.','error'); return; }
+  if (!DATA.freeSlots) DATA.freeSlots = [];
+  DATA.freeSlots = DATA.freeSlots.concat(newSlots);
+  saveFreeSlots();
+  render();
+  showToast(newSlots.length + ' horario' + (newSlots.length!==1?'s':'') + ' libre' + (newSlots.length!==1?'s':'') + ' generado' + (newSlots.length!==1?'s':'') + '.', 'success');
+}
+
 // ════════════════════════════════════════════════════════
 // ADMIN — VISTAS
 // ════════════════════════════════════════════════════════
@@ -1684,6 +1803,91 @@ function vAdminCuentas() {
         </div>
       </div>` : `
       <button class="btn-ghost" style="margin-top:4px" onclick="startEditCycle('new')">+ Agregar ciclo</button>`}
+    </div>
+
+    <!-- ── Plantillas de disponibilidad ── -->
+    <div class="sec-lbl" style="margin-top:20px">Plantillas de disponibilidad</div>
+    <div class="req-card" style="padding:0;overflow:hidden">
+      ${(DATA.templates||[]).length === 0 && editingTemplateId !== 'new' ? `
+      <p style="font-size:12px;color:rgba(0,0,0,0.45);padding:14px 16px;margin:0">Sin plantillas configuradas. Agrega una para generar horarios libres automáticamente.</p>` : ''}
+      ${(DATA.templates||[]).map(function(tmpl){
+        return `<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.06)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600">${_TMPL_DAY_NAMES[tmpl.day]} · ${tmpl.windowStart}–${tmpl.windowEnd}</div>
+            <div style="font-size:11px;color:rgba(0,0,0,0.5);margin-top:2px">
+              ${tmpl.slotDur} min · ${tmpl.modality||'—'} · buffer ${tmpl.bufferMin||0} min
+              ${tmpl.cycleId ? ' · ciclo ' + ((DATA.cycles||[]).find(function(c){ return String(c.id)===String(tmpl.cycleId); })||{}).name : ' · todos los ciclos'}
+            </div>
+          </div>
+          <button class="btn-ghost" style="padding:5px 10px;font-size:12px;margin:0" onclick="generateFromTemplate('${tmpl.id}')">⚡ Generar</button>
+          <button class="btn-ghost" style="padding:5px 10px;font-size:12px;margin:0;color:rgba(200,50,50,0.8)" onclick="deleteTemplate(this,'${tmpl.id}')">✕</button>
+        </div>`;
+      }).join('')}
+      ${editingTemplateId === 'new' ? `
+      <div style="padding:14px 16px;border-top:${(DATA.templates||[]).length?'1px solid rgba(0,0,0,0.06)':'none'}">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <div style="flex:1;min-width:120px">
+            <label class="field-label" style="margin-top:0">Día</label>
+            <select class="fsm" id="tmpl-day" style="margin-bottom:0">
+              ${_TMPL_DAY_NAMES.map(function(n,i){ return '<option value="'+i+'">'+n+'</option>'; }).join('')}
+            </select>
+          </div>
+          <div style="flex:1;min-width:120px">
+            <label class="field-label" style="margin-top:0">Ciclo</label>
+            <select class="fsm" id="tmpl-cycle" style="margin-bottom:0">
+              <option value="">Todos</option>
+              ${cycles.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('')}
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <div style="flex:1;min-width:100px">
+            <label class="field-label" style="margin-top:0">Ventana inicio</label>
+            <input class="fsm" id="tmpl-wstart" type="time" style="margin-bottom:0" value="16:00">
+          </div>
+          <div style="flex:1;min-width:100px">
+            <label class="field-label" style="margin-top:0">Ventana fin</label>
+            <input class="fsm" id="tmpl-wend" type="time" style="margin-bottom:0" value="20:30">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <div style="flex:1;min-width:100px">
+            <label class="field-label" style="margin-top:0">Duración bloque (min)</label>
+            <select class="fsm" id="tmpl-dur" style="margin-bottom:0">
+              <option value="30">30 min</option>
+              <option value="45">45 min</option>
+              <option value="60" selected>60 min</option>
+              <option value="90">90 min</option>
+              <option value="120">120 min</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:100px">
+            <label class="field-label" style="margin-top:0">Modalidad</label>
+            <select class="fsm" id="tmpl-mod" style="margin-bottom:0">
+              <option value="online">Online</option>
+              <option value="domicilio">Domicilio</option>
+              <option value="presencial">Presencial</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:100px">
+            <label class="field-label" style="margin-top:0">Buffer tras sesión (min)</label>
+            <select class="fsm" id="tmpl-buf" style="margin-bottom:0">
+              <option value="0">0 min</option>
+              <option value="15">15 min</option>
+              <option value="30" selected>30 min</option>
+              <option value="45">45 min</option>
+              <option value="60">60 min</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="saveTemplateForm()">Guardar</button>
+          <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="cancelEditTemplate()">Cancelar</button>
+        </div>
+      </div>` : `
+      <div style="padding:10px 14px;${(DATA.templates||[]).length?'border-top:1px solid rgba(0,0,0,0.06)':''}">
+        <button class="btn-ghost" style="margin-top:0;padding:5px 12px;font-size:12px" onclick="startAddTemplate()">+ Nueva plantilla</button>
+      </div>`}
     </div>
 
     ${orphanStudents.length ? `
