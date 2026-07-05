@@ -189,6 +189,13 @@ function cycleCutoffDate(cycleId) {
   }
   return getCycleHorizon();
 }
+function cycleStartDate(cycleId) {
+  if (cycleId != null) {
+    var c=(DATA.cycles||[]).find(function(cc){ return String(cc.id)===String(cycleId); });
+    if (c) return c.start ? new Date(c.start+'T00:00:00') : null;
+  }
+  return null;
+}
 function slotNames(studentIds) {
   var names=(studentIds||[]).map(function(id){
     var st=DATA.students[id]||DATA.students[String(id)];
@@ -339,7 +346,10 @@ function buildGrid(dayList) {
         : slot.students.filter(function(st){
             if (st.skipDates.indexOf(ds)!==-1) return false;
             var cutoff = cycleCutoffDate(st.cycleId);
-            return !(cutoff && d > cutoff);
+            if (cutoff && d > cutoff) return false;
+            var cStart = cycleStartDate(st.cycleId);
+            if (cStart && d < cStart) return false;
+            return true;
           }).map(function(st){ return st.sid; });
       if(!activeIds.length) return '';
       var topPx=(toH(slot.start)-MIN_H)*ROW_H;
@@ -363,6 +373,8 @@ function buildGrid(dayList) {
       if(fs.recurring===false && fs.date) return fs.date===ds;
       var cutoff=cycleCutoffDate(fs.cycleId);
       if(cutoff && d>cutoff) return false;
+      var fsStart=cycleStartDate(fs.cycleId);
+      if(fsStart && d<fsStart) return false;
       if(Array.isArray(fs.skipDates) && fs.skipDates.indexOf(ds)!==-1) return false;
       return Number(fs.day)===dow;
     }).map(function(fs){

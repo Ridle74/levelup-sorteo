@@ -482,6 +482,13 @@ function cycleCutoffDate(cycleId) {
   }
   return getCycleHorizon();
 }
+function cycleStartDate(cycleId) {
+  if (cycleId != null) {
+    const c = (DATA.cycles||[]).find(function(cc){ return String(cc.id) === String(cycleId); });
+    if (c) return c.start ? new Date(c.start+'T00:00:00') : null;
+  }
+  return null;
+}
 // Migración única: clases/horarios libres recurrentes creados antes de esta funcionalidad no
 // tienen cycleId, así que sin esto seguirían repitiéndose más allá del fin de su ciclo (ver
 // cycleCutoffDate). Se les asigna el ciclo vigente HOY, una sola vez; después de eso el campo
@@ -1047,7 +1054,10 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
         : slot.students.filter(function(st){
             if (st.skipDates.includes(dstr)) return false;
             const cutoff = cycleCutoffDate(st.cycleId);
-            return !(cutoff && d > cutoff);
+            if (cutoff && d > cutoff) return false;
+            const cStart = cycleStartDate(st.cycleId);
+            if (cStart && d < cStart) return false;
+            return true;
           });
       if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
@@ -1077,6 +1087,8 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       if (Array.isArray(fs.skipDates) && fs.skipDates.includes(dstr)) return false;
       const fsCutoff = cycleCutoffDate(fs.cycleId);
       if (fsCutoff && d > fsCutoff) return false;
+      const fsStart = cycleStartDate(fs.cycleId);
+      if (fsStart && d < fsStart) return false;
       return Number(fs.day) === dow;
     }).map(function(fs){
       const topPx = Math.max((toH(fs.start) - MIN_H) * ROW_H, 0);
