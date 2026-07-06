@@ -2506,9 +2506,8 @@ function _bingoHostDrawNext() {
   let next; do { next = _bGetRandomInt(1,75); } while (drawnSet.has(next));
   const newDrawn = [...drawn, next];
   const col = _bingoColIndex(next);
-  // directMode (default true si no está seteado en el doc): salta directo a la fase 'mark' sin
-  // mostrar la suma — igual que en neon-bingo, donde directMode se salta la fase 'calc'.
-  const directMode = bingoGame.directMode !== false;
+  // Siempre directMode: no hay fase 'calc', se va directo a 'mark'.
+  const directMode = true;
   const patch = directMode ? {
     drawnNumbers: newDrawn, currentNumber: next, status: 'playing',
     numPhase: 'mark', phaseEndsAt: Date.now() + _bingoCurrentMarkSeconds()*1000,
