@@ -2014,7 +2014,7 @@ function _bingoCloseModal() {
   try {
     const me = _bingoMe();
     if (bingoGame && bingoGame.hostId === me.uid && bingoGame.status === 'playing') {
-      BINGO_REF.update({ nextDrawAt: Date.now() + (bingoGame.intervalMs || 4500) })
+      BINGO_REF.update({ nextDrawAt: Date.now() + (bingoGame.intervalMs ?? 500) })
         .catch(e=>console.error('bingo resume', e));
     }
   } catch(e) {}
@@ -2525,7 +2525,7 @@ function _bingoHostAdvancePhase() {
     const botMarkPatch = _bingoBotProcessMarks();
     BINGO_REF.update(Object.assign({
       numPhase:'done', phaseEndsAt:null, currentSum:null,
-      nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs||4500),
+      nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs ?? 500),
       status: ended ? 'ended' : 'playing'
     }, botMarkPatch))
       .then(() => {
@@ -2555,7 +2555,7 @@ function _bingoHostEndChallenge() {
   const patch = {
     challengeActive:false, challengeEndsAt:null, questions:[],
     nextChallengeAtDraw: drawn.length + _nxt,
-    nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs||4500),
+    nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs ?? 500),
     status: ended ? 'ended' : 'playing',
     retoCount: _rc
   };
@@ -3710,7 +3710,7 @@ function _bingoPaneHtml() {
       phaseFootLabel = `Reto termina en ${Math.ceil(remainSecs)}s ↑`;
     } else if (status==='playing' && bingoGame.nextDrawAt && !inChallenge) {
       // Intervalo entre sorteos: mostrar cuenta regresiva para el siguiente número
-      const totalMs = bingoGame.intervalMs || 4500;
+      const totalMs = bingoGame.intervalMs ?? 500;
       const remainMs = Math.max(0, bingoGame.nextDrawAt - Date.now());
       phasePct = totalMs > 0 ? Math.min(100, Math.max(0, (remainMs / totalMs) * 100)) : 0;
       phaseOn = true;
