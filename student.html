@@ -2722,7 +2722,7 @@ function createBingoGame() {
       challengeSchedule: BINGO_CHALLENGE_SCHEDULES[_bingoPendingSpeed] || BINGO_CHALLENGE_SCHEDULES.media,
       markSeconds:   _bingoPendingSpeed==='rapida' ? 10 : 15,
       intervalMs:    _bingoPendingSpeed==='rapida' ? 3000 : 4500,
-      challengeSeconds:60, challengeIntervalDraws:8, blockSeconds:60,
+      challengeSeconds: _bingoPendingSpeed==='rapida' ? 30 : 60, challengeIntervalDraws:8, blockSeconds:60,
       numPhase:null, phaseEndsAt:null, highlightCol:null, currentSum:null,
       challengeActive:false, challengeId:null, challengeEndsAt:null, questions:[], nextChallengeAtDraw:null,
       tierWinners:{}, retoCount:0,
@@ -2963,7 +2963,8 @@ function _bingoFinishChallenge(correctCount) {
   let charges = 0, fast = false, fails = 0;
   if (perfect) {
     const timeRemaining = Math.max(0, ((bingoGame.challengeEndsAt||0) - Date.now()) / 1000);
-    fast = timeRemaining > 30; // > 30s restantes = usó < 30s
+    const halfTime = (bingoGame.challengeSeconds||60) / 2; // umbral: mitad del tiempo total
+    fast = timeRemaining > halfTime; // completó en < mitad del tiempo → +2 cargas
     charges = fast ? 2 : 1;
     const elapsed = Math.round((bingoGame.challengeSeconds||60) - timeRemaining);
     patch[`players.${me.uid}.lastRetoTime`] = elapsed;
@@ -3914,7 +3915,7 @@ function _bingoPaneHtml() {
       if (status==='playing' && !frozen) {
         body += `<div class="bingo-powers-box">
             <div class="bpx-head"><span>⚡ Poderes</span><span class="bpx-charges">${myPlayer.powerCharges||0} carga(s)</span></div>
-            <div class="bpx-hint">Reto perfecto en &lt;30s → +2 cargas · si no → +1 carga · Desbloquea poderes una sola vez · úsalos tocando casillas.</div>
+            <div class="bpx-hint">Reto perfecto en &lt;${Math.round((bingoGame.challengeSeconds||60)/2)}s → +2 cargas · si no → +1 carga · Desbloquea poderes una sola vez · úsalos tocando casillas.</div>
             ${(()=>{
               const cats = [
                 { limit:'persistent', label:'✨ Permanentes',      keys:['bitacora','vision','fortaleza','venganza'] },
@@ -4043,9 +4044,9 @@ function _bingoPaneHtml() {
         const _rIco = _r.perfect && _r.fast ? '🚀' : _r.perfect ? '✅' : '😓';
         const _rH = _r.perfect && _r.fast ? '¡Rapidísimo!' : _r.perfect ? '¡Reto completo!' : 'Tiempo agotado';
         const _rB = _r.perfect && _r.fast
-          ? `🎉 ¡Felicidades! Ganaste ${_r.charges} cargas ⚡ por hacerlo en menos de 30 segundos.`
+          ? `🎉 ¡Felicidades! Ganaste ${_r.charges} cargas ⚡ por hacerlo en tiempo récord.`
           : _r.perfect
-            ? `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de 30s la próxima vez para ganar 2!`
+            ? `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de ${Math.round((bingoGame.challengeSeconds||60)/2)}s la próxima vez para ganar 2!`
             : `⛔ No completaste el reto — bloqueamos automáticamente ${_r.fails} número${_r.fails!==1?'s':''} de tus cartones.`;
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-${_rC}">
             <div class="bcc-result-ico">${_rIco}</div>
@@ -4060,7 +4061,7 @@ function _bingoPaneHtml() {
         const barCls = remain > 30 ? 'ok' : 'warn';
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
             <div class="bcc-title">🧠 ¡Reto Matemático!</div>
-            <div class="bcc-sub">Responde las 5 preguntas — reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.</div>
+            <div class="bcc-sub">Responde las 5 preguntas — reto perfecto en &lt;${Math.round((bingoGame.challengeSeconds||60)/2)}s = +2 cargas · si no = +1 · limpia tus bloqueos.</div>
             <div class="bcc-bar"><div class="bcc-bar-fill ${barCls}" style="width:${pct}%"></div></div>
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
             ${q ? `<div class="bcc-question">${q.q}</div>
