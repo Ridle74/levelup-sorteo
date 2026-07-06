@@ -2531,17 +2531,19 @@ function _bingoHostAdvancePhase() {
     const botMarkPatch = _bingoBotProcessMarks();
     BINGO_REF.update(Object.assign({
       numPhase:'done', phaseEndsAt:null, currentSum:null,
-      nextDrawAt: ended ? null : Date.now() + 500,
+      nextDrawAt: ended ? null : Date.now() + 200,
       status: ended ? 'ended' : 'playing'
     }, botMarkPatch))
       .then(() => {
+        _bingoAdvancingPhase = false;
         if (!ended) {
+          // Disparar el siguiente número directamente sin esperar al tick (evita latencia de 1-5s)
+          setTimeout(_bingoHostDrawNext, 200);
           setTimeout(_bingoBotCheckClaims, 900);
           if (Math.random() < 0.65) setTimeout(() => _bingoBotSendTaunt('situacional'), 1200);
         }
       })
-      .catch(e=>console.error('bingo phase->done',e))
-      .finally(()=>{ _bingoAdvancingPhase = false; });
+      .catch(e=>{ console.error('bingo phase->done',e); _bingoAdvancingPhase = false; });
   } else {
     _bingoAdvancingPhase = false;
   }
