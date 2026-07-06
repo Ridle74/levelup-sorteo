@@ -2466,6 +2466,18 @@ function _bingoTick() {
   if (drawn.length>0 && bingoGame.nextChallengeAtDraw!=null && drawn.length>=bingoGame.nextChallengeAtDraw) { _bingoHostStartChallenge(); return; }
   if (bingoGame.nextDrawAt && now >= bingoGame.nextDrawAt) _bingoHostDrawNext();
 }
+// Devuelve el tiempo de marcado en segundos según velocidad y tier activo.
+function _bingoCurrentMarkSeconds() {
+  const speed = (bingoGame && bingoGame.gameSpeed) || 'media';
+  const sch = speed === 'rapida'
+    ? { terna:10, cuaterna:8, quina:6, bingo:4 }
+    : { terna:15, cuaterna:12.5, quina:10, bingo:7.5 };
+  const tw = (bingoGame && bingoGame.tierWinners) || {};
+  for (const tier of BINGO_TIER_ORDER) {
+    if (!tw[tier]) return sch[tier];
+  }
+  return sch.bingo;
+}
 function _bingoHostDrawNext() {
   if (_bingoDrawing) return;
   // Guarda: no sortear mientras hay un modal de premio/reglas abierto
@@ -2495,7 +2507,7 @@ function _bingoHostDrawNext() {
   const directMode = bingoGame.directMode !== false;
   const patch = directMode ? {
     drawnNumbers: newDrawn, currentNumber: next, status: 'playing',
-    numPhase: 'mark', phaseEndsAt: Date.now() + (bingoGame.markSeconds||10)*1000,
+    numPhase: 'mark', phaseEndsAt: Date.now() + _bingoCurrentMarkSeconds()*1000,
     highlightCol: col, currentSum: null, nextDrawAt: null
   } : {
     drawnNumbers: newDrawn, currentNumber: next, status: 'playing',
@@ -2506,7 +2518,7 @@ function _bingoHostDrawNext() {
 }
 function _bingoHostAdvancePhase() {
   if (bingoGame.numPhase === 'calc') {
-    BINGO_REF.update({ numPhase:'mark', phaseEndsAt: Date.now() + (bingoGame.markSeconds||10)*1000 })
+    BINGO_REF.update({ numPhase:'mark', phaseEndsAt: Date.now() + _bingoCurrentMarkSeconds()*1000 })
       .catch(e=>console.error('bingo phase->mark',e));
   } else if (bingoGame.numPhase === 'mark') {
     const ended = (bingoGame.drawnNumbers||[]).length >= 75;
@@ -3682,7 +3694,7 @@ function _bingoPaneHtml() {
     const challengePct = intervalDraws>0 ? Math.min(100, Math.max(0, ((drawn.length-startAt)/intervalDraws)*100)) : 0;
     let phasePct = 0, phaseOn = false, phaseColorClass = 'pink', phaseFootLabel = '';
     if (inCalc || inMark) {
-      const totalSecs = inCalc ? (bingoGame.calcSeconds||5) : (bingoGame.markSeconds||10);
+      const totalSecs = inCalc ? (bingoGame.calcSeconds||5) : _bingoCurrentMarkSeconds();
       const remainSecs = Math.max(0, ((bingoGame.phaseEndsAt||0)-Date.now())/1000);
       phasePct = totalSecs>0 ? Math.min(100, Math.max(0, (remainSecs/totalSecs)*100)) : 0;
       phaseOn = true;
