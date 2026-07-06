@@ -2733,7 +2733,7 @@ function createBingoGame() {
       gameSpeed: _bingoPendingSpeed,
       challengeSchedule: BINGO_CHALLENGE_SCHEDULES[_bingoPendingSpeed] || BINGO_CHALLENGE_SCHEDULES.media,
       markSeconds:   _bingoPendingSpeed==='rapida' ? 10 : 15,
-      intervalMs:    0,
+      intervalMs:    500,
       challengeSeconds: _bingoPendingSpeed==='rapida' ? 30 : 60, challengeIntervalDraws:8, blockSeconds:60,
       numPhase:null, phaseEndsAt:null, highlightCol:null, currentSum:null,
       challengeActive:false, challengeId:null, challengeEndsAt:null, questions:[], nextChallengeAtDraw:null,
