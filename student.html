@@ -978,8 +978,10 @@ let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
 let _prevChallengeActive  = false; // detecta transición false→true (inicio de reto) para auto-aceptar Desafío
 // Velocidad media: reto cada 10,8,6,4 números; rápida: 5,4,3,2
 const BINGO_CHALLENGE_SCHEDULES = { media:[10,8,6,4], rapida:[5,4,3,2] };
-let _bingoPendingSpeed   = 'media'; // velocidad elegida ANTES de crear la partida
-let _botDesafioResponded = false;   // evita respuesta doble del bot al Desafío
+let _bingoPendingSpeed       = 'media'; // velocidad elegida ANTES de crear la partida
+let _botDesafioResponded    = false;   // evita respuesta doble del bot al Desafío
+let _bingoDesafioDeclineAck = false;   // el challenger ya vio el modal de rechazo
+let _bingoDesafioDeclineMsg = '';      // mensaje aleatorio fijo hasta que lo cierre
 // Identidad de invitado (sin login) — persiste en localStorage
 let _bingoGuestUid   = localStorage.getItem('bingoGuestUid')   || null;
 let _bingoGuestName  = localStorage.getItem('bingoGuestName')  || null;
@@ -2254,6 +2256,7 @@ function _bingoResetLocalState() {
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
   _bingoRevengeActive = false;
+  _bingoDesafioDeclineAck = false; _bingoDesafioDeclineMsg = '';
   _bingoCloseModal();
 }
 
@@ -2376,7 +2379,7 @@ function _selectBingoGame(gameId) {
                 'activeChallenge.status': 'resolved',
                 'activeChallenge.resolvedBy': 'decline',
                 [`players.${_acBot.toUid}.desafiadoUntilDraw`]: _drawLen + 6,
-              }).then(() => showToast(`🤖 ${(_botP&&_botP.name)||'Bot'} rechazó el Desafío — pierde 6 marcas.`,'success'))
+              }).then(() => showToast(`😱 ¡${(_botP&&_botP.name)||'Bot'} huyó de tu Desafío! Le bloqueamos 6 marcas.`,'success'))
                 .catch(e=>console.error('bot desafio reject',e));
             } else {
               // Bot acepta — simula el duelo
@@ -3278,7 +3281,7 @@ function rechazarBingoDesafio() {
     'activeChallenge.status': 'resolved',
     'activeChallenge.resolvedBy': 'decline',
     [`players.${me.uid}.desafiadoUntilDraw`]: drawLen + 6,
-  }).then(()=>{ showToast('⚔️ Rechazaste el desafío — los próximos 6 números no puedes marcarlos.','error'); _renderBingoPane(); })
+  }).then(()=>{ showToast('🐔 ¡Rechazaste el Desafío! Eso te bloquea los próximos 6 números...','error'); _renderBingoPane(); })
     .catch(e=>console.error('desafio rechazar',e));
 }
 function submitBingoDuelAnswer(raw) {
@@ -4016,6 +4019,20 @@ function _bingoPaneHtml() {
           body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>¡Terminaste el duelo!</b> Esperando que tu rival acabe...</div>`;
         }
       }
+    }
+    // ── Modal para el challenger: su desafío fue rechazado ──
+    if (_ac && _ac.status === 'resolved' && _ac.resolvedBy === 'decline' && _ac.fromUid === me.uid && !_bingoDesafioDeclineAck) {
+      if (!_bingoDesafioDeclineMsg) {
+        const _dp = ['¡Les inspiras demasiado miedo! 😱','¡Salió corriendo antes de enfrentarte! 🏃💨','¡No se atrevió a mirarte a los ojos! 🐔','¡Prefirió el castigo antes que enfrentarte! 👑','¡Tu nombre solo ya lo dejó temblando! 😤','¡Huyó despavorido! 🫣'];
+        _bingoDesafioDeclineMsg = _dp[Math.floor(Math.random() * _dp.length)];
+      }
+      const _toName = (bingoGame.players||{})[_ac.toUid]?.name || 'Tu rival';
+      body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:380px">
+        <div class="bcc-result-ico">😱</div>
+        <div class="bcc-result-h">¡Rechazó tu Desafío!</div>
+        <div class="bcc-result-body" style="text-align:center"><b>${_toName}</b> no se atrevió a enfrentarte.<br><br><span style="font-size:17px;line-height:1.4">${_bingoDesafioDeclineMsg}</span><br><br><span style="color:rgba(255,255,255,0.5);font-size:12px">Como castigo le bloqueamos los próximos <b style="color:#fff">6 números</b>. 🎉</span></div>
+        <button class="bcc-submit" style="margin-top:18px" onclick="_bingoDesafioDeclineAck=true;_bingoDesafioDeclineMsg='';_renderBingoPane()">💪 ¡Bien merecido!</button>
+      </div></div>`;
     }
     const _showChallenge = bingoGame.challengeActive && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId;
     const _showResult = !!_bingoChallengeResult;
