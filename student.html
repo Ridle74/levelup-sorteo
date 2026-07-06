@@ -1954,26 +1954,22 @@ const BINGO_BOT_CONFIG = {
   advanced:     { markProb: 0.96, claimProb: 0.92 },
 };
 const BINGO_BOT_NAMES = ['Botto','Robín','Pixie','Chip'];
-// Mensajes de provocación de los bots (≤18 chars para que quepan en el chip)
-const BINGO_BOT_TAUNTS = {
-  general: [
-    'jajaja 😂','lástima 😏','qué fácil 😎','ya casi 😤',
-    '¡yo gano! 🏆','hmmm... 🤔','¡rápido! ⚡','boom 💥',
-    'te vigilo 👁️','casi casi 👀','concentración 🎯','¡me rindo! 🥲',
-    'eres más bot q yo 🤖','uy uy uy 🫣','se me hace fácil 😌',
-  ],
-  claim: [
-    '¡premio mío! 🎉','sigo ganando 😈','¡boom! gaté 💥','¡BINGO! 🥳',
-    'qué rico ganar 🏆','fácil fácil 😎',
-  ],
-  reto: [
-    'esto es pan comido 🍞','yo soy el mejor 🧠','¡me sé todas! 💡',
-    'sin problemas 😏','matemáticas=fácil 📐',
-  ],
-  lose: [
-    'suerte de novato 🙄','¡trampa! 😤','era un accidente 🤭',
-    'la próxima gano 😤','no contaba con eso 😅',
-  ],
+// Mensajes de los bots según su situación real (≤18 chars)
+const BINGO_BOT_STATUS_POOLS = {
+  // Por progreso de marcas
+  inicio:   ['calentando 🔥','analizando... 🤔','¡arranca! ⚡','hmm 😏','preparándome 🎯','me activo 🧠'],
+  terna:    ['¡ya tengo terna! 😤','voy por la terna 🎯','¡terna conseguida! 💥','¡arrancando! 🚀','¡ojo a mis fichas! 👁️'],
+  cuaterna: ['¡casi cuaterna! 😏','¡voy bien! 😎','¡en racha! ⚡','¡mi momento! 🎯','cuaterna completa 💥'],
+  linea:    ['¡casi línea! 🎯','¡ya casi! 👀','¡modo bestia! 🔥','¡voy por más! 💪','¡línea al caer! 😤'],
+  bingo:    ['¡casi BINGO! 🔥','¡me falta 1! 😤','¡gano yo! 🏆','¡estoy full! 🚀','¡no me paren! 💥'],
+  // Por poderes desbloqueados
+  amenaza_cong:  ['¡te voy a congelar! 🥶','¡ojo! ❄️ vengo','¡frost incoming! ❄️','¡se te congela! 🥶','¡listos pa congelar! 🥶'],
+  amenaza_sabot: ['¡te saboteo! 💀','¡cuidado! 😈 vengo','¡bye números! 💣','¡sabotaje activado! 💀'],
+  amenaza_robo:  ['¡te robo un num! 🎰','¡ladrón de cartón! 🤝','¡próximo robo! 🕵️'],
+  // Eventos
+  claim: ['¡premio mío! 🎉','¡BINGO! 🥳','sigo ganando 😈','¡boom! gaté 💥','qué rico ganar 🏆'],
+  reto:  ['pan comido 🍞','¡me sé todas! 💡','sin problemas 😏','¡yo soy el mejor! 🧠'],
+  lose:  ['¡trampa! 😤','suerte de novato 🙄','la próxima gano 😤','no contaba con eso 😅'],
 };
 const BINGO_TIER_DESC  = {
   terna:    '3 números en la misma fila',
@@ -2520,7 +2516,7 @@ function _bingoHostAdvancePhase() {
       .then(() => {
         if (!ended) {
           setTimeout(_bingoBotCheckClaims, 900);
-          if (Math.random() < 0.20) setTimeout(() => _bingoBotSendTaunt('general'), 1200);
+          if (Math.random() < 0.65) setTimeout(() => _bingoBotSendTaunt('situacional'), 1200);
         }
       })
       .catch(e=>console.error('bingo phase->done',e));
@@ -2627,27 +2623,59 @@ function _bingoBotCheckClaims() {
     break; // un bot reclama por vez
   }
 }
-// Hace que un bot aleatorio envíe un mensaje de provocación como playerStatus (host-only).
-// trigger: 'general' | 'claim' | 'reto' | 'lose'
+// Actualiza los estados de los bots según su situación real (host-only).
+// trigger: 'situacional' | 'claim' | 'reto' | 'lose'
 function _bingoBotSendTaunt(trigger) {
-  if (!bingoGame) return;
-  try {
-    const me = _bingoMe();
-    if (bingoGame.hostId !== me.uid) return; // solo el host escribe bots
-  } catch(e) { return; }
-  const bots = Object.keys(bingoGame.players||{}).filter(uid => uid.startsWith('__bot_'));
+  if (!bingoGame || !BINGO_REF) return;
+  try { if (bingoGame.hostId !== _bingoMe().uid) return; } catch(e) { return; }
+  const players = bingoGame.players || {};
+  const bots = Object.keys(players).filter(uid => uid.startsWith('__bot_'));
   if (!bots.length) return;
-  const pool = BINGO_BOT_TAUNTS[trigger] || BINGO_BOT_TAUNTS.general;
-  const botUid = bots[Math.floor(Math.random() * bots.length)];
-  const msg = pool[Math.floor(Math.random() * pool.length)];
-  BINGO_REF.update({ [`players.${botUid}.playerStatus`]: msg })
-    .catch(e => console.error('bot taunt', e));
-  // Limpiar el mensaje después de 8 segundos para que no quede fijo
+  const _pick = pool => pool[Math.floor(Math.random() * pool.length)];
+  const patch = {}, toClean = [];
+
+  if (trigger === 'claim' || trigger === 'reto' || trigger === 'lose') {
+    // Evento puntual: un bot aleatorio reacciona
+    const uid = bots[Math.floor(Math.random() * bots.length)];
+    const msg = _pick(BINGO_BOT_STATUS_POOLS[trigger] || BINGO_BOT_STATUS_POOLS.reto);
+    patch[`players.${uid}.playerStatus`] = msg;
+    toClean.push(uid);
+  } else {
+    // Situacional: cada bot evalúa su estado real
+    bots.forEach(uid => {
+      if (Math.random() > 0.65) return; // 65 % de probabilidad de hablar
+      const p = players[uid] || {};
+      const marks = (p.marks || []).length;
+      const hasCong  = !!(p.unlockedPowers||{}).congelar;
+      const hasSabot = !!(p.unlockedPowers||{}).sabotaje;
+      const hasRobo  = !!(p.unlockedPowers||{}).robo;
+
+      // Mensajes de amenaza si tiene poderes (30 % de peso)
+      if ((hasCong || hasSabot || hasRobo) && Math.random() < 0.30) {
+        const key = hasCong ? 'amenaza_cong' : hasSabot ? 'amenaza_sabot' : 'amenaza_robo';
+        patch[`players.${uid}.playerStatus`] = _pick(BINGO_BOT_STATUS_POOLS[key]);
+      } else {
+        // Basado en cantidad de marcas → proxy de progreso real
+        let key = 'inicio';
+        if (marks >= 19)     key = 'bingo';
+        else if (marks >= 13) key = 'linea';
+        else if (marks >= 8)  key = 'cuaterna';
+        else if (marks >= 4)  key = 'terna';
+        patch[`players.${uid}.playerStatus`] = _pick(BINGO_BOT_STATUS_POOLS[key]);
+      }
+      toClean.push(uid);
+    });
+  }
+
+  if (!Object.keys(patch).length) return;
+  BINGO_REF.update(patch).catch(e => console.error('bot status', e));
+  // Limpiar después de 7 s
   setTimeout(() => {
     if (!BINGO_REF) return;
-    BINGO_REF.update({ [`players.${botUid}.playerStatus`]: '' })
-      .catch(()=>{});
-  }, 8000);
+    const clear = {};
+    toClean.forEach(uid => { clear[`players.${uid}.playerStatus`] = ''; });
+    BINGO_REF.update(clear).catch(()=>{});
+  }, 7000);
 }
 // Guarda el estado corto del jugador actual (máx. 15 chars).
 function setPlayerStatus(val) {
