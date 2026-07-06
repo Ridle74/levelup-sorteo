@@ -1493,18 +1493,34 @@ function cancelEditTemplate()  { editingTemplateId = null;  render(); }
 
 function saveTemplateForm() {
   const dayEl   = document.getElementById('tmpl-day');
-  const cycEl   = document.getElementById('tmpl-cycle');
   const wsEl    = document.getElementById('tmpl-wstart');
   const weEl    = document.getElementById('tmpl-wend');
   const durEl   = document.getElementById('tmpl-dur');
   const modEl   = document.getElementById('tmpl-mod');
   const bufEl   = document.getElementById('tmpl-buf');
+  const scopeEl = document.getElementById('tmpl-scope');
   if (!wsEl.value || !weEl.value) { showToast('Indica la ventana de disponibilidad.'); return; }
   if (_toMin(wsEl.value) >= _toMin(weEl.value)) { showToast('La hora de inicio debe ser anterior al fin.'); return; }
+  const scopeType = scopeEl ? scopeEl.value : 'cycle';
+  var cycleId = null, dateFrom = null, dateTo = null;
+  if (scopeType === 'cycle') {
+    const cycEl = document.getElementById('tmpl-cycle');
+    cycleId = (cycEl && cycEl.value !== '') ? cycEl.value : null;
+  } else {
+    const fromEl = document.getElementById('tmpl-from');
+    const toEl   = document.getElementById('tmpl-to');
+    dateFrom = fromEl ? fromEl.value : null;
+    dateTo   = toEl   ? toEl.value   : null;
+    if (!dateFrom || !dateTo) { showToast('Indica el rango de fechas.'); return; }
+    if (dateFrom > dateTo) { showToast('La fecha de inicio debe ser anterior al fin.'); return; }
+  }
   const tmpl = {
     id:          editingTemplateId === 'new' ? ('tmpl_' + Date.now()) : editingTemplateId,
     day:         parseInt(dayEl.value),
-    cycleId:     cycEl.value !== '' ? cycEl.value : null,
+    scopeType,
+    cycleId,
+    dateFrom,
+    dateTo,
     windowStart: wsEl.value,
     windowEnd:   weEl.value,
     slotDur:     parseInt(durEl.value),
@@ -1528,6 +1544,34 @@ function deleteTemplate(btn, id) {
   render();
 }
 
+function _gapSlots(occupied, winStart, winEnd, dur, tmpl, extraProps) {
+  occupied.sort(function(a,b){ return a[0]-b[0]; });
+  var merged = [];
+  occupied.forEach(function(iv){
+    if (!merged.length || iv[0] >= merged[merged.length-1][1]) merged.push([iv[0],iv[1]]);
+    else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1],iv[1]);
+  });
+  var gaps = []; var cursor = winStart;
+  merged.forEach(function(iv){
+    var s = Math.max(iv[0],winStart), e = Math.min(iv[1],winEnd);
+    if (s > cursor) gaps.push([cursor,s]);
+    if (e > cursor) cursor = e;
+  });
+  if (cursor < winEnd) gaps.push([cursor,winEnd]);
+  var slots = [];
+  gaps.forEach(function(gap){
+    var t = gap[0];
+    while (t+dur <= gap[1]) {
+      var base = { id:'fs_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+        day:tmpl.day, start:_toTime(t), dur:dur, modality:tmpl.modality, bookedBy:null };
+      Object.assign(base, extraProps);
+      slots.push(base);
+      t += dur;
+    }
+  });
+  return slots;
+}
+
 function generateFromTemplate(tmplId) {
   const tmpl = (DATA.templates||[]).find(function(t){ return t.id === tmplId; });
   if (!tmpl) return;
@@ -1535,57 +1579,53 @@ function generateFromTemplate(tmplId) {
   const winEnd   = _toMin(tmpl.windowEnd);
   const dur      = tmpl.slotDur;
   const buf      = tmpl.bufferMin || 0;
-
-  // Sesiones recurrentes en ese día + ciclo
-  const sessions = (DATA.sessions||[]).filter(function(s){
-    return s.recurring !== false && Number(s.day) === tmpl.day &&
-           (tmpl.cycleId == null || String(s.cycleId) === String(tmpl.cycleId));
-  });
-  // Horarios libres recurrentes ya existentes en ese día + ciclo (para no duplicar)
-  const existingFS = (DATA.freeSlots||[]).filter(function(fs){
-    return fs.recurring !== false && Number(fs.day) === tmpl.day &&
-           (tmpl.cycleId == null || String(fs.cycleId) === String(tmpl.cycleId));
-  });
-
-  // Intervalos ocupados [start, end] en minutos
-  var occupied = [];
-  sessions.forEach(function(s){
-    var st = _toMin(s.start); var en = st + (s.dur||60) + buf;
-    occupied.push([st, en]);
-  });
-  existingFS.forEach(function(fs){
-    var st = _toMin(fs.start); var en = st + (fs.dur||60);
-    occupied.push([st, en]);
-  });
-
-  // Ordenar y unir solapamientos
-  occupied.sort(function(a,b){ return a[0]-b[0]; });
-  var merged = [];
-  occupied.forEach(function(iv){
-    if (!merged.length || iv[0] >= merged[merged.length-1][1]) merged.push([iv[0],iv[1]]);
-    else merged[merged.length-1][1] = Math.max(merged[merged.length-1][1],iv[1]);
-  });
-
-  // Huecos dentro de la ventana
-  var gaps = []; var cursor = winStart;
-  merged.forEach(function(iv){
-    var s = Math.max(iv[0], winStart); var e = Math.min(iv[1], winEnd);
-    if (s > cursor) gaps.push([cursor, s]);
-    if (e > cursor) cursor = e;
-  });
-  if (cursor < winEnd) gaps.push([cursor, winEnd]);
-
-  // Generar bloques de dur minutos en cada hueco
   var newSlots = [];
-  gaps.forEach(function(gap){
-    var t = gap[0];
-    while (t + dur <= gap[1]) {
-      newSlots.push({ id:'fs_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
-        day:tmpl.day, start:_toTime(t), dur:dur, modality:tmpl.modality,
-        recurring:true, cycleId:tmpl.cycleId, bookedBy:null });
-      t += dur;
+
+  if (tmpl.scopeType === 'dateRange') {
+    // ── Rango de fechas: genera horarios one-time para cada ocurrencia del día ──
+    if (!tmpl.dateFrom || !tmpl.dateTo) { showToast('Falta rango de fechas en la plantilla.','error'); return; }
+    var cur = new Date(tmpl.dateFrom + 'T00:00:00');
+    var endD = new Date(tmpl.dateTo  + 'T00:00:00');
+    while (cur <= endD) {
+      if (cur.getDay() === tmpl.day) {
+        var ds = cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
+        // Sesiones que aplican a esta fecha
+        var daySessions = (DATA.sessions||[]).filter(function(s){
+          if (s.oneTimeDate) return s.oneTimeDate === ds;
+          if (s.recurring === false || Number(s.day) !== tmpl.day) return false;
+          if (Array.isArray(s.skipDates) && s.skipDates.indexOf(ds) !== -1) return false;
+          var cutoff = cycleCutoffDate(s.cycleId);
+          if (cutoff && cur > cutoff) return false;
+          var cStart = cycleStartDate(s.cycleId);
+          if (cStart && cur < cStart) return false;
+          return true;
+        });
+        // Horarios libres ya existentes en esa fecha concreta
+        var dayFS = (DATA.freeSlots||[]).filter(function(fs){ return fs.oneTimeDate === ds; });
+        var occupied = [];
+        daySessions.forEach(function(s){ var st=_toMin(s.start); occupied.push([st, st+(s.dur||60)+buf]); });
+        dayFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
+        newSlots = newSlots.concat(_gapSlots(occupied, winStart, winEnd, dur, tmpl,
+          { recurring:false, oneTimeDate:ds }));
+      }
+      cur.setDate(cur.getDate()+1);
     }
-  });
+  } else {
+    // ── Ciclo (recurrentes) ──
+    var sessions = (DATA.sessions||[]).filter(function(s){
+      return s.recurring !== false && Number(s.day) === tmpl.day &&
+             (tmpl.cycleId == null || String(s.cycleId) === String(tmpl.cycleId));
+    });
+    var existingFS = (DATA.freeSlots||[]).filter(function(fs){
+      return fs.recurring !== false && Number(fs.day) === tmpl.day &&
+             (tmpl.cycleId == null || String(fs.cycleId) === String(tmpl.cycleId));
+    });
+    var occupied = [];
+    sessions.forEach(function(s){ var st=_toMin(s.start); occupied.push([st, st+(s.dur||60)+buf]); });
+    existingFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
+    newSlots = _gapSlots(occupied, winStart, winEnd, dur, tmpl,
+      { recurring:true, cycleId:tmpl.cycleId });
+  }
 
   if (!newSlots.length) { showToast('No hay huecos disponibles — todos los bloques ya existen o están ocupados.','error'); return; }
   if (!DATA.freeSlots) DATA.freeSlots = [];
@@ -1816,7 +1856,9 @@ function vAdminCuentas() {
             <div style="font-size:13px;font-weight:600">${_TMPL_DAY_NAMES[tmpl.day]} · ${tmpl.windowStart}–${tmpl.windowEnd}</div>
             <div style="font-size:11px;color:rgba(0,0,0,0.5);margin-top:2px">
               ${tmpl.slotDur} min · ${tmpl.modality||'—'} · buffer ${tmpl.bufferMin||0} min
-              ${tmpl.cycleId ? ' · ciclo ' + ((DATA.cycles||[]).find(function(c){ return String(c.id)===String(tmpl.cycleId); })||{}).name : ' · todos los ciclos'}
+              ${tmpl.scopeType === 'dateRange'
+                ? ' · ' + (tmpl.dateFrom||'').slice(5).replace('-','/') + '–' + (tmpl.dateTo||'').slice(5).replace('-','/')
+                : (tmpl.cycleId ? ' · ciclo ' + ((DATA.cycles||[]).find(function(c){ return String(c.id)===String(tmpl.cycleId); })||{}).name : ' · todos los ciclos')}
             </div>
           </div>
           <button class="btn-ghost" style="padding:5px 10px;font-size:12px;margin:0" onclick="generateFromTemplate('${tmpl.id}')">⚡ Generar</button>
@@ -1825,6 +1867,7 @@ function vAdminCuentas() {
       }).join('')}
       ${editingTemplateId === 'new' ? `
       <div style="padding:14px 16px;border-top:${(DATA.templates||[]).length?'1px solid rgba(0,0,0,0.06)':'none'}">
+        <input type="hidden" id="tmpl-scope" value="cycle">
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
           <div style="flex:1;min-width:120px">
             <label class="field-label" style="margin-top:0">Día</label>
@@ -1833,11 +1876,30 @@ function vAdminCuentas() {
             </select>
           </div>
           <div style="flex:1;min-width:120px">
-            <label class="field-label" style="margin-top:0">Ciclo</label>
-            <select class="fsm" id="tmpl-cycle" style="margin-bottom:0">
-              <option value="">Todos</option>
-              ${cycles.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('')}
-            </select>
+            <label class="field-label" style="margin-top:0">Alcance</label>
+            <div style="display:flex;gap:0;border:1px solid rgba(0,0,0,0.15);border-radius:8px;overflow:hidden">
+              <button id="tmpl-scope-btn-cycle" onclick="(function(){document.getElementById('tmpl-scope').value='cycle';document.getElementById('tmpl-scope-cycle-div').style.display='';document.getElementById('tmpl-scope-range-div').style.display='none';document.getElementById('tmpl-scope-btn-cycle').style.background='rgba(99,102,241,0.12)';document.getElementById('tmpl-scope-btn-range').style.background='transparent';})()" type="button" style="flex:1;padding:7px 8px;font-size:12px;border:none;cursor:pointer;background:rgba(99,102,241,0.12);font-weight:600">Ciclo</button>
+              <button id="tmpl-scope-btn-range" onclick="(function(){document.getElementById('tmpl-scope').value='dateRange';document.getElementById('tmpl-scope-cycle-div').style.display='none';document.getElementById('tmpl-scope-range-div').style.display='';document.getElementById('tmpl-scope-btn-range').style.background='rgba(99,102,241,0.12)';document.getElementById('tmpl-scope-btn-cycle').style.background='transparent';})()" type="button" style="flex:1;padding:7px 8px;font-size:12px;border:none;border-left:1px solid rgba(0,0,0,0.15);cursor:pointer;background:transparent">Fechas</button>
+            </div>
+          </div>
+        </div>
+        <div id="tmpl-scope-cycle-div" style="margin-bottom:8px">
+          <label class="field-label" style="margin-top:0">Ciclo</label>
+          <select class="fsm" id="tmpl-cycle" style="margin-bottom:0">
+            <option value="">Todos</option>
+            ${cycles.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('')}
+          </select>
+        </div>
+        <div id="tmpl-scope-range-div" style="display:none;margin-bottom:8px">
+          <div style="display:flex;gap:8px">
+            <div style="flex:1">
+              <label class="field-label" style="margin-top:0">Desde</label>
+              <input class="fsm" id="tmpl-from" type="date" style="margin-bottom:0">
+            </div>
+            <div style="flex:1">
+              <label class="field-label" style="margin-top:0">Hasta</label>
+              <input class="fsm" id="tmpl-to" type="date" style="margin-bottom:0">
+            </div>
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">

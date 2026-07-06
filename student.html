@@ -976,6 +976,10 @@ let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
 let _bingoDuelError      = false;
 let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
 let _prevChallengeActive  = false; // detecta transición false→true (inicio de reto) para auto-aceptar Desafío
+// Velocidad media: reto cada 10,8,6,4 números; rápida: 5,4,3,2
+const BINGO_CHALLENGE_SCHEDULES = { media:[10,8,6,4], rapida:[5,4,3,2] };
+let _bingoPendingSpeed   = 'media'; // velocidad elegida ANTES de crear la partida
+let _botDesafioResponded = false;   // evita respuesta doble del bot al Desafío
 // Identidad de invitado (sin login) — persiste en localStorage
 let _bingoGuestUid   = localStorage.getItem('bingoGuestUid')   || null;
 let _bingoGuestName  = localStorage.getItem('bingoGuestName')  || null;
@@ -2357,6 +2361,63 @@ function _selectBingoGame(gameId) {
       }
       _prevChallengeActive = _nowCA;
     } catch(e) { console.error('desafio auto-accept', e); }
+    // Bot auto-responde al Desafío (solo el host lo escribe)
+    try {
+      const _acBot = bingoGame && bingoGame.activeChallenge;
+      if (_acBot && _acBot.status === 'pending' && (_acBot.toUid||'').startsWith('__bot_')) {
+        const _me3 = _bingoMe();
+        if (bingoGame.hostId === _me3.uid && !_botDesafioResponded) {
+          _botDesafioResponded = true;
+          const _botP = (bingoGame.players||{})[_acBot.toUid];
+          const _botCfg = BINGO_BOT_CONFIG[(_botP&&_botP.botLevel)||'basic'] || BINGO_BOT_CONFIG.basic;
+          const _accepts = Math.random() < 0.45; // 45% acepta, 55% rechaza
+          const _drawLen = (bingoGame.drawnNumbers||[]).length;
+          setTimeout(() => {
+            if (!BINGO_REF || !bingoGame) return;
+            if (!_accepts) {
+              // Bot rechaza — pierde 6 marcas
+              BINGO_REF.update({
+                'activeChallenge.status': 'resolved',
+                'activeChallenge.resolvedBy': 'decline',
+                [`players.${_acBot.toUid}.desafiadoUntilDraw`]: _drawLen + 6,
+              }).then(() => showToast(`🤖 ${(_botP&&_botP.name)||'Bot'} rechazó el Desafío — pierde 6 marcas.`,'success'))
+                .catch(e=>console.error('bot desafio reject',e));
+            } else {
+              // Bot acepta — simula el duelo
+              const _qs = Array.from({length:5},()=>{ const t=_bGetRandomInt(2,20); return {q:_bingoMakeSum(t),a:String(t)}; });
+              const _secs = bingoGame.challengeSeconds||60;
+              const _now = Date.now();
+              BINGO_REF.update({
+                'activeChallenge.status': 'active',
+                'activeChallenge.questions': _qs,
+                'activeChallenge.startedAt': _now,
+                'activeChallenge.endsAt': _now + _secs*1000,
+              }).then(() => {
+                // Tras 1-3s el bot "resuelve" el duelo
+                setTimeout(() => {
+                  if (!BINGO_REF || !bingoGame) return;
+                  const _botWins = Math.random() < (_botCfg.claimProb||0.5);
+                  const _dLen2 = (bingoGame.drawnNumbers||[]).length;
+                  if (_botWins) {
+                    BINGO_REF.update({ 'activeChallenge.status':'resolved','activeChallenge.resolvedBy':'bot_won',
+                      [`players.${_acBot.fromUid}.desafiadoUntilDraw`]:_dLen2+4 })
+                      .then(()=>showToast(`🤖 ${(_botP&&_botP.name)||'Bot'} ganó el duelo — pierdes 4 marcas.`,'error'))
+                      .catch(e=>console.error('bot desafio bot-won',e));
+                  } else {
+                    BINGO_REF.update({ 'activeChallenge.status':'resolved','activeChallenge.resolvedBy':'bot_lost',
+                      [`players.${_acBot.toUid}.desafiadoUntilDraw`]:_dLen2+4 })
+                      .then(()=>showToast(`⚔️ ¡Ganaste el duelo contra ${(_botP&&_botP.name)||'Bot'}! Pierde 4 marcas.`,'success'))
+                      .catch(e=>console.error('bot desafio bot-lost',e));
+                  }
+                }, 1200 + Math.random()*1800);
+              }).catch(e=>console.error('bot desafio accept',e));
+            }
+          }, 700 + Math.random()*1300);
+        }
+      } else if (!_acBot || _acBot.status !== 'pending') {
+        _botDesafioResponded = false;
+      }
+    } catch(e) { console.error('bot desafio', e); }
     _renderBingoPane();
   }, err => {
     console.error('bingo listener', err);
@@ -2477,12 +2538,15 @@ function _bingoHostStartChallenge() {
 function _bingoHostEndChallenge() {
   const drawn = bingoGame.drawnNumbers || [];
   const ended = drawn.length >= 75;
+  const _sch3 = bingoGame.challengeSchedule || BINGO_CHALLENGE_SCHEDULES[bingoGame.gameSpeed||'media'] || BINGO_CHALLENGE_SCHEDULES.media;
+  const _rc   = (bingoGame.retoCount||0) + 1; // índice del PRÓXIMO reto (ya completamos el actual)
+  const _nxt  = _sch3[_rc] !== undefined ? _sch3[_rc] : _sch3[_sch3.length-1];
   const patch = {
     challengeActive:false, challengeEndsAt:null, questions:[],
-    nextChallengeAtDraw: drawn.length + (bingoGame.challengeIntervalDraws||8),
+    nextChallengeAtDraw: drawn.length + _nxt,
     nextDrawAt: ended ? null : Date.now() + (bingoGame.intervalMs||4500),
     status: ended ? 'ended' : 'playing',
-    retoCount: (bingoGame.retoCount||0) + 1
+    retoCount: _rc
   };
   // Al terminar el reto: descongelar casillas saboteadas (los escudos de Fortaleza son permanentes)
   Object.keys(bingoGame.players||{}).forEach(uid => {
@@ -2623,6 +2687,8 @@ function createBingoGame() {
       createdAt: Date.now(), drawnNumbers:[], currentNumber:null,
       nextDrawAt:null, intervalMs:4500,
       directMode:true, difficulty:1, cardCount,
+      gameSpeed: _bingoPendingSpeed,
+      challengeSchedule: BINGO_CHALLENGE_SCHEDULES[_bingoPendingSpeed] || BINGO_CHALLENGE_SCHEDULES.media,
       calcSeconds:5, markSeconds:10, challengeSeconds:60, challengeIntervalDraws:8, blockSeconds:60,
       numPhase:null, phaseEndsAt:null, highlightCol:null, currentSum:null,
       challengeActive:false, challengeId:null, challengeEndsAt:null, questions:[], nextChallengeAtDraw:null,
@@ -2682,7 +2748,8 @@ function startBingoDraw() {
   const botCount = Math.max(0, Math.min(4, bingoGame.botCount||0));
   const botLevel = bingoGame.botLevel || 'basic';
   const cardCount = bingoGame.cardCount || 1;
-  const patch = { status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: (bingoGame.challengeIntervalDraws||8), tierWinners:{} };
+  const _sch = bingoGame.challengeSchedule || BINGO_CHALLENGE_SCHEDULES[bingoGame.gameSpeed||'media'] || BINGO_CHALLENGE_SCHEDULES.media;
+  const patch = { status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: _sch[0]||10, tierWinners:{} };
   for (let i = 0; i < botCount; i++) {
     patch[`players.__bot_${i}`] = _bingoNewBotPlayer(BINGO_BOT_NAMES[i]||`Bot${i+1}`, botLevel, cardCount);
   }
@@ -3467,7 +3534,11 @@ function _bingoPaneHtml() {
         });
       } catch(e) {}
     }
-    glHtml += '<button class="bingo-create-btn" style="margin-top:10px" onclick="createBingoGame()">🎲 + Crear nueva partida</button></div>';
+    glHtml += `<div style="display:flex;align-items:center;gap:6px;margin:12px 0 0;justify-content:center">
+      <span style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase">Velocidad:</span>
+      ${['media','rapida'].map(sp=>`<button onclick="_bingoPendingSpeed='${sp}';_renderBingoPane()" style="padding:4px 12px;border-radius:20px;border:1px solid ${_bingoPendingSpeed===sp?'rgba(168,85,247,0.8)':'rgba(255,255,255,0.15)'};background:${_bingoPendingSpeed===sp?'rgba(168,85,247,0.2)':'transparent'};color:${_bingoPendingSpeed===sp?'#c084fc':'rgba(255,255,255,0.5)'};font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;cursor:pointer">${sp==='media'?'⏱ Media':'⚡ Rápida'}</button>`).join('')}
+    </div>`;
+    glHtml += '<button class="bingo-create-btn" style="margin-top:8px" onclick="createBingoGame()">🎲 + Crear nueva partida</button></div>';
     return titleHtml + glHtml;
   }
 
@@ -3524,7 +3595,17 @@ function _bingoPaneHtml() {
            <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
            <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
          </div>`;
-    if (isHost) body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
+    if (isHost) {
+      const _curSpd = bingoGame.gameSpeed || 'media';
+      body += `<div style="display:flex;align-items:center;gap:6px;margin:10px 0 0">
+        <span style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase;flex-shrink:0">Velocidad:</span>
+        ${['media','rapida'].map(sp=>`<button onclick="BINGO_REF.update({gameSpeed:'${sp}',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['${sp}']})" style="padding:3px 10px;border-radius:20px;border:1px solid ${_curSpd===sp?'rgba(168,85,247,0.8)':'rgba(255,255,255,0.15)'};background:${_curSpd===sp?'rgba(168,85,247,0.2)':'transparent'};color:${_curSpd===sp?'#c084fc':'rgba(255,255,255,0.4)'};font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;cursor:pointer">${sp==='media'?'⏱ Media':'⚡ Rápida'}</button>`).join('')}
+      </div>`;
+      body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
+    } else {
+      const _sp = bingoGame.gameSpeed || 'media';
+      body += `<div style="text-align:center;margin-top:8px;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase">${_sp==='rapida'?'⚡ Velocidad rápida':'⏱ Velocidad media'}</div>`;
+    }
   } else { // 'playing' | 'ended'
     const drawn  = bingoGame.drawnNumbers || [];
     const cur    = bingoGame.currentNumber;
@@ -3667,7 +3748,7 @@ function _bingoPaneHtml() {
             ? `onclick="doBingoCongelarRival('${uid}')"`
             : `onclick="_bingoSetViewPlayer('${uid}')"`;
           const bubbleShape = p.playerBubbleShape || 'rect';
-          const statusLine = (!isLocked && p.playerStatus) ? `<span class="bpn-status-bubble bpn-bubble-${bubbleShape}"><span class="bpn-bubble-text">${p.playerStatus}</span></span>` : '';
+          const statusLine = p.playerStatus ? `<span class="bpn-status-bubble bpn-bubble-${bubbleShape}"><span class="bpn-bubble-text">${p.playerStatus}</span></span>` : '';
           navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}><span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span>${statusLine}</div>`;
         });
         navHtml += `<div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>`;
