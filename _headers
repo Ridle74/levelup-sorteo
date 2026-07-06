@@ -1,0 +1,8 @@
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/student/*
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/padres/*
+  Cache-Control: no-cache, no-store, must-revalidate
