@@ -3856,8 +3856,46 @@ function _bingoPaneHtml() {
       <span style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase">Velocidad:</span>
       ${['media','rapida'].map(sp=>`<button onclick="_bingoPendingSpeed='${sp}';_renderBingoPane()" style="padding:4px 12px;border-radius:20px;border:1px solid ${_bingoPendingSpeed===sp?'rgba(168,85,247,0.8)':'rgba(255,255,255,0.15)'};background:${_bingoPendingSpeed===sp?'rgba(168,85,247,0.2)':'transparent'};color:${_bingoPendingSpeed===sp?'#c084fc':'rgba(255,255,255,0.5)'};font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;cursor:pointer">${sp==='media'?'⏱ Media':'⚡ Rápida'}</button>`).join('')}
     </div>`;
-    glHtml += '<button class="bingo-create-btn" style="margin-top:8px" onclick="createBingoGame()">🎲 + Crear nueva partida</button></div>';
-    return titleHtml + glHtml;
+    glHtml += '<button class="bingo-create-btn" style="margin-top:8px" onclick="createBingoGame()">🎲 + Crear nueva partida</button>';
+    glHtml += `<button onclick="loadBingoHistory()" style="width:100%;margin-top:8px;padding:11px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:rgba(255,255,255,0.55);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.04em">📊 Ver historial de partidas</button></div>`;
+    let listBody = titleHtml + glHtml;
+    if (_bingoShowHistory) {
+      const fmtDur = ms => { if(!ms) return '—'; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000); return m>0?`${m}m ${s}s`:`${s}s`; };
+      const fmtDate = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
+      listBody += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-top:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">📊 Historial de partidas</span>
+          <button class="bingo-leave-btn" onclick="_bingoShowHistory=false;_bingoHistoryData=null;_renderBingoPane()">✕ Cerrar</button>
+        </div>
+        ${_bingoHistoryData === null ? '<div style="color:rgba(255,255,255,0.45);font-size:13px">Cargando...</div>' :
+          _bingoHistoryData.length === 0 ? '<div style="color:rgba(255,255,255,0.45);font-size:13px">No hay partidas guardadas aún.</div>' :
+          _bingoHistoryData.map(h => {
+            const tw = h.tierWinners||{};
+            const realPlayers = Object.values(h.players||{}).filter(p=>!p.isBot);
+            return `<div style="border-bottom:1px solid rgba(255,255,255,0.07);padding:12px 0">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">${fmtDate(h.startedAt)}</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
+              </div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px">
+                ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
+              </div>
+              ${realPlayers.map(p=>{
+                const rs = p.retoStats||{}; const tot=rs.total||0; const perf=rs.perfect||0;
+                const avgT = tot>0&&perf>0 ? Math.round((rs.totalTimeSecs||0)/perf)+'s' : '—';
+                const pct = tot>0 ? Math.round(perf/tot*100)+'%' : '—';
+                const prizeIcos = BINGO_TIER_ORDER.filter(t=>p.prizes?.[t]).map(t=>BINGO_TIER_LABEL?.[t]||t).join(' ');
+                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid rgba(255,255,255,0.05)">
+                  <span style="font-size:13px;font-weight:700">${p.name}${prizeIcos?` <span style="font-size:11px;color:#facc15">${prizeIcos}</span>`:''}</span>
+                  <span style="font-size:11px;color:rgba(255,255,255,0.5)">Retos: ${tot} | ✅ ${perf} (${pct}) | ⏱ avg ${avgT} | ❌ ${rs.fails||0} fallidos | Marcas: ${p.totalMarks||0}</span>
+                </div>`;
+              }).join('')}
+            </div>`;
+          }).join('')
+        }
+      </div>`;
+    }
+    return listBody;
   }
 
   if (!bingoGame) return titleHtml + `<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>Cargando partida...</div>`;
