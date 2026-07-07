@@ -765,6 +765,11 @@ textarea.fsm { resize:none; height:64px; }
 .bcc-dot.ok{background:#4ade80}
 .bcc-dot.now{background:#facc15;box-shadow:0 0 8px -1px #facc15}
 .bcc-question{font-family:ui-monospace,Menlo,monospace;font-size:36px;font-weight:900;color:#fff;margin:18px 0}
+.bcc-lives{font-size:22px;letter-spacing:4px;margin-bottom:14px}
+.bcc-mc-opts{display:flex;flex-direction:column;gap:10px;width:100%;margin-bottom:14px}
+.bcc-mc-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;padding:14px 18px;cursor:pointer;text-align:left;transition:background .15s,border-color .15s}
+.bcc-mc-btn:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.4)}
+.bcc-mc-btn.bcc-mc-err{background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.6)}
 .bcc-input{width:220px;text-align:center;background:#050810;color:#fff;border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:14px;font-size:24px;font-family:ui-monospace,Menlo,monospace;margin-bottom:14px}
 .bcc-submit{display:block;width:100%;background:linear-gradient(135deg,#db2777,#7c3aed);color:#fff;font-weight:900;border:none;border-radius:12px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
 .bcc-foot{font-size:10px;color:rgba(255,255,255,0.4);margin-top:10px}
@@ -1900,7 +1905,7 @@ const BINGO_TIER_REQ = { terna:3, cuaterna:4, quina:5 }; // 'bingo' se valida ap
 const BINGO_TIER_LABEL = { terna:'Terna', cuaterna:'Cuaterna', quina:'Línea', bingo:'Bingo' };
 
 // -- v2: retos matemáticos, bloqueo y poderes (portados de neon-bingo, bots → alumnos reales) --
-const BINGO_DIFF_LABEL = { 1:'Fácil (sumas)', 2:'Medio (multiplicar)', 3:'Difícil (con negativos)', 4:'Avanzado (ecuación)' };
+const BINGO_DIFF_LABEL = { 1:'Fácil (sumas)', 2:'Medio (multiplicar)', 3:'Difícil (con negativos)', 4:'Avanzado (ecuación)', 5:'Trigonometría (co-razones)' };
 const BINGO_POWER_DEFS = [
   { key:'sabotaje', icon:'❄️', label:'Sabotaje',       cost:2, limit:'reto',       desc:'Congela una casilla de un rival — no puede marcarla hasta el próximo reto. (1 vez por reto)' },
   { key:'congelar', icon:'🥶', label:'Congelar Rival', cost:2, limit:'reto',       desc:'Paraliza a un rival un turno entero: no puede marcar ni reclamar. (1 vez por reto)' },
@@ -1915,6 +1920,10 @@ const BINGO_POWER_DEFS = [
 ];
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
 const _bingoMakeSum = target => { const a = _bGetRandomInt(1, Math.max(1,target-1)); return `${a} + ${target-a}`; };
+// -- Trigonometría: co-razones y razones inversas --
+const TRIG_ALL = ['seno','coseno','tangente','cotangente','secante','cosecante'];
+const TRIG_COPAIRS = [['seno','coseno'],['coseno','seno'],['tangente','cotangente'],['cotangente','tangente'],['secante','cosecante'],['cosecante','secante']];
+function _bingShufArr(arr) { const a=[...arr]; for(let k=a.length-1;k>0;k--){const j=_bGetRandomInt(0,k);[a[k],a[j]]=[a[j],a[k]];} return a; }
 function _bingoGenQuestions(level, count=5) {
   const qs = [];
   for (let i=0; i<count; i++) {
@@ -1925,6 +1934,13 @@ function _bingoGenQuestions(level, count=5) {
     } else if (level===4) {
       const x=_bGetRandomInt(-8,8)||1, m=_bGetRandomInt(2,6), b=_bGetRandomInt(-15,15)||5;
       qs.push({ q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`, a:x });
+    } else if (level===5) {
+      const [fn, coFn] = TRIG_COPAIRS[_bGetRandomInt(0, TRIG_COPAIRS.length-1)];
+      const useCoRazon = Math.random() < 0.5;
+      const qText = useCoRazon ? `¿Co-razón de ${fn}?` : `¿Razón inversa de ${fn}?`;
+      const distractors = _bingShufArr(TRIG_ALL.filter(t => t !== coFn)).slice(0,3);
+      const opts = _bingShufArr([coFn, ...distractors]);
+      qs.push({ q: qText, a: coFn, opts, mc: true });
     } else { const a=_bGetRandomInt(5,40), b=_bGetRandomInt(5,40); qs.push({ q:`${a} + ${b} = ?`, a:a+b }); }
   }
   return qs;
@@ -1944,7 +1960,8 @@ function _bingoNewCardsMap(count) { const m={}; for (let i=0;i<count;i++) m[i]=b
 function _bingoNewTiersMap(count) { const m={}; for (let i=0;i<count;i++) m[i]={ failed:{terna:false,cuaterna:false,quina:false,bingo:false}, won:{terna:false,cuaterna:false,quina:false,bingo:false} }; return m; }
 
 // -- estado efímero local (solo-cliente, no se guarda en Firestore) del reto/bloqueo/poderes --
-let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false;
+let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false, bingoChallengeWrongs = 0;
+let _bingoChallengeKeyListener = null;
 let bingoBlockSelection = [];
 let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
 // ── Constantes y helpers de premios ──────────────────────────────────────────
@@ -2252,7 +2269,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
 }
 
 function _bingoResetLocalState() {
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
@@ -2958,18 +2975,28 @@ function submitBingoChallengeAnswer(raw) {
   if (!player || player.lastChallengeId === bingoGame.challengeId) return;
   const q = (bingoGame.questions||[])[bingoChallengeIdx];
   if (!q) return;
-  const trimmed = (raw||'').trim();
-  if (!trimmed || trimmed === '-') return; // entrada incompleta: ignorar sin mostrar error
-  const val = Number(trimmed);
-  // Limpiar el campo ANTES de re-renderizar; si no, el mecanismo "salva/restaura foco"
-  // de _renderBingoPane() reinyecta la respuesta anterior en la siguiente pregunta.
   const _clearInput = () => { const ci = document.getElementById('bingo-challenge-input'); if (ci) ci.value = ''; };
-  if (Number.isNaN(val) || val !== q.a) {
+  // Verificar respuesta: MC usa comparación de string, numérico usa Number
+  let correct = false;
+  if (q.mc) {
+    const trimmed = (raw||'').trim().toLowerCase();
+    if (!trimmed) return;
+    correct = trimmed === String(q.a).toLowerCase();
+  } else {
+    const trimmed = (raw||'').trim();
+    if (!trimmed || trimmed === '-') return;
+    const val = Number(trimmed);
+    correct = !Number.isNaN(val) && val === q.a;
+  }
+  if (!correct) {
+    bingoChallengeWrongs += 1;
     bingoChallengeError = true; bingoChallengeAnswer = '';
     _clearInput();
+    if (bingoChallengeWrongs >= 3) { _bingoFinishChallenge(bingoChallengeIdx); return; } // 3 vidas agotadas
     _renderBingoPane();
-    return; // respuesta incorrecta: NO avanza, repite la misma pregunta (igual que neon-bingo)
+    return;
   }
+  // Respuesta correcta
   bingoChallengeError = false; bingoChallengeAnswer = '';
   bingoChallengeIdx += 1;
   _clearInput();
@@ -3035,7 +3062,7 @@ function _bingoFinishChallenge(correctCount) {
   BINGO_REF.update(patch)
     .then(()=> showToast(toastMsg, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoBlockSelection = [];
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoBlockSelection = [];
 }
 
 // -- v2: bloqueo (penalidad por reto imperfecto) --
@@ -3523,6 +3550,13 @@ function _renderBingoPane() {
     hosts.forEach(el => { el.innerHTML = _bingoPaneHtml(); });
     // Restaurar scroll del strip de emojis
     if (_emojiScroll > 0) { const ns = document.getElementById('bingo-emoji-strip'); if (ns) ns.scrollLeft = _emojiScroll; }
+    // Key listener 1-4 para preguntas MC del reto
+    if (_bingoChallengeKeyListener) { document.removeEventListener('keydown', _bingoChallengeKeyListener); _bingoChallengeKeyListener = null; }
+    const _mcQ = bingoGame && bingoGame.challengeActive ? (bingoGame.questions||[])[bingoChallengeIdx] : null;
+    if (_mcQ && _mcQ.mc) {
+      _bingoChallengeKeyListener = (e) => { const n=parseInt(e.key); if(n>=1&&n<=4&&(_mcQ.opts||[])[n-1]){e.preventDefault();submitBingoChallengeAnswer(_mcQ.opts[n-1]);} };
+      document.addEventListener('keydown', _bingoChallengeKeyListener);
+    }
     if (savedInput) {
       const el = document.getElementById(savedInput.id);
       if (el) {
@@ -3647,7 +3681,7 @@ function _bingoPaneHtml() {
       <div class="bingo-settings-box">
         <div class="bs-row"><span>Modo directo (sin sumas)</span><button class="bs-toggle ${bingoGame.directMode!==false?'on':''}" onclick="setBingoConfig('directMode', ${bingoGame.directMode===false})">${bingoGame.directMode!==false?'Sí':'No'}</button></div>
         <div class="bs-row"><span>Dificultad del Reto Matemático</span>
-          <select onchange="setBingoConfig('difficulty', Number(this.value))">${[1,2,3,4].map(d=>`<option value="${d}" ${(bingoGame.difficulty||1)===d?'selected':''}>${BINGO_DIFF_LABEL[d]}</option>`).join('')}</select>
+          <select onchange="setBingoConfig('difficulty', Number(this.value))">${[1,2,3,4,5].map(d=>`<option value="${d}" ${(bingoGame.difficulty||1)===d?'selected':''}>${BINGO_DIFF_LABEL[d]}</option>`).join('')}</select>
         </div>
         <div class="bs-row"><span>Cartones por jugador</span>
           <select onchange="setBingoConfig('cardCount', Number(this.value))">${[1,2,3,4].map(n=>`<option value="${n}" ${(bingoGame.cardCount||1)===n?'selected':''}>${n}</option>`).join('')}</select>
@@ -4105,9 +4139,12 @@ function _bingoPaneHtml() {
             <div class="bcc-bar"><div class="bcc-bar-fill ${barCls}" style="width:${pct}%"></div></div>
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
             ${q ? `<div class="bcc-question">${q.q}</div>
-            <input class="bcc-input" id="bingo-challenge-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
+            <div class="bcc-lives">${Array.from({length:3},(_,i)=>i<(3-bingoChallengeWrongs)?'❤️':'🖤').join('')}</div>
+            ${q.mc ? `<div class="bcc-mc-opts">${(q.opts||[]).map((opt,i)=>`<button class="bcc-mc-btn${bingoChallengeError?' bcc-mc-err':''}" onclick="submitBingoChallengeAnswer('${opt}')">[${i+1}] ${opt}</button>`).join('')}</div>
+            <div class="bcc-foot">⏱ ${remain}s · Pregunta ${bingoChallengeIdx+1}/${qs.length} · Tecla 1-4 para responder</div>`
+            : `<input class="bcc-input" id="bingo-challenge-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
             <button class="bcc-submit" onclick="submitBingoChallengeAnswer(document.getElementById('bingo-challenge-input').value)">Responder</button>
-            <div class="bcc-foot">⏱ ${remain}s restantes · Pregunta ${bingoChallengeIdx+1}/${qs.length}</div>` : ''}
+            <div class="bcc-foot">⏱ ${remain}s · Pregunta ${bingoChallengeIdx+1}/${qs.length}</div>`}` : ''}
           </div></div>`;
       }
     }
