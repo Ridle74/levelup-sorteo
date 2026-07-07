@@ -3719,7 +3719,7 @@ function _bingoPaneHtml() {
       phaseOn = true;
       phaseColorClass = 'yellow';
       phaseFootLabel = `Reto termina en ${Math.ceil(remainSecs)}s ↑`;
-    } else if (status==='playing' && bingoGame.nextDrawAt && !inChallenge) {
+    } else if (status==='playing' && bingoGame.nextDrawAt && !inChallenge && bingoGame.numPhase !== 'done') {
       // Intervalo entre sorteos: mostrar cuenta regresiva para el siguiente número
       const totalMs = 500;
       const remainMs = Math.max(0, bingoGame.nextDrawAt - Date.now());
