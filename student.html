@@ -2474,7 +2474,7 @@ function _bingoTick() {
 function _bingoCurrentMarkSeconds() {
   const speed = (bingoGame && bingoGame.gameSpeed) || 'media';
   const sch = speed === 'rapida'
-    ? { terna:10, cuaterna:8, quina:6, bingo:4 }
+    ? { terna:10, cuaterna:10, quina:10, bingo:10 }
     : { terna:15, cuaterna:12.5, quina:10, bingo:7.5 };
   const tw = (bingoGame && bingoGame.tierWinners) || {};
   for (const tier of BINGO_TIER_ORDER) {
