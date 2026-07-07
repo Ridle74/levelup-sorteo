@@ -4400,7 +4400,8 @@ function _bingoPaneHtml() {
         const q = qs[bingoChallengeIdx];
         const remain = Math.max(0, Math.round(((bingoGame.challengeEndsAt||0)-Date.now())/1000));
         const pct = Math.max(0, Math.min(100, (remain/(bingoGame.challengeSeconds||60))*100));
-        const barCls = remain > 30 ? 'ok' : 'warn';
+        const _barThresh = (bingoGame.gameSpeed||'media')==='rapida' ? 15 : 30;
+        const barCls = remain > _barThresh ? 'ok' : 'warn';
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
             <div class="bcc-title">🧠 ¡Reto Matemático!</div>
             <div class="bcc-sub">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s = +2 cargas · en más tiempo = +1 carga · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
