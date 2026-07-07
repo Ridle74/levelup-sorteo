@@ -2588,6 +2588,7 @@ function _bingoTick() {
   } else { _bSndTickSec = -1; }
   if (bingoGame.status !== 'playing') return; // en lobby no hay lógica de reto ni host
   _bingoCheckMyChallengeEnd();  // cada cliente resuelve LOCALMENTE el cierre de su propio reto
+  _bingoCheckMyDuelEnd();       // ...y el vencimiento de su duelo Desafío
   _bingoCheckMyBlockTimeout();  // ...y el vencimiento de su propio bloqueo pendiente
   const me = _bingoMe();
   if (bingoGame.hostId !== me.uid) return; // solo el host avanza el reloj compartido
@@ -3133,6 +3134,19 @@ function _bingoCheckMyChallengeEnd() {
   const allAnswered = bingoChallengeIdx >= (bingoGame.questions||[]).length;
   const timeUp = Date.now() >= (bingoGame.challengeEndsAt||0);
   if (allAnswered || timeUp) _bingoFinishChallenge(bingoChallengeIdx);
+}
+function _bingoCheckMyDuelEnd() {
+  if (!bingoGame) return;
+  const ac = bingoGame.activeChallenge;
+  if (!ac || ac.status !== 'racing' || !ac.endsAt) return;
+  const me = _bingoMe();
+  if (me.uid !== ac.fromUid && me.uid !== ac.toUid) return; // no soy participante
+  const myTime = me.uid === ac.fromUid ? ac.fromTime : ac.toTime;
+  if (myTime !== null && myTime !== undefined) return; // ya terminé
+  if (Date.now() >= ac.endsAt) {
+    // Tiempo agotado: envío tiempo "infinito" (peor que cualquier tiempo real) para resolver el duelo
+    _bingoDuelFinish((ac.endsAt - (ac.startedAt||ac.endsAt)) + 99999);
+  }
 }
 function submitBingoChallengeAnswer(raw) {
   if (!bingoGame || !bingoGame.challengeActive) return;
