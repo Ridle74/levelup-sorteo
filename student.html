@@ -3217,20 +3217,21 @@ function _bingoFinishChallenge(correctCount) {
     }
   } else {
     fails = total - correctCount; // número de preguntas no completadas
-    // Bloqueo automático: los últimos `fails` números sorteados (o todos si hay menos)
+    // Bloqueo automático: los últimos `fails` números que el jugador marcó (en orden de sorteo)
     const _drawn = (bingoGame.drawnNumbers||[]).filter(n => n !== 0);
-    const _toBlock = _drawn.slice(-Math.min(fails, _drawn.length));
-    const _cards = player.cards || {};
+    const _playerMarks = player.marks || [];
+    // Filtrar los números sorteados a solo los que el jugador efectivamente marcó, respetando el orden de sorteo
+    const _drawnAndMarked = _drawn.filter(n => _playerMarks.some(m => m.n === n));
+    const _toBlock = _drawnAndMarked.slice(-Math.min(fails, _drawnAndMarked.length));
     const _newBlocked = [...(player.blockedMarks||[])];
     _toBlock.forEach(num => {
-      Object.keys(_cards).forEach(ci => {
-        const _ci = Number(ci);
-        if ((_cards[ci]||[]).includes(num) && !_newBlocked.some(b=>b.c===_ci&&b.n===num))
-          _newBlocked.push({c:_ci, n:num});
+      _playerMarks.forEach(m => {
+        if (m.n === num && !_newBlocked.some(b => b.c === m.c && b.n === m.n))
+          _newBlocked.push({ c: m.c, n: m.n });
       });
     });
     // Eliminar marcas bloqueadas del array marks
-    const _newMarks = (player.marks||[]).filter(m => !_newBlocked.some(b=>b.c===m.c&&b.n===m.n));
+    const _newMarks = _playerMarks.filter(m => !_newBlocked.some(b => b.c === m.c && b.n === m.n));
     patch[`players.${me.uid}.blockedMarks`] = _newBlocked;
     patch[`players.${me.uid}.marks`]        = _newMarks;
     patch[`players.${me.uid}.pendingBlock`]  = null;
