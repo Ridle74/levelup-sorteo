@@ -2367,6 +2367,8 @@ function _selectBingoGame(gameId) {
       if (prevStatus === 'playing' && bingoGame.status === 'ended' && !_bingoEndShown) {
         _bingoEndShown = true;
         setTimeout(() => _bingoShowEndModal(bingoGame), 900);
+        // El host guarda el historial (una sola vez por guardián historySaved)
+        if (bingoGame.hostId === _bingoMe().uid) setTimeout(_bingoSaveHistory, 1500);
       }
     } catch (e) { console.error('bingo auto-nav', e); }
     // Auto-aceptar Desafío si el reto matemático empieza y el jugador no respondió
@@ -2604,7 +2606,8 @@ function _bingoNewPlayer(me, cardCount) {
     powerCharges: 0, frozenUntilDraw: 0,
     unlockedPowers: {}, usedPowers: {}, shieldedColumns: [],
     lastChallengeId: null, pendingBlock: null, playerStatus: '', playerBubbleShape: 'rect',
-    lastRetoTime: null, desafiadoUntilDraw: 0
+    lastRetoTime: null, desafiadoUntilDraw: 0,
+    retoStats: { total:0, perfect:0, totalTimeSecs:0, fails:0 }
   };
 }
 function _bingoNewBotPlayer(name, level, cardCount) {
@@ -2822,7 +2825,7 @@ function startBingoDraw() {
   const botLevel = bingoGame.botLevel || 'basic';
   const cardCount = bingoGame.cardCount || 1;
   const _sch = bingoGame.challengeSchedule || BINGO_CHALLENGE_SCHEDULES[bingoGame.gameSpeed||'media'] || BINGO_CHALLENGE_SCHEDULES.media;
-  const patch = { status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: _sch[0]||10, tierWinners:{} };
+  const patch = { status:'playing', nextDrawAt: Date.now()+1500, nextChallengeAtDraw: _sch[0]||10, tierWinners:{}, startedAt: Date.now(), historySaved: false };
   for (let i = 0; i < botCount; i++) {
     patch[`players.__bot_${i}`] = _bingoNewBotPlayer(BINGO_BOT_NAMES[i]||`Bot${i+1}`, botLevel, cardCount);
   }
@@ -2834,6 +2837,51 @@ function endBingoGame() {
   if (bingoGame.hostId!==me.uid && !isAdmin()) return;
   BINGO_REF.update({ status:'ended', updatedAt:Date.now() })
     .catch(e=>console.error('bingo end',e));
+}
+let _bingoHistoryData = null, _bingoShowHistory = false;
+async function _bingoSaveHistory() {
+  if (!bingoGame || !BINGO_REF || bingoGame.historySaved) return;
+  const me = _bingoMe();
+  if (bingoGame.hostId !== me.uid) return; // solo el host guarda
+  try {
+    await BINGO_REF.update({ historySaved: true }); // evitar duplicados
+    const db = firebase.firestore();
+    const endedAt = Date.now();
+    const durationMs = bingoGame.startedAt ? (endedAt - bingoGame.startedAt) : null;
+    const players = {};
+    Object.entries(bingoGame.players||{}).forEach(([uid, p]) => {
+      const prizes = {};
+      BINGO_TIER_ORDER.forEach(t => { prizes[t] = Object.values(p.tiers||{}).some(tc=>tc.won?.[t]); });
+      players[uid] = {
+        name: p.name, isBot: p.isBot||false,
+        prizes, retoStats: p.retoStats||{total:0,perfect:0,totalTimeSecs:0,fails:0},
+        totalMarks: (p.marks||[]).length
+      };
+    });
+    const tierWinners = {};
+    BINGO_TIER_ORDER.forEach(t => {
+      tierWinners[t] = Object.entries(bingoGame.players||{}).filter(([,p])=>Object.values(p.tiers||{}).some(tc=>tc.won?.[t])).map(([,p])=>p.name);
+    });
+    await db.collection('bingoHistory').add({
+      gameId: BINGO_REF.id, gameSpeed: bingoGame.gameSpeed||'media',
+      difficulty: bingoGame.difficulty||1, diffLabel: BINGO_DIFF_LABEL[bingoGame.difficulty||1]||'',
+      startedAt: bingoGame.startedAt||null, endedAt, durationMs,
+      totalNumbers: (bingoGame.drawnNumbers||[]).length, retoCount: bingoGame.retoCount||0,
+      players, tierWinners,
+      hostName: bingoGame.players?.[bingoGame.hostId]?.name||'',
+      savedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } catch(e) { console.error('bingo history save', e); }
+}
+async function loadBingoHistory() {
+  _bingoShowHistory = true; _bingoHistoryData = null; _renderBingoPane();
+  try {
+    const db = firebase.firestore();
+    const snap = await db.collection('bingoHistory').orderBy('savedAt','desc').limit(20).get();
+    _bingoHistoryData = [];
+    snap.forEach(doc => _bingoHistoryData.push({ id: doc.id, ...doc.data() }));
+  } catch(e) { _bingoHistoryData = []; console.error('bingo history load', e); }
+  _renderBingoPane();
 }
 function markBingoCell(cardIdx, num) {
   if (!bingoGame || num===0) return;
@@ -3050,6 +3098,12 @@ function _bingoFinishChallenge(correctCount) {
     patch[`players.${me.uid}.pendingBlock`]  = null;
     fails = _toBlock.length; // real count for display
   }
+  // Acumular estadísticas de reto por jugador
+  const _FV = firebase.firestore.FieldValue;
+  patch[`players.${me.uid}.retoStats.total`]        = _FV.increment(1);
+  patch[`players.${me.uid}.retoStats.perfect`]      = _FV.increment(perfect ? 1 : 0);
+  patch[`players.${me.uid}.retoStats.fails`]        = _FV.increment(perfect ? 0 : 1);
+  if (perfect) { const _el = Math.round((bingoGame.challengeSeconds||60) - Math.max(0,((bingoGame.challengeEndsAt||0)-Date.now())/1000)); patch[`players.${me.uid}.retoStats.totalTimeSecs`] = _FV.increment(_el); }
   // Mostrar resultado visual antes de que Firestore actualice el snap
   _bingoChallengeResult = { perfect, fast, charges, fails, isRapida };
   _renderBingoPane();
@@ -3716,7 +3770,44 @@ function _bingoPaneHtml() {
     const cur    = bingoGame.currentNumber;
     const frozen = myPlayer ? _bingoAmFrozen(myPlayer) : false;
 
-    if (status==='ended') body += `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px"><div class="bingo-ended-banner">🏁 ¡Partida terminada! Se sortearon ${drawn.length} números.</div><button class="bingo-leave-btn" onclick="_leaveBingoGame()">← Volver</button></div>`;
+    if (status==='ended') body += `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px"><div class="bingo-ended-banner">🏁 ¡Partida terminada! Se sortearon ${drawn.length} números.</div><button class="bingo-leave-btn" onclick="_leaveBingoGame()">← Volver</button>${isAdmin()||isHost?`<button class="bingo-leave-btn" onclick="loadBingoHistory()">📊 Historial</button>`:''}  </div>`;
+    // Vista de historial de partidas
+    if (_bingoShowHistory) {
+      const fmtDur = ms => { if(!ms) return '—'; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000); return m>0?`${m}m ${s}s`:`${s}s`; };
+      const fmtDate = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
+      body += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-top:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">📊 Historial de partidas</span>
+          <button class="bingo-leave-btn" onclick="_bingoShowHistory=false;_bingoHistoryData=null;_renderBingoPane()">✕ Cerrar</button>
+        </div>
+        ${_bingoHistoryData === null ? '<div style="color:rgba(255,255,255,0.45);font-size:13px">Cargando...</div>' :
+          _bingoHistoryData.length === 0 ? '<div style="color:rgba(255,255,255,0.45);font-size:13px">No hay partidas guardadas aún.</div>' :
+          _bingoHistoryData.map(h => {
+            const tw = h.tierWinners||{};
+            const realPlayers = Object.values(h.players||{}).filter(p=>!p.isBot);
+            return `<div style="border-bottom:1px solid rgba(255,255,255,0.07);padding:12px 0">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">${fmtDate(h.startedAt)}</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
+              </div>
+              <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px">
+                ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
+              </div>
+              ${realPlayers.map(p=>{
+                const rs = p.retoStats||{}; const tot=rs.total||0; const perf=rs.perfect||0;
+                const avgT = tot>0&&perf>0 ? Math.round((rs.totalTimeSecs||0)/perf)+'s' : '—';
+                const pct = tot>0 ? Math.round(perf/tot*100)+'%' : '—';
+                const prizeIcos = BINGO_TIER_ORDER.filter(t=>p.prizes?.[t]).map(t=>BINGO_TIER_LABEL?.[t]||t).join(' ');
+                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid rgba(255,255,255,0.05)">
+                  <span style="font-size:13px;font-weight:700">${p.name}${prizeIcos?` <span style="font-size:11px;color:#facc15">${prizeIcos}</span>`:''}</span>
+                  <span style="font-size:11px;color:rgba(255,255,255,0.5)">Retos: ${tot} | ✅ ${perf} (${pct}) | ⏱ avg ${avgT} | ❌ ${rs.fails||0} fallidos | Marcas: ${p.totalMarks||0}</span>
+                </div>`;
+              }).join('')}
+            </div>`;
+          }).join('')
+        }
+      </div>`;
+    }
 
     // Caja consolidada de sorteo — calco 1:1 del header de neon-bingo_31.html (ball box + 2 stats + 2 barras).
     const numPhase = bingoGame.numPhase;
