@@ -1943,7 +1943,7 @@ const BINGO_POWER_DEFS = [
   { key:'venganza', icon:'⚡', label:'Venganza',        cost:3, limit:'persistent', desc:'Asigna la protección ⚡ a uno de tus cartones (puedes cambiarla en cualquier momento). Si un rival usa Sabotaje o Robo contra ese cartón, recibes una copia del mismo poder para devolvérsela a cualquier rival — aunque ya hayas agotado ese poder.' },
   { key:'bitacora', icon:'📓', label:'Bitácora',        cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
   { key:'vision',   icon:'🔎', label:'Visión X',       cost:2, limit:'persistent', desc:'Desbloquea para toda la partida: ver los números marcados en los cartones de cualquier rival.' },
-  { key:'desafio',  icon:'⚔️', label:'Desafío',         cost:2, limit:'reto',       desc:'Abre el ranking de velocidad de todos los jugadores y reta a uno. Si rechaza: pierde 6 marcas. Si acepta y tú ganas el duelo de reto matemático: pierde 4 marcas.' },
+  { key:'desafio',  icon:'⚔️', label:'Desafío',         cost:2, limit:'game',       desc:'Abre el ranking de velocidad de todos los jugadores y reta a uno. Si rechaza: pierde 6 marcas. Si acepta y tú ganas el duelo de reto matemático: pierde 4 marcas.' },
 ];
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
 const _bingoMakeSum = target => { const a = _bGetRandomInt(1, Math.max(1,target-1)); return `${a} + ${target-a}`; };
@@ -3523,7 +3523,7 @@ function doBingoDesafio(targetUid) {
   }
   BINGO_REF.update({
     activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt:null, endsAt:null, fromTime:null, toTime:null },
-    [`players.${me.uid}.usedPowers.desafio`]: bingoGame.retoCount||0,
+    [`players.${me.uid}.usedPowers.desafio`]: true,
   }).then(()=>{ bingoActivePower=null; _bingoLeaderboardOpen=false; _renderBingoPane(); })
     .catch(e=>console.error('desafio send',e));
 }
@@ -4299,8 +4299,8 @@ function _bingoPaneHtml() {
             ${(()=>{
               const cats = [
                 { limit:'persistent', label:'✨ Permanentes',      keys:['bitacora','vision','fortaleza','venganza'] },
-                { limit:'reto',       label:'🔄 Por reto',         keys:['sabotaje','congelar','desafio'] },
-                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo','camufle'] },
+                { limit:'reto',       label:'🔄 Por reto',         keys:['sabotaje','congelar'] },
+                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo','camufle','desafio'] },
               ];
               return cats.map(cat=>{
                 const defs = BINGO_POWER_DEFS.filter(p=>cat.keys.includes(p.key));
