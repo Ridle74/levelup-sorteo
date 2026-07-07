@@ -3203,11 +3203,11 @@ function _bingoFinishChallenge(correctCount) {
     const elapsed = Math.round((bingoGame.challengeSeconds||60) - timeRemaining);
     patch[`players.${me.uid}.lastRetoTime`] = elapsed;
     if (isRapida) {
-      // Rápida: <15s → +1 carga + limpiar bloqueos; ≥15s → 0 cargas, sin bloqueos nuevos
+      // Rápida: <15s usados (<15s remaining) → +2 cargas; ≥15s → +1 carga; siempre limpiar bloqueos
       fast = timeRemaining > 15;
-      charges = fast ? 1 : 0;
-      if (fast) patch[`players.${me.uid}.blockedMarks`] = [];
-      if (charges > 0) patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
+      charges = fast ? 2 : 1;
+      patch[`players.${me.uid}.blockedMarks`] = [];
+      patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
     } else {
       // Media: <30s → +2 cargas; ≥30s → +1 carga; siempre limpiar bloqueos
       fast = timeRemaining > 30;
@@ -4256,7 +4256,7 @@ function _bingoPaneHtml() {
       if (status==='playing' && !frozen) {
         body += `<div class="bingo-powers-box">
             <div class="bpx-head"><span>⚡ Poderes</span><span class="bpx-charges">${myPlayer.powerCharges||0} carga(s)</span></div>
-            <div class="bpx-hint">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s → +1 carga · en más tiempo → 0 cargas · fallar → bloqueos' : 'Reto perfecto en &lt;30s → +2 cargas · si no → +1 carga'} · Desbloquea poderes una sola vez · úsalos tocando casillas.</div>
+            <div class="bpx-hint">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s → +2 cargas · en más tiempo → +1 carga · fallar → bloqueos' : 'Reto perfecto en &lt;30s → +2 cargas · si no → +1 carga'} · Desbloquea poderes una sola vez · úsalos tocando casillas.</div>
             ${(()=>{
               const cats = [
                 { limit:'persistent', label:'✨ Permanentes',      keys:['bitacora','vision','fortaleza','venganza'] },
@@ -4389,9 +4389,7 @@ function _bingoPaneHtml() {
           ? `⛔ No completaste el reto — bloqueamos automáticamente ${_r.fails} número${_r.fails!==1?'s':''} de tus cartones.`
           : _r.fast
             ? `🎉 ¡Felicidades! Ganaste ${_r.charges} carga${_r.charges!==1?'s':''} ⚡ por hacerlo en tiempo récord.`
-            : _r.isRapida
-              ? `✅ Completaste el reto, pero te tomó más de 15s — sin cargas esta vez. ¡Sé más rápido!`
-              : `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de 30s la próxima vez para ganar 2!`;
+            : `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de ${_r.isRapida?'15':'30'}s la próxima vez para ganar 2!`;
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-${_rC}">
             <div class="bcc-result-ico">${_rIco}</div>
             <div class="bcc-result-h">${_rH}</div>
@@ -4405,7 +4403,7 @@ function _bingoPaneHtml() {
         const barCls = remain > 30 ? 'ok' : 'warn';
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
             <div class="bcc-title">🧠 ¡Reto Matemático!</div>
-            <div class="bcc-sub">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s = +1 carga · después = 0 cargas · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
+            <div class="bcc-sub">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s = +2 cargas · en más tiempo = +1 carga · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
             <div class="bcc-bar"><div class="bcc-bar-fill ${barCls}" style="width:${pct}%"></div></div>
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
             ${q ? `<div class="bcc-question">${q.q}</div>
