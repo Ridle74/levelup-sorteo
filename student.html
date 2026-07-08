@@ -1019,6 +1019,8 @@ let _bingoDesafioDeclineAck = false;   // el challenger ya vio el modal de recha
 let _bingoDesafioDeclineMsg = '';      // mensaje aleatorio fijo hasta que lo cierre
 let _bingoDesafioRaceAck    = false;   // el participante ya vio el resultado del duelo
 let _bingoDesafioRaceResult = null;    // { won, opponentName, penalty } del duelo terminado
+let _bingoDuelCountdownEnd  = 0;       // timestamp fin del countdown 3-2-1 al aceptarse un duelo
+let _bingoDuelCountdownName = '';      // nombre del jugador que aceptó
 // Identidad de invitado (sin login) — persiste en localStorage
 let _bingoGuestUid   = localStorage.getItem('bingoGuestUid')   || null;
 let _bingoGuestName  = localStorage.getItem('bingoGuestName')  || null;
@@ -2441,6 +2443,7 @@ function _bingoResetLocalState() {
   _bingoRevengeActive = false;
   _bingoDesafioDeclineAck = false; _bingoDesafioDeclineMsg = '';
   _bingoDesafioRaceAck = false; _bingoDesafioRaceResult = null;
+  _bingoDuelCountdownEnd = 0; _bingoDuelCountdownName = '';
   _bingoCloseModal();
 }
 
@@ -2582,6 +2585,34 @@ function _selectBingoGame(gameId) {
         _bingoDesafioRaceResult = { won: _won, opponentName: _oppName, penalty: 4 };
       }
     } catch(e) { console.error('duel race result',e); }
+    // Capturar resultado de duel con bot (bot_won / bot_lost)
+    try {
+      const _me5b = _bingoMe();
+      const _acBot2 = bingoGame && bingoGame.activeChallenge;
+      if (_acBot2 && ['bot_won','bot_lost'].includes(_acBot2.resolvedBy)
+          && _acBot2.fromUid === _me5b.uid
+          && !_bingoDesafioRaceAck && !_bingoDesafioRaceResult) {
+        const _botName = (bingoGame.players||{})[_acBot2.toUid]?.name || 'Bot';
+        const _won = _acBot2.resolvedBy === 'bot_lost'; // bot_lost = yo gané
+        _bingoDesafioRaceResult = { won: _won, opponentName: _botName, penalty: 4 };
+      }
+    } catch(e) { console.error('duel bot result',e); }
+    // Countdown 3-2-1 cuando el duelo pasa a 'racing'
+    try {
+      const _me5c = _bingoMe();
+      const _acR = bingoGame && bingoGame.activeChallenge;
+      if (_acR && _acR.status === 'racing'
+          && (_acR.fromUid === _me5c.uid || _acR.toUid === _me5c.uid)
+          && _bingoDuelCountdownEnd === 0) {
+        const _accepterName = (bingoGame.players||{})[_acR.toUid]?.name || 'Tu rival';
+        _bingoDuelCountdownEnd  = Date.now() + 3500;
+        _bingoDuelCountdownName = _accepterName;
+        _renderBingoPane();
+        setTimeout(_renderBingoPane, 1100);
+        setTimeout(_renderBingoPane, 2200);
+        setTimeout(() => { _bingoDuelCountdownEnd = 0; _renderBingoPane(); }, 3500);
+      }
+    } catch(e) { console.error('duel countdown',e); }
     // Bot auto-responde al Desafío (solo el host lo escribe)
     try {
       const _acBot = bingoGame && bingoGame.activeChallenge;
@@ -2591,7 +2622,7 @@ function _selectBingoGame(gameId) {
           _botDesafioResponded = true;
           const _botP = (bingoGame.players||{})[_acBot.toUid];
           const _botCfg = BINGO_BOT_CONFIG[(_botP&&_botP.botLevel)||'basic'] || BINGO_BOT_CONFIG.basic;
-          const _accepts = Math.random() < 0.45; // 45% acepta, 55% rechaza
+          const _accepts = Math.random() < 0.70; // 70% acepta, 30% rechaza
           const _drawLen = (bingoGame.drawnNumbers||[]).length;
           setTimeout(() => {
             if (!BINGO_REF || !bingoGame) return;
@@ -2601,8 +2632,7 @@ function _selectBingoGame(gameId) {
                 'activeChallenge.status': 'resolved',
                 'activeChallenge.resolvedBy': 'decline',
                 [`players.${_acBot.toUid}.desafiadoUntilDraw`]: _drawLen + 6,
-              }).then(() => showToast(`😱 ¡${(_botP&&_botP.name)||'Bot'} huyó de tu Desafío! Le bloqueamos 6 marcas.`,'success'))
-                .catch(e=>console.error('bot desafio reject',e));
+              }).catch(e=>console.error('bot desafio reject',e));
             } else {
               // Bot acepta — simula el duelo
               const _qs = Array.from({length:5},()=>{ const t=_bGetRandomInt(2,20); return {q:_bingoMakeSum(t),a:String(t)}; });
@@ -2622,12 +2652,10 @@ function _selectBingoGame(gameId) {
                   if (_botWins) {
                     BINGO_REF.update({ 'activeChallenge.status':'resolved','activeChallenge.resolvedBy':'bot_won',
                       [`players.${_acBot.fromUid}.desafiadoUntilDraw`]:_dLen2+4 })
-                      .then(()=>showToast(`🤖 ${(_botP&&_botP.name)||'Bot'} ganó el duelo — pierdes 4 marcas.`,'error'))
                       .catch(e=>console.error('bot desafio bot-won',e));
                   } else {
                     BINGO_REF.update({ 'activeChallenge.status':'resolved','activeChallenge.resolvedBy':'bot_lost',
                       [`players.${_acBot.toUid}.desafiadoUntilDraw`]:_dLen2+4 })
-                      .then(()=>showToast(`⚔️ ¡Ganaste el duelo contra ${(_botP&&_botP.name)||'Bot'}! Pierde 4 marcas.`,'success'))
                       .catch(e=>console.error('bot desafio bot-lost',e));
                   }
                 }, 1200 + Math.random()*1800);
@@ -4589,7 +4617,15 @@ function _bingoPaneHtml() {
       } else if (_ac.status === 'racing') {
         const _isParticipant = me.uid===_ac.fromUid || me.uid===_ac.toUid;
         const _myDuelTime = me.uid===_ac.fromUid ? _ac.fromTime : _ac.toTime;
-        if (_isParticipant && (_myDuelTime===null||_myDuelTime===undefined)) {
+        // Countdown 3-2-1 antes de mostrar las preguntas
+        if (_isParticipant && _bingoDuelCountdownEnd > Date.now()) {
+          const _cdLeft = Math.max(1, Math.ceil((_bingoDuelCountdownEnd - Date.now()) / 1000));
+          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-yellow" style="max-width:320px;text-align:center;padding:28px 20px">
+            <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">⚔️ Duelo aceptado</div>
+            <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:14px">${_bingoDuelCountdownName} aceptó el reto</div>
+            <div style="font-size:88px;font-weight:900;line-height:1;color:#f59e0b;text-shadow:0 0 30px rgba(245,158,11,0.8)">${_cdLeft}</div>
+          </div></div>`;
+        } else if (_isParticipant && (_myDuelTime===null||_myDuelTime===undefined)) {
           const _duelRemain = Math.max(0, Math.round((((_ac.endsAt||0)-Date.now())/1000)));
           const _duelPct = Math.min(100, Math.max(0, (_duelRemain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
           const _duelBarCls = _duelRemain > 30 ? 'ok' : 'warn';
@@ -4614,7 +4650,7 @@ function _bingoPaneHtml() {
       }
     }
     // ── Modal resultado de duelo (race) — visible para ambos participantes ──
-    if (_ac && _ac.status === 'resolved' && _ac.resolvedBy === 'race'
+    if (_ac && _ac.status === 'resolved' && ['race','bot_won','bot_lost'].includes(_ac.resolvedBy)
         && (me.uid === _ac.fromUid || me.uid === _ac.toUid)
         && !_bingoDesafioRaceAck && _bingoDesafioRaceResult) {
       const _rr = _bingoDesafioRaceResult;
