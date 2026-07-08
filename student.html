@@ -1019,8 +1019,9 @@ let _bingoDesafioDeclineAck = false;   // el challenger ya vio el modal de recha
 let _bingoDesafioDeclineMsg = '';      // mensaje aleatorio fijo hasta que lo cierre
 let _bingoDesafioRaceAck    = false;   // el participante ya vio el resultado del duelo
 let _bingoDesafioRaceResult = null;    // { won, opponentName, penalty } del duelo terminado
-let _bingoDuelCountdownEnd  = 0;       // timestamp fin del countdown 3-2-1 al aceptarse un duelo
-let _bingoDuelCountdownName = '';      // nombre del jugador que aceptó
+let _bingoDuelCountdownEnd      = 0;    // timestamp fin del countdown 3-2-1 al aceptarse un duelo
+let _bingoDuelCountdownName     = '';
+let _botDesafioRaceSimulated    = false; // evita doble simulación bot en in_reto      // nombre del jugador que aceptó
 // Identidad de invitado (sin login) — persiste en localStorage
 let _bingoGuestUid   = localStorage.getItem('bingoGuestUid')   || null;
 let _bingoGuestName  = localStorage.getItem('bingoGuestName')  || null;
@@ -2498,6 +2499,7 @@ function _selectBingoGame(gameId) {
   if (bingoUnsub) { bingoUnsub(); bingoUnsub = null; }
   bingoGame = null;
   _bingoGameId = gameId;
+  _bingoShowHistory = false; _bingoHistoryData = null; // cerrar historial al entrar a partida
   BINGO_REF = db.collection('bingo').doc(gameId);
   _renderBingoPane();
   bingoUnsub = BINGO_REF.onSnapshot(snap => {
@@ -2558,7 +2560,7 @@ function _selectBingoGame(gameId) {
     try {
       const _me4 = _bingoMe();
       const _acAR = bingoGame && bingoGame.activeChallenge;
-      if (_acAR && _acAR.status === 'racing'
+      if (_acAR && _acAR.status === 'in_reto'
           && _acAR.fromTime != null && _acAR.toTime != null
           && _me4.uid === _acAR.fromUid) {
         const _fp = { 'activeChallenge.status':'resolved', 'activeChallenge.resolvedBy':'race' };
@@ -2598,16 +2600,18 @@ function _selectBingoGame(gameId) {
         _bingoDesafioRaceResult = { won: _won, opponentName: _botName, penalty: 4 };
       }
     } catch(e) { console.error('duel bot result',e); }
-    // Countdown 3-2-1 cuando el duelo pasa a 'racing'
+    // Countdown 3-2-1 cuando el duelo entra en 'in_reto' (reto natural comienza)
     try {
       const _me5c = _bingoMe();
       const _acR = bingoGame && bingoGame.activeChallenge;
-      if (_acR && _acR.status === 'racing'
+      if (_acR && _acR.status === 'in_reto'
           && (_acR.fromUid === _me5c.uid || _acR.toUid === _me5c.uid)
           && _bingoDuelCountdownEnd === 0) {
-        const _accepterName = (bingoGame.players||{})[_acR.toUid]?.name || 'Tu rival';
+        const _rivalNameCD = me.uid === _acR.fromUid
+          ? (bingoGame.players||{})[_acR.toUid]?.name || 'Tu rival'
+          : (bingoGame.players||{})[_acR.fromUid]?.name || 'Tu rival';
         _bingoDuelCountdownEnd  = Date.now() + 3500;
-        _bingoDuelCountdownName = _accepterName;
+        _bingoDuelCountdownName = _rivalNameCD;
         _renderBingoPane();
         setTimeout(_renderBingoPane, 1100);
         setTimeout(_renderBingoPane, 2200);
@@ -2635,31 +2639,11 @@ function _selectBingoGame(gameId) {
                 [`players.${_acBot.toUid}.desafiadoUntilDraw`]: _drawLen + 6,
               }).catch(e=>console.error('bot desafio reject',e));
             } else {
-              // Bot acepta — simula el duelo
-              const _qs = Array.from({length:5},()=>{ const t=_bGetRandomInt(2,20); return {q:_bingoMakeSum(t),a:String(t)}; });
-              const _secs = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
-              const _now = Date.now();
+              // Bot acepta — el duelo se disputará en el próximo reto matemático natural
               BINGO_REF.update({
-                'activeChallenge.status': 'active',
-                'activeChallenge.questions': _qs,
-                'activeChallenge.startedAt': _now,
-                'activeChallenge.endsAt': _now + _secs*1000,
-              }).then(() => {
-                // Tras 1-3s el bot "resuelve" el duelo
-                setTimeout(() => {
-                  if (!BINGO_REF || !bingoGame) return;
-                  const _botWins = Math.random() < (_botCfg.claimProb||0.5);
-                  const _dLen2 = (bingoGame.drawnNumbers||[]).length;
-                  if (_botWins) {
-                    BINGO_REF.update({ 'activeChallenge.status':'resolved','activeChallenge.resolvedBy':'bot_won',
-                      [`players.${_acBot.fromUid}.desafiadoUntilDraw`]:_dLen2+4 })
-                      .catch(e=>console.error('bot desafio bot-won',e));
-                  } else {
-                    BINGO_REF.update({ 'activeChallenge.status':'resolved','activeChallenge.resolvedBy':'bot_lost',
-                      [`players.${_acBot.toUid}.desafiadoUntilDraw`]:_dLen2+4 })
-                      .catch(e=>console.error('bot desafio bot-lost',e));
-                  }
-                }, 1200 + Math.random()*1800);
+                'activeChallenge.status': 'waiting',
+                'activeChallenge.fromTime': null,
+                'activeChallenge.toTime':   null,
               }).catch(e=>console.error('bot desafio accept',e));
             }
           }, 700 + Math.random()*1300);
@@ -2667,6 +2651,43 @@ function _selectBingoGame(gameId) {
       } else if (!_acBot || _acBot.status !== 'pending') {
         _botDesafioResponded = false;
       }
+      // Bot en duelo activo (in_reto) — simula su tiempo una sola vez
+      try {
+        const _acBotR = snap.activeChallenge;
+        if (_acBotR && _acBotR.status === 'in_reto' && !_botDesafioRaceSimulated) {
+          const _botUidR = Object.keys(snap.players||{}).find(u => snap.players[u].isBot);
+          if (_botUidR && (_acBotR.fromUid === _botUidR || _acBotR.toUid === _botUidR)) {
+            const _isFromBot = _acBotR.fromUid === _botUidR;
+            const _botField  = _isFromBot ? 'activeChallenge.fromTime' : 'activeChallenge.toTime';
+            const _botMyTime = _isFromBot ? _acBotR.fromTime : _acBotR.toTime;
+            if (_botMyTime === null || _botMyTime === undefined) {
+              _botDesafioRaceSimulated = true;
+              const _totSecsBot = ((snap.gameSpeed||'media')==='rapida'?30:60);
+              const _botCfgR = _bingoBotConfig(snap.difficulty||1);
+              // el bot tarda entre 40% y 85% del tiempo total (según su nivel)
+              const _botFrac = 0.40 + (1 - (_botCfgR.claimProb||0.5)) * 0.45;
+              const _botMs   = Math.round(_totSecsBot * 1000 * (_botFrac + Math.random()*0.15));
+              setTimeout(() => {
+                if (!BINGO_REF || !bingoGame) return;
+                const _acNow = bingoGame.activeChallenge;
+                if (!_acNow || _acNow.status !== 'in_reto') return;
+                const _otherBot = _isFromBot ? _acNow.toTime : _acNow.fromTime;
+                const _patchBot = { [_botField]: _botMs };
+                if (_otherBot !== null && _otherBot !== undefined) {
+                  _patchBot['activeChallenge.status']     = 'resolved';
+                  _patchBot['activeChallenge.resolvedBy'] = 'race';
+                  const _fB = _isFromBot ? _botMs : _acNow.fromTime;
+                  const _tB = _isFromBot ? _acNow.toTime : _botMs;
+                  if (_fB < _tB) Object.assign(_patchBot, _bingoDuelPenaltyPatch(_acNow.toUid,   4));
+                  else if (_tB < _fB) Object.assign(_patchBot, _bingoDuelPenaltyPatch(_acNow.fromUid, 4));
+                }
+                BINGO_REF.update(_patchBot).catch(e=>console.error('bot duel race',e));
+              }, 800 + Math.random()*1000);
+            }
+          }
+        }
+        if (!_acBotR || _acBotR.status !== 'in_reto') _botDesafioRaceSimulated = false;
+      } catch(e) { console.error('bot in_reto sim', e); }
     } catch(e) { console.error('bot desafio', e); }
     _renderBingoPane();
   }, err => {
@@ -2807,11 +2828,20 @@ function _bingoHostAdvancePhase() {
 }
 function _bingoHostStartChallenge() {
   const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
-  BINGO_REF.update({
+  const _startPatch = {
     challengeActive:true, challengeId: Date.now(), questions,
     challengeEndsAt: Date.now() + (((bingoGame.gameSpeed||'media')==='rapida'?30:60))*1000,
     nextDrawAt: null
-  }).then(() => { setTimeout(() => _bingoBotSendTaunt('reto'), 800); })
+  };
+  // Si hay un duelo esperando → este reto ES el duelo
+  const _acW = bingoGame && bingoGame.activeChallenge;
+  if (_acW && _acW.status === 'waiting') {
+    _startPatch['activeChallenge.status'] = 'in_reto';
+    _startPatch['activeChallenge.fromTime'] = null;
+    _startPatch['activeChallenge.toTime']   = null;
+  }
+  BINGO_REF.update(_startPatch)
+    .then(() => { setTimeout(() => _bingoBotSendTaunt('reto'), 800); })
     .catch(e=>console.error('bingo challenge-start',e));
 }
 function _bingoHostEndChallenge() {
@@ -3277,14 +3307,23 @@ function _bingoCheckMyChallengeEnd() {
 function _bingoCheckMyDuelEnd() {
   if (!bingoGame) return;
   const ac = bingoGame.activeChallenge;
-  if (!ac || ac.status !== 'racing' || !ac.endsAt) return;
+  if (!ac || ac.status !== 'in_reto') return;
   const me = _bingoMe();
-  if (me.uid !== ac.fromUid && me.uid !== ac.toUid) return; // no soy participante
+  if (me.uid !== ac.fromUid && me.uid !== ac.toUid) return;
   const myTime = me.uid === ac.fromUid ? ac.fromTime : ac.toTime;
-  if (myTime !== null && myTime !== undefined) return; // ya terminé
-  if (Date.now() >= ac.endsAt) {
-    // Tiempo agotado: envío tiempo "infinito" (peor que cualquier tiempo real) para resolver el duelo
-    _bingoDuelFinish((ac.endsAt - (ac.startedAt||ac.endsAt)) + 99999);
+  if (myTime !== null && myTime !== undefined) return; // ya registré mi tiempo
+  if (Date.now() >= (bingoGame.challengeEndsAt||0)) {
+    // Tiempo agotado — registrar 999999 (peor tiempo posible)
+    const _isFromDF  = me.uid === ac.fromUid;
+    const _duelField = _isFromDF ? 'activeChallenge.fromTime' : 'activeChallenge.toTime';
+    const _otherTime = _isFromDF ? ac.toTime : ac.fromTime;
+    const _patch = { [_duelField]: 999999 };
+    if (_otherTime !== null && _otherTime !== undefined) {
+      _patch['activeChallenge.status']     = 'resolved';
+      _patch['activeChallenge.resolvedBy'] = 'race';
+      Object.assign(_patch, _bingoDuelPenaltyPatch(me.uid, 4));
+    }
+    BINGO_REF.update(_patch).catch(e=>console.error('duel timeout',e));
   }
 }
 function submitBingoChallengeAnswer(raw) {
@@ -3383,6 +3422,29 @@ function _bingoFinishChallenge(correctCount) {
   patch[`players.${me.uid}.retoStats.perfect`]      = _FV.increment(perfect ? 1 : 0);
   patch[`players.${me.uid}.retoStats.fails`]        = _FV.increment(perfect ? 0 : 1);
   if (perfect) { const _el = Math.round((((bingoGame.gameSpeed||'media')==='rapida'?30:60)) - Math.max(0,((bingoGame.challengeEndsAt||0)-Date.now())/1000)); patch[`players.${me.uid}.retoStats.totalTimeSecs`] = _FV.increment(_el); }
+  // Duelo activo (in_reto) — registrar tiempo de este reto para resolverlo
+  const _acDF = bingoGame.activeChallenge;
+  if (_acDF && _acDF.status === 'in_reto'
+      && (me.uid === _acDF.fromUid || me.uid === _acDF.toUid)) {
+    const _isFromDF  = me.uid === _acDF.fromUid;
+    const _duelField = _isFromDF ? 'activeChallenge.fromTime' : 'activeChallenge.toTime';
+    const _otherTime = _isFromDF ? _acDF.toTime : _acDF.fromTime;
+    // Tiempo en ms: si perfecto = tiempo real transcurrido; si falló = 999999 (peor posible)
+    const _totSecs   = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
+    const _myDuelMs  = perfect
+      ? Math.round(_totSecs*1000 - Math.max(0,(bingoGame.challengeEndsAt||0)-Date.now()))
+      : 999999;
+    patch[_duelField] = _myDuelMs;
+    if (_otherTime !== null && _otherTime !== undefined) {
+      // Ambos terminaron → resolver ahora
+      patch['activeChallenge.status']     = 'resolved';
+      patch['activeChallenge.resolvedBy'] = 'race';
+      const _fT = _isFromDF ? _myDuelMs   : _acDF.fromTime;
+      const _tT = _isFromDF ? _acDF.toTime : _myDuelMs;
+      if (_fT < _tT) Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.toUid,   4));
+      else if (_tT < _fT) Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.fromUid, 4));
+    }
+  }
   // Sonido resultado
   if (perfect) _bSnd.perfect(); else _bSnd.fail();
   // Mostrar resultado visual antes de que Firestore actualice el snap
@@ -3658,6 +3720,16 @@ function cancelarVenganza() {
   bingoActivePower = null; bingoPowerForm = {}; _bingoPowerStep = null;
   _renderBingoPane();
 }
+// ── Visión X: spotlight cursor effect ─────────────────────────────────────────
+function updateVisionSpot(e) {
+  const x = e.clientX !== undefined ? e.clientX : (e.pageX||0);
+  const y = e.clientY !== undefined ? e.clientY : (e.pageY||0);
+  const mask = document.getElementById('vx-mask');
+  const cur  = document.getElementById('vx-cursor');
+  if (mask) mask.style.background = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 0%, transparent 30%, rgba(0,0,8,0.97) 62%)`;
+  if (cur)  { cur.style.left = (x-120)+'px'; cur.style.top = (y-120)+'px'; }
+}
+
 // ── Número bonus (rápida + reto perfecto <15s) ────────────────────────────────
 function claimBingoBonusNum(n) {
   n = Number(n);
@@ -3719,15 +3791,12 @@ function doBingoDesafio(targetUid) {
 function acceptBingoDesafio() {
   const ac = bingoGame && bingoGame.activeChallenge;
   if (!ac || ac.status !== 'pending') return;
-  const qs = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
-  const secs = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
-  const now = Date.now();
+  // El duelo NO genera preguntas propias — se disputará en el PRÓXIMO reto matemático natural
   BINGO_REF.update({
-    'activeChallenge.status': 'racing',
-    'activeChallenge.questions': qs,
-    'activeChallenge.startedAt': now,
-    'activeChallenge.endsAt': now + secs * 1000,
-  }).then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _bingoDuelWrongOpts=new Set(); _renderBingoPane(); })
+    'activeChallenge.status': 'waiting',
+    'activeChallenge.fromTime': null,
+    'activeChallenge.toTime': null,
+  }).then(()=>{ _renderBingoPane(); })
     .catch(e=>console.error('desafio accept',e));
 }
 function rechazarBingoDesafio() {
@@ -4633,38 +4702,31 @@ function _bingoPaneHtml() {
         } else if (_ac.fromUid === me.uid) {
           body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>Desafío enviado a ${_acTo?.name||'rival'}</b> — esperando respuesta...</div>`;
         }
-      } else if (_ac.status === 'racing') {
+      } else if (_ac.status === 'waiting') {
+        // Duelo aceptado — esperando el próximo reto matemático
         const _isParticipant = me.uid===_ac.fromUid || me.uid===_ac.toUid;
-        const _myDuelTime = me.uid===_ac.fromUid ? _ac.fromTime : _ac.toTime;
-        // Countdown 3-2-1 antes de mostrar las preguntas
-        if (_isParticipant && _bingoDuelCountdownEnd > Date.now()) {
-          const _cdLeft = Math.max(1, Math.ceil((_bingoDuelCountdownEnd - Date.now()) / 1000));
-          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-yellow" style="max-width:320px;text-align:center;padding:28px 20px">
-            <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px">⚔️ Duelo aceptado</div>
-            <div style="font-size:20px;font-weight:900;color:#fff;margin-bottom:14px">${_bingoDuelCountdownName} aceptó el reto</div>
-            <div style="font-size:88px;font-weight:900;line-height:1;color:#f59e0b;text-shadow:0 0 30px rgba(245,158,11,0.8)">${_cdLeft}</div>
-          </div></div>`;
-        } else if (_isParticipant && (_myDuelTime===null||_myDuelTime===undefined)) {
-          const _duelRemain = Math.max(0, Math.round((((_ac.endsAt||0)-Date.now())/1000)));
-          const _duelPct = Math.min(100, Math.max(0, (_duelRemain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
-          const _duelBarCls = _duelRemain > 30 ? 'ok' : 'warn';
-          const _duelQ = (_ac.questions||[])[_bingoDuelIdx];
+        if (_isParticipant) {
           const _rivalName = me.uid===_ac.fromUid ? (_acTo?.name||'rival') : (_acFrom?.name||'rival');
-          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${_bingoDuelError?'err':''}">
-            <div class="bcc-title" style="background:linear-gradient(to right,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">⚔️ Duelo vs ${_rivalName}</div>
-            <div class="bcc-sub">Responde más rápido que tu rival para penalizarlo 4 marcas.</div>
-            <div class="bcc-bar"><div class="bcc-bar-fill ${_duelBarCls}" style="width:${_duelPct}%"></div></div>
-            <div class="bcc-dots">${(_ac.questions||[]).map((_,i)=>`<span class="bcc-dot ${i<_bingoDuelIdx?'ok':''} ${i===_bingoDuelIdx?'now':''}"></span>`).join('')}</div>
-            ${_duelQ?`<div class="bcc-question">${_duelQ.q}</div>
-            ${_duelQ.mc
-              ? `<div class="bcc-mc-opts">${(_duelQ.opts||[]).map((opt,i)=>{const _wr=_bingoDuelWrongOpts.has(opt.toLowerCase());return `<button class="bcc-mc-btn${_wr?' bcc-mc-err':''}" ${_wr?'disabled':''} onclick="submitBingoDuelAnswer('${opt}')">[${i+1}] ${opt}</button>`;}).join('')}</div>
-            <div class="bcc-foot">⏱ ${_duelRemain}s · Pregunta ${_bingoDuelIdx+1}/${(_ac.questions||[]).length} · Tecla 1-${(_duelQ.opts||[]).length} para responder</div>`
-              : `<input class="bcc-input" id="bingo-duel-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoDuelAnswer(this.value);}">
-            <button class="bcc-submit" style="background:linear-gradient(135deg,#b45309,#dc2626)" onclick="submitBingoDuelAnswer(document.getElementById('bingo-duel-input').value)">Responder</button>
-            <div class="bcc-foot">⏱ ${_duelRemain}s · Pregunta ${_bingoDuelIdx+1}/${(_ac.questions||[]).length}</div>`}`:''}
-          </div></div>`;
-        } else if (_isParticipant) {
-          body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>¡Terminaste el duelo!</b> Esperando que tu rival acabe...</div>`;
+          body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.5);display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">⚔️</span>
+            <div><b style="font-size:14px">Duelo vs ${_rivalName}</b><br><span style="font-size:12px;color:rgba(255,255,255,0.6)">El próximo reto matemático será el duelo — quien lo termine más rápido gana.</span></div>
+          </div>`;
+        }
+      } else if (_ac.status === 'in_reto') {
+        // Duelo activo — se disputa en el reto matemático actual
+        const _isParticipant = me.uid===_ac.fromUid || me.uid===_ac.toUid;
+        if (_isParticipant) {
+          const _myDuelTime = me.uid===_ac.fromUid ? _ac.fromTime : _ac.toTime;
+          const _rivalName = me.uid===_ac.fromUid ? (_acTo?.name||'rival') : (_acFrom?.name||'rival');
+          if (_myDuelTime !== null && _myDuelTime !== undefined) {
+            body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>¡Terminaste!</b> Esperando que ${_rivalName} acabe...</div>`;
+          } else {
+            body += `<div style="position:fixed;top:0;left:0;right:0;z-index:900;pointer-events:none;padding:10px 14px;display:flex;justify-content:center">
+              <div style="background:linear-gradient(135deg,rgba(245,158,11,0.9),rgba(239,68,68,0.85));border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 4px 20px rgba(239,68,68,0.4);letter-spacing:.02em;text-align:center">
+                ⚔️ ¡DUELO VS ${_rivalName.toUpperCase()}! · Quien termine el reto más rápido gana
+              </div>
+            </div>`;
+          }
         }
       }
     }
@@ -4714,37 +4776,45 @@ function _bingoPaneHtml() {
       const _hasVisionX = !!(myPlayer.unlockedPowers||{}).vision;
       const _myCards    = myPlayer.cards || {};
       const _myCardKeys = Object.keys(_myCards).map(Number).sort();
+      // ── Visión X: overlay fullscreen con spotlight ──
       let _visionHtml = '';
+      let _visionOverlayHtml = '';
       if (_hasVisionX && _myCardKeys.length > 0) {
         const _cardBtns = _myCardKeys.map(ci =>
-          `<button onclick="_bonusVisionCard=${ci};_renderBingoPane()" style="padding:5px 12px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;background:${_bonusVisionCard===ci?'rgba(16,185,129,0.3)':'rgba(255,255,255,0.08)'};border:1px solid ${_bonusVisionCard===ci?'rgba(16,185,129,0.6)':'rgba(255,255,255,0.2)'};color:${_bonusVisionCard===ci?'#34d399':'rgba(255,255,255,0.7)'}">Cartón ${ci+1}</button>`
+          `<button onclick="_bonusVisionCard=${ci};_renderBingoPane()" style="padding:5px 14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;background:${_bonusVisionCard===ci?'rgba(16,185,129,0.3)':'rgba(255,255,255,0.08)'};border:1px solid ${_bonusVisionCard===ci?'rgba(16,185,129,0.6)':'rgba(255,255,255,0.2)'};color:${_bonusVisionCard===ci?'#34d399':'rgba(255,255,255,0.8)'}">Cartón ${ci+1}</button>`
         ).join('');
-        let _gridHtml = '';
         if (_bonusVisionCard !== null && _myCards[_bonusVisionCard]) {
           const _vc  = _myCards[_bonusVisionCard] || [];
           const _cMk = new Set((myPlayer.marks||[]).filter(m=>m.c===_bonusVisionCard).map(m=>m.n));
           const _cBl = new Set((myPlayer.blockedMarks||[]).filter(m=>m.c===_bonusVisionCard).map(m=>m.n));
           const _dr  = new Set(bingoGame.drawnNumbers||[]);
-          const _hds = ['B','I','N','G','O'].map(h=>`<div style="text-align:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.45);padding:3px 0">${h}</div>`).join('');
+          const _hds = ['B','I','N','G','O'].map(h=>`<div style="text-align:center;font-size:14px;font-weight:900;color:rgba(255,255,255,0.55);padding:4px 0;letter-spacing:.12em">${h}</div>`).join('');
           let _cells = '';
           for (let _r=0;_r<5;_r++) for (let _c2=0;_c2<5;_c2++) {
             const _n=_vc[_r*5+_c2], isFree=_n===0, isMk=_cMk.has(_n), isBl=_cBl.has(_n), isDr=_dr.has(_n), canP=!isMk&&!isBl&&_n>0;
-            const _bg=isFree?'rgba(255,255,255,0.04)':isBl?'rgba(239,68,68,0.18)':isMk?'rgba(16,185,129,0.28)':isDr?'rgba(250,204,21,0.1)':'rgba(255,255,255,0.1)';
-            const _bd=isFree?'rgba(255,255,255,0.08)':isBl?'rgba(239,68,68,0.4)':isMk?'rgba(16,185,129,0.55)':isDr?'rgba(250,204,21,0.45)':'rgba(255,255,255,0.3)';
-            const _cl=isFree?'rgba(255,255,255,0.2)':isBl?'rgba(239,68,68,0.55)':isMk?'#34d399':isDr?'#fbbf24':'#fff';
-            _cells += `<button onclick="${canP?`claimBingoBonusNum(${_n})`:'void 0'}" ${!canP?'disabled':''} style="padding:5px 2px;border-radius:6px;font-weight:800;font-size:12px;text-align:center;background:${_bg};border:1px solid ${_bd};color:${_cl};cursor:${canP?'pointer':'default'}">${isFree?'★':_n}</button>`;
+            const _bg=isFree?'rgba(255,255,255,0.04)':isBl?'rgba(239,68,68,0.25)':isMk?'rgba(16,185,129,0.35)':isDr?'rgba(250,204,21,0.15)':'rgba(255,255,255,0.12)';
+            const _bd=isFree?'rgba(255,255,255,0.1)':isBl?'rgba(239,68,68,0.5)':isMk?'rgba(16,185,129,0.7)':isDr?'rgba(250,204,21,0.5)':'rgba(255,255,255,0.35)';
+            const _cl=isFree?'rgba(255,255,255,0.2)':isBl?'rgba(239,68,68,0.6)':isMk?'#34d399':isDr?'#fbbf24':'#fff';
+            _cells += `<button onclick="${canP?`claimBingoBonusNum(${_n})`:'void 0'}" ${!canP?'disabled':''} style="padding:10px 2px;border-radius:8px;font-weight:900;font-size:16px;text-align:center;background:${_bg};border:1px solid ${_bd};color:${_cl};cursor:${canP?'pointer':'default'}">${isFree?'★':_n}</button>`;
           }
-          _gridHtml = `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:250px;margin:10px auto 0">${_hds}${_cells}</div>
-            <div style="display:flex;gap:10px;justify-content:center;margin-top:7px;font-size:10px;color:rgba(255,255,255,0.35)">
-              <span style="color:#34d399">■ marcado</span><span style="color:rgba(239,68,68,0.7)">■ bloqueado</span><span style="color:#fbbf24">■ sorteado</span><span>■ disponible</span>
-            </div>`;
+          _visionOverlayHtml = `<div id="vx-overlay" style="position:fixed;inset:0;z-index:9998;cursor:none;background:rgba(0,0,8,0.98)" onmousemove="updateVisionSpot(event)" ontouchmove="updateVisionSpot(event.touches[0])">
+            <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:10001;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:rgba(16,185,129,0.65);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;pointer-events:none">🔎 VISIÓN X — Cartón ${_bonusVisionCard+1}</div>
+            <div style="position:absolute;top:40px;left:50%;transform:translateX(-50%);z-index:10001;display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${_cardBtns}</div>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:5px;width:300px">${_hds}${_cells}</div>
+            <div style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:10001;display:flex;gap:12px;font-size:11px;white-space:nowrap;pointer-events:none">
+              <span style="color:#34d399">■ marcado</span><span style="color:rgba(239,68,68,0.7)">■ bloqueado</span><span style="color:#fbbf24">■ sorteado</span><span style="color:rgba(255,255,255,0.45)">■ disponible</span>
+            </div>
+            <button onclick="_bonusVisionCard=null;_renderBingoPane()" style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:10001;padding:10px 28px;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.45);color:#34d399;cursor:pointer">✓ Terminé de ver — elegir número</button>
+            <div id="vx-mask" style="position:absolute;inset:0;pointer-events:none;z-index:10000;background:radial-gradient(circle 120px at 50% 50%, transparent 0%, transparent 30%, rgba(0,0,8,0.97) 62%)"></div>
+            <div id="vx-cursor" style="position:fixed;width:240px;height:240px;border:1.5px solid rgba(16,185,129,0.35);border-radius:50%;pointer-events:none;z-index:10002;box-shadow:0 0 28px rgba(16,185,129,0.18),inset 0 0 28px rgba(16,185,129,0.04);left:calc(50% - 120px);top:calc(50% - 120px)"></div>
+          </div>`;
         }
         _visionHtml = `<div style="margin-bottom:14px;padding:10px 12px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.22);border-radius:10px">
-          <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em">🔎 Visión X — previsualiza un cartón:</div>
+          <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em">🔎 Visión X — elige un cartón para previsualizar:</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">${_cardBtns}</div>
-          ${_gridHtml}
         </div>`;
       }
+      if (_visionOverlayHtml) body += _visionOverlayHtml;
       body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:420px">
         <div class="bcc-result-ico">⭐</div>
         <div class="bcc-result-h">¡Elige tu número bonus!</div>
