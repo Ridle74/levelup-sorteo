@@ -2689,7 +2689,6 @@ function _selectBingoGame(gameId) {
           }
         }
         if (!_acBotR || _acBotR.status !== 'in_reto') _botDesafioRaceSimulated = false;
-        if (!_acBotR || _acBotR.status !== 'waiting') _desafioAcceptedAck = false;
       } catch(e) { console.error('bot in_reto sim', e); }
     } catch(e) { console.error('bot desafio', e); }
     _renderBingoPane();
@@ -3815,7 +3814,7 @@ function doBingoDesafio(targetUid) {
   };
   if (_desCost > 0) _desPatch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) - _desCost;
   BINGO_REF.update(_desPatch)
-    .then(()=>{ bingoActivePower=null; _bingoLeaderboardOpen=false; _renderBingoPane(); })
+    .then(()=>{ bingoActivePower=null; _bingoLeaderboardOpen=false; _desafioAcceptedAck=false; _renderBingoPane(); })
     .catch(e=>console.error('desafio send',e));
 }
 function acceptBingoDesafio() {
