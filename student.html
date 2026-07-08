@@ -553,7 +553,7 @@ textarea.fsm { resize:none; height:64px; }
 .blc-sbtn:hover{background:rgba(255,255,255,0.18)}
 .blc-sbtn:disabled{opacity:0.2;cursor:default}
 .blc-snum{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:#fff;min-width:32px;text-align:center;line-height:1}
-.blc-diff-row{display:flex;gap:7px;margin:0 0 10px}
+.blc-diff-row{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}
 .blc-diff-btn{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;color:rgba(255,255,255,0.35);font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:13px 4px;cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
 .blc-diff-btn.on{border-color:rgba(250,204,21,0.7);background:rgba(250,204,21,0.12);color:#facc15}
 .blc-diff-ico{font-size:20px;line-height:1}
@@ -2091,31 +2091,33 @@ const _bSnd = (() => {
   };
 })();
 let _bSndLastNum = null, _bSndChalWas = false, _bSndTickSec = -1;
-function _bingoGenQuestions(level, count=5) {
+// Temas disponibles para retos matemáticos — una partida puede combinar varios
+const BINGO_TOPICS = {
+  suma:     { ico:'＋', lbl:'Suma',        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
+  resta:    { ico:'−',  lbl:'Resta',       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
+  mult:     { ico:'✕',  lbl:'Multiplicar', gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
+  div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
+  neg:      { ico:'±',  lbl:'Negativos',   gen:()=>{ let a,b; do{a=_bGetRandomInt(-10,10);}while(a===0); do{b=_bGetRandomInt(-10,10);}while(b===0); return {q:`${a<0?`(${a})`:a} × ${b<0?`(${b})`:b} = ?`,a:a*b}; } },
+  ecuacion: { ico:'=',  lbl:'Ecuaciones',  gen:()=>{ const x=_bGetRandomInt(-8,8)||1,m=_bGetRandomInt(2,6),b=_bGetRandomInt(-15,15)||5; return {q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`,a:x}; } },
+  trigo:    { ico:'sin',lbl:'Trigo',       gen:()=>{ if(Math.random()<0.5) return _bingoGenTrigTF(); const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
+};
+const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo'];
+// Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
+function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
+// Genera `count` preguntas ciclando por los temas seleccionados (pregunta 1=tema1, 2=tema2, 3=tema1…)
+// Acepta array de claves ['suma','trigo'] o nivel numérico legacy (1-5) para compatibilidad.
+function _bingoGenQuestions(topicsOrLevel, count=5) {
+  let topics;
+  if (Array.isArray(topicsOrLevel) && topicsOrLevel.length>0) {
+    topics = topicsOrLevel;
+  } else {
+    const leg = {1:'suma',2:'mult',3:'neg',4:'ecuacion',5:'trigo'};
+    topics = [leg[+topicsOrLevel]||'suma'];
+  }
   const qs = [];
   for (let i=0; i<count; i++) {
-    if (level===2) { const a=_bGetRandomInt(3,12), b=_bGetRandomInt(3,12); qs.push({ q:`${a} × ${b} = ?`, a:a*b }); }
-    else if (level===3) {
-      let a,b; do{a=_bGetRandomInt(-10,10);}while(a===0); do{b=_bGetRandomInt(-10,10);}while(b===0);
-      qs.push({ q:`${a<0?`(${a})`:a} × ${b<0?`(${b})`:b} = ?`, a:a*b });
-    } else if (level===4) {
-      const x=_bGetRandomInt(-8,8)||1, m=_bGetRandomInt(2,6), b=_bGetRandomInt(-15,15)||5;
-      qs.push({ q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`, a:x });
-    } else if (level===5) {
-      if (Math.random() < 0.5) {
-        // Pregunta Verdadero/Falso de identidades trigonométricas
-        qs.push(_bingoGenTrigTF());
-      } else {
-        // Pregunta MC de co-razones o razones inversas
-        const useCoRazon = Math.random() < 0.5;
-        const _pairs = useCoRazon ? TRIG_COPAIRS : TRIG_RECPAIRS;
-        const [fn, ans] = _pairs[_bGetRandomInt(0, _pairs.length-1)];
-        const qText = useCoRazon ? `¿Co-razón de ${fn}?` : `¿Razón inversa de ${fn}?`;
-        const distractors = _bingShufArr(TRIG_ALL.filter(t => t !== ans)).slice(0,3);
-        const opts = _bingShufArr([ans, ...distractors]);
-        qs.push({ q: qText, a: ans, opts, mc: true });
-      }
-    } else { const a=_bGetRandomInt(5,40), b=_bGetRandomInt(5,40); qs.push({ q:`${a} + ${b} = ?`, a:a+b }); }
+    const t = topics[i % topics.length];
+    qs.push(BINGO_TOPICS[t]?.gen?.() ?? {q:`${_bGetRandomInt(5,40)} + ${_bGetRandomInt(5,40)} = ?`,a:0});
   }
   return qs;
 }
@@ -2751,7 +2753,7 @@ function _bingoHostAdvancePhase() {
   }
 }
 function _bingoHostStartChallenge() {
-  const questions = _bingoGenQuestions(bingoGame.difficulty||1, 5);
+  const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5);
   BINGO_REF.update({
     challengeActive:true, challengeId: Date.now(), questions,
     challengeEndsAt: Date.now() + (bingoGame.challengeSeconds||60)*1000,
@@ -2943,7 +2945,7 @@ function createBingoGame() {
       status:'lobby', hostId: me.uid, hostName: me.name,
       createdAt: Date.now(), drawnNumbers:[], currentNumber:null,
       nextDrawAt:null,
-      directMode:true, difficulty:1, cardCount,
+      directMode:true, difficulty:1, topics:['suma'], cardCount,
       gameSpeed: _bingoPendingSpeed,
       challengeSchedule: BINGO_CHALLENGE_SCHEDULES[_bingoPendingSpeed] || BINGO_CHALLENGE_SCHEDULES.media,
       markSeconds:   _bingoPendingSpeed==='rapida' ? 10 : 15,
@@ -3001,6 +3003,21 @@ function setBingoConfig(field, value) {
   }
   BINGO_REF.update(patch).catch(e=>console.error('bingo config',e));
 }
+function toggleBingoTopic(topic) {
+  const me = _bingoMe();
+  if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
+  _bSnd.click();
+  const current = bingoGame.topics || ['suma'];
+  let next;
+  if (current.includes(topic)) {
+    next = current.filter(t=>t!==topic);
+    if (next.length===0) return; // al menos 1 tema siempre
+  } else {
+    next = [...current, topic];
+  }
+  next.sort((a,b)=>BINGO_TOPIC_ORDER.indexOf(a)-BINGO_TOPIC_ORDER.indexOf(b));
+  BINGO_REF.update({ topics: next }).catch(e=>console.error('bingo topics',e));
+}
 function startBingoDraw() {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
@@ -3049,6 +3066,7 @@ async function _bingoSaveHistory() {
     await db.collection('bingoHistory').add({
       gameId: BINGO_REF.id, gameSpeed: bingoGame.gameSpeed||'media',
       difficulty: bingoGame.difficulty||1, diffLabel: BINGO_DIFF_LABEL[bingoGame.difficulty||1]||'',
+      topics: bingoGame.topics||null, topicsLabel: _bTopicsLabel(bingoGame.topics),
       startedAt: bingoGame.startedAt||null, endedAt, durationMs,
       totalNumbers: (bingoGame.drawnNumbers||[]).length, retoCount: bingoGame.retoCount||0,
       players, tierWinners,
@@ -3597,7 +3615,7 @@ function doBingoDesafio(targetUid) {
 function acceptBingoDesafio() {
   const ac = bingoGame && bingoGame.activeChallenge;
   if (!ac || ac.status !== 'pending') return;
-  const qs = _bingoGenQuestions(bingoGame.difficulty||1, 5);
+  const qs = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5);
   const secs = bingoGame.challengeSeconds || 60;
   const now = Date.now();
   BINGO_REF.update({
@@ -3942,7 +3960,7 @@ function _bingoPaneHtml() {
             return `<div style="border-bottom:1px solid rgba(255,255,255,0.07);padding:12px 0">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:8px">
                 <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">${fmtDate(h.startedAt)}</span>
-                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
               </div>
               <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px">
                 ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
@@ -3997,18 +4015,18 @@ function _bingoPaneHtml() {
   if (status==='lobby') {
     if (isHost) {
       const _curSpd = bingoGame.gameSpeed || 'media';
-      const _diff = bingoGame.difficulty || 1;
+      const _topics = bingoGame.topics || ['suma'];
       const _cards = bingoGame.cardCount || 1;
       const _bots = bingoGame.botCount || 0;
       const _dm = bingoGame.directMode !== false;
-      const _diffItems = [{d:1,ico:'＋',lbl:'Fácil'},{d:2,ico:'✕',lbl:'Medio'},{d:3,ico:'±',lbl:'Difícil'},{d:4,ico:'=',lbl:'Avanzado'},{d:5,ico:'sin',lbl:'Trigo'}];
       body += `
       <div class="blc-speed">
         <button class="blc-spd-btn ${_curSpd==='media'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'media',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['media']})">⏱ Media</button>
         <button class="blc-spd-btn ${_curSpd==='rapida'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'rapida',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['rapida']})">⚡ Rápida</button>
       </div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 4px">TEMAS DEL RETO (selecciona uno o varios — las preguntas rotan en orden)</div>
       <div class="blc-diff-row">
-        ${_diffItems.map(({d,ico,lbl})=>`<button class="blc-diff-btn ${_diff===d?'on':''}" onclick="setBingoConfig('difficulty',${d})"><span class="blc-diff-ico">${ico}</span><span class="blc-diff-lbl">${lbl}</span></button>`).join('')}
+        ${BINGO_TOPIC_ORDER.map(k=>{const {ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" onclick="toggleBingoTopic('${k}')"><span class="blc-diff-ico">${ico}</span><span class="blc-diff-lbl">${lbl}</span></button>`;}).join('')}
       </div>
       <div class="blc-grid">
         <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
@@ -4073,7 +4091,7 @@ function _bingoPaneHtml() {
             return `<div style="border-bottom:1px solid rgba(255,255,255,0.07);padding:12px 0">
               <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:8px">
                 <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">${fmtDate(h.startedAt)}</span>
-                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
               </div>
               <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px">
                 ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
