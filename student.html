@@ -2855,12 +2855,25 @@ function _bingoHostEndChallenge() {
   const _nxt  = _sch3[_rc] !== undefined ? _sch3[_rc] : _sch3[_sch3.length-1];
   const patch = {
     challengeActive:false, challengeEndsAt:null, questions:[],
-    currentNumber: null, numPhase: null, // limpiar el número actual para evitar flash post-reto
+    currentNumber: null, numPhase: null,
     nextChallengeAtDraw: drawn.length + _nxt,
     nextDrawAt: ended ? null : Date.now() + 500,
     status: ended ? 'ended' : 'playing',
     retoCount: _rc
   };
+  // Si el duelo quedó colgado en in_reto sin resolverse → forzar resolución
+  const _acEnd = bingoGame.activeChallenge;
+  if (_acEnd && _acEnd.status === 'in_reto') {
+    const _fT = _acEnd.fromTime ?? 999999;
+    const _tT = _acEnd.toTime  ?? 999999;
+    patch['activeChallenge.status']     = 'resolved';
+    patch['activeChallenge.resolvedBy'] = 'race';
+    patch['activeChallenge.fromTime']   = _fT;
+    patch['activeChallenge.toTime']     = _tT;
+    if (_fT < _tT) Object.assign(patch, _bingoDuelPenaltyPatch(_acEnd.toUid,   4));
+    else if (_tT < _fT) Object.assign(patch, _bingoDuelPenaltyPatch(_acEnd.fromUid, 4));
+    // empate: nadie pierde
+  }
   // Al terminar el reto: descongelar casillas saboteadas (los escudos de Fortaleza son permanentes)
   Object.keys(bingoGame.players||{}).forEach(uid => {
     patch[`players.${uid}.frozenCells`] = [];
@@ -3785,8 +3798,9 @@ function doBingoDesafio(targetUid) {
   if (targetUid === me.uid) { showToast('No puedes desafiarte a ti mismo.','error'); return; }
   const target = (bingoGame.players||{})[targetUid];
   if (!target) { showToast('Jugador no encontrado.','error'); return; }
-  if (bingoGame.activeChallenge && bingoGame.activeChallenge.status !== 'resolved') {
-    showToast('Ya hay un duelo en curso, espera a que termine.','error'); return;
+  const _acGuard = bingoGame.activeChallenge;
+  if (_acGuard && (_acGuard.status === 'pending' || _acGuard.status === 'waiting')) {
+    showToast('Ya hay un duelo pendiente, espera a que el rival responda.','error'); return;
   }
   // Costo escalonado: uso N cuesta 2^(N+1) cargas (2, 4, 8, 16…)
   // El desbloqueo (cost:2) paga el 1er uso; usos siguientes cobran más cargas
