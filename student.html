@@ -1958,11 +1958,11 @@ const BINGO_POWER_DEFS = [
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
 const _bingoMakeSum = target => { const a = _bGetRandomInt(1, Math.max(1,target-1)); return `${a} + ${target-a}`; };
 // -- Trigonometría: co-razones y razones inversas --
-const TRIG_ALL = ['seno','coseno','tangente','cotangente','secante','cosecante'];
-// Co-razones (cofunciones del ángulo complementario): seno↔coseno, tan↔cotan, sec↔cosec
-const TRIG_COPAIRS = [['seno','coseno'],['coseno','seno'],['tangente','cotangente'],['cotangente','tangente'],['secante','cosecante'],['cosecante','secante']];
-// Razones inversas (recíprocas): seno↔cosecante, coseno↔secante, tangente↔cotangente
-const TRIG_RECPAIRS = [['seno','cosecante'],['cosecante','seno'],['coseno','secante'],['secante','coseno'],['tangente','cotangente'],['cotangente','tangente']];
+const TRIG_ALL = ['sen','cos','tan','cot','sec','csc'];
+// Co-razones (cofunciones del ángulo complementario): sen↔cos, tan↔cot, sec↔csc
+const TRIG_COPAIRS = [['sen','cos'],['cos','sen'],['tan','cot'],['cot','tan'],['sec','csc'],['csc','sec']];
+// Razones inversas (recíprocas): sen↔csc, cos↔sec, tan↔cot
+const TRIG_RECPAIRS = [['sen','csc'],['csc','sen'],['cos','sec'],['sec','cos'],['tan','cot'],['cot','tan']];
 // Genera una pregunta Verdadero/Falso de identidades trigonométricas (nivel 5)
 function _bingoGenTrigTF() {
   // Solo dos tipos pedidos: cofunciones de ángulos complementarios y producto razón inversa = 1
@@ -1971,7 +1971,7 @@ function _bingoGenTrigTF() {
   let q, a;
   if (cat === 0) {
     // Cofunciones: fn1(α°) = fn2(90°-α°)
-    const copairs = [['seno','coseno'],['tangente','cotangente'],['secante','cosecante']];
+    const copairs = [['sen','cos'],['tan','cot'],['sec','csc']];
     const [fn1, fn2] = copairs[_bGetRandomInt(0, copairs.length-1)];
     const alpha = _bGetRandomInt(10, 80);
     if (isTrue) {
@@ -1988,7 +1988,7 @@ function _bingoGenTrigTF() {
     }
   } else {
     // Producto recíproco = 1: fn1(θ°) × fn2(θ°) = 1
-    const recpairs = [['seno','cosecante'],['coseno','secante'],['tangente','cotangente']];
+    const recpairs = [['sen','csc'],['cos','sec'],['tan','cot']];
     const theta = _bGetRandomInt(10, 80);
     if (isTrue) {
       const [fn1, fn2] = recpairs[_bGetRandomInt(0, recpairs.length-1)];
@@ -4929,8 +4929,12 @@ function _bingoPaneHtml() {
         const pct = Math.max(0, Math.min(100, (remain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
         const _barThresh = _isRapidaMode ? 15 : 30;
         const barCls = remain > _barThresh ? 'ok' : 'warn';
+        const _rTopics = bingoGame.topics || ['suma'];
+        const _rTopicKey = _rTopics[(bingoGame.retoCount||0) % _rTopics.length];
+        const _rTopicDef = BINGO_TOPICS[_rTopicKey] || { ico:'🧠', lbl: _rTopicKey };
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
             <div class="bcc-title">🧠 ¡Reto Matemático!</div>
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(168,85,247,0.2);border:1px solid rgba(168,85,247,0.5);border-radius:20px;padding:4px 14px;margin:6px 0 4px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#e0aaff">${_rTopicDef.ico} ${_rTopicDef.lbl}</div>
             <div class="bcc-sub">${_isRapidaMode ? 'Reto perfecto en &lt;15s = +1 carga ⚡ + número bonus · si no = +1 carga · 1 vida · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
             <div class="bcc-bar"><div class="bcc-bar-fill ${barCls}" style="width:${pct}%"></div></div>
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
