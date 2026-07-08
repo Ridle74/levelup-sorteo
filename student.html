@@ -2606,7 +2606,7 @@ function _selectBingoGame(gameId) {
             } else {
               // Bot acepta — simula el duelo
               const _qs = Array.from({length:5},()=>{ const t=_bGetRandomInt(2,20); return {q:_bingoMakeSum(t),a:String(t)}; });
-              const _secs = bingoGame.challengeSeconds||60;
+              const _secs = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
               const _now = Date.now();
               BINGO_REF.update({
                 'activeChallenge.status': 'active',
@@ -2780,7 +2780,7 @@ function _bingoHostStartChallenge() {
   const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
   BINGO_REF.update({
     challengeActive:true, challengeId: Date.now(), questions,
-    challengeEndsAt: Date.now() + (bingoGame.challengeSeconds||60)*1000,
+    challengeEndsAt: Date.now() + (((bingoGame.gameSpeed||'media')==='rapida'?30:60))*1000,
     nextDrawAt: null
   }).then(() => { setTimeout(() => _bingoBotSendTaunt('reto'), 800); })
     .catch(e=>console.error('bingo challenge-start',e));
@@ -3309,7 +3309,7 @@ function _bingoFinishChallenge(correctCount) {
   const isRapida = (bingoGame.gameSpeed||'media') === 'rapida';
   if (perfect) {
     const timeRemaining = Math.max(0, ((bingoGame.challengeEndsAt||0) - Date.now()) / 1000);
-    const elapsed = Math.round((bingoGame.challengeSeconds||60) - timeRemaining);
+    const elapsed = Math.round((((bingoGame.gameSpeed||'media')==='rapida'?30:60)) - timeRemaining);
     patch[`players.${me.uid}.lastRetoTime`] = elapsed;
     if (isRapida) {
       // Rápida: siempre +1 carga; si <15s → además elige un número bonus para marcar
@@ -3352,7 +3352,7 @@ function _bingoFinishChallenge(correctCount) {
   patch[`players.${me.uid}.retoStats.total`]        = _FV.increment(1);
   patch[`players.${me.uid}.retoStats.perfect`]      = _FV.increment(perfect ? 1 : 0);
   patch[`players.${me.uid}.retoStats.fails`]        = _FV.increment(perfect ? 0 : 1);
-  if (perfect) { const _el = Math.round((bingoGame.challengeSeconds||60) - Math.max(0,((bingoGame.challengeEndsAt||0)-Date.now())/1000)); patch[`players.${me.uid}.retoStats.totalTimeSecs`] = _FV.increment(_el); }
+  if (perfect) { const _el = Math.round((((bingoGame.gameSpeed||'media')==='rapida'?30:60)) - Math.max(0,((bingoGame.challengeEndsAt||0)-Date.now())/1000)); patch[`players.${me.uid}.retoStats.totalTimeSecs`] = _FV.increment(_el); }
   // Sonido resultado
   if (perfect) _bSnd.perfect(); else _bSnd.fail();
   // Mostrar resultado visual antes de que Firestore actualice el snap
@@ -3690,7 +3690,7 @@ function acceptBingoDesafio() {
   const ac = bingoGame && bingoGame.activeChallenge;
   if (!ac || ac.status !== 'pending') return;
   const qs = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
-  const secs = bingoGame.challengeSeconds || 60;
+  const secs = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
   const now = Date.now();
   BINGO_REF.update({
     'activeChallenge.status': 'racing',
@@ -4249,7 +4249,7 @@ function _bingoPaneHtml() {
       phaseFootLabel = inCalc ? `Calculando ${Math.ceil(remainSecs)}s ↑` : `Marcando ${Math.ceil(remainSecs)}s ↑`;
     } else if (inChallenge && bingoGame.challengeEndsAt) {
       // Reto Matemático activo: mostrar tiempo restante del reto
-      const totalSecs = bingoGame.challengeSeconds || 60;
+      const totalSecs = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
       const remainSecs = Math.max(0, (bingoGame.challengeEndsAt - Date.now()) / 1000);
       phasePct = totalSecs > 0 ? Math.min(100, Math.max(0, (remainSecs / totalSecs) * 100)) : 0;
       phaseOn = true;
@@ -4591,7 +4591,7 @@ function _bingoPaneHtml() {
         const _myDuelTime = me.uid===_ac.fromUid ? _ac.fromTime : _ac.toTime;
         if (_isParticipant && (_myDuelTime===null||_myDuelTime===undefined)) {
           const _duelRemain = Math.max(0, Math.round((((_ac.endsAt||0)-Date.now())/1000)));
-          const _duelPct = Math.min(100, Math.max(0, (_duelRemain/(bingoGame.challengeSeconds||60))*100));
+          const _duelPct = Math.min(100, Math.max(0, (_duelRemain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
           const _duelBarCls = _duelRemain > 30 ? 'ok' : 'warn';
           const _duelQ = (_ac.questions||[])[_bingoDuelIdx];
           const _rivalName = me.uid===_ac.fromUid ? (_acTo?.name||'rival') : (_acFrom?.name||'rival');
@@ -4696,7 +4696,7 @@ function _bingoPaneHtml() {
         const qs = bingoGame.questions || [];
         const q = qs[bingoChallengeIdx];
         const remain = Math.max(0, Math.round(((bingoGame.challengeEndsAt||0)-Date.now())/1000));
-        const pct = Math.max(0, Math.min(100, (remain/(bingoGame.challengeSeconds||60))*100));
+        const pct = Math.max(0, Math.min(100, (remain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
         const _barThresh = _isRapidaMode ? 15 : 30;
         const barCls = remain > _barThresh ? 'ok' : 'warn';
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
