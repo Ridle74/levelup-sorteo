@@ -1019,6 +1019,7 @@ let _bingoDesafioDeclineAck = false;   // el challenger ya vio el modal de recha
 let _bingoDesafioDeclineMsg = '';      // mensaje aleatorio fijo hasta que lo cierre
 let _bingoDesafioRaceAck    = false;   // el participante ya vio el resultado del duelo
 let _bingoDesafioRaceResult = null;    // { won, opponentName, penalty } del duelo terminado
+let _desafioAcceptedAck     = false;   // el challenger ya vio el modal "aceptado"
 let _bingoDuelCountdownEnd      = 0;    // timestamp fin del countdown 3-2-1 al aceptarse un duelo
 let _bingoDuelCountdownName     = '';
 let _botDesafioRaceSimulated    = false; // evita doble simulación bot en in_reto      // nombre del jugador que aceptó
@@ -2445,6 +2446,7 @@ function _bingoResetLocalState() {
   _bingoRevengeActive = false;
   _bingoDesafioDeclineAck = false; _bingoDesafioDeclineMsg = '';
   _bingoDesafioRaceAck = false; _bingoDesafioRaceResult = null;
+  _desafioAcceptedAck = false;
   _bingoDuelCountdownEnd = 0; _bingoDuelCountdownName = '';
   _bingoCloseModal();
 }
@@ -2646,7 +2648,7 @@ function _selectBingoGame(gameId) {
                 'activeChallenge.toTime':   null,
               }).catch(e=>console.error('bot desafio accept',e));
             }
-          }, 700 + Math.random()*1300);
+          }, 2000 + Math.random()*2000);
         }
       } else if (!_acBot || _acBot.status !== 'pending') {
         _botDesafioResponded = false;
@@ -2687,6 +2689,7 @@ function _selectBingoGame(gameId) {
           }
         }
         if (!_acBotR || _acBotR.status !== 'in_reto') _botDesafioRaceSimulated = false;
+        if (!_acBotR || _acBotR.status !== 'waiting') _desafioAcceptedAck = false;
       } catch(e) { console.error('bot in_reto sim', e); }
     } catch(e) { console.error('bot desafio', e); }
     _renderBingoPane();
@@ -3307,6 +3310,19 @@ function _bingoCheckMyChallengeEnd() {
 function _bingoCheckMyDuelEnd() {
   if (!bingoGame) return;
   const ac = bingoGame.activeChallenge;
+  // Auto-decline si el desafío lleva más de 5s sin respuesta (lo ejecuta el challenger)
+  if (ac && ac.status === 'pending' && ac.startedAt && Date.now() - ac.startedAt > 5000) {
+    const me = _bingoMe();
+    if (me.uid === ac.fromUid) {
+      const _drawLen = (bingoGame.drawnNumbers||[]).length;
+      BINGO_REF.update({
+        'activeChallenge.status': 'resolved',
+        'activeChallenge.resolvedBy': 'decline',
+        [`players.${ac.toUid}.desafiadoUntilDraw`]: _drawLen + 6,
+      }).catch(e=>console.error('duel auto-decline',e));
+    }
+    return;
+  }
   if (!ac || ac.status !== 'in_reto') return;
   const me = _bingoMe();
   if (me.uid !== ac.fromUid && me.uid !== ac.toUid) return;
@@ -3780,7 +3796,7 @@ function doBingoDesafio(targetUid) {
     showToast(`¡El ${_desUseCount+1}º Desafío cuesta ⚡${_desCost}! Solo tienes ${player.powerCharges||0}.`, 'error'); return;
   }
   const _desPatch = {
-    activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt:null, endsAt:null, fromTime:null, toTime:null },
+    activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt: Date.now(), endsAt:null, fromTime:null, toTime:null },
     [`players.${me.uid}.usedPowers.desafio`]: _desUseCount + 1,
   };
   if (_desCost > 0) _desPatch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) - _desCost;
@@ -4700,17 +4716,36 @@ function _bingoPaneHtml() {
               <button class="bcc-submit" style="flex:2" onclick="acceptBingoDesafio()">⚔️ Aceptar Duelo</button>
             </div></div></div>`;
         } else if (_ac.fromUid === me.uid) {
-          body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>Desafío enviado a ${_acTo?.name||'rival'}</b> — esperando respuesta...</div>`;
+          // Challenger ve modal con countdown de 5s
+          const _pendLeft = Math.max(0, Math.ceil(((_ac.startedAt||Date.now()) + 5000 - Date.now()) / 1000));
+          const _toName2 = _acTo?.name || 'rival';
+          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-yellow" style="max-width:340px;text-align:center;padding:24px 20px">
+            <div style="font-size:36px;margin-bottom:8px">⚔️</div>
+            <div style="font-size:17px;font-weight:900;color:#fff;margin-bottom:6px">Desafío enviado a <b style="color:#fbbf24">${_toName2}</b></div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:16px">Esperando que acepte o rechace…</div>
+            <div style="font-size:64px;font-weight:900;line-height:1;color:${_pendLeft<=2?'#ef4444':'#f59e0b'};text-shadow:0 0 24px ${_pendLeft<=2?'rgba(239,68,68,0.7)':'rgba(245,158,11,0.7)'}">${_pendLeft}</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px">Si no responde en tiempo, se le penalizará automáticamente.</div>
+          </div></div>`;
         }
       } else if (_ac.status === 'waiting') {
         // Duelo aceptado — esperando el próximo reto matemático
         const _isParticipant = me.uid===_ac.fromUid || me.uid===_ac.toUid;
         if (_isParticipant) {
           const _rivalName = me.uid===_ac.fromUid ? (_acTo?.name||'rival') : (_acFrom?.name||'rival');
-          body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.5);display:flex;align-items:center;gap:10px">
-            <span style="font-size:22px">⚔️</span>
-            <div><b style="font-size:14px">Duelo vs ${_rivalName}</b><br><span style="font-size:12px;color:rgba(255,255,255,0.6)">El próximo reto matemático será el duelo — quien lo termine más rápido gana.</span></div>
-          </div>`;
+          // Challenger ve modal "aceptó" una sola vez
+          if (me.uid === _ac.fromUid && !_desafioAcceptedAck) {
+            body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:340px;text-align:center;padding:24px 20px">
+              <div style="font-size:36px;margin-bottom:8px">🤝</div>
+              <div style="font-size:17px;font-weight:900;color:#fff;margin-bottom:6px"><b style="color:#34d399">${_rivalName}</b> aceptó el duelo</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:18px">El próximo reto matemático será el duelo.<br>Quien lo termine más rápido <b style="color:#fff">gana</b>.</div>
+              <button onclick="_desafioAcceptedAck=true;_renderBingoPane()" class="bcc-submit" style="background:linear-gradient(135deg,#16a34a,#15803d)">¡Entendido! 💪</button>
+            </div></div>`;
+          } else {
+            body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.5);display:flex;align-items:center;gap:10px">
+              <span style="font-size:22px">⚔️</span>
+              <div><b style="font-size:14px">Duelo vs ${_rivalName}</b><br><span style="font-size:12px;color:rgba(255,255,255,0.6)">El próximo reto matemático será el duelo — quien lo termine más rápido gana.</span></div>
+            </div>`;
+          }
         }
       } else if (_ac.status === 'in_reto') {
         // Duelo activo — se disputa en el reto matemático actual
