@@ -2099,9 +2099,10 @@ const BINGO_TOPICS = {
   div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
   neg:      { ico:'±',  lbl:'Negativos',   gen:()=>{ let a,b; do{a=_bGetRandomInt(-10,10);}while(a===0); do{b=_bGetRandomInt(-10,10);}while(b===0); return {q:`${a<0?`(${a})`:a} × ${b<0?`(${b})`:b} = ?`,a:a*b}; } },
   ecuacion: { ico:'=',  lbl:'Ecuaciones',  gen:()=>{ const x=_bGetRandomInt(-8,8)||1,m=_bGetRandomInt(2,6),b=_bGetRandomInt(-15,15)||5; return {q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`,a:x}; } },
-  trigo:    { ico:'sin',lbl:'Trigo',       gen:()=>{ if(Math.random()<0.5) return _bingoGenTrigTF(); const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
+  trigo:    { ico:'sin',lbl:'Trigo',       gen:()=>{ const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
+  trigvf:   { ico:'V/F', lbl:'Trigo V/F',  gen:()=>_bingoGenTrigTF() },
 };
-const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo'];
+const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf'];
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
 // Genera `count` preguntas ciclando por los temas seleccionados (pregunta 1=tema1, 2=tema2, 3=tema1…)
