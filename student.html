@@ -1016,6 +1016,8 @@ let _bingoPendingSpeed       = 'media'; // velocidad elegida ANTES de crear la p
 let _botDesafioResponded    = false;   // evita respuesta doble del bot al Desafío
 let _bingoDesafioDeclineAck = false;   // el challenger ya vio el modal de rechazo
 let _bingoDesafioDeclineMsg = '';      // mensaje aleatorio fijo hasta que lo cierre
+let _bingoDesafioRaceAck    = false;   // el participante ya vio el resultado del duelo
+let _bingoDesafioRaceResult = null;    // { won, opponentName, penalty } del duelo terminado
 // Identidad de invitado (sin login) — persiste en localStorage
 let _bingoGuestUid   = localStorage.getItem('bingoGuestUid')   || null;
 let _bingoGuestName  = localStorage.getItem('bingoGuestName')  || null;
@@ -1944,7 +1946,7 @@ const BINGO_POWER_DEFS = [
   { key:'venganza', icon:'⚡', label:'Venganza',        cost:3, limit:'persistent', desc:'Asigna la protección ⚡ a uno de tus cartones (puedes cambiarla en cualquier momento). Si un rival usa Sabotaje o Robo contra ese cartón, recibes una copia del mismo poder para devolvérsela a cualquier rival — aunque ya hayas agotado ese poder.' },
   { key:'bitacora', icon:'📓', label:'Bitácora',        cost:1, limit:'persistent', desc:'Desbloquea para toda la partida: historial de números sorteados y resaltado de columna cantada.' },
   { key:'vision',   icon:'🔎', label:'Visión X',       cost:2, limit:'persistent', desc:'Desbloquea para toda la partida: ver los números marcados en los cartones de cualquier rival.' },
-  { key:'desafio',  icon:'⚔️', label:'Desafío',         cost:2, limit:'game',       desc:'Abre el ranking de velocidad de todos los jugadores y reta a uno. Si rechaza: pierde 6 marcas. Si acepta y tú ganas el duelo de reto matemático: pierde 4 marcas.' },
+  { key:'desafio',  icon:'⚔️', label:'Desafío',         cost:2, limit:'escalating',  desc:'Abre el ranking de velocidad y reta a un rival. Si rechaza: pierde 6 marcas. Si aceptas y ganas: pierde 4. 1ª vez: ⚡2 (desbloqueo). 2ª: ⚡4. 3ª: ⚡8 (se dobla cada uso).' },
 ];
 const _bingoColIndex = num => num<=15?0 : num<=30?1 : num<=45?2 : num<=60?3 : 4;
 const _bingoMakeSum = target => { const a = _bGetRandomInt(1, Math.max(1,target-1)); return `${a} + ${target-a}`; };
@@ -2436,6 +2438,7 @@ function _bingoResetLocalState() {
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
   _bingoRevengeActive = false;
   _bingoDesafioDeclineAck = false; _bingoDesafioDeclineMsg = '';
+  _bingoDesafioRaceAck = false; _bingoDesafioRaceResult = null;
   _bingoCloseModal();
 }
 
@@ -2544,6 +2547,39 @@ function _selectBingoGame(gameId) {
       }
       _prevChallengeActive = _nowCA;
     } catch(e) { console.error('desafio auto-accept', e); }
+    // Auto-resolver duelo si ambos tiempos ya están en Firestore (evita race condition)
+    // Solo el fromUid (challenger) lo resuelve para evitar doble escritura
+    try {
+      const _me4 = _bingoMe();
+      const _acAR = bingoGame && bingoGame.activeChallenge;
+      if (_acAR && _acAR.status === 'racing'
+          && _acAR.fromTime != null && _acAR.toTime != null
+          && _me4.uid === _acAR.fromUid) {
+        const _fp = { 'activeChallenge.status':'resolved', 'activeChallenge.resolvedBy':'race' };
+        if (_acAR.fromTime < _acAR.toTime) Object.assign(_fp, _bingoDuelPenaltyPatch(_acAR.toUid, 4));
+        else if (_acAR.toTime < _acAR.fromTime) Object.assign(_fp, _bingoDuelPenaltyPatch(_acAR.fromUid, 4));
+        BINGO_REF.update(_fp).catch(e=>console.error('duel auto-resolve',e));
+      }
+    } catch(e) { console.error('duel auto-resolve',e); }
+    // Capturar resultado del duelo para mostrar popup (una sola vez por duelo)
+    try {
+      const _me5 = _bingoMe();
+      const _acRes = bingoGame && bingoGame.activeChallenge;
+      if (_acRes && _acRes.status === 'resolved' && _acRes.resolvedBy === 'race'
+          && (_acRes.fromUid === _me5.uid || _acRes.toUid === _me5.uid)
+          && !_bingoDesafioRaceAck && !_bingoDesafioRaceResult) {
+        const _isFr = _acRes.fromUid === _me5.uid;
+        const _oppUid = _isFr ? _acRes.toUid : _acRes.fromUid;
+        const _oppName = (bingoGame.players||{})[_oppUid]?.name || 'Tu rival';
+        const _myT  = _isFr ? _acRes.fromTime : _acRes.toTime;
+        const _oppT = _isFr ? _acRes.toTime   : _acRes.fromTime;
+        let _won;
+        if (_myT == null)  _won = false;
+        else if (_oppT == null) _won = true;
+        else _won = _myT < _oppT;
+        _bingoDesafioRaceResult = { won: _won, opponentName: _oppName, penalty: 4 };
+      }
+    } catch(e) { console.error('duel race result',e); }
     // Bot auto-responde al Desafío (solo el host lo escribe)
     try {
       const _acBot = bingoGame && bingoGame.activeChallenge;
@@ -3394,6 +3430,7 @@ function _bingoPowerAvailable(player, key) {
   const pw = BINGO_POWER_DEFS.find(p=>p.key===key);
   if (!pw) return false;
   if (pw.limit === 'persistent') return true;
+  if (pw.limit === 'escalating') return true;  // siempre disponible; el costo escala por uso
   const used = (player.usedPowers||{})[key];
   if (pw.limit === 'game') return !used;
   if (pw.limit === 'reto') return used !== (bingoGame.retoCount||0);
@@ -3591,10 +3628,20 @@ function doBingoDesafio(targetUid) {
   if (bingoGame.activeChallenge && bingoGame.activeChallenge.status !== 'resolved') {
     showToast('Ya hay un duelo en curso, espera a que termine.','error'); return;
   }
-  BINGO_REF.update({
+  // Costo escalonado: uso N cuesta 2^(N+1) cargas (2, 4, 8, 16…)
+  // El desbloqueo (cost:2) paga el 1er uso; usos siguientes cobran más cargas
+  const _desUseCount = (player.usedPowers||{}).desafio || 0;
+  const _desCost = _desUseCount === 0 ? 0 : 2 * Math.pow(2, _desUseCount); // 1º libre (ya pagó unlock), 2º=4, 3º=8…
+  if (_desCost > 0 && (player.powerCharges||0) < _desCost) {
+    showToast(`¡El ${_desUseCount+1}º Desafío cuesta ⚡${_desCost}! Solo tienes ${player.powerCharges||0}.`, 'error'); return;
+  }
+  const _desPatch = {
     activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt:null, endsAt:null, fromTime:null, toTime:null },
-    [`players.${me.uid}.usedPowers.desafio`]: true,
-  }).then(()=>{ bingoActivePower=null; _bingoLeaderboardOpen=false; _renderBingoPane(); })
+    [`players.${me.uid}.usedPowers.desafio`]: _desUseCount + 1,
+  };
+  if (_desCost > 0) _desPatch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) - _desCost;
+  BINGO_REF.update(_desPatch)
+    .then(()=>{ bingoActivePower=null; _bingoLeaderboardOpen=false; _renderBingoPane(); })
     .catch(e=>console.error('desafio send',e));
 }
 function acceptBingoDesafio() {
@@ -3658,6 +3705,28 @@ function submitBingoDuelAnswer(raw) {
     _renderBingoPane();
   }
 }
+// Construye el patch de Firestore que quita `count` marcas del perdedor del duelo,
+// igual que el fail del reto normal: últimos números sorteados que el jugador tenía marcados.
+function _bingoDuelPenaltyPatch(loserUid, count) {
+  const loser = (bingoGame.players||{})[loserUid];
+  if (!loser) return {};
+  const drawn       = (bingoGame.drawnNumbers||[]).filter(n=>n!==0);
+  const loserMarks  = loser.marks || [];
+  const drawnMarked = drawn.filter(n=>loserMarks.some(m=>m.n===n));
+  const toBlock     = drawnMarked.slice(-Math.min(count, drawnMarked.length));
+  const newBlocked  = [...(loser.blockedMarks||[])];
+  toBlock.forEach(num=>{
+    loserMarks.forEach(m=>{
+      if(m.n===num && !newBlocked.some(b=>b.c===m.c&&b.n===m.n))
+        newBlocked.push({c:m.c, n:m.n});
+    });
+  });
+  const newMarks = loserMarks.filter(m=>!newBlocked.some(b=>b.c===m.c&&b.n===m.n));
+  return {
+    [`players.${loserUid}.blockedMarks`]: newBlocked,
+    [`players.${loserUid}.marks`]:        newMarks,
+  };
+}
 function _bingoDuelFinish(elapsedMs) {
   const me = _bingoMe();
   const ac = bingoGame && bingoGame.activeChallenge;
@@ -3672,12 +3741,12 @@ function _bingoDuelFinish(elapsedMs) {
     const toT   = isFrom ? ac.toTime  : elapsedMs;
     patch['activeChallenge.status'] = 'resolved';
     patch['activeChallenge.resolvedBy'] = 'race';
-    const drawLen = (bingoGame.drawnNumbers||[]).length;
     if (fromT < toT) {
-      // challenger ganó → penalizar al desafiado
-      patch[`players.${ac.toUid}.desafiadoUntilDraw`] = drawLen + 4;
+      Object.assign(patch, _bingoDuelPenaltyPatch(ac.toUid, 4));
+    } else if (toT < fromT) {
+      Object.assign(patch, _bingoDuelPenaltyPatch(ac.fromUid, 4));
     }
-    // si toT <= fromT: desafiado ganó — el challenger solo pierde la carga sin penalización extra
+    // empate: nadie pierde
   }
   BINGO_REF.update(patch)
     .then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _bingoDuelWrongOpts=new Set(); _renderBingoPane(); })
@@ -4485,6 +4554,23 @@ function _bingoPaneHtml() {
           body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>¡Terminaste el duelo!</b> Esperando que tu rival acabe...</div>`;
         }
       }
+    }
+    // ── Modal resultado de duelo (race) — visible para ambos participantes ──
+    if (_ac && _ac.status === 'resolved' && _ac.resolvedBy === 'race'
+        && (me.uid === _ac.fromUid || me.uid === _ac.toUid)
+        && !_bingoDesafioRaceAck && _bingoDesafioRaceResult) {
+      const _rr = _bingoDesafioRaceResult;
+      body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-${_rr.won?'green':'red'}" style="max-width:380px">
+        <div class="bcc-result-ico">${_rr.won?'🏆':'😓'}</div>
+        <div class="bcc-result-h">${_rr.won?'¡Ganaste el Duelo!':'Perdiste el Duelo'}</div>
+        <div class="bcc-result-body" style="text-align:center">
+          ${_rr.won
+            ? `⚔️ Fuiste más rápido que <b>${_rr.opponentName}</b>.<br><br><span style="color:rgba(255,255,255,0.55);font-size:13px">⛔ <b>${_rr.opponentName}</b> no podrá marcar los próximos <b style="color:#fff">${_rr.penalty} números</b>.</span>`
+            : `⚔️ <b>${_rr.opponentName}</b> fue más rápido que tú.<br><br><span style="color:rgba(255,255,255,0.55);font-size:13px">⛔ No podrás marcar los próximos <b style="color:#fff">${_rr.penalty} números</b>.</span>`
+          }
+        </div>
+        <button class="bcc-submit" style="margin-top:18px;background:${_rr.won?'linear-gradient(135deg,#16a34a,#15803d)':'linear-gradient(135deg,#dc2626,#b91c1c)'}" onclick="_bingoDesafioRaceAck=true;_bingoDesafioRaceResult=null;_renderBingoPane()">OK</button>
+      </div></div>`;
     }
     // ── Modal para el challenger: su desafío fue rechazado ──
     if (_ac && _ac.status === 'resolved' && _ac.resolvedBy === 'decline' && _ac.fromUid === me.uid && !_bingoDesafioDeclineAck) {
