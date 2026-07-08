@@ -3726,8 +3726,8 @@ function updateVisionSpot(e) {
   const y = e.clientY !== undefined ? e.clientY : (e.pageY||0);
   const mask = document.getElementById('vx-mask');
   const cur  = document.getElementById('vx-cursor');
-  if (mask) mask.style.background = `radial-gradient(circle 120px at ${x}px ${y}px, transparent 0%, transparent 30%, rgba(0,0,8,0.97) 62%)`;
-  if (cur)  { cur.style.left = (x-120)+'px'; cur.style.top = (y-120)+'px'; }
+  if (mask) mask.style.background = `radial-gradient(circle 150px at ${x}px ${y}px, transparent 0%, transparent 25%, rgba(0,0,8,0.97) 58%)`;
+  if (cur)  { cur.style.left = (x-150)+'px'; cur.style.top = (y-150)+'px'; }
 }
 
 // ── Número bonus (rápida + reto perfecto <15s) ────────────────────────────────
@@ -4776,65 +4776,48 @@ function _bingoPaneHtml() {
       const _hasVisionX = !!(myPlayer.unlockedPowers||{}).vision;
       const _myCards    = myPlayer.cards || {};
       const _myCardKeys = Object.keys(_myCards).map(Number).sort();
-      // ── Visión X: overlay fullscreen con spotlight ──
+      // ── Visión X: spotlight sobre los cartónes reales del juego ──
       let _visionHtml = '';
-      let _visionOverlayHtml = '';
       if (_hasVisionX && _myCardKeys.length > 0) {
-        const _cardBtns = _myCardKeys.map(ci =>
-          `<button onclick="_bonusVisionCard=${ci};_renderBingoPane()" style="padding:5px 14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;background:${_bonusVisionCard===ci?'rgba(16,185,129,0.3)':'rgba(255,255,255,0.08)'};border:1px solid ${_bonusVisionCard===ci?'rgba(16,185,129,0.6)':'rgba(255,255,255,0.2)'};color:${_bonusVisionCard===ci?'#34d399':'rgba(255,255,255,0.8)'}">Cartón ${ci+1}</button>`
-        ).join('');
-        if (_bonusVisionCard !== null && _myCards[_bonusVisionCard]) {
-          const _vc  = _myCards[_bonusVisionCard] || [];
-          const _cMk = new Set((myPlayer.marks||[]).filter(m=>m.c===_bonusVisionCard).map(m=>m.n));
-          const _cBl = new Set((myPlayer.blockedMarks||[]).filter(m=>m.c===_bonusVisionCard).map(m=>m.n));
-          const _dr  = new Set(bingoGame.drawnNumbers||[]);
-          const _hds = ['B','I','N','G','O'].map(h=>`<div style="text-align:center;font-size:14px;font-weight:900;color:rgba(255,255,255,0.55);padding:4px 0;letter-spacing:.12em">${h}</div>`).join('');
-          let _cells = '';
-          for (let _r=0;_r<5;_r++) for (let _c2=0;_c2<5;_c2++) {
-            const _n=_vc[_r*5+_c2], isFree=_n===0, isMk=_cMk.has(_n), isBl=_cBl.has(_n), isDr=_dr.has(_n), canP=!isMk&&!isBl&&_n>0;
-            const _bg=isFree?'rgba(255,255,255,0.04)':isBl?'rgba(239,68,68,0.25)':isMk?'rgba(16,185,129,0.35)':isDr?'rgba(250,204,21,0.15)':'rgba(255,255,255,0.12)';
-            const _bd=isFree?'rgba(255,255,255,0.1)':isBl?'rgba(239,68,68,0.5)':isMk?'rgba(16,185,129,0.7)':isDr?'rgba(250,204,21,0.5)':'rgba(255,255,255,0.35)';
-            const _cl=isFree?'rgba(255,255,255,0.2)':isBl?'rgba(239,68,68,0.6)':isMk?'#34d399':isDr?'#fbbf24':'#fff';
-            _cells += `<button onclick="${canP?`claimBingoBonusNum(${_n})`:'void 0'}" ${!canP?'disabled':''} style="padding:10px 2px;border-radius:8px;font-weight:900;font-size:16px;text-align:center;background:${_bg};border:1px solid ${_bd};color:${_cl};cursor:${canP?'pointer':'default'}">${isFree?'★':_n}</button>`;
-          }
-          _visionOverlayHtml = `<div id="vx-overlay" style="position:fixed;inset:0;z-index:9998;cursor:none;background:rgba(0,0,8,0.98)" onmousemove="updateVisionSpot(event)" ontouchmove="updateVisionSpot(event.touches[0])">
-            <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:10001;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:rgba(16,185,129,0.65);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap;pointer-events:none">🔎 VISIÓN X — Cartón ${_bonusVisionCard+1}</div>
-            <div style="position:absolute;top:40px;left:50%;transform:translateX(-50%);z-index:10001;display:flex;gap:6px;flex-wrap:wrap;justify-content:center">${_cardBtns}</div>
-            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;grid-template-columns:repeat(5,1fr);gap:5px;width:300px">${_hds}${_cells}</div>
-            <div style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%);z-index:10001;display:flex;gap:12px;font-size:11px;white-space:nowrap;pointer-events:none">
-              <span style="color:#34d399">■ marcado</span><span style="color:rgba(239,68,68,0.7)">■ bloqueado</span><span style="color:#fbbf24">■ sorteado</span><span style="color:rgba(255,255,255,0.45)">■ disponible</span>
-            </div>
-            <button onclick="_bonusVisionCard=null;_renderBingoPane()" style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:10001;padding:10px 28px;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.45);color:#34d399;cursor:pointer">✓ Terminé de ver — elegir número</button>
-            <div id="vx-mask" style="position:absolute;inset:0;pointer-events:none;z-index:10000;background:radial-gradient(circle 120px at 50% 50%, transparent 0%, transparent 30%, rgba(0,0,8,0.97) 62%)"></div>
-            <div id="vx-cursor" style="position:fixed;width:240px;height:240px;border:1.5px solid rgba(16,185,129,0.35);border-radius:50%;pointer-events:none;z-index:10002;box-shadow:0 0 28px rgba(16,185,129,0.18),inset 0 0 28px rgba(16,185,129,0.04);left:calc(50% - 120px);top:calc(50% - 120px)"></div>
-          </div>`;
-        }
-        _visionHtml = `<div style="margin-bottom:14px;padding:10px 12px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.22);border-radius:10px">
-          <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em">🔎 Visión X — elige un cartón para previsualizar:</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">${_cardBtns}</div>
+        _visionHtml = `<div style="margin-bottom:14px;padding:10px 12px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.22);border-radius:10px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">🔎</span>
+          <div style="flex:1">
+            <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:4px;text-transform:uppercase;letter-spacing:.07em">Visión X activa</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.55)">Mira tus cartones con spotlight antes de elegir</div>
+          </div>
+          <button onclick="_bonusVisionCard=true;_renderBingoPane()" style="padding:7px 14px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.5);color:#34d399;white-space:nowrap">👁 Previsualizar</button>
         </div>`;
       }
-      if (_visionOverlayHtml) body += _visionOverlayHtml;
-      body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:420px">
-        <div class="bcc-result-ico">⭐</div>
-        <div class="bcc-result-h">¡Elige tu número bonus!</div>
-        <div class="bcc-result-body" style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">
-          Selecciona un número de tus cartones para marcarlo como si hubiera salido.
-        </div>
-        ${_visionHtml}
-        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">
-          ${_numsSorted.map(n=>{
-            const col = _cols[Math.floor((n-1)/15)];
-            const already = _markedSet.has(n) && !_blockedSet.has(n);
-            return `<button onclick="claimBingoBonusNum(${n})" ${already?'disabled':''} style="
-              min-width:38px;padding:6px 4px;border-radius:8px;font-weight:900;font-size:13px;cursor:${already?'default':'pointer'};
-              background:${already?'rgba(255,255,255,0.07)':'rgba(255,255,255,0.15)'};
-              border:1px solid ${already?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.35)'};
-              color:${already?'rgba(255,255,255,0.3)':'#fff'};
-            ">${col}${n}</button>`;
-          }).join('')}
-        </div>
-      </div></div>`;
+      if (_bonusVisionCard) {
+        // Previsualización activa: spotlight sobre cartónes reales — el modal desaparece
+        body += `<div id="vx-overlay" style="position:fixed;inset:0;z-index:9998;cursor:none" onmousemove="updateVisionSpot(event)" ontouchmove="updateVisionSpot(event.touches[0])">
+          <div id="vx-mask" style="position:fixed;inset:0;pointer-events:none;z-index:10000;background:radial-gradient(circle 150px at 50% 50%, transparent 0%, transparent 25%, rgba(0,0,8,0.97) 58%)"></div>
+          <div id="vx-cursor" style="position:fixed;width:300px;height:300px;border:1.5px solid rgba(16,185,129,0.35);border-radius:50%;pointer-events:none;z-index:10002;box-shadow:0 0 32px rgba(16,185,129,0.2),inset 0 0 32px rgba(16,185,129,0.05);left:calc(50% - 150px);top:calc(50% - 150px)"></div>
+          <div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:10003;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;color:rgba(16,185,129,0.7);text-transform:uppercase;letter-spacing:.1em;pointer-events:none;white-space:nowrap">🔎 VISIÓN X · mueve el cursor sobre tus cartones</div>
+          <button onclick="_bonusVisionCard=null;_renderBingoPane()" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:10003;padding:11px 30px;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.45);color:#34d399;cursor:pointer">✓ Terminé de ver — elegir número</button>
+        </div>`;
+      } else {
+        body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:420px">
+          <div class="bcc-result-ico">⭐</div>
+          <div class="bcc-result-h">¡Elige tu número bonus!</div>
+          <div class="bcc-result-body" style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">
+            Selecciona un número de tus cartones para marcarlo como si hubiera salido.
+          </div>
+          ${_visionHtml}
+          <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">
+            ${_numsSorted.map(n=>{
+              const col = _cols[Math.floor((n-1)/15)];
+              const already = _markedSet.has(n) && !_blockedSet.has(n);
+              return `<button onclick="claimBingoBonusNum(${n})" ${already?'disabled':''} style="
+                min-width:38px;padding:6px 4px;border-radius:8px;font-weight:900;font-size:13px;cursor:${already?'default':'pointer'};
+                background:${already?'rgba(255,255,255,0.07)':'rgba(255,255,255,0.15)'};
+                border:1px solid ${already?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.35)'};
+                color:${already?'rgba(255,255,255,0.3)':'#fff'};
+              ">${col}${n}</button>`;
+            }).join('')}
+          </div>
+        </div></div>`;
+      }
     } else if (_showChallenge || _showResult) {
       if (_showResult) {
         const _r = _bingoChallengeResult;
