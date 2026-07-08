@@ -2730,7 +2730,7 @@ function _bingoTick() {
 function _bingoCurrentMarkSeconds() {
   const speed = (bingoGame && bingoGame.gameSpeed) || 'media';
   const sch = speed === 'rapida'
-    ? { terna:10, cuaterna:10, quina:10, bingo:10 }
+    ? { terna:10, cuaterna:9, quina:8, bingo:7 }
     : { terna:15, cuaterna:12.5, quina:10, bingo:7.5 };
   const tw = (bingoGame && bingoGame.tierWinners) || {};
   for (const tier of BINGO_TIER_ORDER) {
@@ -4084,6 +4084,8 @@ function _bingoPaneHtml() {
     if (_bingoShowHistory) {
       const fmtDur = ms => { if(!ms) return '—'; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000); return m>0?`${m}m ${s}s`:`${s}s`; };
       const fmtDate = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
+      const fmtTime = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
+      const fmtDateOnly = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}); };
       listBody += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-top:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">📊 Historial de partidas</span>
@@ -4095,9 +4097,16 @@ function _bingoPaneHtml() {
             const tw = h.tierWinners||{};
             const realPlayers = Object.values(h.players||{}).filter(p=>!p.isBot);
             return `<div style="border-bottom:1px solid rgba(255,255,255,0.07);padding:12px 0">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">${fmtDate(h.startedAt)}</span>
-                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:6px">
+                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">📅 ${fmtDateOnly(h.startedAt)}</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ${h.retoCount||0} retos</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:8px;flex-wrap:wrap">
+                <span>🟢 <span style="color:rgba(255,255,255,0.6);font-size:11px">Inicio:</span> <b style="color:#4ade80">${fmtTime(h.startedAt)}</b></span>
+                <span style="color:rgba(255,255,255,0.25)">→</span>
+                <span>🔴 <span style="color:rgba(255,255,255,0.6);font-size:11px">Fin:</span> <b style="color:#f87171">${fmtTime(h.endedAt)}</b></span>
+                <span style="color:rgba(255,255,255,0.25)">·</span>
+                <span style="color:rgba(255,255,255,0.6);font-size:12px">⏱ <b style="color:#fff">${fmtDur(h.durationMs)}</b></span>
               </div>
               <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px">
                 ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
@@ -4215,6 +4224,8 @@ function _bingoPaneHtml() {
     if (_bingoShowHistory) {
       const fmtDur = ms => { if(!ms) return '—'; const m=Math.floor(ms/60000), s=Math.floor((ms%60000)/1000); return m>0?`${m}m ${s}s`:`${s}s`; };
       const fmtDate = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
+      const fmtTime = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
+      const fmtDateOnly = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}); };
       body += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-top:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">📊 Historial de partidas</span>
@@ -4226,9 +4237,16 @@ function _bingoPaneHtml() {
             const tw = h.tierWinners||{};
             const realPlayers = Object.values(h.players||{}).filter(p=>!p.isBot);
             return `<div style="border-bottom:1px solid rgba(255,255,255,0.07);padding:12px 0">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:8px">
-                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">${fmtDate(h.startedAt)}</span>
-                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ⏱ ${fmtDur(h.durationMs)} · ${h.retoCount||0} retos</span>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:6px">
+                <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">📅 ${fmtDateOnly(h.startedAt)}</span>
+                <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ${h.retoCount||0} retos</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:8px;flex-wrap:wrap">
+                <span>🟢 <span style="color:rgba(255,255,255,0.6);font-size:11px">Inicio:</span> <b style="color:#4ade80">${fmtTime(h.startedAt)}</b></span>
+                <span style="color:rgba(255,255,255,0.25)">→</span>
+                <span>🔴 <span style="color:rgba(255,255,255,0.6);font-size:11px">Fin:</span> <b style="color:#f87171">${fmtTime(h.endedAt)}</b></span>
+                <span style="color:rgba(255,255,255,0.25)">·</span>
+                <span style="color:rgba(255,255,255,0.6);font-size:12px">⏱ <b style="color:#fff">${fmtDur(h.durationMs)}</b></span>
               </div>
               <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px">
                 ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
