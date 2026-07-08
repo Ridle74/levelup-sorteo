@@ -2872,6 +2872,18 @@ function _bingoHostEndChallenge() {
     if (_fT < _tT) Object.assign(patch, _bingoDuelPenaltyPatch(_acEnd.toUid,   4));
     else if (_tT < _fT) Object.assign(patch, _bingoDuelPenaltyPatch(_acEnd.fromUid, 4));
     // empate: nadie pierde
+    // Capturar resultado para el jugador local (sin esperar round-trip de onSnapshot)
+    try {
+      const _meHE = _bingoMe();
+      if (!_bingoDesafioRaceAck && !_bingoDesafioRaceResult &&
+          (_acEnd.fromUid === _meHE.uid || _acEnd.toUid === _meHE.uid)) {
+        const _isFrHE   = _acEnd.fromUid === _meHE.uid;
+        const _oppUidHE = _isFrHE ? _acEnd.toUid : _acEnd.fromUid;
+        const _wonHE    = _isFrHE ? (_fT < _tT) : (_tT < _fT);
+        _bingoDesafioRaceResult = { won: _wonHE, opponentName: (bingoGame.players||{})[_oppUidHE]?.name || 'Tu rival', penalty: 4 };
+        if (_bingoChallengeResult) setTimeout(_renderBingoPane, 3700);
+      }
+    } catch(e) { console.error('duel result host-end', e); }
   }
   // Al terminar el reto: descongelar casillas saboteadas (los escudos de Fortaleza son permanentes)
   Object.keys(bingoGame.players||{}).forEach(uid => {
@@ -3471,6 +3483,12 @@ function _bingoFinishChallenge(correctCount) {
       const _tT = _isFromDF ? _acDF.toTime : _myDuelMs;
       if (_fT < _tT) Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.toUid,   4));
       else if (_tT < _fT) Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.fromUid, 4));
+      // Capturar resultado inmediatamente (sin esperar round-trip de onSnapshot)
+      if (!_bingoDesafioRaceAck && !_bingoDesafioRaceResult) {
+        const _oppUidDF = _isFromDF ? _acDF.toUid : _acDF.fromUid;
+        _bingoDesafioRaceResult = { won: _myDuelMs < _otherTime, opponentName: (bingoGame.players||{})[_oppUidDF]?.name || 'Tu rival', penalty: 4 };
+        setTimeout(_renderBingoPane, 3700);
+      }
     }
   }
   // Sonido resultado
@@ -3478,7 +3496,27 @@ function _bingoFinishChallenge(correctCount) {
   // Mostrar resultado visual antes de que Firestore actualice el snap
   _bingoChallengeResult = { perfect, fast, charges, fails, isRapida };
   _renderBingoPane();
-  setTimeout(() => { _bingoChallengeResult = null; _renderBingoPane(); }, 3500);
+  setTimeout(() => {
+    _bingoChallengeResult = null;
+    // Fallback: si el duelo se resolvió pero el resultado no llegó aún vía onSnapshot
+    if (!_bingoDesafioRaceAck && !_bingoDesafioRaceResult && bingoGame) {
+      const _acCB = bingoGame.activeChallenge;
+      if (_acCB && _acCB.status === 'resolved' && _acCB.resolvedBy === 'race') {
+        try {
+          const _meCB = _bingoMe();
+          if (_meCB.uid === _acCB.fromUid || _meCB.uid === _acCB.toUid) {
+            const _isFrCB   = _acCB.fromUid === _meCB.uid;
+            const _oppUidCB = _isFrCB ? _acCB.toUid   : _acCB.fromUid;
+            const _myTCB    = _isFrCB ? _acCB.fromTime : _acCB.toTime;
+            const _oppTCB   = _isFrCB ? _acCB.toTime   : _acCB.fromTime;
+            const _wonCB    = (_myTCB != null) && (_oppTCB == null || _myTCB < _oppTCB);
+            _bingoDesafioRaceResult = { won: _wonCB, opponentName: (bingoGame.players||{})[_oppUidCB]?.name || 'Tu rival', penalty: 4 };
+          }
+        } catch(e) { console.error('duel result fallback', e); }
+      }
+    }
+    _renderBingoPane();
+  }, 3500);
   const toastMsg = !perfect
     ? `⛔ Bloqueamos automáticamente ${fails} número${fails!==1?'s':''} de tus cartones.`
     : charges > 0
