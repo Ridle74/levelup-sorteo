@@ -498,6 +498,70 @@ textarea.fsm { resize:none; height:64px; }
     .perfil-frame-opt{display:flex;flex-direction:column;align-items:center;cursor:pointer;opacity:0.65;transition:opacity 0.15s;padding:6px}
     .perfil-frame-opt.selected,.perfil-frame-opt:hover{opacity:1}
 
+/* ── PREPÁRATE (modo examen de práctica en tab GAMING) ──────────────────────────────────────── */
+.prep-mode-tab{flex:1;padding:8px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;cursor:pointer;transition:all .2s}
+.prep-mode-tab.active{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.6);color:#e0aaff;box-shadow:0 0 12px -4px rgba(124,58,237,0.5)}
+.prep-wrap{font-family:'Barlow Condensed',sans-serif;color:#e5e7eb;padding:2px 0}
+.prep-title{font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;margin-bottom:2px}
+.prep-sub{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:16px}
+.prep-section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin:12px 0 6px}
+.prep-topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:4px}
+.prep-topic-btn{padding:10px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;text-align:left}
+.prep-topic-btn:hover{background:rgba(255,255,255,0.07);color:#fff}
+.prep-topic-btn.active{background:rgba(124,58,237,0.22);border-color:rgba(124,58,237,0.55);color:#e0aaff;box-shadow:0 0 10px -4px rgba(124,58,237,0.4)}
+.prep-topic-ico{font-size:14px;font-weight:900;min-width:22px;text-align:center;font-style:normal}
+.prep-option-row{display:flex;gap:7px;margin-bottom:2px}
+.prep-option-btn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.55);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;text-align:center}
+.prep-option-btn.active{background:rgba(124,58,237,0.22);border-color:rgba(124,58,237,0.55);color:#e0aaff}
+.prep-start-btn{width:100%;margin-top:18px;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;box-shadow:0 4px 20px -5px rgba(124,58,237,0.6);transition:opacity .15s}
+.prep-start-btn:hover{opacity:.88}
+.prep-exam-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.prep-topic-badge-sm{display:inline-flex;align-items:center;gap:5px;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.4);border-radius:16px;padding:4px 12px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#e0aaff}
+.prep-timer{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:#39ff7a}
+.prep-timer.urgent{color:#ef4444;animation:prep-pulse .7s infinite}
+@keyframes prep-pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.prep-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.prep-prog-label{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
+.prep-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden}
+.prep-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:10px;transition:width .3s}
+.prep-question-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;margin-bottom:16px;font-size:20px;font-weight:700;text-align:center;color:#fff;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center}
+.prep-mc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.prep-mc-btn{padding:12px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e5e7eb;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .18s;text-align:center}
+.prep-mc-btn:hover:not(:disabled){background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+.prep-mc-btn.correct,.prep-vf-btn.correct{background:rgba(57,255,122,0.18)!important;border-color:rgba(57,255,122,0.6)!important;color:#39ff7a!important}
+.prep-mc-btn.wrong,.prep-vf-btn.wrong{background:rgba(239,68,68,0.18)!important;border-color:rgba(239,68,68,0.5)!important;color:#fca5a5!important}
+.prep-mc-btn:disabled,.prep-vf-btn:disabled{cursor:default}
+.prep-vf-row{display:flex;gap:10px;margin-bottom:14px}
+.prep-vf-btn{flex:1;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e5e7eb;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;cursor:pointer;transition:all .18s;text-align:center;text-transform:uppercase}
+.prep-vf-btn:hover:not(:disabled){background:rgba(255,255,255,0.1)}
+.prep-text-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.prep-text-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-align:center;outline:none}
+.prep-text-input:focus{border-color:rgba(168,85,247,0.6);box-shadow:0 0 0 2px rgba(168,85,247,0.15)}
+.prep-text-input:disabled{opacity:.5}
+.prep-submit-btn{padding:12px 18px;border-radius:10px;border:none;background:rgba(124,58,237,0.5);color:#e0aaff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.prep-submit-btn:hover:not(:disabled){opacity:.85}
+.prep-submit-btn:disabled{opacity:.3;cursor:default}
+.prep-next-btn{width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.prep-next-btn:hover:not(:disabled){opacity:.88}
+.prep-next-btn:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);cursor:default}
+.prep-score-wrap{text-align:center;padding:8px 0 16px}
+.prep-score-num{font-size:58px;font-weight:900;line-height:1;color:#fff}
+.prep-score-denom{font-size:28px;font-weight:700;color:rgba(255,255,255,0.35)}
+.prep-score-emoji{font-size:38px;margin:4px 0 2px}
+.prep-score-pct{font-size:30px;font-weight:900;color:#39ff7a;margin:2px 0}
+.prep-score-label{font-size:15px;font-weight:700;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em}
+.prep-result-row{display:flex;gap:8px;margin-top:14px}
+.prep-result-btn{flex:1;padding:11px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:all .2s;text-align:center}
+.prep-result-btn.primary{background:rgba(124,58,237,0.3);border-color:rgba(168,85,247,0.5);color:#e0aaff}
+.prep-result-btn:hover{opacity:.85}
+.prep-review-list{margin-top:12px;display:flex;flex-direction:column;gap:7px}
+.prep-review-item{padding:10px 12px;border-radius:10px;border:1px solid}
+.prep-review-item.ok{background:rgba(57,255,122,0.05);border-color:rgba(57,255,122,0.18)}
+.prep-review-item.fail{background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.18)}
+.prep-review-q{color:rgba(255,255,255,0.85);font-size:13px;font-weight:700;margin-bottom:3px}
+.prep-review-ok{color:#39ff7a;font-size:12px}
+.prep-review-fail{color:#f87171;font-size:12px}
+.prep-review-correct{color:rgba(255,255,255,0.45);font-size:12px}
 /* ── BINGO (tab GAMING + /student/bingo) — diseño "Neon Bingo" ───────────────────────────────── */
 .bingo-wrap{background:#0a0e1a;border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:14px;font-family:'Barlow Condensed',sans-serif;box-shadow:0 0 30px -10px rgba(124,58,237,0.25)}
 .bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -992,6 +1056,10 @@ let msgsDmView    = null; // null=group channel, or String(studentId) for DM
 let msgsUploading = false;
 // ── BINGO (juego multijugador en vivo, tab GAMING del Dashboard) ─
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
+let dashGamingMode = 'bingo';  // 'bingo' | 'preparate' — sub-modo dentro de GAMING
+// Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
+let _prep = { state:'config', topic:'suma', qCount:10, timeSec:300, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
+let _prepTimerIntv = null;
 let bingoGame     = null;      // snapshot en vivo de BINGO_REF (null = todavía no llegó el primer snapshot)
 let bingoUnsub    = null;      // unsubscribe del listener de BINGO_REF (se queda activo toda la sesión, como msgsListeners)
 let bingoTickTimer = null;     // setInterval de 1s: refresca cuenta atrás y dispara el sorteo si soy el host
@@ -1811,7 +1879,12 @@ function vDashboard() {
     </div>
 
     <div id="pane-dash-gaming" style="display:${dashTab==='gaming'?'block':'none'}">
-      <div id="bingo-pane" class="bingo-wrap bingo-pane-host">${_bingoPaneHtml()}</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button id="prep-tab-bingo" class="prep-mode-tab ${dashGamingMode==='bingo'?'active':''}" onclick="setGamingMode('bingo')">🎰 Neon Bingo</button>
+        <button id="prep-tab-preparate" class="prep-mode-tab ${dashGamingMode==='preparate'?'active':''}" onclick="setGamingMode('preparate')">📚 Prepárate</button>
+      </div>
+      <div id="bingo-pane" class="bingo-wrap bingo-pane-host" style="display:${dashGamingMode==='bingo'?'block':'none'}">${_bingoPaneHtml()}</div>
+      <div id="preparate-pane" style="display:${dashGamingMode==='preparate'?'block':'none'}">${_preparatePaneHtml()}</div>
     </div>
 
     <div id="pane-dash-resumen" style="display:${dashTab==='resumen'?'block':'none'}">
@@ -4091,6 +4164,186 @@ function doBingoRobo() {
 }
 
 // -- render --
+// ── PREPÁRATE — modo examen de práctica ──────────────────────────────────────────────────────────
+function setGamingMode(mode) {
+  dashGamingMode = mode;
+  const bp = document.getElementById('bingo-pane');
+  const pp = document.getElementById('preparate-pane');
+  if (bp) bp.style.display = mode === 'bingo' ? 'block' : 'none';
+  if (pp) pp.style.display = mode === 'preparate' ? 'block' : 'none';
+  // Actualizar estilos de los tabs
+  document.querySelectorAll('.prep-mode-tab').forEach(b => b.classList.remove('active'));
+  const activeTab = document.getElementById('prep-tab-' + mode);
+  if (activeTab) activeTab.classList.add('active');
+  if (mode === 'preparate') _renderPreparatePane();
+}
+function _renderPreparatePane() {
+  const el = document.getElementById('preparate-pane');
+  if (!el) return;
+  // Guardar valor del input de texto si existe (para no perderlo al re-render)
+  const savedVal = (!(_prep.questions[_prep.currentIdx]?.mc) && !_prep.answered)
+    ? (document.getElementById('prep-ans-input')?.value || '') : '';
+  el.innerHTML = _preparatePaneHtml();
+  const inp = document.getElementById('prep-ans-input');
+  if (inp) { if (savedVal) inp.value = savedVal; inp.focus(); }
+}
+function _preparatePaneHtml() {
+  if (_prep.state === 'config') return _prepConfigHtml();
+  if (_prep.state === 'exam')   return _prepExamHtml();
+  if (_prep.state === 'result') return _prepResultHtml();
+  return '';
+}
+function _prepConfigHtml() {
+  const topics = Object.entries(BINGO_TOPICS);
+  const qOpts = [5,10,15,20];
+  const tOpts = [[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
+  return `<div class="prep-wrap">
+    <div class="prep-title">📚 Prepárate</div>
+    <div class="prep-sub">Practica antes de jugar al Bingo</div>
+    <div class="prep-section-label">Tema</div>
+    <div class="prep-topic-grid">
+      ${topics.map(([key,def])=>`
+        <button class="prep-topic-btn ${_prep.topic===key?'active':''}" onclick="_prep.topic='${key}';_renderPreparatePane()">
+          <span class="prep-topic-ico">${def.ico}</span>${def.lbl}
+        </button>`).join('')}
+    </div>
+    <div class="prep-section-label">Preguntas</div>
+    <div class="prep-option-row">
+      ${qOpts.map(n=>`<button class="prep-option-btn ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()">${n}</button>`).join('')}
+    </div>
+    <div class="prep-section-label">Tiempo total</div>
+    <div class="prep-option-row">
+      ${tOpts.map(([s,lbl])=>`<button class="prep-option-btn ${_prep.timeSec===s?'active':''}" onclick="_prep.timeSec=${s};_renderPreparatePane()">${lbl}</button>`).join('')}
+    </div>
+    <button class="prep-start-btn" onclick="_prepStart()">▶ Comenzar</button>
+  </div>`;
+}
+function _prepStart() {
+  const def = BINGO_TOPICS[_prep.topic]; if (!def) return;
+  const qs = []; for (let i=0;i<_prep.qCount;i++) qs.push(def.gen());
+  Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
+  clearInterval(_prepTimerIntv);
+  if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+  _renderPreparatePane();
+}
+function _prepTickTimer() {
+  if (_prep.state !== 'exam') { clearInterval(_prepTimerIntv); return; }
+  _prep.timeLeft--;
+  if (_prep.timeLeft <= 0) { _prep.timeLeft = 0; _prepFinish(); return; }
+  const el = document.getElementById('prep-timer');
+  if (el) {
+    const m = Math.floor(_prep.timeLeft/60), s = _prep.timeLeft%60;
+    el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    el.classList.toggle('urgent', _prep.timeLeft <= 30);
+  }
+}
+function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+function _prepSelectOpt(opt) {
+  if (_prep.answered) return;
+  _prep.selectedOpt = opt;
+  _prep.answered = true;
+  const q = _prep.questions[_prep.currentIdx];
+  _prep.answers.push({ given:opt, correct: String(q.a).toLowerCase()===String(opt).toLowerCase(), q:q.q, a:q.a, opts:q.opts, mc:true });
+  _renderPreparatePane();
+}
+function _prepSubmitText() {
+  if (_prep.answered) return;
+  const inp = document.getElementById('prep-ans-input');
+  const val = (inp ? inp.value : '').trim(); if (!val) return;
+  _prep.answered = true;
+  const q = _prep.questions[_prep.currentIdx];
+  const correct = parseFloat(val) === parseFloat(q.a) || String(val).toLowerCase() === String(q.a).toLowerCase();
+  _prep.answers.push({ given:val, correct, q:q.q, a:q.a, mc:false });
+  _renderPreparatePane();
+}
+function _prepNextQ() {
+  if (!_prep.answered) return;
+  _prep.currentIdx++;
+  _prep.answered = false; _prep.selectedOpt = null;
+  if (_prep.currentIdx >= _prep.questions.length) _prepFinish();
+  else _renderPreparatePane();
+}
+function _prepFinish() {
+  clearInterval(_prepTimerIntv);
+  _prep.state = 'result'; _prep.endTime = Date.now();
+  _renderPreparatePane();
+}
+function _prepExamHtml() {
+  const q = _prep.questions[_prep.currentIdx]; if (!q) return '';
+  const def = BINGO_TOPICS[_prep.topic]||{};
+  const total = _prep.questions.length, idx = _prep.currentIdx;
+  const pct = Math.round((idx/total)*100);
+  const isMC = !!q.mc, isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
+  const timerHtml = _prep.timeSec > 0 ? `<div id="prep-timer" class="prep-timer${_prep.timeLeft<=30?' urgent':''}">${_prepFmtTime(_prep.timeLeft)}</div>` : '';
+  let ansHtml = '';
+  if (isMC && isVF) {
+    ansHtml = `<div class="prep-vf-row">${(q.opts||[]).map(opt=>{
+      let cls='prep-vf-btn';
+      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(_prep.selectedOpt===opt?' wrong':''); }
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${opt.replace(/'/g,"\\'")}')">${opt}</button>`;
+    }).join('')}</div>`;
+  } else if (isMC) {
+    ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
+      let cls='prep-mc-btn';
+      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(_prep.selectedOpt===opt?' wrong':''); }
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${opt.replace(/'/g,"\\'")}')">${i+1}. ${opt}</button>`;
+    }).join('')}</div>`;
+  } else {
+    const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
+    ansHtml = `<div class="prep-text-row">
+      <input id="prep-ans-input" class="prep-text-input" type="text" placeholder="Tu respuesta…" ${_prep.answered?'disabled':''} autocomplete="off" onkeydown="if(event.key==='Enter')_prepSubmitText()">
+      <button class="prep-submit-btn" onclick="_prepSubmitText()" ${_prep.answered?'disabled':''}>OK</button>
+    </div>`;
+    if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${q.a}</b></span>`}</div>`;
+  }
+  return `<div class="prep-wrap">
+    <div class="prep-exam-header">
+      <div class="prep-topic-badge-sm">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+      ${timerHtml}
+    </div>
+    <div class="prep-progress-row">
+      <span class="prep-prog-label">${idx+1}/${total}</span>
+      <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="prep-question-card">${q.q}</div>
+    ${ansHtml}
+    <button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()">
+      ${idx===total-1?'🏁 Ver resultados':'Siguiente →'}
+    </button>
+  </div>`;
+}
+function _prepResultHtml() {
+  const total = _prep.questions.length;
+  const correct = _prep.answers.filter(a=>a.correct).length;
+  const pct = total>0 ? Math.round((correct/total)*100) : 0;
+  const secs = _prep.startTime&&_prep.endTime ? Math.round((_prep.endTime-_prep.startTime)/1000) : 0;
+  const emoji = pct>=90?'🏆':pct>=70?'🌟':pct>=50?'👍':'💪';
+  const label = pct>=90?'¡Excelente!':pct>=70?'¡Bien hecho!':pct>=50?'Puedes mejorar':'Sigue practicando';
+  const def = BINGO_TOPICS[_prep.topic]||{};
+  const reviewHtml = _prep.showReview ? `<div class="prep-review-list">${_prep.answers.map((ans,i)=>`
+    <div class="prep-review-item ${ans.correct?'ok':'fail'}">
+      <div class="prep-review-q">${i+1}. ${ans.q}</div>
+      <div>${ans.correct?`<span class="prep-review-ok">✓ ${ans.given}</span>`:`<span class="prep-review-fail">✗ ${ans.given}</span> · <span class="prep-review-correct">Correcta: ${ans.a}</span>`}</div>
+    </div>`).join('')}</div>` : '';
+  return `<div class="prep-wrap">
+    <div class="prep-score-wrap">
+      <div class="prep-topic-badge-sm" style="margin:0 auto 10px;display:inline-flex">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+      <div class="prep-score-emoji">${emoji}</div>
+      <div><span class="prep-score-num">${correct}</span><span class="prep-score-denom">/${total}</span></div>
+      <div class="prep-score-pct">${pct}%</div>
+      <div class="prep-score-label">${label}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:4px">Tiempo: ${_prepFmtTime(secs)}</div>
+    </div>
+    <div class="prep-result-row">
+      <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
+      <button class="prep-result-btn" onclick="_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
+    </div>
+    <button class="prep-result-btn" style="width:100%;margin-top:8px" onclick="_prep.showReview=!_prep.showReview;_renderPreparatePane()">
+      ${_prep.showReview?'▲ Ocultar revisión':'▼ Revisar respuestas'}
+    </button>
+    ${reviewHtml}
+  </div>`;
+}
 function _renderBingoPane() {
   _bingoEnsureTimer();
   // Detección de cambios de estado para sonidos
@@ -8740,366 +8993,4 @@ function renderHorPopContent(st) {
   if (hasSid) {
     const pts = getStudentPoints(sid);
     html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Puntos de este mes</div>'
-      +'<div class="hor-pop-pts-row">'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.hours+'</div><div class="hor-pop-pts-l">Horas</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.progress+'</div><div class="hor-pop-pts-l">Avance</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.tasks+'</div><div class="hor-pop-pts-l">Tareas</div></div>'
-      +'</div></div>';
-
-    const podiums = getStudentPodiumHistory(sid, name);
-    if (podiums.length) {
-      html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Podios anteriores</div>'
-        +'<div class="hor-pop-medals">'+podiums.map(function(p){ return '<span class="hor-pop-medal">'+p.medal+' '+p.label+'</span>'; }).join('')+'</div></div>';
-    }
-
-    if (!isDom) {
-      const canSee = isAdmin() || getLoggedId()===sid;
-      if (canSee) {
-        if (isAdmin()) {
-          // Botón "Guardar enlace" solo si todavía no tiene enlace, o si se entró en modo
-          // edición desde el botón "Editar" de arriba — si ya tiene y no se está editando,
-          // se muestra el enlace guardado en su lugar (sin botón de guardar).
-          if (!link || linkEditing) {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
-              +'<button class="hor-pop-link-btn" style="background:'+color+'26;border-color:'+color+'66;color:'+color+'" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
-          } else {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
-          }
-        } else if (link) {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
-        } else {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
-        }
-      }
-    }
-  }
-  return html;
-}
-
-// Busca en pointsHistory (archivado automático) y en HISTORIAL_SEED (meses previos al
-// archivado) si este alumno quedó 1°/2°/3° en algún mes anterior. Empareja por id cuando
-// está disponible; los meses semilla (sin id) emparejan por nombre normalizado.
-function getStudentPodiumHistory(id, name) {
-  const now = new Date();
-  const MESES_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const medals = ['🥇','🥈','🥉'];
-  const results = [];
-  for (let off = -1; off >= -12; off--) {
-    const d = new Date(now); d.setMonth(d.getMonth()+off);
-    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    const podio = pointsHistory[ym] || HISTORIAL_SEED[ym];
-    if (!podio) continue;
-    const idx = podio.findIndex(function(p){
-      return (p.id!=null && p.id===id) || (p.id==null && normName(p.nombre)===normName(name));
-    });
-    if (idx === -1) continue;
-    results.push({ ym, medal: medals[idx], label: MESES_S[d.getMonth()]+' '+d.getFullYear() });
-  }
-  return results;
-}
-
-// Guarda/actualiza el enlace de videollamada de un alumno (uno por alumno, compartido
-// entre todas sus clases virtuales). Mismo patrón de lectura+merge que perfilSaveProfile().
-async function saveHorPopLink(sid) {
-  const inp = document.getElementById('hor-pop-link-inp');
-  if (!inp) return;
-  const val = normalizeLinkUrl(inp.value);
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov = data.overrides || {};
-  const key = String(sid);
-  ov[key] = ov[key] || {};
-  ov[key].link = val;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  showToast('Enlace guardado ✓');
-  if (_horPopState && _horPopState.sid === sid && _horPopEl) {
-    _horPopState.linkEditing = false;
-    _horPopEl.innerHTML = renderHorPopContent(_horPopState);
-    positionHorPop(_horPopEl, _horPopCard);
-  }
-}
-
-function changeHorWeek(delta) {
-  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW < 640) {
-    horDayOffset += delta;
-    // when going beyond week boundaries, shift the week
-    if (horDayOffset > 5) { horWeekOffset += 1; horDayOffset -= 7; }
-    if (horDayOffset < 0) { horWeekOffset -= 1; horDayOffset += 7; }
-  } else {
-    horWeekOffset += delta;
-  }
-  renderHorariosCalendar();
-}
-function horGoToday() {
-  horWeekOffset = 0;
-  horDayOffset = 0;
-  const appW2 = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW2 < 640) {
-    const dow = new Date().getDay();
-    horDayOffset = (dow === 0 ? 6 : dow - 1); // Mon=0 … Sun=6
-  }
-  renderHorariosCalendar();
-}
-
-function togglePtsEditor(studentId) {
-  expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
-  ptsMonthOffset = 0;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-function changePtsMonth(delta) {
-  ptsMonthOffset += delta;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-let _ptsTimer=null;
-// Cola de ediciones de Puntos todavía no guardadas (se vacía al disparar _flushPointsLog).
-// Como togglePointMark/toggleAbsent comparten un mismo timer debounced (para no mandar un
-// guardado por cada clic), varias ediciones pueden acumularse antes de guardar. Por eso el
-// guardado real no escribe directo la copia local de "pointsLog": vuelve a leer el dato fresco
-// del servidor (saveLmsFieldTx) y "reproduce" aquí, en orden, cada edición pendiente sobre ESE
-// dato fresco — así una edición hecha desde otro dispositivo mientras esta pestaña estaba
-// desactualizada no se pierde ni se pisa.
-let _ptsPendingEdits = [];
-function _applyPtsEditsToLog(freshLog, edits) {
-  const log = JSON.parse(JSON.stringify(freshLog || {}));
-  for (const edit of edits) {
-    const key = String(edit.studentId);
-    if (!log[key]) log[key]={};
-    if (!log[key][edit.dateKey]) log[key][edit.dateKey]={hours:[],progress:[],tasks:[]};
-    const entry = log[key][edit.dateKey];
-    if (edit.type === 'mark') {
-      if (!Array.isArray(entry[edit.field])) entry[edit.field]=[];
-      while (entry[edit.field].length < edit.count) entry[edit.field].push(false);
-      entry[edit.field][edit.idx]=!!edit.checked;
-    } else { // 'absent'
-      entry.absent = !!edit.checked;
-      if (edit.checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-    }
-  }
-  return log;
-}
-function _flushPointsLog() {
-  const edits = _ptsPendingEdits.splice(0); // toma todas las ediciones pendientes y vacía la cola
-  if (!edits.length) return;
-  savePointsLog(fresh => _applyPtsEditsToLog(fresh, edits));
-}
-// idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
-function togglePointMark(studentId, dateKey, field, idx, count, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  if (!Array.isArray(entry[field])) entry[field]=[];
-  while (entry[field].length < count) entry[field].push(false);
-  entry[field][idx]=!!checked;
-  _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
-  // Refresca el total mostrado en la cabecera de la fila sin re-render completo
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast('Puntos guardados.','success'); },800);
-}
-
-// Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
-// Horas/Progreso/Tareas de ese día y se excluye del cálculo de puntos (no suma ni resta).
-function toggleAbsent(studentId, dateKey, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  entry.absent = !!checked;
-  if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-  _ptsPendingEdits.push({type:'absent', studentId, dateKey, checked});
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  const cont=document.getElementById(`pts-dates-${studentId}`);
-  const st=getStudents().find(x=>String(x.id)===key);
-  if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
-}
-
-// ════════════════════════════════════════════════════════
-// FIREBASE LISTENER + BOOT
-// ════════════════════════════════════════════════════════
-// Mantiene la clave del admin sincronizada con /padres (mismo documento compartido).
-AUTH_REF.onSnapshot(doc => {
-  const a = doc.exists ? doc.data() : {};
-  ADMIN.pin = a.adminPin || "80808";
-}, err => console.error('[Firebase auth]', err));
-
-// Normaliza nombres para emparejar alumnos entre /student y /padres (minúsculas, sin tildes, sin espacios extra).
-function normName(s) {
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-}
-PADRES_REF.onSnapshot(doc => {
-  const d = doc.exists ? doc.data() : {};
-  const pStudents = d.students || {};
-  const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
-  const map = {}, slotMap = {}, sessMap = {};
-  Object.entries(pStudents).forEach(([sid, st]) => {
-    const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
-    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
-    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
-    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
-    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
-    // recurring/date/skipDates fecha por fecha.
-    const hoursByDay = {}, slotsByDay = {};
-    mySessions.forEach(s => {
-      const h = Math.max(1, Math.round((s.dur||60)/60));
-      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
-      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
-      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
-    });
-    // ordenar los slots de cada día cronológicamente por hora de inicio
-    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
-    const key = normName(st.name);
-    map[key] = hoursByDay;
-    slotMap[key] = slotsByDay;
-    sessMap[key] = mySessions;
-  });
-  classDaysByName  = map;
-  classSlotsByName = slotMap;
-  classSessByName  = sessMap;
-  if (currentView === 'puntos') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-  }
-  if (currentView === 'horarios') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
-    renderHorariosSidebar();
-  }
-  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
-  // nombres vinculados (un padre puede registrarse o editar un nombre en
-  // cualquier momento mientras el admin tiene el panel abierto).
-  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
-    syncPadresLinks();
-    cacheLiveNames();
-    renderStudentList();
-    renderPadresRequests();
-  }
-}, err => console.error('[Firebase padres]', err));
-
-REF.onSnapshot(doc => {
-  const data = doc.exists ? doc.data() : {};
-  allocations = data.allocations || {};
-  overrides   = data.overrides   || {};
-  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
-  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
-  const lms   = data.lms || {};
-  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
-  points      = typeof lms.points==='object' ? lms.points : {};
-  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
-  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
-  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
-  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
-  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
-  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
-  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
-  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
-  // sobrescriben datos reales con el estado vacío por defecto.
-  if (doc.exists) {
-    lmsDataLoaded = true;
-    archiveMonthIfNeeded();
-    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
-    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
-    (function seedJoannaMult(){
-      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
-      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
-        taskMultipliers[String(joanna.id)] = 3;
-        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
-      }
-    })();
-  } else {
-    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
-  }
-
-  if (!appReady) {
-    appReady = true;
-    document.getElementById('initial-loading').classList.add('hidden');
-    router();
-  } else {
-    // Live-update tablero if it's open
-    const hash = currentView;
-    if (hash === 'tablero') {
-      const loggedId = getLoggedId();
-      if (loggedId !== null) renderAll(loggedId);
-    }
-    if (hash === 'ranking')   vRankingSetup();
-    if (hash === 'numeros')   vNumerosSetup();
-    if (hash === 'dashboard') {
-      const app=document.getElementById('app');
-      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
-    }
-    if (hash === 'puntos') {
-      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
-      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
-      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
-      if (Date.now() - _lastPtsLocalEdit > 2500) {
-        const app=document.getElementById('app');
-        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-      }
-    }
-    if (hash === 'horarios') renderHorariosSidebar();
-    if (hash === 'tareas' && taskFilter !== 'msgs') {
-      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
-      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
-      const app=document.getElementById('app');
-      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
-    }
-  }
-}, err => {
-  console.error('[Firebase]', err);
-  document.getElementById('initial-loading').classList.add('hidden');
-  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
-  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
-  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
-  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+      +'
