@@ -2821,6 +2821,7 @@ function _bingoHostEndChallenge() {
   const _nxt  = _sch3[_rc] !== undefined ? _sch3[_rc] : _sch3[_sch3.length-1];
   const patch = {
     challengeActive:false, challengeEndsAt:null, questions:[],
+    currentNumber: null, numPhase: null, // limpiar el número actual para evitar flash post-reto
     nextChallengeAtDraw: drawn.length + _nxt,
     nextDrawAt: ended ? null : Date.now() + 500,
     status: ended ? 'ended' : 'playing',
@@ -4315,8 +4316,7 @@ function _bingoPaneHtml() {
         return (!presentSomewhere || markedEverywhere) ? 'marked-ok' : 'marked-bad';
       };
     }
-    // Durante el reto se oculta el último número sorteado (el que disparó el reto).
-    const drawnVisible = inChallenge ? drawn.slice(0, -1) : drawn;
+    const drawnVisible = drawn; // siempre mostrar todos los números, incluso durante el reto
 
     // ── Head box: 2 columnas (ball box izq, stats der) + chip strip debajo ──────
     body += `<div class="bingo-head-box"><div class="bdh-row">
