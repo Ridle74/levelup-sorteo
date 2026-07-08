@@ -2543,8 +2543,10 @@ function _selectBingoGame(gameId) {
       if (prevStatus === 'playing' && bingoGame.status === 'ended' && !_bingoEndShown) {
         _bingoEndShown = true;
         setTimeout(() => _bingoShowEndModal(bingoGame), 900);
-        // El host guarda el historial (una sola vez por guardián historySaved)
-        if (bingoGame.hostId === _bingoMe().uid) setTimeout(_bingoSaveHistory, 1500);
+      }
+      // Guardar historial — reintenta en cada snapshot hasta que historySaved sea true
+      if (bingoGame.status === 'ended' && !bingoGame.historySaved) {
+        setTimeout(_bingoSaveHistory, 1500);
       }
     } catch (e) { console.error('bingo auto-nav', e); }
     // Auto-aceptar Desafío si el reto matemático empieza y el jugador no respondió
@@ -3155,10 +3157,7 @@ function endBingoGame() {
 let _bingoHistoryData = null, _bingoShowHistory = false;
 async function _bingoSaveHistory() {
   if (!bingoGame || !BINGO_REF || bingoGame.historySaved) return;
-  const me = _bingoMe();
-  if (bingoGame.hostId !== me.uid) return; // solo el host guarda
   try {
-    await BINGO_REF.update({ historySaved: true }); // evitar duplicados
     const db = firebase.firestore();
     const endedAt = Date.now();
     const durationMs = bingoGame.startedAt ? (endedAt - bingoGame.startedAt) : null;
@@ -3176,7 +3175,8 @@ async function _bingoSaveHistory() {
     BINGO_TIER_ORDER.forEach(t => {
       tierWinners[t] = Object.entries(bingoGame.players||{}).filter(([,p])=>Object.values(p.tiers||{}).some(tc=>tc.won?.[t])).map(([,p])=>p.name);
     });
-    await db.collection('bingoHistory').add({
+    // Usar set() con el gameId como doc ID para idempotencia (reintentos seguros)
+    await db.collection('bingoHistory').doc(BINGO_REF.id).set({
       gameId: BINGO_REF.id, gameSpeed: bingoGame.gameSpeed||'media',
       difficulty: bingoGame.difficulty||1, diffLabel: BINGO_DIFF_LABEL[bingoGame.difficulty||1]||'',
       topics: bingoGame.topics||null, topicsLabel: _bTopicsLabel(bingoGame.topics),
@@ -3186,6 +3186,8 @@ async function _bingoSaveHistory() {
       hostName: bingoGame.players?.[bingoGame.hostId]?.name||'',
       savedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    // Marcar solo DESPUÉS de que el guardado fue exitoso
+    await BINGO_REF.update({ historySaved: true });
   } catch(e) { console.error('bingo history save', e); }
 }
 async function loadBingoHistory() {
@@ -9095,9 +9097,4 @@ function openImgViewer(url, name){
 }
 function closeImgViewer(){
   const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+  if (m
