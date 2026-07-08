@@ -1033,6 +1033,7 @@ let bingoGames           = [];   // lista en vivo de partidas (lobby/playing) de
 let bingoGamesUnsub      = null; // unsub del listener de la colección bingo/
 let _bingoChallengeResult = null; // { perfect, fast, charges, fails } — feedback visual tras el reto
 let _bingoBonusPending    = false; // true mientras el jugador elige su número bonus (rápida <15s)
+let _bonusVisionCard      = null;  // índice del cartón seleccionado para previsualizar con Visión X
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -2682,7 +2683,7 @@ function _leaveBingoGame() {
   _bingoResetLocalState();
   _bingoEndShown = false;
   _bingoChallengeResult = null;
-  _bingoBonusPending = false;
+  _bingoBonusPending = false; _bonusVisionCard = null;
   document.getElementById('bpm-overlay')?.remove();
   _renderBingoPane();
 }
@@ -3676,7 +3677,7 @@ function claimBingoBonusNum(n) {
     newMarks.push({ c: cardIdx, n, bonus: true }); // bonus:true → color diferente en el cartón
     added++;
   });
-  _bingoBonusPending = false;
+  _bingoBonusPending = false; _bonusVisionCard = null;
   if (added === 0) {
     showToast(`El ${n} no está en ninguno de tus cartones (o ya lo tenías marcado).`, 'error');
     _renderBingoPane();
@@ -4709,12 +4710,48 @@ function _bingoPaneHtml() {
       const _blockedSet = new Set((myPlayer.blockedMarks||[]).map(m=>m.n));
       const _numsSorted = [..._allNums].sort((a,b)=>a-b);
       const _cols = ['B','I','N','G','O'];
+      // Visión X: previsualización de cartón durante el bonus pick
+      const _hasVisionX = !!(myPlayer.unlockedPowers||{}).vision;
+      const _myCards    = myPlayer.cards || {};
+      const _myCardKeys = Object.keys(_myCards).map(Number).sort();
+      let _visionHtml = '';
+      if (_hasVisionX && _myCardKeys.length > 0) {
+        const _cardBtns = _myCardKeys.map(ci =>
+          `<button onclick="_bonusVisionCard=${ci};_renderBingoPane()" style="padding:5px 12px;border-radius:8px;font-weight:700;font-size:12px;cursor:pointer;background:${_bonusVisionCard===ci?'rgba(16,185,129,0.3)':'rgba(255,255,255,0.08)'};border:1px solid ${_bonusVisionCard===ci?'rgba(16,185,129,0.6)':'rgba(255,255,255,0.2)'};color:${_bonusVisionCard===ci?'#34d399':'rgba(255,255,255,0.7)'}">Cartón ${ci+1}</button>`
+        ).join('');
+        let _gridHtml = '';
+        if (_bonusVisionCard !== null && _myCards[_bonusVisionCard]) {
+          const _vc  = _myCards[_bonusVisionCard] || [];
+          const _cMk = new Set((myPlayer.marks||[]).filter(m=>m.c===_bonusVisionCard).map(m=>m.n));
+          const _cBl = new Set((myPlayer.blockedMarks||[]).filter(m=>m.c===_bonusVisionCard).map(m=>m.n));
+          const _dr  = new Set(bingoGame.drawnNumbers||[]);
+          const _hds = ['B','I','N','G','O'].map(h=>`<div style="text-align:center;font-size:11px;font-weight:900;color:rgba(255,255,255,0.45);padding:3px 0">${h}</div>`).join('');
+          let _cells = '';
+          for (let _r=0;_r<5;_r++) for (let _c2=0;_c2<5;_c2++) {
+            const _n=_vc[_r*5+_c2], isFree=_n===0, isMk=_cMk.has(_n), isBl=_cBl.has(_n), isDr=_dr.has(_n), canP=!isMk&&!isBl&&_n>0;
+            const _bg=isFree?'rgba(255,255,255,0.04)':isBl?'rgba(239,68,68,0.18)':isMk?'rgba(16,185,129,0.28)':isDr?'rgba(250,204,21,0.1)':'rgba(255,255,255,0.1)';
+            const _bd=isFree?'rgba(255,255,255,0.08)':isBl?'rgba(239,68,68,0.4)':isMk?'rgba(16,185,129,0.55)':isDr?'rgba(250,204,21,0.45)':'rgba(255,255,255,0.3)';
+            const _cl=isFree?'rgba(255,255,255,0.2)':isBl?'rgba(239,68,68,0.55)':isMk?'#34d399':isDr?'#fbbf24':'#fff';
+            _cells += `<button onclick="${canP?`claimBingoBonusNum(${_n})`:'void 0'}" ${!canP?'disabled':''} style="padding:5px 2px;border-radius:6px;font-weight:800;font-size:12px;text-align:center;background:${_bg};border:1px solid ${_bd};color:${_cl};cursor:${canP?'pointer':'default'}">${isFree?'★':_n}</button>`;
+          }
+          _gridHtml = `<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;max-width:250px;margin:10px auto 0">${_hds}${_cells}</div>
+            <div style="display:flex;gap:10px;justify-content:center;margin-top:7px;font-size:10px;color:rgba(255,255,255,0.35)">
+              <span style="color:#34d399">■ marcado</span><span style="color:rgba(239,68,68,0.7)">■ bloqueado</span><span style="color:#fbbf24">■ sorteado</span><span>■ disponible</span>
+            </div>`;
+        }
+        _visionHtml = `<div style="margin-bottom:14px;padding:10px 12px;background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.22);border-radius:10px">
+          <div style="font-size:10px;font-weight:700;color:#34d399;margin-bottom:8px;text-transform:uppercase;letter-spacing:.07em">🔎 Visión X — previsualiza un cartón:</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${_cardBtns}</div>
+          ${_gridHtml}
+        </div>`;
+      }
       body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:420px">
         <div class="bcc-result-ico">⭐</div>
         <div class="bcc-result-h">¡Elige tu número bonus!</div>
         <div class="bcc-result-body" style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">
           Selecciona un número de tus cartones para marcarlo como si hubiera salido.
         </div>
+        ${_visionHtml}
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">
           ${_numsSorted.map(n=>{
             const col = _cols[Math.floor((n-1)/15)];
