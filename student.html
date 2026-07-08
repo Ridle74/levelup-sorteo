@@ -1029,6 +1029,7 @@ let _bingoGameId         = null; // ID del doc activo en la colección bingo/ (n
 let bingoGames           = [];   // lista en vivo de partidas (lobby/playing) del listener de colección
 let bingoGamesUnsub      = null; // unsub del listener de la colección bingo/
 let _bingoChallengeResult = null; // { perfect, fast, charges, fails } — feedback visual tras el reto
+let _bingoBonusPending    = false; // true mientras el jugador elige su número bonus (rápida <15s)
 let classDaysByName  = {}; // { "<nombre normalizado>": { "<díaSemana>": horas } } — horas totales por día, desde /padres
 let classSlotsByName = {}; // { "<nombre normalizado>": { "<díaSemana>": [{start,dur}] } } — slots horarios desde /padres
 let classSessByName  = {}; // { "<nombre normalizado>": [sesión cruda, ...] } — sesiones tal cual vienen de /padres
@@ -2652,6 +2653,7 @@ function _leaveBingoGame() {
   _bingoResetLocalState();
   _bingoEndShown = false;
   _bingoChallengeResult = null;
+  _bingoBonusPending = false;
   document.getElementById('bpm-overlay')?.remove();
   _renderBingoPane();
 }
@@ -3281,7 +3283,7 @@ function submitBingoChallengeAnswer(raw) {
     bingoChallengeAnswer = '';
     _clearInput();
     _bSnd.wrong();
-    const _maxW = (bingoGame?.gameSpeed==='rapida') ? 2 : 3;
+    const _maxW = (bingoGame?.gameSpeed==='rapida') ? 1 : 3;
     if (bingoChallengeWrongs >= _maxW) { _bingoFinishChallenge(bingoChallengeIdx); return; } // vidas agotadas
     _renderBingoPane();
     setTimeout(() => { bingoChallengeError = false; _renderBingoPane(); }, 350);
@@ -3309,11 +3311,12 @@ function _bingoFinishChallenge(correctCount) {
     const elapsed = Math.round((bingoGame.challengeSeconds||60) - timeRemaining);
     patch[`players.${me.uid}.lastRetoTime`] = elapsed;
     if (isRapida) {
-      // Rápida: <15s usados (<15s remaining) → +2 cargas; ≥15s → +1 carga; siempre limpiar bloqueos
-      fast = timeRemaining > 15;
-      charges = fast ? 2 : 1;
+      // Rápida: siempre +1 carga; si <15s → además elige un número bonus para marcar
+      fast = timeRemaining > 15; // fast = completó en menos de 15s
+      charges = 1;
       patch[`players.${me.uid}.blockedMarks`] = [];
       patch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) + charges;
+      if (fast) _bingoBonusPending = true;
     } else {
       // Media: <30s → +2 cargas; ≥30s → +1 carga; siempre limpiar bloqueos
       fast = timeRemaining > 30;
@@ -3358,7 +3361,7 @@ function _bingoFinishChallenge(correctCount) {
   const toastMsg = !perfect
     ? `⛔ Bloqueamos automáticamente ${fails} número${fails!==1?'s':''} de tus cartones.`
     : charges > 0
-      ? `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.`
+      ? (isRapida && fast ? `🌟 ¡Rapidísimo! +${charges} carga ⚡ y elige un número para marcar en tus cartones.` : `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.`)
       : `✅ ¡Reto completo! Sin cargas esta vez — responde más rápido la próxima.`;
   BINGO_REF.update(patch)
     .then(()=> showToast(toastMsg, perfect?'success':'error'))
@@ -3617,6 +3620,37 @@ function cancelarVenganza() {
   bingoActivePower = null; bingoPowerForm = {}; _bingoPowerStep = null;
   _renderBingoPane();
 }
+// ── Número bonus (rápida + reto perfecto <15s) ────────────────────────────────
+function claimBingoBonusNum(n) {
+  n = Number(n);
+  if (!n || n < 1 || n > 75) return;
+  const me = _bingoMe();
+  const player = (bingoGame.players||{})[me.uid];
+  if (!player || !_bingoBonusPending) return;
+  const existingSet = new Set((player.marks||[]).map(m=>`${m.c}:${m.n}`));
+  const blockedSet  = new Set((player.blockedMarks||[]).map(m=>`${m.c}:${m.n}`));
+  const newMarks    = [...(player.marks||[])];
+  let added = 0;
+  Object.entries(player.cards||{}).forEach(([ci, card]) => {
+    const cardIdx = Number(ci);
+    if (!(card||[]).includes(n)) return;           // número no está en este cartón
+    const key = `${cardIdx}:${n}`;
+    if (existingSet.has(key) || blockedSet.has(key)) return; // ya marcado o bloqueado
+    newMarks.push({ c: cardIdx, n });
+    added++;
+  });
+  _bingoBonusPending = false;
+  if (added === 0) {
+    showToast(`El ${n} no está en ninguno de tus cartones (o ya lo tenías marcado).`, 'error');
+    _renderBingoPane();
+    return;
+  }
+  BINGO_REF.update({ [`players.${me.uid}.marks`]: newMarks })
+    .then(()=> showToast(`⭐ ¡${n} marcado en ${added} cartón${added>1?'es':''}!`, 'success'))
+    .catch(e=>console.error('bonus num', e));
+  _renderBingoPane();
+}
+
 // ── Desafío ──────────────────────────────────────────────────────────────────
 function doBingoDesafio(targetUid) {
   const me = _bingoMe();
@@ -4449,9 +4483,10 @@ function _bingoPaneHtml() {
             <div class="bpx-hint">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s → +2 cargas · en más tiempo → +1 carga · fallar → bloqueos' : 'Reto perfecto en &lt;30s → +2 cargas · si no → +1 carga'} · Desbloquea poderes una sola vez · úsalos tocando casillas.</div>
             ${(()=>{
               const cats = [
-                { limit:'persistent', label:'✨ Permanentes',      keys:['bitacora','vision','fortaleza','venganza'] },
-                { limit:'reto',       label:'🔄 Por reto',         keys:['sabotaje','congelar'] },
-                { limit:'game',       label:'🎯 Una vez en partida', keys:['comodin','robo','camufle','desafio'] },
+                { limit:'persistent',  label:'✨ Permanentes',        keys:['bitacora','vision','fortaleza','venganza'] },
+                { limit:'reto',        label:'🔄 Por reto',           keys:['sabotaje','congelar'] },
+                { limit:'game',        label:'🎯 Una vez en partida', keys:['comodin','robo','camufle'] },
+                { limit:'escalating',  label:'⚔️ Desafío (costo doble cada uso)', keys:['desafio'] },
               ];
               return cats.map(cat=>{
                 const defs = BINGO_POWER_DEFS.filter(p=>cat.keys.includes(p.key));
@@ -4460,9 +4495,20 @@ function _bingoPaneHtml() {
                   const available = unlocked && _bingoPowerAvailable(myPlayer, pw.key);
                   const isActive = bingoActivePower === pw.key;
                   const state = !unlocked ? 'locked' : (!available ? 'cooldown' : (isActive ? 'active' : 'ready'));
-                  const badge = !unlocked ? `🔒 Desbloquear ⚡${pw.cost}` :
-                    (!available ? (pw.limit==='game'?'✓ Usado':'⏳ Próx. reto') :
-                    (pw.limit==='persistent'?'✅ Activo':(isActive?'▶ Activo':'Usar')));
+                  let badge;
+                  if (!unlocked) {
+                    badge = `🔒 Desbloquear ⚡${pw.cost}`;
+                  } else if (pw.limit === 'escalating') {
+                    const _uc = (myPlayer.usedPowers||{}).desafio || 0;
+                    const _nc = _uc === 0 ? 0 : 2 * Math.pow(2, _uc);
+                    badge = _uc === 0
+                      ? (isActive ? '▶ Activo' : 'Usar (ya pagaste al desbloquear)')
+                      : (isActive ? '▶ Activo' : `Uso ${_uc+1} · cuesta ⚡${_nc}`);
+                  } else if (!available) {
+                    badge = pw.limit==='game' ? '✓ Usado' : '⏳ Próx. reto';
+                  } else {
+                    badge = pw.limit==='persistent' ? '✅ Activo' : (isActive ? '▶ Activo' : 'Usar');
+                  }
                   return `<button class="bpx-btn ${state}" onclick="toggleBingoPower('${pw.key}')">
                     <div class="bpx-btn-head"><span class="bpx-btn-icon">${pw.icon}</span>${pw.label}</div>
                     <div class="bpx-btn-desc">${pw.desc}</div>
@@ -4506,7 +4552,7 @@ function _bingoPaneHtml() {
             <span class="bdl-rank">${i+1}</span>
             <span class="bdl-name">${r.name}</span>
             <span class="bdl-time">${r.t!==null?r.t+'s':'—'}</span>
-            ${r.uid!==me.uid?`<button class="bdl-btn" onclick="doBingoDesafio('${r.uid}')">⚔️ Desafiar</button>`:'<span style="color:rgba(255,255,255,0.3);font-size:11px">tú</span>'}
+            ${r.uid!==me.uid?(()=>{const _uc=(myPlayer.usedPowers||{}).desafio||0;const _nc=_uc===0?0:2*Math.pow(2,_uc);const _lbl=_nc>0?`⚔️ Desafiar · ⚡${_nc}`:'⚔️ Desafiar';return `<button class="bdl-btn" onclick="doBingoDesafio('${r.uid}')">${_lbl}</button>`;})():'<span style="color:rgba(255,255,255,0.3);font-size:11px">tú</span>'}
           </div>`).join('')}</div>
         </div></div>`;
     }
@@ -4588,18 +4634,47 @@ function _bingoPaneHtml() {
     }
     const _showChallenge = bingoGame.challengeActive && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId;
     const _showResult = !!_bingoChallengeResult;
-    if (_showChallenge || _showResult) {
+    const _isRapidaMode = (bingoGame.gameSpeed||'media') === 'rapida';
+    // Modal: número bonus pendiente (rápida <15s)
+    if (_bingoBonusPending && !_showResult && myPlayer) {
+      const _allNums = new Set();
+      Object.values(myPlayer.cards||{}).forEach(card=>{ (card||[]).forEach(n=>{ if(n>0) _allNums.add(n); }); });
+      const _markedSet  = new Set((myPlayer.marks||[]).map(m=>m.n));
+      const _blockedSet = new Set((myPlayer.blockedMarks||[]).map(m=>m.n));
+      const _numsSorted = [..._allNums].sort((a,b)=>a-b);
+      const _cols = ['B','I','N','G','O'];
+      body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:420px">
+        <div class="bcc-result-ico">⭐</div>
+        <div class="bcc-result-h">¡Elige tu número bonus!</div>
+        <div class="bcc-result-body" style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">
+          Selecciona un número de tus cartones para marcarlo como si hubiera salido.
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:14px">
+          ${_numsSorted.map(n=>{
+            const col = _cols[Math.floor((n-1)/15)];
+            const already = _markedSet.has(n) && !_blockedSet.has(n);
+            return `<button onclick="claimBingoBonusNum(${n})" ${already?'disabled':''} style="
+              min-width:38px;padding:6px 4px;border-radius:8px;font-weight:900;font-size:13px;cursor:${already?'default':'pointer'};
+              background:${already?'rgba(255,255,255,0.07)':'rgba(255,255,255,0.15)'};
+              border:1px solid ${already?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.35)'};
+              color:${already?'rgba(255,255,255,0.3)':'#fff'};
+            ">${col}${n}</button>`;
+          }).join('')}
+        </div>
+      </div></div>`;
+    } else if (_showChallenge || _showResult) {
       if (_showResult) {
         const _r = _bingoChallengeResult;
-        // perfect+fast=verde, perfect+lento+rapida(0 cargas)=naranja, perfect+lento+media=amarillo, fail=rojo
-        const _rC = !_r.perfect ? 'red' : _r.fast ? 'green' : (_r.isRapida && _r.charges===0) ? 'yellow' : 'yellow';
+        const _rC = !_r.perfect ? 'red' : _r.fast ? 'green' : 'yellow';
         const _rIco = !_r.perfect ? '😓' : _r.fast ? '🚀' : '✅';
         const _rH = !_r.perfect ? 'Tiempo agotado' : _r.fast ? '¡Rapidísimo!' : '¡Reto completo!';
         const _rB = !_r.perfect
           ? `⛔ No completaste el reto — bloqueamos automáticamente ${_r.fails} número${_r.fails!==1?'s':''} de tus cartones.`
-          : _r.fast
-            ? `🎉 ¡Felicidades! Ganaste ${_r.charges} carga${_r.charges!==1?'s':''} ⚡ por hacerlo en tiempo récord.`
-            : `👍 +${_r.charges} carga ⚡ — ¡intenta hacerlo en menos de ${_r.isRapida?'15':'30'}s la próxima vez para ganar 2!`;
+          : _r.fast && _r.isRapida
+            ? `🎉 +${_r.charges} carga ⚡ y bloqueos limpiados. <b>En un momento elige tu número bonus</b> para marcarlo en tus cartones.`
+            : _r.fast
+              ? `🎉 ¡Felicidades! +${_r.charges} carga${_r.charges!==1?'s':''} ⚡ y bloqueos limpiados.`
+              : `👍 +${_r.charges} carga ⚡ — hazlo en menos de ${_r.isRapida?'15':'30'}s para ganar el número bonus.`;
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-${_rC}">
             <div class="bcc-result-ico">${_rIco}</div>
             <div class="bcc-result-h">${_rH}</div>
@@ -4610,15 +4685,15 @@ function _bingoPaneHtml() {
         const q = qs[bingoChallengeIdx];
         const remain = Math.max(0, Math.round(((bingoGame.challengeEndsAt||0)-Date.now())/1000));
         const pct = Math.max(0, Math.min(100, (remain/(bingoGame.challengeSeconds||60))*100));
-        const _barThresh = (bingoGame.gameSpeed||'media')==='rapida' ? 15 : 30;
+        const _barThresh = _isRapidaMode ? 15 : 30;
         const barCls = remain > _barThresh ? 'ok' : 'warn';
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
             <div class="bcc-title">🧠 ¡Reto Matemático!</div>
-            <div class="bcc-sub">${(bingoGame.gameSpeed||'media')==='rapida' ? 'Reto perfecto en &lt;15s = +2 cargas · en más tiempo = +1 carga · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
+            <div class="bcc-sub">${_isRapidaMode ? 'Reto perfecto en &lt;15s = +1 carga ⚡ + número bonus · si no = +1 carga · 1 vida · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
             <div class="bcc-bar"><div class="bcc-bar-fill ${barCls}" style="width:${pct}%"></div></div>
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
             ${q ? `<div class="bcc-question">${q.q}</div>
-            <div class="bcc-lives">${(()=>{const _mw=(bingoGame?.gameSpeed==='rapida')?2:3;return Array.from({length:_mw},(_,i)=>i<(_mw-bingoChallengeWrongs)?'❤️':'🖤').join('');})()}</div>
+            <div class="bcc-lives">${(()=>{const _mw=_isRapidaMode?1:3;return Array.from({length:_mw},(_,i)=>i<(_mw-bingoChallengeWrongs)?'❤️':'🖤').join('');})()}</div>
             ${q.mc ? `<div class="bcc-mc-opts">${(q.opts||[]).map((opt,i)=>{const _wr=bingoChallengeWrongOpts.has(opt.toLowerCase());return `<button class="bcc-mc-btn${_wr?' bcc-mc-err':''}" ${_wr?'disabled':''} onclick="submitBingoChallengeAnswer('${opt}')">[${i+1}] ${opt}</button>`;}).join('')}</div>
             <div class="bcc-foot">⏱ ${remain}s · Pregunta ${bingoChallengeIdx+1}/${qs.length} · Tecla 1-4 para responder</div>`
             : `<input class="bcc-input" id="bingo-challenge-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
