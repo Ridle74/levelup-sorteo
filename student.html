@@ -1955,7 +1955,8 @@ const TRIG_COPAIRS = [['seno','coseno'],['coseno','seno'],['tangente','cotangent
 const TRIG_RECPAIRS = [['seno','cosecante'],['cosecante','seno'],['coseno','secante'],['secante','coseno'],['tangente','cotangente'],['cotangente','tangente']];
 // Genera una pregunta Verdadero/Falso de identidades trigonométricas (nivel 5)
 function _bingoGenTrigTF() {
-  const cat = _bGetRandomInt(0, 2); // 0=cofunciones, 1=producto recíproco, 2=pitagóricas
+  // Solo dos tipos pedidos: cofunciones de ángulos complementarios y producto razón inversa = 1
+  const cat = _bGetRandomInt(0, 1); // 0=cofunciones, 1=producto recíproco
   const isTrue = Math.random() < 0.5;
   let q, a;
   if (cat === 0) {
@@ -1975,7 +1976,7 @@ function _bingoGenTrigTF() {
       q = `¿Verdadero o falso? ${fn1}(${alpha}°) = ${fn2}(${beta}°)`;
       a = 'Falso';
     }
-  } else if (cat === 1) {
+  } else {
     // Producto recíproco = 1: fn1(θ°) × fn2(θ°) = 1
     const recpairs = [['seno','cosecante'],['coseno','secante'],['tangente','cotangente']];
     const theta = _bGetRandomInt(10, 80);
@@ -1989,26 +1990,6 @@ function _bingoGenTrigTF() {
       const others = TRIG_ALL.filter(t => t !== fn1 && t !== fn2correct);
       const fn2 = others[_bGetRandomInt(0, others.length-1)];
       q = `¿Verdadero o falso? ${fn1}(${theta}°) × ${fn2}(${theta}°) = 1`;
-      a = 'Falso';
-    }
-  } else {
-    // Identidades pitagóricas
-    const trueIds = [
-      'seno²(α) + coseno²(α) = 1',
-      '1 + tangente²(α) = secante²(α)',
-      '1 + cotangente²(α) = cosecante²(α)',
-    ];
-    const falseIds = [
-      'seno²(α) + tangente²(α) = 1',
-      '1 + seno²(α) = secante²(α)',
-      'coseno²(α) + cotangente²(α) = 1',
-      '1 + cotangente²(α) = tangente²(α)',
-    ];
-    if (isTrue) {
-      q = `¿Verdadero o falso? ${trueIds[_bGetRandomInt(0, trueIds.length-1)]}`;
-      a = 'Verdadero';
-    } else {
-      q = `¿Verdadero o falso? ${falseIds[_bGetRandomInt(0, falseIds.length-1)]}`;
       a = 'Falso';
     }
   }
@@ -2105,9 +2086,10 @@ const BINGO_TOPICS = {
 const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf'];
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
-// Genera `count` preguntas ciclando por los temas seleccionados (pregunta 1=tema1, 2=tema2, 3=tema1…)
+// Genera `count` preguntas todas del mismo tema — el tema se elige por índice de reto.
+// Cada reto completo usa UN solo tema; los temas rotan entre retos (reto 0→tema0, reto 1→tema1…).
 // Acepta array de claves ['suma','trigo'] o nivel numérico legacy (1-5) para compatibilidad.
-function _bingoGenQuestions(topicsOrLevel, count=5) {
+function _bingoGenQuestions(topicsOrLevel, count=5, retoIndex=0) {
   let topics;
   if (Array.isArray(topicsOrLevel) && topicsOrLevel.length>0) {
     topics = topicsOrLevel;
@@ -2115,10 +2097,11 @@ function _bingoGenQuestions(topicsOrLevel, count=5) {
     const leg = {1:'suma',2:'mult',3:'neg',4:'ecuacion',5:'trigo'};
     topics = [leg[+topicsOrLevel]||'suma'];
   }
+  const t = topics[retoIndex % topics.length];
+  const gen = BINGO_TOPICS[t]?.gen;
   const qs = [];
   for (let i=0; i<count; i++) {
-    const t = topics[i % topics.length];
-    qs.push(BINGO_TOPICS[t]?.gen?.() ?? {q:`${_bGetRandomInt(5,40)} + ${_bGetRandomInt(5,40)} = ?`,a:0});
+    qs.push(gen ? gen() : {q:`${_bGetRandomInt(5,40)} + ${_bGetRandomInt(5,40)} = ?`,a:0});
   }
   return qs;
 }
@@ -2754,7 +2737,7 @@ function _bingoHostAdvancePhase() {
   }
 }
 function _bingoHostStartChallenge() {
-  const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5);
+  const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
   BINGO_REF.update({
     challengeActive:true, challengeId: Date.now(), questions,
     challengeEndsAt: Date.now() + (bingoGame.challengeSeconds||60)*1000,
@@ -3616,7 +3599,7 @@ function doBingoDesafio(targetUid) {
 function acceptBingoDesafio() {
   const ac = bingoGame && bingoGame.activeChallenge;
   if (!ac || ac.status !== 'pending') return;
-  const qs = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5);
+  const qs = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
   const secs = bingoGame.challengeSeconds || 60;
   const now = Date.now();
   BINGO_REF.update({
