@@ -1007,6 +1007,7 @@ let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {sr
 let _bingoRevengeActive  = false; // true cuando el jugador está ejecutando su venganza
 let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
 let _bingoDuelError      = false;
+let _bingoDuelWrongOpts  = new Set(); // opciones ya intentadas (MC) en la pregunta actual del duelo
 let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
 let _prevChallengeActive  = false; // detecta transición false→true (inicio de reto) para auto-aceptar Desafío
 // Velocidad media: reto cada 10,8,6,4 números; rápida: 5,4,3,2
@@ -3607,7 +3608,7 @@ function acceptBingoDesafio() {
     'activeChallenge.questions': qs,
     'activeChallenge.startedAt': now,
     'activeChallenge.endsAt': now + secs * 1000,
-  }).then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _renderBingoPane(); })
+  }).then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _bingoDuelWrongOpts=new Set(); _renderBingoPane(); })
     .catch(e=>console.error('desafio accept',e));
 }
 function rechazarBingoDesafio() {
@@ -3631,12 +3632,24 @@ function submitBingoDuelAnswer(raw) {
   const qs = ac.questions || [];
   const q = qs[_bingoDuelIdx];
   if (!q) return;
-  const val = Number((raw||'').trim());
   const clearInput = () => { const el = document.getElementById('bingo-duel-input'); if (el) el.value = ''; };
-  if (Number.isNaN(val) || val !== q.a) {
+  // Comparar respuesta: MC (string) o numérica
+  let correct = false;
+  if (q.mc) {
+    const trimmed = (raw||'').trim().toLowerCase();
+    if (!trimmed) return;
+    correct = trimmed === String(q.a).toLowerCase();
+    if (!correct) _bingoDuelWrongOpts.add(trimmed);
+  } else {
+    const val = Number((raw||'').trim());
+    if (Number.isNaN(val)) { clearInput(); return; }
+    correct = val === q.a;
+  }
+  if (!correct) {
     _bingoDuelError = true; clearInput(); _renderBingoPane(); return;
   }
   _bingoDuelError = false;
+  _bingoDuelWrongOpts = new Set();
   _bingoDuelIdx += 1;
   clearInput();
   if (_bingoDuelIdx >= qs.length) {
@@ -3667,7 +3680,7 @@ function _bingoDuelFinish(elapsedMs) {
     // si toT <= fromT: desafiado ganó — el challenger solo pierde la carga sin penalización extra
   }
   BINGO_REF.update(patch)
-    .then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _renderBingoPane(); })
+    .then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _bingoDuelWrongOpts=new Set(); _renderBingoPane(); })
     .catch(e=>console.error('duel finish',e));
 }
 // doVenganza() se llama en lugar de la función normal cuando _bingoRevengeActive===true
@@ -4461,9 +4474,12 @@ function _bingoPaneHtml() {
             <div class="bcc-bar"><div class="bcc-bar-fill ${_duelBarCls}" style="width:${_duelPct}%"></div></div>
             <div class="bcc-dots">${(_ac.questions||[]).map((_,i)=>`<span class="bcc-dot ${i<_bingoDuelIdx?'ok':''} ${i===_bingoDuelIdx?'now':''}"></span>`).join('')}</div>
             ${_duelQ?`<div class="bcc-question">${_duelQ.q}</div>
-            <input class="bcc-input" id="bingo-duel-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoDuelAnswer(this.value);}">
+            ${_duelQ.mc
+              ? `<div class="bcc-mc-opts">${(_duelQ.opts||[]).map((opt,i)=>{const _wr=_bingoDuelWrongOpts.has(opt.toLowerCase());return `<button class="bcc-mc-btn${_wr?' bcc-mc-err':''}" ${_wr?'disabled':''} onclick="submitBingoDuelAnswer('${opt}')">[${i+1}] ${opt}</button>`;}).join('')}</div>
+            <div class="bcc-foot">⏱ ${_duelRemain}s · Pregunta ${_bingoDuelIdx+1}/${(_ac.questions||[]).length} · Tecla 1-${(_duelQ.opts||[]).length} para responder</div>`
+              : `<input class="bcc-input" id="bingo-duel-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoDuelAnswer(this.value);}">
             <button class="bcc-submit" style="background:linear-gradient(135deg,#b45309,#dc2626)" onclick="submitBingoDuelAnswer(document.getElementById('bingo-duel-input').value)">Responder</button>
-            <div class="bcc-foot">⏱ ${_duelRemain}s · Pregunta ${_bingoDuelIdx+1}/${(_ac.questions||[]).length}</div>`:''}
+            <div class="bcc-foot">⏱ ${_duelRemain}s · Pregunta ${_bingoDuelIdx+1}/${(_ac.questions||[]).length}</div>`}`:''}
           </div></div>`;
         } else if (_isParticipant) {
           body += `<div class="bpx-revenge-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(239,68,68,0.1));border-color:rgba(245,158,11,0.4)">⚔️ <b>¡Terminaste el duelo!</b> Esperando que tu rival acabe...</div>`;
