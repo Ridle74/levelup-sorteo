@@ -3258,6 +3258,9 @@ function claimBingoPrize(cardIdx, tier) {
   if (t.won?.[tier] || t.failed?.[tier]) return; // ya resuelto, sin reintentos
   const card = (player.cards||{})[cardIdx];
   if (!card) return;
+  // Bloquear si alguna celda congelada forma parte del cartón reclamado
+  const _frozenNums = new Set((player.frozenCells||[]).filter(f=>f.c===Number(cardIdx)).map(f=>f.n));
+  if (_frozenNums.size > 0) { showToast('❄️ Tienes una casilla congelada en este cartón — no puedes canjear hasta que se descongele.','error'); return; }
   const marksSet = new Set((player.marks||[]).filter(m=>m.c===Number(cardIdx)).map(m=>m.n));
   const { maxLine, isFull } = bingoEvaluate(card, marksSet);
   const ok = tier==='bingo' ? isFull : maxLine >= BINGO_TIER_REQ[tier];
@@ -4054,6 +4057,7 @@ function doBingoRobo() {
   const rivPos = rivCard.indexOf(rivalNum);
   if (myPos === -1 || rivPos === -1) { showToast('Número no encontrado en el cartón.','error'); return; }
   if ((bingoGame.drawnNumbers||[]).includes(myNum)) { showToast('No puedes ceder un número ya sorteado.','error'); return; }
+  if ((player.frozenCells||[]).some(f=>f.c===myCardIdx && f.n===myNum)) { showToast('❄️ Esa casilla está congelada — no puedes usarla en un robo.','error'); return; }
   if (myPos % 5 !== rivPos % 5) { showToast(`Los números deben estar en la misma columna (${'BINGO'[rivPos%5]}).`,'error'); return; }
   // Chequear columna protegida por Fortaleza — si está protegida, la carga se gasta pero no aplica
   const _rivShielded = rivalPlayer.shieldedColumns||[];
