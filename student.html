@@ -759,6 +759,7 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-cell.marked.fire-3{background:linear-gradient(135deg,#bef264,#facc15);box-shadow:0 0 12px rgba(250,204,21,0.65);transform:scale(1.05)}
 .bingo-cell.marked.fire-4{background:linear-gradient(135deg,#facc15,#fb923c);box-shadow:0 0 16px rgba(251,146,60,0.8);transform:scale(1.05);color:#fff}
 .bingo-cell.marked.fire-5{background:linear-gradient(135deg,#fb923c,#f97316,#dc2626);box-shadow:0 0 24px rgba(220,38,38,0.95);transform:scale(1.05);color:#fff}
+.bingo-cell.marked.bonus,.bingo-cell.marked.bonus.fire-1,.bingo-cell.marked.bonus.fire-2,.bingo-cell.marked.bonus.fire-3,.bingo-cell.marked.bonus.fire-4,.bingo-cell.marked.bonus.fire-5{background:linear-gradient(135deg,#f59e0b,#a855f7)!important;box-shadow:0 0 18px rgba(168,85,247,0.75)!important;color:#fff!important;border:1px solid rgba(251,191,36,0.5)!important;transform:scale(1.05)}
 .bingo-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start}
 .bingo-card-block{position:relative;max-width:420px;width:100%;margin:0 auto;background:#111827;border:1px solid rgba(132,204,22,0.3);border-radius:16px;padding:20px;box-shadow:0 0 15px rgba(132,204,22,0.1)}
 .bingo-card-block.blocking{border-color:#ef4444}
@@ -3283,7 +3284,7 @@ function submitBingoChallengeAnswer(raw) {
     bingoChallengeAnswer = '';
     _clearInput();
     _bSnd.wrong();
-    const _maxW = (bingoGame?.gameSpeed==='rapida') ? 1 : 3;
+    const _maxW = (bingoGame?.gameSpeed==='rapida') ? 2 : 3;
     if (bingoChallengeWrongs >= _maxW) { _bingoFinishChallenge(bingoChallengeIdx); return; } // vidas agotadas
     _renderBingoPane();
     setTimeout(() => { bingoChallengeError = false; _renderBingoPane(); }, 350);
@@ -3643,7 +3644,7 @@ function claimBingoBonusNum(n) {
     if (!(card||[]).includes(n)) return;           // número no está en este cartón
     const key = `${cardIdx}:${n}`;
     if (existingSet.has(key) || blockedSet.has(key)) return; // ya marcado o bloqueado
-    newMarks.push({ c: cardIdx, n });
+    newMarks.push({ c: cardIdx, n, bonus: true }); // bonus:true → color diferente en el cartón
     added++;
   });
   _bingoBonusPending = false;
@@ -4393,6 +4394,7 @@ function _bingoPaneHtml() {
           }
 
           const marksSet   = new Set(viewMarks.filter(m=>m.c===cardIdx).map(m=>m.n));
+          const bonusSet   = new Set(viewMarks.filter(m=>m.c===cardIdx&&m.bonus).map(m=>m.n));
           const blockedSet = new Set(viewBlocked.filter(m=>m.c===cardIdx).map(m=>m.n));
           const rowHeat = [];
           for (let r=0; r<5; r++) { let h=0; for (let c=0; c<5; c++) { const n=_bcAt(card,r,c); if (n===0||(marksSet.has(n)&&!blockedSet.has(n))) h++; } rowHeat.push(h); }
@@ -4443,7 +4445,7 @@ function _bingoPaneHtml() {
               const st = isSabotaged?'sabotaged':(isBlocked?'blocked':(isMarked?'marked':''));
               const rivalPowerActive = ['sabotaje','congelar'].includes(bingoActivePower) ||
                 (bingoActivePower==='robo' && !_bingoPowerStep); // robo paso 1 en rival
-              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, rivalPowerActive?'power-target':''].filter(Boolean).join(' ');
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, rivalPowerActive?'power-target':'', isMarked&&bonusSet.has(num)?'bonus':''].filter(Boolean).join(' ');
               const tt = isSabotaged ? `title="❄️ Congelada por ${frozenEntry.byName}"` : '';
               const fn2 = rivalPowerActive ? `onclick="_bingoCellPowerClick(${cardIdx},${num},'${viewUid}')"` : '';
               body += `<div class="${cl}" ${fn2} ${tt}>${isSabotaged?'❄️':num}</div>`;
@@ -4457,7 +4459,7 @@ function _bingoPaneHtml() {
               const isPowerSrc = bingoActivePower==='robo' && _bingoPowerStep &&
                 _bingoPowerStep.rivalCardIdx!==undefined; // robo marcado en paso 1
               const powerCls = ownPowerActive ? 'power-target' : '';
-              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, powerCls].filter(Boolean).join(' ');
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, powerCls, isMarked&&bonusSet.has(num)?'bonus':''].filter(Boolean).join(' ');
               const tt = isSabotaged ? `title="❄️ ${frozenEntry.byName} congeló esta casilla hasta el próximo reto"` : '';
               const fn = frozen ? '' : (ownPowerActive
                 ? `onclick="_bingoCellPowerClick(${cardIdx},${num},null)"`
