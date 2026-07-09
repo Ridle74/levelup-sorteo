@@ -4772,10 +4772,19 @@ function _bingoPaneHtml() {
         <button class="blc-spd-btn ${_curSpd==='media'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'media',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['media']})">⏱ Media</button>
         <button class="blc-spd-btn ${_curSpd==='rapida'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'rapida',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['rapida']})">⚡ Rápida</button>
       </div>
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 4px">TEMAS DEL RETO (selecciona uno o varios — las preguntas rotan en orden)</div>
-      <div class="blc-diff-row">
-        ${BINGO_TOPIC_ORDER.map(k=>{const {ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" onclick="toggleBingoTopic('${k}')"><span class="blc-diff-ico">${ico}</span><span class="blc-diff-lbl">${lbl}</span></button>`;}).join('')}
-      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 6px">TEMAS DEL RETO <span style="opacity:.6">(selecciona uno o varios — rotan en orden)</span></div>
+      ${Object.entries(PREP_LEVELS).map(([lvlKey,lvlDef])=>{
+        const grades=lvlDef.grades||{};
+        const gKeys=Object.keys(grades);
+        if(!gKeys.length) return `<div style="font-size:10px;color:rgba(255,255,255,0.2);margin:2px 0 4px">${lvlDef.ico} ${lvlDef.lbl} — próximamente</div>`;
+        return `<div style="margin-bottom:6px">
+          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">${lvlDef.ico} ${lvlDef.lbl}</div>
+          ${gKeys.map(g=>{const tks=grades[g]||[];return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+            <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);min-width:18px">${g}°</span>
+            <div class="blc-diff-row" style="margin:0;flex-wrap:wrap">${tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" onclick="toggleBingoTopic('${k}')"><span class="blc-diff-ico">${ico}</span><span class="blc-diff-lbl">${lbl}</span></button>`;}).join('')}</div>
+          </div>`;}).join('')}
+        </div>`;
+      }).join('')}
       <div class="blc-grid">
         <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
           <span class="blc-clabel">Modo directo</span>
