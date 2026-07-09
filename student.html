@@ -2256,7 +2256,7 @@ const BINGO_TOPICS = {
   trigo:    { ico:'sin',lbl:'Razones',     qCount:3, gen:()=>{ const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
   trigvf:    { ico:'V/F', lbl:'Identidades', qCount:3, gen:()=>_bingoGenTrigTF() },
   conjuntos:  { ico:'∪',  lbl:'Conjuntos',              gen:()=>_bingoGenConjuntos() },
-  trigoprop:  { ico:'∠',  lbl:'Prop. Trig.', qCount:5,  gen:()=>_bingoGenTrigoProp() },
+  trigoprop:  { ico:'∠',  lbl:'Prop. Trig.', qCount:2,  gen:()=>_bingoGenTrigoProp() },
 };
 const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop'];
 const PREP_LEVELS = {
@@ -3230,7 +3230,7 @@ function createBingoGame() {
       status:'lobby', hostId: me.uid, hostName: me.name,
       createdAt: Date.now(), drawnNumbers:[], currentNumber:null,
       nextDrawAt:null,
-      directMode:true, difficulty:1, topics:['suma'], cardCount,
+      directMode:true, difficulty:1, topics:[], cardCount,
       gameSpeed: _bingoPendingSpeed,
       challengeSchedule: BINGO_CHALLENGE_SCHEDULES[_bingoPendingSpeed] || BINGO_CHALLENGE_SCHEDULES.media,
       markSeconds:   _bingoPendingSpeed==='rapida' ? 10 : 15,
@@ -3293,11 +3293,10 @@ function toggleBingoTopic(topic) {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
   _bSnd.click();
-  const current = bingoGame.topics || ['suma'];
+  const current = bingoGame.topics || [];
   let next;
   if (current.includes(topic)) {
     next = current.filter(t=>t!==topic);
-    if (next.length===0) return; // al menos 1 tema siempre
   } else {
     next = [...current, topic];
   }
@@ -3307,6 +3306,7 @@ function toggleBingoTopic(topic) {
 function startBingoDraw() {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
+  if (!(bingoGame.topics||[]).length) { showToast('Selecciona al menos un tema para el reto.','error'); return; }
   if (!Object.keys(bingoGame.players||{}).length) { showToast('Espera a que se unan jugadores.','error'); return; }
   const botCount = Math.max(0, Math.min(4, bingoGame.botCount||0));
   const botLevel = bingoGame.botLevel || 'basic';
@@ -4765,7 +4765,7 @@ function _bingoPaneHtml() {
   if (status==='lobby') {
     if (isHost) {
       const _curSpd = bingoGame.gameSpeed || 'media';
-      const _topics = bingoGame.topics || ['suma'];
+      const _topics = bingoGame.topics || [];
       const _cards = bingoGame.cardCount || 1;
       const _bots = bingoGame.botCount || 0;
       const _dm = bingoGame.directMode !== false;
@@ -4825,7 +4825,8 @@ function _bingoPaneHtml() {
            <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
          </div>`;
     if (isHost) {
-      body += `<button class="bingo-start-btn" onclick="startBingoDraw()">▶ Iniciar sorteo</button>`;
+      const _hasTopics = (bingoGame.topics||[]).length > 0;
+      body += `<button class="bingo-start-btn" onclick="startBingoDraw()" ${_hasTopics?'':'disabled style="opacity:0.35;cursor:not-allowed"'}>${_hasTopics?'▶ Iniciar sorteo':'⚠ Selecciona un tema'}</button>`;
     } else {
       const _sp = bingoGame.gameSpeed || 'media';
       body += `<div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase">${_sp==='rapida'?'⚡ Velocidad rápida':'⏱ Velocidad media'}</div>`;
@@ -5408,7 +5409,7 @@ function _bingoPaneHtml() {
         const pct = Math.max(0, Math.min(100, (remain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
         const _barThresh = _isRapidaMode ? 15 : 30;
         const barCls = remain > _barThresh ? 'ok' : 'warn';
-        const _rTopics = bingoGame.topics || ['suma'];
+        const _rTopics = bingoGame.topics || [];
         const _rTopicKey = _rTopics[(bingoGame.retoCount||0) % _rTopics.length];
         const _rTopicDef = BINGO_TOPICS[_rTopicKey] || { ico:'🧠', lbl: _rTopicKey };
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
