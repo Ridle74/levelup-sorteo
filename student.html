@@ -1058,7 +1058,7 @@ let msgsUploading = false;
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
 let dashGamingMode = 'bingo';  // 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
-let _prep = { state:'config', level:'primaria', topic:'suma', qCount:10, timeSec:300, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
+let _prep = { state:'config', level:'primaria', grade:'1', topic:'suma', qCount:10, timeSec:300, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -2259,8 +2259,9 @@ const BINGO_TOPICS = {
 };
 const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop'];
 const PREP_LEVELS = {
-  primaria:   { lbl:'Primaria',   ico:'🏫', topics:['suma','resta','mult','div','conjuntos'] },
-  secundaria: { lbl:'Secundaria', ico:'📐', topics:['neg','ecuacion','trigo','trigvf','trigoprop'] },
+  primaria:        { lbl:'Primaria',   ico:'🏫', grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'] } },
+  secundaria:      { lbl:'Secundaria', ico:'📐', grades:{ '1':['neg','ecuacion','trigoprop'], '3':['trigo','trigvf'] } },
+  preuniversitario:{ lbl:'Pre-univ.',  ico:'🎓', grades:{} },
 };
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
@@ -4293,28 +4294,45 @@ function _preparatePaneHtml() {
 }
 function _prepSetLevel(lvl) {
   _prep.level = lvl;
-  _prep.topic = PREP_LEVELS[lvl].topics[0]; // resetea al primer tema del nivel
+  const grades = PREP_LEVELS[lvl]?.grades || {};
+  const firstGrade = Object.keys(grades)[0] || '1';
+  _prep.grade = firstGrade;
+  _prep.topic = (grades[firstGrade] || [])[0] || '';
+  _renderPreparatePane();
+}
+function _prepSetGrade(g) {
+  _prep.grade = g;
+  const topics = PREP_LEVELS[_prep.level]?.grades?.[g] || [];
+  _prep.topic = topics[0] || '';
   _renderPreparatePane();
 }
 function _prepConfigHtml() {
-  const levelTopicKeys = PREP_LEVELS[_prep.level].topics;
+  const lvDef = PREP_LEVELS[_prep.level] || {};
+  const grades = lvDef.grades || {};
+  const gradeKeys = Object.keys(grades);
+  const topicKeys = grades[_prep.grade] || [];
   const qOpts = [5,10,15,20];
   const tOpts = [[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
+  const nivelRow = Object.entries(PREP_LEVELS).map(([key,lv])=>`
+    <button class="prep-option-btn ${_prep.level===key?'active':''}" style="font-size:13px" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('');
+  const gradeRow = gradeKeys.map(g=>`
+    <button class="prep-option-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')">${g}° Grado</button>`).join('');
+  const topicGrid = topicKeys.map(key=>{ const def=BINGO_TOPICS[key]; return `
+    <button class="prep-topic-btn ${_prep.topic===key?'active':''}" onclick="_prep.topic='${key}';_renderPreparatePane()">
+      <span class="prep-topic-ico">${def.ico}</span>${def.lbl}
+    </button>`; }).join('');
+  const hasTopics = topicKeys.length > 0;
   return `<div class="prep-wrap">
     <div class="prep-title">📚 Prepárate</div>
     <div class="prep-sub">Practica antes de jugar al Bingo</div>
-    <div class="prep-section-label">Nivel</div>
-    <div class="prep-option-row">
-      ${Object.entries(PREP_LEVELS).map(([key,lv])=>`
-        <button class="prep-option-btn ${_prep.level===key?'active':''}" style="font-size:15px" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')}
-    </div>
+    <div class="prep-section-label">Nivel educativo</div>
+    <div class="prep-option-row">${nivelRow}</div>
+    ${gradeKeys.length > 0 ? `
+    <div class="prep-section-label">Grado</div>
+    <div class="prep-option-row">${gradeRow}</div>
+    ${hasTopics ? `
     <div class="prep-section-label">Tema</div>
-    <div class="prep-topic-grid">
-      ${levelTopicKeys.map(key=>{ const def=BINGO_TOPICS[key]; return `
-        <button class="prep-topic-btn ${_prep.topic===key?'active':''}" onclick="_prep.topic='${key}';_renderPreparatePane()">
-          <span class="prep-topic-ico">${def.ico}</span>${def.lbl}
-        </button>`; }).join('')}
-    </div>
+    <div class="prep-topic-grid">${topicGrid}</div>
     <div class="prep-section-label">Preguntas</div>
     <div class="prep-option-row">
       ${qOpts.map(n=>`<button class="prep-option-btn ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()">${n}</button>`).join('')}
@@ -4323,7 +4341,8 @@ function _prepConfigHtml() {
     <div class="prep-option-row">
       ${tOpts.map(([s,lbl])=>`<button class="prep-option-btn ${_prep.timeSec===s?'active':''}" onclick="_prep.timeSec=${s};_renderPreparatePane()">${lbl}</button>`).join('')}
     </div>
-    <button class="prep-start-btn" onclick="_prepStart()">▶ Comenzar</button>
+    <button class="prep-start-btn" onclick="_prepStart()">▶ Comenzar</button>` : ''}` :
+    `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:16px">🚧 Próximamente habrá temas para este nivel.</div>`}
     ${!isAdmin() ? _prepHistorySectionHtml() : ''}
   </div>`;
 }
@@ -4352,7 +4371,7 @@ function _prepHistorySectionHtml() {
               <span style="font-size:14px;font-weight:900;color:${ok?'#39ff7a':'#f87171'}">${h.correct}/${h.total} · ${h.pct}%</span>
             </div>
             <div style="display:flex;justify-content:space-between;margin-top:2px">
-              <span style="font-size:11px;color:rgba(255,255,255,0.35)">${h.level==='primaria'?'🏫 Primaria':'📐 Secundaria'}</span>
+              <span style="font-size:11px;color:rgba(255,255,255,0.35)">${h.level==='primaria'?'🏫 Primaria':h.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.'}${h.grade?` · ${h.grade}° Grado`:''}</span>
               <span style="font-size:11px;color:rgba(255,255,255,0.3)">${dateStr} ${timeStr}</span>
             </div>
           </div>`;
@@ -4423,6 +4442,7 @@ async function _prepSaveHistory() {
       uid:        me.uid,
       name:       me.name,
       level:      _prep.level,
+      grade:      _prep.grade || '',
       topic:      _prep.topic,
       topicLabel: def.lbl || _prep.topic,
       correct, total,
@@ -9390,4 +9410,153 @@ PADRES_REF.onSnapshot(doc => {
     const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
     // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
     // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
-    // skipDates — se mantiene solo por compatibilidad. getClassDat
+    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
+    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
+    // recurring/date/skipDates fecha por fecha.
+    const hoursByDay = {}, slotsByDay = {};
+    mySessions.forEach(s => {
+      const h = Math.max(1, Math.round((s.dur||60)/60));
+      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
+      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
+      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
+    });
+    // ordenar los slots de cada día cronológicamente por hora de inicio
+    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
+    const key = normName(st.name);
+    map[key] = hoursByDay;
+    slotMap[key] = slotsByDay;
+    sessMap[key] = mySessions;
+  });
+  classDaysByName  = map;
+  classSlotsByName = slotMap;
+  classSessByName  = sessMap;
+  if (currentView === 'puntos') {
+    const app=document.getElementById('app');
+    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+  }
+  if (currentView === 'horarios') {
+    const app=document.getElementById('app');
+    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
+    renderHorariosSidebar();
+  }
+  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
+  // nombres vinculados (un padre puede registrarse o editar un nombre en
+  // cualquier momento mientras el admin tiene el panel abierto).
+  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
+    syncPadresLinks();
+    cacheLiveNames();
+    renderStudentList();
+    renderPadresRequests();
+  }
+}, err => console.error('[Firebase padres]', err));
+
+REF.onSnapshot(doc => {
+  const data = doc.exists ? doc.data() : {};
+  allocations = data.allocations || {};
+  overrides   = data.overrides   || {};
+  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
+  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
+  const lms   = data.lms || {};
+  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
+  points      = typeof lms.points==='object' ? lms.points : {};
+  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
+  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
+  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
+  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
+  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
+  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
+  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
+  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
+  // sobrescriben datos reales con el estado vacío por defecto.
+  if (doc.exists) {
+    lmsDataLoaded = true;
+    archiveMonthIfNeeded();
+    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
+    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
+    (function seedJoannaMult(){
+      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
+      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
+        taskMultipliers[String(joanna.id)] = 3;
+        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
+      }
+    })();
+  } else {
+    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
+  }
+
+  if (!appReady) {
+    appReady = true;
+    document.getElementById('initial-loading').classList.add('hidden');
+    router();
+  } else {
+    // Live-update tablero if it's open
+    const hash = currentView;
+    if (hash === 'tablero') {
+      const loggedId = getLoggedId();
+      if (loggedId !== null) renderAll(loggedId);
+    }
+    if (hash === 'ranking')   vRankingSetup();
+    if (hash === 'numeros')   vNumerosSetup();
+    if (hash === 'dashboard') {
+      const app=document.getElementById('app');
+      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
+    }
+    if (hash === 'puntos') {
+      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
+      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
+      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
+      if (Date.now() - _lastPtsLocalEdit > 2500) {
+        const app=document.getElementById('app');
+        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+      }
+    }
+    if (hash === 'horarios') renderHorariosSidebar();
+    if (hash === 'tareas' && taskFilter !== 'msgs') {
+      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
+      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
+      const app=document.getElementById('app');
+      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
+    }
+  }
+}, err => {
+  console.error('[Firebase]', err);
+  document.getElementById('initial-loading').classList.add('hidden');
+  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
+  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
+  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
+  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
+  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
+  appReady = true;
+  router();
+  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
+});
+
+// Image viewer modal
+function openImgViewer(url, name){
+  let modal = document.getElementById('img-viewer-modal');
+  if (!modal){
+    modal = document.createElement('div');
+    modal.id = 'img-viewer-modal';
+    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
+    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
+        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
+      </div>`;
+    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
+    document.body.appendChild(modal);
+  }
+  document.getElementById('img-viewer-img').src = url;
+  const dl = document.getElementById('img-viewer-dl');
+  dl.href = url; dl.download = name||'imagen.jpg';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeImgViewer(){
+  const m = document.getElementById('img-viewer-modal');
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
