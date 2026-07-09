@@ -2079,6 +2079,25 @@ function _bingoGenTrigTF() {
   return { q, a, opts: ['Verdadero', 'Falso'], mc: true };
 }
 function _bingShufArr(arr) { const a=[...arr]; for(let k=a.length-1;k>0;k--){const j=_bGetRandomInt(0,k);[a[k],a[j]]=[a[j],a[k]];} return a; }
+// Genera pregunta de conjuntos: cuántos elementos tiene A ∪ B o A ∩ B
+function _bingoGenConjuntos() {
+  const pool = _bingShufArr([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]);
+  const nC = _bGetRandomInt(1,2), nA = _bGetRandomInt(2,3), nB = _bGetRandomInt(2,3);
+  const common = pool.slice(0, nC);
+  const onlyA  = pool.slice(nC, nC+nA);
+  const onlyB  = pool.slice(nC+nA, nC+nA+nB);
+  const A = [...common,...onlyA].sort((a,b)=>a-b);
+  const B = [...common,...onlyB].sort((a,b)=>a-b);
+  const uSize = nC+nA+nB, iSize = nC;
+  const askUnion = Math.random()<0.5;
+  const correct = askUnion ? uSize : iSize;
+  const op = askUnion ? 'A ∪ B' : 'A ∩ B';
+  const cands = new Set([A.length, B.length, A.length+B.length, uSize, iSize, correct-1, correct+1, correct+2]);
+  cands.delete(correct);
+  const wrongs = [...cands].filter(x=>x>0).slice(0,3);
+  while(wrongs.length<3) wrongs.push(correct+wrongs.length+1);
+  return { q:`A = {${A.join(', ')}}  B = {${B.join(', ')}}\n¿Cuántos elementos tiene ${op}?`, a:String(correct), opts:_bingShufArr([correct,...wrongs]).map(String), mc:true };
+}
 
 // ── Bingo Sound Engine (Web Audio API, sin archivos externos) ──────────────
 const _bSnd = (() => {
@@ -2164,12 +2183,13 @@ const BINGO_TOPICS = {
   neg:      { ico:'±',  lbl:'Negativos',   gen:()=>{ let a,b; do{a=_bGetRandomInt(-10,10);}while(a===0); do{b=_bGetRandomInt(-10,10);}while(b===0); return {q:`${a<0?`(${a})`:a} × ${b<0?`(${b})`:b} = ?`,a:a*b}; } },
   ecuacion: { ico:'=',  lbl:'Ecuaciones',  gen:()=>{ const x=_bGetRandomInt(-8,8)||1,m=_bGetRandomInt(2,6),b=_bGetRandomInt(-15,15)||5; return {q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`,a:x}; } },
   trigo:    { ico:'sin',lbl:'Razones',     qCount:3, gen:()=>{ const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
-  trigvf:   { ico:'V/F', lbl:'Identidades', qCount:3, gen:()=>_bingoGenTrigTF() },
+  trigvf:    { ico:'V/F', lbl:'Identidades', qCount:3, gen:()=>_bingoGenTrigTF() },
+  conjuntos: { ico:'∪',  lbl:'Conjuntos',             gen:()=>_bingoGenConjuntos() },
 };
-const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf'];
+const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', topics:['suma','resta','mult','div'] },
-  secundaria: { lbl:'Secundaria', ico:'📐', topics:['neg','ecuacion','trigo','trigvf'] },
+  secundaria: { lbl:'Secundaria', ico:'📐', topics:['neg','ecuacion','trigo','trigvf','conjuntos'] },
 };
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
@@ -4390,13 +4410,16 @@ function _renderBingoPane() {
     // La solución correcta es que los inputs de respuesta usen type="text" (ver bcc-input).
     savedInput = { id: active.id, value: active.value, selStart: active.selectionStart, selEnd: active.selectionEnd };
   }
-  // Guardar posición de scroll del strip de emojis (se resetea al reconstruir el innerHTML)
+  // Guardar posición de scroll del strip de emojis y del historial de números
   const _emojiStrip = document.getElementById('bingo-emoji-strip');
   const _emojiScroll = _emojiStrip ? _emojiStrip.scrollLeft : 0;
+  const _histStrip = document.getElementById('bingo-hist-strip');
+  const _histScroll = _histStrip ? _histStrip.scrollLeft : 0;
   try {
     hosts.forEach(el => { el.innerHTML = _bingoPaneHtml(); });
-    // Restaurar scroll del strip de emojis
+    // Restaurar scroll del strip de emojis y del historial de números
     if (_emojiScroll > 0) { const ns = document.getElementById('bingo-emoji-strip'); if (ns) ns.scrollLeft = _emojiScroll; }
+    if (_histScroll > 0)  { const nh = document.getElementById('bingo-hist-strip');  if (nh) nh.scrollLeft = _histScroll; }
     // Key listener 1-4 para preguntas MC del reto
     if (_bingoChallengeKeyListener) { document.removeEventListener('keydown', _bingoChallengeKeyListener); _bingoChallengeKeyListener = null; }
     const _mcQ = bingoGame && bingoGame.challengeActive ? (bingoGame.questions||[])[bingoChallengeIdx] : null;
@@ -9351,4 +9374,22 @@ function openImgViewer(url, name){
     modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
       <div style="display:flex;gap:10px;margin-top:16px">
         <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:
+        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
+      </div>`;
+    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
+    document.body.appendChild(modal);
+  }
+  document.getElementById('img-viewer-img').src = url;
+  const dl = document.getElementById('img-viewer-dl');
+  dl.href = url; dl.download = name||'imagen.jpg';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeImgViewer(){
+  const m = document.getElementById('img-viewer-modal');
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
