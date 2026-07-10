@@ -601,9 +601,12 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-full-btn{font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 11px;cursor:pointer;flex-shrink:0}
 /* Lobby redesign cards */
 .blc-speed{display:grid;grid-template-columns:1fr 1fr;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,0.12);margin:10px 0 12px}
-.blc-spd-btn{background:transparent;border:none;border-right:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.32);font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:22px 10px;cursor:pointer;transition:background .2s,color .2s}
+.blc-spd-btn{background:transparent;border:none;border-right:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.32);font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;padding:13px 10px;cursor:pointer;transition:background .2s,color .2s}
 .blc-spd-btn:last-child{border-right:none}
 .blc-spd-btn.on{background:rgba(168,85,247,0.18);color:#c084fc;text-shadow:0 0 22px rgba(192,132,252,0.7)}
+.blc-grade-grid{display:grid;gap:4px;margin:4px 0 8px}
+.blc-grade-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;color:rgba(255,255,255,0.45);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:12px 4px;cursor:pointer;transition:all .2s}
+.blc-grade-btn.on{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5);color:#c084fc}
 .blc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px}
 .blc-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px}
 .blc-clickable{cursor:pointer;transition:border-color .2s,background .2s}
@@ -2293,6 +2296,7 @@ const _bSnd = (() => {
 })();
 let _bSndLastNum = null, _bSndChalWas = false, _bSndTickSec = -1;
 let _bingoLobbyNivel = 'primaria'; // nivel activo en el selector de temas del lobby
+let _bingoLobbyGrade = null;       // grado/área seleccionado dentro del nivel
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 const BINGO_TOPICS = {
   suma:     { ico:'＋', lbl:'Suma',        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
@@ -2308,9 +2312,17 @@ const BINGO_TOPICS = {
 };
 const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop'];
 const PREP_LEVELS = {
-  primaria:        { lbl:'Primaria',   ico:'🏫', grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'] } },
-  secundaria:      { lbl:'Secundaria', ico:'📐', grades:{ '1':['neg','ecuacion','trigoprop'], '3':['trigo','trigvf'] } },
-  preuniversitario:{ lbl:'Pre-univ.',  ico:'🎓', grades:{} },
+  primaria:   { lbl:'Primaria',   ico:'🏫',
+    grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':[], '5':[], '6':[] } },
+  secundaria: { lbl:'Secundaria', ico:'📐',
+    grades:{ '1':['neg','ecuacion','trigoprop'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
+  preuniversitario:{ lbl:'Pre-univ.', ico:'🎓', grades:{},
+    areas:[
+      {key:'algebra',      lbl:'Álgebra',      ico:'α'},
+      {key:'aritmetica',   lbl:'Aritmética',   ico:'🔢'},
+      {key:'trigonometria',lbl:'Trigonometría',ico:'∠'},
+      {key:'geometria',    lbl:'Geometría',    ico:'◻'},
+    ] },
 };
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
@@ -3362,7 +3374,8 @@ function setBingoConfig(field, value) {
   }
   BINGO_REF.update(patch).catch(e=>console.error('bingo config',e));
 }
-function setBingoLobbyNivel(nivel) { _bingoLobbyNivel = nivel; _renderBingoPane(); }
+function setBingoLobbyNivel(nivel) { _bingoLobbyNivel = nivel; _bingoLobbyGrade = null; _renderBingoPane(); }
+function setBingoLobbyGrade(g) { _bingoLobbyGrade = g; _renderBingoPane(); }
 function toggleBingoTopic(topic) {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
@@ -4882,19 +4895,28 @@ function _bingoPaneHtml() {
       </div>
       <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 4px">TEMAS DEL RETO <span style="opacity:.6">(selecciona uno o varios — rotan en orden)</span></div>
       <div class="blc-speed" style="grid-template-columns:1fr 1fr 1fr;margin:4px 0 8px">
-        ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" style="font-size:14px;padding:14px 4px" onclick="setBingoLobbyNivel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')}
+        ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')}
       </div>
       ${(()=>{
-        const grades=PREP_LEVELS[_bingoLobbyNivel]?.grades||{};
-        const gKeys=Object.keys(grades);
-        if(!gKeys.length) return `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px">🚧 Próximamente</div>`;
-        return gKeys.map(g=>{
-          const tks=grades[g]||[];
-          return `<div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.08em;margin:6px 0 4px">${g}° Grado</div>`
-            +tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);
-              return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;
-            }).join('');
-        }).join('');
+        const lv = PREP_LEVELS[_bingoLobbyNivel];
+        if (!lv) return '';
+        // PRE-UNIV.: muestra áreas (álgebra, aritmética, trig, geometría)
+        if (lv.areas) {
+          const areasHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico} ${a.lbl}</button>`).join('')}</div>`;
+          return areasHtml + (_bingoLobbyGrade ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>` : '');
+        }
+        // PRIMARIA / SECUNDARIA: selector de grado → temas del grado
+        const grades = lv.grades || {};
+        const gKeys = Object.keys(grades).sort((a,b)=>+a-+b);
+        if (!gKeys.length) return `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
+        const cols = Math.min(gKeys.length, 3);
+        const gradeHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>`;
+        if (!_bingoLobbyGrade) return gradeHtml;
+        const tks = grades[_bingoLobbyGrade] || [];
+        const topicsHtml = tks.length
+          ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
+          : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
+        return gradeHtml + topicsHtml;
       })()}
       <div class="blc-grid">
         <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
