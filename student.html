@@ -4969,14 +4969,14 @@ function _prepExamHtml() {
   if (isMC && isVF) {
     ansHtml = `<div class="prep-vf-row">${(q.opts||[]).map(opt=>{
       let cls='prep-vf-btn';
-      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(_prep.selectedOpt===opt?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${opt.replace(/'/g,"\\'")}')">${opt}</button>`;
+      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${opt}</button>`;
     }).join('')}</div>`;
   } else if (isMC) {
     ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
       let cls='prep-mc-btn';
-      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(_prep.selectedOpt===opt?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${opt.replace(/'/g,"\\'")}')">${i+1}. ${opt}</button>`;
+      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1}. ${opt}</button>`;
     }).join('')}</div>`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
