@@ -516,6 +516,8 @@ textarea.fsm { resize:none; height:64px; }
 .prep-opt-sq{width:38px;height:38px;flex:none;padding:0;border-radius:8px;border:2px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.55);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:transform .14s,box-shadow .14s,background .18s,border-color .18s;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;user-select:none}
 .prep-opt-sq:hover{transform:scale(1.11);box-shadow:0 3px 14px rgba(0,0,0,0.45)}
 .prep-opt-sq.active{background:rgba(124,58,237,0.45);border-color:rgba(124,58,237,0.85);color:#e0aaff}
+.prep-sel-btn{height:32px;padding:0 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;transition:background .15s}
+.prep-sel-btn:hover{background:rgba(255,255,255,0.11)}
 .prep-start-btn{width:100%;margin-top:18px;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;cursor:pointer;box-shadow:0 4px 20px -5px rgba(124,58,237,0.6);transition:opacity .15s}
 .prep-start-btn:hover{opacity:.88}
 .prep-exam-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -1104,7 +1106,7 @@ let msgsUploading = false;
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
 let dashGamingMode = 'bingo';  // 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
-let _prep = { state:'config', level:'primaria', grade:'1', topic:'suma', qCount:10, timeSec:300, ansMode:'mc', editorial:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
+let _prep = { state:'config', level:'primaria', grade:'1', topic:'suma', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -4671,7 +4673,7 @@ function _preparatePaneHtml() {
   return '';
 }
 function _prepSetLevel(lvl) {
-  _prep.level = lvl; _prep.editorial = null;
+  _prep.level = lvl; _prep.editorial = null; _prep.openSelector = null;
   const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
   _prep.grade = gradeKeys[0] || '';
   const units = (PREP_CURRICULUM[lvl]||{})[_prep.grade] || [];
@@ -4679,7 +4681,7 @@ function _prepSetLevel(lvl) {
   _renderPreparatePane();
 }
 function _prepSetGrade(g) {
-  _prep.grade = g; _prep.editorial = null;
+  _prep.grade = g; _prep.editorial = null; _prep.openSelector = null;
   const units = (PREP_CURRICULUM[_prep.level]||{})[g] || [];
   _prep.topic = units[0]?.skills[0] || '';
   _renderPreparatePane();
@@ -4694,31 +4696,33 @@ function _prepConfigHtml() {
   const masLoading = !Array.isArray(_prepHistoryData);
   const coursePct = _prepCourseScore(allTopicKeys);
 
-  // Tabs de nivel
-  const levelTabs = Object.entries(PREP_LEVELS).map(([key,lv])=>
-    `<button class="prep-option-btn ${_prep.level===key?'active':''}" style="font-size:12px;padding:7px 8px" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`
-  ).join('');
-  // Tabs de grado
-  const gradeTabs = gradeKeys.length
-    ? `<div class="prep-option-row" style="margin:4px 0 10px">${gradeKeys.map(g=>
-        `<button class="prep-option-btn ${_prep.grade===g?'active':''}" style="font-size:12px;padding:7px 8px" onclick="_prepSetGrade('${g}')">${g}°</button>`
-      ).join('')}</div>`
+  // ── Selector desplegable: Nivel · Grado · Editorial ─────────────────────────
+  const openSel = _prep.openSelector;
+  // Nivel
+  const nivelSel = openSel === 'level'
+    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-opt-sq ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" title="${lv.lbl}">${lv.ico}</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${lvDef.ico||''} ${lvDef.lbl||''} ▾</button>`;
+  // Grado
+  const gradeSel = gradeKeys.length
+    ? (openSel === 'grade'
+      ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
+        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+      : `<button class="prep-sel-btn" onclick="_prep.openSelector='grade';_renderPreparatePane()">${_prep.grade}° ▾</button>`)
     : '';
-
-  // Editorial selector
-  const editorialRow = edKeys.length >= 1
-    ? `<div style="display:flex;align-items:center;gap:6px;margin:2px 0 8px">
-        <span class="prep-section-label" style="margin:0;white-space:nowrap">Editorial</span>
-        <div class="prep-option-row" style="margin:0;flex-wrap:wrap">
-          <button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_renderPreparatePane()" title="Todas">✦</button>
-          ${edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.short||k.slice(0,3).toUpperCase()}</button>`).join('')}
-        </div>
-      </div>`
+  // Editorial
+  const editorialSel = edKeys.length
+    ? (openSel === 'editorial'
+      ? `<button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" title="Todas">✦</button>`
+        + edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.short||k.slice(0,3).toUpperCase()}</button>`).join('')
+        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+      : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.short||_prep.editorial):'✦'} ▾</button>`)
     : '';
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?'<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>'+gradeSel:''}${editorialSel?'<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>'+editorialSel:''}</div>`;
   // PRE-UNIV: áreas sin contenido aún
   if (lvDef.areas) {
     return `<div class="prep-wrap" style="padding-bottom:8px">
-      <div class="prep-option-row" style="margin:0 0 8px">${levelTabs}</div>
+      ${selectorRow}
       <div class="prep-kh-units">${lvDef.areas.map((a,ai)=>`
         <div class="prep-kh-unit">
           <div class="prep-kh-unit-name">Área ${ai+1} — ${a.lbl}</div>
@@ -4804,9 +4808,7 @@ function _prepConfigHtml() {
   }
 
   return `<div class="prep-wrap" style="padding-bottom:8px">
-    <div class="prep-option-row" style="margin:0 0 4px">${levelTabs}</div>
-    ${gradeTabs}
-    ${editorialRow}
+    ${selectorRow}
     ${courseHeader}
     ${legend}
     ${unitsHtml}
