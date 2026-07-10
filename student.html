@@ -873,6 +873,15 @@ textarea.fsm { resize:none; height:64px; }
 .bcc-result-ico{font-size:56px;line-height:1;margin-bottom:12px}
 .bcc-result-h{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#fff;margin-bottom:10px}
 .bcc-result-body{font-size:15px;color:rgba(255,255,255,0.8);line-height:1.4;max-width:340px}
+/* ── Review de respuesta correcta (al agotar vidas) ── */
+.bcc-review-card{background:linear-gradient(135deg,rgba(127,29,29,0.4),rgba(30,10,40,0.6));border-color:#ef4444;box-shadow:0 0 60px -10px rgba(239,68,68,0.4)}
+.bcc-review-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin:8px 0 2px}
+.bcc-review-q{font-size:14px;color:rgba(255,255,255,0.55);white-space:pre-line;margin:4px 0 10px;line-height:1.4}
+.bcc-review-answer{font-size:28px;font-weight:900;color:#4ade80;letter-spacing:0.04em;margin-bottom:12px}
+.bcc-review-steps{text-align:left;width:100%;border-top:1px solid rgba(255,255,255,0.1);padding-top:10px;margin-top:4px}
+.bcc-review-step{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.82);line-height:1.4}
+.bcc-review-step-n{color:rgba(168,85,247,0.7);font-weight:900;font-size:11px;min-width:18px;text-align:right;flex-shrink:0}
+.bcc-continue-btn{margin-top:14px;width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:12px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer}
 /* ── Lista de partidas ── */
 .bingo-games-list{display:flex;flex-direction:column;gap:10px;margin-top:8px}
 .bingo-game-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 16px;cursor:pointer;transition:background .15s,border-color .15s}
@@ -2126,7 +2135,15 @@ function _tpCompBasic(){
   const CFGS=[{s:3,x:30},{s:5,x:18},{s:6,x:15},{s:9,x:10},{s:10,x:9},{s:15,x:6},{s:18,x:5}];
   const {s,x}=CFGS[_bGetRandomInt(0,CFGS.length-1)];
   let a,b; do{a=_bGetRandomInt(1,s-1);b=s-a;}while(a===b);
-  return {q:`Halla x (agudo):\n${t1}(${a}x) = ${t2}(${b}x)`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true};
+  const steps=[
+    `Cofunción: ${t2}(θ) = ${t1}(90° − θ)`,
+    `${t1}(${a}x) = ${t1}(90° − ${b}x)`,
+    `Igualamos argumentos: ${a}x = 90° − ${b}x`,
+    `${a}x + ${b}x = 90°`,
+    `${s}x = 90°`,
+    `x = 90° ÷ ${s} = ${x}°`,
+  ];
+  return {q:`Halla x (agudo):\n${t1}(${a}x) = ${t2}(${b}x)`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true,steps};
 }
 // Tipo 2: trig1(ax+p) = trig2(bx+q) → (a+b)x = 90 - p - q
 function _tpCompOffset(){
@@ -2139,7 +2156,17 @@ function _tpCompOffset(){
   const pChoices=[]; for(let p=-50;p<=50;p+=5){const q=pq-p;if(Math.abs(q)<=50)pChoices.push({p,q});}
   if(!pChoices.length) return _tpCompBasic();
   const {p,q}=pChoices[_bGetRandomInt(0,pChoices.length-1)];
-  return {q:`Halla x (agudo):\n${t1}(${_tpFmtA(a,p)}) = ${t2}(${_tpFmtA(b,q)})`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true};
+  const _sgn = n => n===0?'': n>0?` − ${n}°`:` + ${Math.abs(n)}°`;
+  const rhs = 90 - p - q; // = ab * x
+  const steps=[
+    `Cofunción: ${t2}(θ) = ${t1}(90° − θ)`,
+    `${t1}(${_tpFmtA(a,p)}) = ${t1}(90° − (${_tpFmtA(b,q)}))`,
+    `Igualamos: ${_tpFmtA(a,p)} = 90° − (${_tpFmtA(b,q)})`,
+    `${a}x + ${b}x = 90°${_sgn(p)}${_sgn(q)}`,
+    `${ab}x = ${rhs}°`,
+    `x = ${rhs}° ÷ ${ab} = ${x}°`,
+  ];
+  return {q:`Halla x (agudo):\n${t1}(${_tpFmtA(a,p)}) = ${t2}(${_tpFmtA(b,q)})`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true,steps};
 }
 // Tipo 3: trig(ax+p)·recip(bx+q) = 1 → ax+p = bx+q (mismo ángulo, recíproco)
 function _tpRecipProd(){
@@ -2150,12 +2177,20 @@ function _tpRecipProd(){
   const diff=_bGetRandomInt(1,Math.min(a-1,2)); const b=a-diff;
   if(b<1) return _tpRecipProd();
   const q=p+diff*x; if(q>80) return _tpRecipProd();
-  return {q:`Halla x (agudo):\n${t1}(${_tpFmtA(a,p)}) · ${t2}(${_tpFmtA(b,q)}) = 1`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true};
+  const steps=[
+    `Propiedad recíproca: ${t1}(θ) · ${t2}(φ) = 1 implica θ = φ`,
+    `${_tpFmtA(a,p)} = ${_tpFmtA(b,q)}`,
+    `${a}x − ${b}x = ${q}° − ${p}°`,
+    `${diff}x = ${q-p}°`,
+    `x = ${q-p}° ÷ ${diff} = ${x}°`,
+  ];
+  return {q:`Halla x (agudo):\n${t1}(${_tpFmtA(a,p)}) · ${t2}(${_tpFmtA(b,q)}) = 1`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true,steps};
 }
 // Tipo 4: Calcula M = k·trig(α)·cofun_recip(β) + n = k + n (producto siempre = 1)
 function _tpCalcIdent(){
   const α=[18,24,33,36,42,54,66,72][_bGetRandomInt(0,7)];
   const comp=90-α, k=_bGetRandomInt(2,8), n=_bGetRandomInt(1,6), r=k+n;
+  const ei=_bGetRandomInt(0,5);
   const EXPRS=[
     `${k}·sen(${α}°)·csc(${α}°) + ${n}`,
     `${k}·cos(${α}°)·sec(${α}°) + ${n}`,
@@ -2164,9 +2199,18 @@ function _tpCalcIdent(){
     `${k}·sen(${comp}°)·sec(${α}°) + ${n}`,
     `${k}·tan(${comp}°)·tan(${α}°) + ${n}`,
   ];
-  const expr=EXPRS[_bGetRandomInt(0,5)];
+  const STEPS=[
+    [`sen(α)·csc(α) = 1  (identidad recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`cos(α)·sec(α) = 1  (identidad recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`tan(α)·cot(α) = 1  (identidad recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`cos(${comp}°) = sen(${α}°)  (cofunción: complemento)`,`= ${k}·sen(${α}°)·csc(${α}°) + ${n}`,`sen(α)·csc(α) = 1  (recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`sen(${comp}°) = cos(${α}°)  (cofunción: complemento)`,`= ${k}·cos(${α}°)·sec(${α}°) + ${n}`,`cos(α)·sec(α) = 1  (recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`tan(${comp}°) = cot(${α}°)  (cofunción: complemento)`,`= ${k}·cot(${α}°)·tan(${α}°) + ${n}`,`cot(α)·tan(α) = 1  (recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+  ];
+  const steps=STEPS[ei];
+  const expr=EXPRS[ei];
   const wrongs=[r-1,r+1,r+2,r-2].filter(w=>w>0&&w!==r).slice(0,3);
-  return {q:`Calcula:\nM = ${expr}`,a:String(r),opts:_bingShufArr([String(r),...wrongs.map(String)]),mc:true};
+  return {q:`Calcula:\nM = ${expr}`,a:String(r),opts:_bingShufArr([String(r),...wrongs.map(String)]),mc:true,steps};
 }
 
 // ── Bingo Sound Engine (Web Audio API, sin archivos externos) ──────────────
@@ -2303,6 +2347,7 @@ function _bingoNewTiersMap(count) { const m={}; for (let i=0;i<count;i++) m[i]={
 
 // -- estado efímero local (solo-cliente, no se guarda en Firestore) del reto/bloqueo/poderes --
 let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false, bingoChallengeWrongs = 0, bingoChallengeWrongOpts = new Set();
+let bingoChallengeReview = false, bingoChallengeReviewQ = null; // pantalla de resolución al agotar vidas
 let _bingoChallengeKeyListener = null;
 let bingoBlockSelection = [];
 let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
@@ -2611,7 +2656,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
 }
 
 function _bingoResetLocalState() {
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set();
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
@@ -3502,6 +3547,7 @@ function submitBingoCalcAnswer(raw) {
 // igual de "confiado" que ya hacían markBingoCell/claimBingoPrize). --
 function _bingoCheckMyChallengeEnd() {
   if (!bingoGame || !bingoGame.challengeActive) return;
+  if (bingoChallengeReview) return; // en pantalla de resolución, no interrumpir
   const me = _bingoMe();
   const player = (bingoGame.players||{})[me.uid];
   if (!player || player.lastChallengeId === bingoGame.challengeId) return; // ya resuelto este reto
@@ -3572,7 +3618,13 @@ function submitBingoChallengeAnswer(raw) {
     _clearInput();
     _bSnd.wrong();
     const _maxW = (bingoGame?.gameSpeed==='rapida') ? 2 : 3;
-    if (bingoChallengeWrongs >= _maxW) { _bingoFinishChallenge(bingoChallengeIdx); return; } // vidas agotadas
+    if (bingoChallengeWrongs >= _maxW) {
+      // Vidas agotadas → mostrar resolución antes de terminar
+      bingoChallengeReview = true;
+      bingoChallengeReviewQ = q;
+      _renderBingoPane();
+      return;
+    }
     _renderBingoPane();
     setTimeout(() => { bingoChallengeError = false; _renderBingoPane(); }, 350);
     return;
@@ -3584,6 +3636,12 @@ function submitBingoChallengeAnswer(raw) {
   _clearInput();
   if (bingoChallengeIdx >= bingoGame.questions.length) _bingoFinishChallenge(bingoChallengeIdx);
   else _renderBingoPane();
+}
+function dismissChallengeReview() {
+  const idx = bingoChallengeIdx;
+  bingoChallengeReview = false;
+  bingoChallengeReviewQ = null;
+  _bingoFinishChallenge(idx);
 }
 function _bingoFinishChallenge(correctCount) {
   const me = _bingoMe();
@@ -3703,7 +3761,7 @@ function _bingoFinishChallenge(correctCount) {
   BINGO_REF.update(patch)
     .then(()=> showToast(toastMsg, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoBlockSelection = [];
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; bingoBlockSelection = [];
 }
 
 // -- v2: bloqueo (penalidad por reto imperfecto) --
@@ -4593,7 +4651,7 @@ function _renderBingoPane() {
     if (_bingoChallengeKeyListener) { document.removeEventListener('keydown', _bingoChallengeKeyListener); _bingoChallengeKeyListener = null; }
     const _mcQ = bingoGame && bingoGame.challengeActive ? (bingoGame.questions||[])[bingoChallengeIdx] : null;
     if (_mcQ && _mcQ.mc) {
-      _bingoChallengeKeyListener = (e) => { const n=parseInt(e.key); if(n>=1&&n<=4){const _opt=(_mcQ.opts||[])[n-1];if(_opt&&!bingoChallengeWrongOpts.has(_opt.toLowerCase())){e.preventDefault();submitBingoChallengeAnswer(_opt);}} };
+      _bingoChallengeKeyListener = (e) => { if(bingoChallengeReview) return; const n=parseInt(e.key); if(n>=1&&n<=4){const _opt=(_mcQ.opts||[])[n-1];if(_opt&&!bingoChallengeWrongOpts.has(_opt.toLowerCase())){e.preventDefault();submitBingoChallengeAnswer(_opt);}} };
       document.addEventListener('keydown', _bingoChallengeKeyListener);
     }
     if (savedInput) {
@@ -5412,7 +5470,23 @@ function _bingoPaneHtml() {
         const _rTopics = bingoGame.topics || [];
         const _rTopicKey = _rTopics[(bingoGame.retoCount||0) % _rTopics.length];
         const _rTopicDef = BINGO_TOPICS[_rTopicKey] || { ico:'🧠', lbl: _rTopicKey };
-        body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
+        if (bingoChallengeReview && bingoChallengeReviewQ) {
+          // ── Pantalla de resolución (al agotar vidas) ──
+          const _rq = bingoChallengeReviewQ;
+          const _stepsHtml = (_rq.steps && _rq.steps.length)
+            ? `<div class="bcc-review-steps">${_rq.steps.map((s,i)=>`<div class="bcc-review-step"><span class="bcc-review-step-n">${i+1}.</span><span>${s}</span></div>`).join('')}</div>`
+            : '';
+          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-review-card">
+            <div class="bcc-title">💀 Sin vidas</div>
+            <div class="bcc-review-label">La pregunta era</div>
+            <div class="bcc-review-q">${_rq.q}</div>
+            <div class="bcc-review-label">Respuesta correcta</div>
+            <div class="bcc-review-answer">${_rq.a}</div>
+            ${_stepsHtml}
+            <button class="bcc-continue-btn" onclick="dismissChallengeReview()">Entendido → Continuar</button>
+          </div></div>`;
+        } else {
+          body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card ${bingoChallengeError?'err':''}">
             <div class="bcc-title">🧠 ¡Reto Matemático!</div>
             <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(168,85,247,0.2);border:1px solid rgba(168,85,247,0.5);border-radius:20px;padding:4px 14px;margin:6px 0 4px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#e0aaff">${_rTopicDef.ico} ${_rTopicDef.lbl}</div>
             <div class="bcc-sub">${_isRapidaMode ? 'Reto perfecto en &lt;15s = +1 carga ⚡ + número bonus · si no = +1 carga · 1 vida · fallar = bloqueos.' : 'Reto perfecto en &lt;30s = +2 cargas · si no = +1 · limpia tus bloqueos.'}</div>
@@ -5426,6 +5500,7 @@ function _bingoPaneHtml() {
             <button class="bcc-submit" onclick="submitBingoChallengeAnswer(document.getElementById('bingo-challenge-input').value)">Responder</button>
             <div class="bcc-foot">⏱ ${remain}s · Pregunta ${bingoChallengeIdx+1}/${qs.length}</div>`}` : ''}
           </div></div>`;
+        }
       }
     }
 
