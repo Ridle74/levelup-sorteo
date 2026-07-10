@@ -1088,6 +1088,7 @@ let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {sr
 let _bingoRevengeActive  = false; // true cuando el jugador está ejecutando su venganza
 let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
 let _bingoDuelError      = false;
+let _bingoDuelWrongs     = 0;    // errores acumulados en el duelo racing actual
 let _bingoDuelWrongOpts  = new Set(); // opciones ya intentadas (MC) en la pregunta actual del duelo
 let _bingoLeaderboardOpen = false; // tabla de tiempos del Desafío visible
 let _prevChallengeActive  = false; // detecta transición false→true (inicio de reto) para auto-aceptar Desafío
@@ -2785,8 +2786,9 @@ function _selectBingoGame(gameId) {
           && _acAR.fromTime != null && _acAR.toTime != null
           && _me4.uid === _acAR.fromUid) {
         const _fp = { 'activeChallenge.status':'resolved', 'activeChallenge.resolvedBy':'race' };
-        if (_acAR.fromTime < _acAR.toTime) Object.assign(_fp, _bingoDuelPenaltyPatch(_acAR.toUid, 4));
-        else if (_acAR.toTime < _acAR.fromTime) Object.assign(_fp, _bingoDuelPenaltyPatch(_acAR.fromUid, 4));
+        const _arWin = _duelWinner(_acAR.fromTime, _acAR.fromWrongs ?? 0, _acAR.toTime, _acAR.toWrongs ?? 0);
+        if (_arWin === 'from') Object.assign(_fp, _bingoDuelPenaltyPatch(_acAR.toUid,   4));
+        else if (_arWin === 'to')  Object.assign(_fp, _bingoDuelPenaltyPatch(_acAR.fromUid, 4));
         BINGO_REF.update(_fp).catch(e=>console.error('duel auto-resolve',e));
       }
     } catch(e) { console.error('duel auto-resolve',e); }
@@ -2802,10 +2804,12 @@ function _selectBingoGame(gameId) {
         const _oppName = (bingoGame.players||{})[_oppUid]?.name || 'Tu rival';
         const _myT  = _isFr ? _acRes.fromTime : _acRes.toTime;
         const _oppT = _isFr ? _acRes.toTime   : _acRes.fromTime;
+        const _myW  = _isFr ? (_acRes.fromWrongs ?? 0) : (_acRes.toWrongs ?? 0);
+        const _oppW = _isFr ? (_acRes.toWrongs ?? 0)  : (_acRes.fromWrongs ?? 0);
         let _won;
         if (_myT == null)  _won = false;
         else if (_oppT == null) _won = true;
-        else _won = _myT < _oppT;
+        else _won = _duelWinner(_myT, _myW, _oppT, _oppW) === (_isFr ? 'from' : 'to');
         _bingoDesafioRaceResult = { won: _won, opponentName: _oppName, penalty: 4 };
       }
     } catch(e) { console.error('duel race result',e); }
@@ -2892,15 +2896,20 @@ function _selectBingoGame(gameId) {
                 if (!BINGO_REF || !bingoGame) return;
                 const _acNow = bingoGame.activeChallenge;
                 if (!_acNow || _acNow.status !== 'in_reto') return;
-                const _otherBot = _isFromBot ? _acNow.toTime : _acNow.fromTime;
-                const _patchBot = { [_botField]: _botMs };
+                const _botWrongsField = _isFromBot ? 'activeChallenge.fromWrongs' : 'activeChallenge.toWrongs';
+                const _otherBot      = _isFromBot ? _acNow.toTime   : _acNow.fromTime;
+                const _otherBotW     = _isFromBot ? (_acNow.toWrongs ?? 0) : (_acNow.fromWrongs ?? 0);
+                const _patchBot = { [_botField]: _botMs, [_botWrongsField]: 0 }; // bots no fallan
                 if (_otherBot !== null && _otherBot !== undefined) {
                   _patchBot['activeChallenge.status']     = 'resolved';
                   _patchBot['activeChallenge.resolvedBy'] = 'race';
-                  const _fB = _isFromBot ? _botMs : _acNow.fromTime;
-                  const _tB = _isFromBot ? _acNow.toTime : _botMs;
-                  if (_fB < _tB) Object.assign(_patchBot, _bingoDuelPenaltyPatch(_acNow.toUid,   4));
-                  else if (_tB < _fB) Object.assign(_patchBot, _bingoDuelPenaltyPatch(_acNow.fromUid, 4));
+                  const _fB  = _isFromBot ? _botMs          : _acNow.fromTime;
+                  const _tB  = _isFromBot ? _acNow.toTime   : _botMs;
+                  const _fBW = _isFromBot ? 0               : _otherBotW;
+                  const _tBW = _isFromBot ? _otherBotW      : 0;
+                  const _botWin = _duelWinner(_fB, _fBW, _tB, _tBW);
+                  if (_botWin === 'from') Object.assign(_patchBot, _bingoDuelPenaltyPatch(_acNow.toUid,   4));
+                  else if (_botWin === 'to')  Object.assign(_patchBot, _bingoDuelPenaltyPatch(_acNow.fromUid, 4));
                 }
                 BINGO_REF.update(_patchBot).catch(e=>console.error('bot duel race',e));
               }, 800 + Math.random()*1000);
@@ -3057,9 +3066,11 @@ function _bingoHostStartChallenge() {
   // Si hay un duelo esperando → este reto ES el duelo
   const _acW = bingoGame && bingoGame.activeChallenge;
   if (_acW && _acW.status === 'waiting') {
-    _startPatch['activeChallenge.status'] = 'in_reto';
-    _startPatch['activeChallenge.fromTime'] = null;
-    _startPatch['activeChallenge.toTime']   = null;
+    _startPatch['activeChallenge.status']     = 'in_reto';
+    _startPatch['activeChallenge.fromTime']   = null;
+    _startPatch['activeChallenge.toTime']     = null;
+    _startPatch['activeChallenge.fromWrongs'] = null;
+    _startPatch['activeChallenge.toWrongs']   = null;
   }
   BINGO_REF.update(_startPatch)
     .then(() => { setTimeout(() => _bingoBotSendTaunt('reto'), 800); })
@@ -3703,26 +3714,34 @@ function _bingoFinishChallenge(correctCount) {
   if (_acDF && _acDF.status === 'in_reto'
       && (me.uid === _acDF.fromUid || me.uid === _acDF.toUid)) {
     const _isFromDF  = me.uid === _acDF.fromUid;
-    const _duelField = _isFromDF ? 'activeChallenge.fromTime' : 'activeChallenge.toTime';
-    const _otherTime = _isFromDF ? _acDF.toTime : _acDF.fromTime;
+    const _duelTimeField   = _isFromDF ? 'activeChallenge.fromTime'   : 'activeChallenge.toTime';
+    const _duelWrongsField = _isFromDF ? 'activeChallenge.fromWrongs' : 'activeChallenge.toWrongs';
+    const _otherTime   = _isFromDF ? _acDF.toTime   : _acDF.fromTime;
+    const _otherWrongs = _isFromDF ? (_acDF.toWrongs ?? null) : (_acDF.fromWrongs ?? null);
     // Tiempo en ms: si perfecto = tiempo real transcurrido; si falló = 999999 (peor posible)
     const _totSecs   = ((bingoGame.gameSpeed||'media')==='rapida'?30:60);
     const _myDuelMs  = perfect
       ? Math.round(_totSecs*1000 - Math.max(0,(bingoGame.challengeEndsAt||0)-Date.now()))
       : 999999;
-    patch[_duelField] = _myDuelMs;
+    const _myDuelWrongs = bingoChallengeWrongs;
+    patch[_duelTimeField]   = _myDuelMs;
+    patch[_duelWrongsField] = _myDuelWrongs;
     if (_otherTime !== null && _otherTime !== undefined) {
       // Ambos terminaron → resolver ahora
       patch['activeChallenge.status']     = 'resolved';
       patch['activeChallenge.resolvedBy'] = 'race';
-      const _fT = _isFromDF ? _myDuelMs   : _acDF.fromTime;
-      const _tT = _isFromDF ? _acDF.toTime : _myDuelMs;
-      if (_fT < _tT) Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.toUid,   4));
-      else if (_tT < _fT) Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.fromUid, 4));
+      const _fT = _isFromDF ? _myDuelMs     : _acDF.fromTime;
+      const _tT = _isFromDF ? _acDF.toTime  : _myDuelMs;
+      const _fW = _isFromDF ? _myDuelWrongs : (_acDF.fromWrongs ?? 0);
+      const _tW = _isFromDF ? (_acDF.toWrongs ?? 0) : _myDuelWrongs;
+      const _win = _duelWinner(_fT, _fW, _tT, _tW);
+      if (_win === 'from') Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.toUid,   4));
+      else if (_win === 'to') Object.assign(patch, _bingoDuelPenaltyPatch(_acDF.fromUid, 4));
       // Capturar resultado inmediatamente (sin esperar round-trip de onSnapshot)
       if (!_bingoDesafioRaceAck && !_bingoDesafioRaceResult) {
-        const _oppUidDF = _isFromDF ? _acDF.toUid : _acDF.fromUid;
-        _bingoDesafioRaceResult = { won: _myDuelMs < _otherTime, opponentName: (bingoGame.players||{})[_oppUidDF]?.name || 'Tu rival', penalty: 4 };
+        const _oppUidDF  = _isFromDF ? _acDF.toUid : _acDF.fromUid;
+        const _myWin     = _duelWinner(_myDuelMs, _myDuelWrongs, _otherTime, _otherWrongs ?? 0) === (_isFromDF ? 'from' : 'to');
+        _bingoDesafioRaceResult = { won: _myWin, opponentName: (bingoGame.players||{})[_oppUidDF]?.name || 'Tu rival', penalty: 4 };
         setTimeout(_renderBingoPane, 3700);
       }
     }
@@ -4083,7 +4102,7 @@ function doBingoDesafio(targetUid) {
     showToast(`¡El ${_desUseCount+1}º Desafío cuesta ⚡${_desCost}! Solo tienes ${player.powerCharges||0}.`, 'error'); return;
   }
   const _desPatch = {
-    activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt: Date.now(), endsAt:null, fromTime:null, toTime:null },
+    activeChallenge: { fromUid: me.uid, toUid: targetUid, status:'pending', questions:[], startedAt: Date.now(), endsAt:null, fromTime:null, toTime:null, fromWrongs:null, toWrongs:null },
     [`players.${me.uid}.usedPowers.desafio`]: _desUseCount + 1,
   };
   if (_desCost > 0) _desPatch[`players.${me.uid}.powerCharges`] = (player.powerCharges||0) - _desCost;
@@ -4099,6 +4118,8 @@ function acceptBingoDesafio() {
     'activeChallenge.status': 'waiting',
     'activeChallenge.fromTime': null,
     'activeChallenge.toTime': null,
+    'activeChallenge.fromWrongs': null,
+    'activeChallenge.toWrongs': null,
   }).then(()=>{ _renderBingoPane(); })
     .catch(e=>console.error('desafio accept',e));
 }
@@ -4137,7 +4158,7 @@ function submitBingoDuelAnswer(raw) {
     correct = val === q.a;
   }
   if (!correct) {
-    _bingoDuelError = true; clearInput(); _renderBingoPane(); return;
+    _bingoDuelError = true; _bingoDuelWrongs += 1; clearInput(); _renderBingoPane(); return;
   }
   _bingoDuelError = false;
   _bingoDuelWrongOpts = new Set();
@@ -4148,6 +4169,15 @@ function submitBingoDuelAnswer(raw) {
   } else {
     _renderBingoPane();
   }
+}
+// Determina ganador del duelo: primero menos errores, desempate por menor tiempo.
+// Retorna 'from' | 'to' | 'draw'.
+function _duelWinner(fromTime, fromWrongs, toTime, toWrongs) {
+  const fW = fromWrongs ?? 999, tW = toWrongs ?? 999;
+  const fT = fromTime   ?? 999999, tT = toTime ?? 999999;
+  if (fW !== tW) return fW < tW ? 'from' : 'to';
+  if (fT !== tT) return fT < tT ? 'from' : 'to';
+  return 'draw';
 }
 // Construye el patch de Firestore que quita `count` marcas del perdedor del duelo,
 // igual que el fail del reto normal: últimos números sorteados que el jugador tenía marcados.
@@ -4176,24 +4206,26 @@ function _bingoDuelFinish(elapsedMs) {
   const ac = bingoGame && bingoGame.activeChallenge;
   if (!ac || ac.status !== 'racing') return;
   const isFrom = me.uid === ac.fromUid;
-  const myField = isFrom ? 'activeChallenge.fromTime' : 'activeChallenge.toTime';
-  const otherTime = isFrom ? ac.toTime : ac.fromTime;
-  const patch = { [myField]: elapsedMs };
+  const myTimeField   = isFrom ? 'activeChallenge.fromTime'   : 'activeChallenge.toTime';
+  const myWrongsField = isFrom ? 'activeChallenge.fromWrongs' : 'activeChallenge.toWrongs';
+  const otherTime   = isFrom ? ac.toTime   : ac.fromTime;
+  const otherWrongs = isFrom ? ac.toWrongs : ac.fromWrongs;
+  const patch = { [myTimeField]: elapsedMs, [myWrongsField]: _bingoDuelWrongs };
   if (otherTime !== null && otherTime !== undefined) {
     // ambos terminaron — resolver ahora
-    const fromT = isFrom ? elapsedMs : ac.fromTime;
-    const toT   = isFrom ? ac.toTime  : elapsedMs;
+    const fromT = isFrom ? elapsedMs        : ac.fromTime;
+    const toT   = isFrom ? ac.toTime        : elapsedMs;
+    const fromW = isFrom ? _bingoDuelWrongs : (ac.fromWrongs ?? 0);
+    const toW   = isFrom ? (ac.toWrongs ?? 0) : _bingoDuelWrongs;
     patch['activeChallenge.status'] = 'resolved';
     patch['activeChallenge.resolvedBy'] = 'race';
-    if (fromT < toT) {
-      Object.assign(patch, _bingoDuelPenaltyPatch(ac.toUid, 4));
-    } else if (toT < fromT) {
-      Object.assign(patch, _bingoDuelPenaltyPatch(ac.fromUid, 4));
-    }
-    // empate: nadie pierde
+    const _winner = _duelWinner(fromT, fromW, toT, toW);
+    if (_winner === 'from') Object.assign(patch, _bingoDuelPenaltyPatch(ac.toUid,   4));
+    else if (_winner === 'to') Object.assign(patch, _bingoDuelPenaltyPatch(ac.fromUid, 4));
+    // draw: nadie pierde
   }
   BINGO_REF.update(patch)
-    .then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _bingoDuelWrongOpts=new Set(); _renderBingoPane(); })
+    .then(()=>{ _bingoDuelIdx=0; _bingoDuelError=false; _bingoDuelWrongs=0; _bingoDuelWrongOpts=new Set(); _renderBingoPane(); })
     .catch(e=>console.error('duel finish',e));
 }
 // doVenganza() se llama en lugar de la función normal cuando _bingoRevengeActive===true
