@@ -4772,6 +4772,13 @@ function _prepConfigHtml() {
           <div class="prep-section-label" style="margin:0 0 4px">Tiempo</div>
           <div class="prep-option-row">${tOpts.map(([s,l])=>`<button class="prep-option-btn ${_prep.timeSec===s?'active':''}" style="padding:5px 4px;font-size:13px" onclick="_prep.timeSec=${s};_renderPreparatePane()">${l}</button>`).join('')}</div>
         </div>
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Modo</div>
+          <div class="prep-option-row">
+            <button class="prep-option-btn ${_prep.ansMode==='mc'?'active':''}" style="padding:5px 6px;font-size:13px" onclick="_prep.ansMode='mc';_renderPreparatePane()">☰ Opción múltiple</button>
+            <button class="prep-option-btn ${_prep.ansMode==='text'?'active':''}" style="padding:5px 6px;font-size:13px" onclick="_prep.ansMode='text';_renderPreparatePane()">✏️ Escribir</button>
+          </div>
+        </div>
       </div>
       <button class="prep-start-btn" style="margin-top:8px" onclick="_prepStart()">▶ Practicar ahora</button>
     </div>`;
@@ -4963,7 +4970,7 @@ function _prepExamHtml() {
   const def = BINGO_TOPICS[_prep.topic]||{};
   const total = _prep.questions.length, idx = _prep.currentIdx;
   const pct = Math.round((idx/total)*100);
-  const isMC = !!q.mc, isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
+  const isMC = !!q.mc && _prep.ansMode !== 'text', isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
   const timerHtml = _prep.timeSec > 0 ? `<div id="prep-timer" class="prep-timer${_prep.timeLeft<=30?' urgent':''}">${_prepFmtTime(_prep.timeLeft)}</div>` : '';
   let ansHtml = '';
   if (isMC && isVF) {
