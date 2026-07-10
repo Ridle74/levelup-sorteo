@@ -1106,7 +1106,7 @@ let msgsUploading = false;
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
 let dashGamingMode = 'bingo';  // 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
-let _prep = { state:'config', level:'primaria', grade:'1', topic:'suma', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
+let _prep = { state:'config', level:'primaria', grade:'1', topic:'suma', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -4700,9 +4700,8 @@ function _prepConfigHtml() {
   const openSel = _prep.openSelector;
   // Nivel
   const nivelSel = openSel === 'level'
-    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-opt-sq ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" title="${lv.lbl}">${lv.ico}</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${lvDef.ico||''} ${lvDef.lbl||''} ▾</button>`;
+    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${lvDef.ico||'?'} ▾</button>`;
   // Grado
   const gradeSel = gradeKeys.length
     ? (openSel === 'grade'
