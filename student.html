@@ -532,7 +532,8 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-units{display:flex;flex-direction:column;gap:8px}
 .prep-kh-unit{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:11px 12px}
 .prep-kh-unit-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.3);margin-bottom:8px}
-.prep-kh-skills{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.prep-kh-skills{display:flex;flex-wrap:nowrap;align-items:center;gap:5px;overflow-x:auto;padding-bottom:2px}
+.prep-kh-sep{width:1px;height:36px;background:rgba(255,255,255,0.13);margin:0 5px;flex-shrink:0}
 .prep-kh-sq{width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:transform .14s,box-shadow .14s;color:rgba(255,255,255,0.28);flex-shrink:0;user-select:none}
 .prep-kh-sq:hover{transform:scale(1.11);box-shadow:0 3px 14px rgba(0,0,0,0.45)}
 .prep-kh-sq.dominado{background:rgba(109,40,217,0.85);border-color:rgba(168,85,247,0.9);color:#fff}
@@ -2560,9 +2561,7 @@ const PREP_CURRICULUM = {
   },
   secundaria: {
     '1':[{lbl:'Números Negativos y Ecuaciones',  skills:['neg','ecuacion']},
-         {lbl:'Ángulo Trigonométrico',            skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo']},
-         {lbl:'Sistemas de Medición Angular',     skills:['trig1_m1','trig1_m2','trig1_m3','trig1_medicion']},
-         {lbl:'Longitud de Arco',                 skills:['trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
+         {lbl:'Primera Unidad — Trigonometría',   skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
          {lbl:'Propiedades Trigonométricas',      skills:['trigoprop']}],
     '2':[], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          skills:['trigo','trigvf']}],
@@ -4731,22 +4730,22 @@ function _prepConfigHtml() {
     unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">🚧 Próximamente habrá contenido para este grado.</div>`;
   } else {
     unitsHtml = `<div class="prep-kh-units">${units.map((unit,ui)=>{
-      const exSks = unit.skills.filter(sk=>!BINGO_TOPICS[sk]?.quiz);
-      const qzSks = unit.skills.filter(sk=>BINGO_TOPICS[sk]?.quiz);
-      const sqHtml = exSks.map(sk=>{
+      const skillsHtml = unit.skills.map((sk,si)=>{
         const def=BINGO_TOPICS[sk]||{};
         const lvl=_prepMasteryLevel(sk);
         const isSel=_prep.topic===sk;
+        const isQuiz=!!def.quiz;
+        const nextIsEx=si<unit.skills.length-1&&!BINGO_TOPICS[unit.skills[si+1]]?.quiz;
+        if(isQuiz){
+          const btn=`<button class="prep-kh-quiz${isSel?' selected':''}" style="${isSel?'background:rgba(168,85,247,0.28);':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()">📋 Cuestionario</button>`;
+          return btn+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
+        }
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?'♛':(def.ico||'?')}</div>`;
-      }).join('');
-      const qzHtml = qzSks.map(sk=>{
-        const isSel=_prep.topic===sk;
-        return `<button class="prep-kh-quiz${isSel?' selected':''}" style="${isSel?'background:rgba(168,85,247,0.28);':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()">📋 Cuestionario</button>`;
       }).join('');
       return `<div class="prep-kh-unit">
         <div class="prep-kh-unit-name">Unidad ${ui+1} — ${unit.lbl}</div>
-        <div class="prep-kh-skills">${sqHtml}${qzHtml}
-          <button class="prep-kh-quiz" style="border-style:solid;color:#facc15;border-color:rgba(250,204,21,0.4);background:rgba(250,204,21,0.06)" onclick="_prepUnitExam(['${unit.skills.join("','")}'])">★ Examen</button>
+        <div class="prep-kh-skills">${skillsHtml}
+          <button class="prep-kh-quiz" style="border-style:solid;color:#facc15;border-color:rgba(250,204,21,0.4);background:rgba(250,204,21,0.06);margin-left:6px" onclick="_prepUnitExam(['${unit.skills.join("','")}'])">★ Examen</button>
         </div>
       </div>`;
     }).join('')}</div>`;
