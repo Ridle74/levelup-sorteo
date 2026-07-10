@@ -3265,9 +3265,12 @@ function setPlayerStatus(val) {
 }
 function toggleBingoEmojiPicker() { _bingoEmojiPickerOpen = !_bingoEmojiPickerOpen; _renderBingoPane(); }
 function scrollBingoEmojis(dir) {
-  _bingoEmojiScrollPos = Math.max(0, _bingoEmojiScrollPos + dir * 140);
   const s = document.getElementById('bingo-emoji-strip');
-  if (s) s.scrollLeft = _bingoEmojiScrollPos;
+  if (!s) return;
+  const firstBtn = s.querySelector('.bep-btn');
+  const step = firstBtn ? firstBtn.offsetWidth * 4 : 96;
+  _bingoEmojiScrollPos = Math.max(0, _bingoEmojiScrollPos + dir * step);
+  s.scrollLeft = _bingoEmojiScrollPos;
 }
 function insertBingoEmoji(idx) {
   const e = FACE_EMOJIS[idx];
