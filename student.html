@@ -1084,6 +1084,9 @@ let _bingoEndShown   = false;  // modal de fin de partida ya mostrado para esta 
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
 let _bingoEmojiPickerOpen = false;
+let _bingoStatusDraft    = null;  // valor pendiente de confirmación de Firestore
+let _bingoEmojiScrollPos = 0;     // posición del strip de emojis (persiste en re-renders)
+const FACE_EMOJIS = ['😀','😂','🤣','😊','😇','🥰','😍','🤩','😘','😋','😎','🥳','😜','🤪','😝','🤑','🤗','🤔','😏','🙄','😒','😢','😭','😤','😡','🤯','😱','🥺','😴','🤠','👻','🤖','💀','😈','😵','🤢','😷','🥶','🎉','🔥','💪','⚡','🏆','🎯','💯','👑','🤝','👍','🫡','😤'];
 let _bingoPowerStep      = null; // estado de poderes de 2 pasos (e.g. Robo: {srcCardIdx, srcNum})
 let _bingoRevengeActive  = false; // true cuando el jugador está ejecutando su venganza
 let _bingoDuelIdx        = 0;    // pregunta actual del duelo Desafío
@@ -3255,16 +3258,28 @@ function setPlayerStatus(val) {
     const me = _bingoMe();
     if (!bingoGame || !me || !(bingoGame.players||{})[me.uid]) return;
     const clean = (val||'').trim().slice(0, 15);
+    _bingoStatusDraft = clean; // preservar mientras Firestore confirma
     BINGO_REF.update({ [`players.${me.uid}.playerStatus`]: clean })
       .catch(e => console.error('bingo status', e));
   } catch(e) {}
 }
 function toggleBingoEmojiPicker() { _bingoEmojiPickerOpen = !_bingoEmojiPickerOpen; _renderBingoPane(); }
-function scrollBingoEmojis(dir) { const s = document.getElementById('bingo-emoji-strip'); if (s) s.scrollBy({ left: dir * 140, behavior: 'smooth' }); }
-function insertBingoEmoji(e) {
+function scrollBingoEmojis(dir) {
+  _bingoEmojiScrollPos = Math.max(0, _bingoEmojiScrollPos + dir * 140);
+  const s = document.getElementById('bingo-emoji-strip');
+  if (s) s.scrollLeft = _bingoEmojiScrollPos;
+}
+function insertBingoEmoji(idx) {
+  const e = FACE_EMOJIS[idx];
+  if (!e) return;
   const inp = document.getElementById('bingo-status-input');
-  if (inp) { const v = (inp.value + e).slice(0, 15); inp.value = v; setPlayerStatus(v); inp.focus(); }
+  const cur = inp ? inp.value : (_bingoStatusDraft || '');
+  const v = (cur + e).slice(0, 15);
+  _bingoStatusDraft = v;
+  if (inp) { inp.value = v; inp.focus(); }
+  setPlayerStatus(v);
   _bingoEmojiPickerOpen = false;
+  _bingoEmojiScrollPos = 0;
   _renderBingoPane();
 }
 function setBubbleShape(shape) {
@@ -4669,15 +4684,13 @@ function _renderBingoPane() {
     // La solución correcta es que los inputs de respuesta usen type="text" (ver bcc-input).
     savedInput = { id: active.id, value: active.value, selStart: active.selectionStart, selEnd: active.selectionEnd };
   }
-  // Guardar posición de scroll del strip de emojis y del historial de números
-  const _emojiStrip = document.getElementById('bingo-emoji-strip');
-  const _emojiScroll = _emojiStrip ? _emojiStrip.scrollLeft : 0;
+  // Guardar posición de scroll del historial de números (emojis usa _bingoEmojiScrollPos)
   const _histStrip = document.getElementById('bingo-hist-strip');
   const _histScroll = _histStrip ? _histStrip.scrollLeft : 0;
   try {
     hosts.forEach(el => { el.innerHTML = _bingoPaneHtml(); });
-    // Restaurar scroll del strip de emojis y del historial de números
-    if (_emojiScroll > 0) { const ns = document.getElementById('bingo-emoji-strip'); if (ns) ns.scrollLeft = _emojiScroll; }
+    // Restaurar scroll del strip de emojis (desde variable de módulo) y del historial de números
+    { const ns = document.getElementById('bingo-emoji-strip'); if (ns) ns.scrollLeft = _bingoEmojiScrollPos; }
     if (_histScroll > 0)  { const nh = document.getElementById('bingo-hist-strip');  if (nh) nh.scrollLeft = _histScroll; }
     // Key listener 1-4 para preguntas MC del reto
     if (_bingoChallengeKeyListener) { document.removeEventListener('keydown', _bingoChallengeKeyListener); _bingoChallengeKeyListener = null; }
@@ -4912,7 +4925,7 @@ function _bingoPaneHtml() {
       : `<div style="font-size:13px;color:#4ade80;font-weight:700;margin:10px 0 4px">✓ Ya estás dentro — espera a que ${isHost?'inicies tú':'el host inicie'} el sorteo</div>
          <div class="bingo-status-row" style="margin-top:8px">
            <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
-           <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
+           <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(_bingoStatusDraft !== null ? _bingoStatusDraft : (myPlayer.playerStatus||'')).replace(/"/g,'&quot;')}" onblur="_bingoStatusDraft=null;setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
          </div>`;
     if (isHost) {
       const _hasTopics = (bingoGame.topics||[]).length > 0;
@@ -5112,11 +5125,10 @@ function _bingoPaneHtml() {
           navHtml += `<div class="bpn-pill${isActive?' active':''}${isLocked?' locked':''}${isCongelarTarget?' power-target-pill':''}${isBot?' bpn-bot':''}" ${onclick}><span class="bpn-main">${label}<span class="bpn-pct">${isLocked?'?':pct+'%'}</span></span>${statusLine}</div>`;
         });
         navHtml += `<div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>`;
-        navHtml += `<input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(myPlayer.playerStatus||'').replace(/"/g,'&quot;')}" onblur="setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">`;
+        navHtml += `<input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(_bingoStatusDraft !== null ? _bingoStatusDraft : (myPlayer.playerStatus||'')).replace(/"/g,'&quot;')}" onblur="_bingoStatusDraft=null;setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">`;
         if (_bingoEmojiPickerOpen) {
-          const FACE_EMOJIS = ['😀','😂','🤣','😊','😇','🥰','😍','🤩','😘','😋','😎','🥳','😜','🤪','😝','🤑','🤗','🤔','😏','🙄','😒','😢','😭','😤','😡','🤯','😱','🥺','😴','🤠','👻','🤖','💀','😈','😵','🤢','😷','🥶'];
           navHtml += `<button class="bep-nav-btn" onclick="scrollBingoEmojis(-1)">&#9664;</button>`;
-          navHtml += `<div id="bingo-emoji-strip" class="bep-strip">${FACE_EMOJIS.map(em=>`<button class="bep-btn" onclick="insertBingoEmoji(this.dataset.e)" data-e="${em}">${em}</button>`).join('')}</div>`;
+          navHtml += `<div id="bingo-emoji-strip" class="bep-strip">${FACE_EMOJIS.map((em,i)=>`<button class="bep-btn" onclick="insertBingoEmoji(${i})">${em}</button>`).join('')}</div>`;
           navHtml += `<button class="bep-nav-btn" onclick="scrollBingoEmojis(1)">&#9654;</button>`;
         }
         navHtml += `<button class="bep-toggle${_bingoEmojiPickerOpen?' active':''}" onclick="toggleBingoEmojiPicker()" title="Emojis">🙂</button>`;
