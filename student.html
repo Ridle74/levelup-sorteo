@@ -519,6 +519,32 @@ textarea.fsm { resize:none; height:64px; }
 .prep-topic-badge-sm{display:inline-flex;align-items:center;gap:5px;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.4);border-radius:16px;padding:4px 12px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#e0aaff}
 .prep-timer{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:#39ff7a}
 .prep-timer.urgent{color:#ef4444;animation:prep-pulse .7s infinite}
+/* ── Prepárate — Khan Academy style ───────────────────────────────── */
+.prep-kh-course-hdr{margin:0 0 10px}
+.prep-kh-course-name{font-size:19px;font-weight:900;color:#fff;margin-bottom:5px;letter-spacing:.02em}
+.prep-kh-mastery-row{display:flex;align-items:center;gap:8px}
+.prep-kh-mastery-lbl{font-size:11px;color:rgba(255,255,255,0.4);white-space:nowrap}
+.prep-kh-bar{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,0.08)}
+.prep-kh-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#a855f7);transition:width .4s}
+.prep-kh-legend{display:flex;flex-wrap:wrap;gap:5px 12px;margin:8px 0 12px;padding:7px 10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+.prep-kh-leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,0.42)}
+.prep-kh-leg-sq{width:13px;height:13px;border-radius:3px;flex-shrink:0}
+.prep-kh-units{display:flex;flex-direction:column;gap:8px}
+.prep-kh-unit{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:11px 12px}
+.prep-kh-unit-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.3);margin-bottom:8px}
+.prep-kh-skills{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.prep-kh-sq{width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:transform .14s,box-shadow .14s;color:rgba(255,255,255,0.28);flex-shrink:0;user-select:none}
+.prep-kh-sq:hover{transform:scale(1.11);box-shadow:0 3px 14px rgba(0,0,0,0.45)}
+.prep-kh-sq.dominado{background:rgba(109,40,217,0.85);border-color:rgba(168,85,247,0.9);color:#fff}
+.prep-kh-sq.competente{background:rgba(139,92,246,0.45);border-color:rgba(168,85,247,0.55);color:#e0aaff}
+.prep-kh-sq.familiar{background:rgba(249,115,22,0.42);border-color:rgba(249,115,22,0.75);color:#fb923c}
+.prep-kh-sq.intentado{background:transparent;border-color:rgba(249,115,22,0.55);color:rgba(249,115,22,0.45)}
+.prep-kh-sq.selected{outline:2px solid #facc15;outline-offset:2px}
+.prep-kh-quiz{background:rgba(168,85,247,0.09);border:1.5px dashed rgba(168,85,247,0.38);border-radius:8px;color:#a855f7;padding:5px 11px;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer;letter-spacing:.04em;transition:background .18s;flex-shrink:0}
+.prep-kh-quiz:hover{background:rgba(168,85,247,0.2)}
+.prep-kh-panel{margin-top:12px;background:rgba(250,204,21,0.05);border:1px solid rgba(250,204,21,0.16);border-radius:12px;padding:12px 14px}
+.prep-kh-panel-topic{font-size:16px;font-weight:900;color:#facc15;margin-bottom:9px;letter-spacing:.03em}
+.prep-kh-panel-opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 @keyframes prep-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .prep-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .prep-prog-label{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
@@ -2323,6 +2349,22 @@ const PREP_LEVELS = {
       {key:'trigonometria',lbl:'Trigonometría',ico:'∠'},
       {key:'geometria',    lbl:'Geometría',    ico:'◻'},
     ] },
+};
+// Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
+const PREP_CURRICULUM = {
+  primaria: {
+    '1':[{lbl:'Adición y Sustracción',    skills:['suma','resta']}],
+    '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
+    '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
+    '4':[], '5':[], '6':[],
+  },
+  secundaria: {
+    '1':[{lbl:'Números Negativos y Ecuaciones',  skills:['neg','ecuacion']},
+         {lbl:'Propiedades Trigonométricas',      skills:['trigoprop']}],
+    '2':[], '4':[], '5':[],
+    '3':[{lbl:'Razones Trigonométricas',          skills:['trigo','trigvf']}],
+  },
+  preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
@@ -4417,55 +4459,120 @@ function _preparatePaneHtml() {
 }
 function _prepSetLevel(lvl) {
   _prep.level = lvl;
-  const grades = PREP_LEVELS[lvl]?.grades || {};
-  const firstGrade = Object.keys(grades)[0] || '1';
-  _prep.grade = firstGrade;
-  _prep.topic = (grades[firstGrade] || [])[0] || '';
+  const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
+  _prep.grade = gradeKeys[0] || '';
+  const units = (PREP_CURRICULUM[lvl]||{})[_prep.grade] || [];
+  _prep.topic = units[0]?.skills[0] || '';
   _renderPreparatePane();
 }
 function _prepSetGrade(g) {
   _prep.grade = g;
-  const topics = PREP_LEVELS[_prep.level]?.grades?.[g] || [];
-  _prep.topic = topics[0] || '';
+  const units = (PREP_CURRICULUM[_prep.level]||{})[g] || [];
+  _prep.topic = units[0]?.skills[0] || '';
   _renderPreparatePane();
 }
 function _prepConfigHtml() {
   const lvDef = PREP_LEVELS[_prep.level] || {};
-  const grades = lvDef.grades || {};
-  const gradeKeys = Object.keys(grades);
-  const topicKeys = grades[_prep.grade] || [];
-  const qOpts = [5,10,15,20];
-  const tOpts = [[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
-  const nivelRow = Object.entries(PREP_LEVELS).map(([key,lv])=>`
-    <button class="prep-option-btn ${_prep.level===key?'active':''}" style="font-size:13px" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('');
-  const gradeRow = gradeKeys.map(g=>`
-    <button class="prep-option-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')">${g}° Grado</button>`).join('');
-  const topicGrid = topicKeys.map(key=>{ const def=BINGO_TOPICS[key]; return `
-    <button class="prep-topic-btn ${_prep.topic===key?'active':''}" onclick="_prep.topic='${key}';_renderPreparatePane()">
-      <span class="prep-topic-ico">${def.ico}</span>${def.lbl}
-    </button>`; }).join('');
-  const hasTopics = topicKeys.length > 0;
-  return `<div class="prep-wrap">
-    <div class="prep-title">📚 Prepárate</div>
-    <div class="prep-sub">Practica antes de jugar al Bingo</div>
-    <div class="prep-section-label">Nivel educativo</div>
-    <div class="prep-option-row">${nivelRow}</div>
-    ${gradeKeys.length > 0 ? `
-    <div class="prep-section-label">Grado</div>
-    <div class="prep-option-row">${gradeRow}</div>
-    ${hasTopics ? `
-    <div class="prep-section-label">Tema</div>
-    <div class="prep-topic-grid">${topicGrid}</div>
-    <div class="prep-section-label">Preguntas</div>
-    <div class="prep-option-row">
-      ${qOpts.map(n=>`<button class="prep-option-btn ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()">${n}</button>`).join('')}
+  const gradeKeys = Object.keys(lvDef.grades||{}).sort((a,b)=>+a-+b);
+  const units = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
+  const allTopicKeys = units.flatMap(u=>u.skills||[]);
+  const masLoading = !Array.isArray(_prepHistoryData);
+  const coursePct = _prepCourseScore(allTopicKeys);
+
+  // Tabs de nivel
+  const levelTabs = Object.entries(PREP_LEVELS).map(([key,lv])=>
+    `<button class="prep-option-btn ${_prep.level===key?'active':''}" style="font-size:12px;padding:7px 8px" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`
+  ).join('');
+  // Tabs de grado
+  const gradeTabs = gradeKeys.length
+    ? `<div class="prep-option-row" style="margin:4px 0 10px">${gradeKeys.map(g=>
+        `<button class="prep-option-btn ${_prep.grade===g?'active':''}" style="font-size:12px;padding:7px 8px" onclick="_prepSetGrade('${g}')">${g}°</button>`
+      ).join('')}</div>`
+    : '';
+
+  // PRE-UNIV: áreas sin contenido aún
+  if (lvDef.areas) {
+    return `<div class="prep-wrap" style="padding-bottom:8px">
+      <div class="prep-option-row" style="margin:0 0 8px">${levelTabs}</div>
+      <div class="prep-kh-units">${lvDef.areas.map((a,ai)=>`
+        <div class="prep-kh-unit">
+          <div class="prep-kh-unit-name">Área ${ai+1} — ${a.lbl}</div>
+          <div class="prep-kh-skills"><span style="font-size:11px;color:rgba(255,255,255,0.2)">🚧 Próximamente</span></div>
+        </div>`).join('')}
+      </div>
+      ${!isAdmin() ? _prepHistorySectionHtml() : ''}
+    </div>`;
+  }
+
+  // Encabezado con dominio de curso
+  const courseHeader = `<div class="prep-kh-course-hdr">
+    <div class="prep-kh-course-name">${lvDef.lbl||''}${_prep.grade?' · '+_prep.grade+'° Grado':''}</div>
+    <div class="prep-kh-mastery-row">
+      <span class="prep-kh-mastery-lbl">Dominio del curso:</span>
+      <div class="prep-kh-bar"><div class="prep-kh-bar-fill" style="width:${masLoading||!allTopicKeys.length?0:coursePct}%"></div></div>
+      <span class="prep-kh-mastery-lbl">${masLoading||!allTopicKeys.length?'…':coursePct+'%'}</span>
     </div>
-    <div class="prep-section-label">Tiempo total</div>
-    <div class="prep-option-row">
-      ${tOpts.map(([s,lbl])=>`<button class="prep-option-btn ${_prep.timeSec===s?'active':''}" onclick="_prep.timeSec=${s};_renderPreparatePane()">${lbl}</button>`).join('')}
-    </div>
-    <button class="prep-start-btn" onclick="_prepStart()">▶ Comenzar</button>` : ''}` :
-    `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:16px">🚧 Próximamente habrá temas para este nivel.</div>`}
+  </div>`;
+
+  // Leyenda de dominio
+  const legend = `<div class="prep-kh-legend">
+    ${[['rgba(109,40,217,0.85)','transparent','♛ Dominado'],['rgba(139,92,246,0.45)','transparent','Competente'],
+       ['rgba(249,115,22,0.42)','transparent','Familiar'],['transparent','rgba(249,115,22,0.55)','Intentado'],
+       ['rgba(255,255,255,0.04)','rgba(255,255,255,0.12)','No empezado']]
+    .map(([bg,bc,lb])=>`<div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:${bg};border:2px solid ${bc}"></div>${lb}</div>`).join('')}
+  </div>`;
+
+  // Unidades con cuadros de habilidad + botón examen de unidad (★)
+  let unitsHtml = '';
+  if (!allTopicKeys.length) {
+    unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">🚧 Próximamente habrá contenido para este grado.</div>`;
+  } else {
+    unitsHtml = `<div class="prep-kh-units">${units.map((unit,ui)=>{
+      const sqHtml = unit.skills.map(sk=>{
+        const def=BINGO_TOPICS[sk]||{};
+        const lvl=_prepMasteryLevel(sk);
+        const isSel=_prep.topic===sk;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?'♛':(def.ico||'?')}</div>`;
+      }).join('');
+      return `<div class="prep-kh-unit">
+        <div class="prep-kh-unit-name">Unidad ${ui+1} — ${unit.lbl}</div>
+        <div class="prep-kh-skills">${sqHtml}
+          <button class="prep-kh-quiz" onclick="_prepStartUnit(['${unit.skills.join("','")}'])">⚡ Practicar</button>
+          <button class="prep-kh-quiz" style="border-style:solid;color:#facc15;border-color:rgba(250,204,21,0.4);background:rgba(250,204,21,0.06)" onclick="_prepUnitExam(['${unit.skills.join("','")}'])">★ Examen</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // Panel de inicio para la habilidad seleccionada
+  let startPanel = '';
+  if (_prep.topic && allTopicKeys.includes(_prep.topic)) {
+    const def=BINGO_TOPICS[_prep.topic]||{};
+    const qOpts=[5,10,15,20];
+    const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
+    startPanel = `<div class="prep-kh-panel">
+      <div class="prep-kh-panel-topic">${def.ico||''} ${def.lbl||_prep.topic}</div>
+      <div class="prep-kh-panel-opts">
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
+          <div class="prep-option-row">${qOpts.map(n=>`<button class="prep-option-btn ${_prep.qCount===n?'active':''}" style="padding:5px 4px;font-size:13px" onclick="_prep.qCount=${n};_renderPreparatePane()">${n}</button>`).join('')}</div>
+        </div>
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Tiempo</div>
+          <div class="prep-option-row">${tOpts.map(([s,l])=>`<button class="prep-option-btn ${_prep.timeSec===s?'active':''}" style="padding:5px 4px;font-size:13px" onclick="_prep.timeSec=${s};_renderPreparatePane()">${l}</button>`).join('')}</div>
+        </div>
+      </div>
+      <button class="prep-start-btn" style="margin-top:8px" onclick="_prepStart()">▶ Practicar ahora</button>
+    </div>`;
+  }
+
+  return `<div class="prep-wrap" style="padding-bottom:8px">
+    <div class="prep-option-row" style="margin:0 0 4px">${levelTabs}</div>
+    ${gradeTabs}
+    ${courseHeader}
+    ${legend}
+    ${unitsHtml}
+    ${startPanel}
     ${!isAdmin() ? _prepHistorySectionHtml() : ''}
   </div>`;
 }
@@ -4501,6 +4608,46 @@ function _prepHistorySectionHtml() {
         }).join('')}</div>`}
     </div>` : ''}
   </div>`;
+}
+function _prepMasteryLevel(topicKey) {
+  if (!Array.isArray(_prepHistoryData)) return 'unknown';
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
+  if (!sessions.length) return 'pendiente';
+  const best = Math.max(...sessions.map(h=>h.pct||0));
+  if (best>=90) return 'dominado';
+  if (best>=70) return 'competente';
+  if (best>=40) return 'familiar';
+  return 'intentado';
+}
+function _prepCourseScore(topicKeys) {
+  const W={dominado:100,competente:75,familiar:50,intentado:20,pendiente:0,unknown:0};
+  if (!topicKeys.length) return 0;
+  return Math.round(topicKeys.map(k=>W[_prepMasteryLevel(k)]||0).reduce((a,b)=>a+b,0)/topicKeys.length);
+}
+function _prepStartUnit(skills) {
+  const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
+  if (!valid.length) return;
+  const qs = [];
+  for (let i=0;i<_prep.qCount;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(def.gen()); }
+  _prep.topic = valid[0];
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
+  clearInterval(_prepTimerIntv);
+  if (_prep.timeSec>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+  _renderPreparatePane();
+}
+// Examen de unidad (★): más preguntas, mezcla todos los temas de la unidad en orden aleatorio
+function _prepUnitExam(skills) {
+  const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
+  if (!valid.length) return;
+  const total = Math.max(10, valid.length * 5); // al menos 5 por habilidad
+  const qs = [];
+  for (let i=0;i<total;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(def.gen()); }
+  // Mezclar preguntas para que no vayan por grupos
+  for (let i=qs.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
+  _prep.topic = valid[0];
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false}); // tiempo libre para examen
+  clearInterval(_prepTimerIntv);
+  _renderPreparatePane();
 }
 function _prepStart() {
   const def = BINGO_TOPICS[_prep.topic]; if (!def) return;
