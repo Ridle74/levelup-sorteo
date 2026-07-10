@@ -534,6 +534,10 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-unit-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.3);margin-bottom:8px}
 .prep-kh-skills{display:flex;flex-wrap:nowrap;align-items:center;gap:5px;overflow-x:auto;padding-bottom:2px}
 .prep-kh-sep{width:1px;height:36px;background:rgba(255,255,255,0.13);margin:0 5px;flex-shrink:0}
+.prep-kh-sq.quiz-sq{background:rgba(168,85,247,0.1);border:2px dashed rgba(168,85,247,0.55);color:#a855f7}
+.prep-kh-sq.quiz-sq.selected,.prep-kh-sq.quiz-sq:hover{background:rgba(168,85,247,0.26);border-style:solid}
+.prep-kh-sq.exam-sq{background:rgba(250,204,21,0.07);border:2px solid rgba(250,204,21,0.5);color:#facc15}
+.prep-kh-sq.exam-sq:hover{background:rgba(250,204,21,0.18)}
 .prep-kh-sq{width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:transform .14s,box-shadow .14s;color:rgba(255,255,255,0.28);flex-shrink:0;user-select:none}
 .prep-kh-sq:hover{transform:scale(1.11);box-shadow:0 3px 14px rgba(0,0,0,0.45)}
 .prep-kh-sq.dominado{background:rgba(109,40,217,0.85);border-color:rgba(168,85,247,0.9);color:#fff}
@@ -2525,24 +2529,24 @@ const BINGO_TOPICS = {
   trig1_a3:     { ico:'∡',  lbl:'Tres Ángulos',    qCount:3, gen:()=>_angTrigA3() },
   trig1_a4:     { ico:'⊕',  lbl:'Opuestos V.',     qCount:3, gen:()=>_angTrigA4() },
   trig1_a5:     { ico:'⟂',  lbl:'Bisectriz',       qCount:3, gen:()=>_angTrigA5() },
-  trig1_angulo: { ico:'📋', lbl:'Cuestionario A.T.',qCount:5, gen:()=>_bingoGenAngTrig(), quiz:true },
+  trig1_angulo: { ico:'⚡', lbl:'Ángulo Trigonométrico',    qCount:5, gen:()=>_bingoGenAngTrig(), quiz:true },
   // ── Subtema 2: Sistemas de Medición Angular ──
   trig1_m1:     { ico:'°',  lbl:'S ↔ C',           qCount:3, gen:()=>_bingoGenMedicion1() },
   trig1_m2:     { ico:'π',  lbl:'S ↔ R',           qCount:3, gen:()=>_bingoGenMedicion2() },
   trig1_m3:     { ico:'g',  lbl:'C ↔ R',           qCount:3, gen:()=>_bingoGenMedicion3() },
-  trig1_medicion:{ ico:'📋',lbl:'Cuestionario S.M.',qCount:5, gen:()=>_bingoGenMedicion(), quiz:true },
+  trig1_medicion:{ ico:'⚡', lbl:'Sistemas de Medición Angular', qCount:5, gen:()=>_bingoGenMedicion(), quiz:true },
   // ── Subtema 3: Longitud de Arco ──
   trig1_l1:     { ico:')',  lbl:'L (radianes)',     qCount:3, gen:()=>_bingoGenArco1() },
   trig1_l2:     { ico:'°)',  lbl:'L (grados)',       qCount:3, gen:()=>_bingoGenArco2() },
   trig1_l3:     { ico:'⇌',  lbl:'Hallar r o θ',    qCount:3, gen:()=>_bingoGenArco3() },
-  trig1_arco:   { ico:'📋', lbl:'Cuestionario L.A.',qCount:5, gen:()=>_bingoGenArco(), quiz:true },
+  trig1_arco:   { ico:'⚡', lbl:'Longitud de Arco',           qCount:5, gen:()=>_bingoGenArco(), quiz:true },
 };
 const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫',
-    grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':[], '5':[], '6':[] } },
+    grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':[], '5':[], '6':['neg','ecuacion'] } },
   secundaria: { lbl:'Secundaria', ico:'📐',
-    grades:{ '1':['neg','ecuacion','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
   preuniversitario:{ lbl:'Pre-univ.', ico:'🎓', grades:{},
     areas:[
       {key:'algebra',      lbl:'Álgebra',      ico:'α'},
@@ -2557,11 +2561,11 @@ const PREP_CURRICULUM = {
     '1':[{lbl:'Adición y Sustracción',    skills:['suma','resta']}],
     '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
-    '4':[], '5':[], '6':[],
+    '4':[], '5':[],
+    '6':[{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
   },
   secundaria: {
-    '1':[{lbl:'Números Negativos y Ecuaciones',  skills:['neg','ecuacion']},
-         {lbl:'Primera Unidad — Trigonometría',   skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
+    '1':[{lbl:'Primera Unidad — Trigonometría',   skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
          {lbl:'Propiedades Trigonométricas',      skills:['trigoprop']}],
     '2':[], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          skills:['trigo','trigvf']}],
@@ -4737,15 +4741,15 @@ function _prepConfigHtml() {
         const isQuiz=!!def.quiz;
         const nextIsEx=si<unit.skills.length-1&&!BINGO_TOPICS[unit.skills[si+1]]?.quiz;
         if(isQuiz){
-          const btn=`<button class="prep-kh-quiz${isSel?' selected':''}" style="${isSel?'background:rgba(168,85,247,0.28);':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()">📋 Cuestionario</button>`;
-          return btn+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
+          const sq=`<div class="prep-kh-sq quiz-sq${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="Cuestionario: ${def.lbl||sk}" style="cursor:pointer">⚡</div>`;
+          return sq+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
         }
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?'♛':(def.ico||'?')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit">
         <div class="prep-kh-unit-name">Unidad ${ui+1} — ${unit.lbl}</div>
         <div class="prep-kh-skills">${skillsHtml}
-          <button class="prep-kh-quiz" style="border-style:solid;color:#facc15;border-color:rgba(250,204,21,0.4);background:rgba(250,204,21,0.06);margin-left:6px" onclick="_prepUnitExam(['${unit.skills.join("','")}'])">★ Examen</button>
+          <div class="prep-kh-sq exam-sq" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}" style="cursor:pointer;margin-left:4px">★</div>
         </div>
       </div>`;
     }).join('')}</div>`;
