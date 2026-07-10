@@ -4861,12 +4861,20 @@ function _prepUnitExam(skills) {
   _renderPreparatePane();
 }
 function _prepStart() {
-  const def = BINGO_TOPICS[_prep.topic]; if (!def) return;
-  const qs = []; for (let i=0;i<_prep.qCount;i++) qs.push(def.gen());
-  Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
-  clearInterval(_prepTimerIntv);
-  if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
-  _renderPreparatePane();
+  const def = BINGO_TOPICS[_prep.topic];
+  if (!def || !def.gen) { console.warn('_prepStart: no def for topic', _prep.topic); return; }
+  try {
+    const qs = [];
+    for (let i=0;i<_prep.qCount;i++) qs.push(def.gen());
+    Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
+    clearInterval(_prepTimerIntv);
+    if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+    _renderPreparatePane();
+  } catch(e) {
+    console.error('_prepStart error:', e);
+    const el = document.getElementById('preparate-pane');
+    if (el) el.insertAdjacentHTML('afterbegin', `<div style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#f87171;font-family:monospace">⚠️ Error al generar preguntas: ${e.message}</div>`);
+  }
 }
 function _prepTickTimer() {
   if (_prep.state !== 'exam') { clearInterval(_prepTimerIntv); return; }
