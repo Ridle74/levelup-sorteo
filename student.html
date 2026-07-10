@@ -2323,6 +2323,125 @@ const _bSnd = (() => {
 let _bSndLastNum = null, _bSndChalWas = false, _bSndTickSec = -1;
 let _bingoLobbyNivel = 'primaria'; // nivel activo en el selector de temas del lobby
 let _bingoLobbyGrade = null;       // grado/área seleccionado dentro del nivel
+// ─── Helpers compartidos ─────────────────────────────────────────────────────
+function _t1Rnd(lo,hi){return Math.floor(Math.random()*(hi-lo+1))+lo;}
+function _t1Shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function _t1Opts5(ans){const d=_t1Shuf([-7,-5,-3,-2,-1,1,2,3,5,7,10,-10,15,-15].map(v=>ans+v).filter(v=>v!==ans&&v>-90&&v<360));return _t1Shuf([ans,...d.slice(0,4)]);}
+function _t1AngStr(k,n){return n>0?`${k}x + ${n}`:`${k}x`;}
+// ─── Ejercicios individuales Subtema 1: Ángulo Trigonométrico ────────────────
+function _angTrigA1(){ // Dos ángulos consecutivos → 90°
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,12),a=_t1Rnd(1,3),b=_t1Rnd(1,10),c=_t1Rnd(1,4);
+    const α=a*x+b; if(α>=85||α<=3) continue;
+    const β=90-α,d=β-c*x; if(d<0||d>50) continue;
+    return{q:`∠AOB = (${_t1AngStr(a,b)})° y ∠BOC = (${_t1AngStr(c,d)})° son consecutivos con ∠AOC = 90°. Halla x.`,
+      a:x,opts:_t1Opts5(x),mc:true,
+      steps:[`α + β = 90°`,`(${_t1AngStr(a,b)}) + (${_t1AngStr(c,d)}) = 90`,`${a+c}x + ${b+d} = 90`,`${a+c}x = ${90-b-d}`,`x = ${x}`]};
+  } return _angTrigA1();
+}
+function _angTrigA2(){ // Dos ángulos consecutivos → 180°
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(3,18),a=_t1Rnd(1,4),b=_t1Rnd(1,15),c=_t1Rnd(1,4);
+    const α=a*x+b; if(α>=170||α<=10) continue;
+    const β=180-α,d=β-c*x; if(d<0||d>60) continue;
+    return{q:`∠AOB = (${_t1AngStr(a,b)})° y ∠BOC = (${_t1AngStr(c,d)})° son consecutivos con ∠AOC = 180°. Halla x.`,
+      a:x,opts:_t1Opts5(x),mc:true,
+      steps:[`α + β = 180°`,`(${_t1AngStr(a,b)}) + (${_t1AngStr(c,d)}) = 180`,`${a+c}x + ${b+d} = 180`,`${a+c}x = ${180-b-d}`,`x = ${x}`]};
+  } return _angTrigA2();
+}
+function _angTrigA3(){ // Tres ángulos consecutivos → 180°
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,15),a=_t1Rnd(1,3),b=_t1Rnd(1,10),K=_t1Rnd(2,7)*10,c=_t1Rnd(1,3);
+    const α=a*x+b; if(α<=0) continue;
+    const γt=180-α-K; if(γt<=0) continue;
+    const d=γt-c*x; if(d<0||d>40) continue;
+    return{q:`Tres ángulos consecutivos forman un ángulo llano: (${_t1AngStr(a,b)})°, ${K}° y (${_t1AngStr(c,d)})°. Halla x.`,
+      a:x,opts:_t1Opts5(x),mc:true,
+      steps:[`(${_t1AngStr(a,b)}) + ${K} + (${_t1AngStr(c,d)}) = 180`,`${a+c}x + ${b+K+d} = 180`,`${a+c}x = ${180-b-K-d}`,`x = ${x}`]};
+  } return _angTrigA3();
+}
+function _angTrigA4(){ // Ángulos opuestos por vértice
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,15),a=_t1Rnd(2,6),b=_t1Rnd(1,20),c=_t1Rnd(1,a-1);
+    const v=a*x+b; if(v<=0||v>=180) continue;
+    const d=v-c*x; if(d<0||d>60) continue;
+    return{q:`∠AOB = (${a}x + ${b})° y ∠COD = (${c}x + ${d})° son ángulos opuestos por vértice. Halla x.`,
+      a:x,opts:_t1Opts5(x),mc:true,
+      steps:[`Ángulos opuestos por vértice son iguales`,`${a}x + ${b} = ${c}x + ${d}`,`${a-c}x = ${d-b}`,`x = ${d-b}/${a-c} = ${x}`]};
+  } return _angTrigA4();
+}
+function _angTrigA5(){ // Bisectriz
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,12),a=_t1Rnd(2,5),b=_t1Rnd(1,15),c=_t1Rnd(1,a-1);
+    const v=a*x+b; if(v<=0||v>=90) continue;
+    const d=v-c*x; if(d<0||d>40) continue;
+    return{q:`OT es bisectriz de ∠AOB. Si ∠AOT = (${a}x + ${b})° y ∠TOB = (${c}x + ${d})°, halla x.`,
+      a:x,opts:_t1Opts5(x),mc:true,
+      steps:[`La bisectriz divide ∠AOB en dos partes iguales`,`${a}x + ${b} = ${c}x + ${d}`,`${a-c}x = ${d-b}`,`x = ${d-b}/${a-c} = ${x}`]};
+  } return _angTrigA5();
+}
+// ─── Subtema 2: Sistemas de Medición Angular ──────────────────────────────────
+const _T1_SC=[[9,10],[18,20],[27,30],[36,40],[45,50],[54,60],[63,70],[72,80],[81,90],[90,100],[108,120],[135,150],[162,180],[180,200]];
+const _T1_SR=[[30,'π/6'],[45,'π/4'],[60,'π/3'],[90,'π/2'],[120,'2π/3'],[135,'3π/4'],[150,'5π/6'],[180,'π'],[36,'π/5'],[72,'2π/5'],[54,'3π/10'],[108,'3π/5']];
+const _T1_CR=[[100,'π/2'],[200,'π'],[50,'π/4'],[150,'3π/4'],[80,'2π/5'],[120,'3π/5'],[160,'4π/5'],[40,'π/5'],[20,'π/10'],[60,'3π/10']];
+const _T1_RF=['π/6','π/4','π/3','π/2','2π/3','3π/4','5π/6','π','π/5','2π/5','3π/10','3π/5','4π/5','π/10'];
+function _bingoGenMedicion1(){ // S ↔ C
+  const[S,C]=_T1_SC[_t1Rnd(0,_T1_SC.length-1)];
+  const toC=Math.random()<0.5;
+  const wr=a=>_t1Shuf([a+10,a-10,a+20,a-20,Math.round(a*9/10),Math.round(a*10/9)].filter(v=>v!==a&&v>0)).slice(0,4);
+  if(toC){return{q:`Convierte ${S}° a grados centesimales.`,a:C+'g',opts:_t1Shuf([C+'g',...wr(C).map(v=>v+'g')]),mc:true,steps:[`C = S × 10/9`,`C = ${S} × 10/9`,`C = ${C}g`]};}
+  return{q:`Convierte ${C}g a grados sexagesimales.`,a:S+'°',opts:_t1Shuf([S+'°',...wr(S).map(v=>v+'°')]),mc:true,steps:[`S = C × 9/10`,`S = ${C} × 9/10`,`S = ${S}°`]};
+}
+function _bingoGenMedicion2(){ // S ↔ R
+  const[S,R]=_T1_SR[_t1Rnd(0,_T1_SR.length-1)];
+  const toR=Math.random()<0.5;
+  const wrR=_t1Shuf(_T1_RF.filter(f=>f!==R)).slice(0,4).map(f=>f+' rad');
+  if(toR){return{q:`Convierte ${S}° a radianes.`,a:R+' rad',opts:_t1Shuf([R+' rad',...wrR]),mc:true,steps:[`R = S × π/180`,`R = ${S} × π/180`,`R = ${R} rad`]};}
+  const wrS=_t1Shuf([S+30,S-30,S+45,S-45,S+15].filter(v=>v!==S&&v>0&&v<=360)).slice(0,4).map(v=>v+'°');
+  return{q:`Convierte ${R} rad a grados sexagesimales.`,a:S+'°',opts:_t1Shuf([S+'°',...wrS]),mc:true,steps:[`S = R × 180/π`,`S = ${R} × 180/π`,`S = ${S}°`]};
+}
+function _bingoGenMedicion3(){ // C ↔ R
+  const[C,R]=_T1_CR[_t1Rnd(0,_T1_CR.length-1)];
+  const toR=Math.random()<0.5;
+  const wrR=_t1Shuf(_T1_RF.filter(f=>f!==R)).slice(0,4).map(f=>f+' rad');
+  if(toR){return{q:`Convierte ${C}g a radianes.`,a:R+' rad',opts:_t1Shuf([R+' rad',...wrR]),mc:true,steps:[`R = C × π/200`,`R = ${C} × π/200`,`R = ${R} rad`]};}
+  const wrC=_t1Shuf([C+20,C-20,C+40,C-40,C+10].filter(v=>v!==C&&v>0&&v<=400)).slice(0,4).map(v=>v+'g');
+  return{q:`Convierte ${R} rad a grados centesimales.`,a:C+'g',opts:_t1Shuf([C+'g',...wrC]),mc:true,steps:[`C = R × 200/π`,`C = ${R} × 200/π`,`C = ${C}g`]};
+}
+function _bingoGenMedicion(){const t=_t1Rnd(0,2);return t===0?_bingoGenMedicion1():t===1?_bingoGenMedicion2():_bingoGenMedicion3();}
+// ─── Subtema 3: Longitud de Arco ─────────────────────────────────────────────
+const _T1_ARC_R=[[6,'π/3 rad','2π'],[12,'2π/3 rad','8π'],[8,'π/4 rad','2π'],[5,'π/5 rad','π'],[10,'π/2 rad','5π'],[4,'π/4 rad','π'],[9,'π/3 rad','3π'],[15,'π/3 rad','5π'],[6,'π/2 rad','3π'],[7,'π/7 rad','π'],[3,'π/3 rad','π'],[14,'π/7 rad','2π']];
+const _T1_ARC_D=[[12,'120°','8π'],[6,'60°','2π'],[8,'90°','4π'],[5,'36°','π'],[10,'180°','10π'],[3,'60°','π'],[4,'90°','2π'],[9,'120°','6π'],[15,'60°','5π'],[12,'30°','2π']];
+const _T1_ARC_Lwrong=['π','2π','3π','4π','5π','6π','7π','8π','9π','10π','π/2','3π/2'];
+function _bingoGenArco1(){ // Hallar L dado r y θ (radianes)
+  const[r,θ,L]=_T1_ARC_R[_t1Rnd(0,_T1_ARC_R.length-1)];
+  const wr=_t1Shuf(_T1_ARC_Lwrong.filter(v=>v!==L)).slice(0,4).map(v=>v+' m');
+  return{q:`Sector circular: r = ${r} m, θ = ${θ}. Halla la longitud del arco L.`,a:L+' m',opts:_t1Shuf([L+' m',...wr]),mc:true,
+    steps:[`L = r × θ`,`L = ${r} × ${θ}`,`L = ${L} m`]};
+}
+function _bingoGenArco2(){ // Hallar L dado r y θ (grados)
+  const[r,θ,L]=_T1_ARC_D[_t1Rnd(0,_T1_ARC_D.length-1)];
+  const wr=_t1Shuf(_T1_ARC_Lwrong.filter(v=>v!==L)).slice(0,4).map(v=>v+' m');
+  return{q:`Sector circular: r = ${r} m, θ = ${θ}. Halla la longitud del arco L.`,a:L+' m',opts:_t1Shuf([L+' m',...wr]),mc:true,
+    steps:[`Convertir θ: θ_rad = ${θ} × π/180`,`L = r × θ_rad`,`L = ${L} m`]};
+}
+function _bingoGenArco3(){ // Hallar r o θ dado L
+  const findR=Math.random()<0.5;
+  if(findR){
+    const D=[['8π m','2π/3 rad',12],['2π m','π/3 rad',6],['4π m','π/2 rad',8],['π m','π/5 rad',5],['5π m','π/2 rad',10],['3π m','π/3 rad',9],['3π m','π/2 rad',6],['2π m','π/4 rad',8]];
+    const[L,θ,r]=D[_t1Rnd(0,D.length-1)];
+    const wr=_t1Shuf([r+2,r-2,r+4,r-4,r*2].filter(v=>v!==r&&v>0)).slice(0,4).map(v=>v+' m');
+    return{q:`Si L = ${L} y θ = ${θ}, halla el radio r.`,a:r+' m',opts:_t1Shuf([r+' m',...wr]),mc:true,
+      steps:[`r = L / θ`,`r = ${L} / ${θ}`,`r = ${r} m`]};
+  }
+  const D=[['2π m',6,'π/3 rad'],['8π m',12,'2π/3 rad'],['4π m',8,'π/2 rad'],['π m',5,'π/5 rad'],['6 m',3,'2 rad'],['10 m',5,'2 rad'],['3 m',3,'1 rad'],['π m',7,'π/7 rad']];
+  const[L,r,θ]=D[_t1Rnd(0,D.length-1)];
+  const allT=['π/6 rad','π/4 rad','π/3 rad','π/2 rad','2π/3 rad','3π/4 rad','1 rad','2 rad','3 rad','π/5 rad','π/7 rad'];
+  const wr=_t1Shuf(allT.filter(v=>v!==θ)).slice(0,4);
+  return{q:`Si L = ${L} y r = ${r} m, halla el ángulo central θ.`,a:θ,opts:_t1Shuf([θ,...wr]),mc:true,
+    steps:[`θ = L / r`,`θ = ${L} / ${r}`,`θ = ${θ}`]};
+}
+function _bingoGenArco(){const t=_t1Rnd(0,2);return t===0?_bingoGenArco1():t===1?_bingoGenArco2():_bingoGenArco3();}
 // ─── Ángulo Trigonométrico (Subtema 1, Secundaria 1°) ────────────────────────
 function _bingoGenAngTrig() {
   const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
@@ -2398,15 +2517,31 @@ const BINGO_TOPICS = {
   trigo:    { ico:'sin',lbl:'Razones',     qCount:3, gen:()=>{ const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
   trigvf:    { ico:'V/F', lbl:'Identidades', qCount:3, gen:()=>_bingoGenTrigTF() },
   conjuntos:  { ico:'∪',  lbl:'Conjuntos',              gen:()=>_bingoGenConjuntos() },
-  trigoprop:  { ico:'∠',  lbl:'Prop. Trig.',   qCount:2,  gen:()=>_bingoGenTrigoProp() },
-  trig1_angulo:{ ico:'∡', lbl:'Ángulo Trig.',  qCount:5,  gen:()=>_bingoGenAngTrig() },
+  trigoprop:    { ico:'∠',  lbl:'Prop. Trig.',     qCount:2, gen:()=>_bingoGenTrigoProp() },
+  // ── Subtema 1: Ángulo Trigonométrico ──
+  trig1_a1:     { ico:'⊾',  lbl:'Cons. 90°',       qCount:3, gen:()=>_angTrigA1() },
+  trig1_a2:     { ico:'↔',  lbl:'Cons. 180°',      qCount:3, gen:()=>_angTrigA2() },
+  trig1_a3:     { ico:'∡',  lbl:'Tres Ángulos',    qCount:3, gen:()=>_angTrigA3() },
+  trig1_a4:     { ico:'⊕',  lbl:'Opuestos V.',     qCount:3, gen:()=>_angTrigA4() },
+  trig1_a5:     { ico:'⟂',  lbl:'Bisectriz',       qCount:3, gen:()=>_angTrigA5() },
+  trig1_angulo: { ico:'📋', lbl:'Cuestionario A.T.',qCount:5, gen:()=>_bingoGenAngTrig(), quiz:true },
+  // ── Subtema 2: Sistemas de Medición Angular ──
+  trig1_m1:     { ico:'°',  lbl:'S ↔ C',           qCount:3, gen:()=>_bingoGenMedicion1() },
+  trig1_m2:     { ico:'π',  lbl:'S ↔ R',           qCount:3, gen:()=>_bingoGenMedicion2() },
+  trig1_m3:     { ico:'g',  lbl:'C ↔ R',           qCount:3, gen:()=>_bingoGenMedicion3() },
+  trig1_medicion:{ ico:'📋',lbl:'Cuestionario S.M.',qCount:5, gen:()=>_bingoGenMedicion(), quiz:true },
+  // ── Subtema 3: Longitud de Arco ──
+  trig1_l1:     { ico:')',  lbl:'L (radianes)',     qCount:3, gen:()=>_bingoGenArco1() },
+  trig1_l2:     { ico:'°)',  lbl:'L (grados)',       qCount:3, gen:()=>_bingoGenArco2() },
+  trig1_l3:     { ico:'⇌',  lbl:'Hallar r o θ',    qCount:3, gen:()=>_bingoGenArco3() },
+  trig1_arco:   { ico:'📋', lbl:'Cuestionario L.A.',qCount:5, gen:()=>_bingoGenArco(), quiz:true },
 };
-const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_angulo'];
+const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫',
     grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':[], '5':[], '6':[] } },
   secundaria: { lbl:'Secundaria', ico:'📐',
-    grades:{ '1':['neg','ecuacion','trigoprop','trig1_angulo'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
+    grades:{ '1':['neg','ecuacion','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
   preuniversitario:{ lbl:'Pre-univ.', ico:'🎓', grades:{},
     areas:[
       {key:'algebra',      lbl:'Álgebra',      ico:'α'},
@@ -2425,7 +2560,9 @@ const PREP_CURRICULUM = {
   },
   secundaria: {
     '1':[{lbl:'Números Negativos y Ecuaciones',  skills:['neg','ecuacion']},
-         {lbl:'Ángulo Trigonométrico',            skills:['trig1_angulo']},
+         {lbl:'Ángulo Trigonométrico',            skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo']},
+         {lbl:'Sistemas de Medición Angular',     skills:['trig1_m1','trig1_m2','trig1_m3','trig1_medicion']},
+         {lbl:'Longitud de Arco',                 skills:['trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
          {lbl:'Propiedades Trigonométricas',      skills:['trigoprop']}],
     '2':[], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          skills:['trigo','trigvf']}],
@@ -4594,16 +4731,21 @@ function _prepConfigHtml() {
     unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">🚧 Próximamente habrá contenido para este grado.</div>`;
   } else {
     unitsHtml = `<div class="prep-kh-units">${units.map((unit,ui)=>{
-      const sqHtml = unit.skills.map(sk=>{
+      const exSks = unit.skills.filter(sk=>!BINGO_TOPICS[sk]?.quiz);
+      const qzSks = unit.skills.filter(sk=>BINGO_TOPICS[sk]?.quiz);
+      const sqHtml = exSks.map(sk=>{
         const def=BINGO_TOPICS[sk]||{};
         const lvl=_prepMasteryLevel(sk);
         const isSel=_prep.topic===sk;
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?'♛':(def.ico||'?')}</div>`;
       }).join('');
+      const qzHtml = qzSks.map(sk=>{
+        const isSel=_prep.topic===sk;
+        return `<button class="prep-kh-quiz${isSel?' selected':''}" style="${isSel?'background:rgba(168,85,247,0.28);':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()">📋 Cuestionario</button>`;
+      }).join('');
       return `<div class="prep-kh-unit">
         <div class="prep-kh-unit-name">Unidad ${ui+1} — ${unit.lbl}</div>
-        <div class="prep-kh-skills">${sqHtml}
-          <button class="prep-kh-quiz" onclick="_prepStartUnit(['${unit.skills.join("','")}'])">⚡ Practicar</button>
+        <div class="prep-kh-skills">${sqHtml}${qzHtml}
           <button class="prep-kh-quiz" style="border-style:solid;color:#facc15;border-color:rgba(250,204,21,0.4);background:rgba(250,204,21,0.06)" onclick="_prepUnitExam(['${unit.skills.join("','")}'])">★ Examen</button>
         </div>
       </div>`;
