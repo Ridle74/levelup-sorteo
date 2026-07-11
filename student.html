@@ -5395,7 +5395,8 @@ function _bingoPaneHtml() {
         const cols = Math.min(gKeys.length, 3);
         const gradeHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>`;
         if (!_bingoLobbyGrade) return gradeHtml;
-        const tks = grades[_bingoLobbyGrade] || [];
+        const _currUnits = (PREP_CURRICULUM[_bingoLobbyNivel]||{})[_bingoLobbyGrade] || [];
+        const tks = _currUnits.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]);
         const topicsHtml = tks.length
           ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
           : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
