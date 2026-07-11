@@ -2232,75 +2232,113 @@ function _genConj4BQ1(){const f=[_genConj4B1,_genConj4B2,_genConj4B3];return f[_
 function _genConj4BQ2(){return Math.random()<0.5?_genConj4B4():_genConj4B5();}
 
 // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
-const _EM_CTXS = [
+const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
+const _EM_CAJAS = [
   { plural:'DVDs',      cats:['ciencia ficción','acción','suspenso','terror'] },
   { plural:'caramelos', cats:['naranja','fresa','piña','uva'] },
   { plural:'libros',    cats:['aventura','misterio','ciencia','poesía'] },
-  { plural:'lápices',   cats:['rojo','azul','verde','amarillo'] },
-  { plural:'globos',    cats:['rojo','azul','verde','morado'] },
   { plural:'pelotas',   cats:['roja','azul','verde','amarilla'] },
+  { plural:'bolitas',   cats:['roja','azul','verde','amarilla'] },
 ];
-const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
-// b1: Cardinal del espacio muestral (n=?)
+const _EM_PALABRAS = [
+  { word:'EUCALIPTO',  v:5, c:4 },
+  { word:'COLOMBIA',   v:4, c:4 },
+  { word:'MATEMATICA', v:5, c:5 },
+  { word:'PRIMARIA',   v:4, c:4 },
+  { word:'TRIANGULO',  v:4, c:5 },
+  { word:'DINOSAURIO', v:6, c:4 },
+  { word:'SORPRESA',   v:3, c:5 },
+  { word:'COMPUTADORA',v:5, c:6 },
+  { word:'BIBLIOTECA', v:5, c:5 },
+  { word:'CALCETINES', v:4, c:6 },
+];
+
+// b1: ¿Cuántos elementos tiene el espacio muestral? (cardinal n)
 function _genEM_B1(){
   const exps=[
-    {q:'Se lanza una moneda al aire.',n:2,o:'cara, sello'},
-    {q:'Se lanza un dado de 6 caras.',n:6,o:'1, 2, 3, 4, 5, 6'},
-    {q:'Se gira una ruleta dividida en 4 sectores de colores.',n:4,o:'rojo, verde, morado, amarillo'},
-    {q:'Se gira una ruleta dividida en 3 sectores de colores.',n:3,o:'azul, rojo, verde'},
-    {q:'Se extrae una carta de un mazo numerado del 1 al 5.',n:5,o:'1, 2, 3, 4, 5'},
-    {q:'Se elige al azar una fruta: manzana, pera, plátano o uva.',n:4,o:'manzana, pera, plátano, uva'},
-    {q:'Se saca al azar una letra de las letras M, A, T, E.',n:4,o:'M, A, T, E'},
-    {q:'Se saca al azar un número del 1 al 8.',n:8,o:'1, 2, 3, 4, 5, 6, 7, 8'},
+    {q:'Lanzar una moneda al aire',n:2,o:'cara, sello'},
+    {q:'Lanzar un dado de 6 caras',n:6,o:'1, 2, 3, 4, 5, 6'},
+    {q:'Girar una ruleta de 4 colores (rojo, verde, morado, amarillo)',n:4,o:'rojo, verde, morado, amarillo'},
+    {q:'Girar una ruleta de 3 colores (azul, rojo, verde)',n:3,o:'azul, rojo, verde'},
+    {q:'Extraer una carta numerada del 1 al 5',n:5,o:'1, 2, 3, 4, 5'},
+    {q:'Elegir al azar una fruta de una cesta: manzana, pera, plátano, uva',n:4,o:'manzana, pera, plátano, uva'},
+    {q:'Sacar al azar una bola de colores: rojo, azul, verde, amarillo, naranja',n:5,o:'rojo, azul, verde, amarillo, naranja'},
+    {q:'Sacar al azar un número del 1 al 8',n:8,o:'1, 2, 3, 4, 5, 6, 7, 8'},
   ];
   const e=exps[_c4rnd(0,exps.length-1)];
-  const ws=_c4shuf([e.n-1,e.n+1,e.n+2,e.n*2,Math.max(1,e.n-2)].filter(v=>v!==e.n&&v>0)).slice(0,3);
-  return{q:`Experimento: "${e.q}"\nΩ = {${e.o}}\n¿Cuál es el cardinal del espacio muestral (n)?`,a:e.n,opts:_c4shuf([e.n,...ws]),mc:true};
+  const ws=_c4shuf([e.n-1,e.n+1,e.n+2,Math.max(1,e.n-2)].filter(v=>v!==e.n&&v>0)).slice(0,3);
+  return{q:`Experimento: "${e.q}"\nΩ = {${e.o}}\n¿Cuántos elementos tiene el espacio muestral (n)?`,a:e.n,opts:_c4shuf([e.n,...ws]),mc:true};
 }
-// b2: ¿Qué color es MÁS probable? (urna con bolas)
+
+// b2: Identificar el espacio muestral correcto (Ω)
 function _genEM_B2(){
-  const cols=_c4shuf(_EM_COLS).slice(0,4);
-  const cnts=[_c4rnd(7,11),_c4rnd(1,3),_c4rnd(1,3),_c4rnd(2,4)];
-  const items=cols.map((c,i)=>({c,n:cnts[i]}));
-  const sh=_c4shuf(items);
-  const most=sh.reduce((a,b)=>a.n>=b.n?a:b).c;
-  return{q:`En una urna hay: ${sh.map(x=>`${x.n} bolas ${x.c}`).join(', ')}.\n¿Qué color es MÁS probable al sacar una bola al azar?`,a:most,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
+  const probs=[
+    {q:'Se lanza una moneda',correct:'{cara, sello}',wrong:['{cara, sello, canto}','{cara, escudo}','{par, impar}']},
+    {q:'Se lanza un dado de 6 caras',correct:'{1, 2, 3, 4, 5, 6}',wrong:['{1, 2, 3, 4, 5}','{1, 2, 3, 4, 5, 6, 7}','{par, impar}']},
+    {q:'Se saca una bola de una bolsa con bolas roja, azul y verde',correct:'{roja, azul, verde}',wrong:['{roja, azul}','{roja, azul, verde, amarilla}','{azul, verde}']},
+    {q:'Se elige una fruta entre manzana, pera y plátano',correct:'{manzana, pera, plátano}',wrong:['{manzana, pera}','{manzana, pera, plátano, uva}','{manzana, plátano}']},
+    {q:'Se extrae una figura entre círculo, cuadrado y triángulo',correct:'{círculo, cuadrado, triángulo}',wrong:['{círculo, cuadrado}','{círculo, cuadrado, triángulo, rombo}','{cuadrado, triángulo}']},
+  ];
+  const p=probs[_c4rnd(0,probs.length-1)];
+  return{q:`Experimento: "${p.q}"\n¿Cuál es el espacio muestral Ω correcto?`,a:p.correct,opts:_c4shuf([p.correct,...p.wrong.slice(0,3)]),mc:true};
 }
-// b3: ¿Qué color es MENOS probable? (urna con bolas)
+
+// b3: ¿Cuántos elementos tiene el suceso A?
 function _genEM_B3(){
+  const probs=[
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número PAR',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número IMPAR',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MAYOR QUE 4',ans:2,w:[3,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MENOR QUE 3',ans:2,w:[3,4,1]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso A: obtener un CUADRILÁTERO (rombo, cuadrado, rectángulo)',ans:3,w:[2,4,5]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso B: obtener una figura NO POLIGONAL (círculo, óvalo, corazón)',ans:3,w:[2,4,5]},
+    {q:'Ω = {rojo, azul, verde, amarillo, naranja} (bolas en urna)\nSuceso A: sacar un color PRIMARIO (rojo, azul, amarillo)',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un múltiplo de 3 (3,6,9)',ans:3,w:[2,4,1]},
+  ];
+  const p=probs[_c4rnd(0,probs.length-1)];
+  const ws=_c4shuf(p.w.filter(v=>v!==p.ans)).slice(0,3);
+  return{q:`${p.q}\n¿Cuántos elementos tiene el suceso A?`,a:p.ans,opts:_c4shuf([p.ans,...ws]),mc:true};
+}
+
+// b4: ¿Vocal o consonante más probable? (letras de una palabra)
+function _genEM_B4(){
+  const w=_EM_PALABRAS[_c4rnd(0,_EM_PALABRAS.length-1)];
+  const ans=w.v>w.c?'vocal':w.v<w.c?'consonante':'igual de probable';
+  const otras=['vocal','consonante','igual de probable'].filter(x=>x!==ans);
+  return{q:`Se colocan tarjetas con las letras de "${w.word}" en una bolsa.\n(${w.v} vocales y ${w.c} consonantes)\nAl sacar una tarjeta al azar, ¿qué es MÁS probable?`,a:ans,opts:_c4shuf([ans,...otras,'no se puede saber']),mc:true};
+}
+
+// b5: ¿Qué color es MÁS o MENOS probable? (urna con bolas)
+function _genEM_B5(){
+  const askMost=Math.random()<0.5;
   const cols=_c4shuf(_EM_COLS).slice(0,4);
-  const cnts=[_c4rnd(1,2),_c4rnd(6,10),_c4rnd(5,9),_c4rnd(3,7)];
+  const cnts=askMost?[_c4rnd(7,11),_c4rnd(1,3),_c4rnd(1,3),_c4rnd(2,4)]:[_c4rnd(1,2),_c4rnd(6,10),_c4rnd(5,9),_c4rnd(3,7)];
   const items=cols.map((c,i)=>({c,n:cnts[i]}));
   const sh=_c4shuf(items);
-  const least=sh.reduce((a,b)=>a.n<=b.n?a:b).c;
-  return{q:`En una urna hay: ${sh.map(x=>`${x.n} bolas ${x.c}`).join(', ')}.\n¿Qué color es MENOS probable al sacar una bola al azar?`,a:least,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
+  const target=askMost?sh.reduce((a,b)=>a.n>=b.n?a:b).c:sh.reduce((a,b)=>a.n<=b.n?a:b).c;
+  return{q:`En una urna hay: ${sh.map(x=>`${x.n} bolas ${x.c}`).join(', ')}.\n¿Qué color es ${askMost?'MÁS':'MENOS'} probable al sacar una bola al azar?`,a:target,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
 }
-// b4: ¿Qué categoría es MÁS probable? (caja con objetos)
-function _genEM_B4(){
-  const ctx=_c4pick(_EM_CTXS);
-  const cats=_c4shuf(ctx.cats).slice(0,4);
-  const cnts=[_c4rnd(10,16),_c4rnd(1,4),_c4rnd(1,4),_c4rnd(2,5)];
-  const items=cats.map((c,i)=>({c,n:cnts[i]}));
-  const sh=_c4shuf(items);
-  const total=sh.reduce((s,x)=>s+x.n,0);
-  const most=sh.reduce((a,b)=>a.n>=b.n?a:b).c;
-  return{q:`En una caja hay ${total} ${ctx.plural}: ${sh.map(x=>`${x.n} de ${x.c}`).join(', ')}.\nAl sacar uno al azar, ¿cuál es MÁS probable?`,a:most,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
-}
-// b5: ¿Qué categoría es MENOS probable? (caja con objetos)
-function _genEM_B5(){
-  const ctx=_c4pick(_EM_CTXS);
-  const cats=_c4shuf(ctx.cats).slice(0,4);
+
+// bq1: Quiz I — Espacio Muestral (b1+b2+b3)
+function _genEM_BQ1(){const f=[_genEM_B1,_genEM_B2,_genEM_B3];return f[_c4rnd(0,2)]();}
+// bq2: Quiz II — Probabilidad Comparada (b4+b5+más/menos en caja)
+function _genEM_BQ2(){
+  if(Math.random()<0.33) return _genEM_B4();
+  if(Math.random()<0.5){
+    // más probable en caja
+    const ctx=_c4pick(_EM_CAJAS);const cats=_c4shuf(ctx.cats).slice(0,4);
+    const cnts=[_c4rnd(10,16),_c4rnd(1,4),_c4rnd(1,4),_c4rnd(2,5)];
+    const sh=_c4shuf(cats.map((c,i)=>({c,n:cnts[i]})));
+    const total=sh.reduce((s,x)=>s+x.n,0);const most=sh.reduce((a,b)=>a.n>=b.n?a:b).c;
+    return{q:`En una caja hay ${total} ${ctx.plural}: ${sh.map(x=>`${x.n} de ${x.c}`).join(', ')}.\nAl sacar uno al azar, ¿cuál es MÁS probable?`,a:most,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
+  }
+  // menos probable en caja
+  const ctx=_c4pick(_EM_CAJAS);const cats=_c4shuf(ctx.cats).slice(0,4);
   const cnts=[_c4rnd(1,2),_c4rnd(9,14),_c4rnd(6,10),_c4rnd(4,8)];
-  const items=cats.map((c,i)=>({c,n:cnts[i]}));
-  const sh=_c4shuf(items);
-  const total=sh.reduce((s,x)=>s+x.n,0);
-  const least=sh.reduce((a,b)=>a.n<=b.n?a:b).c;
+  const sh=_c4shuf(cats.map((c,i)=>({c,n:cnts[i]})));
+  const total=sh.reduce((s,x)=>s+x.n,0);const least=sh.reduce((a,b)=>a.n<=b.n?a:b).c;
   return{q:`En una caja hay ${total} ${ctx.plural}: ${sh.map(x=>`${x.n} de ${x.c}`).join(', ')}.\nAl sacar uno al azar, ¿cuál es MENOS probable?`,a:least,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
 }
-// bq1: Quiz I — Espacio Muestral (cardinal + urna MÁS/MENOS)
-function _genEM_BQ1(){const f=[_genEM_B1,_genEM_B2,_genEM_B3];return f[_c4rnd(0,2)]();}
-// bq2: Quiz II — Sucesos y Probabilidad (caja MÁS/MENOS)
-function _genEM_BQ2(){return Math.random()<0.5?_genEM_B4():_genEM_B5();}
 
 // Propiedades de Razones Trigonométricas: identidades cofunction y recíprocas
 // Tipos de pregunta generados aleatoriamente basados en el libro (págs 33-37):
