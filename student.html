@@ -2600,6 +2600,7 @@ const BINGO_TOPICS = {
   resta:    { ico:'−',  lbl:'Resta',       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
   mult:     { ico:'✕',  lbl:'Multiplicar', gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
   div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
+  div5x2:   { ico:'÷', lbl:'División 5÷2 dígitos', qCount:3, qCountRapida:2, gen:()=>{ const d=_bGetRandomInt(10,99),qMin=Math.ceil(10000/d),qMax=Math.min(9999,Math.floor(99999/d)),q=_bGetRandomInt(qMin,qMax),dvd=d*q; const ws=_bingShufArr([q-3,q-2,q-1,q+1,q+2,q+3].filter(v=>v!==q&&v>0)).slice(0,3); return {q:`${dvd} ÷ ${d} = ?`,a:q,opts:_bingShufArr([q,...ws]),mc:true}; } },
   neg:      { ico:'±',  lbl:'Negativos',   gen:()=>{ let a,b; do{a=_bGetRandomInt(-10,10);}while(a===0); do{b=_bGetRandomInt(-10,10);}while(b===0); return {q:`${a<0?`(${a})`:a} × ${b<0?`(${b})`:b} = ?`,a:a*b}; } },
   ecuacion: { ico:'=',  lbl:'Ecuaciones',  gen:()=>{ const x=_bGetRandomInt(-8,8)||1,m=_bGetRandomInt(2,6),b=_bGetRandomInt(-15,15)||5; return {q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`,a:x}; } },
   trigo:    { ico:'sin',lbl:'Razones',     qCount:3, gen:()=>{ const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
@@ -2632,10 +2633,10 @@ const BINGO_TOPICS = {
   conj4_b5:  { ico:'⊖', lbl:'Problema – Intersección', qCount:4, gen:()=>_genConj4B5() },
   conj4_bq2: { ico:'⚡', lbl:'Quiz – Problemas Contexto', qCount:5, gen:()=>_genConj4BQ2(), quiz:true },
 };
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['neg','ecuacion'] } },
+    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['div5x2','neg','ecuacion'] } },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
   preuniversitario:{ lbl:'Pre-univ.', ico:'U', grades:{},
@@ -2653,7 +2654,7 @@ const PREP_CURRICULUM = {
     '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
     '4':[{lbl:'Unión e Intersección de Conjuntos', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
-    '6':[{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
+    '6':[{lbl:'División de 5 entre 2 Dígitos', skills:['div5x2']},{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
   },
   secundaria: {
     '1':[{lbl:'Primera Unidad — Trigonometría',   editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
