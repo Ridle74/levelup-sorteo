@@ -1111,6 +1111,7 @@ let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
 let _prepShowHistory = false;
+let _prepExpandedHistId = null;
 let bingoGame     = null;      // snapshot en vivo de BINGO_REF (null = todavía no llegó el primer snapshot)
 let bingoUnsub    = null;      // unsubscribe del listener de BINGO_REF (se queda activo toda la sesión, como msgsListeners)
 let bingoTickTimer = null;     // setInterval de 1s: refresca cuenta atrás y dispara el sorteo si soy el host
@@ -3927,6 +3928,18 @@ async function loadBingoHistory() {
   } catch(e) { _bingoHistoryData = []; console.error('bingo history load', e); }
   _renderBingoPane();
 }
+function _bingoRetoLogHtml(retoLog) {
+  var chips = (retoLog||[]).map(function(r) {
+    var ok = r.correct >= r.total;
+    var bg = ok ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
+    var bd = ok ? 'rgba(74,222,128,0.35)' : 'rgba(248,113,113,0.35)';
+    var lbl = (r.topicLbl||r.topic||'?');
+    var score = (r.correct||0) + '/' + (r.total||'?');
+    var wrongs = r.wrongs > 0 ? ' ❌' + r.wrongs : '';
+    return '<span style="font-size:10px;padding:2px 7px;border-radius:10px;background:' + bg + ';border:1px solid ' + bd + ';color:rgba(255,255,255,0.75);white-space:nowrap">R' + ((r.reto||0)+1) + ' ' + lbl + ' · ✅' + score + wrongs + '</span>';
+  }).join('');
+  return '<div style="display:flex;flex-wrap:wrap;gap:3px;margin:3px 0 2px">' + chips + '</div>';
+}
 function markBingoCell(cardIdx, num) {
   if (!bingoGame || num===0) return;
   const me = _bingoMe();
@@ -5045,6 +5058,44 @@ function _prepConfigHtml() {
     ${!isAdmin() ? _prepHistorySectionHtml() : ''}
   </div>`;
 }
+function _prepHistCardHtml(h, dateStr, timeStr, ok) {
+  const expanded = _prepExpandedHistId === h.id;
+  const lvlLbl = h.level==='primaria' ? '🏫 Primaria' : h.level==='secundaria' ? '📐 Secundaria' : '🎓 Pre-univ.';
+  const gradeLbl = h.grade ? ' · ' + h.grade + '° Grado' : '';
+  let ansRows = '';
+  if (expanded && (h.answers||[]).length) {
+    (h.answers||[]).forEach(function(ans, i) {
+      const ico = ans.correct ? '✅' : '❌';
+      const ansLine = ans.correct
+        ? '<span style="font-size:11px;color:#39ff7a">Tu respuesta: ' + ans.given + '</span>'
+        : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + ans.given + '</span>'
+          + ' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
+          + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + ans.a + '</span>';
+      ansRows += '<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
+        + '<span style="font-size:14px;flex-shrink:0">' + ico + '</span>'
+        + '<div style="flex:1;min-width:0">'
+        + '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px">' + (i+1) + '. ' + (ans.q||'') + '</div>'
+        + ansLine
+        + '</div></div>';
+    });
+  }
+  const btnHtml = (h.answers||[]).length
+    ? '<button onclick="_prepExpandedHistId=_prepExpandedHistId===\'' + h.id + '\'?null:\'' + h.id + '\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'
+      + (expanded ? '▲ Ocultar ejercicios' : '▼ Ver ejercicios (' + h.answers.length + ')') + '</button>'
+      + (expanded ? '<div style="margin-top:6px">' + ansRows + '</div>' : '')
+    : '';
+  return '<div class="prep-review-item ' + (ok?'ok':'fail') + '">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center">'
+    + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">' + (h.topicLabel||h.topic) + '</span>'
+    + '<span style="font-size:14px;font-weight:900;color:' + (ok?'#39ff7a':'#f87171') + '">' + h.correct + '/' + h.total + ' · ' + h.pct + '%</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;margin-top:2px">'
+    + '<span style="font-size:11px;color:rgba(255,255,255,0.35)">' + lvlLbl + gradeLbl + '</span>'
+    + '<span style="font-size:11px;color:rgba(255,255,255,0.3)">' + dateStr + ' ' + timeStr + '</span>'
+    + '</div>'
+    + btnHtml
+    + '</div>';
+}
 function _prepHistorySectionHtml() {
   const loading = _prepHistoryLoading;
   const data = _prepHistoryData;
@@ -5064,16 +5115,7 @@ function _prepHistorySectionHtml() {
             ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
             : '';
           const ok = h.pct >= 70;
-          return `<div class="prep-review-item ${ok?'ok':'fail'}">
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">${h.topicLabel||h.topic}</span>
-              <span style="font-size:14px;font-weight:900;color:${ok?'#39ff7a':'#f87171'}">${h.correct}/${h.total} · ${h.pct}%</span>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:2px">
-              <span style="font-size:11px;color:rgba(255,255,255,0.35)">${h.level==='primaria'?'🏫 Primaria':h.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.'}${h.grade?` · ${h.grade}° Grado`:''}</span>
-              <span style="font-size:11px;color:rgba(255,255,255,0.3)">${dateStr} ${timeStr}</span>
-            </div>
-          </div>`;
+          return _prepHistCardHtml(h, dateStr, timeStr, ok);
         }).join('')}</div>`}
     </div>` : ''}
   </div>`;
@@ -5195,6 +5237,7 @@ async function _prepSaveHistory() {
       correct, total,
       pct:        total>0 ? Math.round((correct/total)*100) : 0,
       timeSec:    secs,
+      answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct})),
       completedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     // Recargar historial para mostrarlo actualizado
@@ -5470,9 +5513,7 @@ function _bingoPaneHtml() {
                   <span style="font-size:13px;font-weight:700">${p.name}${prizeIcos?` <span style="font-size:11px;color:#facc15">${prizeIcos}</span>`:''}</span>
                   <span style="font-size:11px;color:rgba(255,255,255,0.5)">Retos: ${tot} | ✅ ${perf} (${pct}) | ⏱ avg ${avgT} | ❌ ${rs.fails||0} fallidos | Marcas: ${p.totalMarks||0}</span>
                 </div>
-                ${(p.retoLog||[]).length>0?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin:3px 0 2px">
-                  ${(p.retoLog||[]).map(r=>{const _ok=r.correct>=r.total;return \`<span style="font-size:10px;padding:2px 7px;border-radius:10px;background:\${_ok?'rgba(74,222,128,0.12)':'rgba(248,113,113,0.12)'};border:1px solid \${_ok?'rgba(74,222,128,0.35)':'rgba(248,113,113,0.35)'};color:rgba(255,255,255,0.75);white-space:nowrap">R\${(r.reto||0)+1} \${r.topicLbl||r.topic||'?'} · ✅\${r.correct||0}/\${r.total||'?'}\${r.wrongs>0?' ❌'+r.wrongs:''}</span>\`;}).join('')}
-                </div>`:''}`;
+                ${(p.retoLog||[]).length>0 ? _bingoRetoLogHtml(p.retoLog) : ''}`;
               }).join('')}
             </div>`;
           }).join('')
