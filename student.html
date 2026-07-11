@@ -2704,12 +2704,12 @@ function _bingoGenAngTrig() {
 }
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 const BINGO_TOPICS = {
-  suma:     { ico:'＋', lbl:'Suma',        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
-  suma10:   { ico:'＋', lbl:'Suma (10-20)',  qCount:5, qCountRapida:3, gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
-  resta:    { ico:'−',  lbl:'Resta',       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
-  mult:     { ico:'✕',  lbl:'Multiplicar', gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
-  div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
-  div5x2:   { ico:'÷', lbl:'División 5÷2 dígitos', qCount:3, qCountRapida:2, gen:()=>{ const d=_bGetRandomInt(10,99),qMin=Math.ceil(10000/d),qMax=Math.min(9999,Math.floor(99999/d)),q=_bGetRandomInt(qMin,qMax),dvd=d*q; const ws=_bingShufArr([q-3,q-2,q-1,q+1,q+2,q+3].filter(v=>v!==q&&v>0)).slice(0,3); return {q:`${dvd} ÷ ${d} = ?`,a:q,opts:_bingShufArr([q,...ws]),mc:true}; } },
+  suma:     { ico:'＋', lbl:'Suma', maxWrongs:5,        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
+  suma10:   { ico:'＋', lbl:'Suma (10-20)',  maxWrongs:5, qCount:5, qCountRapida:3, gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
+  resta:    { ico:'−',  lbl:'Resta',       maxWrongs:5,       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
+  mult:     { ico:'✕',  lbl:'Multiplicar', maxWrongs:5, gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
+  div:      { ico:'÷',  lbl:'División',    maxWrongs:5,    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
+  div5x2:   { ico:'÷', lbl:'División 5÷2 dígitos', maxWrongs:5, qCount:3, qCountRapida:2, gen:()=>{ const d=_bGetRandomInt(10,99),qMin=Math.ceil(10000/d),qMax=Math.min(9999,Math.floor(99999/d)),q=_bGetRandomInt(qMin,qMax),dvd=d*q; const ws=_bingShufArr([q-3,q-2,q-1,q+1,q+2,q+3].filter(v=>v!==q&&v>0)).slice(0,3); return {q:`${dvd} ÷ ${d} = ?`,a:q,opts:_bingShufArr([q,...ws]),mc:true}; } },
   neg:      { ico:'±',  lbl:'Negativos',   gen:()=>{ let a,b; do{a=_bGetRandomInt(-10,10);}while(a===0); do{b=_bGetRandomInt(-10,10);}while(b===0); return {q:`${a<0?`(${a})`:a} × ${b<0?`(${b})`:b} = ?`,a:a*b}; } },
   ecuacion: { ico:'=',  lbl:'Ecuaciones',  gen:()=>{ const x=_bGetRandomInt(-8,8)||1,m=_bGetRandomInt(2,6),b=_bGetRandomInt(-15,15)||5; return {q:`${m}x ${b>0?'+':'-'} ${Math.abs(b)} = ${m*x+b}`,a:x}; } },
   trigo:    { ico:'sin',lbl:'Razones',     qCount:3, gen:()=>{ const useCoR=Math.random()<0.5; const _p=useCoR?TRIG_COPAIRS:TRIG_RECPAIRS; const [fn,ans]=_p[_bGetRandomInt(0,_p.length-1)]; const qText=useCoR?`¿Co-razón de ${fn}?`:`¿Razón inversa de ${fn}?`; const dist=_bingShufArr(TRIG_ALL.filter(t=>t!==ans)).slice(0,3); return {q:qText,a:ans,opts:_bingShufArr([ans,...dist]),mc:true}; } },
@@ -3248,6 +3248,11 @@ function _selectBingoGame(gameId) {
       const _me2 = _bingoMe();
       const _nowCA = !!(bingoGame && bingoGame.challengeActive);
       if (_nowCA && !_prevChallengeActive) {
+        // Nuevo reto: limpiar estado local para que el jugador pueda participar limpiamente
+        bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
+        bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set();
+        bingoChallengeReview = false; bingoChallengeReviewQ = null;
+        bingoBlockSelection = []; _bingoChallengeResult = null;
         const _ac2 = bingoGame.activeChallenge;
         if (_ac2 && _ac2.status === 'pending' && _ac2.toUid === _me2.uid) {
           acceptBingoDesafio();
@@ -4122,9 +4127,13 @@ function submitBingoChallengeAnswer(raw) {
     bingoChallengeAnswer = '';
     _clearInput();
     _bSnd.wrong();
-    const _maxW = (bingoGame?.gameSpeed==='rapida') ? 2 : 3;
+    const _topicKeys = Array.isArray(bingoGame?.topics) ? bingoGame.topics : (bingoGame?.topics ? [bingoGame.topics] : []);
+    const _singleTopicDef = _topicKeys.length === 1 ? BINGO_TOPICS[_topicKeys[0]] : null;
+    const _maxW = (bingoGame?.gameSpeed==='rapida') ? 2 : (_singleTopicDef?.maxWrongs ?? 3);
     if (bingoChallengeWrongs >= _maxW) {
-      // Vidas agotadas → mostrar resolución antes de terminar
+      // Vidas agotadas → aplicar penalidad AHORA (dentro de este reto), luego mostrar review
+      _bingoFinishChallenge(bingoChallengeIdx);
+      // Nota: _bingoFinishChallenge resetea bingoChallengeReview=false, lo reactivamos para la pantalla de revisión
       bingoChallengeReview = true;
       bingoChallengeReviewQ = q;
       _renderBingoPane();
@@ -4143,10 +4152,11 @@ function submitBingoChallengeAnswer(raw) {
   else _renderBingoPane();
 }
 function dismissChallengeReview() {
-  const idx = bingoChallengeIdx;
+  // La penalidad ya fue aplicada cuando se agotaron las vidas.
+  // Aquí solo cerramos la pantalla de revisión.
   bingoChallengeReview = false;
   bingoChallengeReviewQ = null;
-  _bingoFinishChallenge(idx);
+  _renderBingoPane();
 }
 function _bingoFinishChallenge(correctCount) {
   const me = _bingoMe();
@@ -6166,7 +6176,7 @@ function _bingoPaneHtml() {
             <div class="bcc-bar"><div class="bcc-bar-fill ${barCls}" style="width:${pct}%"></div></div>
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
             ${q ? `<div class="bcc-question">${q.q}</div>
-            <div class="bcc-lives">${(()=>{const _mw=_isRapidaMode?1:3;return Array.from({length:_mw},(_,i)=>i<(_mw-bingoChallengeWrongs)?'❤️':'🖤').join('');})()}</div>
+            <div class="bcc-lives">${(()=>{const _tkeys=Array.isArray(bingoGame?.topics)?bingoGame.topics:(bingoGame?.topics?[bingoGame.topics]:[]);const _tdef=_tkeys.length===1?BINGO_TOPICS[_tkeys[0]]:null;const _mw=_isRapidaMode?1:(_tdef?.maxWrongs??3);return Array.from({length:_mw},(_,i)=>i<(_mw-bingoChallengeWrongs)?'❤️':'🖤').join('');})()}</div>
             ${q.mc ? `<div class="bcc-mc-opts">${(q.opts||[]).map((opt,i)=>{const _wr=bingoChallengeWrongOpts.has(String(opt).toLowerCase());return `<button class="bcc-mc-btn${_wr?' bcc-mc-err':''}" ${_wr?'disabled':''} onclick="submitBingoChallengeAnswer('${opt}')">[${i+1}] ${opt}</button>`;}).join('')}</div>
             <div class="bcc-foot">⏱ ${remain}s · Pregunta ${bingoChallengeIdx+1}/${qs.length} · Tecla 1-4 para responder</div>`
             : `<input class="bcc-input" id="bingo-challenge-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
