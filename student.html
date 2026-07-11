@@ -1308,6 +1308,8 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
       padresId,
       linkBroken,
+      nivel: pStudent ? (pStudent.nivel || null) : null,
+      grado: pStudent ? (pStudent.grado || null) : null,
     });
   });
   // Orden: mayor puntaje del mes en curso primero.
@@ -9677,6 +9679,11 @@ function vPerfil() {
   const curPhoto = _perfilPendingPhoto!==null ? _perfilPendingPhoto : (ov.photo||null);
   const curIcon  = _perfilPendingIcon  || st.icon  || '😀';
   const curColor = _perfilPendingColor || st.color || '#8B5CF6';
+  const _pNivelLbl = {primaria:'🏫 Primaria',secundaria:'📐 Secundaria',preuni:'🎓 Pre-Univ.'};
+  const _pNivelBadge = (st.nivel||st.grado)
+    ? '<span style="font-size:11px;background:rgba(124,58,237,0.22);border:1px solid rgba(124,58,237,0.38);border-radius:10px;padding:2px 10px;color:#a78bfa">'
+      +(_pNivelLbl[st.nivel]||st.nivel||'')+(st.grado?(st.nivel?' · ':'')+st.grado+'° Grado':'')+'</span>'
+    : '';
 
   const tabs=[{id:'foto',label:'📷 Foto'},{id:'icon',label:'Icono'},{id:'color',label:'Color'},{id:'frame',label:'Marco'},{id:'pin',label:'PIN'}];
 
@@ -9741,7 +9748,7 @@ function vPerfil() {
     +'<button onclick="go(&quot;dashboard&quot;)" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
     +'<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>'
     +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:8px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,60)+'</div>'
-    +'<div style="text-align:center;font-size:15px;font-weight:600;margin-bottom:18px;color:#ccc">'+(st.name||'')+'</div>'
+    +'<div style="text-align:center;margin-bottom:18px"><div style="font-size:15px;font-weight:600;color:#ccc">'+(st.name||'')+'</div>'+(_pNivelBadge?'<div style="margin-top:5px">'+_pNivelBadge+'</div>':'')+'</div>'
     +'<div style="display:flex;gap:4px;margin-bottom:12px;overflow-x:auto">'+tabButtons+'</div>'
     +'<div id="perfil-tab-body" style="background:#111;border-radius:12px;padding:10px;min-height:80px">'+(tabContents[_perfilTab]||'')+'</div>'
     +saveBtn+'</div>';

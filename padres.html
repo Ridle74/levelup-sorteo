@@ -1428,15 +1428,19 @@ function saveFamilyNames(id) {
     if (!input) continue;
     const newName = input.value.trim();
     if (!newName) { showToast('El nombre de ' + s.name + ' no puede estar vacío.'); return; }
-    kidUpdates.push({ cid, oldName: s.name, newName });
+    const nivelSel = document.getElementById('edit-nivel-' + id + '-' + cid);
+    const gradoSel = document.getElementById('edit-grado-' + id + '-' + cid);
+    const newNivel = nivelSel ? (nivelSel.value || null) : (s.nivel || null);
+    const newGrado = gradoSel && gradoSel.value ? Number(gradoSel.value) : (s.grado || null);
+    kidUpdates.push({ cid, oldName: s.name, newName, newNivel, newGrado });
   }
   p.name = newParentName;
   saveParents();
-  kidUpdates.forEach(({ cid, oldName, newName }) => {
-    if (oldName !== newName) {
-      DATA.students[cid].name = newName;
-      syncNameToStudent(oldName, newName);
-    }
+  kidUpdates.forEach(({ cid, oldName, newName, newNivel, newGrado }) => {
+    DATA.students[cid].name = newName;
+    DATA.students[cid].nivel = newNivel;
+    DATA.students[cid].grado = newGrado;
+    if (oldName !== newName) syncNameToStudent(oldName, newName);
   });
   if (kidUpdates.length) {
     REF.set({ students: DATA.students }, { merge: true }).catch(e => { console.error(e); });
@@ -1973,7 +1977,27 @@ function vAdminCuentas() {
           ${editingNames ? `
             <div style="display:flex;flex-direction:column;gap:8px">
               <input class="fsm" id="edit-pname-${id}" type="text" value="${p.name}" placeholder="Nombre del padre/madre" style="margin-bottom:0">
-              ${kids.map(({cid, s}) => `<input class="fsm" id="edit-cname-${id}-${cid}" type="text" value="${s.name}" placeholder="Nombre del hijo/a" style="margin-bottom:0">`).join('')}
+              ${kids.map(({cid, s}) => '<div style="display:flex;flex-direction:column;gap:4px">'
+                +'<input class="fsm" id="edit-cname-'+id+'-'+cid+'" type="text" value="'+(s.name||'')+'" placeholder="Nombre del hijo/a" style="margin-bottom:0">'
+                +'<div style="display:flex;gap:6px">'
+                +'<select class="fsm" id="edit-nivel-'+id+'-'+cid+'" style="margin-bottom:0;flex:1">'
+                +'<option value="">— Nivel —</option>'
+                +'<option value="primaria"'+(s.nivel==='primaria'?' selected':'')+'>Primaria</option>'
+                +'<option value="secundaria"'+(s.nivel==='secundaria'?' selected':'')+'>Secundaria</option>'
+                +'<option value="preuni"'+(s.nivel==='preuni'?' selected':'')+'>Pre-Universitario</option>'
+                +'</select>'
+                +'<select class="fsm" id="edit-grado-'+id+'-'+cid+'" style="margin-bottom:0;flex:1">'
+                +'<option value="">— Grado —</option>'
+                +'<option value="1"'+(s.grado==1?' selected':'')+'>1°</option>'
+                +'<option value="2"'+(s.grado==2?' selected':'')+'>2°</option>'
+                +'<option value="3"'+(s.grado==3?' selected':'')+'>3°</option>'
+                +'<option value="4"'+(s.grado==4?' selected':'')+'>4°</option>'
+                +'<option value="5"'+(s.grado==5?' selected':'')+'>5°</option>'
+                +'<option value="6"'+(s.grado==6?' selected':'')+'>6°</option>'
+                +'</select>'
+                +'</div>'
+                +'</div>'
+              ).join('')}
               <div style="display:flex;gap:8px">
                 <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveFamilyNames('${id}')">Guardar nombres</button>
                 <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditNames()">Cancelar</button>
@@ -1983,7 +2007,7 @@ function vAdminCuentas() {
               <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${p.name}</div>
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="startEditNames('${id}')">✏️ Editar nombres</button>
             </div>
-            <div class="cs-meta" style="margin-top:3px">${kids.map(({s})=>s.icon+' '+s.name).join(' · ')||'Sin hijos asignados'}${p.phone?' · 📱 '+p.phone:''}</div>`}
+            <div class="cs-meta" style="margin-top:3px">${kids.map(({s})=>{const _nlb={primaria:'Primaria',secundaria:'Secundaria',preuni:'Pre-Uni'};const _badge=(s.nivel||s.grado)?'<span style="font-size:9px;background:rgba(124,58,237,0.22);border:1px solid rgba(124,58,237,0.38);border-radius:8px;padding:1px 5px;color:#a78bfa;margin-left:3px">'+(_nlb[s.nivel]||s.nivel||'')+(s.grado?(s.nivel?' ':'')+s.grado+'°':'')+'</span>':'';return s.icon+' '+s.name+_badge;}).join(' · ')||'Sin hijos asignados'}${p.phone?' · 📱 '+p.phone:''}</div>`}
           ${editing ? `
             <div style="display:flex;gap:8px;margin-top:10px">
               <input class="fsm" id="edit-pin-${id}" type="text" inputmode="numeric" maxlength="6" value="${p.pin}" style="margin-bottom:0">
