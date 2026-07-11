@@ -2596,7 +2596,7 @@ function _bingoGenAngTrig() {
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 const BINGO_TOPICS = {
   suma:     { ico:'＋', lbl:'Suma',        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
-  suma10:   { ico:'＋', lbl:'Suma (10-20)',  qCount:3, gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
+  suma10:   { ico:'＋', lbl:'Suma (10-20)',  qCount:5, qCountRapida:3, gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
   resta:    { ico:'−',  lbl:'Resta',       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
   mult:     { ico:'✕',  lbl:'Multiplicar', gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
   div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
@@ -2673,7 +2673,7 @@ function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl
 // Genera `count` preguntas todas del mismo tema — el tema se elige por índice de reto.
 // Cada reto completo usa UN solo tema; los temas rotan entre retos (reto 0→tema0, reto 1→tema1…).
 // Acepta array de claves ['suma','trigo'] o nivel numérico legacy (1-5) para compatibilidad.
-function _bingoGenQuestions(topicsOrLevel, count=5, retoIndex=0) {
+function _bingoGenQuestions(topicsOrLevel, count=5, retoIndex=0, speed='media') {
   let topics;
   if (Array.isArray(topicsOrLevel) && topicsOrLevel.length>0) {
     topics = topicsOrLevel;
@@ -2684,7 +2684,7 @@ function _bingoGenQuestions(topicsOrLevel, count=5, retoIndex=0) {
   const t = topics[retoIndex % topics.length];
   const topicDef = BINGO_TOPICS[t];
   const gen = topicDef?.gen;
-  const finalCount = topicDef?.qCount ?? count;
+  const finalCount = (speed==='rapida' && topicDef?.qCountRapida != null ? topicDef.qCountRapida : topicDef?.qCount) ?? count;
   const qs = [];
   for (let i=0; i<finalCount; i++) {
     qs.push(gen ? gen() : {q:`${_bGetRandomInt(5,40)} + ${_bGetRandomInt(5,40)} = ?`,a:0});
@@ -3416,7 +3416,7 @@ function _bingoHostAdvancePhase() {
   }
 }
 function _bingoHostStartChallenge() {
-  const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0);
+  const questions = _bingoGenQuestions(bingoGame.topics || bingoGame.difficulty || 1, 5, bingoGame.retoCount||0, bingoGame.gameSpeed||'media');
   const _startPatch = {
     challengeActive:true, challengeId: Date.now(), questions,
     challengeEndsAt: Date.now() + (((bingoGame.gameSpeed||'media')==='rapida'?30:60))*1000,
