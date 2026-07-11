@@ -2596,6 +2596,7 @@ function _bingoGenAngTrig() {
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 const BINGO_TOPICS = {
   suma:     { ico:'＋', lbl:'Suma',        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
+  suma10:   { ico:'＋', lbl:'Suma (10-20)',  gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
   resta:    { ico:'−',  lbl:'Resta',       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
   mult:     { ico:'✕',  lbl:'Multiplicar', gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
   div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
@@ -2631,10 +2632,10 @@ const BINGO_TOPICS = {
   conj4_b5:  { ico:'⊖', lbl:'Problema – Intersección', qCount:4, gen:()=>_genConj4B5() },
   conj4_bq2: { ico:'⚡', lbl:'Quiz – Problemas Contexto', qCount:5, gen:()=>_genConj4BQ2(), quiz:true },
 };
-const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['neg','ecuacion'] } },
+    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['neg','ecuacion'] } },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
   preuniversitario:{ lbl:'Pre-univ.', ico:'U', grades:{},
@@ -2648,7 +2649,7 @@ const PREP_LEVELS = {
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
-    '1':[{lbl:'Adición y Sustracción',    skills:['suma','resta']}],
+    '1':[{lbl:'Adición y Sustracción',    skills:['suma','suma10','resta']}],
     '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
     '4':[{lbl:'Unión e Intersección de Conjuntos', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
