@@ -5196,7 +5196,7 @@ function _renderBingoPane() {
     if (_bingoChallengeKeyListener) { document.removeEventListener('keydown', _bingoChallengeKeyListener); _bingoChallengeKeyListener = null; }
     const _mcQ = bingoGame && bingoGame.challengeActive ? (bingoGame.questions||[])[bingoChallengeIdx] : null;
     if (_mcQ && _mcQ.mc) {
-      _bingoChallengeKeyListener = (e) => { if(bingoChallengeReview) return; const n=parseInt(e.key); if(n>=1&&n<=4){const _opt=(_mcQ.opts||[])[n-1];if(_opt&&!bingoChallengeWrongOpts.has(_opt.toLowerCase())){e.preventDefault();submitBingoChallengeAnswer(_opt);}} };
+      _bingoChallengeKeyListener = (e) => { if(bingoChallengeReview) return; const n=parseInt(e.key); if(n>=1&&n<=4){const _opt=(_mcQ.opts||[])[n-1];if(_opt!=null&&!bingoChallengeWrongOpts.has(String(_opt).toLowerCase())){e.preventDefault();submitBingoChallengeAnswer(_opt);}} };
       document.addEventListener('keydown', _bingoChallengeKeyListener);
     }
     if (savedInput) {
@@ -6048,7 +6048,7 @@ function _bingoPaneHtml() {
             <div class="bcc-dots">${qs.map((_,i)=>`<span class="bcc-dot ${i<bingoChallengeIdx?'ok':''} ${i===bingoChallengeIdx?'now':''}"></span>`).join('')}</div>
             ${q ? `<div class="bcc-question">${q.q}</div>
             <div class="bcc-lives">${(()=>{const _mw=_isRapidaMode?1:3;return Array.from({length:_mw},(_,i)=>i<(_mw-bingoChallengeWrongs)?'❤️':'🖤').join('');})()}</div>
-            ${q.mc ? `<div class="bcc-mc-opts">${(q.opts||[]).map((opt,i)=>{const _wr=bingoChallengeWrongOpts.has(opt.toLowerCase());return `<button class="bcc-mc-btn${_wr?' bcc-mc-err':''}" ${_wr?'disabled':''} onclick="submitBingoChallengeAnswer('${opt}')">[${i+1}] ${opt}</button>`;}).join('')}</div>
+            ${q.mc ? `<div class="bcc-mc-opts">${(q.opts||[]).map((opt,i)=>{const _wr=bingoChallengeWrongOpts.has(String(opt).toLowerCase());return `<button class="bcc-mc-btn${_wr?' bcc-mc-err':''}" ${_wr?'disabled':''} onclick="submitBingoChallengeAnswer('${opt}')">[${i+1}] ${opt}</button>`;}).join('')}</div>
             <div class="bcc-foot">⏱ ${remain}s · Pregunta ${bingoChallengeIdx+1}/${qs.length} · Tecla 1-4 para responder</div>`
             : `<input class="bcc-input" id="bingo-challenge-input" type="text" inputmode="numeric" placeholder="Tu respuesta" autofocus onkeydown="if(event.key==='Enter'){event.preventDefault();submitBingoChallengeAnswer(this.value);}">
             <button class="bcc-submit" onclick="submitBingoChallengeAnswer(document.getElementById('bingo-challenge-input').value)">Responder</button>
