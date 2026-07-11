@@ -2154,6 +2154,83 @@ function _bingoGenConjuntos() {
   return { q:`A = {${A.join(', ')}}  B = {${B.join(', ')}}\n¿Cuántos elementos tiene ${op}?`, a:String(correct), opts:_bingShufArr([correct,...wrongs]).map(String), mc:true };
 }
 
+// ── Conjuntos 4° Primaria – Colegio Belén ────────────────────────────────────
+const _CONJ4_CTX = [
+  {A:'practican fútbol',           B:'practican vóley',           both:'practican ambos deportes',     q_u:'practican fútbol o vóley',           q_i:'practican ambos deportes'},
+  {A:'tienen perro',               B:'tienen gato',               both:'tienen perro y gato',           q_u:'tienen perro o gato',                q_i:'tienen perro y gato'},
+  {A:'leen cuentos',               B:'dibujan',                   both:'hacen las dos actividades',     q_u:'leen cuentos o dibujan',             q_i:'hacen las dos cosas'},
+  {A:'toman jugo en el recreo',    B:'toman leche en el recreo',  both:'toman los dos',                 q_u:'toman jugo o leche',                 q_i:'toman jugo y leche'},
+  {A:'leen libros de aventura',    B:'leen libros de misterio',   both:'leen los dos tipos',            q_u:'leen al menos un tipo de libro',      q_i:'leen los dos tipos de libro'},
+  {A:'les gusta la música',        B:'les gusta la danza',        both:'les gustan las dos artes',      q_u:'les gusta la música o la danza',      q_i:'les gustan las dos artes'},
+  {A:'practican natación',         B:'practican atletismo',       both:'practican los dos deportes',    q_u:'practican natación o atletismo',      q_i:'practican los dos deportes'},
+  {A:'visitaron el stand de ciencias', B:'visitaron el stand de arte', both:'visitaron los dos stands', q_u:'visitaron algún stand',              q_i:'visitaron los dos stands'},
+];
+function _c4rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _c4shuf(a){return a.slice().sort(()=>Math.random()-.5);}
+function _c4pick(arr){return arr[_c4rnd(0,arr.length-1)];}
+function _c4ints(n,min,max,ex=[]){
+  const pool=[];for(let i=min;i<=max;i++)if(!ex.includes(i))pool.push(i);
+  return _c4shuf(pool).slice(0,n).sort((a,b)=>a-b);
+}
+// b1: ¿Cuántos elementos tiene A∪B? (conjuntos numéricos)
+function _genConj4B1(){
+  const common=_c4ints(_c4rnd(1,3),2,25);
+  const onlyA=_c4ints(_c4rnd(2,4),2,25,common);
+  const onlyB=_c4ints(_c4rnd(2,4),2,25,[...common,...onlyA]);
+  const A=[...common,...onlyA].sort((a,b)=>a-b);
+  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const ans=common.length+onlyA.length+onlyB.length;
+  const wrongs=_c4shuf([A.length,B.length,A.length+B.length,ans-1,ans+1,ans+2].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuántos elementos tiene A∪B?`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∪B reúne todos los elementos de A y B sin repetir.`};
+}
+// b2: ¿Cuántos elementos tiene A∩B? (conjuntos numéricos)
+function _genConj4B2(){
+  const common=_c4ints(_c4rnd(1,3),2,25);
+  const onlyA=_c4ints(_c4rnd(2,4),2,25,common);
+  const onlyB=_c4ints(_c4rnd(2,4),2,25,[...common,...onlyA]);
+  const A=[...common,...onlyA].sort((a,b)=>a-b);
+  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const ans=common.length;
+  const wrongs=_c4shuf([A.length,B.length,ans+1,ans+2,onlyA.length].filter(v=>v!==ans&&v>=0)).slice(0,3);
+  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuántos elementos tiene A∩B?`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∩B solo incluye los elementos que aparecen en ambos conjuntos.`};
+}
+// b3: ¿Qué número pertenece a A∩B?
+function _genConj4B3(){
+  const common=_c4ints(_c4rnd(1,2),2,20);
+  const onlyA=_c4ints(3,2,20,common);
+  const onlyB=_c4ints(3,2,20,[...common,...onlyA]);
+  const A=[...common,...onlyA].sort((a,b)=>a-b);
+  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const ans=common[0];
+  const d=[onlyA[0],onlyB[0],_c4ints(1,21,30,[...A,...B])[0]||99];
+  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Qué número pertenece a A∩B?`,
+    a:ans,opts:_c4shuf([ans,...d.slice(0,3)]),mc:true,ste:`Busca el número que aparece en los dos conjuntos al mismo tiempo.`};
+}
+// b4: Problema contexto → calcular UNIÓN
+function _genConj4B4(){
+  const inter=_c4rnd(3,10),aO=_c4rnd(5,18),bO=_c4rnd(5,18);
+  const a=aO+inter,b=bO+inter,ans=a+b-inter;
+  const ctx=_c4pick(_CONJ4_CTX);
+  const wrongs=_c4shuf([a+b,ans+_c4rnd(1,4),a,b,ans-_c4rnd(1,3)].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`En un grupo:\n· ${a} estudiantes ${ctx.A}\n· ${b} estudiantes ${ctx.B}\n· ${inter} estudiantes ${ctx.both}\n¿Cuántos estudiantes ${ctx.q_u}?`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`|A∪B| = |A| + |B| − |A∩B| = ${a} + ${b} − ${inter} = ${ans}`};
+}
+// b5: Problema contexto → calcular INTERSECCIÓN (dado el total de la unión)
+function _genConj4B5(){
+  const inter=_c4rnd(3,10),aO=_c4rnd(5,18),bO=_c4rnd(5,18);
+  const a=aO+inter,b=bO+inter,total=a+b-inter;
+  const ctx=_c4pick(_CONJ4_CTX);
+  const wrongs=_c4shuf([inter+_c4rnd(1,4),Math.max(1,inter-_c4rnd(1,3)),a,b].filter(v=>v!==inter&&v>0)).slice(0,3);
+  return{q:`En un grupo de ${total} estudiantes:\n· ${a} estudiantes ${ctx.A}\n· ${b} estudiantes ${ctx.B}\n¿Cuántos estudiantes ${ctx.q_i}?`,
+    a:inter,opts:_c4shuf([inter,...wrongs]),mc:true,ste:`|A∩B| = |A| + |B| − total = ${a} + ${b} − ${total} = ${inter}`};
+}
+// bq1: Quiz — Conjuntos Numéricos (mezcla b1 + b2 + b3)
+function _genConj4BQ1(){const f=[_genConj4B1,_genConj4B2,_genConj4B3];return f[_c4rnd(0,2)]();}
+// bq2: Quiz — Problemas de Contexto (mezcla b4 + b5)
+function _genConj4BQ2(){return Math.random()<0.5?_genConj4B4():_genConj4B5();}
+
 // Propiedades de Razones Trigonométricas: identidades cofunction y recíprocas
 // Tipos de pregunta generados aleatoriamente basados en el libro (págs 33-37):
 // 1) trig1(ax) = trig2(bx)            → x = 90/(a+b)
@@ -2545,11 +2622,19 @@ const BINGO_TOPICS = {
   trig1_l2:     { ico:'°)',  lbl:'L (grados)',       qCount:3, gen:()=>_bingoGenArco2() },
   trig1_l3:     { ico:'⇌',  lbl:'Hallar r o θ',    qCount:3, gen:()=>_bingoGenArco3() },
   trig1_arco:   { ico:'⚡', lbl:'Longitud de Arco',           qCount:5, gen:()=>_bingoGenArco(), quiz:true },
+  // ── Conjuntos 4° Primaria – Colegio Belén ──
+  conj4_b1:  { ico:'∪', lbl:'Unión (numérica)',        qCount:4, gen:()=>_genConj4B1() },
+  conj4_b2:  { ico:'∩', lbl:'Intersección (numérica)', qCount:4, gen:()=>_genConj4B2() },
+  conj4_b3:  { ico:'∈', lbl:'Elemento en A∩B',         qCount:4, gen:()=>_genConj4B3() },
+  conj4_bq1: { ico:'⚡', lbl:'Quiz – Conjuntos Numéricos', qCount:5, gen:()=>_genConj4BQ1(), quiz:true },
+  conj4_b4:  { ico:'⊕', lbl:'Problema – Unión',        qCount:4, gen:()=>_genConj4B4() },
+  conj4_b5:  { ico:'⊖', lbl:'Problema – Intersección', qCount:4, gen:()=>_genConj4B5() },
+  conj4_bq2: { ico:'⚡', lbl:'Quiz – Problemas Contexto', qCount:5, gen:()=>_genConj4BQ2(), quiz:true },
 };
 const BINGO_TOPIC_ORDER = ['suma','resta','mult','div','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':[], '5':[], '6':['neg','ecuacion'] } },
+    grades:{ '1':['suma','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['neg','ecuacion'] } },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
   preuniversitario:{ lbl:'Pre-univ.', ico:'U', grades:{},
@@ -2566,7 +2651,7 @@ const PREP_CURRICULUM = {
     '1':[{lbl:'Adición y Sustracción',    skills:['suma','resta']}],
     '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
-    '4':[], '5':[],
+    '4':[{lbl:'Unión e Intersección de Conjuntos', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
     '6':[{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
   },
   secundaria: {
@@ -2580,6 +2665,7 @@ const PREP_CURRICULUM = {
 const PREP_EDITORIALS = {
   intelectum:   { lbl:'Intelectum',    short:'INT', ico:'📘' },
   saco_oliveros:{ lbl:'Saco Oliveros', short:'SAO', ico:'📗' },
+  belen:        { lbl:'Colegio Belén', short:'BEL', ico:'📒' },
 };
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
