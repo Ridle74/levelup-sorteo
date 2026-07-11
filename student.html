@@ -2596,7 +2596,7 @@ function _bingoGenAngTrig() {
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 const BINGO_TOPICS = {
   suma:     { ico:'＋', lbl:'Suma',        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
-  suma10:   { ico:'＋', lbl:'Suma (10-20)',  gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
+  suma10:   { ico:'＋', lbl:'Suma (10-20)',  qCount:3, gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
   resta:    { ico:'−',  lbl:'Resta',       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
   mult:     { ico:'✕',  lbl:'Multiplicar', gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
   div:      { ico:'÷',  lbl:'División',    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
