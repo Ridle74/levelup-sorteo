@@ -3894,6 +3894,7 @@ async function _bingoSaveHistory() {
       players[uid] = {
         name: p.name, isBot: p.isBot||false,
         prizes, retoStats: p.retoStats||{total:0,perfect:0,totalTimeSecs:0,fails:0},
+        retoLog: (p.retoLog||[]).sort((a,b)=>(a.reto||0)-(b.reto||0)),
         totalMarks: (p.marks||[]).length
       };
     });
@@ -4281,6 +4282,19 @@ function _bingoFinishChallenge(correctCount) {
     : charges > 0
       ? (isRapida && fast ? `🌟 ¡Rapidísimo! +${charges} carga ⚡ y elige un número para marcar en tus cartones.` : `🌟 ¡Reto perfecto! +${charges} carga${charges>1?'s':''} y bloqueos limpiados.`)
       : `✅ ¡Reto completo! Sin cargas esta vez — responde más rápido la próxima.`;
+  // Registrar log de este reto (para historial de partida)
+  const _retoTopicKeys = Array.isArray(bingoGame.topics) ? bingoGame.topics : (bingoGame.topics ? [bingoGame.topics] : []);
+  const _retoTopicKey  = _retoTopicKeys.length === 1 ? _retoTopicKeys[0] : null;
+  const _retoEntry = {
+    reto:     bingoGame.retoCount || 0,
+    topic:    _retoTopicKey,
+    topicLbl: _retoTopicKey ? (BINGO_TOPICS[_retoTopicKey]?.lbl || _retoTopicKey)
+                             : (_bTopicsLabel(bingoGame.topics) || ('Nivel '+(bingoGame.difficulty||1))),
+    correct:  correctCount,
+    wrongs:   bingoChallengeWrongs,
+    total,
+  };
+  patch[`players.${me.uid}.retoLog`] = _FV.arrayUnion(_retoEntry);
   BINGO_REF.update(patch)
     .then(()=> showToast(toastMsg, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
@@ -5455,7 +5469,10 @@ function _bingoPaneHtml() {
                 return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-top:1px solid rgba(255,255,255,0.05)">
                   <span style="font-size:13px;font-weight:700">${p.name}${prizeIcos?` <span style="font-size:11px;color:#facc15">${prizeIcos}</span>`:''}</span>
                   <span style="font-size:11px;color:rgba(255,255,255,0.5)">Retos: ${tot} | ✅ ${perf} (${pct}) | ⏱ avg ${avgT} | ❌ ${rs.fails||0} fallidos | Marcas: ${p.totalMarks||0}</span>
-                </div>`;
+                </div>
+                ${(p.retoLog||[]).length>0?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin:3px 0 2px">
+                  ${(p.retoLog||[]).map(r=>{const _ok=r.correct>=r.total;return \`<span style="font-size:10px;padding:2px 7px;border-radius:10px;background:\${_ok?'rgba(74,222,128,0.12)':'rgba(248,113,113,0.12)'};border:1px solid \${_ok?'rgba(74,222,128,0.35)':'rgba(248,113,113,0.35)'};color:rgba(255,255,255,0.75);white-space:nowrap">R\${(r.reto||0)+1} \${r.topicLbl||r.topic||'?'} · ✅\${r.correct||0}/\${r.total||'?'}\${r.wrongs>0?' ❌'+r.wrongs:''}</span>\`;}).join('')}
+                </div>`:''}`;
               }).join('')}
             </div>`;
           }).join('')
