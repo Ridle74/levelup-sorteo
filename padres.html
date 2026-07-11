@@ -1413,6 +1413,17 @@ function saveParentPin(id) {
   render();
 }
 function startEditNames(id) { editingNamesId = id; render(); }
+function _updateGradoOpts(famId, cid) {
+  const nivelSel = document.getElementById('edit-nivel-' + famId + '-' + cid);
+  const gradoSel = document.getElementById('edit-grado-' + famId + '-' + cid);
+  if (!nivelSel || !gradoSel) return;
+  const nivel = nivelSel.value;
+  const max = nivel === 'secundaria' ? 5 : nivel === 'preuni' ? 2 : 6;
+  const cur = Number(gradoSel.value) || 0;
+  gradoSel.innerHTML = '<option value="">— Grado —</option>'
+    + Array.from({length: max}, function(_, i){ var g=i+1; return '<option value="'+g+'"'+(cur===g?' selected':'')+'>'+g+'°</option>'; }).join('');
+  if (cur > max) gradoSel.value = '';
+}
 function cancelEditNames() { editingNamesId = null; render(); }
 function saveFamilyNames(id) {
   const p = DATA.parents[id];
@@ -1980,21 +1991,14 @@ function vAdminCuentas() {
               ${kids.map(({cid, s}) => '<div style="display:flex;flex-direction:column;gap:4px">'
                 +'<input class="fsm" id="edit-cname-'+id+'-'+cid+'" type="text" value="'+(s.name||'')+'" placeholder="Nombre del hijo/a" style="margin-bottom:0">'
                 +'<div style="display:flex;gap:6px">'
-                +'<select class="fsm" id="edit-nivel-'+id+'-'+cid+'" style="margin-bottom:0;flex:1">'
+                +'<select class="fsm" id="edit-nivel-'+id+'-'+cid+'" style="margin-bottom:0;flex:1" onchange="_updateGradoOpts(\''+id+'\',\''+cid+'\')">'
                 +'<option value="">— Nivel —</option>'
                 +'<option value="primaria"'+(s.nivel==='primaria'?' selected':'')+'>Primaria</option>'
                 +'<option value="secundaria"'+(s.nivel==='secundaria'?' selected':'')+'>Secundaria</option>'
                 +'<option value="preuni"'+(s.nivel==='preuni'?' selected':'')+'>Pre-Universitario</option>'
                 +'</select>'
-                +'<select class="fsm" id="edit-grado-'+id+'-'+cid+'" style="margin-bottom:0;flex:1">'
-                +'<option value="">— Grado —</option>'
-                +'<option value="1"'+(s.grado==1?' selected':'')+'>1°</option>'
-                +'<option value="2"'+(s.grado==2?' selected':'')+'>2°</option>'
-                +'<option value="3"'+(s.grado==3?' selected':'')+'>3°</option>'
-                +'<option value="4"'+(s.grado==4?' selected':'')+'>4°</option>'
-                +'<option value="5"'+(s.grado==5?' selected':'')+'>5°</option>'
-                +'<option value="6"'+(s.grado==6?' selected':'')+'>6°</option>'
-                +'</select>'
+                +(function(){var _gMax=s.nivel==='secundaria'?5:s.nivel==='preuni'?2:6;var _gopts='<option value="">— Grado —</option>';for(var _gi=1;_gi<=_gMax;_gi++)_gopts+='<option value="'+_gi+'"'+(s.grado==_gi?' selected':'')+'>'+_gi+'°</option>';return '<select class="fsm" id="edit-grado-'+id+'-'+cid+'" style="margin-bottom:0;flex:1">'+_gopts+'</select>';})()
+                +''
                 +'</div>'
                 +'</div>'
               ).join('')}
