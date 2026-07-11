@@ -5135,11 +5135,41 @@ function _prepCourseScore(topicKeys) {
   if (!topicKeys.length) return 0;
   return Math.round(topicKeys.map(k=>W[_prepMasteryLevel(k)]||0).reduce((a,b)=>a+b,0)/topicKeys.length);
 }
+function _prepGenOpts(answer) {
+  // Genera 3 distractores numéricos para usar en modo MC cuando el generador no incluye opts
+  const n = Number(answer);
+  if (isNaN(n) || !isFinite(n)) return null; // respuesta no numérica → sin opciones
+  const abs = Math.abs(n);
+  // Paso de variación: pequeño para números chicos, mayor para números grandes
+  const step = abs >= 1000 ? Math.round(abs*0.08) : abs >= 100 ? Math.round(abs*0.12) : abs >= 10 ? Math.max(2,Math.round(abs*0.2)) : Math.max(1, Math.round(abs*0.3)||1);
+  const used = new Set([n]);
+  const wrongs = [];
+  const dirs = [1,-1,2,-2,3,-3,4,-4,5,-5];
+  for (const d of dirs) {
+    if (wrongs.length >= 3) break;
+    const w = Math.round((n + d * step) * 100) / 100;
+    if (!used.has(w) && (Number.isInteger(n) ? Number.isInteger(w) : true)) { used.add(w); wrongs.push(String(w)); }
+  }
+  // fallback: sumar enteros simples
+  for (let d=1; wrongs.length<3; d++) {
+    if (!used.has(n+d)) { used.add(n+d); wrongs.push(String(n+d)); }
+    if (wrongs.length<3 && !used.has(n-d)) { used.add(n-d); wrongs.push(String(n-d)); }
+  }
+  return _bingShufArr([String(answer), ...wrongs.slice(0,3)]);
+}
+function _prepApplyMcMode(q) {
+  // Si está en modo MC y la pregunta no tiene opts, genera opciones automáticamente
+  if (_prep.ansMode === 'mc' && !q.opts) {
+    const opts = _prepGenOpts(q.a);
+    if (opts) { q.opts = opts; q.mc = true; }
+  }
+  return q;
+}
 function _prepStartUnit(skills) {
   const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
   if (!valid.length) return;
   const qs = [];
-  for (let i=0;i<_prep.qCount;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(def.gen()); }
+  for (let i=0;i<_prep.qCount;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(_prepApplyMcMode(def.gen())); }
   _prep.topic = valid[0];
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
   clearInterval(_prepTimerIntv);
@@ -5152,7 +5182,7 @@ function _prepUnitExam(skills) {
   if (!valid.length) return;
   const total = Math.max(10, valid.length * 5); // al menos 5 por habilidad
   const qs = [];
-  for (let i=0;i<total;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(def.gen()); }
+  for (let i=0;i<total;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(_prepApplyMcMode(def.gen())); }
   // Mezclar preguntas para que no vayan por grupos
   for (let i=qs.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
   _prep.topic = valid[0];
