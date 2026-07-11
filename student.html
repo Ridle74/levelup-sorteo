@@ -5195,7 +5195,7 @@ function _prepStart() {
   if (!def || !def.gen) { console.warn('_prepStart: no def for topic', _prep.topic); return; }
   try {
     const qs = [];
-    for (let i=0;i<_prep.qCount;i++) qs.push(def.gen());
+    for (let i=0;i<_prep.qCount;i++) qs.push(_prepApplyMcMode(def.gen()));
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
     clearInterval(_prepTimerIntv);
     if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
