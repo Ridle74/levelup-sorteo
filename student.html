@@ -1221,6 +1221,7 @@ let taskAssignChecked   = new Set();
 // Etiqueta de tipo de contenido elegida al crear/editar UNA tarea — se guarda en la
 // tarea para mostrar luego un badge en su tarjeta.
 let taskTag = null;
+let _taskPrepOpen = false; // si la sección Prepárate está visible en el form de tarea
 // Etiquetas de tipo de prompt (para clasificar y luego filtrar la lista general de Prompts).
 const PROMPT_TAGS = [
   { key:'imagenes',  label:'Imágenes',    icon:'🖼️' },
@@ -7569,6 +7570,45 @@ function vTareas() {
         </div>
       </div>
       <input type="hidden" id="t-editing-id" value="">
+      <div style="margin-bottom:8px">
+        <button type="button" onclick="_toggleTaskPrep()" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;border-radius:10px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;width:100%;text-align:left">🧠 VINCULAR A PREPÁRATE <span id="tp-toggle-arrow">▼</span></button>
+        <div id="task-prep-section" style="display:none;margin-top:6px;padding:10px;border-radius:10px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2)">
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado()" style="flex:1;margin-bottom:0">
+              <option value="">— Nivel —</option>
+              <option value="primaria">Primaria</option>
+              <option value="secundaria">Secundaria</option>
+              <option value="preuniversitario">Pre-Universitario</option>
+            </select>
+            <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnits()" style="flex:1;margin-bottom:0">
+              <option value="">— Grado —</option>
+            </select>
+          </div>
+          <select class="fsm" id="tp-unit" style="margin-bottom:6px">
+            <option value="">— Selecciona el tema —</option>
+          </select>
+          <div style="display:flex;gap:6px">
+            <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0">
+              <option value="mc">Opción múltiple</option>
+              <option value="text">Escribir respuesta</option>
+            </select>
+            <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0">
+              <option value="5">5 preguntas</option>
+              <option value="10" selected>10 preguntas</option>
+              <option value="15">15 preguntas</option>
+              <option value="20">20 preguntas</option>
+            </select>
+            <select class="fsm" id="tp-time" style="flex:1;margin-bottom:0">
+              <option value="0">Sin tiempo</option>
+              <option value="120">2 min</option>
+              <option value="300" selected>5 min</option>
+              <option value="600">10 min</option>
+              <option value="900">15 min</option>
+              <option value="1800">30 min</option>
+            </select>
+          </div>
+        </div>
+      </div>
       <button class="btn-sm btn-primary" id="t-save-btn" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
     </div>`:''}
 
@@ -7630,6 +7670,10 @@ function renderTask(t, loggedId) {
   const tagHtml = t.tag&&_tagInfo(t.tag) ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
       <div style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;background:rgba(186,255,41,0.12);border:1px solid rgba(186,255,41,0.3);color:#baff29;font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase">${_tagInfo(t.tag).icon} ${_tagInfo(t.tag).label}</div>
     </div>` : '';
+  const _prepCfg = t.prepLink ? JSON.stringify(t.prepLink).replace(/"/g,'&quot;') : '';
+  const prepBtnHtml = t.prepLink
+    ? '<button onclick="_launchPrepFromTask(JSON.parse(this.dataset.cfg))" data-cfg="'+_prepCfg+'" style="margin-top:5px;width:100%;padding:7px 2px;border-radius:9px;background:rgba(124,58,237,0.18);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:0.05em">▶ PRACTICAR — '+(t.prepLink.unitLabel||'Prepárate')+'</button>'
+    : '';
   const btnsHtml = `<button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>${isAdmin()?`<button class="btn-dt sq" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''} ${isAdmin()?`<button class="btn-dt sq${notDone?' on':''}" title="${notDone?'Quitar marca de no hecha':'Marcar como no hecha'}" onclick="markTaskUndone('${t.id}')">✕</button>`:''}`;
   if (isMobile) {
     return `
@@ -7642,6 +7686,7 @@ function renderTask(t, loggedId) {
       <div style="flex:1;min-width:0">${attHtml}</div>
       <div style="display:flex;gap:6px;flex-shrink:0">${btnsHtml}</div>
     </div>
+    ${prepBtnHtml}
   </div>`;
   }
   return `
@@ -7659,6 +7704,7 @@ function renderTask(t, loggedId) {
       <div style="flex:1;min-width:0">${attHtml}</div>
       <div class="task-btns" style="margin-top:0;flex-shrink:0">${btnsHtml}</div>
     </div>
+    ${prepBtnHtml}
   </div>`;
 }
 function renderReviewQueue(list) {
@@ -8598,6 +8644,89 @@ function refreshTaskTagList() {
   if (el) el.innerHTML = _renderTagPills(taskTag, 'toggleTaskTag');
 }
 // ─────────────────────────────────────────────────────
+function _toggleTaskPrep() {
+  _taskPrepOpen = !_taskPrepOpen;
+  const sec = document.getElementById('task-prep-section');
+  const arrow = document.getElementById('tp-toggle-arrow');
+  if (sec) sec.style.display = _taskPrepOpen ? 'block' : 'none';
+  if (arrow) arrow.textContent = _taskPrepOpen ? '▲' : '▼';
+}
+function _updateTaskPrepGrado() {
+  const nivelSel = document.getElementById('tp-nivel');
+  const gradoSel = document.getElementById('tp-grado');
+  if (!nivelSel || !gradoSel) return;
+  const nivel = nivelSel.value;
+  const max = nivel === 'secundaria' ? 5 : nivel === 'preuniversitario' ? 2 : 6;
+  gradoSel.innerHTML = '<option value="">— Grado —</option>'
+    + Array.from({length: max}, function(_,i){ var g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
+  const unitSel = document.getElementById('tp-unit');
+  if (unitSel) unitSel.innerHTML = '<option value="">— Selecciona el tema —</option>';
+}
+function _updateTaskPrepUnits() {
+  const nivelSel = document.getElementById('tp-nivel');
+  const gradoSel = document.getElementById('tp-grado');
+  const unitSel  = document.getElementById('tp-unit');
+  if (!nivelSel || !gradoSel || !unitSel) return;
+  const nivel = nivelSel.value, grado = gradoSel.value;
+  const units = (PREP_CURRICULUM[nivel]||{})[grado] || [];
+  unitSel.innerHTML = '<option value="">— Selecciona el tema —</option>'
+    + units.map(function(u,i){
+        var pre = u.editorial && PREP_EDITORIALS[u.editorial] ? PREP_EDITORIALS[u.editorial].short+' · ' : '';
+        return '<option value="'+i+'">'+pre+u.lbl+'</option>';
+      }).join('');
+}
+function _readTaskPrepLink() {
+  var nivelSel = document.getElementById('tp-nivel');
+  var gradoSel = document.getElementById('tp-grado');
+  var unitSel  = document.getElementById('tp-unit');
+  var modeSel  = document.getElementById('tp-mode');
+  var qcntSel  = document.getElementById('tp-qcount');
+  var timeSel  = document.getElementById('tp-time');
+  if (!nivelSel || !gradoSel || !unitSel) return null;
+  var nivel = nivelSel.value, grado = gradoSel.value, unitIdx = unitSel.value;
+  if (!nivel || !grado || unitIdx === '') return null;
+  var units = (PREP_CURRICULUM[nivel]||{})[grado] || [];
+  var unit  = units[Number(unitIdx)];
+  if (!unit) return null;
+  return {
+    level:      nivel,
+    grade:      Number(grado),
+    unitSkills: unit.skills,
+    unitLabel:  unit.lbl,
+    ansMode:    modeSel ? modeSel.value : 'mc',
+    qCount:     qcntSel ? Number(qcntSel.value) : 10,
+    timeSec:    timeSel ? Number(timeSel.value) : 0,
+  };
+}
+function _launchPrepFromTask(cfg) {
+  if (!cfg || !(cfg.unitSkills||[]).length) { showToast('Este ejercicio no tiene un tema configurado.'); return; }
+  _prep.level   = cfg.level   || 'primaria';
+  _prep.grade   = String(cfg.grade || '1');
+  _prep.ansMode = cfg.ansMode || 'mc';
+  _prep.qCount  = cfg.qCount  || 10;
+  _prep.timeSec = cfg.timeSec || 0;
+  _prep.timeLeft = _prep.timeSec;
+  _prepStartUnit(cfg.unitSkills);
+  go('preparate');
+}
+function _resetTaskPrepForm() {
+  _taskPrepOpen = false;
+  var sec = document.getElementById('task-prep-section');
+  if (sec) sec.style.display = 'none';
+  var arrow = document.getElementById('tp-toggle-arrow');
+  if (arrow) arrow.textContent = '▼';
+  ['tp-nivel','tp-grado','tp-unit'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  var gSel = document.getElementById('tp-grado');
+  if (gSel) gSel.innerHTML = '<option value="">— Grado —</option>';
+  var uSel = document.getElementById('tp-unit');
+  if (uSel) uSel.innerHTML = '<option value="">— Selecciona el tema —</option>';
+  var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = 'mc';
+  var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = '10';
+  var tSel = document.getElementById('tp-time'); if (tSel) tSel.value = '300';
+}
 function toggleAddTask() {
   const box=document.getElementById('add-task-box');
   if (!box) return;
@@ -8615,6 +8744,7 @@ function toggleAddTask() {
     const lbl=document.getElementById('add-task-label'); if(lbl) lbl.textContent='NUEVA TAREA';
     const delBtn=document.getElementById('t-delete-btn'); if(delBtn){ delBtn.style.visibility='visible'; delBtn.disabled=true; delBtn.style.opacity='0.35'; delBtn.style.cursor='not-allowed'; }
     cancelTaskLink(); cancelTaskFile();
+    _resetTaskPrepForm();
   }
 }
 let _taskFileObj = null;
@@ -8657,6 +8787,29 @@ function openEditTask(id) {
   if (btn) btn.textContent = 'ACTUALIZAR TAREA';
   const lbl = document.getElementById('add-task-label'); if (lbl) lbl.textContent = 'EDITAR TAREA';
   const delBtn = document.getElementById('t-delete-btn'); if (delBtn) { delBtn.style.visibility = 'visible'; delBtn.disabled = false; delBtn.style.opacity = '1'; delBtn.style.cursor = 'pointer'; }
+  // pre-fill prep link
+  _resetTaskPrepForm();
+  if (t.prepLink && t.prepLink.unitSkills) {
+    _taskPrepOpen = true;
+    var sec = document.getElementById('task-prep-section');
+    if (sec) sec.style.display = 'block';
+    var arrow = document.getElementById('tp-toggle-arrow');
+    if (arrow) arrow.textContent = '▲';
+    var nSel = document.getElementById('tp-nivel');
+    if (nSel) { nSel.value = t.prepLink.level||''; _updateTaskPrepGrado(); }
+    var gSel = document.getElementById('tp-grado');
+    if (gSel) { gSel.value = String(t.prepLink.grade||''); _updateTaskPrepUnits(); }
+    // Select the matching unit by skills
+    var uSel = document.getElementById('tp-unit');
+    if (uSel && t.prepLink.level && t.prepLink.grade) {
+      var units = (PREP_CURRICULUM[t.prepLink.level]||{})[String(t.prepLink.grade)] || [];
+      var matchIdx = units.findIndex(function(u){ return JSON.stringify(u.skills)===JSON.stringify(t.prepLink.unitSkills); });
+      if (matchIdx >= 0) uSel.value = String(matchIdx);
+    }
+    var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = t.prepLink.ansMode||'mc';
+    var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = String(t.prepLink.qCount||10);
+    var tSel = document.getElementById('tp-time'); if (tSel) tSel.value = String(t.prepLink.timeSec||300);
+  }
   // pre-fill attachment if link
   cancelTaskLink(); cancelTaskFile();
   if (t.att?.type === 'link') {
@@ -8709,6 +8862,7 @@ async function addTask() {
     assignTo,
     tag: taskTag || '',
     promptId: '', promptName: '',
+    prepLink: _taskPrepOpen ? (_readTaskPrepLink() || null) : null,
     ...(att ? {att} : {})
   };
   const newId = Date.now().toString();
