@@ -7587,11 +7587,18 @@ function vTareas() {
           <select class="fsm" id="tp-unit" style="margin-bottom:6px">
             <option value="">— Selecciona el tema —</option>
           </select>
-          <div style="display:flex;gap:6px">
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <select class="fsm" id="tp-tipo" style="flex:1;margin-bottom:0">
+              <option value="ejercicio">📝 Ejercicio</option>
+              <option value="cuestionario">📋 Cuestionario</option>
+              <option value="prueba">⭐ Prueba de Unidad</option>
+            </select>
             <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0">
               <option value="mc">Opción múltiple</option>
               <option value="text">Escribir respuesta</option>
             </select>
+          </div>
+          <div style="display:flex;gap:6px">
             <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0">
               <option value="5">5 preguntas</option>
               <option value="10" selected>10 preguntas</option>
@@ -8679,6 +8686,7 @@ function _readTaskPrepLink() {
   var nivelSel = document.getElementById('tp-nivel');
   var gradoSel = document.getElementById('tp-grado');
   var unitSel  = document.getElementById('tp-unit');
+  var tipoSel  = document.getElementById('tp-tipo');
   var modeSel  = document.getElementById('tp-mode');
   var qcntSel  = document.getElementById('tp-qcount');
   var timeSel  = document.getElementById('tp-time');
@@ -8693,6 +8701,7 @@ function _readTaskPrepLink() {
     grade:      Number(grado),
     unitSkills: unit.skills,
     unitLabel:  unit.lbl,
+    tipo:       tipoSel ? tipoSel.value : 'cuestionario',
     ansMode:    modeSel ? modeSel.value : 'mc',
     qCount:     qcntSel ? Number(qcntSel.value) : 10,
     timeSec:    timeSel ? Number(timeSel.value) : 0,
@@ -8706,7 +8715,17 @@ function _launchPrepFromTask(cfg) {
   _prep.qCount  = cfg.qCount  || 10;
   _prep.timeSec = cfg.timeSec || 0;
   _prep.timeLeft = _prep.timeSec;
-  _prepStartUnit(cfg.unitSkills);
+  var tipo = cfg.tipo || 'cuestionario';
+  if (tipo === 'ejercicio') {
+    // Practica el primer skill de la unidad (o el único disponible)
+    _prep.topic = cfg.unitSkills[0];
+    _prepStart();
+  } else if (tipo === 'prueba') {
+    _prepUnitExam(cfg.unitSkills);
+  } else {
+    // cuestionario (default)
+    _prepStartUnit(cfg.unitSkills);
+  }
   go('preparate');
 }
 function _resetTaskPrepForm() {
@@ -8723,6 +8742,7 @@ function _resetTaskPrepForm() {
   if (gSel) gSel.innerHTML = '<option value="">— Grado —</option>';
   var uSel = document.getElementById('tp-unit');
   if (uSel) uSel.innerHTML = '<option value="">— Selecciona el tema —</option>';
+  var tipoSel = document.getElementById('tp-tipo'); if (tipoSel) tipoSel.value = 'ejercicio';
   var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = 'mc';
   var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = '10';
   var tSel = document.getElementById('tp-time'); if (tSel) tSel.value = '300';
@@ -8806,6 +8826,7 @@ function openEditTask(id) {
       var matchIdx = units.findIndex(function(u){ return JSON.stringify(u.skills)===JSON.stringify(t.prepLink.unitSkills); });
       if (matchIdx >= 0) uSel.value = String(matchIdx);
     }
+    var tipoSel = document.getElementById('tp-tipo'); if (tipoSel) tipoSel.value = t.prepLink.tipo||'ejercicio';
     var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = t.prepLink.ansMode||'mc';
     var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = String(t.prepLink.qCount||10);
     var tSel = document.getElementById('tp-time'); if (tSel) tSel.value = String(t.prepLink.timeSec||300);
