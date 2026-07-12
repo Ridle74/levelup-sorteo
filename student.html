@@ -1242,6 +1242,12 @@ let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
 let _prepShowHistory = false;
 let _prepExpandedHistId = null;
+// Admin: historial global de todos los alumnos
+let _prepAdminHistData = null;
+let _prepAdminHistLoading = false;
+let _prepAdminShowHist = false;
+let _prepAdminFilterUid = null;  // null = todos
+let _prepAdminExpandedId = null;
 let bingoGame     = null;      // snapshot en vivo de BINGO_REF (null = todavía no llegó el primer snapshot)
 let bingoUnsub    = null;      // unsubscribe del listener de BINGO_REF (se queda activo toda la sesión, como msgsListeners)
 let bingoTickTimer = null;     // setInterval de 1s: refresca cuenta atrás y dispara el sorteo si soy el host
@@ -5600,7 +5606,7 @@ function _prepConfigHtml() {
           <div class="prep-kh-skills"><span style="font-size:11px;color:rgba(255,255,255,0.2)">🚧 Próximamente</span></div>
         </div>`).join('')}
       </div>
-      ${!isAdmin() ? _prepHistorySectionHtml() : ''}
+      ${isAdmin() ? _prepAdminHistoryHtml() : _prepHistorySectionHtml()}
     </div>`;
   }
 
@@ -5687,7 +5693,7 @@ function _prepConfigHtml() {
     ${legend}
     ${unitsHtml}
     ${startPanel}
-    ${!isAdmin() ? _prepHistorySectionHtml() : ''}
+    ${isAdmin() ? _prepAdminHistoryHtml() : _prepHistorySectionHtml()}
   </div>`;
 }
 function _prepHistCardHtml(h, dateStr, timeStr, ok) {
@@ -5920,6 +5926,90 @@ async function loadPrepHistory() {
   } catch(e) { _prepHistoryData = []; console.error('prep history load', e); }
   _prepHistoryLoading = false;
   if (dashGamingMode==='preparate') _renderPreparatePane();
+}
+async function loadPrepHistoryAdmin() {
+  if (!isAdmin()) return;
+  _prepAdminHistLoading = true;
+  try {
+    const snap = await db.collection('prepHistory').limit(200).get();
+    _prepAdminHistData = [];
+    snap.forEach(doc => _prepAdminHistData.push({ id:doc.id, ...doc.data() }));
+    _prepAdminHistData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
+  } catch(e) { _prepAdminHistData = []; console.error('prep admin history load', e); }
+  _prepAdminHistLoading = false;
+  if (dashGamingMode==='preparate') _renderPreparatePane();
+}
+function _prepAdminHistoryHtml() {
+  const loading = _prepAdminHistLoading;
+  const raw = _prepAdminHistData;
+  const students = getStudents();
+  // Filtrar por alumno si hay filtro activo
+  const data = Array.isArray(raw)
+    ? (_prepAdminFilterUid ? raw.filter(h=>h.uid===_prepAdminFilterUid) : raw)
+    : null;
+  const empty = Array.isArray(data) && data.length === 0;
+  // Pills de alumnos (solo los que tienen al menos una entrada)
+  const uidsWithData = Array.isArray(raw) ? [...new Set(raw.map(h=>h.uid))] : [];
+  const studentPills = students
+    .filter(s=>uidsWithData.includes(String(s.id)))
+    .map(s=>{
+      const active = _prepAdminFilterUid === String(s.id);
+      return `<button onclick="_prepAdminFilterUid=${active?'null':"'"+String(s.id)+"'"};_renderPreparatePane()" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:16px;border:1px solid ${active?s.color:'rgba(255,255,255,0.15)'};background:${active?s.color+'22':'rgba(255,255,255,0.05)'};color:${active?s.color:'rgba(255,255,255,0.6)'};font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">${s.icon} ${s.name.split(' ')[0]}</button>`;
+    }).join('');
+  let cardsHtml = '';
+  if (loading || !Array.isArray(data)) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`;
+  } else if (empty) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">Aún no hay partidas guardadas.</div>`;
+  } else {
+    cardsHtml = `<div class="prep-review-list">${data.map(h=>{
+      const stu = students.find(s=>String(s.id)===String(h.uid));
+      const dateStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
+      const timeStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
+      const ok = (h.pct||0) >= 70;
+      const lvlLbl = h.level==='primaria'?'🏫 Primaria':h.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
+      const gradeLbl = h.grade ? ' · '+h.grade+'° Grado' : '';
+      const expanded = _prepAdminExpandedId === h.id;
+      let ansRows = '';
+      if (expanded && (h.answers||[]).length) {
+        (h.answers||[]).forEach(function(a,i){
+          const ico=a.correct?'✅':'❌';
+          const ansLine=a.correct
+            ?'<span style="font-size:11px;color:#39ff7a">Tu resp: '+a.given+'</span>'
+            :'<span style="font-size:11px;color:#f87171">Tu resp: '+a.given+'</span>'
+              +' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
+              +' <span style="font-size:11px;color:#39ff7a">Correcta: '+a.a+'</span>';
+          ansRows+='<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
+            +'<span style="font-size:14px;flex-shrink:0">'+ico+'</span>'
+            +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px">'+(i+1)+'. '+(a.q||'')+'</div>'+ansLine+'</div></div>';
+        });
+      }
+      const expandBtn = (h.answers||[]).length
+        ? '<button onclick="_prepAdminExpandedId=_prepAdminExpandedId===\''+h.id+'\'?null:\''+h.id+'\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'+(expanded?'▲ Ocultar ejercicios':'▼ Ver ejercicios ('+h.answers.length+')')+'</button>'+(expanded?'<div style="margin-top:6px">'+ansRows+'</div>':'')
+        : '';
+      return '<div class="prep-review-item '+(ok?'ok':'fail')+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center">'
+        +'<div style="display:flex;align-items:center;gap:6px">'
+        +(stu?'<span style="font-size:13px;background:'+stu.color+'22;border:1px solid '+stu.color+'55;border-radius:10px;padding:1px 7px;color:'+stu.color+';font-weight:900;font-size:12px">'+stu.icon+' '+stu.name.split(' ')[0]+'</span>':'')
+        +'<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">'+(h.topicLabel||h.topic)+'</span>'
+        +'</div>'
+        +'<span style="font-size:14px;font-weight:900;color:'+(ok?'#39ff7a':'#f87171')+'">'+h.correct+'/'+h.total+' · '+h.pct+'%</span>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;margin-top:2px">'
+        +'<span style="font-size:11px;color:rgba(255,255,255,0.35)">'+lvlLbl+gradeLbl+'</span>'
+        +'<span style="font-size:11px;color:rgba(255,255,255,0.3)">'+dateStr+' '+timeStr+'</span>'
+        +'</div>'+expandBtn+'</div>';
+    }).join('')}</div>`;
+  }
+  return `<div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowHist=!_prepAdminShowHist;if(_prepAdminShowHist&&!Array.isArray(_prepAdminHistData)&&!_prepAdminHistLoading)loadPrepHistoryAdmin();_renderPreparatePane()">
+      📊 ${_prepAdminShowHist ? '▲ Ocultar' : '▼ Ver'} historial de alumnos
+    </button>
+    ${_prepAdminShowHist ? `<div style="margin-top:10px">
+      ${uidsWithData.length > 1 ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${studentPills}</div>` : ''}
+      ${cardsHtml}
+    </div>` : ''}
+  </div>`;
 }
 function _prepExamHtml() {
   const q = _prep.questions[_prep.currentIdx]; if (!q) return '';
@@ -11375,156 +11465,4 @@ PADRES_REF.onSnapshot(doc => {
   const map = {}, slotMap = {}, sessMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
     const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
-    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
-    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
-    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
-    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
-    // recurring/date/skipDates fecha por fecha.
-    const hoursByDay = {}, slotsByDay = {};
-    mySessions.forEach(s => {
-      const h = Math.max(1, Math.round((s.dur||60)/60));
-      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
-      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
-      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
-    });
-    // ordenar los slots de cada día cronológicamente por hora de inicio
-    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
-    const key = normName(st.name);
-    map[key] = hoursByDay;
-    slotMap[key] = slotsByDay;
-    sessMap[key] = mySessions;
-  });
-  classDaysByName  = map;
-  classSlotsByName = slotMap;
-  classSessByName  = sessMap;
-  if (currentView === 'puntos') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-  }
-  if (currentView === 'horarios') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
-    renderHorariosSidebar();
-  }
-  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
-  // nombres vinculados (un padre puede registrarse o editar un nombre en
-  // cualquier momento mientras el admin tiene el panel abierto).
-  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
-    syncPadresLinks();
-    cacheLiveNames();
-    renderStudentList();
-    renderPadresRequests();
-  }
-}, err => console.error('[Firebase padres]', err));
-
-REF.onSnapshot(doc => {
-  const data = doc.exists ? doc.data() : {};
-  allocations = data.allocations || {};
-  overrides   = data.overrides   || {};
-  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
-  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
-  const lms   = data.lms || {};
-  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
-  points      = typeof lms.points==='object' ? lms.points : {};
-  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
-  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
-  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
-  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
-  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
-  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
-  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
-  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
-  // sobrescriben datos reales con el estado vacío por defecto.
-  if (doc.exists) {
-    lmsDataLoaded = true;
-    archiveMonthIfNeeded();
-    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
-    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
-    (function seedJoannaMult(){
-      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
-      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
-        taskMultipliers[String(joanna.id)] = 3;
-        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
-      }
-    })();
-  } else {
-    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
-  }
-
-  if (!appReady) {
-    appReady = true;
-    document.getElementById('initial-loading').classList.add('hidden');
-    router();
-    _showSorteoNotice();
-  } else {
-    // Live-update tablero if it's open
-    const hash = currentView;
-    if (hash === 'tablero') {
-      const loggedId = getLoggedId();
-      if (loggedId !== null) renderAll(loggedId);
-    }
-    if (hash === 'ranking')   vRankingSetup();
-    if (hash === 'numeros')   vNumerosSetup();
-    if (hash === 'dashboard') {
-      const app=document.getElementById('app');
-      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
-    }
-    if (hash === 'puntos') {
-      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
-      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
-      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
-      if (Date.now() - _lastPtsLocalEdit > 2500) {
-        const app=document.getElementById('app');
-        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-      }
-    }
-    if (hash === 'horarios') renderHorariosSidebar();
-    if (hash === 'tareas' && taskFilter !== 'msgs') {
-      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
-      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
-      const app=document.getElementById('app');
-      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
-    }
-  }
-}, err => {
-  console.error('[Firebase]', err);
-  document.getElementById('initial-loading').classList.add('hidden');
-  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
-  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
-  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
-  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+    // días de clase con su total de horas ese día (sum
