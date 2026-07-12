@@ -2477,21 +2477,21 @@ function _genEM_B2(){
   return{q:`Experimento: "${p.q}"\n¿Cuál es el espacio muestral Ω correcto?`,a:p.correct,opts:_c4shuf([p.correct,...p.wrong.slice(0,3)]),mc:true};
 }
 
-// b3: ¿Cuántos elementos tiene el suceso A?
+// b3: ¿Cuál es el cardinal del suceso A? n(A) =
 function _genEM_B3(){
   const probs=[
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número PAR',ans:3,w:[2,4,1]},
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número IMPAR',ans:3,w:[2,4,1]},
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MAYOR QUE 4',ans:2,w:[3,4,1]},
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MENOR QUE 3',ans:2,w:[3,4,1]},
-    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso A: obtener un CUADRILÁTERO\n¿Cuántos elementos tiene el suceso A?',ans:3,w:[4,5,6]},
-    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso B: obtener una figura NO POLIGONAL\nSuceso A: complemento de B\n¿Cuántos elementos tiene el suceso A?',ans:6,w:[3,4,5]},
-    {q:'Ω = {rojo, azul, verde, amarillo, naranja} (bolas en urna)\nSuceso A: sacar un color PRIMARIO\n¿Cuántos elementos tiene el suceso A?',ans:3,w:[2,4,1]},
-    {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un múltiplo de 3\n¿Cuántos elementos tiene el suceso A?',ans:3,w:[2,4,1]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso A: obtener un CUADRILÁTERO',ans:3,w:[4,5,6]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso B: obtener una figura NO POLIGONAL\nSuceso A: complemento de B',ans:6,w:[3,4,5]},
+    {q:'Ω = {rojo, azul, verde, amarillo, naranja} (bolas en urna)\nSuceso A: sacar un color PRIMARIO',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un múltiplo de 3',ans:3,w:[2,4,1]},
   ];
   const p=probs[_c4rnd(0,probs.length-1)];
   const ws=_c4shuf(p.w.filter(v=>v!==p.ans)).slice(0,3);
-  return{q:`${p.q}\n¿Cuántos elementos tiene el suceso A?`,a:p.ans,opts:_c4shuf([p.ans,...ws]),mc:true};
+  return{q:`${p.q}\n¿Cuál es el cardinal del suceso A? n(A) =`,a:p.ans,opts:_c4shuf([p.ans,...ws]),mc:true};
 }
 
 // b4: ¿Vocal o consonante más probable? (letras de una palabra)
