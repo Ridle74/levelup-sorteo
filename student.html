@@ -598,6 +598,30 @@ textarea.fsm { resize:none; height:64px; }
 .prep-review-ok{color:#39ff7a;font-size:12px}
 .prep-review-fail{color:#f87171;font-size:12px}
 .prep-review-correct{color:rgba(255,255,255,0.45);font-size:12px}
+/* ── GAME CATALOG ─────────────────────────────────────────────────────────────────────────────── */
+.game-catalog{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0}
+.game-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 14px 16px;border-radius:18px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative;overflow:hidden}
+.game-card::before{content:'';position:absolute;inset:0;border-radius:18px;opacity:0;transition:opacity .2s;pointer-events:none}
+.game-card:hover{transform:translateY(-2px)}
+.game-card:hover::before{opacity:1}
+.game-card.gc-bingo{border-color:rgba(124,58,237,0.28);background:rgba(124,58,237,0.07)}
+.game-card.gc-bingo::before{background:radial-gradient(ellipse at 50% 0%,rgba(124,58,237,0.22) 0%,transparent 65%)}
+.game-card.gc-bingo:hover{box-shadow:0 6px 24px -6px rgba(124,58,237,0.45)}
+.game-card.gc-prep{border-color:rgba(20,184,166,0.28);background:rgba(20,184,166,0.07)}
+.game-card.gc-prep::before{background:radial-gradient(ellipse at 50% 0%,rgba(20,184,166,0.2) 0%,transparent 65%)}
+.game-card.gc-prep:hover{box-shadow:0 6px 24px -6px rgba(20,184,166,0.4)}
+.game-card-icon{font-size:44px;line-height:1;margin-bottom:10px;position:relative;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.4))}
+.game-card-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:6px;position:relative}
+.gc-bingo .game-card-name{color:#c4b5fd}
+.gc-prep .game-card-name{color:#5eead4}
+.game-card-desc{font-size:11px;color:rgba(255,255,255,0.42);line-height:1.45;margin-bottom:16px;position:relative;flex:1}
+.game-card-btn{position:relative;padding:7px 20px;border-radius:20px;border:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;transition:all .18s}
+.gc-bingo .game-card-btn{background:rgba(124,58,237,0.3);color:#e0aaff;border:1px solid rgba(124,58,237,0.5)}
+.gc-bingo .game-card-btn:hover{background:rgba(124,58,237,0.5);box-shadow:0 0 14px -4px rgba(124,58,237,0.7)}
+.gc-prep .game-card-btn{background:rgba(20,184,166,0.22);color:#5eead4;border:1px solid rgba(20,184,166,0.4)}
+.gc-prep .game-card-btn:hover{background:rgba(20,184,166,0.38);box-shadow:0 0 14px -4px rgba(20,184,166,0.55)}
+.game-back-btn{display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:rgba(255,255,255,0.35);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;padding:0 0 12px;transition:color .15s}
+.game-back-btn:hover{color:rgba(255,255,255,0.7)}
 /* ── BINGO (tab GAMING + /student/bingo) — diseño "Neon Bingo" ───────────────────────────────── */
 .bingo-wrap{background:#0a0e1a;border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:14px;font-family:'Barlow Condensed',sans-serif;box-shadow:0 0 30px -10px rgba(124,58,237,0.25)}
 .bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -1104,7 +1128,7 @@ let msgsDmView    = null; // null=group channel, or String(studentId) for DM
 let msgsUploading = false;
 // ── BINGO (juego multijugador en vivo, tab GAMING del Dashboard) ─
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
-let dashGamingMode = 'bingo';  // 'bingo' | 'preparate' — sub-modo dentro de GAMING
+let dashGamingMode = 'catalog'; // 'catalog' | 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
 let _prep = { state:'config', level:'primaria', grade:'1', topic:'suma', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
 let _prepTimerIntv = null;
@@ -1938,12 +1962,27 @@ function vDashboard() {
     </div>
 
     <div id="pane-dash-gaming" style="display:${dashTab==='gaming'?'block':'none'}">
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <button id="prep-tab-bingo" class="prep-mode-tab ${dashGamingMode==='bingo'?'active':''}" onclick="setGamingMode('bingo')">🎰 Neon Bingo</button>
-        <button id="prep-tab-preparate" class="prep-mode-tab ${dashGamingMode==='preparate'?'active':''}" onclick="setGamingMode('preparate')">📚 Prepárate</button>
+      <div id="game-catalog-view" style="display:${dashGamingMode==='catalog'?'block':'none'}">
+        <div class="game-catalog">
+          <div class="game-card gc-bingo" onclick="setGamingMode('bingo')">
+            <div class="game-card-icon">🎰</div>
+            <div class="game-card-name">Neon Bingo</div>
+            <div class="game-card-desc">Bingo multijugador en vivo con poderes, retos matemáticos y bloqueos.</div>
+            <button class="game-card-btn">▶ Jugar</button>
+          </div>
+          <div class="game-card gc-prep" onclick="setGamingMode('preparate')">
+            <div class="game-card-icon">📚</div>
+            <div class="game-card-name">Prepárate</div>
+            <div class="game-card-desc">Practica ejercicios, cuestionarios y pruebas de unidad a tu ritmo.</div>
+            <button class="game-card-btn">▶ Empezar</button>
+          </div>
+        </div>
       </div>
-      <div id="bingo-pane" class="bingo-wrap bingo-pane-host" style="display:${dashGamingMode==='bingo'?'block':'none'}">${_bingoPaneHtml()}</div>
-      <div id="preparate-pane" style="display:${dashGamingMode==='preparate'?'block':'none'}">${_preparatePaneHtml()}</div>
+      <div id="game-active-view" style="display:${dashGamingMode!=='catalog'?'block':'none'}">
+        <button class="game-back-btn" onclick="setGamingMode('catalog')">‹ CATÁLOGO</button>
+        <div id="bingo-pane" class="bingo-wrap bingo-pane-host" style="display:${dashGamingMode==='bingo'?'block':'none'}">${_bingoPaneHtml()}</div>
+        <div id="preparate-pane" style="display:${dashGamingMode==='preparate'?'block':'none'}">${_preparatePaneHtml()}</div>
+      </div>
     </div>
 
     <div id="pane-dash-resumen" style="display:${dashTab==='resumen'?'block':'none'}">
@@ -4889,14 +4928,15 @@ function doBingoRobo() {
 // ── PREPÁRATE — modo examen de práctica ──────────────────────────────────────────────────────────
 function setGamingMode(mode) {
   dashGamingMode = mode;
+  const catalogView = document.getElementById('game-catalog-view');
+  const activeView  = document.getElementById('game-active-view');
   const bp = document.getElementById('bingo-pane');
   const pp = document.getElementById('preparate-pane');
-  if (bp) bp.style.display = mode === 'bingo' ? 'block' : 'none';
+  const isCatalog = mode === 'catalog';
+  if (catalogView) catalogView.style.display = isCatalog ? 'block' : 'none';
+  if (activeView)  activeView.style.display  = isCatalog ? 'none'  : 'block';
+  if (bp) bp.style.display = mode === 'bingo'     ? 'block' : 'none';
   if (pp) pp.style.display = mode === 'preparate' ? 'block' : 'none';
-  // Actualizar estilos de los tabs
-  document.querySelectorAll('.prep-mode-tab').forEach(b => b.classList.remove('active'));
-  const activeTab = document.getElementById('prep-tab-' + mode);
-  if (activeTab) activeTab.classList.add('active');
   if (mode === 'preparate') {
     _renderPreparatePane();
     if (!isAdmin() && _prepHistoryData === null && !_prepHistoryLoading) loadPrepHistory();
