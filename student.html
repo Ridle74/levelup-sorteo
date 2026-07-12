@@ -2447,6 +2447,50 @@ const _EM_PALABRAS = [
   { word:'CALCETINES', v:4, c:6 },
 ];
 
+// b0: Definiciones — Espacio Muestral y Suceso
+function _genEM_B0(){
+  const defs=[
+    {q:'¿Qué es el ESPACIO MUESTRAL (Ω) de un experimento?',
+     a:'El conjunto de todos los resultados posibles',
+     w:['El resultado más probable del experimento','Un subconjunto de resultados favorables','El número total de experimentos realizados']},
+    {q:'¿Qué representa el CARDINAL de un conjunto?',
+     a:'El número de elementos que contiene',
+     w:['El elemento de mayor valor del conjunto','La suma de todos sus elementos','El primer elemento del conjunto']},
+    {q:'¿Qué es un SUCESO (o evento) en probabilidad?',
+     a:'Un subconjunto del espacio muestral',
+     w:['El espacio muestral completo Ω','El número de resultados posibles','El experimento en sí mismo']},
+    {q:'¿Qué es un EXPERIMENTO ALEATORIO?',
+     a:'Un proceso cuyos resultados no se pueden predecir con certeza',
+     w:['Un experimento que siempre da el mismo resultado','Un proceso con un único resultado posible','Un experimento sin resultados favorables']},
+    {q:'¿Qué es el SUCESO COMPLEMENTARIO de A (notación A\')?',
+     a:'Los resultados de Ω que NO pertenecen a A',
+     w:['Los resultados que sí pertenecen a A','El espacio muestral completo Ω','El conjunto vacío ∅']},
+    {q:'¿Qué es un SUCESO IMPOSIBLE?',
+     a:'Un suceso que nunca puede ocurrir; se representa con ∅',
+     w:['Un suceso que ocurre la mitad de las veces','Un suceso igual al espacio muestral Ω','Un suceso con exactamente un elemento']},
+    {q:'¿Qué es un SUCESO SEGURO?',
+     a:'Un suceso que siempre ocurre; es igual al espacio muestral Ω',
+     w:['Un suceso con probabilidad cero','Un suceso con un solo resultado posible','El complementario del espacio muestral']},
+    {q:'¿Qué notación se usa para el cardinal del espacio muestral?',
+     a:'n(Ω)',
+     w:['n(A)','P(Ω)','A\'']},
+    {q:'¿Qué es un SUCESO ELEMENTAL?',
+     a:'Un suceso formado por un solo elemento del espacio muestral',
+     w:['El conjunto de todos los resultados posibles','Un suceso con más de 5 elementos','El suceso que nunca puede ocurrir']},
+    {q:'Si Ω = {1,2,3,4,5,6}, ¿qué valor tiene n(Ω)?',
+     a:'6',
+     w:['1','3','12']},
+    {q:'¿Cómo se llama el conjunto de todos los resultados posibles de un experimento aleatorio?',
+     a:'Espacio muestral',
+     w:['Suceso','Evento elemental','Muestra estadística']},
+    {q:'Si A = {2, 4, 6} dentro de Ω = {1,2,3,4,5,6}, ¿qué es A?',
+     a:'Un suceso del experimento',
+     w:['El espacio muestral completo','Un experimento aleatorio','El suceso imposible']},
+  ];
+  const d=defs[_c4rnd(0,defs.length-1)];
+  return{q:d.q,a:d.a,opts:_c4shuf([d.a,...d.w.slice(0,3)]),mc:true};
+}
+
 // b1: ¿Cuántos elementos tiene el espacio muestral? (cardinal n)
 function _genEM_B1(){
   const exps=[
@@ -2940,6 +2984,7 @@ const BINGO_TOPICS = {
   conj4_b5:  { ico:'⊖', lbl:'Problema – Intersección', qCount:4, gen:()=>_genConj4B5() },
   conj4_bq2: { ico:'⚡', lbl:'Quiz – Problemas Contexto', qCount:5, gen:()=>_genConj4BQ2(), quiz:true },
   // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ──
+  em_b0:  { ico:'📖', lbl:'Definiciones – Espacio Muestral', qCount:4, gen:()=>_genEM_B0() },
   em_b1:  { ico:'Ω',  lbl:'Cardinal del Espacio Muestral', qCount:4, gen:()=>_genEM_B1() },
   em_b2:  { ico:'▲',  lbl:'Identificar espacio muestral Ω',      qCount:4, gen:()=>_genEM_B2() },
   em_b3:  { ico:'▽',  lbl:'Elementos de un suceso A',    qCount:4, gen:()=>_genEM_B3() },
@@ -2948,10 +2993,10 @@ const BINGO_TOPICS = {
   em_b5:  { ico:'▽',  lbl:'Más/menos probable (urna/caja)',qCount:4, gen:()=>_genEM_B5() },
   em_bq2: { ico:'⚡', lbl:'Quiz II — Sucesos y Probabilidad',qCount:5, qCountRapida:3, gen:()=>_genEM_BQ2(), quiz:true },
 };
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['div5x2','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] } },
+    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] } },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
   preuniversitario:{ lbl:'Pre-univ.', ico:'U', grades:{},
@@ -2969,7 +3014,7 @@ const PREP_CURRICULUM = {
     '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
     '4':[{lbl:'Unión e Intersección de Conjuntos', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
-    '6':[{lbl:'División de 5 entre 2 Dígitos', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', editorial:'trinidad', skills:['em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
+    '6':[{lbl:'División de 5 entre 2 Dígitos', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
   },
   secundaria: {
     '1':[{lbl:'Primera Unidad — Trigonometría',   editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
