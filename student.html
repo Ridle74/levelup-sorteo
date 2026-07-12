@@ -5566,7 +5566,7 @@ function _prepConfigHtml() {
   const lvDef = PREP_LEVELS[_prep.level] || {};
   const gradeKeys = Object.keys(lvDef.grades||{}).sort((a,b)=>+a-+b);
   const allUnits = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
-  const edKeys = [...new Set(allUnits.map(u=>u.editorial).filter(Boolean))];
+  const edKeys = Object.keys(PREP_EDITORIALS); // siempre todos los colegios
   const units = _prep.editorial ? allUnits.filter(u=>u.editorial===_prep.editorial) : allUnits;
   const allTopicKeys = units.flatMap(u=>u.skills||[]);
   const masLoading = !Array.isArray(_prepHistoryData);
@@ -5585,15 +5585,13 @@ function _prepConfigHtml() {
         + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
       : `<button class="prep-sel-btn" onclick="_prep.openSelector='grade';_renderPreparatePane()">${_prep.grade}° ▾</button>`)
     : '';
-  // Editorial
-  const editorialSel = edKeys.length
-    ? (openSel === 'editorial'
-      ? `<button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" title="Todas">✦</button>`
-        + edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.short||k.slice(0,3).toUpperCase()}</button>`).join('')
-        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-      : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.short||_prep.editorial):'✦'} ▾</button>`)
-    : '';
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?'<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>'+gradeSel:''}${editorialSel?'<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>'+editorialSel:''}</div>`;
+  // Colegio (siempre visible)
+  const colegioSel = openSel === 'editorial'
+    ? `<button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" title="Todos">✦</button>`
+      + edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'}</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.short):'🏫 ▾'}</button>`;
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?'<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>'+gradeSel:''}<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>${colegioSel}</div>`;
   // PRE-UNIV: áreas sin contenido aún
   if (lvDef.areas) {
     return `<div class="prep-wrap" style="padding-bottom:8px">
@@ -5629,7 +5627,10 @@ function _prepConfigHtml() {
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
   let unitsHtml = '';
   if (!allTopicKeys.length) {
-    unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">🚧 Próximamente habrá contenido para este grado.</div>`;
+    const _emptyMsg = _prep.editorial
+      ? `🏫 Aún no hay ejercicios de <b>${PREP_EDITORIALS[_prep.editorial]?.lbl||_prep.editorial}</b> para este grado.`
+      : '🚧 Próximamente habrá contenido para este grado.';
+    unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">${_emptyMsg}</div>`;
   } else {
     unitsHtml = `<div class="prep-kh-units">${units.map((unit,ui)=>{
       const skillsHtml = unit.skills.map((sk,si)=>{
@@ -11494,38 +11495,4 @@ REF.onSnapshot(doc => {
   // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
   // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
   // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se de
