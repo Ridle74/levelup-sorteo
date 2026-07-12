@@ -612,6 +612,11 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-tips-btn{flex-shrink:0;border:1px solid;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em;font-family:'Barlow Condensed',sans-serif;transition:all .2s;text-transform:uppercase}
 .bingo-tips-btn.on{background:rgba(220,38,38,0.18);border-color:rgba(220,38,38,0.45);color:#fca5a5}
 .bingo-tips-btn.off{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
+.bingo-cell.tip-hl{outline:2px solid #f59e0b;outline-offset:-2px;animation:btt-hl-pulse 1.2s ease-in-out infinite}
+@keyframes btt-hl-pulse{0%,100%{outline-color:#f59e0b;box-shadow:inset 0 0 8px rgba(245,158,11,0.3)}50%{outline-color:#fcd34d;box-shadow:inset 0 0 14px rgba(252,211,77,0.5)}}
+.bingo-math-warn{background:linear-gradient(90deg,rgba(234,179,8,0.12),rgba(234,179,8,0.06));border:1px solid rgba(234,179,8,0.3);border-radius:10px;padding:6px 12px;margin:4px 0 2px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#fde68a;letter-spacing:.04em;text-align:center}
+.bingo-pwr-tip{position:fixed;bottom:130px;left:50%;transform:translateX(-50%) translateY(8px);z-index:9997;background:#1a1a2e;border:1px solid rgba(168,85,247,0.4);border-radius:12px;padding:9px 13px;font-family:'Barlow Condensed',sans-serif;font-size:11.5px;color:rgba(255,255,255,0.7);max-width:280px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.6);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;line-height:1.45}
+.bingo-pwr-tip.bpt-in{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ── GAME CATALOG ─────────────────────────────────────────────────────────────────────────────── */
 .game-catalog{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0}
 .game-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 14px 16px;border-radius:18px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative;overflow:hidden}
@@ -1168,6 +1173,7 @@ let _btPrevDrawn       = 0;     // drawnNumbers.length en el tick anterior
 let _btPrevBlocked     = false; // si el jugador estaba bloqueado antes
 let _btPrevPowers      = 0;     // cantidad de poderes en el tick anterior
 let _btPrevChallenge   = false; // challengeActive en el tick anterior
+let _bingoTipHlNums    = new Set(); // números a sombrear en el cartón (tutorial)
 let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
@@ -2965,7 +2971,18 @@ function _bingoEnableTips(val) {
   _bingoTipsEnabled = val;
   localStorage.setItem('bingo_tips_pref', val ? '1' : '0');
   _bingoCloseModal();
-  if (val) _bingoQueueTip('welcome');
+  if (val) {
+    _bingoQueueTip('welcome');
+    // Si ya hay una partida activa, resaltar casillas para el primer nivel sin ganar
+    if (bingoGame && bingoGame.status === 'playing') {
+      const curWinners = bingoGame.tierWinners || {};
+      const activeTier = BINGO_TIER_ORDER.find(t=>!curWinners[t]);
+      if (activeTier) setTimeout(()=>_bingoComputeTipHl(activeTier), 1500);
+    }
+  } else {
+    _bingoTipHlNums = new Set();
+    _renderBingoPane();
+  }
 }
 
 function toggleBingoTips() {
@@ -2976,6 +2993,8 @@ function toggleBingoTips() {
     if (el) { el.classList.remove('btt-in'); setTimeout(()=>el.remove(), 300); }
     _bingoTipQueue = [];
     if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
+    _bingoTipHlNums = new Set();
+    const pt = document.getElementById('bingo-pwr-tip'); if (pt) pt.remove();
   }
   _renderBingoPane();
 }
@@ -3020,6 +3039,60 @@ function _bingoCloseTip() {
   setTimeout(()=>{ el.remove(); _bingoTipQueue.shift(); if (_bingoTipQueue.length) setTimeout(_bingoShowNextTip, 400); }, 300);
 }
 
+function _bingoComputeTipHl(nextTier) {
+  _bingoTipHlNums = new Set();
+  if (!_bingoTipsEnabled || !bingoGame) { _renderBingoPane(); return; }
+  try {
+    const me = _bingoMe();
+    const myP = (bingoGame.players||{})[me.uid];
+    if (!myP) { _renderBingoPane(); return; }
+    const req = {terna:3,cuaterna:4,quina:5,bingo:25}[nextTier]||3;
+    let bestScore = -1, bestNums = [];
+    Object.entries(myP.cards||{}).forEach(([ci, card]) => {
+      const cardIdx = Number(ci);
+      const marksSet = new Set((myP.marks||[]).filter(m=>m.c===cardIdx).map(m=>m.n));
+      const blockedSet = new Set((myP.blockedMarks||[]).filter(b=>b.c===cardIdx).map(b=>b.n));
+      const isOn = n => n===0 || (marksSet.has(n) && !blockedSet.has(n));
+      const lines = [];
+      for (let r=0;r<5;r++) {
+        lines.push([0,1,2,3,4].map(c=>_bcAt(card,r,c)));
+        lines.push([0,1,2,3,4].map(rr=>_bcAt(card,rr,r)));
+      }
+      lines.push([0,1,2,3,4].map(k=>_bcAt(card,k,k)));
+      lines.push([0,1,2,3,4].map(k=>_bcAt(card,k,4-k)));
+      lines.forEach(line => {
+        const markedCount = line.filter(isOn).length;
+        const needed = line.filter(n=>n!==0&&!isOn(n));
+        if (nextTier==='bingo') { needed.forEach(n=>bestNums.push(n)); bestScore=1; }
+        else if (markedCount>bestScore && markedCount<req) { bestScore=markedCount; bestNums=needed; }
+      });
+    });
+    _bingoTipHlNums = new Set(bestNums);
+  } catch(e) { console.error('tipHl',e); }
+  _renderBingoPane();
+}
+
+function _bingoPwrTip(el, key) {
+  if (!_bingoTipsEnabled) return;
+  const pw = BINGO_POWER_DEFS.find(p=>p.key===key);
+  if (!pw) return;
+  const prev = document.getElementById('bingo-pwr-tip');
+  if (prev) prev.remove();
+  const tt = document.createElement('div');
+  tt.id = 'bingo-pwr-tip';
+  tt.className = 'bingo-pwr-tip';
+  tt.textContent = pw.icon+' '+pw.label+': '+pw.desc;
+  document.body.appendChild(tt);
+  requestAnimationFrame(()=>tt.classList.add('bpt-in'));
+}
+
+function _bingoPwrTipHide() {
+  const tt = document.getElementById('bingo-pwr-tip');
+  if (!tt) return;
+  tt.classList.remove('bpt-in');
+  setTimeout(()=>{ const t=document.getElementById('bingo-pwr-tip'); if(t)t.remove(); },250);
+}
+
 function _bingoCheckTips() {
   if (!_bingoTipsEnabled || !bingoGame) return;
   try {
@@ -3031,10 +3104,11 @@ function _bingoCheckTips() {
     const nowBlocked = (myP.blocked||0) > 0;
     const nowPowers = Object.keys(myP.unlockedPowers||{}).length;
     // First number drawn
-    if (_btPrevDrawn === 0 && drawn >= 1) {
-      _bingoQueueTip('first_call');
-      setTimeout(()=>_bingoQueueTip('how_draw'), 9000);
-    }
+    if (_btPrevDrawn === 0 && drawn >= 1) _bingoQueueTip('first_call');
+    // 5th number → cómo salen los números (da espacio desde first_call)
+    if (_btPrevDrawn < 5 && drawn >= 5) _bingoQueueTip('how_draw');
+    // 8th number → prizes tip (gradual, no en masa al inicio)
+    if (_btPrevDrawn < 8 && drawn >= 8) _bingoQueueTip('prizes');
     // Math challenge started
     if (!_btPrevChallenge && nowCA) _bingoQueueTip('math');
     // Got blocked
@@ -3328,7 +3402,9 @@ function _bingoResetLocalState() {
   _bingoTipsShown = new Set(); _bingoTipQueue = []; _btFirstMarkDone = false;
   _btPrevDrawn = 0; _btPrevBlocked = false; _btPrevPowers = 0; _btPrevChallenge = false;
   if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
+  _bingoTipHlNums = new Set();
   const _te = document.getElementById('bingo-tip-toast'); if (_te) _te.remove();
+  const _pt = document.getElementById('bingo-pwr-tip'); if (_pt) _pt.remove();
   _bingoCloseModal();
 }
 
@@ -3402,8 +3478,8 @@ function _selectBingoGame(gameId) {
       }
       if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying) {
         _bingoRulesShown = false;
-        // Tips: mostrar prizes ~10s después del inicio (después del modal de reglas)
-        setTimeout(()=>_bingoQueueTip('prizes'), 12000);
+        // Tips: resaltar casillas para terna cuando empieza la partida
+        if (_bingoTipsEnabled) setTimeout(()=>_bingoComputeTipHl('terna'), 3000);
       }
       if (bingoGame.status === 'playing' && amPlaying && !_bingoRulesShown) {
         _bingoRulesShown = true;
@@ -3418,6 +3494,13 @@ function _selectBingoGame(gameId) {
           setTimeout(() => _bingoShowTierWonModal(tier, winnerName), 400);
           // Si el ganador es humano, los bots se "quejan"
           if (!winnerUid.startsWith('__bot_')) setTimeout(() => _bingoBotSendTaunt('lose'), 1500);
+          // Tips: resaltar casillas para el siguiente nivel
+          if (_bingoTipsEnabled && amPlaying) {
+            const _ntIdx = BINGO_TIER_ORDER.indexOf(tier) + 1;
+            if (_ntIdx < BINGO_TIER_ORDER.length) {
+              setTimeout(()=>_bingoComputeTipHl(BINGO_TIER_ORDER[_ntIdx]), 800);
+            }
+          }
         }
       });
       _prevBingoTierWinners = Object.assign({}, curWinners);
@@ -5995,6 +6078,7 @@ function _bingoPaneHtml() {
         <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
       </div>
     </div>
+    ${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?`<div class="bingo-math-warn">🧮 Reto en ${drawsLeft} número${drawsLeft===1?'':'s'} · ⚡ &lt;15s = +2 cargas · &lt;30s = +1 carga — ¡Prepárate!</div>`:''}
     ${(myPlayer && (myPlayer.unlockedPowers||{}).bitacora) && drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
       <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
       <div class="bingo-hist-row">
@@ -6143,7 +6227,7 @@ function _bingoPaneHtml() {
               const isPowerSrc = bingoActivePower==='robo' && _bingoPowerStep &&
                 _bingoPowerStep.rivalCardIdx!==undefined; // robo marcado en paso 1
               const powerCls = ownPowerActive ? 'power-target' : '';
-              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, powerCls, isMarked&&bonusSet.has(num)?'bonus':''].filter(Boolean).join(' ');
+              const cl = ['bingo-cell', st, `fire-${rowHeat[r]}`, powerCls, isMarked&&bonusSet.has(num)?'bonus':'', _bingoTipHlNums.has(num)&&!isMarked?'tip-hl':''].filter(Boolean).join(' ');
               const tt = isSabotaged ? `title="❄️ ${frozenEntry.byName} congeló esta casilla hasta el próximo reto"` : '';
               const fn = frozen ? '' : (ownPowerActive
                 ? `onclick="_bingoCellPowerClick(${cardIdx},${num},null)"`
@@ -6205,7 +6289,7 @@ function _bingoPaneHtml() {
                       : isActive ? '▶ Activo'
                       : _useCost > 0 ? `Usar · ⚡${_useCost}` : 'Usar';
                   }
-                  return `<button class="bpx-btn ${state}" onclick="toggleBingoPower('${pw.key}')">
+                  return `<button class="bpx-btn ${state}" onclick="toggleBingoPower('${pw.key}')" onmouseenter="if(_bingoTipsEnabled)_bingoPwrTip(this,'${pw.key}')" onmouseleave="_bingoPwrTipHide()">
                     <div class="bpx-btn-head"><span class="bpx-btn-icon">${pw.icon}</span>${pw.label}</div>
                     <div class="bpx-btn-desc">${pw.desc}</div>
                     <div class="bpx-state-badge">${badge}</div>
