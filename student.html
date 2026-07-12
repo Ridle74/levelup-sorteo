@@ -2484,7 +2484,7 @@ function _genEM_B3(){
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número IMPAR',ans:3,w:[2,4,1]},
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MAYOR QUE 4',ans:2,w:[3,4,1]},
     {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MENOR QUE 3',ans:2,w:[3,4,1]},
-    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso A: obtener un CUADRILÁTERO (rombo, cuadrado, rectángulo)',ans:3,w:[2,4,5]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso A: obtener un CUADRILÁTERO (rombo, cuadrado, rectángulo)',ans:3,w:[4,5,6]},
     {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso B: obtener una figura NO POLIGONAL (círculo, óvalo, corazón)\nSuceso A: complemento de B (figuras POLIGONALES)\n¿Cuántos elementos tiene el suceso A?',ans:6,w:[3,4,5]},
     {q:'Ω = {rojo, azul, verde, amarillo, naranja} (bolas en urna)\nSuceso A: sacar un color PRIMARIO (rojo, azul, amarillo)',ans:3,w:[2,4,1]},
     {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un múltiplo de 3 (3,6,9)',ans:3,w:[2,4,1]},
@@ -6039,13 +6039,19 @@ function _prepExamHtml() {
     </div>`;
     if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${q.a}</b></span>`}</div>`;
   }
+  const _nivelLbl = _prep.level==='primaria'?'🏫 Primaria':_prep.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
+  const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
+  const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].ico} ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
   return `<div class="prep-wrap">
-    <div class="prep-exam-header">
-      <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="_prep.state='config';clearInterval(_prepTimerIntv);_renderPreparatePane()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1" title="Salir">✕</button>
-        <div class="prep-topic-badge-sm">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:6px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0">
+          <button onclick="_prep.state='config';clearInterval(_prepTimerIntv);_renderPreparatePane()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir">✕</button>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.35);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
+        </div>
+        <div style="padding-right:48px;flex-shrink:0">${timerHtml}</div>
       </div>
-      ${timerHtml}
+      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
     </div>
     <div class="prep-progress-row">
       <span class="prep-prog-label">${idx+1}/${total}</span>
@@ -11464,4 +11470,157 @@ PADRES_REF.onSnapshot(doc => {
   padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
   const map = {}, slotMap = {}, sessMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
-    const mySessions = pSessions.filter(s => St
+    const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
+    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
+    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
+    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
+    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
+    // recurring/date/skipDates fecha por fecha.
+    const hoursByDay = {}, slotsByDay = {};
+    mySessions.forEach(s => {
+      const h = Math.max(1, Math.round((s.dur||60)/60));
+      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
+      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
+      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
+    });
+    // ordenar los slots de cada día cronológicamente por hora de inicio
+    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
+    const key = normName(st.name);
+    map[key] = hoursByDay;
+    slotMap[key] = slotsByDay;
+    sessMap[key] = mySessions;
+  });
+  classDaysByName  = map;
+  classSlotsByName = slotMap;
+  classSessByName  = sessMap;
+  if (currentView === 'puntos') {
+    const app=document.getElementById('app');
+    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+  }
+  if (currentView === 'horarios') {
+    const app=document.getElementById('app');
+    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
+    renderHorariosSidebar();
+  }
+  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
+  // nombres vinculados (un padre puede registrarse o editar un nombre en
+  // cualquier momento mientras el admin tiene el panel abierto).
+  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
+    syncPadresLinks();
+    cacheLiveNames();
+    renderStudentList();
+    renderPadresRequests();
+  }
+}, err => console.error('[Firebase padres]', err));
+
+REF.onSnapshot(doc => {
+  const data = doc.exists ? doc.data() : {};
+  allocations = data.allocations || {};
+  overrides   = data.overrides   || {};
+  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
+  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
+  const lms   = data.lms || {};
+  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
+  points      = typeof lms.points==='object' ? lms.points : {};
+  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
+  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
+  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
+  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
+  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
+  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
+  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
+  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
+  // sobrescriben datos reales con el estado vacío por defecto.
+  if (doc.exists) {
+    lmsDataLoaded = true;
+    archiveMonthIfNeeded();
+    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
+    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
+    (function seedJoannaMult(){
+      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
+      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
+        taskMultipliers[String(joanna.id)] = 3;
+        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
+      }
+    })();
+  } else {
+    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
+  }
+
+  if (!appReady) {
+    appReady = true;
+    document.getElementById('initial-loading').classList.add('hidden');
+    router();
+    _showSorteoNotice();
+  } else {
+    // Live-update tablero if it's open
+    const hash = currentView;
+    if (hash === 'tablero') {
+      const loggedId = getLoggedId();
+      if (loggedId !== null) renderAll(loggedId);
+    }
+    if (hash === 'ranking')   vRankingSetup();
+    if (hash === 'numeros')   vNumerosSetup();
+    if (hash === 'dashboard') {
+      const app=document.getElementById('app');
+      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
+    }
+    if (hash === 'puntos') {
+      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
+      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
+      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
+      if (Date.now() - _lastPtsLocalEdit > 2500) {
+        const app=document.getElementById('app');
+        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+      }
+    }
+    if (hash === 'horarios') renderHorariosSidebar();
+    if (hash === 'tareas' && taskFilter !== 'msgs') {
+      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
+      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
+      const app=document.getElementById('app');
+      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
+    }
+  }
+}, err => {
+  console.error('[Firebase]', err);
+  document.getElementById('initial-loading').classList.add('hidden');
+  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
+  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
+  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
+  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
+  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
+  appReady = true;
+  router();
+  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
+});
+
+// Image viewer modal
+function openImgViewer(url, name){
+  let modal = document.getElementById('img-viewer-modal');
+  if (!modal){
+    modal = document.createElement('div');
+    modal.id = 'img-viewer-modal';
+    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
+    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
+        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
+      </div>`;
+    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
+    document.body.appendChild(modal);
+  }
+  document.getElementById('img-viewer-img').src = url;
+  const dl = document.getElementById('img-viewer-dl');
+  dl.href = url; dl.download = name||'imagen.jpg';
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeImgViewer(){
+  const m = document.getElementById('img-viewer-modal');
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
