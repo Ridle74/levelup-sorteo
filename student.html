@@ -2461,7 +2461,7 @@ function _genEM_B1(){
   ];
   const e=exps[_c4rnd(0,exps.length-1)];
   const ws=_c4shuf([e.n-1,e.n+1,e.n+2,Math.max(1,e.n-2)].filter(v=>v!==e.n&&v>0)).slice(0,3);
-  return{q:`Experimento: "${e.q}"\nΩ = {${e.o}}\n¿Cuál es el cardinal del espacio muestral? n(Ω) =`,a:e.n,opts:_c4shuf([e.n,...ws]),mc:true};
+  return{q:`Experimento: "${e.q}"\n¿Cuál es el cardinal del espacio muestral? n(Ω) =`,a:e.n,opts:_c4shuf([e.n,...ws]),mc:true};
 }
 
 // b2: Identificar el espacio muestral correcto (Ω)
