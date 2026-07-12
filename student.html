@@ -598,6 +598,20 @@ textarea.fsm { resize:none; height:64px; }
 .prep-review-ok{color:#39ff7a;font-size:12px}
 .prep-review-fail{color:#f87171;font-size:12px}
 .prep-review-correct{color:rgba(255,255,255,0.45);font-size:12px}
+/* ── BINGO TIPS TOAST ─────────────────────────────────────────────────────────────────────────── */
+.bingo-tip-toast{position:fixed;left:50%;transform:translateX(-50%) translateY(16px);bottom:76px;z-index:9998;width:min(340px,92vw);background:linear-gradient(145deg,#1c0808,#2d1010);border:1.5px solid rgba(220,38,38,0.5);border-radius:16px;padding:13px 12px 11px;display:flex;align-items:flex-start;gap:11px;box-shadow:0 0 30px -6px rgba(220,38,38,0.35),0 8px 28px rgba(0,0,0,0.7);opacity:0;transition:opacity .28s,transform .28s;pointer-events:all}
+.bingo-tip-toast.btt-in{opacity:1;transform:translateX(-50%) translateY(0)}
+.btt-icon{font-size:26px;line-height:1;flex-shrink:0;margin-top:1px;filter:drop-shadow(0 0 6px rgba(239,68,68,0.5))}
+.btt-body{flex:1;min-width:0}
+.btt-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#fca5a5;letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.btt-text{font-size:11.5px;color:rgba(255,255,255,0.6);line-height:1.45}
+.btt-off{display:block;margin-top:5px;font-size:10px;color:rgba(239,68,68,0.4);cursor:pointer;background:none;border:none;padding:0;text-align:left;letter-spacing:.03em;transition:color .15s}
+.btt-off:hover{color:rgba(239,68,68,0.7)}
+.btt-close{flex-shrink:0;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:rgba(255,255,255,0.45);font-size:12px;width:22px;height:22px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:1px;transition:all .15s}
+.btt-close:hover{background:rgba(239,68,68,0.3);color:#fff}
+.bingo-tips-btn{flex-shrink:0;border:1px solid;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em;font-family:'Barlow Condensed',sans-serif;transition:all .2s;text-transform:uppercase}
+.bingo-tips-btn.on{background:rgba(220,38,38,0.18);border-color:rgba(220,38,38,0.45);color:#fca5a5}
+.bingo-tips-btn.off{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
 /* ── GAME CATALOG ─────────────────────────────────────────────────────────────────────────────── */
 .game-catalog{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:4px 0}
 .game-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 14px 16px;border-radius:18px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);cursor:pointer;transition:transform .18s,box-shadow .18s;position:relative;overflow:hidden}
@@ -1145,6 +1159,16 @@ let _bingoAdvancingPhase = false; // evita que el tick llame _bingoHostAdvancePh
 let _prevBingoTierWinners = {};// copia anterior de tierWinners para detectar nuevos ganadores
 let _bingoRulesShown = false;  // modal de reglas ya mostrado para esta partida
 let _bingoEndShown   = false;  // modal de fin de partida ya mostrado para esta sesión
+// ── Bingo Tips ──
+let _bingoTipsEnabled  = null;  // null=no preguntado, true=on, false=off
+let _bingoTipsShown    = new Set(); // IDs de tips ya mostrados en esta partida
+let _bingoTipQueue     = [];    // cola de tip IDs pendientes
+let _bingoTipTimer     = null;  // timeout del auto-dismiss
+let _btPrevDrawn       = 0;     // drawnNumbers.length en el tick anterior
+let _btPrevBlocked     = false; // si el jugador estaba bloqueado antes
+let _btPrevPowers      = 0;     // cantidad de poderes en el tick anterior
+let _btPrevChallenge   = false; // challengeActive en el tick anterior
+let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
 let _bingoEmojiPickerOpen = false;
@@ -2910,6 +2934,119 @@ function _bingoBadgeColor(tier) {
   return {terna:'#fbbf24',cuaterna:'#34d399',quina:'#60a5fa',bingo:'#f472b6'}[tier]||'#94a3b8';
 }
 
+// ── BINGO TIPS: datos y funciones ────────────────────────────────────────────
+const BINGO_TIPS = {
+  welcome:    { icon:'🎰', title:'¡Bienvenido al Bingo!', body:'Espera en el lobby a que el host inicie la partida. Se te asignará un cartón con 25 números.' },
+  first_call: { icon:'🔢', title:'¡Salió el primer número!', body:'Búscalo en tu cartón y tócalo para marcarlo. Los números salen automáticamente del bombo cada ciertos segundos.' },
+  how_draw:   { icon:'⏱️', title:'Cómo salen los números', body:'Cada vez que el bombo sortea un número, aparece en la barra superior. Si está en tu cartón, tócalo rápido para marcarlo.' },
+  first_mark: { icon:'✅', title:'¡Primer número marcado!', body:'Sigue marcando. 3 en la misma fila → TERNA · 4 → CUATERNA · 5 → LÍNEA · Cartón completo → BINGO.' },
+  prizes:     { icon:'🏆', title:'Los premios', body:'TERNA = S/5 · CUATERNA = S/10 · LÍNEA = S/15 · BINGO = S/80. ¡El primero en cantar cada premio se lo lleva!' },
+  can_claim:  { icon:'📣', title:'¡Puedes cantar!', body:'Tienes suficientes números en línea. Toca el botón CANTAR antes que los demás para reclamar tu premio.' },
+  math:       { icon:'🧮', title:'Reto Matemático', body:'¡Empieza el Reto! Responde las preguntas lo más rápido posible. El ganador obtiene un número extra en su cartón.' },
+  power_won:  { icon:'⚡', title:'¡Ganaste un poder!', body:'Toca el ícono del poder en tu cartón para activarlo. Puedes robar números a rivales, bloquearlos o congelar casillas.' },
+  blocked:    { icon:'🔒', title:'Estás bloqueado', body:'Un rival usó un poder para bloquearte. Algunas casillas quedan inaccesibles hasta que el bloqueo termine automáticamente.' },
+};
+
+function _bingoTipsPrompt() {
+  const pref = localStorage.getItem('bingo_tips_pref');
+  if (pref !== null) { _bingoTipsEnabled = pref === '1'; return; } // ya decidió antes
+  _bingoShowModal(`<div class="bpm-box" style="max-width:300px;text-align:center">
+    <div style="font-size:38px;margin-bottom:8px">💡</div>
+    <div class="bpm-title" style="color:#fca5a5;font-size:19px">TIPS DE TUTORIAL</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.55;margin:10px 0 20px">¿Quieres recibir ventanitas explicativas mientras juegas? Te guiarán por las reglas sin interrumpir la partida.</div>
+    <div style="display:flex;gap:10px">
+      <button onclick="_bingoEnableTips(false)" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.5);border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;cursor:pointer;text-transform:uppercase">No gracias</button>
+      <button onclick="_bingoEnableTips(true)" style="flex:1.2;background:linear-gradient(135deg,#dc2626,#991b1b);border:none;color:#fff;border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;cursor:pointer;text-transform:uppercase;box-shadow:0 0 18px -4px rgba(220,38,38,0.6)">💡 Sí, activar</button>
+    </div>
+  </div>`);
+}
+
+function _bingoEnableTips(val) {
+  _bingoTipsEnabled = val;
+  localStorage.setItem('bingo_tips_pref', val ? '1' : '0');
+  _bingoCloseModal();
+  if (val) _bingoQueueTip('welcome');
+}
+
+function toggleBingoTips() {
+  _bingoTipsEnabled = !_bingoTipsEnabled;
+  localStorage.setItem('bingo_tips_pref', _bingoTipsEnabled ? '1' : '0');
+  if (!_bingoTipsEnabled) {
+    const el = document.getElementById('bingo-tip-toast');
+    if (el) { el.classList.remove('btt-in'); setTimeout(()=>el.remove(), 300); }
+    _bingoTipQueue = [];
+    if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
+  }
+  _renderBingoPane();
+}
+
+function _bingoQueueTip(id) {
+  if (!_bingoTipsEnabled) return;
+  if (_bingoTipsShown.has(id) || !BINGO_TIPS[id]) return;
+  _bingoTipsShown.add(id);
+  _bingoTipQueue.push(id);
+  if (_bingoTipQueue.length === 1) _bingoShowNextTip();
+}
+
+function _bingoShowNextTip() {
+  const id = _bingoTipQueue[0];
+  if (!id) return;
+  const tip = BINGO_TIPS[id];
+  if (!tip) { _bingoTipQueue.shift(); _bingoShowNextTip(); return; }
+  const prev = document.getElementById('bingo-tip-toast');
+  if (prev) { prev.remove(); }
+  const el = document.createElement('div');
+  el.id = 'bingo-tip-toast';
+  el.className = 'bingo-tip-toast';
+  el.innerHTML =
+    '<div class="btt-icon">'+tip.icon+'</div>'+
+    '<div class="btt-body">'+
+      '<div class="btt-title">'+tip.title+'</div>'+
+      '<div class="btt-text">'+tip.body+'</div>'+
+      '<button class="btt-off" onclick="toggleBingoTips()">Desactivar tips</button>'+
+    '</div>'+
+    '<button class="btt-close" onclick="_bingoCloseTip()">✕</button>';
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>el.classList.add('btt-in')); });
+  if (_bingoTipTimer) clearTimeout(_bingoTipTimer);
+  _bingoTipTimer = setTimeout(_bingoCloseTip, 6500);
+}
+
+function _bingoCloseTip() {
+  if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
+  const el = document.getElementById('bingo-tip-toast');
+  if (!el) { _bingoTipQueue.shift(); if (_bingoTipQueue.length) setTimeout(_bingoShowNextTip, 400); return; }
+  el.classList.remove('btt-in');
+  setTimeout(()=>{ el.remove(); _bingoTipQueue.shift(); if (_bingoTipQueue.length) setTimeout(_bingoShowNextTip, 400); }, 300);
+}
+
+function _bingoCheckTips() {
+  if (!_bingoTipsEnabled || !bingoGame) return;
+  try {
+    const me = _bingoMe();
+    const myP = (bingoGame.players||{})[me.uid];
+    if (!myP) return;
+    const drawn = (bingoGame.drawnNumbers||[]).length;
+    const nowCA = !!bingoGame.challengeActive;
+    const nowBlocked = (myP.blocked||0) > 0;
+    const nowPowers = Object.keys(myP.unlockedPowers||{}).length;
+    // First number drawn
+    if (_btPrevDrawn === 0 && drawn >= 1) {
+      _bingoQueueTip('first_call');
+      setTimeout(()=>_bingoQueueTip('how_draw'), 9000);
+    }
+    // Math challenge started
+    if (!_btPrevChallenge && nowCA) _bingoQueueTip('math');
+    // Got blocked
+    if (!_btPrevBlocked && nowBlocked) _bingoQueueTip('blocked');
+    // Got a new power
+    if (nowPowers > _btPrevPowers) _bingoQueueTip('power_won');
+    // Update prev
+    _btPrevDrawn = drawn; _btPrevChallenge = nowCA;
+    _btPrevBlocked = nowBlocked; _btPrevPowers = nowPowers;
+  } catch(e) {}
+}
+
 // ── Modales de premios (overlay fuera de .bingo-pane-host) ───────────────────
 let _bingoPaused = false; // bloquea el siguiente sorteo mientras hay un modal abierto
 
@@ -3187,6 +3324,11 @@ function _bingoResetLocalState() {
   _bingoDesafioRaceAck = false; _bingoDesafioRaceResult = null;
   _desafioAcceptedAck = false;
   _bingoDuelCountdownEnd = 0; _bingoDuelCountdownName = '';
+  // Reset tips tracking state for new game
+  _bingoTipsShown = new Set(); _bingoTipQueue = []; _btFirstMarkDone = false;
+  _btPrevDrawn = 0; _btPrevBlocked = false; _btPrevPowers = 0; _btPrevChallenge = false;
+  if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
+  const _te = document.getElementById('bingo-tip-toast'); if (_te) _te.remove();
   _bingoCloseModal();
 }
 
@@ -3260,6 +3402,8 @@ function _selectBingoGame(gameId) {
       }
       if (prevStatus === 'lobby' && bingoGame.status === 'playing' && amPlaying) {
         _bingoRulesShown = false;
+        // Tips: mostrar prizes ~10s después del inicio (después del modal de reglas)
+        setTimeout(()=>_bingoQueueTip('prizes'), 12000);
       }
       if (bingoGame.status === 'playing' && amPlaying && !_bingoRulesShown) {
         _bingoRulesShown = true;
@@ -3281,6 +3425,8 @@ function _selectBingoGame(gameId) {
         _bingoEndShown = true;
         setTimeout(() => _bingoShowEndModal(bingoGame), 900);
       }
+      // Tips: detectar cambios relevantes en cada snapshot
+      try { _bingoCheckTips(); } catch(e) {}
       // Guardar historial — reintenta en cada snapshot hasta que historySaved sea true
       if (bingoGame.status === 'ended' && !bingoGame.historySaved) {
         setTimeout(_bingoSaveHistory, 1500);
@@ -3862,7 +4008,7 @@ function joinBingoGame(gameId) {
   if ((game.players||{})[me.uid]) { _selectBingoGame(gameId); return; } // ya está dentro
   const player = _bingoNewPlayer(me, game.cardCount||1);
   db.collection('bingo').doc(gameId).update({ [`players.${me.uid}`]: player })
-    .then(() => _selectBingoGame(gameId))
+    .then(() => { _selectBingoGame(gameId); setTimeout(_bingoTipsPrompt, 1200); })
     .catch(e => { showToast('No se pudo unir a la partida.', 'error'); console.error(e); });
 }
 // Ajustes del lobby (solo host, solo antes de iniciar).
@@ -4012,10 +4158,12 @@ function markBingoCell(cardIdx, num) {
   const exists = marks.some(m=>m.c===cardIdx && m.n===num);
   const newMarks = exists ? marks.filter(m=>!(m.c===cardIdx && m.n===num)) : [...marks, {c:cardIdx, n:num}];
   if (exists) _bSnd.unmark(); else _bSnd.mark();
+  if (!exists && !_btFirstMarkDone) { _btFirstMarkDone = true; setTimeout(()=>_bingoQueueTip('first_mark'), 800); }
   BINGO_REF.update({ [`players.${me.uid}.marks`]: newMarks })
     .catch(e=>console.error('bingo mark',e));
 }
 function _bingoConfirmClaim(cardIdx, tier) {
+  _bingoQueueTip('can_claim');
   const tierLabel  = BINGO_TIER_LABEL[tier] || tier;
   const tierReq    = { terna:'3 números en línea', cuaterna:'4 números en línea', quina:'5 números en línea (toda la fila/columna)', bingo:'todos los números del cartón' }[tier] || '';
   const penalty    = `Si declaras ${tierLabel} sin tenerla realmente, tu botón quedará bloqueado con ✕ y <b>perderás para siempre</b> la oportunidad de canjear este premio en este cartón.`;
@@ -5481,10 +5629,11 @@ function _bingoPaneHtml() {
   const titleHtml = `
     <div class="bingo-titlebar">
       <div class="btb-ico">🎱</div>
-      <div>
+      <div style="flex:1">
         <div class="btb-text">Neon Bingo</div>
         <div class="btb-sub">En vivo · Matemáticas</div>
       </div>
+      <button onclick="toggleBingoTips()" class="bingo-tips-btn ${_bingoTipsEnabled?'on':'off'}">💡 TIPS</button>
     </div>`;
 
   // ── Invitado sin identidad: pedir nombre antes de mostrar nada ───────────────────
