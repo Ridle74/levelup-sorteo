@@ -2499,7 +2499,7 @@ function _genEM_B4(){
   const w=_EM_PALABRAS[_c4rnd(0,_EM_PALABRAS.length-1)];
   const ans=w.v>w.c?'vocal':w.v<w.c?'consonante':'igual de probable';
   const otras=['vocal','consonante','igual de probable'].filter(x=>x!==ans);
-  return{q:`Se colocan tarjetas con las letras de "${w.word}" en una bolsa.\n(${w.v} vocales y ${w.c} consonantes)\nAl sacar una tarjeta al azar, ¿qué es MÁS probable?`,a:ans,opts:_c4shuf([ans,...otras,'no se puede saber']),mc:true};
+  return{q:`Se colocan tarjetas con las letras de "${w.word}" en una bolsa.\nAl sacar una tarjeta al azar, ¿qué es MÁS probable?`,a:ans,opts:_c4shuf([ans,...otras,'no se puede saber']),mc:true};
 }
 
 // b5: ¿Qué color es MÁS o MENOS probable? (urna con bolas)
