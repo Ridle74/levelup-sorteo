@@ -8618,12 +8618,6 @@ function vTareas() {
       <div style="margin-bottom:8px">
         <button type="button" onclick="_toggleTaskPrep()" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;border-radius:10px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;width:100%;text-align:left">🧠 VINCULAR A PREPÁRATE <span id="tp-toggle-arrow">▼</span></button>
         <div id="task-prep-section" style="display:none;margin-top:6px;padding:10px;border-radius:10px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2)">
-          <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepTema()" style="margin-bottom:6px">
-            <option value="">— Tipo de actividad —</option>
-            <option value="ejercicio">📝 Ejercicio</option>
-            <option value="cuestionario">📋 Cuestionario</option>
-            <option value="prueba">⭐ Prueba de Unidad</option>
-          </select>
           <div style="display:flex;gap:6px;margin-bottom:6px">
             <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado()" style="flex:1;margin-bottom:0">
               <option value="">— Nivel —</option>
@@ -8631,12 +8625,18 @@ function vTareas() {
               <option value="secundaria">Secundaria</option>
               <option value="preuniversitario">Pre-Universitario</option>
             </select>
-            <select class="fsm" id="tp-grado" onchange="_updateTaskPrepTema()" style="flex:1;margin-bottom:0">
+            <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnidad()" style="flex:1;margin-bottom:0">
               <option value="">— Grado —</option>
             </select>
           </div>
-          <select class="fsm" id="tp-tema" style="margin-bottom:6px">
-            <option value="">— Elige tipo y grado primero —</option>
+          <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo()" style="margin-bottom:6px">
+            <option value="">— Unidad —</option>
+          </select>
+          <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem()" style="margin-bottom:6px">
+            <option value="">— Tipo de actividad —</option>
+          </select>
+          <select class="fsm" id="tp-item" style="margin-bottom:6px;display:none">
+            <option value="">— Selecciona —</option>
           </select>
           <div style="display:flex;gap:6px;margin-bottom:6px">
             <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0">
@@ -9705,95 +9705,134 @@ function _toggleTaskPrep() {
   if (arrow) arrow.textContent = _taskPrepOpen ? '▲' : '▼';
 }
 function _updateTaskPrepGrado() {
-  const nivelSel = document.getElementById('tp-nivel');
-  const gradoSel = document.getElementById('tp-grado');
-  if (!nivelSel || !gradoSel) return;
-  const nivel = nivelSel.value;
-  const max = nivel === 'secundaria' ? 5 : nivel === 'preuniversitario' ? 2 : 6;
-  gradoSel.innerHTML = '<option value="">— Grado —</option>'
-    + Array.from({length: max}, function(_,i){ var g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
-  const temaSel = document.getElementById('tp-tema');
-  if (temaSel) temaSel.innerHTML = '<option value="">— Elige tipo y grado primero —</option>';
-}
-function _updateTaskPrepTema() {
-  var tipoSel  = document.getElementById('tp-tipo');
   var nivelSel = document.getElementById('tp-nivel');
   var gradoSel = document.getElementById('tp-grado');
-  var temaSel  = document.getElementById('tp-tema');
-  if (!tipoSel || !nivelSel || !gradoSel || !temaSel) return;
-  var tipo = tipoSel.value, nivel = nivelSel.value, grado = gradoSel.value;
-  if (!tipo || !nivel || !grado) {
-    temaSel.innerHTML = '<option value="">— Elige tipo y grado primero —</option>';
+  if (!nivelSel || !gradoSel) return;
+  var nivel = nivelSel.value;
+  var max = nivel === 'secundaria' ? 5 : nivel === 'preuniversitario' ? 2 : 6;
+  gradoSel.innerHTML = '<option value="">— Grado —</option>'
+    + Array.from({length: max}, function(_,i){ var g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
+  var uSel = document.getElementById('tp-unidad');
+  if (uSel) uSel.innerHTML = '<option value="">— Unidad —</option>';
+  var tSel = document.getElementById('tp-tipo');
+  if (tSel) tSel.innerHTML = '<option value="">— Tipo de actividad —</option>';
+  var iSel = document.getElementById('tp-item');
+  if (iSel) { iSel.innerHTML = '<option value="">— Selecciona —</option>'; iSel.style.display = 'none'; }
+}
+function _updateTaskPrepUnidad() {
+  var nivelSel = document.getElementById('tp-nivel');
+  var gradoSel = document.getElementById('tp-grado');
+  var unidadSel = document.getElementById('tp-unidad');
+  if (!nivelSel || !gradoSel || !unidadSel) return;
+  var nivel = nivelSel.value, grado = gradoSel.value;
+  var units = nivel && grado ? ((PREP_CURRICULUM[nivel]||{})[grado] || []) : [];
+  var opts = '<option value="">— Unidad —</option>';
+  units.forEach(function(u, i) {
+    var pre = u.editorial && PREP_EDITORIALS[u.editorial] ? PREP_EDITORIALS[u.editorial].short+' · ' : '';
+    opts += '<option value="'+i+'">Unidad '+(i+1)+' — '+pre+u.lbl+'</option>';
+  });
+  unidadSel.innerHTML = opts;
+  var tSel = document.getElementById('tp-tipo');
+  if (tSel) tSel.innerHTML = '<option value="">— Tipo de actividad —</option>';
+  var iSel = document.getElementById('tp-item');
+  if (iSel) { iSel.innerHTML = '<option value="">— Selecciona —</option>'; iSel.style.display = 'none'; }
+}
+function _updateTaskPrepTipo() {
+  var nivelSel  = document.getElementById('tp-nivel');
+  var gradoSel  = document.getElementById('tp-grado');
+  var unidadSel = document.getElementById('tp-unidad');
+  var tipoSel   = document.getElementById('tp-tipo');
+  var itemSel   = document.getElementById('tp-item');
+  if (!nivelSel || !gradoSel || !unidadSel || !tipoSel) return;
+  var nivel = nivelSel.value, grado = gradoSel.value, uVal = unidadSel.value;
+  if (!nivel || !grado || uVal === '') {
+    tipoSel.innerHTML = '<option value="">— Tipo de actividad —</option>';
+    if (itemSel) { itemSel.style.display = 'none'; }
     return;
   }
   var units = (PREP_CURRICULUM[nivel]||{})[grado] || [];
-  if (tipo === 'ejercicio') {
-    var opts = '<option value="">— Selecciona el ejercicio —</option>';
-    units.forEach(function(u) {
-      (u.skills||[]).forEach(function(sk) {
-        var def = BINGO_TOPICS[sk];
-        if (def) opts += '<option value="skill:'+sk+'">'+(def.lbl||sk)+'</option>';
-      });
-    });
-    temaSel.innerHTML = opts;
-  } else {
-    var placeholder = tipo === 'prueba' ? '— Selecciona la unidad —' : '— Selecciona el cuestionario —';
-    var opts = '<option value="">'+placeholder+'</option>';
-    units.forEach(function(u, i) {
-      var pre = u.editorial && PREP_EDITORIALS[u.editorial] ? PREP_EDITORIALS[u.editorial].short+' · ' : '';
-      opts += '<option value="unit:'+i+'">'+pre+u.lbl+'</option>';
-    });
-    temaSel.innerHTML = opts;
-  }
+  var unit = units[Number(uVal)];
+  if (!unit) { tipoSel.innerHTML = '<option value="">— Tipo de actividad —</option>'; return; }
+  var hasEx  = (unit.skills||[]).some(function(sk){ var d=BINGO_TOPICS[sk]; return d && !d.quiz; });
+  var hasQz  = (unit.skills||[]).some(function(sk){ var d=BINGO_TOPICS[sk]; return d && !!d.quiz; });
+  var opts = '<option value="">— Tipo de actividad —</option>';
+  opts += '<option value="toda">📚 Toda la unidad</option>';
+  if (hasEx) opts += '<option value="ejercicio">📝 Ejercicio</option>';
+  if (hasQz) opts += '<option value="cuestionario">📋 Cuestionario</option>';
+  tipoSel.innerHTML = opts;
+  if (itemSel) { itemSel.innerHTML = '<option value="">— Selecciona —</option>'; itemSel.style.display = 'none'; }
+}
+function _updateTaskPrepItem() {
+  var nivelSel  = document.getElementById('tp-nivel');
+  var gradoSel  = document.getElementById('tp-grado');
+  var unidadSel = document.getElementById('tp-unidad');
+  var tipoSel   = document.getElementById('tp-tipo');
+  var itemSel   = document.getElementById('tp-item');
+  if (!tipoSel || !itemSel) return;
+  var tipo = tipoSel.value;
+  if (!tipo || tipo === 'toda') { itemSel.style.display = 'none'; return; }
+  var nivel = nivelSel ? nivelSel.value : '';
+  var grado = gradoSel ? gradoSel.value : '';
+  var uVal  = unidadSel ? unidadSel.value : '';
+  var units = nivel && grado ? ((PREP_CURRICULUM[nivel]||{})[grado]||[]) : [];
+  var unit  = uVal !== '' ? units[Number(uVal)] : null;
+  if (!unit) { itemSel.style.display = 'none'; return; }
+  var isQz = tipo === 'cuestionario';
+  var filtered = (unit.skills||[]).filter(function(sk){ var d=BINGO_TOPICS[sk]; return d && (isQz ? !!d.quiz : !d.quiz); });
+  var placeholder = isQz ? '— Selecciona el cuestionario —' : '— Selecciona el ejercicio —';
+  var opts = '<option value="">'+placeholder+'</option>';
+  filtered.forEach(function(sk){ var d=BINGO_TOPICS[sk]; opts += '<option value="'+sk+'">'+(d.ico||'')+' '+(d.lbl||sk)+'</option>'; });
+  itemSel.innerHTML = opts;
+  itemSel.style.display = '';
 }
 function _readTaskPrepLink() {
-  var tipoSel  = document.getElementById('tp-tipo');
-  var nivelSel = document.getElementById('tp-nivel');
-  var gradoSel = document.getElementById('tp-grado');
-  var temaSel  = document.getElementById('tp-tema');
-  var modeSel  = document.getElementById('tp-mode');
-  var qcntSel  = document.getElementById('tp-qcount');
-  var timeSel  = document.getElementById('tp-time');
-  if (!tipoSel || !nivelSel || !gradoSel || !temaSel) return null;
-  var tipo = tipoSel.value, nivel = nivelSel.value, grado = gradoSel.value, temaVal = temaSel.value;
-  if (!tipo || !nivel || !grado || !temaVal) return null;
+  var tipoSel   = document.getElementById('tp-tipo');
+  var nivelSel  = document.getElementById('tp-nivel');
+  var gradoSel  = document.getElementById('tp-grado');
+  var unidadSel = document.getElementById('tp-unidad');
+  var itemSel   = document.getElementById('tp-item');
+  var modeSel   = document.getElementById('tp-mode');
+  var qcntSel   = document.getElementById('tp-qcount');
+  var timeSel   = document.getElementById('tp-time');
+  if (!tipoSel || !nivelSel || !gradoSel || !unidadSel) return null;
+  var tipo = tipoSel.value, nivel = nivelSel.value, grado = gradoSel.value, uVal = unidadSel.value;
+  if (!tipo || !nivel || !grado || uVal === '') return null;
+  var units = (PREP_CURRICULUM[nivel]||{})[grado] || [];
+  var unit = units[Number(uVal)];
+  if (!unit) return null;
   var base = {
     tipo: tipo, level: nivel, grade: Number(grado),
+    unitIdx: Number(uVal), unitLabel: unit.lbl, unitSkills: unit.skills,
     ansMode: modeSel ? modeSel.value : 'mc',
     qCount:  qcntSel ? Number(qcntSel.value) : 10,
     timeSec: timeSel ? Number(timeSel.value) : 0,
   };
-  if (tipo === 'ejercicio' && temaVal.startsWith('skill:')) {
-    var sk = temaVal.slice(6);
-    var def = BINGO_TOPICS[sk];
-    if (!def) return null;
-    return Object.assign(base, { skillKey: sk, unitLabel: def.lbl||sk });
-  } else if (temaVal.startsWith('unit:')) {
-    var units = (PREP_CURRICULUM[nivel]||{})[grado] || [];
-    var unit = units[Number(temaVal.slice(5))];
-    if (!unit) return null;
-    return Object.assign(base, { unitSkills: unit.skills, unitLabel: unit.lbl });
-  }
-  return null;
+  if (tipo === 'toda') return base;
+  var sk = itemSel ? itemSel.value : '';
+  if (!sk) return null;
+  var def = BINGO_TOPICS[sk];
+  if (!def) return null;
+  return Object.assign(base, { skillKey: sk, skillLabel: def.lbl||sk });
 }
 function _launchPrepFromTask(cfg) {
   if (!cfg) { showToast('Sin configuración de práctica.'); return; }
-  var tipo = cfg.tipo || 'cuestionario';
-  if (tipo === 'ejercicio' && !cfg.skillKey) { showToast('Sin skill configurado.'); return; }
-  if (tipo !== 'ejercicio' && !(cfg.unitSkills||[]).length) { showToast('Sin unidad configurada.'); return; }
+  var tipo = cfg.tipo || 'toda';
   _prep.level   = cfg.level   || 'primaria';
   _prep.grade   = String(cfg.grade || '1');
   _prep.ansMode = cfg.ansMode || 'mc';
   _prep.qCount  = cfg.qCount  || 10;
   _prep.timeSec = cfg.timeSec || 0;
   _prep.timeLeft = _prep.timeSec;
-  if (tipo === 'ejercicio') {
+  if ((tipo === 'ejercicio' || tipo === 'cuestionario') && cfg.skillKey) {
     _prep.topic = cfg.skillKey;
     _prepStart();
-  } else if (tipo === 'prueba') {
-    _prepUnitExam(cfg.unitSkills);
-  } else {
+  } else if (tipo === 'toda' || tipo === 'cuestionario' || tipo === 'prueba') {
+    // legado: cuestionario/prueba sin skillKey = toda la unidad
+    if (!(cfg.unitSkills||[]).length) { showToast('Sin unidad configurada.'); return; }
     _prepStartUnit(cfg.unitSkills);
+  } else {
+    showToast('Configuración de práctica no válida.');
+    return;
   }
   go('preparate');
 }
@@ -9803,12 +9842,15 @@ function _resetTaskPrepForm() {
   if (sec) sec.style.display = 'none';
   var arrow = document.getElementById('tp-toggle-arrow');
   if (arrow) arrow.textContent = '▼';
-  var tipoSel = document.getElementById('tp-tipo'); if (tipoSel) tipoSel.value = '';
   var nSel = document.getElementById('tp-nivel'); if (nSel) nSel.value = '';
   var gSel = document.getElementById('tp-grado');
   if (gSel) { gSel.value = ''; gSel.innerHTML = '<option value="">— Grado —</option>'; }
-  var temaSel = document.getElementById('tp-tema');
-  if (temaSel) { temaSel.value = ''; temaSel.innerHTML = '<option value="">— Elige tipo y grado primero —</option>'; }
+  var uSel = document.getElementById('tp-unidad');
+  if (uSel) { uSel.value = ''; uSel.innerHTML = '<option value="">— Unidad —</option>'; }
+  var tipoSel = document.getElementById('tp-tipo');
+  if (tipoSel) { tipoSel.value = ''; tipoSel.innerHTML = '<option value="">— Tipo de actividad —</option>'; }
+  var itemSel = document.getElementById('tp-item');
+  if (itemSel) { itemSel.value = ''; itemSel.innerHTML = '<option value="">— Selecciona —</option>'; itemSel.style.display = 'none'; }
   var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = 'mc';
   var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = '10';
   var tSel = document.getElementById('tp-time'); if (tSel) tSel.value = '300';
@@ -9875,26 +9917,39 @@ function openEditTask(id) {
   const delBtn = document.getElementById('t-delete-btn'); if (delBtn) { delBtn.style.visibility = 'visible'; delBtn.disabled = false; delBtn.style.opacity = '1'; delBtn.style.cursor = 'pointer'; }
   // pre-fill prep link
   _resetTaskPrepForm();
-  if (t.prepLink && (t.prepLink.unitSkills || t.prepLink.skillKey)) {
+  if (t.prepLink && t.prepLink.level && t.prepLink.grade != null) {
     _taskPrepOpen = true;
     var sec = document.getElementById('task-prep-section');
     if (sec) sec.style.display = 'block';
     var arrow = document.getElementById('tp-toggle-arrow');
     if (arrow) arrow.textContent = '▲';
-    var tipoSel = document.getElementById('tp-tipo');
-    if (tipoSel) { tipoSel.value = t.prepLink.tipo||'cuestionario'; }
+    // nivel
     var nSel = document.getElementById('tp-nivel');
     if (nSel) { nSel.value = t.prepLink.level||''; _updateTaskPrepGrado(); }
+    // grado
     var gSel = document.getElementById('tp-grado');
-    if (gSel) { gSel.value = String(t.prepLink.grade||''); _updateTaskPrepTema(); }
-    // Restore tema selection using skill:/unit: prefix convention
-    var temaSel = document.getElementById('tp-tema');
-    if (temaSel && t.prepLink.tipo === 'ejercicio' && t.prepLink.skillKey) {
-      temaSel.value = 'skill:' + t.prepLink.skillKey;
-    } else if (temaSel && t.prepLink.unitSkills && t.prepLink.level && t.prepLink.grade) {
-      var units = (PREP_CURRICULUM[t.prepLink.level]||{})[String(t.prepLink.grade)] || [];
-      var matchIdx = units.findIndex(function(u){ return JSON.stringify(u.skills)===JSON.stringify(t.prepLink.unitSkills); });
-      if (matchIdx >= 0) temaSel.value = 'unit:' + matchIdx;
+    if (gSel) { gSel.value = String(t.prepLink.grade||''); _updateTaskPrepUnidad(); }
+    // unidad — match by unitIdx if saved, else by unitSkills content
+    var uSel = document.getElementById('tp-unidad');
+    if (uSel && t.prepLink.level && t.prepLink.grade != null) {
+      var pUnits = (PREP_CURRICULUM[t.prepLink.level]||{})[String(t.prepLink.grade)] || [];
+      var uIdx = -1;
+      if (t.prepLink.unitIdx != null) { uIdx = t.prepLink.unitIdx; }
+      else if (t.prepLink.unitSkills) {
+        uIdx = pUnits.findIndex(function(u){ return JSON.stringify(u.skills)===JSON.stringify(t.prepLink.unitSkills); });
+      }
+      if (uIdx >= 0) { uSel.value = String(uIdx); _updateTaskPrepTipo(); }
+    }
+    // tipo
+    var tipoSel = document.getElementById('tp-tipo');
+    var savedTipo = t.prepLink.tipo || (t.prepLink.skillKey ? 'ejercicio' : 'toda');
+    // legado: 'prueba' y 'cuestionario' sin skillKey → toda
+    if ((savedTipo === 'prueba' || savedTipo === 'cuestionario') && !t.prepLink.skillKey) savedTipo = 'toda';
+    if (tipoSel) { tipoSel.value = savedTipo; _updateTaskPrepItem(); }
+    // item (ejercicio o cuestionario específico)
+    if (savedTipo !== 'toda' && t.prepLink.skillKey) {
+      var itemSel = document.getElementById('tp-item');
+      if (itemSel) itemSel.value = t.prepLink.skillKey;
     }
     var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = t.prepLink.ansMode||'mc';
     var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = String(t.prepLink.qCount||10);
