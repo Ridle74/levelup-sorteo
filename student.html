@@ -2450,14 +2450,18 @@ const _EM_PALABRAS = [
 // b1: ¿Cuántos elementos tiene el espacio muestral? (cardinal n)
 function _genEM_B1(){
   const exps=[
-    {q:'Lanzar una moneda al aire',n:2,o:'cara, sello'},
-    {q:'Lanzar un dado de 6 caras',n:6,o:'1, 2, 3, 4, 5, 6'},
-    {q:'Girar una ruleta de 4 colores (rojo, verde, morado, amarillo)',n:4,o:'rojo, verde, morado, amarillo'},
-    {q:'Girar una ruleta de 3 colores (azul, rojo, verde)',n:3,o:'azul, rojo, verde'},
-    {q:'Extraer una carta numerada del 1 al 5',n:5,o:'1, 2, 3, 4, 5'},
-    {q:'Elegir al azar una fruta de una cesta: manzana, pera, plátano, uva',n:4,o:'manzana, pera, plátano, uva'},
-    {q:'Sacar al azar una bola de colores: rojo, azul, verde, amarillo, naranja',n:5,o:'rojo, azul, verde, amarillo, naranja'},
-    {q:'Sacar al azar un número del 1 al 8',n:8,o:'1, 2, 3, 4, 5, 6, 7, 8'},
+    {q:'Anotar los números PARES del 1 al 10',n:5,o:'2,4,6,8,10'},
+    {q:'Anotar los múltiplos de 3 del 1 al 12',n:4,o:'3,6,9,12'},
+    {q:'Anotar los números IMPARES del 1 al 9',n:5,o:'1,3,5,7,9'},
+    {q:'Anotar los múltiplos de 4 menores que 20',n:4,o:'4,8,12,16'},
+    {q:'Anotar los números del 1 al 15 divisibles entre 5',n:3,o:'5,10,15'},
+    {q:'Elegir los meses del año que tienen exactamente 30 días',n:4,o:'Abril,Junio,Septiembre,Noviembre'},
+    {q:'Anotar los días de la semana que tienen MÁS de 6 letras',n:3,o:'Miércoles,Viernes,Domingo'},
+    {q:'Extraer las vocales distintas de la palabra MURCIÉLAGO',n:5,o:'U,I,É,A,O'},
+    {q:'Extraer las letras de la palabra LIMA que son consonantes',n:2,o:'L,M'},
+    {q:'Anotar los números del 1 al 20 mayores que 16',n:4,o:'17,18,19,20'},
+    {q:'Anotar los múltiplos de 6 menores que 30',n:4,o:'6,12,18,24'},
+    {q:'Extraer los colores de la lista (rojo, azul, verde, amarillo, morado) que empiezan con vocal',n:2,o:'azul,amarillo'},
   ];
   const e=exps[_c4rnd(0,exps.length-1)];
   const ws=_c4shuf([e.n-1,e.n+1,e.n+2,Math.max(1,e.n-2)].filter(v=>v!==e.n&&v>0)).slice(0,3);
