@@ -614,7 +614,10 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-tips-btn.off{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
 .bingo-cell.tip-hl{outline:2px solid #f59e0b;outline-offset:-2px;animation:btt-hl-pulse 1.2s ease-in-out infinite}
 @keyframes btt-hl-pulse{0%,100%{outline-color:#f59e0b;box-shadow:inset 0 0 8px rgba(245,158,11,0.3)}50%{outline-color:#fcd34d;box-shadow:inset 0 0 14px rgba(252,211,77,0.5)}}
-.bingo-math-warn{background:linear-gradient(90deg,rgba(234,179,8,0.12),rgba(234,179,8,0.06));border:1px solid rgba(234,179,8,0.3);border-radius:10px;padding:6px 12px;margin:4px 0 2px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#fde68a;letter-spacing:.04em;text-align:center}
+.reto-warn-stat{background:rgba(234,179,8,0.1)!important;border-radius:8px;padding:4px 6px!important;border:1px solid rgba(234,179,8,0.35);animation:btt-hl-pulse 1.5s ease-in-out infinite}
+.bdh-reto-warn{font-size:9.5px;color:#fde68a;font-weight:700;letter-spacing:.02em;margin-top:3px;line-height:1.3;white-space:normal;max-width:80px}
+.bingo-hl-callout{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:9px 14px;margin:6px 0 2px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#fde68a;text-align:center;letter-spacing:.03em;line-height:1.45}
+.bingo-hl-callout strong{color:#fbbf24}
 .bingo-pwr-tip{position:fixed;bottom:130px;left:50%;transform:translateX(-50%) translateY(8px);z-index:9997;background:#1a1a2e;border:1px solid rgba(168,85,247,0.4);border-radius:12px;padding:9px 13px;font-family:'Barlow Condensed',sans-serif;font-size:11.5px;color:rgba(255,255,255,0.7);max-width:280px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.6);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;line-height:1.45}
 .bingo-pwr-tip.bpt-in{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ── GAME CATALOG ─────────────────────────────────────────────────────────────────────────────── */
@@ -1174,6 +1177,8 @@ let _btPrevBlocked     = false; // si el jugador estaba bloqueado antes
 let _btPrevPowers      = 0;     // cantidad de poderes en el tick anterior
 let _btPrevChallenge   = false; // challengeActive en el tick anterior
 let _bingoTipHlNums    = new Set(); // números a sombrear en el cartón (tutorial)
+let _bingoTipHlNeeded  = 0;         // cuántas casillas faltan para el siguiente tier
+let _bingoTipHlTierLabel = '';      // nombre del tier (TERNA, CUATERNA…)
 let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
@@ -2980,7 +2985,7 @@ function _bingoEnableTips(val) {
       if (activeTier) setTimeout(()=>_bingoComputeTipHl(activeTier), 1500);
     }
   } else {
-    _bingoTipHlNums = new Set();
+    _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlTierLabel = '';
     _renderBingoPane();
   }
 }
@@ -2993,7 +2998,7 @@ function toggleBingoTips() {
     if (el) { el.classList.remove('btt-in'); setTimeout(()=>el.remove(), 300); }
     _bingoTipQueue = [];
     if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
-    _bingoTipHlNums = new Set();
+    _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlTierLabel = '';
     const pt = document.getElementById('bingo-pwr-tip'); if (pt) pt.remove();
   }
   _renderBingoPane();
@@ -3068,6 +3073,8 @@ function _bingoComputeTipHl(nextTier) {
       });
     });
     _bingoTipHlNums = new Set(bestNums);
+    _bingoTipHlNeeded = bestNums.length;
+    _bingoTipHlTierLabel = {terna:'TERNA',cuaterna:'CUATERNA',quina:'LÍNEA',bingo:'BINGO'}[nextTier]||nextTier;
   } catch(e) { console.error('tipHl',e); }
   _renderBingoPane();
 }
@@ -3402,7 +3409,7 @@ function _bingoResetLocalState() {
   _bingoTipsShown = new Set(); _bingoTipQueue = []; _btFirstMarkDone = false;
   _btPrevDrawn = 0; _btPrevBlocked = false; _btPrevPowers = 0; _btPrevChallenge = false;
   if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
-  _bingoTipHlNums = new Set();
+  _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlTierLabel = '';
   const _te = document.getElementById('bingo-tip-toast'); if (_te) _te.remove();
   const _pt = document.getElementById('bingo-pwr-tip'); if (_pt) _pt.remove();
   _bingoCloseModal();
@@ -6071,14 +6078,13 @@ function _bingoPaneHtml() {
       <div class="bdh-side">
         <div class="bdh-stats">
           <div class="bdh-stat"><div class="bdh-stat-lbl">Extraídos</div><div class="bdh-stat-val cyan">${drawn.length}/75</div></div>
-          <div class="bdh-stat"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div></div>
+          <div class="bdh-stat${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?' reto-warn-stat':''}"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div>${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?`<div class="bdh-reto-warn">🧮 ¡${drawsLeft===1?'¡Es el último!':'¡Ya viene!'} Responde rápido y gana números extra</div>`:''}</div>
         </div>
         <div class="bdh-bar"><div class="bdh-bar-fill grad" style="width:${challengePct}%"></div></div>
         <div class="bdh-bar" style="${phaseOn?'':'opacity:.3'}"><div class="bdh-bar-fill ${phaseColorClass}" style="width:${phaseOn?phasePct:0}%"></div></div>
         <div class="bdh-bar-foot"><span>Reto ↑</span><span class="${phaseOn?`on ${phaseColorClass}`:''}">${phaseOn?phaseFootLabel:''}</span></div>
       </div>
     </div>
-    ${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?`<div class="bingo-math-warn">🧮 Reto en ${drawsLeft} número${drawsLeft===1?'':'s'} · ⚡ &lt;15s = +2 cargas · &lt;30s = +1 carga — ¡Prepárate!</div>`:''}
     ${(myPlayer && (myPlayer.unlockedPowers||{}).bitacora) && drawnVisible.length > 0 ? `<div class="bingo-hist-wrap">
       <div class="bingo-hist-lbl">${bingoGame.directMode!==false ? 'Números que salieron' : 'Cálculos que salieron'}</div>
       <div class="bingo-hist-row">
@@ -6250,6 +6256,11 @@ function _bingoPaneHtml() {
           body += `</div>`;
         });
         body += `</div>`;
+        // Callout de pista: aparece justo debajo de los cartones si tips activos y hay casillas resaltadas
+        if (_bingoTipsEnabled && _bingoTipHlNums.size > 0 && _bingoTipHlNeeded > 0) {
+          const _n = _bingoTipHlNeeded;
+          body += `<div class="bingo-hl-callout">🎯 ¡Te falt${_n===1?'a':'an'} <strong>${_n} casilla${_n===1?'':'s'}</strong> para cantar <strong>${_bingoTipHlTierLabel}</strong>! Búscalas en amarillo en tu cartón.</div>`;
+        }
       }
 
       // (bloqueo de reto es ahora automático — no hay banner de selección manual)
