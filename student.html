@@ -680,6 +680,8 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-status-input:focus{border-color:rgba(168,85,247,0.5);background:rgba(168,85,247,0.06)}
 .bingo-start-btn{width:100%;background:linear-gradient(135deg,#84cc16,#16a34a);color:#06170c;font-weight:900;border:none;border-radius:16px;padding:22px;font-family:'Barlow Condensed',sans-serif;font-size:24px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:10px;box-shadow:0 0 32px -4px #84cc16,0 4px 24px rgba(0,0,0,0.4)}
 .bingo-end-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
+.bingo-pause-btn{background:rgba(234,179,8,0.12);border:1px solid rgba(234,179,8,0.4);color:#fde68a;border-radius:10px;padding:7px 13px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;flex-shrink:0}
+.bingo-paused-banner{background:rgba(234,179,8,0.08);border:1px solid rgba(234,179,8,0.3);border-radius:12px;padding:10px 14px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#fde68a;margin:6px 0;letter-spacing:0.05em;animation:btt-hl-pulse 2s ease-in-out infinite}
 .bingo-join-btn{width:100%;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:16px;padding:22px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:8px;box-shadow:0 0 28px -6px #22d3ee}
 .bingo-full-btn{font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 11px;cursor:pointer;flex-shrink:0}
 /* Lobby redesign cards */
@@ -1182,6 +1184,8 @@ let _bingoTipHlNeeded  = 0;         // cuántas casillas faltan para el siguient
 let _bingoTipHlTierLabel = '';      // nombre del tier (TERNA, CUATERNA…)
 let _bingoTipHlHave    = 0;         // casillas ya marcadas en la mejor línea
 let _bingoTipHlCardIdx = -1;        // índice del cartón con la mejor fila
+let _bingoHlCalloutKey   = '';      // clave de estado del último callout mostrado
+let _bingoHlCalloutTimer = null;    // timer para auto-ocultar el callout (10s)
 let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
@@ -2963,16 +2967,10 @@ const BINGO_TIPS = {
 
 function _bingoTipsPrompt() {
   const pref = localStorage.getItem('bingo_tips_pref');
-  if (pref !== null) { _bingoTipsEnabled = pref === '1'; return; } // ya decidió antes
-  _bingoShowModal(`<div class="bpm-box" style="max-width:300px;text-align:center">
-    <div style="font-size:38px;margin-bottom:8px">💡</div>
-    <div class="bpm-title" style="color:#fca5a5;font-size:19px">TIPS DE TUTORIAL</div>
-    <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.55;margin:10px 0 20px">¿Quieres recibir ventanitas explicativas mientras juegas? Te guiarán por las reglas sin interrumpir la partida.</div>
-    <div style="display:flex;gap:10px">
-      <button onclick="_bingoEnableTips(false)" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.5);border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;cursor:pointer;text-transform:uppercase">No gracias</button>
-      <button onclick="_bingoEnableTips(true)" style="flex:1.2;background:linear-gradient(135deg,#dc2626,#991b1b);border:none;color:#fff;border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;cursor:pointer;text-transform:uppercase;box-shadow:0 0 18px -4px rgba(220,38,38,0.6)">💡 Sí, activar</button>
-    </div>
-  </div>`);
+  if (pref === '0') { _bingoTipsEnabled = false; return; } // desactivados manualmente
+  // Por defecto: activar tips sin preguntar
+  _bingoTipsEnabled = true;
+  if (!pref) localStorage.setItem('bingo_tips_pref', '1');
 }
 
 function _bingoEnableTips(val) {
@@ -3074,21 +3072,25 @@ function _bingoUpdateRetoWarn() {
 
 function _bingoUpdateHlCallout() {
   const show = _bingoTipsEnabled && _bingoTipHlNums.size>0 && bingoGame && bingoGame.status==='playing';
+  const stateKey = show ? `${_bingoTipHlCardIdx}:${_bingoTipHlNums.size}:${_bingoTipHlTierLabel}` : '';
   let el = document.getElementById('bingo-hl-callout-popup');
   if (!show) {
+    _bingoHlCalloutKey = '';
+    if (_bingoHlCalloutTimer) { clearTimeout(_bingoHlCalloutTimer); _bingoHlCalloutTimer = null; }
     if (el) { el.classList.remove('bhlp-in'); setTimeout(()=>{const t=document.getElementById('bingo-hl-callout-popup');if(t)t.remove();},300); }
     return;
   }
-  if (!el) {
-    el = document.createElement('div');
-    el.id = 'bingo-hl-callout-popup';
-    el.className = 'bingo-hl-callout-popup';
-    document.body.appendChild(el);
-    requestAnimationFrame(()=>{ const t=document.getElementById('bingo-hl-callout-popup'); if(t) t.classList.add('bhlp-in'); });
-  }
+  // Si el estado no cambió, no re-disparar (preserva el timer en curso)
+  if (stateKey === _bingoHlCalloutKey) return;
+  _bingoHlCalloutKey = stateKey;
+  if (_bingoHlCalloutTimer) { clearTimeout(_bingoHlCalloutTimer); _bingoHlCalloutTimer = null; }
+  if (el) { el.remove(); el = null; }
+  el = document.createElement('div');
+  el.id = 'bingo-hl-callout-popup';
+  el.className = 'bingo-hl-callout-popup';
+  document.body.appendChild(el);
   const n = _bingoTipHlNeeded;
   const nums = [..._bingoTipHlNums].sort((a,b)=>a-b);
-  // Formatea lista: "el 12, el 45 o el 67"
   const fmtList = arr => {
     if(!arr.length) return '';
     const b = arr.map(x=>`el <strong>${x}</strong>`);
@@ -3097,15 +3099,19 @@ function _bingoUpdateHlCallout() {
   };
   let html;
   if(n===1) {
-    // Puede haber 1-3 candidatos (cualquiera vale para el último número)
-    const cands = nums.slice(0,3);
-    html = `🔥 <strong>¡Solo falta 1!</strong><br>Si sale ${fmtList(cands)}, márcalo y canta <strong>${_bingoTipHlTierLabel}</strong> 🏆`;
+    html = `🔥 <strong>¡Solo falta 1!</strong><br>Si sale ${fmtList(nums.slice(0,3))}, márcalo y canta <strong>${_bingoTipHlTierLabel}</strong> 🏆`;
   } else if(nums.length<=5) {
     html = `🎯 <strong>¡Vas muy bien!</strong><br>Te faltan <strong>${n}</strong> para cantar <strong>${_bingoTipHlTierLabel}</strong>.<br>Busca: ${fmtList(nums)} — están en amarillo.`;
   } else {
-    html = `🎯 <strong>¡Vas muy bien!</strong><br>Te faltan <strong>${n} números</strong> para cantar <strong>${_bingoTipHlTierLabel}</strong>.<br>Están marcados en amarillo en tu cartón.`;
+    html = `🎯 <strong>¡Vas muy bien!</strong><br>Te faltan <strong>${n} números</strong> para cantar <strong>${_bingoTipHlTierLabel}</strong>.<br>Están marcados en amarillo.`;
   }
   el.innerHTML = html;
+  requestAnimationFrame(()=>{ const t=document.getElementById('bingo-hl-callout-popup'); if(t) t.classList.add('bhlp-in'); });
+  // Auto-ocultar después de 10 segundos
+  _bingoHlCalloutTimer = setTimeout(()=>{
+    const t=document.getElementById('bingo-hl-callout-popup');
+    if(t){ t.classList.remove('bhlp-in'); setTimeout(()=>{ const u=document.getElementById('bingo-hl-callout-popup'); if(u)u.remove(); },300); }
+  }, 10000);
 }
 
 function _bingoComputeTipHl(nextTier) {
@@ -3443,6 +3449,7 @@ function _bingoResetLocalState() {
   _btPrevDrawn = 0; _btPrevBlocked = false; _btPrevPowers = 0; _btPrevChallenge = false;
   if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
   _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlHave = 0; _bingoTipHlTierLabel = ''; _bingoTipHlCardIdx = -1;
+  _bingoHlCalloutKey = ''; if (_bingoHlCalloutTimer) { clearTimeout(_bingoHlCalloutTimer); _bingoHlCalloutTimer = null; }
   const _te = document.getElementById('bingo-tip-toast'); if (_te) _te.remove();
   const _pt = document.getElementById('bingo-pwr-tip'); if (_pt) _pt.remove();
   const _rw = document.getElementById('bingo-reto-warn-popup'); if (_rw) _rw.remove();
@@ -3765,6 +3772,7 @@ function _bingoTick() {
   _bingoCheckMyBlockTimeout();  // ...y el vencimiento de su propio bloqueo pendiente
   const me = _bingoMe();
   if (bingoGame.hostId !== me.uid) return; // solo el host avanza el reloj compartido
+  if (bingoGame.paused) return; // partida en pausa
   const now = Date.now();
   if (bingoGame.challengeActive) {
     if (now >= (bingoGame.challengeEndsAt||0)) _bingoHostEndChallenge();
@@ -4189,6 +4197,17 @@ function startBingoDraw() {
     patch[`players.__bot_${i}`] = _bingoNewBotPlayer(BINGO_BOT_NAMES[i]||`Bot${i+1}`, botLevel, cardCount);
   }
   BINGO_REF.update(patch).catch(e=>console.error('bingo start',e));
+}
+function pauseBingoGame() {
+  const me = _bingoMe();
+  if (!bingoGame || !BINGO_REF) return;
+  if (bingoGame.hostId !== me.uid && !isAdmin()) return;
+  if (bingoGame.status !== 'playing') return;
+  const nowPaused = !bingoGame.paused;
+  BINGO_REF.update(nowPaused
+    ? { paused: true,  nextDrawAt: null }
+    : { paused: false, nextDrawAt: Date.now() + 1000 }
+  ).catch(e => console.error('bingo pause/resume', e));
 }
 function endBingoGame() {
   const me = _bingoMe();
@@ -5896,6 +5915,7 @@ function _bingoPaneHtml() {
       </div>
       <div style="display:flex;gap:6px">
         ${currentView!=='bingo' ? `<button class="bingo-full-btn" onclick="go('bingo')">⛶ Pantalla completa</button>` : ''}
+        ${(isHost||isAdmin()) && status==='playing' ? `<button class="bingo-pause-btn" onclick="pauseBingoGame()">${bingoGame.paused?'▶ Reanudar':'⏸ Pausar'}</button>` : ''}
         ${(isHost||isAdmin()) ? `<button class="bingo-end-btn" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
       </div>
     </div>`;
@@ -5904,6 +5924,7 @@ function _bingoPaneHtml() {
     : `<div style="font-size:11px;color:rgba(255,255,255,0.35);margin:6px 0 10px">Aún no se unió nadie</div>`;
 
   let body = titleHtml + hostLine + playersRowHtml;
+  if (bingoGame.paused) body += `<div class="bingo-paused-banner">⏸ Partida en pausa · El host la reanudará en breve</div>`;
 
   if (status==='lobby') {
     if (isHost) {
@@ -10562,418 +10583,4 @@ function closeHorPop() {
 }
 
 function positionHorPop(pop, anchorEl) {
-  const r = anchorEl.getBoundingClientRect();
-  const margin = 8;
-  const pw = pop.offsetWidth, ph = pop.offsetHeight;
-  let left = r.left;
-  let top  = r.bottom + margin;
-  if (left + pw > window.innerWidth - margin) left = window.innerWidth - pw - margin;
-  if (left < margin) left = margin;
-  if (top + ph > window.innerHeight - margin) top = r.top - ph - margin; // sin espacio abajo: se abre hacia arriba
-  if (top < margin) top = margin;
-  pop.style.left = left + 'px';
-  pop.style.top  = top + 'px';
-}
-
-// Activa/desactiva el modo edición del enlace (botón "Editar" arriba a la derecha, en la
-// misma línea que el nombre del alumno). Vuelve a pintar el contenido sin cerrar la ventana.
-function toggleHorPopLinkEdit(evt) {
-  // Evita que el clic burbujee hasta el listener "click afuera cierra la ventana": como esta
-  // función reemplaza el innerHTML de _horPopEl en el mismo tick, el botón original quedaría
-  // desconectado del DOM y _horPopEl.contains(e.target) daría falso, cerrando la ventana sola.
-  if (evt) evt.stopPropagation();
-  if (!_horPopState || !_horPopEl) return;
-  _horPopState.linkEditing = !_horPopState.linkEditing;
-  _horPopEl.innerHTML = renderHorPopContent(_horPopState);
-  if (_horPopCard) positionHorPop(_horPopEl, _horPopCard);
-}
-
-function renderHorPopContent(st) {
-  const { sid, name, icon, color, date, start, end, modality, linkEditing } = st;
-  const isDom = (modality||'').toLowerCase().includes('dom');
-  const dt = new Date(date+'T00:00:00');
-  const DAY_NAMES_L = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const dayLbl = DAY_NAMES_L[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1);
-  const hasSid = sid != null && !isNaN(sid);
-  const link = hasSid ? ((overrides[String(sid)]||{}).link || '') : '';
-  // El botón "Editar" solo aparece si el admin ve una clase virtual que YA tiene enlace
-  // guardado (si no tiene enlace, el formulario de guardar ya está visible directamente).
-  const showEditBtn = hasSid && isAdmin() && !isDom && !!link;
-
-  let html = '<div class="hor-pop-head">'
-    +'<div class="hor-pop-icon">'+icon+'</div>'
-    +'<div style="flex:1;min-width:0">'
-    +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">'
-    +'<div class="hor-pop-name">'+name+'</div>'
-    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit(event)">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button>':'')
-    +'</div>'
-    +'<div class="hor-pop-sub">'+dayLbl+' · '+start+'–'+end+'</div>'
-    +'<span class="hor-pop-badge" style="background:'+(isDom?'rgba(239,68,68,0.15)':'rgba(79,182,255,0.15)')+';color:'+(isDom?'#ef4444':'#4fb6ff')+'">'+modality+'</span>'
-    +'</div></div>';
-
-  if (hasSid) {
-    const pts = getStudentPoints(sid);
-    html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Puntos de este mes</div>'
-      +'<div class="hor-pop-pts-row">'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.hours+'</div><div class="hor-pop-pts-l">Horas</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.progress+'</div><div class="hor-pop-pts-l">Avance</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.tasks+'</div><div class="hor-pop-pts-l">Tareas</div></div>'
-      +'</div></div>';
-
-    const podiums = getStudentPodiumHistory(sid, name);
-    if (podiums.length) {
-      html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Podios anteriores</div>'
-        +'<div class="hor-pop-medals">'+podiums.map(function(p){ return '<span class="hor-pop-medal">'+p.medal+' '+p.label+'</span>'; }).join('')+'</div></div>';
-    }
-
-    if (!isDom) {
-      const canSee = isAdmin() || getLoggedId()===sid;
-      if (canSee) {
-        if (isAdmin()) {
-          // Botón "Guardar enlace" solo si todavía no tiene enlace, o si se entró en modo
-          // edición desde el botón "Editar" de arriba — si ya tiene y no se está editando,
-          // se muestra el enlace guardado en su lugar (sin botón de guardar).
-          if (!link || linkEditing) {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
-              +'<button class="hor-pop-link-btn" style="background:'+color+'26;border-color:'+color+'66;color:'+color+'" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
-          } else {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
-          }
-        } else if (link) {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
-        } else {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
-        }
-      }
-    }
-  }
-  return html;
-}
-
-// Busca en pointsHistory (archivado automático) y en HISTORIAL_SEED (meses previos al
-// archivado) si este alumno quedó 1°/2°/3° en algún mes anterior. Empareja por id cuando
-// está disponible; los meses semilla (sin id) emparejan por nombre normalizado.
-function getStudentPodiumHistory(id, name) {
-  const now = new Date();
-  const MESES_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const medals = ['🥇','🥈','🥉'];
-  const results = [];
-  for (let off = -1; off >= -12; off--) {
-    const d = new Date(now); d.setMonth(d.getMonth()+off);
-    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    const podio = pointsHistory[ym] || HISTORIAL_SEED[ym];
-    if (!podio) continue;
-    const idx = podio.findIndex(function(p){
-      return (p.id!=null && p.id===id) || (p.id==null && normName(p.nombre)===normName(name));
-    });
-    if (idx === -1) continue;
-    results.push({ ym, medal: medals[idx], label: MESES_S[d.getMonth()]+' '+d.getFullYear() });
-  }
-  return results;
-}
-
-// Guarda/actualiza el enlace de videollamada de un alumno (uno por alumno, compartido
-// entre todas sus clases virtuales). Mismo patrón de lectura+merge que perfilSaveProfile().
-async function saveHorPopLink(sid) {
-  const inp = document.getElementById('hor-pop-link-inp');
-  if (!inp) return;
-  const val = normalizeLinkUrl(inp.value);
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov = data.overrides || {};
-  const key = String(sid);
-  ov[key] = ov[key] || {};
-  ov[key].link = val;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  showToast('Enlace guardado ✓');
-  if (_horPopState && _horPopState.sid === sid && _horPopEl) {
-    _horPopState.linkEditing = false;
-    _horPopEl.innerHTML = renderHorPopContent(_horPopState);
-    positionHorPop(_horPopEl, _horPopCard);
-  }
-}
-
-function changeHorWeek(delta) {
-  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW < 640) {
-    horDayOffset += delta;
-    // when going beyond week boundaries, shift the week
-    if (horDayOffset > 5) { horWeekOffset += 1; horDayOffset -= 7; }
-    if (horDayOffset < 0) { horWeekOffset -= 1; horDayOffset += 7; }
-  } else {
-    horWeekOffset += delta;
-  }
-  renderHorariosCalendar();
-}
-function horGoToday() {
-  horWeekOffset = 0;
-  horDayOffset = 0;
-  const appW2 = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW2 < 640) {
-    const dow = new Date().getDay();
-    horDayOffset = (dow === 0 ? 6 : dow - 1); // Mon=0 … Sun=6
-  }
-  renderHorariosCalendar();
-}
-
-function togglePtsEditor(studentId) {
-  expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
-  ptsMonthOffset = 0;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-function changePtsMonth(delta) {
-  ptsMonthOffset += delta;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-let _ptsTimer=null;
-// Cola de ediciones de Puntos todavía no guardadas (se vacía al disparar _flushPointsLog).
-// Como togglePointMark/toggleAbsent comparten un mismo timer debounced (para no mandar un
-// guardado por cada clic), varias ediciones pueden acumularse antes de guardar. Por eso el
-// guardado real no escribe directo la copia local de "pointsLog": vuelve a leer el dato fresco
-// del servidor (saveLmsFieldTx) y "reproduce" aquí, en orden, cada edición pendiente sobre ESE
-// dato fresco — así una edición hecha desde otro dispositivo mientras esta pestaña estaba
-// desactualizada no se pierde ni se pisa.
-let _ptsPendingEdits = [];
-function _applyPtsEditsToLog(freshLog, edits) {
-  const log = JSON.parse(JSON.stringify(freshLog || {}));
-  for (const edit of edits) {
-    const key = String(edit.studentId);
-    if (!log[key]) log[key]={};
-    if (!log[key][edit.dateKey]) log[key][edit.dateKey]={hours:[],progress:[],tasks:[]};
-    const entry = log[key][edit.dateKey];
-    if (edit.type === 'mark') {
-      if (!Array.isArray(entry[edit.field])) entry[edit.field]=[];
-      while (entry[edit.field].length < edit.count) entry[edit.field].push(false);
-      entry[edit.field][edit.idx]=!!edit.checked;
-    } else { // 'absent'
-      entry.absent = !!edit.checked;
-      if (edit.checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-    }
-  }
-  return log;
-}
-function _flushPointsLog() {
-  const edits = _ptsPendingEdits.splice(0); // toma todas las ediciones pendientes y vacía la cola
-  if (!edits.length) return;
-  savePointsLog(fresh => _applyPtsEditsToLog(fresh, edits));
-}
-// idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
-function togglePointMark(studentId, dateKey, field, idx, count, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  if (!Array.isArray(entry[field])) entry[field]=[];
-  while (entry[field].length < count) entry[field].push(false);
-  entry[field][idx]=!!checked;
-  _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
-  // Refresca el total mostrado en la cabecera de la fila sin re-render completo
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast('Puntos guardados.','success'); },800);
-}
-
-// Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
-// Horas/Progreso/Tareas de ese día y se excluye del cálculo de puntos (no suma ni resta).
-function toggleAbsent(studentId, dateKey, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  entry.absent = !!checked;
-  if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-  _ptsPendingEdits.push({type:'absent', studentId, dateKey, checked});
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  const cont=document.getElementById(`pts-dates-${studentId}`);
-  const st=getStudents().find(x=>String(x.id)===key);
-  if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
-}
-
-// ════════════════════════════════════════════════════════
-// FIREBASE LISTENER + BOOT
-// ════════════════════════════════════════════════════════
-// Mantiene la clave del admin sincronizada con /padres (mismo documento compartido).
-AUTH_REF.onSnapshot(doc => {
-  const a = doc.exists ? doc.data() : {};
-  ADMIN.pin = a.adminPin || "80808";
-}, err => console.error('[Firebase auth]', err));
-
-// Normaliza nombres para emparejar alumnos entre /student y /padres (minúsculas, sin tildes, sin espacios extra).
-function normName(s) {
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-}
-PADRES_REF.onSnapshot(doc => {
-  const d = doc.exists ? doc.data() : {};
-  const pStudents = d.students || {};
-  const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
-  const map = {}, slotMap = {}, sessMap = {};
-  Object.entries(pStudents).forEach(([sid, st]) => {
-    const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
-    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
-    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
-    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
-    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
-    // recurring/date/skipDates fecha por fecha.
-    const hoursByDay = {}, slotsByDay = {};
-    mySessions.forEach(s => {
-      const h = Math.max(1, Math.round((s.dur||60)/60));
-      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
-      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
-      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
-    });
-    // ordenar los slots de cada día cronológicamente por hora de inicio
-    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
-    const key = normName(st.name);
-    map[key] = hoursByDay;
-    slotMap[key] = slotsByDay;
-    sessMap[key] = mySessions;
-  });
-  classDaysByName  = map;
-  classSlotsByName = slotMap;
-  classSessByName  = sessMap;
-  if (currentView === 'puntos') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-  }
-  if (currentView === 'horarios') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
-    renderHorariosSidebar();
-  }
-  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
-  // nombres vinculados (un padre puede registrarse o editar un nombre en
-  // cualquier momento mientras el admin tiene el panel abierto).
-  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
-    syncPadresLinks();
-    cacheLiveNames();
-    renderStudentList();
-    renderPadresRequests();
-  }
-}, err => console.error('[Firebase padres]', err));
-
-REF.onSnapshot(doc => {
-  const data = doc.exists ? doc.data() : {};
-  allocations = data.allocations || {};
-  overrides   = data.overrides   || {};
-  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
-  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
-  const lms   = data.lms || {};
-  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
-  points      = typeof lms.points==='object' ? lms.points : {};
-  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
-  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
-  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
-  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
-  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
-  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
-  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
-  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
-  // sobrescriben datos reales con el estado vacío por defecto.
-  if (doc.exists) {
-    lmsDataLoaded = true;
-    archiveMonthIfNeeded();
-    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
-    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
-    (function seedJoannaMult(){
-      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
-      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
-        taskMultipliers[String(joanna.id)] = 3;
-        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
-      }
-    })();
-  } else {
-    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
-  }
-
-  if (!appReady) {
-    appReady = true;
-    document.getElementById('initial-loading').classList.add('hidden');
-    router();
-  } else {
-    // Live-update tablero if it's open
-    const hash = currentView;
-    if (hash === 'tablero') {
-      const loggedId = getLoggedId();
-      if (loggedId !== null) renderAll(loggedId);
-    }
-    if (hash === 'ranking')   vRankingSetup();
-    if (hash === 'numeros')   vNumerosSetup();
-    if (hash === 'dashboard') {
-      const app=document.getElementById('app');
-      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
-    }
-    if (hash === 'puntos') {
-      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
-      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
-      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
-      if (Date.now() - _lastPtsLocalEdit > 2500) {
-        const app=document.getElementById('app');
-        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-      }
-    }
-    if (hash === 'horarios') renderHorariosSidebar();
-    if (hash === 'tareas' && taskFilter !== 'msgs') {
-      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
-      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
-      const app=document.getElementById('app');
-      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
-    }
-  }
-}, err => {
-  console.error('[Firebase]', err);
-  document.getElementById('initial-loading').classList.add('hidden');
-  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
-  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
-  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
-  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+  const r = anchorEl.getBoundingClien
