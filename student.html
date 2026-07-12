@@ -615,9 +615,10 @@ textarea.fsm { resize:none; height:64px; }
 .bingo-cell.tip-hl{outline:2px solid #f59e0b;outline-offset:-2px;animation:btt-hl-pulse 1.2s ease-in-out infinite}
 @keyframes btt-hl-pulse{0%,100%{outline-color:#f59e0b;box-shadow:inset 0 0 8px rgba(245,158,11,0.3)}50%{outline-color:#fcd34d;box-shadow:inset 0 0 14px rgba(252,211,77,0.5)}}
 .reto-warn-stat{background:rgba(234,179,8,0.1)!important;border-radius:8px;padding:4px 6px!important;border:1px solid rgba(234,179,8,0.35);animation:btt-hl-pulse 1.5s ease-in-out infinite}
-.bdh-reto-warn{font-size:9.5px;color:#fde68a;font-weight:700;letter-spacing:.02em;margin-top:3px;line-height:1.3;white-space:normal;max-width:80px}
-.bingo-hl-callout{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:9px 14px;margin:6px 0 2px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#fde68a;text-align:center;letter-spacing:.03em;line-height:1.45}
-.bingo-hl-callout strong{color:#fbbf24}
+.bingo-reto-warn-popup{position:fixed;top:110px;right:12px;z-index:9996;max-width:195px;background:rgba(20,16,2,0.97);border:1.5px solid rgba(234,179,8,0.5);border-radius:14px;padding:10px 13px;font-family:'Barlow Condensed',sans-serif;font-size:12px;line-height:1.5;color:#fde68a;box-shadow:0 0 22px -4px rgba(234,179,8,0.35),0 6px 20px rgba(0,0,0,0.8);pointer-events:none;opacity:0;transition:opacity .3s,transform .3s;transform:translateX(8px)}
+.bingo-reto-warn-popup.brwp-in{opacity:1;transform:translateX(0)}
+.bingo-hl-callout-popup{position:fixed;bottom:148px;left:12px;z-index:9996;max-width:185px;background:rgba(2,18,6,0.97);border:1.5px solid rgba(245,158,11,0.45);border-radius:14px;padding:10px 13px;font-family:'Barlow Condensed',sans-serif;font-size:12px;line-height:1.5;color:#fde68a;box-shadow:0 0 22px -4px rgba(245,158,11,0.3),0 6px 20px rgba(0,0,0,0.8);pointer-events:none;opacity:0;transition:opacity .3s,transform .3s;transform:translateX(-8px)}
+.bingo-hl-callout-popup.bhlp-in{opacity:1;transform:translateX(0)}
 .bingo-pwr-tip{position:fixed;bottom:130px;left:50%;transform:translateX(-50%) translateY(8px);z-index:9997;background:#1a1a2e;border:1px solid rgba(168,85,247,0.4);border-radius:12px;padding:9px 13px;font-family:'Barlow Condensed',sans-serif;font-size:11.5px;color:rgba(255,255,255,0.7);max-width:280px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.6);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;line-height:1.45}
 .bingo-pwr-tip.bpt-in{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ── GAME CATALOG ─────────────────────────────────────────────────────────────────────────────── */
@@ -1179,6 +1180,7 @@ let _btPrevChallenge   = false; // challengeActive en el tick anterior
 let _bingoTipHlNums    = new Set(); // números a sombrear en el cartón (tutorial)
 let _bingoTipHlNeeded  = 0;         // cuántas casillas faltan para el siguiente tier
 let _bingoTipHlTierLabel = '';      // nombre del tier (TERNA, CUATERNA…)
+let _bingoTipHlHave    = 0;         // casillas ya marcadas en la mejor línea
 let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
@@ -2985,7 +2987,9 @@ function _bingoEnableTips(val) {
       if (activeTier) setTimeout(()=>_bingoComputeTipHl(activeTier), 1500);
     }
   } else {
-    _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlTierLabel = '';
+    _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlHave = 0; _bingoTipHlTierLabel = '';
+    const _rwE = document.getElementById('bingo-reto-warn-popup'); if (_rwE) _rwE.remove();
+    const _hcE = document.getElementById('bingo-hl-callout-popup'); if (_hcE) _hcE.remove();
     _renderBingoPane();
   }
 }
@@ -2998,8 +3002,10 @@ function toggleBingoTips() {
     if (el) { el.classList.remove('btt-in'); setTimeout(()=>el.remove(), 300); }
     _bingoTipQueue = [];
     if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
-    _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlTierLabel = '';
+    _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlHave = 0; _bingoTipHlTierLabel = '';
     const pt = document.getElementById('bingo-pwr-tip'); if (pt) pt.remove();
+    const rwT = document.getElementById('bingo-reto-warn-popup'); if (rwT) rwT.remove();
+    const hcT = document.getElementById('bingo-hl-callout-popup'); if (hcT) hcT.remove();
   }
   _renderBingoPane();
 }
@@ -3044,38 +3050,49 @@ function _bingoCloseTip() {
   setTimeout(()=>{ el.remove(); _bingoTipQueue.shift(); if (_bingoTipQueue.length) setTimeout(_bingoShowNextTip, 400); }, 300);
 }
 
+function _bingoUpdateRetoWarn() {
+  const dl = bingoGame ? Math.max(0,(bingoGame.nextChallengeAtDraw||0)-(bingoGame.drawnNumbers||[]).length) : 0;
+  const show = _bingoTipsEnabled && bingoGame && bingoGame.status==='playing' && dl>0 && dl<=3;
+  let el = document.getElementById('bingo-reto-warn-popup');
+  if (!show) {
+    if (el) { el.classList.remove('brwp-in'); setTimeout(()=>{const t=document.getElementById('bingo-reto-warn-popup');if(t)t.remove();},300); }
+    return;
+  }
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'bingo-reto-warn-popup';
+    el.className = 'bingo-reto-warn-popup';
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{ const t=document.getElementById('bingo-reto-warn-popup'); if(t) t.classList.add('brwp-in'); });
+  }
+  el.innerHTML = dl===1
+    ? '🧮 <strong>¡El Reto es ahora!</strong><br>Responde rápido para ganar números extra.'
+    : `🧮 <strong>¡Reto en ${dl} números!</strong><br>Responde rápido y gana números extra para tu cartón.`;
+}
+
+function _bingoUpdateHlCallout() {
+  const show = _bingoTipsEnabled && _bingoTipHlHave>=2 && _bingoTipHlNeeded>0 && bingoGame && bingoGame.status==='playing';
+  let el = document.getElementById('bingo-hl-callout-popup');
+  if (!show) {
+    if (el) { el.classList.remove('bhlp-in'); setTimeout(()=>{const t=document.getElementById('bingo-hl-callout-popup');if(t)t.remove();},300); }
+    return;
+  }
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'bingo-hl-callout-popup';
+    el.className = 'bingo-hl-callout-popup';
+    document.body.appendChild(el);
+    requestAnimationFrame(()=>{ const t=document.getElementById('bingo-hl-callout-popup'); if(t) t.classList.add('bhlp-in'); });
+  }
+  const n = _bingoTipHlNeeded;
+  el.innerHTML = n===1
+    ? `🔥 <strong>¡Solo falta 1!</strong><br>Marca esa casilla amarilla y canta <strong>${_bingoTipHlTierLabel}</strong> 🏆`
+    : `🎯 <strong>¡Vas muy bien!</strong><br>Te faltan <strong>${n} casillas</strong> para cantar <strong>${_bingoTipHlTierLabel}</strong>.<br>Están marcadas en amarillo.`;
+}
+
 function _bingoComputeTipHl(nextTier) {
-  _bingoTipHlNums = new Set();
-  if (!_bingoTipsEnabled || !bingoGame) { _renderBingoPane(); return; }
-  try {
-    const me = _bingoMe();
-    const myP = (bingoGame.players||{})[me.uid];
-    if (!myP) { _renderBingoPane(); return; }
-    const req = {terna:3,cuaterna:4,quina:5,bingo:25}[nextTier]||3;
-    let bestScore = -1, bestNums = [];
-    Object.entries(myP.cards||{}).forEach(([ci, card]) => {
-      const cardIdx = Number(ci);
-      const marksSet = new Set((myP.marks||[]).filter(m=>m.c===cardIdx).map(m=>m.n));
-      const blockedSet = new Set((myP.blockedMarks||[]).filter(b=>b.c===cardIdx).map(b=>b.n));
-      const isOn = n => n===0 || (marksSet.has(n) && !blockedSet.has(n));
-      const lines = [];
-      for (let r=0;r<5;r++) {
-        lines.push([0,1,2,3,4].map(c=>_bcAt(card,r,c)));
-        lines.push([0,1,2,3,4].map(rr=>_bcAt(card,rr,r)));
-      }
-      lines.push([0,1,2,3,4].map(k=>_bcAt(card,k,k)));
-      lines.push([0,1,2,3,4].map(k=>_bcAt(card,k,4-k)));
-      lines.forEach(line => {
-        const markedCount = line.filter(isOn).length;
-        const needed = line.filter(n=>n!==0&&!isOn(n));
-        if (nextTier==='bingo') { needed.forEach(n=>bestNums.push(n)); bestScore=1; }
-        else if (markedCount>bestScore && markedCount<req) { bestScore=markedCount; bestNums=needed; }
-      });
-    });
-    _bingoTipHlNums = new Set(bestNums);
-    _bingoTipHlNeeded = bestNums.length;
-    _bingoTipHlTierLabel = {terna:'TERNA',cuaterna:'CUATERNA',quina:'LÍNEA',bingo:'BINGO'}[nextTier]||nextTier;
-  } catch(e) { console.error('tipHl',e); }
+  // El cómputo ahora ocurre inline en _bingoPaneHtml en cada render.
+  // Solo disparamos un re-render para que los popups flotantes se actualicen.
   _renderBingoPane();
 }
 
@@ -3409,9 +3426,11 @@ function _bingoResetLocalState() {
   _bingoTipsShown = new Set(); _bingoTipQueue = []; _btFirstMarkDone = false;
   _btPrevDrawn = 0; _btPrevBlocked = false; _btPrevPowers = 0; _btPrevChallenge = false;
   if (_bingoTipTimer) { clearTimeout(_bingoTipTimer); _bingoTipTimer = null; }
-  _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlTierLabel = '';
+  _bingoTipHlNums = new Set(); _bingoTipHlNeeded = 0; _bingoTipHlHave = 0; _bingoTipHlTierLabel = '';
   const _te = document.getElementById('bingo-tip-toast'); if (_te) _te.remove();
   const _pt = document.getElementById('bingo-pwr-tip'); if (_pt) _pt.remove();
+  const _rw = document.getElementById('bingo-reto-warn-popup'); if (_rw) _rw.remove();
+  const _hc = document.getElementById('bingo-hl-callout-popup'); if (_hc) _hc.remove();
   _bingoCloseModal();
 }
 
@@ -5711,6 +5730,9 @@ function _renderBingoPane() {
     console.error('bingo render', e);
     showToast('Error mostrando el Bingo (' + (e.message||'error') + ').', 'error');
   }
+  // Actualizar popups flotantes de tips (viven fuera del innerHTML cycle)
+  _bingoUpdateRetoWarn();
+  _bingoUpdateHlCallout();
 }
 function _bingoPaneHtml() {
   // Barra de título "Neon Bingo" — visible en todos los estados (idle/lobby/playing/ended),
@@ -6044,6 +6066,33 @@ function _bingoPaneHtml() {
     // ── Tier activo (primer premio aún no ganado globalmente) ───────────────────
     const activeTier = BINGO_TIER_ORDER.find(k => !(bingoGame.tierWinners||{})[k]);
 
+    // ── Highlight de celdas: recalculado en cada render si tips activos ──────────
+    if (_bingoTipsEnabled && status==='playing' && myPlayer && activeTier) {
+      try {
+        const _req2={terna:3,cuaterna:4,quina:5,bingo:25}[activeTier]||3;
+        const _lbl2={terna:'TERNA',cuaterna:'CUATERNA',quina:'LÍNEA',bingo:'BINGO'}[activeTier]||activeTier;
+        let _bs2=-1,_bn2=[],_bh2=0;
+        Object.entries(myPlayer.cards||{}).forEach(([ci,card])=>{
+          const _ci2=Number(ci);
+          const _ms2=new Set((myPlayer.marks||[]).filter(m=>m.c===_ci2).map(m=>m.n));
+          const _bk2=new Set((myPlayer.blockedMarks||[]).filter(b=>b.c===_ci2).map(b=>b.n));
+          const _on2=n=>n===0||(_ms2.has(n)&&!_bk2.has(n));
+          const _ll2=[];
+          for(let r=0;r<5;r++){_ll2.push([0,1,2,3,4].map(c=>_bcAt(card,r,c)));_ll2.push([0,1,2,3,4].map(rr=>_bcAt(card,rr,r)));}
+          _ll2.push([0,1,2,3,4].map(k=>_bcAt(card,k,k)));
+          _ll2.push([0,1,2,3,4].map(k=>_bcAt(card,k,4-k)));
+          _ll2.forEach(line=>{
+            const mc=line.filter(_on2).length,nd=line.filter(n=>n!==0&&!_on2(n));
+            if(activeTier==='bingo'){nd.forEach(n=>_bn2.push(n));if(mc>_bh2){_bs2=1;_bh2=mc;}}
+            else if(mc>_bs2&&mc<_req2){_bs2=mc;_bn2=nd;_bh2=mc;}
+          });
+        });
+        _bingoTipHlNums=new Set(_bn2);_bingoTipHlNeeded=_bn2.length;_bingoTipHlHave=_bh2;_bingoTipHlTierLabel=_lbl2;
+      } catch(e){}
+    } else if (!_bingoTipsEnabled || !activeTier) {
+      _bingoTipHlNums=new Set();_bingoTipHlNeeded=0;_bingoTipHlHave=0;_bingoTipHlTierLabel='';
+    }
+
     // ── chipStateFor: color del chip en el historial ─────────────────────────
     let chipStateFor = () => '';
     if (myPlayer) {
@@ -6078,7 +6127,7 @@ function _bingoPaneHtml() {
       <div class="bdh-side">
         <div class="bdh-stats">
           <div class="bdh-stat"><div class="bdh-stat-lbl">Extraídos</div><div class="bdh-stat-val cyan">${drawn.length}/75</div></div>
-          <div class="bdh-stat${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?' reto-warn-stat':''}"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div>${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?`<div class="bdh-reto-warn">🧮 ¡${drawsLeft===1?'¡Es el último!':'¡Ya viene!'} Responde rápido y gana números extra</div>`:''}</div>
+          <div class="bdh-stat${drawsLeft<=3&&drawsLeft>0&&_bingoTipsEnabled?' reto-warn-stat':''}"><div class="bdh-stat-lbl">Reto en</div><div class="bdh-stat-val yellow">${drawsLeft} sorteo${drawsLeft===1?'':'s'}</div></div>
         </div>
         <div class="bdh-bar"><div class="bdh-bar-fill grad" style="width:${challengePct}%"></div></div>
         <div class="bdh-bar" style="${phaseOn?'':'opacity:.3'}"><div class="bdh-bar-fill ${phaseColorClass}" style="width:${phaseOn?phasePct:0}%"></div></div>
@@ -6256,11 +6305,6 @@ function _bingoPaneHtml() {
           body += `</div>`;
         });
         body += `</div>`;
-        // Callout de pista: aparece justo debajo de los cartones si tips activos y hay casillas resaltadas
-        if (_bingoTipsEnabled && _bingoTipHlNums.size > 0 && _bingoTipHlNeeded > 0) {
-          const _n = _bingoTipHlNeeded;
-          body += `<div class="bingo-hl-callout">🎯 ¡Te falt${_n===1?'a':'an'} <strong>${_n} casilla${_n===1?'':'s'}</strong> para cantar <strong>${_bingoTipHlTierLabel}</strong>! Búscalas en amarillo en tu cartón.</div>`;
-        }
       }
 
       // (bloqueo de reto es ahora automático — no hay banner de selección manual)
@@ -10539,375 +10583,4 @@ function renderHorPopContent(st) {
     +'<div style="flex:1;min-width:0">'
     +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">'
     +'<div class="hor-pop-name">'+name+'</div>'
-    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit(event)">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button>':'')
-    +'</div>'
-    +'<div class="hor-pop-sub">'+dayLbl+' · '+start+'–'+end+'</div>'
-    +'<span class="hor-pop-badge" style="background:'+(isDom?'rgba(239,68,68,0.15)':'rgba(79,182,255,0.15)')+';color:'+(isDom?'#ef4444':'#4fb6ff')+'">'+modality+'</span>'
-    +'</div></div>';
-
-  if (hasSid) {
-    const pts = getStudentPoints(sid);
-    html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Puntos de este mes</div>'
-      +'<div class="hor-pop-pts-row">'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.hours+'</div><div class="hor-pop-pts-l">Horas</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.progress+'</div><div class="hor-pop-pts-l">Avance</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.tasks+'</div><div class="hor-pop-pts-l">Tareas</div></div>'
-      +'</div></div>';
-
-    const podiums = getStudentPodiumHistory(sid, name);
-    if (podiums.length) {
-      html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Podios anteriores</div>'
-        +'<div class="hor-pop-medals">'+podiums.map(function(p){ return '<span class="hor-pop-medal">'+p.medal+' '+p.label+'</span>'; }).join('')+'</div></div>';
-    }
-
-    if (!isDom) {
-      const canSee = isAdmin() || getLoggedId()===sid;
-      if (canSee) {
-        if (isAdmin()) {
-          // Botón "Guardar enlace" solo si todavía no tiene enlace, o si se entró en modo
-          // edición desde el botón "Editar" de arriba — si ya tiene y no se está editando,
-          // se muestra el enlace guardado en su lugar (sin botón de guardar).
-          if (!link || linkEditing) {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
-              +'<button class="hor-pop-link-btn" style="background:'+color+'26;border-color:'+color+'66;color:'+color+'" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
-          } else {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
-          }
-        } else if (link) {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
-        } else {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
-        }
-      }
-    }
-  }
-  return html;
-}
-
-// Busca en pointsHistory (archivado automático) y en HISTORIAL_SEED (meses previos al
-// archivado) si este alumno quedó 1°/2°/3° en algún mes anterior. Empareja por id cuando
-// está disponible; los meses semilla (sin id) emparejan por nombre normalizado.
-function getStudentPodiumHistory(id, name) {
-  const now = new Date();
-  const MESES_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const medals = ['🥇','🥈','🥉'];
-  const results = [];
-  for (let off = -1; off >= -12; off--) {
-    const d = new Date(now); d.setMonth(d.getMonth()+off);
-    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    const podio = pointsHistory[ym] || HISTORIAL_SEED[ym];
-    if (!podio) continue;
-    const idx = podio.findIndex(function(p){
-      return (p.id!=null && p.id===id) || (p.id==null && normName(p.nombre)===normName(name));
-    });
-    if (idx === -1) continue;
-    results.push({ ym, medal: medals[idx], label: MESES_S[d.getMonth()]+' '+d.getFullYear() });
-  }
-  return results;
-}
-
-// Guarda/actualiza el enlace de videollamada de un alumno (uno por alumno, compartido
-// entre todas sus clases virtuales). Mismo patrón de lectura+merge que perfilSaveProfile().
-async function saveHorPopLink(sid) {
-  const inp = document.getElementById('hor-pop-link-inp');
-  if (!inp) return;
-  const val = normalizeLinkUrl(inp.value);
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov = data.overrides || {};
-  const key = String(sid);
-  ov[key] = ov[key] || {};
-  ov[key].link = val;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  showToast('Enlace guardado ✓');
-  if (_horPopState && _horPopState.sid === sid && _horPopEl) {
-    _horPopState.linkEditing = false;
-    _horPopEl.innerHTML = renderHorPopContent(_horPopState);
-    positionHorPop(_horPopEl, _horPopCard);
-  }
-}
-
-function changeHorWeek(delta) {
-  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW < 640) {
-    horDayOffset += delta;
-    // when going beyond week boundaries, shift the week
-    if (horDayOffset > 5) { horWeekOffset += 1; horDayOffset -= 7; }
-    if (horDayOffset < 0) { horWeekOffset -= 1; horDayOffset += 7; }
-  } else {
-    horWeekOffset += delta;
-  }
-  renderHorariosCalendar();
-}
-function horGoToday() {
-  horWeekOffset = 0;
-  horDayOffset = 0;
-  const appW2 = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW2 < 640) {
-    const dow = new Date().getDay();
-    horDayOffset = (dow === 0 ? 6 : dow - 1); // Mon=0 … Sun=6
-  }
-  renderHorariosCalendar();
-}
-
-function togglePtsEditor(studentId) {
-  expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
-  ptsMonthOffset = 0;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-function changePtsMonth(delta) {
-  ptsMonthOffset += delta;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-let _ptsTimer=null;
-// Cola de ediciones de Puntos todavía no guardadas (se vacía al disparar _flushPointsLog).
-// Como togglePointMark/toggleAbsent comparten un mismo timer debounced (para no mandar un
-// guardado por cada clic), varias ediciones pueden acumularse antes de guardar. Por eso el
-// guardado real no escribe directo la copia local de "pointsLog": vuelve a leer el dato fresco
-// del servidor (saveLmsFieldTx) y "reproduce" aquí, en orden, cada edición pendiente sobre ESE
-// dato fresco — así una edición hecha desde otro dispositivo mientras esta pestaña estaba
-// desactualizada no se pierde ni se pisa.
-let _ptsPendingEdits = [];
-function _applyPtsEditsToLog(freshLog, edits) {
-  const log = JSON.parse(JSON.stringify(freshLog || {}));
-  for (const edit of edits) {
-    const key = String(edit.studentId);
-    if (!log[key]) log[key]={};
-    if (!log[key][edit.dateKey]) log[key][edit.dateKey]={hours:[],progress:[],tasks:[]};
-    const entry = log[key][edit.dateKey];
-    if (edit.type === 'mark') {
-      if (!Array.isArray(entry[edit.field])) entry[edit.field]=[];
-      while (entry[edit.field].length < edit.count) entry[edit.field].push(false);
-      entry[edit.field][edit.idx]=!!edit.checked;
-    } else { // 'absent'
-      entry.absent = !!edit.checked;
-      if (edit.checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-    }
-  }
-  return log;
-}
-function _flushPointsLog() {
-  const edits = _ptsPendingEdits.splice(0); // toma todas las ediciones pendientes y vacía la cola
-  if (!edits.length) return;
-  savePointsLog(fresh => _applyPtsEditsToLog(fresh, edits));
-}
-// idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
-function togglePointMark(studentId, dateKey, field, idx, count, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  if (!Array.isArray(entry[field])) entry[field]=[];
-  while (entry[field].length < count) entry[field].push(false);
-  entry[field][idx]=!!checked;
-  _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
-  // Refresca el total mostrado en la cabecera de la fila sin re-render completo
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast('Puntos guardados.','success'); },800);
-}
-
-// Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
-// Horas/Progreso/Tareas de ese día y se excluye del cálculo de puntos (no suma ni resta).
-function toggleAbsent(studentId, dateKey, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  entry.absent = !!checked;
-  if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-  _ptsPendingEdits.push({type:'absent', studentId, dateKey, checked});
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  const cont=document.getElementById(`pts-dates-${studentId}`);
-  const st=getStudents().find(x=>String(x.id)===key);
-  if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
-}
-
-// ════════════════════════════════════════════════════════
-// FIREBASE LISTENER + BOOT
-// ════════════════════════════════════════════════════════
-// Mantiene la clave del admin sincronizada con /padres (mismo documento compartido).
-AUTH_REF.onSnapshot(doc => {
-  const a = doc.exists ? doc.data() : {};
-  ADMIN.pin = a.adminPin || "80808";
-}, err => console.error('[Firebase auth]', err));
-
-// Normaliza nombres para emparejar alumnos entre /student y /padres (minúsculas, sin tildes, sin espacios extra).
-function normName(s) {
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-}
-PADRES_REF.onSnapshot(doc => {
-  const d = doc.exists ? doc.data() : {};
-  const pStudents = d.students || {};
-  const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
-  const map = {}, slotMap = {}, sessMap = {};
-  Object.entries(pStudents).forEach(([sid, st]) => {
-    const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
-    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
-    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
-    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
-    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
-    // recurring/date/skipDates fecha por fecha.
-    const hoursByDay = {}, slotsByDay = {};
-    mySessions.forEach(s => {
-      const h = Math.max(1, Math.round((s.dur||60)/60));
-      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
-      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
-      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
-    });
-    // ordenar los slots de cada día cronológicamente por hora de inicio
-    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
-    const key = normName(st.name);
-    map[key] = hoursByDay;
-    slotMap[key] = slotsByDay;
-    sessMap[key] = mySessions;
-  });
-  classDaysByName  = map;
-  classSlotsByName = slotMap;
-  classSessByName  = sessMap;
-  if (currentView === 'puntos') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-  }
-  if (currentView === 'horarios') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
-    renderHorariosSidebar();
-  }
-  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
-  // nombres vinculados (un padre puede registrarse o editar un nombre en
-  // cualquier momento mientras el admin tiene el panel abierto).
-  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
-    syncPadresLinks();
-    cacheLiveNames();
-    renderStudentList();
-    renderPadresRequests();
-  }
-}, err => console.error('[Firebase padres]', err));
-
-REF.onSnapshot(doc => {
-  const data = doc.exists ? doc.data() : {};
-  allocations = data.allocations || {};
-  overrides   = data.overrides   || {};
-  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
-  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
-  const lms   = data.lms || {};
-  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
-  points      = typeof lms.points==='object' ? lms.points : {};
-  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
-  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
-  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
-  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
-  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
-  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
-  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
-  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
-  // sobrescriben datos reales con el estado vacío por defecto.
-  if (doc.exists) {
-    lmsDataLoaded = true;
-    archiveMonthIfNeeded();
-    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
-    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
-    (function seedJoannaMult(){
-      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
-      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
-        taskMultipliers[String(joanna.id)] = 3;
-        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
-      }
-    })();
-  } else {
-    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
-  }
-
-  if (!appReady) {
-    appReady = true;
-    document.getElementById('initial-loading').classList.add('hidden');
-    router();
-  } else {
-    // Live-update tablero if it's open
-    const hash = currentView;
-    if (hash === 'tablero') {
-      const loggedId = getLoggedId();
-      if (loggedId !== null) renderAll(loggedId);
-    }
-    if (hash === 'ranking')   vRankingSetup();
-    if (hash === 'numeros')   vNumerosSetup();
-    if (hash === 'dashboard') {
-      const app=document.getElementById('app');
-      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
-    }
-    if (hash === 'puntos') {
-      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
-      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
-      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
-      if (Date.now() - _lastPtsLocalEdit > 2500) {
-        const app=document.getElementById('app');
-        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-      }
-    }
-    if (hash === 'horarios') renderHorariosSidebar();
-    if (hash === 'tareas' && taskFilter !== 'msgs') {
-      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
-      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
-      const app=document.getElementById('app');
-      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
-    }
-  }
-}, err => {
-  console.error('[Firebase]', err);
-  document.getElementById('initial-loading').classList.add('hidden');
-  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
-  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
-  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
-  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit(event)">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button
