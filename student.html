@@ -645,6 +645,17 @@ textarea.fsm { resize:none; height:64px; }
 .gc-prep .game-card-btn:hover{background:rgba(20,184,166,0.38);box-shadow:0 0 14px -4px rgba(20,184,166,0.55)}
 .game-back-btn{display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:rgba(255,255,255,0.35);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;padding:0 0 12px;transition:color .15s}
 .game-back-btn:hover{color:rgba(255,255,255,0.7)}
+/* ── Gaming fullscreen ───────────────────────────── */
+#gfs-btn{position:fixed;top:12px;right:12px;z-index:600;background:rgba(10,10,26,0.88);border:1px solid rgba(99,102,241,0.4);color:rgba(180,180,255,0.75);border-radius:11px;padding:8px 11px;font-size:18px;cursor:pointer;backdrop-filter:blur(10px);line-height:1;display:none;transition:all .2s}
+#gfs-btn.gfs-visible{display:block}
+#gfs-btn:hover{background:rgba(99,102,241,0.18);color:#c7d2fe}
+body.gaming-fs #gfs-btn{border-color:rgba(239,68,68,0.45);color:rgba(252,165,165,0.9);background:rgba(30,8,8,0.92)}
+body.gaming-fs .dash-hero{display:none!important}
+body.gaming-fs .tabs{display:none!important}
+body.gaming-fs #bottom-nav,body.gaming-fs #bottom-nav.visible{display:none!important}
+body.gaming-fs #hist-bar,body.gaming-fs #hist-bar.visible{display:none!important}
+body.gaming-fs .game-back-btn{display:none!important}
+body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#070714;overflow-y:auto;padding:8px 0 0}
 /* ── BINGO (tab GAMING + /student/bingo) — diseño "Neon Bingo" ───────────────────────────────── */
 .bingo-wrap{background:#0a0e1a;border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:14px;font-family:'Barlow Condensed',sans-serif;box-shadow:0 0 30px -10px rgba(124,58,237,0.25)}
 .bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
@@ -1130,6 +1141,9 @@ textarea.fsm { resize:none; height:64px; }
 
 <!-- APP -->
 <div id="app"></div>
+
+<!-- GAMING FULLSCREEN BTN (visible solo cuando hay juego activo) -->
+<button id="gfs-btn" onclick="toggleGamingFS()" title="Pantalla completa">⤢</button>
 
 <!-- BOTTOM NAV -->
 <div id="bottom-nav">
@@ -1691,9 +1705,8 @@ function showToast(msg, type='error') {
 }
 
 function _showSorteoNotice() {
-  if (sessionStorage.getItem('sorteoNoticeShown')) return;
   if (isAdmin()) return;
-  sessionStorage.setItem('sorteoNoticeShown', '1');
+  if (new Date() >= new Date('2026-07-19T00:00:00')) return; // expiró el domingo 19
   const overlay = document.createElement('div');
   overlay.id = 'sorteo-notice-overlay';
   overlay.innerHTML = `
@@ -5485,6 +5498,23 @@ function doBingoRobo() {
 
 // -- render --
 // ── PREPÁRATE — modo examen de práctica ──────────────────────────────────────────────────────────
+let _gamingFS = false;
+function toggleGamingFS() {
+  _gamingFS = !_gamingFS;
+  document.body.classList.toggle('gaming-fs', _gamingFS);
+  const btn = document.getElementById('gfs-btn');
+  if (btn) btn.textContent = _gamingFS ? '✕' : '⤢';
+}
+function _syncGFSBtn(gameActive) {
+  const btn = document.getElementById('gfs-btn');
+  if (!btn) return;
+  btn.classList.toggle('gfs-visible', gameActive);
+  if (!gameActive && _gamingFS) {
+    _gamingFS = false;
+    document.body.classList.remove('gaming-fs');
+    btn.textContent = '⤢';
+  }
+}
 function setGamingMode(mode) {
   dashGamingMode = mode;
   const catalogView = document.getElementById('game-catalog-view');
@@ -5500,6 +5530,7 @@ function setGamingMode(mode) {
     _renderPreparatePane();
     if (!isAdmin() && _prepHistoryData === null && !_prepHistoryLoading) loadPrepHistory();
   }
+  _syncGFSBtn(!isCatalog);
 }
 function _renderPreparatePane() {
   const el = document.getElementById('preparate-pane');
@@ -11466,35 +11497,4 @@ REF.onSnapshot(doc => {
   // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
   appReady = true;
   router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga
