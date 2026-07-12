@@ -713,6 +713,24 @@ textarea.fsm { resize:none; height:64px; }
 .bsp-role-btn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;border-radius:8px;padding:4px 10px;border:1px solid;cursor:pointer}
 .bsp-role-btn.to-player{background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.35);color:#86efac}
 .bsp-role-btn.to-spectator{background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.35);color:#a5b4fc}
+/* --- Lobby dos pasos --- */
+.blo-open-btn{width:100%;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:16px;padding:18px;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:12px;box-shadow:0 0 28px -8px #22d3ee}
+.blo-open-btn:hover{background:rgba(34,211,238,0.2)}
+.blo-back-link{display:inline-flex;align-items:center;gap:5px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:rgba(255,255,255,0.35);cursor:pointer;padding:2px 0 10px;border:none;background:none}
+.blo-back-link:hover{color:rgba(255,255,255,0.6)}
+.blo-config-summary{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.04em;text-transform:uppercase;display:flex;flex-wrap:wrap;gap:6px 16px}
+.blo-cfg-chip{display:inline-flex;align-items:center;gap:4px;color:rgba(255,255,255,0.55)}
+.blo-cfg-chip b{color:rgba(255,255,255,0.85);font-weight:700}
+.blo-waiting-count{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px}
+.blo-waiting-count b{color:#fff}
+.blo-players-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.blo-player-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:14px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.blo-player-card.blo-me{border-color:rgba(34,211,238,0.4);background:rgba(34,211,238,0.06)}
+.blo-player-card.blo-spectator-card{border-color:rgba(99,102,241,0.35);background:rgba(99,102,241,0.06)}
+.blo-player-ico{font-size:30px;line-height:1}
+.blo-player-name{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#fff;word-break:break-word;line-height:1.2}
+.blo-host-badge{font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:#fbbf24;font-weight:700}
+.blo-bot-badge{font-size:9px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.3);font-weight:700}
 .bingo-join-btn{width:100%;background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:16px;padding:22px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-top:8px;box-shadow:0 0 28px -6px #22d3ee}
 .bingo-full-btn{font-size:10px;color:rgba(255,255,255,0.55);font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 11px;cursor:pointer;flex-shrink:0}
 /* Lobby redesign cards */
@@ -1218,6 +1236,7 @@ let _bingoTipHlCardIdx = -1;        // índice del cartón con la mejor fila
 let _bingoHlCalloutKey   = '';      // clave de estado del último callout mostrado
 let _bingoHlCalloutTimer = null;    // timer para auto-ocultar el callout (10s)
 let _bingoIsSpectator = false;      // modo comentarista: panel resumen en vez de propios cartones
+let _bingoLobbyStep = 'config';    // 'config' | 'waiting' — paso del lobby para el host
 let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
@@ -3472,6 +3491,7 @@ function _bingoResetLocalState() {
   _desafioAcceptedAck = false;
   _bingoDuelCountdownEnd = 0; _bingoDuelCountdownName = '';
   _bingoIsSpectator = false; // reset al salir/nueva partida
+  _bingoLobbyStep = 'config'; // siempre empieza en paso config
   // Reset tips tracking state for new game
   _bingoTipsEnabled = true; // siempre ON al inicio de cada partida
   _bingoTipsShown = new Set(); _bingoTipQueue = []; _btFirstMarkDone = false;
@@ -6070,84 +6090,158 @@ function _bingoPaneHtml() {
     ? `<div class="bingo-players-row">${playersArr.map(p=>`<span class="bingo-player-chip${p.isBot?' bpc-bot':''}"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span><span class="bpc-info"><span class="bpc-name">${p.name}</span>${p.playerStatus?`<span class="bpc-status">${p.playerStatus}</span>`:''}</span></span>`).join('')}</div>`
     : `<div style="font-size:11px;color:rgba(255,255,255,0.35);margin:6px 0 10px">Aún no se unió nadie</div>`;
 
-  let body = titleHtml + hostLine + playersRowHtml;
+  let body = titleHtml + hostLine + (isHost && status==='lobby' && _bingoLobbyStep==='waiting' ? '' : playersRowHtml);
   if (bingoGame.paused) body += `<div class="bingo-paused-banner">⏸ Partida en pausa · El host la reanudará en breve</div>`;
 
   if (status==='lobby') {
     if (isHost) {
-      const _curSpd = bingoGame.gameSpeed || 'media';
-      const _topics = bingoGame.topics || [];
-      const _cards = bingoGame.cardCount || 1;
-      const _bots = bingoGame.botCount || 0;
-      const _dm = bingoGame.directMode !== false;
-      body += `
-      <div class="blc-speed">
-        <button class="blc-spd-btn ${_curSpd==='media'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'media',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['media']})">⏱ Media</button>
-        <button class="blc-spd-btn ${_curSpd==='rapida'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'rapida',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['rapida']})">⚡ Rápida</button>
-      </div>
-      <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 4px">TEMAS DEL RETO <span style="opacity:.6">(selecciona uno o varios — rotan en orden)</span></div>
-      <div class="blc-speed" style="grid-template-columns:1fr 1fr 1fr;margin:4px 0 8px">
-        ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')}
-      </div>
-      ${(()=>{
-        const lv = PREP_LEVELS[_bingoLobbyNivel];
-        if (!lv) return '';
-        // PRE-UNIV.: muestra áreas (álgebra, aritmética, trig, geometría)
-        if (lv.areas) {
-          const areasHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico} ${a.lbl}</button>`).join('')}</div>`;
-          return areasHtml + (_bingoLobbyGrade ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>` : '');
+      if (_bingoLobbyStep === 'config') {
+        // ── Paso 1: Configurar ──────────────────────────────────────────────
+        const _curSpd = bingoGame.gameSpeed || 'media';
+        const _topics = bingoGame.topics || [];
+        const _cards = bingoGame.cardCount || 1;
+        const _bots = bingoGame.botCount || 0;
+        const _dm = bingoGame.directMode !== false;
+        body += `
+        <div class="blc-speed">
+          <button class="blc-spd-btn ${_curSpd==='media'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'media',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['media']})">⏱ Media</button>
+          <button class="blc-spd-btn ${_curSpd==='rapida'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'rapida',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['rapida']})">⚡ Rápida</button>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 4px">TEMAS DEL RETO <span style="opacity:.6">(selecciona uno o varios — rotan en orden)</span></div>
+        <div class="blc-speed" style="grid-template-columns:1fr 1fr 1fr;margin:4px 0 8px">
+          ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')}
+        </div>
+        ${(()=>{
+          const lv = PREP_LEVELS[_bingoLobbyNivel];
+          if (!lv) return '';
+          if (lv.areas) {
+            const areasHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico} ${a.lbl}</button>`).join('')}</div>`;
+            return areasHtml + (_bingoLobbyGrade ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>` : '');
+          }
+          const grades = lv.grades || {};
+          const gKeys = Object.keys(grades).sort((a,b)=>+a-+b);
+          if (!gKeys.length) return `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
+          const cols = Math.min(gKeys.length, 3);
+          const gradeHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>`;
+          if (!_bingoLobbyGrade) return gradeHtml;
+          const _currUnits = (PREP_CURRICULUM[_bingoLobbyNivel]||{})[_bingoLobbyGrade] || [];
+          const tks = _currUnits.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]);
+          const topicsHtml = tks.length
+            ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
+            : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
+          return gradeHtml + topicsHtml;
+        })()}
+        <div class="blc-grid">
+          <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
+            <span class="blc-clabel">Modo directo</span>
+            <span class="blc-cico">${_dm?'⚡':'🧮'}</span>
+            <span class="blc-cval">${_dm?'Sin sumas':'Con sumas'}</span>
+          </div>
+          <div class="blc-card">
+            <span class="blc-clabel">Cartones por jugador</span>
+            <div class="blc-stepper">
+              <button class="blc-sbtn" onclick="setBingoConfig('cardCount',Math.max(1,${_cards}-1))" ${_cards<=1?'disabled':''}>−</button>
+              <span class="blc-snum">${_cards}</span>
+              <button class="blc-sbtn" onclick="setBingoConfig('cardCount',Math.min(4,${_cards}+1))" ${_cards>=4?'disabled':''}>+</button>
+            </div>
+          </div>
+        </div>
+        <div class="blc-card" style="margin-bottom:8px">
+          <span class="blc-clabel">Bots 🤖</span>
+          <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+            <div class="blc-stepper">
+              <button class="blc-sbtn" onclick="setBingoConfig('botCount',Math.max(0,${_bots}-1))" ${_bots<=0?'disabled':''}>−</button>
+              <span class="blc-snum">${_bots}</span>
+              <button class="blc-sbtn" onclick="setBingoConfig('botCount',Math.min(8,${_bots}+1))">+</button>
+            </div>
+            ${_bots>0?`<div><div class="blc-clabel" style="margin-bottom:2px">Nivel</div><div class="blc-botlvl">${['basic','intermediate','advanced'].map(l=>`<button class="blc-botlvl-btn ${(bingoGame.botLevel||'basic')===l?'on':''}" onclick="setBingoConfig('botLevel','${l}')">${{basic:'Básico',intermediate:'Medio',advanced:'Pro'}[l]}</button>`).join('')}</div></div>`:''}
+          </div>
+        </div>
+        <div class="bsp-role-row">${myPlayer?'🎮 Rol: <b>Jugador</b>':'👁 Rol: <b>Espectador</b>'}
+          ${myPlayer
+            ? `<button class="bsp-role-btn to-spectator" onclick="setBingoHostRole('spectator')">→ Espectador 👁</button>`
+            : `<button class="bsp-role-btn to-player" onclick="setBingoHostRole('player')">→ Jugador 🎮</button>`}
+        </div>
+        <button class="blo-open-btn" onclick="_bingoLobbyStep='waiting';_renderBingoPane()">Abrir sala de espera →</button>`;
+
+      } else {
+        // ── Paso 2: Sala de espera ──────────────────────────────────────────
+        const _curSpd = bingoGame.gameSpeed || 'media';
+        const _topics = bingoGame.topics || [];
+        const _cards = bingoGame.cardCount || 1;
+        const _bots = bingoGame.botCount || 0;
+        const _dm = bingoGame.directMode !== false;
+        const spdLbl = _curSpd === 'rapida' ? '⚡ Rápida' : '⏱ Media';
+        const modeLbl = _dm ? '⚡ Sin sumas' : '🧮 Con sumas';
+        const topicLbls = _topics.map(k => (BINGO_TOPICS[k]||{}).lbl || k).join(', ') || '—';
+
+        // Config summary compacta
+        body += `<button class="blo-back-link" onclick="_bingoLobbyStep='config';_renderBingoPane()">← Volver a configuración</button>
+        <div class="blo-config-summary">
+          <span class="blo-cfg-chip">${spdLbl}</span>
+          <span class="blo-cfg-chip">${modeLbl}</span>
+          <span class="blo-cfg-chip"><b>${_cards}</b> cartón${_cards>1?'es':''}/jugador</span>
+          ${_bots>0?`<span class="blo-cfg-chip"><b>${_bots}</b> bot${_bots>1?'s':''}</span>`:''}
+          <span class="blo-cfg-chip" style="color:rgba(255,255,255,0.75);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${topicLbls}</span>
+        </div>`;
+
+        // Grid grande de jugadores
+        const allJoined = Object.entries(bingoGame.players || {});
+        const humanPlayers = allJoined.filter(([,p]) => !p.isBot);
+        const botPlayers   = allJoined.filter(([,p]) => p.isBot);
+        const totalCount   = humanPlayers.length + botPlayers.length + (myPlayer ? 0 : 1); // +1 si host es espectador (no está en players)
+        const spectatorHost = !myPlayer; // host en modo espectador
+
+        body += `<div class="blo-waiting-count">En sala: <b>${humanPlayers.length + (spectatorHost?1:0)}</b> jugador${(humanPlayers.length + (spectatorHost?1:0))!==1?'es':''}${_bots>0?` + <b>${botPlayers.length}</b> bot${botPlayers.length!==1?'s':''}`:''}`;
+        body += `</div><div class="blo-players-grid">`;
+
+        // Host primero
+        const me = _bingoMe();
+        if (spectatorHost) {
+          body += `<div class="blo-player-card blo-spectator-card">
+            <div class="blo-player-ico">${me.icon||'👁'}</div>
+            <div class="blo-player-name">${me.name||'Host'}</div>
+            <div class="blo-host-badge">HOST · ESPECTADOR</div>
+          </div>`;
+        } else if (myPlayer) {
+          body += `<div class="blo-player-card blo-me">
+            <div class="blo-player-ico">${myPlayer.icon||me.icon||'🎮'}</div>
+            <div class="blo-player-name">${myPlayer.name||me.name||'Host'}</div>
+            <div class="blo-host-badge">HOST</div>
+          </div>`;
         }
-        // PRIMARIA / SECUNDARIA: selector de grado → temas del grado
-        const grades = lv.grades || {};
-        const gKeys = Object.keys(grades).sort((a,b)=>+a-+b);
-        if (!gKeys.length) return `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
-        const cols = Math.min(gKeys.length, 3);
-        const gradeHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>`;
-        if (!_bingoLobbyGrade) return gradeHtml;
-        const _currUnits = (PREP_CURRICULUM[_bingoLobbyNivel]||{})[_bingoLobbyGrade] || [];
-        const tks = _currUnits.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]);
-        const topicsHtml = tks.length
-          ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
-          : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
-        return gradeHtml + topicsHtml;
-      })()}
-      <div class="blc-grid">
-        <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
-          <span class="blc-clabel">Modo directo</span>
-          <span class="blc-cico">${_dm?'⚡':'🧮'}</span>
-          <span class="blc-cval">${_dm?'Sin sumas':'Con sumas'}</span>
-        </div>
-        <div class="blc-card">
-          <span class="blc-clabel">Cartones por jugador</span>
-          <div class="blc-stepper">
-            <button class="blc-sbtn" onclick="setBingoConfig('cardCount',Math.max(1,${_cards}-1))" ${_cards<=1?'disabled':''}>−</button>
-            <span class="blc-snum">${_cards}</span>
-            <button class="blc-sbtn" onclick="setBingoConfig('cardCount',Math.min(4,${_cards}+1))" ${_cards>=4?'disabled':''}>+</button>
-          </div>
-        </div>
-      </div>
-      <div class="blc-card" style="margin-bottom:8px">
-        <span class="blc-clabel">Bots 🤖</span>
-        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
-          <div class="blc-stepper">
-            <button class="blc-sbtn" onclick="setBingoConfig('botCount',Math.max(0,${_bots}-1))" ${_bots<=0?'disabled':''}>−</button>
-            <span class="blc-snum">${_bots}</span>
-            <button class="blc-sbtn" onclick="setBingoConfig('botCount',Math.min(8,${_bots}+1))">+</button>
-          </div>
-          ${_bots>0?`<div><div class="blc-clabel" style="margin-bottom:2px">Nivel</div><div class="blc-botlvl">${['basic','intermediate','advanced'].map(l=>`<button class="blc-botlvl-btn ${(bingoGame.botLevel||'basic')===l?'on':''}" onclick="setBingoConfig('botLevel','${l}')">${{basic:'Básico',intermediate:'Medio',advanced:'Pro'}[l]}</button>`).join('')}</div></div>`:``}
-        </div>
-      </div>`;
-    }
-    if (isHost) {
-      body += myPlayer
-        ? `<div class="bsp-role-row">🎮 Rol: <b>Jugador</b> <button class="bsp-role-btn to-spectator" onclick="setBingoHostRole('spectator')">→ Cambiar a Espectador 👁</button></div>
-           <div style="font-size:13px;color:#4ade80;font-weight:700;margin:4px 0 4px">✓ Listo — inicia el sorteo cuando quieras</div>
-           <div class="bingo-status-row" style="margin-top:8px">
-             <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
-             <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(_bingoStatusDraft !== null ? _bingoStatusDraft : (myPlayer.playerStatus||'')).replace(/"/g,'&quot;')}" onblur="_bingoStatusDraft=null;setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
-           </div>`
-        : `<div class="bsp-role-row">👁 Rol: <b>Espectador</b> <button class="bsp-role-btn to-player" onclick="setBingoHostRole('player')">→ Cambiar a Jugador 🎮</button></div>`;
+        // Otros humanos
+        humanPlayers.forEach(([uid, p]) => {
+          if (uid === me.uid) return; // host ya añadido
+          body += `<div class="blo-player-card">
+            <div class="blo-player-ico">${p.icon||'👤'}</div>
+            <div class="blo-player-name">${p.name||uid}</div>
+            ${p.playerStatus?`<div class="blo-bot-badge">${p.playerStatus}</div>`:''}
+          </div>`;
+        });
+        // Bots
+        botPlayers.forEach(([, p]) => {
+          body += `<div class="blo-player-card" style="opacity:.55">
+            <div class="blo-player-ico">${p.icon||'🤖'}</div>
+            <div class="blo-player-name">${p.name||'Bot'}</div>
+            <div class="blo-bot-badge">BOT</div>
+          </div>`;
+        });
+        body += `</div>`;
+
+        // Status input si host es jugador
+        if (myPlayer) {
+          body += `<div class="bingo-status-row" style="margin-bottom:10px">
+            <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
+            <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(_bingoStatusDraft !== null ? _bingoStatusDraft : (myPlayer.playerStatus||'')).replace(/"/g,'&quot;')}" onblur="_bingoStatusDraft=null;setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
+          </div>`;
+        }
+
+        const _hasTopics = _topics.length > 0;
+        body += `<button class="bingo-start-btn" onclick="startBingoDraw()" ${_hasTopics?'':'disabled style="opacity:0.35;cursor:not-allowed"'}>${_hasTopics?'▶ Iniciar sorteo':'⚠ Selecciona un tema'}</button>`;
+      }
     } else {
+      // ── No-host en lobby ────────────────────────────────────────────────
       body += !myPlayer
         ? `<button class="bingo-join-btn" onclick="joinBingoGame(_bingoGameId)">🃏 Unirme a la partida</button>`
         : `<div style="font-size:13px;color:#4ade80;font-weight:700;margin:10px 0 4px">✓ Ya estás dentro — espera a que el host inicie el sorteo</div>
@@ -6155,11 +6249,6 @@ function _bingoPaneHtml() {
              <div class="bsr-shapes">${['rect','cloud'].map(s=>`<button onclick="setBubbleShape('${s}')" class="bsr-shape bsr-shape-${s}${(myPlayer.playerBubbleShape||'rect')===s?' bsr-active':''}" title="${{rect:'Bocadillo',cloud:'Nube'}[s]}"></button>`).join('')}</div>
              <input id="bingo-status-input" class="bingo-status-input bsr-inline" maxlength="15" placeholder="Estado..." value="${(_bingoStatusDraft !== null ? _bingoStatusDraft : (myPlayer.playerStatus||'')).replace(/"/g,'&quot;')}" onblur="_bingoStatusDraft=null;setPlayerStatus(this.value)" onkeydown="if(event.key==='Enter'){this.blur();event.preventDefault();}">
            </div>`;
-    }
-    if (isHost) {
-      const _hasTopics = (bingoGame.topics||[]).length > 0;
-      body += `<button class="bingo-start-btn" onclick="startBingoDraw()" ${_hasTopics?'':'disabled style="opacity:0.35;cursor:not-allowed"'}>${_hasTopics?'▶ Iniciar sorteo':'⚠ Selecciona un tema'}</button>`;
-    } else {
       const _sp = bingoGame.gameSpeed || 'media';
       body += `<div style="text-align:center;margin-top:10px;font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:0.08em;text-transform:uppercase">${_sp==='rapida'?'⚡ Velocidad rápida':'⏱ Velocidad media'}</div>`;
     }
@@ -10418,744 +10507,4 @@ function vPerfil() {
 
   const tabs=[{id:'foto',label:'📷 Foto'},{id:'icon',label:'Icono'},{id:'color',label:'Color'},{id:'frame',label:'Marco'},{id:'pin',label:'PIN'}];
 
-  const _iconCats = Object.keys(PERFIL_ICONS_BY_CAT);
-  const _iconList = PERFIL_ICONS_BY_CAT[_perfilIconCat]||[];
-  const _catPills = _iconCats.map(function(cat){
-    const active = _perfilIconCat===cat;
-    return '<button data-cat="'+cat+'" onclick="perfilSwitchIconCat(this.dataset.cat)"'
-      +' style="padding:4px 12px;border-radius:20px;border:none;cursor:pointer;font-size:11px;font-weight:700;'
-      +(active?'background:#7c3aed;color:#fff;':'background:rgba(255,255,255,0.07);color:#aaa;')+'">'+(active?'▸ ':'')+cat+'</button>';
-  }).join('');
-  const iconGrid =
-    '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px">'+_catPills+'</div>'
-    +'<div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;max-height:210px;overflow-y:auto;padding-right:2px">'
-    +_iconList.map(function(ico){
-      return '<button class="perfil-ico-btn'+(ico===curIcon?' selected':'')+'" data-ico="'+ico+'" onclick="perfilPickIcon(this.dataset.ico)">'+ico+'</button>';
-    }).join('')+'</div>';
-
-  const colorGrid = COLOR_PALETTE.map(col=>
-    '<div class="perfil-color-dot'+(curColor===col?' selected':'')+'" style="background:'+col+'" data-col="'+col+'" onclick="perfilPickColor(this.dataset.col)"></div>'
-  ).join('');
-
-  const frameGrid = ''; // próximamente
-
-  const fotoContent='<div style="text-align:center">'
-    +'<div style="font-size:12px;color:#aaa;margin-bottom:12px">Elegí una foto y ajustá el encuadre arrastrando</div>'
-    +'<input type="file" id="perfil-file-input" accept="image/*" style="display:none" onchange="perfilPhotoSelected()">'
-    +'<button onclick="perfilOpenFilePicker()" style="padding:10px 22px;border-radius:10px;background:#1a1a2e;border:1px solid #333;color:#ccc;cursor:pointer;font-size:13px;margin-bottom:14px">📁 Elegir foto</button>'
-    +'<div id="perfil-crop-wrap" style="display:none;flex-direction:column;align-items:center;gap:10px">'
-    +'<div style="position:relative;width:220px;height:220px;border-radius:22%;overflow:hidden;border:2px solid #7c3aed;cursor:grab" id="perfil-crop-container">'
-    +'<canvas id="perfil-crop-canvas" width="220" height="220" style="display:block"></canvas></div>'
-    +'<div style="display:flex;gap:10px;align-items:center"><span style="color:#888;font-size:12px">🔍</span>'
-    +'<input type="range" id="perfil-crop-zoom" min="0.5" max="4" step="0.05" value="1" style="width:140px" oninput="perfilCropZoom()"><span style="color:#888;font-size:12px">🔎</span></div>'
-    +'<button onclick="perfilCropConfirm()" style="padding:10px 28px;border-radius:10px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px">✓ Usar esta foto</button>'
-    +(curPhoto?'<button onclick="perfilRemovePhoto()" style="padding:8px 18px;border-radius:10px;background:#1a1a2e;border:1px solid #555;color:#aaa;cursor:pointer;font-size:12px;margin-top:4px">🗑 Quitar foto</button>':'')
-    +'</div></div>';
-
-  const pinContent='<div>'
-    +'<div style="font-size:12px;color:#aaa;margin-bottom:10px">Ingresa tu PIN actual para poder cambiarlo</div>'
-    +'<input id="perfil-pin-old" type="password" inputmode="numeric" maxlength="10" placeholder="PIN actual" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:8px;box-sizing:border-box;font-size:15px">'
-    +'<input id="perfil-pin-new" type="password" inputmode="numeric" maxlength="10" placeholder="PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:8px;box-sizing:border-box;font-size:15px">'
-    +'<input id="perfil-pin-new2" type="password" inputmode="numeric" maxlength="10" placeholder="Repetir PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:14px;box-sizing:border-box;font-size:15px">'
-    +'<button onclick="perfilSavePin()" style="width:100%;padding:12px;border-radius:10px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px">Cambiar PIN</button>'
-    +'</div>';
-
-  const tabContents={
-    foto: fotoContent,
-    icon: iconGrid,
-    color:'<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">'+colorGrid+'</div>',
-    frame:'<div style="text-align:center;padding:20px 0"><div style="font-size:32px;margin-bottom:10px">🖼️</div><div style="font-size:14px;font-weight:700;color:#ccc;margin-bottom:6px">Marcos decorativos</div><div style="font-size:12px;color:#666">Próximamente — gato, diablo, murciélago,<br>ciervo, dragón y unicornio</div></div>',
-    pin:  pinContent,
-  };
-
-  const tabButtons=tabs.map(t=>
-    '<button data-tab="'+t.id+'" onclick="perfilSwitchTab(this.dataset.tab)" style="flex:1;padding:7px 2px;border-radius:9px;border:none;cursor:pointer;font-size:11px;font-weight:700;background:'+(_perfilTab===t.id?'#7c3aed':'#1a1a2e')+';color:'+(_perfilTab===t.id?'#fff':'#888')+'">'+t.label+'</button>'
-  ).join('');
-
-  const saveBtn=_perfilTab!=='pin'?'<button onclick="perfilSaveProfile()" style="width:100%;margin-top:10px;padding:11px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px">Guardar cambios</button>':'';
-
-  return '<div style="max-width:600px;margin:0 auto;padding:10px">'
-    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
-    +'<button onclick="go(&quot;dashboard&quot;)" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
-    +'<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>'
-    +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:8px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,60)+'</div>'
-    +'<div style="text-align:center;margin-bottom:18px"><div style="font-size:15px;font-weight:600;color:#ccc">'+(st.name||'')+'</div>'+(_pNivelBadge?'<div style="margin-top:5px">'+_pNivelBadge+'</div>':'')+'</div>'
-    +'<div style="display:flex;gap:4px;margin-bottom:12px;overflow-x:auto">'+tabButtons+'</div>'
-    +'<div id="perfil-tab-body" style="background:#111;border-radius:12px;padding:10px;min-height:80px">'+(tabContents[_perfilTab]||'')+'</div>'
-    +saveBtn+'</div>';
-}
-
-function perfilSwitchTab(tab) { _perfilTab=tab; vPerfilRefresh(); }
-function perfilSwitchIconCat(cat) { _perfilIconCat=cat; vPerfilRefresh(); }
-function vPerfilRefresh() {
-  const app = document.getElementById('app');
-  if (app) app.innerHTML = '<div class="vw">' + vPerfil() + '</div>';
-}
-
-function perfilPickIcon(ico) {
-  _perfilPendingIcon=ico;
-  document.querySelectorAll('.perfil-ico-btn').forEach(b=>b.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  _refreshPerfilAvatar();
-}
-function perfilPickColor(col) {
-  _perfilPendingColor=col;
-  document.querySelectorAll('.perfil-color-dot').forEach(b=>b.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  _refreshPerfilAvatar();
-}
-function perfilPickFrame(fid) {
-  _perfilPendingFrame=fid;
-  document.querySelectorAll('.perfil-frame-opt').forEach(el=>el.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  _refreshPerfilAvatar();
-}
-function _refreshHeaderAvatar(ov) {
-  const el = document.getElementById('hdr-icon');
-  if (!el) return;
-  const photo = ov && ov.photo ? ov.photo : null;
-  const icon  = (ov && ov.icon) || '';
-  const color = (ov && ov.color) || '#8B5CF6';
-  el.style.background = color;
-  if (photo) {
-    el.style.borderRadius = '22%'; // photo
-    el.innerHTML = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover">';
-  } else {
-    el.style.borderRadius = '22%'; // emoji
-    el.innerHTML = '<span style="font-size:16px;line-height:1">'+icon+'</span>';
-  }
-}
-function _refreshPerfilAvatar() {
-  const id=getLoggedId(); const st=getStudents().find(s=>s.id===id)||{};
-  const ov=overrides[String(id)]||{};
-  const wrap=document.getElementById('perfil-avatar-wrap'); if(!wrap)return;
-  wrap.innerHTML=makeAvatarHTML(
-    _perfilPendingIcon||st.icon||'😀',
-    _perfilPendingColor||st.color||'#8B5CF6',
-    _perfilPendingPhoto!==null?_perfilPendingPhoto:(ov.photo||null),
-    _perfilPendingFrame!==null?_perfilPendingFrame:(ov.frame||'none'), 80);
-}
-function perfilOpenFilePicker() {
-  document.getElementById('perfil-file-input').click();
-}
-function perfilPhotoSelected() {
-  const input=document.getElementById('perfil-file-input');
-  if(!input||!input.files[0])return;
-  const reader=new FileReader();
-  reader.onload=function(e){
-    _cropImg=new Image();
-    _cropImg.onload=function(){
-      _cropX=0;_cropY=0;
-      _cropScale=220/Math.min(_cropImg.width,_cropImg.height);
-      const w=document.getElementById('perfil-crop-wrap');
-      if(w)w.style.display='flex';
-      perfilDrawCrop();
-    };
-    _cropImg.src=e.target.result;
-  };
-  reader.readAsDataURL(input.files[0]);
-  perfilSetupCropCanvas();
-}
-function _clampCrop() {
-  if (!_cropImg) return;
-  const iw = _cropImg.width  * _cropScale;
-  const ih = _cropImg.height * _cropScale;
-  _cropX = Math.min(0, Math.max(220 - iw, _cropX));
-  _cropY = Math.min(0, Math.max(220 - ih, _cropY));
-}
-function perfilDrawCrop() {
-  const canvas=document.getElementById('perfil-crop-canvas');
-  if(!canvas||!_cropImg)return;
-  const ctx=canvas.getContext('2d');
-  _clampCrop();
-  ctx.clearRect(0,0,220,220);
-  ctx.drawImage(_cropImg,_cropX,_cropY,_cropImg.width*_cropScale,_cropImg.height*_cropScale);
-}
-function perfilCropZoom() {
-  const z=parseFloat(document.getElementById('perfil-crop-zoom').value);
-  const old=_cropScale;
-  _cropScale=(220/Math.min(_cropImg.width,_cropImg.height))*z;
-  const r=_cropScale/old;
-  _cropX=110-(110-_cropX)*r; _cropY=110-(110-_cropY)*r;
-  _clampCrop();
-  perfilDrawCrop();
-}
-function perfilSetupCropCanvas() {
-  setTimeout(function(){
-    const el=document.getElementById('perfil-crop-container'); if(!el)return;
-    el.addEventListener('mousedown',  function(e){_cropDragging=true;_cropLX=e.clientX;_cropLY=e.clientY;el.style.cursor='grabbing';});
-    el.addEventListener('mousemove',  function(e){if(!_cropDragging)return;_cropX+=e.clientX-_cropLX;_cropY+=e.clientY-_cropLY;_cropLX=e.clientX;_cropLY=e.clientY;perfilDrawCrop();});
-    el.addEventListener('mouseup',    function(){_cropDragging=false;el.style.cursor='grab';});
-    el.addEventListener('mouseleave', function(){_cropDragging=false;el.style.cursor='grab';});
-    el.addEventListener('touchstart', function(e){_cropDragging=true;_cropLX=e.touches[0].clientX;_cropLY=e.touches[0].clientY;e.preventDefault();},{passive:false});
-    el.addEventListener('touchmove',  function(e){if(!_cropDragging)return;_cropX+=e.touches[0].clientX-_cropLX;_cropY+=e.touches[0].clientY-_cropLY;_cropLX=e.touches[0].clientX;_cropLY=e.touches[0].clientY;perfilDrawCrop();e.preventDefault();},{passive:false});
-    el.addEventListener('touchend',   function(){_cropDragging=false;});
-  },200);
-}
-function perfilCropConfirm() {
-  const src=document.getElementById('perfil-crop-canvas'); if(!src)return;
-  const out=document.createElement('canvas'); out.width=240;out.height=240;
-  const ctx=out.getContext('2d');
-  ctx.fillStyle='#000';ctx.fillRect(0,0,240,240);
-  ctx.drawImage(src,0,0,220,220,0,0,240,240);
-  _perfilPendingPhoto=out.toDataURL('image/jpeg',0.75);
-  document.getElementById('perfil-crop-wrap').style.display='none';
-  _refreshPerfilAvatar();
-  showToast('Foto lista — guardá los cambios');
-}
-function perfilRemovePhoto() {
-  _perfilPendingPhoto='';
-  _refreshPerfilAvatar();
-  const w=document.getElementById('perfil-crop-wrap'); if(w)w.style.display='none';
-}
-
-
-async function perfilSaveProfile() {
-  const id = getLoggedId();
-  if (!_perfilPendingIcon && !_perfilPendingColor && !_perfilPendingFrame && _perfilPendingPhoto===null) {
-    showToast('No hay cambios que guardar'); return;
-  }
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov = data.overrides || {};
-  const key = String(id);
-  ov[key] = ov[key] || {};
-  if (_perfilPendingIcon)           ov[key].icon  = _perfilPendingIcon;
-  if (_perfilPendingColor)          ov[key].color = _perfilPendingColor;
-  if (_perfilPendingFrame!==null)   ov[key].frame = _perfilPendingFrame;
-  if (_perfilPendingPhoto!==null)   ov[key].photo = _perfilPendingPhoto;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  // Update header avatar immediately
-  _refreshHeaderAvatar(ov[key]);
-  _perfilPendingIcon=null;_perfilPendingColor=null;_perfilPendingFrame=null;_perfilPendingPhoto=null;
-  showToast('Perfil guardado ✓');
-  renderAll(getLoggedId());
-  if (document.getElementById('pane-ranking') && document.getElementById('pane-ranking').style.display!=='none') renderTableroRanking();
-  setTimeout(function(){ history.back(); }, 900);
-}
-
-async function perfilSavePin() {
-  const id = getLoggedId();
-  const students = getStudents();
-  const st = students.find(s=>s.id===id)||{};
-  const oldPin  = document.getElementById('perfil-pin-old').value.trim();
-  const newPin  = document.getElementById('perfil-pin-new').value.trim();
-  const newPin2 = document.getElementById('perfil-pin-new2').value.trim();
-  if (!oldPin||!newPin||!newPin2) { showToast('Completa todos los campos'); return; }
-  if (String(oldPin) !== String(st.pin||'')) { showToast('PIN actual incorrecto'); return; }
-  if (newPin !== newPin2) { showToast('Los PINs no coinciden'); return; }
-  if (newPin.length < 4) { showToast('El PIN debe tener al menos 4 caracteres'); return; }
-  const key = String(id);
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov = data.overrides || {};
-  ov[key] = ov[key] || {};
-  ov[key].pin = newPin;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  showToast('PIN cambiado');
-  document.getElementById('perfil-pin-old').value='';
-  document.getElementById('perfil-pin-new').value='';
-  document.getElementById('perfil-pin-new2').value='';
-}
-
-// ════════════════════════════════════════════════════════
-// VENTANA EMERGENTE DE CLASE (calendario de Horarios)
-// Se abre al hacer clic en una tarjeta de clase; se cierra al hacer clic afuera
-// o al alejar el mouse de la tarjeta y de la propia ventana (estilo hover-card).
-// Puntos y podios anteriores los puede ver cualquiera. El enlace de videollamada
-// solo lo ve el admin o el propio alumno dueño de esa clase, y solo si es Virtual.
-// ════════════════════════════════════════════════════════
-let _horPopEl = null, _horPopCard = null, _horPopCloseTimer = null, _horPopState = null;
-// Margen (px) de tolerancia: la ventana solo se cierra si el mouse se aleja BASTANTE de la
-// tarjeta + la propia ventana, no si se aleja un poquito (cruzando el espacio entre ambas).
-const HOR_POP_BUFFER = 70;
-
-function openHorPop(evt, cardEl) {
-  evt.stopPropagation();
-  closeHorPop();
-
-  const sidRaw = cardEl.dataset.sid;
-  const sid    = sidRaw === '' ? null : Number(sidRaw);
-  _horPopState = {
-    sid, date: cardEl.dataset.date, start: cardEl.dataset.start, end: cardEl.dataset.end,
-    modality: cardEl.dataset.modality, name: cardEl.dataset.name, icon: cardEl.dataset.icon,
-    color: cardEl.dataset.color || '#4fb6ff', linkEditing: false
-  };
-
-  const pop = document.createElement('div');
-  pop.className = 'hor-pop';
-  pop.innerHTML = renderHorPopContent(_horPopState);
-  // Tiñe el fondo, borde y resplandor de la ventana con el color elegido en el perfil del
-  // alumno (el mismo que ya se usa en su tarjeta del calendario), para que sea reconocible.
-  // El degradado oscuro de abajo asegura que siga siendo opaco y legible (texto blanco).
-  pop.style.background = 'linear-gradient(160deg,'+_horPopState.color+'38,'+_horPopState.color+'12), linear-gradient(160deg,#11142a,#0a0c18)';
-  pop.style.borderColor = _horPopState.color + '55';
-  pop.style.boxShadow = '0 12px 32px -8px rgba(0,0,0,0.65), 0 0 22px -4px '+_horPopState.color+'45, 0 0 0 1px rgba(255,255,255,0.03)';
-  document.body.appendChild(pop);
-  positionHorPop(pop, cardEl);
-
-  _horPopEl = pop;
-  _horPopCard = cardEl;
-  document.addEventListener('click', _horPopOutsideHandler);
-  document.addEventListener('mousemove', _horPopMoveHandler);
-}
-
-function _horPopOutsideHandler(e) {
-  if (!_horPopEl) return;
-  if (_horPopEl.contains(e.target) || (_horPopCard && _horPopCard.contains(e.target))) return;
-  closeHorPop();
-}
-
-// Calcula qué tan lejos está el mouse del rectángulo combinado (tarjeta + ventana emergente)
-// y solo programa el cierre si esa distancia supera HOR_POP_BUFFER — así moverse un poco
-// (incluso por el espacio vacío entre la tarjeta y la ventana) no la cierra de golpe.
-function _horPopMoveHandler(e) {
-  if (!_horPopEl || !_horPopCard) return;
-  const r1 = _horPopCard.getBoundingClientRect();
-  const r2 = _horPopEl.getBoundingClientRect();
-  const u = {
-    left:   Math.min(r1.left, r2.left),
-    right:  Math.max(r1.right, r2.right),
-    top:    Math.min(r1.top, r2.top),
-    bottom: Math.max(r1.bottom, r2.bottom)
-  };
-  const dx = Math.max(u.left - e.clientX, 0, e.clientX - u.right);
-  const dy = Math.max(u.top - e.clientY, 0, e.clientY - u.bottom);
-  const dist = Math.sqrt(dx*dx + dy*dy);
-  if (dist > HOR_POP_BUFFER) {
-    if (!_horPopCloseTimer) _horPopCloseTimer = setTimeout(closeHorPop, 220);
-  } else {
-    clearTimeout(_horPopCloseTimer);
-    _horPopCloseTimer = null;
-  }
-}
-
-function closeHorPop() {
-  clearTimeout(_horPopCloseTimer);
-  _horPopCloseTimer = null;
-  if (_horPopEl && _horPopEl.parentNode) _horPopEl.parentNode.removeChild(_horPopEl);
-  _horPopEl = null;
-  _horPopCard = null;
-  _horPopState = null;
-  document.removeEventListener('click', _horPopOutsideHandler);
-  document.removeEventListener('mousemove', _horPopMoveHandler);
-}
-
-function positionHorPop(pop, anchorEl) {
-  const r = anchorEl.getBoundingClientRect();
-  const margin = 8;
-  const pw = pop.offsetWidth, ph = pop.offsetHeight;
-  let left = r.left;
-  let top  = r.bottom + margin;
-  if (left + pw > window.innerWidth - margin) left = window.innerWidth - pw - margin;
-  if (left < margin) left = margin;
-  if (top + ph > window.innerHeight - margin) top = r.top - ph - margin; // sin espacio abajo: se abre hacia arriba
-  if (top < margin) top = margin;
-  pop.style.left = left + 'px';
-  pop.style.top  = top + 'px';
-}
-
-// Activa/desactiva el modo edición del enlace (botón "Editar" arriba a la derecha, en la
-// misma línea que el nombre del alumno). Vuelve a pintar el contenido sin cerrar la ventana.
-function toggleHorPopLinkEdit(evt) {
-  // Evita que el clic burbujee hasta el listener "click afuera cierra la ventana": como esta
-  // función reemplaza el innerHTML de _horPopEl en el mismo tick, el botón original quedaría
-  // desconectado del DOM y _horPopEl.contains(e.target) daría falso, cerrando la ventana sola.
-  if (evt) evt.stopPropagation();
-  if (!_horPopState || !_horPopEl) return;
-  _horPopState.linkEditing = !_horPopState.linkEditing;
-  _horPopEl.innerHTML = renderHorPopContent(_horPopState);
-  if (_horPopCard) positionHorPop(_horPopEl, _horPopCard);
-}
-
-function renderHorPopContent(st) {
-  const { sid, name, icon, color, date, start, end, modality, linkEditing } = st;
-  const isDom = (modality||'').toLowerCase().includes('dom');
-  const dt = new Date(date+'T00:00:00');
-  const DAY_NAMES_L = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const dayLbl = DAY_NAMES_L[dt.getDay()]+' '+dt.getDate()+'/'+(dt.getMonth()+1);
-  const hasSid = sid != null && !isNaN(sid);
-  const link = hasSid ? ((overrides[String(sid)]||{}).link || '') : '';
-  // El botón "Editar" solo aparece si el admin ve una clase virtual que YA tiene enlace
-  // guardado (si no tiene enlace, el formulario de guardar ya está visible directamente).
-  const showEditBtn = hasSid && isAdmin() && !isDom && !!link;
-
-  let html = '<div class="hor-pop-head">'
-    +'<div class="hor-pop-icon">'+icon+'</div>'
-    +'<div style="flex:1;min-width:0">'
-    +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">'
-    +'<div class="hor-pop-name">'+name+'</div>'
-    +(showEditBtn?'<button class="hor-pop-edit-link-btn" onclick="toggleHorPopLinkEdit(event)">'+(linkEditing?'✕ Cancelar':'✏️ Editar')+'</button>':'')
-    +'</div>'
-    +'<div class="hor-pop-sub">'+dayLbl+' · '+start+'–'+end+'</div>'
-    +'<span class="hor-pop-badge" style="background:'+(isDom?'rgba(239,68,68,0.15)':'rgba(79,182,255,0.15)')+';color:'+(isDom?'#ef4444':'#4fb6ff')+'">'+modality+'</span>'
-    +'</div></div>';
-
-  if (hasSid) {
-    const pts = getStudentPoints(sid);
-    html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Puntos de este mes</div>'
-      +'<div class="hor-pop-pts-row">'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.hours+'</div><div class="hor-pop-pts-l">Horas</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.progress+'</div><div class="hor-pop-pts-l">Avance</div></div>'
-      +'<div class="hor-pop-pts-chip"><div class="hor-pop-pts-v" style="color:'+color+'">'+pts.tasks+'</div><div class="hor-pop-pts-l">Tareas</div></div>'
-      +'</div></div>';
-
-    const podiums = getStudentPodiumHistory(sid, name);
-    if (podiums.length) {
-      html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Podios anteriores</div>'
-        +'<div class="hor-pop-medals">'+podiums.map(function(p){ return '<span class="hor-pop-medal">'+p.medal+' '+p.label+'</span>'; }).join('')+'</div></div>';
-    }
-
-    if (!isDom) {
-      const canSee = isAdmin() || getLoggedId()===sid;
-      if (canSee) {
-        if (isAdmin()) {
-          // Botón "Guardar enlace" solo si todavía no tiene enlace, o si se entró en modo
-          // edición desde el botón "Editar" de arriba — si ya tiene y no se está editando,
-          // se muestra el enlace guardado en su lugar (sin botón de guardar).
-          if (!link || linkEditing) {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<input type="text" class="hor-pop-link-input" id="hor-pop-link-inp" placeholder="https://meet.google.com/..." value="'+escAttr(link)+'">'
-              +'<button class="hor-pop-link-btn" style="background:'+color+'26;border-color:'+color+'66;color:'+color+'" onclick="saveHorPopLink('+sid+')">Guardar enlace</button></div>';
-          } else {
-            html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-              +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Abrir enlace</a></div>';
-          }
-        } else if (link) {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<a class="hor-pop-link-join" style="background:linear-gradient(135deg,'+color+'cc,'+color+'88)" href="'+escAttr(normalizeLinkUrl(link))+'" target="_blank" rel="noopener">🔗 Unirse a la clase</a></div>';
-        } else {
-          html += '<div class="hor-pop-sec"><div class="hor-pop-lbl">Enlace de la clase</div>'
-            +'<div style="font-size:11px;color:rgba(255,255,255,0.4)">Aún no hay enlace para esta clase.</div></div>';
-        }
-      }
-    }
-  }
-  return html;
-}
-
-// Busca en pointsHistory (archivado automático) y en HISTORIAL_SEED (meses previos al
-// archivado) si este alumno quedó 1°/2°/3° en algún mes anterior. Empareja por id cuando
-// está disponible; los meses semilla (sin id) emparejan por nombre normalizado.
-function getStudentPodiumHistory(id, name) {
-  const now = new Date();
-  const MESES_S = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const medals = ['🥇','🥈','🥉'];
-  const results = [];
-  for (let off = -1; off >= -12; off--) {
-    const d = new Date(now); d.setMonth(d.getMonth()+off);
-    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    const podio = pointsHistory[ym] || HISTORIAL_SEED[ym];
-    if (!podio) continue;
-    const idx = podio.findIndex(function(p){
-      return (p.id!=null && p.id===id) || (p.id==null && normName(p.nombre)===normName(name));
-    });
-    if (idx === -1) continue;
-    results.push({ ym, medal: medals[idx], label: MESES_S[d.getMonth()]+' '+d.getFullYear() });
-  }
-  return results;
-}
-
-// Guarda/actualiza el enlace de videollamada de un alumno (uno por alumno, compartido
-// entre todas sus clases virtuales). Mismo patrón de lectura+merge que perfilSaveProfile().
-async function saveHorPopLink(sid) {
-  const inp = document.getElementById('hor-pop-link-inp');
-  if (!inp) return;
-  const val = normalizeLinkUrl(inp.value);
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov = data.overrides || {};
-  const key = String(sid);
-  ov[key] = ov[key] || {};
-  ov[key].link = val;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  showToast('Enlace guardado ✓');
-  if (_horPopState && _horPopState.sid === sid && _horPopEl) {
-    _horPopState.linkEditing = false;
-    _horPopEl.innerHTML = renderHorPopContent(_horPopState);
-    positionHorPop(_horPopEl, _horPopCard);
-  }
-}
-
-function changeHorWeek(delta) {
-  const appW = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW < 640) {
-    horDayOffset += delta;
-    // when going beyond week boundaries, shift the week
-    if (horDayOffset > 5) { horWeekOffset += 1; horDayOffset -= 7; }
-    if (horDayOffset < 0) { horWeekOffset -= 1; horDayOffset += 7; }
-  } else {
-    horWeekOffset += delta;
-  }
-  renderHorariosCalendar();
-}
-function horGoToday() {
-  horWeekOffset = 0;
-  horDayOffset = 0;
-  const appW2 = document.getElementById('app') ? document.getElementById('app').offsetWidth : (window.innerWidth||390);
-  if (appW2 < 640) {
-    const dow = new Date().getDay();
-    horDayOffset = (dow === 0 ? 6 : dow - 1); // Mon=0 … Sun=6
-  }
-  renderHorariosCalendar();
-}
-
-function togglePtsEditor(studentId) {
-  expandedPtsStudent = (expandedPtsStudent === studentId) ? null : studentId;
-  ptsMonthOffset = 0;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-function changePtsMonth(delta) {
-  ptsMonthOffset += delta;
-  const app=document.getElementById('app');
-  if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-}
-let _ptsTimer=null;
-// Cola de ediciones de Puntos todavía no guardadas (se vacía al disparar _flushPointsLog).
-// Como togglePointMark/toggleAbsent comparten un mismo timer debounced (para no mandar un
-// guardado por cada clic), varias ediciones pueden acumularse antes de guardar. Por eso el
-// guardado real no escribe directo la copia local de "pointsLog": vuelve a leer el dato fresco
-// del servidor (saveLmsFieldTx) y "reproduce" aquí, en orden, cada edición pendiente sobre ESE
-// dato fresco — así una edición hecha desde otro dispositivo mientras esta pestaña estaba
-// desactualizada no se pierde ni se pisa.
-let _ptsPendingEdits = [];
-function _applyPtsEditsToLog(freshLog, edits) {
-  const log = JSON.parse(JSON.stringify(freshLog || {}));
-  for (const edit of edits) {
-    const key = String(edit.studentId);
-    if (!log[key]) log[key]={};
-    if (!log[key][edit.dateKey]) log[key][edit.dateKey]={hours:[],progress:[],tasks:[]};
-    const entry = log[key][edit.dateKey];
-    if (edit.type === 'mark') {
-      if (!Array.isArray(entry[edit.field])) entry[edit.field]=[];
-      while (entry[edit.field].length < edit.count) entry[edit.field].push(false);
-      entry[edit.field][edit.idx]=!!edit.checked;
-    } else { // 'absent'
-      entry.absent = !!edit.checked;
-      if (edit.checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-    }
-  }
-  return log;
-}
-function _flushPointsLog() {
-  const edits = _ptsPendingEdits.splice(0); // toma todas las ediciones pendientes y vacía la cola
-  if (!edits.length) return;
-  savePointsLog(fresh => _applyPtsEditsToLog(fresh, edits));
-}
-// idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
-function togglePointMark(studentId, dateKey, field, idx, count, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  if (!Array.isArray(entry[field])) entry[field]=[];
-  while (entry[field].length < count) entry[field].push(false);
-  entry[field][idx]=!!checked;
-  _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
-  // Refresca el total mostrado en la cabecera de la fila sin re-render completo
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast('Puntos guardados.','success'); },800);
-}
-
-// Marca/desmarca una fecha como "faltó a clase": al marcarla se borran las casillas de
-// Horas/Progreso/Tareas de ese día y se excluye del cálculo de puntos (no suma ni resta).
-function toggleAbsent(studentId, dateKey, checked) {
-  if (!firestoreDataReady()) return;
-  _lastPtsLocalEdit = Date.now();
-  const key=String(studentId);
-  if (!pointsLog[key]) pointsLog[key]={};
-  if (!pointsLog[key][dateKey]) pointsLog[key][dateKey]={hours:[],progress:[],tasks:[]};
-  const entry = pointsLog[key][dateKey];
-  entry.absent = !!checked;
-  if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
-  _ptsPendingEdits.push({type:'absent', studentId, dateKey, checked});
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
-  const cont=document.getElementById(`pts-dates-${studentId}`);
-  const st=getStudents().find(x=>String(x.id)===key);
-  if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
-  clearTimeout(_ptsTimer);
-  _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast(checked?'Marcado como ausente: esta fecha no sumará puntos.':'Asistencia restaurada.','success'); },400);
-}
-
-// ════════════════════════════════════════════════════════
-// FIREBASE LISTENER + BOOT
-// ════════════════════════════════════════════════════════
-// Mantiene la clave del admin sincronizada con /padres (mismo documento compartido).
-AUTH_REF.onSnapshot(doc => {
-  const a = doc.exists ? doc.data() : {};
-  ADMIN.pin = a.adminPin || "80808";
-}, err => console.error('[Firebase auth]', err));
-
-// Normaliza nombres para emparejar alumnos entre /student y /padres (minúsculas, sin tildes, sin espacios extra).
-function normName(s) {
-  return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-}
-PADRES_REF.onSnapshot(doc => {
-  const d = doc.exists ? doc.data() : {};
-  const pStudents = d.students || {};
-  const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
-  const map = {}, slotMap = {}, sessMap = {};
-  Object.entries(pStudents).forEach(([sid, st]) => {
-    const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
-    // días de clase con su total de horas ese día (suma de duraciones / 60), p.ej. {1: 2, 4: 1}
-    // NOTA: este patrón semanal NO distingue sesiones de una sola vez (excepciones puntuales) ni
-    // skipDates — se mantiene solo por compatibilidad. getClassDatesForStudent() ya NO lo usa para
-    // generar las fechas exactas de clase; usa sessMap (classSessByName) directamente para respetar
-    // recurring/date/skipDates fecha por fecha.
-    const hoursByDay = {}, slotsByDay = {};
-    mySessions.forEach(s => {
-      const h = Math.max(1, Math.round((s.dur||60)/60));
-      hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
-      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
-      slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
-    });
-    // ordenar los slots de cada día cronológicamente por hora de inicio
-    Object.keys(slotsByDay).forEach(d => slotsByDay[d].sort((a,b)=>(a.start||'').localeCompare(b.start||'')));
-    const key = normName(st.name);
-    map[key] = hoursByDay;
-    slotMap[key] = slotsByDay;
-    sessMap[key] = mySessions;
-  });
-  classDaysByName  = map;
-  classSlotsByName = slotMap;
-  classSessByName  = sessMap;
-  if (currentView === 'puntos') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-  }
-  if (currentView === 'horarios') {
-    const app=document.getElementById('app');
-    if (app) app.innerHTML=`<div class="vw">${vHorarios()}</div>`;
-    renderHorariosSidebar();
-  }
-  // Si el panel de admin está abierto, refresca en vivo solicitudes nuevas y
-  // nombres vinculados (un padre puede registrarse o editar un nombre en
-  // cualquier momento mientras el admin tiene el panel abierto).
-  if (isAdmin() && document.getElementById('admin-panel')?.classList.contains('open')) {
-    syncPadresLinks();
-    cacheLiveNames();
-    renderStudentList();
-    renderPadresRequests();
-  }
-}, err => console.error('[Firebase padres]', err));
-
-REF.onSnapshot(doc => {
-  const data = doc.exists ? doc.data() : {};
-  allocations = data.allocations || {};
-  overrides   = data.overrides   || {};
-  appConfig   = data.config      || { startTime:'', endTime:'', totalNumbers: 200 };
-  if (!appConfig.totalNumbers) appConfig.totalNumbers = 200;
-  const lms   = data.lms || {};
-  tasks       = Array.isArray(lms.tasks)  ? lms.tasks  : [];
-  points      = typeof lms.points==='object' ? lms.points : {};
-  pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
-  pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
-  taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
-  prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
-  // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
-  // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
-  // la misma situación de riesgo que un error de red: variables locales en blanco), NO
-  // habilitamos los guardados ni las migraciones automáticas de abajo — así nunca se
-  // sobrescriben datos reales con el estado vacío por defecto.
-  if (doc.exists) {
-    lmsDataLoaded = true;
-    archiveMonthIfNeeded();
-    // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
-    // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
-    (function seedJoannaMult(){
-      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
-      if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
-        taskMultipliers[String(joanna.id)] = 3;
-        saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
-      }
-    })();
-  } else {
-    console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
-  }
-
-  if (!appReady) {
-    appReady = true;
-    document.getElementById('initial-loading').classList.add('hidden');
-    router();
-  } else {
-    // Live-update tablero if it's open
-    const hash = currentView;
-    if (hash === 'tablero') {
-      const loggedId = getLoggedId();
-      if (loggedId !== null) renderAll(loggedId);
-    }
-    if (hash === 'ranking')   vRankingSetup();
-    if (hash === 'numeros')   vNumerosSetup();
-    if (hash === 'dashboard') {
-      const app=document.getElementById('app');
-      if (app) app.innerHTML=`<div class="vw">${vDashboard()}</div>`;
-    }
-    if (hash === 'puntos') {
-      // Evita re-render completo (parpadeo/salto) justo después de marcar una casilla:
-      // la actualización optimista ya refleja el cambio en pantalla; el snapshot que
-      // confirma nuestro propio guardado llega ~1s después y no necesita re-pintar todo.
-      if (Date.now() - _lastPtsLocalEdit > 2500) {
-        const app=document.getElementById('app');
-        if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
-      }
-    }
-    if (hash === 'horarios') renderHorariosSidebar();
-    if (hash === 'tareas' && taskFilter !== 'msgs') {
-      // Refresca la vista de Tareas si llega un cambio remoto (ej. un alumno entrega una
-      // tarea, o el admin la aprueba desde otro dispositivo) mientras está abierta.
-      const app=document.getElementById('app');
-      if (app) { app.innerHTML=`<div class="vw">${vTareas()}</div>`; vTareasSetup(); }
-    }
-  }
-}, err => {
-  console.error('[Firebase]', err);
-  document.getElementById('initial-loading').classList.add('hidden');
-  // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
-  // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
-  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
-  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+  const _iconCats = Object.ke
