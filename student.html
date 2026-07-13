@@ -3062,6 +3062,8 @@ const BINGO_TOPICS = {
   em_b5:  { ico:'▽',  lbl:'Más/menos probable (urna/caja)',qCount:4, gen:()=>_genEM_B5() },
   em_bq2: { ico:'⚡', lbl:'Quiz II — Sucesos y Probabilidad',qCount:5, qCountRapida:3, gen:()=>_genEM_BQ2(), quiz:true },
 };
+// Ícono unificado para habilidades (no quiz)
+Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = '✏️'; });
 const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
@@ -8878,7 +8880,7 @@ function renderTask(t, loggedId) {
     </div>` : '';
   const _prepCfg = t.prepLink ? JSON.stringify(t.prepLink).replace(/"/g,'&quot;') : '';
   const prepBtnHtml = t.prepLink
-    ? (function(pl){ var tipoLabel = pl.tipo==='examen'?'EXAMEN':pl.tipo==='cuestionario'?'CUESTIONARIO':pl.tipo==='habilidad'?'HABILIDAD':'PRÁCTICA'; var itemLabel = pl.skillLabel || pl.unitLabel || 'Prepárate'; return '<button onclick="_launchPrepFromTask(JSON.parse(this.dataset.cfg))" data-cfg="'+_prepCfg+'" style="'+(t.att?'margin-top:5px;':'')+'width:100%;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(124,58,237,0.35);border-radius:10px;color:#a78bfa;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">▶ '+tipoLabel+' — '+itemLabel+'</button>'; })(t.prepLink)
+    ? (function(pl){ var uNum=String((pl.unitIdx||0)+1).padStart(2,'0'); var uTopic=pl.unitLabel?(pl.unitLabel.split(' — ').pop()):''; var tipoLabel=(pl.tipo==='examen'||pl.tipo==='toda')?('PRUEBA — Unidad '+uNum):pl.tipo==='cuestionario'?'CUESTIONARIO':'HABILIDAD'; var itemLabel=(pl.tipo==='examen'||pl.tipo==='toda')?uTopic:(pl.skillLabel||pl.unitLabel||'Prepárate'); return '<button onclick="_launchPrepFromTask(JSON.parse(this.dataset.cfg))" data-cfg="'+_prepCfg+'" style="'+(t.att?'margin-top:5px;':'')+'width:100%;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(124,58,237,0.35);border-radius:10px;color:#a78bfa;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">▶ '+tipoLabel+' — '+itemLabel+'</button>'; })(t.prepLink)
     : '';
   const btnsHtml = `<button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>${isAdmin()?`<button class="btn-dt sq" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''} ${isAdmin()?`<button class="btn-dt sq${notDone?' on':''}" title="${notDone?'Quitar marca de no hecha':'Marcar como no hecha'}" onclick="markTaskUndone('${t.id}')">✕</button>`:''}`;
   if (isMobile) {
