@@ -8714,10 +8714,7 @@ function vTareas() {
 
     ${isAdmin()?`
     <div id="add-task-box" class="add-task-box" style="display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="sec-lbl" id="add-task-label" style="margin:0">NUEVA TAREA</div>
-        <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:28px;height:28px;flex-shrink:0;cursor:pointer;font-size:14px;line-height:1">✕</button>
-      </div>
+      <div class="sec-lbl" id="add-task-label" style="margin-bottom:8px">NUEVA TAREA</div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
         <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
         <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px">
@@ -8725,6 +8722,7 @@ function vTareas() {
           <option value="documento">📄 Documento</option>
           <option value="preparate">🧠 Prepárate</option>
         </select>
+        <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:38px;flex-shrink:0;cursor:pointer;font-size:14px;line-height:1">✕</button>
       </div>
       <div id="task-link-section">
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
