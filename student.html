@@ -8736,42 +8736,41 @@ function vTareas() {
         </div>
       </div>
       <div id="task-prep-section" style="display:none;margin-bottom:8px">
-        <div style="display:flex;gap:6px;margin-bottom:8px">
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
           <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Nivel —</option>
             <option value="primaria">Primaria</option>
             <option value="secundaria">Secundaria</option>
             <option value="preuniversitario">Pre-Universitario</option>
           </select>
-          <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnidad();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
+          <select class="fsm" id="tp-grado" onchange="_updateTaskPrepColegio();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Grado —</option>
           </select>
+          <select class="fsm" id="tp-colegio" onchange="_updateTaskPrepUnidad();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
+            <option value="" disabled selected>— Colegio —</option>
+          </select>
+          <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
+            <option value="" disabled selected>— Unidad —</option>
+          </select>
+          <button onclick="_clearTaskPrepRow1()" title="Limpiar selección" style="flex-shrink:0;width:34px;height:38px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">↺</button>
         </div>
-        <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo();_syncPrepSel(this)" style="margin-bottom:8px;height:38px;color:rgba(255,255,255,0.4)">
-          <option value="" disabled selected>— Unidad —</option>
-        </select>
-        <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem();_syncPrepSel(this)" style="margin-bottom:8px;height:38px;color:rgba(255,255,255,0.4)">
-          <option value="" disabled selected>— Tipo de actividad —</option>
-        </select>
-        <select class="fsm" id="tp-item" onchange="_syncPrepSel(this)" style="margin-bottom:8px;height:38px;color:rgba(255,255,255,0.4);display:none">
-          <option value="" disabled selected>— Selecciona —</option>
-        </select>
         <div style="display:flex;gap:6px;margin-bottom:8px">
-          <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0;height:38px">
+          <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
+            <option value="" disabled selected>— Tipo de actividad —</option>
+          </select>
+          <select class="fsm" id="tp-mode" onchange="_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Tipo de respuesta —</option>
             <option value="mc">Opción múltiple</option>
             <option value="text">Escribir respuesta</option>
           </select>
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:0">
-          <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0;height:38px">
+          <select class="fsm" id="tp-qcount" onchange="_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— N° de preguntas —</option>
             <option value="5">5 preguntas</option>
             <option value="10">10 preguntas</option>
             <option value="15">15 preguntas</option>
             <option value="20">20 preguntas</option>
           </select>
-          <select class="fsm" id="tp-time" style="flex:1;margin-bottom:0;height:38px">
+          <select class="fsm" id="tp-time" onchange="_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Tiempo —</option>
             <option value="0">Sin tiempo</option>
             <option value="120">2 min</option>
@@ -8781,6 +8780,9 @@ function vTareas() {
             <option value="1800">30 min</option>
           </select>
         </div>
+        <select class="fsm" id="tp-item" onchange="_syncPrepSel(this)" style="margin-bottom:8px;height:38px;color:rgba(255,255,255,0.4);display:none">
+          <option value="" disabled selected>— Selecciona —</option>
+        </select>
       </div>
       <div id="task-file-section" style="display:none">
         <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
@@ -9852,7 +9854,7 @@ function _syncPrepSel(el) {
 }
 // Sincroniza todos los selects de Prepárate a la vez
 function _syncAllPrepSels() {
-  ['tp-nivel','tp-grado','tp-unidad','tp-tipo','tp-item','tp-mode','tp-qcount','tp-time'].forEach(function(id){
+  ['tp-nivel','tp-grado','tp-colegio','tp-unidad','tp-tipo','tp-item','tp-mode','tp-qcount','tp-time'].forEach(function(id){
     _syncPrepSel(document.getElementById(id));
   });
 }
@@ -9876,32 +9878,61 @@ function _updateTaskPrepGrado() {
   if (!nivelSel || !gradoSel) return;
   var nivel = nivelSel.value;
   var max = nivel === 'secundaria' ? 5 : nivel === 'preuniversitario' ? 2 : 6;
-  gradoSel.innerHTML = '<option value="">— Grado —</option>'
+  gradoSel.innerHTML = '<option value="" disabled selected>— Grado —</option>'
     + Array.from({length: max}, function(_,i){ var g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
+  var cSel = document.getElementById('tp-colegio');
+  if (cSel) { cSel.value = ''; cSel.innerHTML = '<option value="" disabled selected>— Colegio —</option>'; }
   var uSel = document.getElementById('tp-unidad');
-  if (uSel) uSel.innerHTML = '<option value="">— Unidad —</option>';
+  if (uSel) { uSel.value = ''; uSel.innerHTML = '<option value="" disabled selected>— Unidad —</option>'; }
   var tSel = document.getElementById('tp-tipo');
-  if (tSel) tSel.innerHTML = '<option value="">— Tipo de actividad —</option>';
+  if (tSel) { tSel.value = ''; tSel.innerHTML = '<option value="" disabled selected>— Tipo de actividad —</option>'; }
   var iSel = document.getElementById('tp-item');
-  if (iSel) { iSel.innerHTML = '<option value="">— Selecciona —</option>'; iSel.style.display = 'none'; }
+  if (iSel) { iSel.value = ''; iSel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>'; iSel.style.display = 'none'; }
+  _syncAllPrepSels();
+}
+function _updateTaskPrepColegio() {
+  var nivelSel = document.getElementById('tp-nivel');
+  var gradoSel = document.getElementById('tp-grado');
+  var colegioSel = document.getElementById('tp-colegio');
+  var nivel = nivelSel ? nivelSel.value : '';
+  var grado = gradoSel ? gradoSel.value : '';
+  var allUnits = nivel && grado ? ((PREP_CURRICULUM[nivel]||{})[grado] || []) : [];
+  if (colegioSel) {
+    var edSet = [];
+    allUnits.forEach(function(u){ if (u.editorial && edSet.indexOf(u.editorial)<0) edSet.push(u.editorial); });
+    var opts = '<option value="" disabled selected>— Colegio —</option>';
+    edSet.forEach(function(ed){
+      var info = PREP_EDITORIALS[ed] || {};
+      opts += '<option value="'+ed+'">'+(info.ico||'🏫')+' '+(info.lbl||ed)+'</option>';
+    });
+    colegioSel.innerHTML = opts;
+    colegioSel.value = '';
+    _syncPrepSel(colegioSel);
+  }
+  _updateTaskPrepUnidad();
 }
 function _updateTaskPrepUnidad() {
   var nivelSel = document.getElementById('tp-nivel');
   var gradoSel = document.getElementById('tp-grado');
+  var colegioSel = document.getElementById('tp-colegio');
   var unidadSel = document.getElementById('tp-unidad');
   if (!nivelSel || !gradoSel || !unidadSel) return;
   var nivel = nivelSel.value, grado = gradoSel.value;
-  var units = nivel && grado ? ((PREP_CURRICULUM[nivel]||{})[grado] || []) : [];
-  var opts = '<option value="">— Unidad —</option>';
-  units.forEach(function(u, i) {
+  var colegio = colegioSel ? colegioSel.value : '';
+  var allUnits = nivel && grado ? ((PREP_CURRICULUM[nivel]||{})[grado] || []) : [];
+  var opts = '<option value="" disabled selected>— Unidad —</option>';
+  allUnits.forEach(function(u, i) {
+    if (colegio && u.editorial !== colegio) return;
     var pre = u.editorial && PREP_EDITORIALS[u.editorial] ? PREP_EDITORIALS[u.editorial].short+' · ' : '';
     opts += '<option value="'+i+'">Unidad '+(i+1)+' — '+pre+u.lbl+'</option>';
   });
   unidadSel.innerHTML = opts;
+  unidadSel.value = '';
+  _syncPrepSel(unidadSel);
   var tSel = document.getElementById('tp-tipo');
-  if (tSel) tSel.innerHTML = '<option value="">— Tipo de actividad —</option>';
+  if (tSel) { tSel.value = ''; tSel.innerHTML = '<option value="" disabled selected>— Tipo de actividad —</option>'; }
   var iSel = document.getElementById('tp-item');
-  if (iSel) { iSel.innerHTML = '<option value="">— Selecciona —</option>'; iSel.style.display = 'none'; }
+  if (iSel) { iSel.value = ''; iSel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>'; iSel.style.display = 'none'; }
 }
 function _updateTaskPrepTipo() {
   var nivelSel  = document.getElementById('tp-nivel');
@@ -9951,6 +9982,20 @@ function _updateTaskPrepItem() {
   filtered.forEach(function(sk){ var d=BINGO_TOPICS[sk]; opts += '<option value="'+sk+'">'+(d.ico||'')+' '+(d.lbl||sk)+'</option>'; });
   itemSel.innerHTML = opts;
   itemSel.style.display = '';
+}
+function _clearTaskPrepRow1() {
+  var nSel = document.getElementById('tp-nivel'); if (nSel) nSel.value = '';
+  var gSel = document.getElementById('tp-grado');
+  if (gSel) { gSel.value = ''; gSel.innerHTML = '<option value="" disabled selected>— Grado —</option>'; }
+  var cSel = document.getElementById('tp-colegio');
+  if (cSel) { cSel.value = ''; cSel.innerHTML = '<option value="" disabled selected>— Colegio —</option>'; }
+  var uSel = document.getElementById('tp-unidad');
+  if (uSel) { uSel.value = ''; uSel.innerHTML = '<option value="" disabled selected>— Unidad —</option>'; }
+  var tSel = document.getElementById('tp-tipo');
+  if (tSel) { tSel.value = ''; tSel.innerHTML = '<option value="" disabled selected>— Tipo de actividad —</option>'; }
+  var iSel = document.getElementById('tp-item');
+  if (iSel) { iSel.value = ''; iSel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>'; iSel.style.display = 'none'; }
+  _syncAllPrepSels();
 }
 function _readTaskPrepLink() {
   var tipoSel   = document.getElementById('tp-tipo');
@@ -10014,6 +10059,8 @@ function _resetTaskPrepForm() {
   var nSel = document.getElementById('tp-nivel'); if (nSel) nSel.value = '';
   var gSel = document.getElementById('tp-grado');
   if (gSel) { gSel.value = ''; gSel.innerHTML = '<option value="" disabled selected>— Grado —</option>'; }
+  var cSel2 = document.getElementById('tp-colegio');
+  if (cSel2) { cSel2.value = ''; cSel2.innerHTML = '<option value="" disabled selected>— Colegio —</option>'; }
   var uSel = document.getElementById('tp-unidad');
   if (uSel) { uSel.value = ''; uSel.innerHTML = '<option value="" disabled selected>— Unidad —</option>'; }
   var tpTipoSel = document.getElementById('tp-tipo');
@@ -10097,7 +10144,16 @@ function openEditTask(id) {
     if (nSel) { nSel.value = t.prepLink.level||''; _updateTaskPrepGrado(); }
     // grado
     var gSel = document.getElementById('tp-grado');
-    if (gSel) { gSel.value = String(t.prepLink.grade||''); _updateTaskPrepUnidad(); }
+    if (gSel) { gSel.value = String(t.prepLink.grade||''); _updateTaskPrepColegio(); }
+    // colegio: derive from the unit's editorial
+    if (t.prepLink.level && t.prepLink.grade != null) {
+      var pAllUnits0 = (PREP_CURRICULUM[t.prepLink.level]||{})[String(t.prepLink.grade)] || [];
+      var uIdx0 = t.prepLink.unitIdx != null ? t.prepLink.unitIdx
+        : pAllUnits0.findIndex(function(u){ return JSON.stringify(u.skills)===JSON.stringify(t.prepLink.unitSkills); });
+      var unitEd = (uIdx0 >= 0 && pAllUnits0[uIdx0]) ? pAllUnits0[uIdx0].editorial : null;
+      var cSelEd = document.getElementById('tp-colegio');
+      if (cSelEd && unitEd) { cSelEd.value = unitEd; _syncPrepSel(cSelEd); _updateTaskPrepUnidad(); }
+    }
     // unidad — match by unitIdx if saved, else by unitSkills content
     var uSel = document.getElementById('tp-unidad');
     if (uSel && t.prepLink.level && t.prepLink.grade != null) {
