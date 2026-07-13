@@ -1237,7 +1237,7 @@ let msgsUploading = false;
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
 let dashGamingMode = 'catalog'; // 'catalog' | 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
-let _prep = { state:'config', level:'primaria', grade:'1', topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prep = { state:'config', level:'primaria', grade:'1', topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -3067,10 +3067,17 @@ Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
 const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] } },
+    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
+    areas:[{key:'matematica', lbl:'Matemática'}] },
   secundaria: { lbl:'Secundaria', ico:'S',
-    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] } },
-  preuniversitario:{ lbl:'Pre-univ.', ico:'U', grades:{},
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
+    areas:[
+      {key:'algebra',      lbl:'Álgebra'},
+      {key:'aritmetica',   lbl:'Aritmética'},
+      {key:'trigonometria',lbl:'Trigonometría'},
+      {key:'geometria',    lbl:'Geometría'},
+    ] },
+  preuniversitario:{ lbl:'Preuniversitario', ico:'U', grades:{},
     areas:[
       {key:'algebra',      lbl:'Álgebra',      ico:'α'},
       {key:'aritmetica',   lbl:'Aritmética',   ico:'🔢'},
@@ -3081,17 +3088,17 @@ const PREP_LEVELS = {
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
-    '1':[{lbl:'Adición y Sustracción',    skills:['suma','suma10','resta']}],
-    '2':[{lbl:'Multiplicación y División', skills:['mult','div']}],
-    '3':[{lbl:'Conjuntos',                skills:['conjuntos']}],
-    '4':[{lbl:'Unión e Intersección de Conjuntos', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
-    '6':[{lbl:'División de 5 entre 2 Dígitos', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', skills:['neg','ecuacion']}],
+    '1':[{lbl:'Adición y Sustracción',    area:'matematica', skills:['suma','suma10','resta']}],
+    '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
+    '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
+    '4':[{lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
+    '6':[{lbl:'División de 5 entre 2 Dígitos', area:'matematica', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', area:'matematica', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', area:'matematica', skills:['neg','ecuacion']}],
   },
   secundaria: {
-    '1':[{lbl:'Primera Unidad — Trigonometría',   editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
-         {lbl:'Propiedades Trigonométricas',      editorial:'intelectum', skills:['trigoprop']}],
+    '1':[{lbl:'Primera Unidad — Trigonometría',   area:'trigonometria', editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
+         {lbl:'Propiedades Trigonométricas',      area:'trigonometria', editorial:'intelectum', skills:['trigoprop']}],
     '2':[], '4':[], '5':[],
-    '3':[{lbl:'Razones Trigonométricas',          editorial:'intelectum', skills:['trigo','trigvf']}],
+    '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
   },
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
@@ -5676,7 +5683,7 @@ function _preparatePaneHtml() {
   return '';
 }
 function _prepSetLevel(lvl) {
-  _prep.level = lvl; _prep.editorial = null; _prep.openSelector = null;
+  _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.openSelector = null;
   const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
   _prep.grade = gradeKeys[0] || '';
   _prep.topic = '';
@@ -5687,22 +5694,33 @@ function _prepSetGrade(g) {
   _prep.topic = '';
   _renderPreparatePane();
 }
+function _prepSetArea(key) {
+  _prep.area = (_prep.area === key) ? null : key;
+  _prep.openSelector = null; _prep.topic = '';
+  _renderPreparatePane();
+}
 function _prepConfigHtml() {
   const lvDef = PREP_LEVELS[_prep.level] || {};
   const gradeKeys = Object.keys(lvDef.grades||{}).sort((a,b)=>+a-+b);
   const allUnits = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
   const edKeys = Object.keys(PREP_EDITORIALS); // siempre todos los colegios
-  const units = _prep.editorial ? allUnits.filter(u=>u.editorial===_prep.editorial) : allUnits;
+  const units = allUnits.filter(u=>{
+    if (_prep.editorial && u.editorial !== _prep.editorial) return false;
+    if (_prep.area && u.area !== _prep.area) return false;
+    return true;
+  });
   const allTopicKeys = units.flatMap(u=>u.skills||[]);
   const masLoading = !Array.isArray(_prepHistoryData);
   const coursePct = _prepCourseScore(allTopicKeys);
 
-  // ── Selector desplegable: Nivel · Grado · Editorial ─────────────────────────
+  // ── Selector desplegable: Nivel · Grado · Área · Colegio ────────────────────
   const openSel = _prep.openSelector;
+  const areaOpts = lvDef.areas || [];
   // Nivel
   const nivelSel = openSel === 'level'
     ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
-    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${lvDef.ico||'?'} ▾</button>`;
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${lvDef.lbl} ▾</button>`;
   // Grado
   const gradeSel = gradeKeys.length
     ? (openSel === 'grade'
@@ -5710,20 +5728,29 @@ function _prepConfigHtml() {
         + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
       : `<button class="prep-sel-btn" onclick="_prep.openSelector='grade';_renderPreparatePane()">${_prep.grade}° ▾</button>`)
     : '';
+  // Área
+  const areaSel = areaOpts.length
+    ? (openSel === 'area'
+      ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.lbl}</button>`).join('')
+        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+      : `<button class="prep-sel-btn" onclick="_prep.openSelector='area';_renderPreparatePane()">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
+    : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
     ? `<button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" title="Todos">✦</button>`
       + edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
     : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 ▾'}</button>`;
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?'<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>'+gradeSel:''}<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>${colegioSel}</div>`;
-  // PRE-UNIV: áreas sin contenido aún
-  if (lvDef.areas) {
+  const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?dot+gradeSel:''}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
+  // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
+  if (!gradeKeys.length && areaOpts.length) {
+    const visibleAreas = _prep.area ? areaOpts.filter(a=>a.key===_prep.area) : areaOpts;
     return `<div class="prep-wrap" style="padding-bottom:8px">
       ${selectorRow}
-      <div class="prep-kh-units">${lvDef.areas.map((a,ai)=>`
+      <div class="prep-kh-units">${visibleAreas.map((a,ai)=>`
         <div class="prep-kh-unit">
-          <div class="prep-kh-unit-name">Área ${ai+1} — ${a.lbl}</div>
+          <div class="prep-kh-unit-name">${a.lbl}</div>
           <div class="prep-kh-skills"><span style="font-size:11px;color:rgba(255,255,255,0.2)">🚧 Próximamente</span></div>
         </div>`).join('')}
       </div>
