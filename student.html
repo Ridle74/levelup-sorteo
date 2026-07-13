@@ -8722,6 +8722,7 @@ function vTareas() {
         <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
         <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px">
           <option value="enlace">🔗 Enlace</option>
+          <option value="documento">📄 Documento</option>
           <option value="preparate">🧠 Prepárate</option>
         </select>
       </div>
@@ -8778,13 +8779,15 @@ function vTareas() {
           </select>
         </div>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-        <div id="task-file-row" style="flex:1;display:flex;gap:6px" data-url="">
-          <div id="task-file-name" onclick="cancelTaskFile();document.getElementById('task-file-input').click()" style="flex:1;cursor:pointer;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Subir archivo...</div>
-          <input type="text" class="fsm" id="t-desc" placeholder="Título del archivo" style="flex:1;margin-bottom:0;height:38px">
+      <div id="task-file-section" style="display:none">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+          <div id="task-file-row" style="flex:1;display:flex;gap:6px" data-url="">
+            <div id="task-file-name" onclick="cancelTaskFile();document.getElementById('task-file-input').click()" style="flex:1;cursor:pointer;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Subir archivo...</div>
+            <input type="text" class="fsm" id="t-desc" placeholder="Título del archivo" style="flex:1;margin-bottom:0;height:38px">
+          </div>
+          <button class="msgs-btn-icon" title="Ver / descargar archivo" onclick="openTaskFile()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">📎</button>
+          <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
         </div>
-        <button class="msgs-btn-icon" title="Ver / descargar archivo" onclick="openTaskFile()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">📎</button>
-        <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
       </div>
       <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
         <div style="flex:1;position:relative">
@@ -9843,16 +9846,12 @@ function _updateTaskTipo() {
   var sel = document.getElementById('task-tipo-sel');
   var tipo = sel ? sel.value : 'enlace';
   var linkSec = document.getElementById('task-link-section');
+  var fileSec = document.getElementById('task-file-section');
   var prepSec = document.getElementById('task-prep-section');
-  if (tipo === 'preparate') {
-    if (linkSec) linkSec.style.display = 'none';
-    if (prepSec) prepSec.style.display = 'block';
-    _taskPrepOpen = true;
-  } else {
-    if (linkSec) linkSec.style.display = '';
-    if (prepSec) prepSec.style.display = 'none';
-    _taskPrepOpen = false;
-  }
+  if (linkSec) linkSec.style.display  = tipo === 'enlace'    ? '' : 'none';
+  if (fileSec) fileSec.style.display  = tipo === 'documento' ? '' : 'none';
+  if (prepSec) prepSec.style.display  = tipo === 'preparate' ? 'block' : 'none';
+  _taskPrepOpen = tipo === 'preparate';
 }
 function _toggleTaskPrep() { /* legado — no-op */ }
 function _updateTaskPrepGrado() {
@@ -9995,10 +9994,7 @@ function _resetTaskPrepForm() {
   _taskPrepOpen = false;
   var tipoSel = document.getElementById('task-tipo-sel');
   if (tipoSel) tipoSel.value = 'enlace';
-  var linkSec = document.getElementById('task-link-section');
-  if (linkSec) linkSec.style.display = '';
-  var sec = document.getElementById('task-prep-section');
-  if (sec) sec.style.display = 'none';
+  _updateTaskTipo();
   var nSel = document.getElementById('tp-nivel'); if (nSel) nSel.value = '';
   var gSel = document.getElementById('tp-grado');
   if (gSel) { gSel.value = ''; gSel.innerHTML = '<option value="">— Grado —</option>'; }
@@ -10115,7 +10111,10 @@ function openEditTask(id) {
   cancelTaskLink(); cancelTaskFile();
   if (!t.prepLink) {
     var tipoMainSel2 = document.getElementById('task-tipo-sel');
-    if (tipoMainSel2) tipoMainSel2.value = 'enlace';
+    if (tipoMainSel2) {
+      if (t.att?.type === 'file' || t.att?.type === 'image') tipoMainSel2.value = 'documento';
+      else tipoMainSel2.value = 'enlace';
+    }
     _updateTaskTipo();
   }
   if (t.att?.type === 'link') {
