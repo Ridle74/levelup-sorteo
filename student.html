@@ -1236,7 +1236,7 @@ let msgsUploading = false;
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
 let dashGamingMode = 'catalog'; // 'catalog' | 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
-let _prep = { state:'config', level:'primaria', grade:'1', topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false };
+let _prep = { state:'config', level:'primaria', grade:'1', topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -5599,6 +5599,7 @@ function _renderPreparatePane() {
 }
 function _preparatePaneHtml() {
   if (_prep.state === 'config') return _prepConfigHtml();
+  if (_prep.state === 'unit')   return _prepUnitPaneHtml();
   if (_prep.state === 'exam')   return _prepExamHtml();
   if (_prep.state === 'result') return _prepResultHtml();
   return '';
@@ -5855,13 +5856,51 @@ function _prepApplyMcMode(q) {
 function _prepStartUnit(skills) {
   const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
   if (!valid.length) return;
+  _prep.unitSkillList = valid;
+  _prep.unitDone = [];
+  _prep.state = 'unit';
+  _renderPreparatePane();
+}
+function _prepStartFromUnit(sk) {
+  const def = BINGO_TOPICS[sk]; if (!def) return;
+  _prep.topic = sk;
+  const qCount = def.qCount || _prep.qCount;
   const qs = [];
-  for (let i=0;i<_prep.qCount;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(_prepApplyMcMode(def.gen())); }
-  _prep.topic = valid[0];
+  for (let i=0;i<qCount;i++) qs.push(_prepApplyMcMode(def.gen()));
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
   clearInterval(_prepTimerIntv);
   if (_prep.timeSec>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   _renderPreparatePane();
+}
+function _prepUnitPaneHtml() {
+  const skills = _prep.unitSkillList;
+  const done   = new Set(_prep.unitDone);
+  const total  = skills.length;
+  const doneN  = done.size;
+  const pct    = total>0 ? Math.round((doneN/total)*100) : 0;
+  const allDone = doneN === total && total > 0;
+  const rows = skills.map(sk=>{
+    const def = BINGO_TOPICS[sk]||{};
+    const isDone = done.has(sk);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,${isDone?'0.03':'0.06'});border:1px solid rgba(255,255,255,${isDone?'0.05':'0.1'});margin-bottom:6px;${isDone?'opacity:0.55':'cursor:pointer'}" ${isDone?'':('onclick="_prepStartFromUnit(\''+sk+'\')"')}>`
+      +`<span style="font-size:18px;flex-shrink:0">${def.ico||'📝'}</span>`
+      +`<span style="flex:1;min-width:0;font-size:12px;font-weight:700;color:rgba(255,255,255,${isDone?'0.4':'0.85'})">${def.lbl||sk}</span>`
+      +(isDone
+        ? '<span style="font-size:11px;color:#39ff7a;font-weight:900;flex-shrink:0">✓ LISTO</span>'
+        : '<span style="padding:4px 12px;border-radius:8px;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;font-size:11px;font-weight:900;flex-shrink:0">▶ HACER</span>')
+      +'</div>';
+  }).join('');
+  return `<div class="prep-wrap" style="padding:16px">
+    <button onclick="_prep.state='config';_prep.unitSkillList=[];_prep.unitDone=[];_renderPreparatePane()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:12px;padding:0;display:block">← Volver al catálogo</button>
+    ${allDone?'<div style="text-align:center;padding:10px;margin-bottom:12px;border-radius:12px;background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);color:#39ff7a;font-size:13px;font-weight:900">🏆 ¡Unidad completada!</div>':''}
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden">
+        <div style="height:100%;border-radius:3px;background:linear-gradient(90deg,#39ff7a,#00e5ff);width:${pct}%;transition:width 0.3s"></div>
+      </div>
+      <span style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.5);flex-shrink:0">${doneN}/${total}</span>
+    </div>
+    ${rows}
+  </div>`;
 }
 // Examen de unidad (★): más preguntas, mezcla todos los temas de la unidad en orden aleatorio
 function _prepUnitExam(skills) {
@@ -5933,6 +5972,10 @@ function _prepNextQ() {
 function _prepFinish() {
   clearInterval(_prepTimerIntv);
   _prep.state = 'result'; _prep.endTime = Date.now();
+  // Marcar skill actual como completado en el contexto de unidad
+  if (_prep.unitSkillList.length>0 && _prep.topic && !_prep.unitDone.includes(_prep.topic)) {
+    _prep.unitDone.push(_prep.topic);
+  }
   _prepSaveHistory();
   _renderPreparatePane();
 }
@@ -6135,10 +6178,28 @@ function _prepResultHtml() {
       <div class="prep-score-label">${label}</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:4px">Tiempo: ${_prepFmtTime(secs)}</div>
     </div>
-    <div class="prep-result-row">
-      <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
-      <button class="prep-result-btn" onclick="_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
-    </div>
+    ${(()=>{
+      if (_prep.unitSkillList.length>0) {
+        const nextSk = _prep.unitSkillList.find(sk=>!_prep.unitDone.includes(sk));
+        const nextDef = nextSk ? BINGO_TOPICS[nextSk] : null;
+        const allDone = !nextSk;
+        return allDone
+          ? `<div style="text-align:center;padding:10px;margin-bottom:10px;border-radius:12px;background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);color:#39ff7a;font-size:13px;font-weight:900">🏆 ¡Unidad completada!</div>
+             <div class="prep-result-row">
+               <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
+               <button class="prep-result-btn" onclick="_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Ver unidad</button>
+             </div>`
+          : `<button class="prep-result-btn primary" style="width:100%;margin-bottom:8px" onclick="_prepStartFromUnit('${nextSk}')">▶ Siguiente: ${nextDef?.lbl||nextSk}</button>
+             <div class="prep-result-row">
+               <button class="prep-result-btn" onclick="_prepStart()">↺ Repetir</button>
+               <button class="prep-result-btn" onclick="_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Lista</button>
+             </div>`;
+      }
+      return `<div class="prep-result-row">
+        <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
+        <button class="prep-result-btn" onclick="_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
+      </div>`;
+    })()}
     <button class="prep-result-btn" style="width:100%;margin-top:8px" onclick="_prep.showReview=!_prep.showReview;_renderPreparatePane()">
       ${_prep.showReview?'▲ Ocultar revisión':'▼ Revisar respuestas'}
     </button>
