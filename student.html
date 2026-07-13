@@ -10027,7 +10027,7 @@ function _readTaskPrepLink() {
     qCount:  qcntSel ? Number(qcntSel.value) : 10,
     timeSec: timeSel ? Number(timeSel.value) : 0,
   };
-  if (tipo === 'examen') return base;
+  if (tipo === 'examen' || tipo === 'toda') return base;
   var sk = itemSel ? itemSel.value : '';
   if (!sk) return null;
   var def = BINGO_TOPICS[sk];
