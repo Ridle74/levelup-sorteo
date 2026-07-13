@@ -8754,7 +8754,7 @@ function vTareas() {
           </select>
           <button onclick="_clearTaskPrepRow1()" title="Limpiar selección" style="flex-shrink:0;width:34px;height:38px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">↺</button>
         </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px">
+        <div style="display:flex;gap:6px;margin-bottom:8px;align-items:center">
           <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Tipo de actividad —</option>
           </select>
@@ -8779,6 +8779,7 @@ function vTareas() {
             <option value="900">15 min</option>
             <option value="1800">30 min</option>
           </select>
+          <button onclick="_clearTaskPrepRow2()" title="Limpiar selección" style="flex-shrink:0;width:34px;height:38px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">↺</button>
         </div>
         <select class="fsm" id="tp-item" onchange="_syncPrepSel(this)" style="margin-bottom:8px;height:38px;color:rgba(255,255,255,0.4);display:none">
           <option value="" disabled selected>— Selecciona —</option>
@@ -9995,6 +9996,16 @@ function _clearTaskPrepRow1() {
   if (tSel) { tSel.value = ''; tSel.innerHTML = '<option value="" disabled selected>— Tipo de actividad —</option>'; }
   var iSel = document.getElementById('tp-item');
   if (iSel) { iSel.value = ''; iSel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>'; iSel.style.display = 'none'; }
+  _syncAllPrepSels();
+}
+function _clearTaskPrepRow2() {
+  var tSel = document.getElementById('tp-tipo');
+  if (tSel) { tSel.value = ''; tSel.innerHTML = '<option value="" disabled selected>— Tipo de actividad —</option>'; }
+  var iSel = document.getElementById('tp-item');
+  if (iSel) { iSel.value = ''; iSel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>'; iSel.style.display = 'none'; }
+  var mSel = document.getElementById('tp-mode'); if (mSel) mSel.value = '';
+  var qSel = document.getElementById('tp-qcount'); if (qSel) qSel.value = '';
+  var tTimeSel = document.getElementById('tp-time'); if (tTimeSel) tTimeSel.value = '';
   _syncAllPrepSels();
 }
 function _readTaskPrepLink() {
