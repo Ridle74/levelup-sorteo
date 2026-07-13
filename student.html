@@ -9893,9 +9893,10 @@ function _updateTaskPrepTipo() {
   var hasEx  = (unit.skills||[]).some(function(sk){ var d=BINGO_TOPICS[sk]; return d && !d.quiz; });
   var hasQz  = (unit.skills||[]).some(function(sk){ var d=BINGO_TOPICS[sk]; return d && !!d.quiz; });
   var opts = '<option value="">— Tipo de actividad —</option>';
-  opts += '<option value="examen">🎓 Examen de unidad</option>';
   if (hasEx) opts += '<option value="habilidad">📝 Habilidades</option>';
   if (hasQz) opts += '<option value="cuestionario">📋 Cuestionarios</option>';
+  opts += '<option value="examen">🎓 Examen de unidad</option>';
+  opts += '<option value="toda">📚 Toda la unidad</option>';
   tipoSel.innerHTML = opts;
   if (itemSel) { itemSel.innerHTML = '<option value="">— Selecciona —</option>'; itemSel.style.display = 'none'; }
 }
@@ -9907,7 +9908,7 @@ function _updateTaskPrepItem() {
   var itemSel   = document.getElementById('tp-item');
   if (!tipoSel || !itemSel) return;
   var tipo = tipoSel.value;
-  if (!tipo || tipo === 'examen') { itemSel.style.display = 'none'; return; }
+  if (!tipo || tipo === 'examen' || tipo === 'toda') { itemSel.style.display = 'none'; return; }
   var nivel = nivelSel ? nivelSel.value : '';
   var grado = gradoSel ? gradoSel.value : '';
   var uVal  = unidadSel ? unidadSel.value : '';
