@@ -9832,7 +9832,10 @@ function _launchPrepFromTask(cfg) {
     showToast('Configuración de práctica no válida.');
     return;
   }
-  go('preparate');
+  // 'preparate' no es una ruta del router — es dashGamingMode dentro del dashboard
+  dashTab = 'gaming';
+  dashGamingMode = 'preparate';
+  go('dashboard');
 }
 function _resetTaskPrepForm() {
   _taskPrepOpen = false;
