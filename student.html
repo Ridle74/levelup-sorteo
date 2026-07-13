@@ -8717,7 +8717,8 @@ function vTareas() {
       <div class="sec-lbl" id="add-task-label" style="margin-bottom:8px">NUEVA TAREA</div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
         <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
-        <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px">
+        <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
+          <option value="" disabled selected>Tipo de tarea...</option>
           <option value="enlace">🔗 Enlace</option>
           <option value="documento">📄 Documento</option>
           <option value="preparate">🧠 Prepárate</option>
@@ -9842,7 +9843,9 @@ function refreshTaskTagList() {
 // ─────────────────────────────────────────────────────
 function _updateTaskTipo() {
   var sel = document.getElementById('task-tipo-sel');
-  var tipo = sel ? sel.value : 'enlace';
+  var tipo = sel ? sel.value : '';
+  // Color placeholder vs seleccionado
+  if (sel) sel.style.color = tipo ? '' : 'rgba(255,255,255,0.4)';
   var linkSec = document.getElementById('task-link-section');
   var fileSec = document.getElementById('task-file-section');
   var prepSec = document.getElementById('task-prep-section');
@@ -9991,7 +9994,7 @@ function _launchPrepFromTask(cfg) {
 function _resetTaskPrepForm() {
   _taskPrepOpen = false;
   var tipoSel = document.getElementById('task-tipo-sel');
-  if (tipoSel) tipoSel.value = 'enlace';
+  if (tipoSel) tipoSel.value = '';
   _updateTaskTipo();
   var nSel = document.getElementById('tp-nivel'); if (nSel) nSel.value = '';
   var gSel = document.getElementById('tp-grado');
