@@ -9992,11 +9992,8 @@ function _clearTaskPrepRow1() {
   if (cSel) { cSel.value = ''; cSel.innerHTML = '<option value="" disabled selected>— Colegio —</option>'; }
   var uSel = document.getElementById('tp-unidad');
   if (uSel) { uSel.value = ''; uSel.innerHTML = '<option value="" disabled selected>— Unidad —</option>'; }
-  var tSel = document.getElementById('tp-tipo');
-  if (tSel) { tSel.value = ''; tSel.innerHTML = '<option value="" disabled selected>— Tipo de actividad —</option>'; }
-  var iSel = document.getElementById('tp-item');
-  if (iSel) { iSel.value = ''; iSel.innerHTML = '<option value="" disabled selected>— Selecciona —</option>'; iSel.style.display = 'none'; }
-  _syncAllPrepSels();
+  // también limpia fila 2 (depende de fila 1)
+  _clearTaskPrepRow2();
 }
 function _clearTaskPrepRow2() {
   var tSel = document.getElementById('tp-tipo');
