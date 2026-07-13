@@ -8714,17 +8714,69 @@ function vTareas() {
 
     ${isAdmin()?`
     <div id="add-task-box" class="add-task-box" style="display:none">
-      <div class="sec-lbl" id="add-task-label">NUEVA TAREA</div>
-      <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-        <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
-        <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:34px;flex-shrink:0;cursor:pointer;font-size:16px">✕</button>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="sec-lbl" id="add-task-label" style="margin:0">NUEVA TAREA</div>
+        <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:28px;height:28px;flex-shrink:0;cursor:pointer;font-size:14px;line-height:1">✕</button>
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
-        <div id="task-link-row" style="flex:1;margin-bottom:0;display:flex;gap:6px">
-          <input type="text" id="task-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;height:38px">
-          <input type="text" id="task-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;height:38px">
+        <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
+        <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="width:140px;margin-bottom:0;height:38px;flex-shrink:0">
+          <option value="enlace">🔗 Enlace</option>
+          <option value="preparate">🧠 Prepárate</option>
+        </select>
+      </div>
+      <div id="task-link-section">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
+          <div id="task-link-row" style="flex:1;margin-bottom:0;display:flex;gap:6px">
+            <input type="text" id="task-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;height:38px">
+            <input type="text" id="task-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;height:38px">
+          </div>
+          <button class="msgs-btn-icon" title="Copiar enlace" onclick="copyTaskLink()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">🔗</button>
         </div>
-        <button class="msgs-btn-icon" title="Copiar enlace" onclick="copyTaskLink()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">🔗</button>
+      </div>
+      <div id="task-prep-section" style="display:none;margin-bottom:8px;padding:10px;border-radius:10px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2)">
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado()" style="flex:1;margin-bottom:0">
+            <option value="">— Nivel —</option>
+            <option value="primaria">Primaria</option>
+            <option value="secundaria">Secundaria</option>
+            <option value="preuniversitario">Pre-Universitario</option>
+          </select>
+          <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnidad()" style="flex:1;margin-bottom:0">
+            <option value="">— Grado —</option>
+          </select>
+        </div>
+        <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo()" style="margin-bottom:6px">
+          <option value="">— Unidad —</option>
+        </select>
+        <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem()" style="margin-bottom:6px">
+          <option value="">— Tipo de actividad —</option>
+        </select>
+        <select class="fsm" id="tp-item" style="margin-bottom:6px;display:none">
+          <option value="">— Selecciona —</option>
+        </select>
+        <div style="display:flex;gap:6px;margin-bottom:6px">
+          <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0">
+            <option value="mc">Opción múltiple</option>
+            <option value="text">Escribir respuesta</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:6px">
+          <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0">
+            <option value="5">5 preguntas</option>
+            <option value="10" selected>10 preguntas</option>
+            <option value="15">15 preguntas</option>
+            <option value="20">20 preguntas</option>
+          </select>
+          <select class="fsm" id="tp-time" style="flex:1;margin-bottom:0">
+            <option value="0">Sin tiempo</option>
+            <option value="120">2 min</option>
+            <option value="300" selected>5 min</option>
+            <option value="600">10 min</option>
+            <option value="900">15 min</option>
+            <option value="1800">30 min</option>
+          </select>
+        </div>
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
         <div id="task-file-row" style="flex:1;display:flex;gap:6px" data-url="">
@@ -8754,53 +8806,6 @@ function vTareas() {
         </div>
       </div>
       <input type="hidden" id="t-editing-id" value="">
-      <div style="margin-bottom:8px">
-        <button type="button" onclick="_toggleTaskPrep()" style="background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);color:#a78bfa;border-radius:10px;padding:7px 14px;font-size:11px;font-weight:700;cursor:pointer;width:100%;text-align:left">🧠 VINCULAR A PREPÁRATE <span id="tp-toggle-arrow">▼</span></button>
-        <div id="task-prep-section" style="display:none;margin-top:6px;padding:10px;border-radius:10px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2)">
-          <div style="display:flex;gap:6px;margin-bottom:6px">
-            <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado()" style="flex:1;margin-bottom:0">
-              <option value="">— Nivel —</option>
-              <option value="primaria">Primaria</option>
-              <option value="secundaria">Secundaria</option>
-              <option value="preuniversitario">Pre-Universitario</option>
-            </select>
-            <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnidad()" style="flex:1;margin-bottom:0">
-              <option value="">— Grado —</option>
-            </select>
-          </div>
-          <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo()" style="margin-bottom:6px">
-            <option value="">— Unidad —</option>
-          </select>
-          <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem()" style="margin-bottom:6px">
-            <option value="">— Tipo de actividad —</option>
-          </select>
-          <select class="fsm" id="tp-item" style="margin-bottom:6px;display:none">
-            <option value="">— Selecciona —</option>
-          </select>
-          <div style="display:flex;gap:6px;margin-bottom:6px">
-            <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0">
-              <option value="mc">Opción múltiple</option>
-              <option value="text">Escribir respuesta</option>
-            </select>
-          </div>
-          <div style="display:flex;gap:6px">
-            <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0">
-              <option value="5">5 preguntas</option>
-              <option value="10" selected>10 preguntas</option>
-              <option value="15">15 preguntas</option>
-              <option value="20">20 preguntas</option>
-            </select>
-            <select class="fsm" id="tp-time" style="flex:1;margin-bottom:0">
-              <option value="0">Sin tiempo</option>
-              <option value="120">2 min</option>
-              <option value="300" selected>5 min</option>
-              <option value="600">10 min</option>
-              <option value="900">15 min</option>
-              <option value="1800">30 min</option>
-            </select>
-          </div>
-        </div>
-      </div>
       <button class="btn-sm btn-primary" id="t-save-btn" onclick="addTask()" style="width:100%">GUARDAR TAREA</button>
     </div>`:''}
 
@@ -9834,13 +9839,22 @@ function refreshTaskTagList() {
   if (el) el.innerHTML = _renderTagPills(taskTag, 'toggleTaskTag');
 }
 // ─────────────────────────────────────────────────────
-function _toggleTaskPrep() {
-  _taskPrepOpen = !_taskPrepOpen;
-  const sec = document.getElementById('task-prep-section');
-  const arrow = document.getElementById('tp-toggle-arrow');
-  if (sec) sec.style.display = _taskPrepOpen ? 'block' : 'none';
-  if (arrow) arrow.textContent = _taskPrepOpen ? '▲' : '▼';
+function _updateTaskTipo() {
+  var sel = document.getElementById('task-tipo-sel');
+  var tipo = sel ? sel.value : 'enlace';
+  var linkSec = document.getElementById('task-link-section');
+  var prepSec = document.getElementById('task-prep-section');
+  if (tipo === 'preparate') {
+    if (linkSec) linkSec.style.display = 'none';
+    if (prepSec) prepSec.style.display = 'block';
+    _taskPrepOpen = true;
+  } else {
+    if (linkSec) linkSec.style.display = '';
+    if (prepSec) prepSec.style.display = 'none';
+    _taskPrepOpen = false;
+  }
 }
+function _toggleTaskPrep() { /* legado — no-op */ }
 function _updateTaskPrepGrado() {
   var nivelSel = document.getElementById('tp-nivel');
   var gradoSel = document.getElementById('tp-grado');
@@ -9979,10 +9993,12 @@ function _launchPrepFromTask(cfg) {
 }
 function _resetTaskPrepForm() {
   _taskPrepOpen = false;
+  var tipoSel = document.getElementById('task-tipo-sel');
+  if (tipoSel) tipoSel.value = 'enlace';
+  var linkSec = document.getElementById('task-link-section');
+  if (linkSec) linkSec.style.display = '';
   var sec = document.getElementById('task-prep-section');
   if (sec) sec.style.display = 'none';
-  var arrow = document.getElementById('tp-toggle-arrow');
-  if (arrow) arrow.textContent = '▼';
   var nSel = document.getElementById('tp-nivel'); if (nSel) nSel.value = '';
   var gSel = document.getElementById('tp-grado');
   if (gSel) { gSel.value = ''; gSel.innerHTML = '<option value="">— Grado —</option>'; }
@@ -10060,10 +10076,9 @@ function openEditTask(id) {
   _resetTaskPrepForm();
   if (t.prepLink && t.prepLink.level && t.prepLink.grade != null) {
     _taskPrepOpen = true;
-    var sec = document.getElementById('task-prep-section');
-    if (sec) sec.style.display = 'block';
-    var arrow = document.getElementById('tp-toggle-arrow');
-    if (arrow) arrow.textContent = '▲';
+    var tipoMainSel = document.getElementById('task-tipo-sel');
+    if (tipoMainSel) tipoMainSel.value = 'preparate';
+    _updateTaskTipo();
     // nivel
     var nSel = document.getElementById('tp-nivel');
     if (nSel) { nSel.value = t.prepLink.level||''; _updateTaskPrepGrado(); }
@@ -10098,6 +10113,11 @@ function openEditTask(id) {
   }
   // pre-fill attachment if link
   cancelTaskLink(); cancelTaskFile();
+  if (!t.prepLink) {
+    var tipoMainSel2 = document.getElementById('task-tipo-sel');
+    if (tipoMainSel2) tipoMainSel2.value = 'enlace';
+    _updateTaskTipo();
+  }
   if (t.att?.type === 'link') {
     document.getElementById('task-link-url').value  = t.att.url||'';
     document.getElementById('task-link-name').value = t.att.name||'';
