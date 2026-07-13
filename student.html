@@ -8725,7 +8725,7 @@ function renderTask(t, loggedId) {
     </div>` : '';
   const _prepCfg = t.prepLink ? JSON.stringify(t.prepLink).replace(/"/g,'&quot;') : '';
   const prepBtnHtml = t.prepLink
-    ? '<button onclick="_launchPrepFromTask(JSON.parse(this.dataset.cfg))" data-cfg="'+_prepCfg+'" style="margin-top:5px;width:100%;padding:7px 2px;border-radius:9px;background:rgba(124,58,237,0.18);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;font-size:11px;font-weight:900;cursor:pointer;letter-spacing:0.05em">▶ PRACTICAR — '+(t.prepLink.unitLabel||'Prepárate')+'</button>'
+    ? '<button onclick="_launchPrepFromTask(JSON.parse(this.dataset.cfg))" data-cfg="'+_prepCfg+'" style="margin-top:5px;width:100%;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 10px;background:rgba(0,0,0,0.3);border:1px solid rgba(124,58,237,0.35);border-radius:10px;color:#a78bfa;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">▶ PRACTICAR — '+(t.prepLink.unitLabel||'Prepárate')+'</button>'
     : '';
   const btnsHtml = `<button class="btn-dg sq ${done?'on':awaiting?'wait':'off'}" ${awaiting?'disabled':''} title="${doneTitle}" onclick="toggleTaskDone('${t.id}')">${doneIcon}</button>${isAdmin()?`<button class="btn-dt sq" style="background:rgba(79,182,255,0.1);border-color:rgba(79,182,255,0.25);color:#4fb6ff" title="Editar" onclick="openEditTask('${t.id}')">✏️</button>`:''} ${isAdmin()?`<button class="btn-dt sq${notDone?' on':''}" title="${notDone?'Quitar marca de no hecha':'Marcar como no hecha'}" onclick="markTaskUndone('${t.id}')">✕</button>`:''}`;
   if (isMobile) {
