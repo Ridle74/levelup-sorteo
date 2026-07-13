@@ -2445,6 +2445,18 @@ const _EM_PALABRAS = [
   { word:'COMPUTADORA',v:5, c:6 },
   { word:'BIBLIOTECA', v:5, c:5 },
   { word:'CALCETINES', v:4, c:6 },
+  { word:'AGUACATE',   v:5, c:3 },
+  { word:'ELEFANTE',   v:4, c:4 },
+  { word:'CHOCOLATE',  v:4, c:5 },
+  { word:'UNIVERSO',   v:4, c:4 },
+  { word:'COLEGIO',    v:5, c:3 },
+  { word:'PLANETA',    v:3, c:4 },
+  { word:'SOMBRERO',   v:3, c:5 },
+  { word:'ESTRELLA',   v:3, c:5 },
+  { word:'ESTUDIANTE', v:5, c:5 },
+  { word:'MARIPOSA',   v:4, c:4 },
+  { word:'EJERCICIO',  v:6, c:3 },
+  { word:'TORTUGA',    v:3, c:4 },
 ];
 
 // b0: Definiciones — Espacio Muestral y Suceso
@@ -2486,6 +2498,30 @@ function _genEM_B0(){
     {q:'Si A = {2, 4, 6} dentro de Ω = {1,2,3,4,5,6}, ¿qué es A?',
      a:'Un suceso del experimento',
      w:['El espacio muestral completo','Un experimento aleatorio','El suceso imposible']},
+    {q:'¿Qué símbolo se usa para representar el ESPACIO MUESTRAL?',
+     a:'Ω (omega mayúscula)',
+     w:['Δ (delta)','Σ (sigma)','∅ (conjunto vacío)']},
+    {q:'¿Cuántos elementos tiene el suceso imposible?',
+     a:'Ninguno (es el conjunto vacío ∅)',
+     w:['Uno','Todos los del espacio muestral','Depende del experimento']},
+    {q:'¿Qué relación tiene el suceso seguro con el espacio muestral?',
+     a:'Son iguales: el suceso seguro ES el espacio muestral Ω',
+     w:['El suceso seguro es un subconjunto propio de Ω','El suceso seguro está fuera de Ω','El suceso seguro tiene la mitad de elementos de Ω']},
+    {q:'Si lanzamos un dado, ¿el suceso "sacar un 7" es un suceso posible?',
+     a:'No, es un suceso imposible porque 7 ∉ Ω',
+     w:['Sí, es un suceso elemental','Sí, con probabilidad muy baja','No, es el suceso seguro']},
+    {q:'¿Cuántos sucesos elementales tiene el espacio muestral de lanzar una moneda?',
+     a:'2 (cara y sello)',
+     w:['1','3','4']},
+    {q:'¿Qué significa A\' (A prima) en probabilidad?',
+     a:'El complementario de A: todos los elementos de Ω que no están en A',
+     w:['Lo mismo que A pero escrito de otra forma','El conjunto vacío','La unión de A con otro suceso']},
+    {q:'Si n(Ω) = 6 y n(A) = 2, ¿cuántos elementos tiene el complementario de A?',
+     a:'4',
+     w:['2','6','8']},
+    {q:'¿Un experimento aleatorio puede tener un solo resultado posible?',
+     a:'No, porque entonces el resultado sería predecible (sería determinista)',
+     w:['Sí, si ese único resultado es el suceso seguro','Sí, si el espacio muestral es el conjunto vacío','Sí, cualquier experimento puede tener un solo resultado']},
   ];
   const d=defs[_c4rnd(0,defs.length-1)];
   return{q:d.q,a:d.a,opts:_c4shuf([d.a,...d.w.slice(0,3)]),mc:true};
@@ -2506,6 +2542,16 @@ function _genEM_B1(){
     {q:'Anotar los números del 1 al 20 mayores que 16',n:4,o:'17,18,19,20'},
     {q:'Anotar los múltiplos de 6 menores que 30',n:4,o:'6,12,18,24'},
     {q:'Extraer los colores de la lista (rojo, azul, verde, amarillo, morado) que empiezan con vocal',n:2,o:'azul,amarillo'},
+    {q:'Anotar los números primos menores que 15',n:6,o:'2,3,5,7,11,13'},
+    {q:'Extraer las vocales de la palabra PRIMARIA',n:3,o:'I,A,I,A → 4 letras pero distintas: I,A'},
+    {q:'Anotar los divisores del número 12',n:6,o:'1,2,3,4,6,12'},
+    {q:'Elegir las estaciones del año que tienen más de 6 letras en español',n:2,o:'primavera,otoño→solo primavera,invierno'},
+    {q:'Anotar los números del 1 al 30 divisibles entre 7',n:4,o:'7,14,21,28'},
+    {q:'Extraer las consonantes de la palabra LIMA',n:2,o:'L,M'},
+    {q:'Anotar los múltiplos de 8 menores que 50',n:6,o:'8,16,24,32,40,48'},
+    {q:'Elegir los planetas del sistema solar que tienen 6 letras o menos',n:5,o:'Marte,Venus,Tierra,Júpiter→Marte,Venus,Tierra,Urano,Saturno'},
+    {q:'Anotar los números del 1 al 20 que son cuadrados perfectos',n:4,o:'1,4,9,16'},
+    {q:'Extraer las letras de la palabra BINGO que son vocales',n:2,o:'I,O'},
   ];
   const e=exps[_c4rnd(0,exps.length-1)];
   const ws=_c4shuf([e.n-1,e.n+1,e.n+2,Math.max(1,e.n-2)].filter(v=>v!==e.n&&v>0)).slice(0,3);
@@ -2520,6 +2566,17 @@ function _genEM_B2(){
     {q:'Se saca una bola de una bolsa con bolas roja, azul y verde',correct:'{roja, azul, verde}',wrong:['{roja, azul}','{roja, azul, verde, amarilla}','{azul, verde}']},
     {q:'Se elige una fruta entre manzana, pera y plátano',correct:'{manzana, pera, plátano}',wrong:['{manzana, pera}','{manzana, pera, plátano, uva}','{manzana, plátano}']},
     {q:'Se extrae una figura entre círculo, cuadrado y triángulo',correct:'{círculo, cuadrado, triángulo}',wrong:['{círculo, cuadrado}','{círculo, cuadrado, triángulo, rombo}','{cuadrado, triángulo}']},
+    {q:'Se escoge un día del fin de semana',correct:'{sábado, domingo}',wrong:['{sábado}','{viernes, sábado, domingo}','{lunes, sábado, domingo}']},
+    {q:'Se saca una carta de un mazo solo de ases (corazón, pica, trébol, diamante)',correct:'{corazón, pica, trébol, diamante}',wrong:['{corazón, pica, trébol}','{corazón, diamante}','{corazón, pica, trébol, diamante, joker}']},
+    {q:'Se elige un color de semáforo',correct:'{rojo, amarillo, verde}',wrong:['{rojo, verde}','{rojo, amarillo, verde, azul}','{rojo, amarillo}']},
+    {q:'Se gira una ruleta con sectores 1, 2, 3, 4 y 5',correct:'{1, 2, 3, 4, 5}',wrong:['{1, 2, 3, 4}','{0, 1, 2, 3, 4, 5}','{1, 2, 3, 4, 5, 6}']},
+    {q:'Se extrae una letra de la palabra "AMOR"',correct:'{A, M, O, R}',wrong:['{A, M, O}','{A, M, O, R, E}','{M, O, R}']},
+    {q:'Se lanza un dado de 4 caras',correct:'{1, 2, 3, 4}',wrong:['{1, 2, 3}','{1, 2, 3, 4, 5}','{0, 1, 2, 3, 4}']},
+    {q:'Se escoge un punto cardinal',correct:'{norte, sur, este, oeste}',wrong:['{norte, sur, este}','{norte, sur, este, oeste, noreste}','{norte, sur}']},
+    {q:'Se elige una vocal del abecedario español',correct:'{a, e, i, o, u}',wrong:['{a, e, i, o}','{a, e, i, o, u, y}','{a, i, o, u}']},
+    {q:'Se extrae un palo de una baraja española (oros, copas, espadas, bastos)',correct:'{oros, copas, espadas, bastos}',wrong:['{oros, copas, espadas}','{oros, espadas, bastos}','{oros, copas, espadas, bastos, comodín}']},
+    {q:'Se lanza una moneda dos veces y se anota el resultado de cada lanzamiento',correct:'{CC, CS, SC, SS}',wrong:['{CC, CS, SC}','{CC, SS}','{C, S}']},
+    {q:'Se elige el turno de un semáforo (verde primero o rojo primero)',correct:'{verde primero, rojo primero}',wrong:['{verde}','{verde, rojo, amarillo primero}','{rojo, verde, azul primero}']},
   ];
   const p=probs[_c4rnd(0,probs.length-1)];
   return{q:`Experimento: "${p.q}"\n¿Cuál es el espacio muestral Ω correcto?`,a:p.correct,opts:_c4shuf([p.correct,...p.wrong.slice(0,3)]),mc:true};
@@ -2536,6 +2593,17 @@ function _genEM_B3(){
     {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso B: obtener una figura NO POLIGONAL\nSuceso A: complemento de B',ans:6,w:[3,4,5]},
     {q:'Ω = {rojo, azul, verde, amarillo, naranja} (bolas en urna)\nSuceso A: sacar un color PRIMARIO',ans:3,w:[2,4,1]},
     {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un múltiplo de 3',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número PRIMO',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un número CUADRADO PERFECTO',ans:3,w:[2,4,1]},
+    {q:'Ω = {a,e,i,o,u} (vocales)\nSuceso A: elegir una vocal que tenga menos de 2 letras',ans:5,w:[3,4,2]},
+    {q:'Ω = {rojo,azul,verde,amarillo,naranja,morado,rosado,blanco} (bolas)\nSuceso A: sacar un color que empiece con vocal',ans:3,w:[2,4,1]},
+    {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día del FIN DE SEMANA',ans:2,w:[3,4,5]},
+    {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día de la semana que tenga más de 6 letras',ans:4,w:[3,5,2]},
+    {q:'Ω = {enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre}\nSuceso A: elegir un mes que tenga 30 días exactos',ans:4,w:[3,5,6]},
+    {q:'Ω = {A,M,O,R} (letras de "AMOR")\nSuceso A: elegir una VOCAL',ans:2,w:[1,3,4]},
+    {q:'Ω = {cara,sello} (moneda)\nSuceso A: obtener cara',ans:1,w:[2,0,3]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10,11,12} (dado de 12 caras)\nSuceso A: sacar un múltiplo de 4',ans:3,w:[2,4,6]},
+    {q:'Ω = {norte,sur,este,oeste} (puntos cardinales)\nSuceso A: elegir un punto que empiece con vocal',ans:1,w:[2,3,4]},
   ];
   const p=probs[_c4rnd(0,probs.length-1)];
   const ws=_c4shuf(p.w.filter(v=>v!==p.ans)).slice(0,3);
@@ -5861,12 +5929,23 @@ function _prepStartUnit(skills) {
   _prep.state = 'unit';
   _renderPreparatePane();
 }
+// Genera preguntas únicas (sin repetir enunciado) para una sesión
+function _prepGenUniqueQs(gen, count) {
+  const qs = [], seen = new Set();
+  let tries = 0, limit = count * 30;
+  while (qs.length < count && tries < limit) {
+    tries++;
+    const q = _prepApplyMcMode(gen());
+    if (!seen.has(q.q)) { seen.add(q.q); qs.push(q); }
+  }
+  // Si el pool es menor que count, completar sin restricción
+  while (qs.length < count) qs.push(_prepApplyMcMode(gen()));
+  return qs;
+}
 function _prepStartFromUnit(sk) {
   const def = BINGO_TOPICS[sk]; if (!def) return;
   _prep.topic = sk;
-  const qCount = def.qCount || _prep.qCount;
-  const qs = [];
-  for (let i=0;i<qCount;i++) qs.push(_prepApplyMcMode(def.gen()));
+  const qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
   clearInterval(_prepTimerIntv);
   if (_prep.timeSec>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -5920,8 +5999,7 @@ function _prepStart() {
   const def = BINGO_TOPICS[_prep.topic];
   if (!def || !def.gen) { console.warn('_prepStart: no def for topic', _prep.topic); return; }
   try {
-    const qs = [];
-    for (let i=0;i<_prep.qCount;i++) qs.push(_prepApplyMcMode(def.gen()));
+    const qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
     clearInterval(_prepTimerIntv);
     if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
