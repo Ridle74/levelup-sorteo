@@ -8718,10 +8718,10 @@ function vTareas() {
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
         <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
         <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
-          <option value="" disabled selected>Tipo de tarea...</option>
-          <option value="enlace">🔗 Enlace</option>
-          <option value="documento">📄 Documento</option>
-          <option value="preparate">🧠 Prepárate</option>
+          <option value="" disabled selected style="background:#fff;color:#111">Tipo de tarea...</option>
+          <option value="enlace" style="background:#fff;color:#111">🔗 Enlace</option>
+          <option value="documento" style="background:#fff;color:#111">📄 Documento</option>
+          <option value="preparate" style="background:#fff;color:#111">🧠 Prepárate</option>
         </select>
         <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:38px;flex-shrink:0;cursor:pointer;font-size:14px;line-height:1">✕</button>
       </div>
