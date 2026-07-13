@@ -8720,7 +8720,7 @@ function vTareas() {
       </div>
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px">
         <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
-        <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="width:140px;margin-bottom:0;height:38px;flex-shrink:0">
+        <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px">
           <option value="enlace">🔗 Enlace</option>
           <option value="preparate">🧠 Prepárate</option>
         </select>
@@ -8734,41 +8734,41 @@ function vTareas() {
           <button class="msgs-btn-icon" title="Copiar enlace" onclick="copyTaskLink()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">🔗</button>
         </div>
       </div>
-      <div id="task-prep-section" style="display:none;margin-bottom:8px;padding:10px;border-radius:10px;background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2)">
-        <div style="display:flex;gap:6px;margin-bottom:6px">
-          <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado()" style="flex:1;margin-bottom:0">
+      <div id="task-prep-section" style="display:none;margin-bottom:8px">
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado()" style="flex:1;margin-bottom:0;height:38px">
             <option value="">— Nivel —</option>
             <option value="primaria">Primaria</option>
             <option value="secundaria">Secundaria</option>
             <option value="preuniversitario">Pre-Universitario</option>
           </select>
-          <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnidad()" style="flex:1;margin-bottom:0">
+          <select class="fsm" id="tp-grado" onchange="_updateTaskPrepUnidad()" style="flex:1;margin-bottom:0;height:38px">
             <option value="">— Grado —</option>
           </select>
         </div>
-        <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo()" style="margin-bottom:6px">
+        <select class="fsm" id="tp-unidad" onchange="_updateTaskPrepTipo()" style="margin-bottom:8px;height:38px">
           <option value="">— Unidad —</option>
         </select>
-        <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem()" style="margin-bottom:6px">
+        <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem()" style="margin-bottom:8px;height:38px">
           <option value="">— Tipo de actividad —</option>
         </select>
-        <select class="fsm" id="tp-item" style="margin-bottom:6px;display:none">
+        <select class="fsm" id="tp-item" style="margin-bottom:8px;height:38px;display:none">
           <option value="">— Selecciona —</option>
         </select>
-        <div style="display:flex;gap:6px;margin-bottom:6px">
-          <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0">
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <select class="fsm" id="tp-mode" style="flex:1;margin-bottom:0;height:38px">
             <option value="mc">Opción múltiple</option>
             <option value="text">Escribir respuesta</option>
           </select>
         </div>
-        <div style="display:flex;gap:6px">
-          <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0">
+        <div style="display:flex;gap:6px;margin-bottom:0">
+          <select class="fsm" id="tp-qcount" style="flex:1;margin-bottom:0;height:38px">
             <option value="5">5 preguntas</option>
             <option value="10" selected>10 preguntas</option>
             <option value="15">15 preguntas</option>
             <option value="20">20 preguntas</option>
           </select>
-          <select class="fsm" id="tp-time" style="flex:1;margin-bottom:0">
+          <select class="fsm" id="tp-time" style="flex:1;margin-bottom:0;height:38px">
             <option value="0">Sin tiempo</option>
             <option value="120">2 min</option>
             <option value="300" selected>5 min</option>
