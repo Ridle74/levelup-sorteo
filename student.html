@@ -536,15 +536,15 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-leg-item{display:flex;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,0.42)}
 .prep-kh-leg-sq{width:13px;height:13px;border-radius:3px;flex-shrink:0}
 .prep-kh-units{display:flex;flex-direction:column;gap:8px}
-.prep-kh-unit{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:11px 12px}
-.prep-kh-unit-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.65);margin-bottom:8px}
+.prep-kh-unit{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.035);border-radius:12px;padding:11px 12px}
+.prep-kh-unit-name{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin-bottom:8px}
 .prep-kh-skills{display:flex;flex-wrap:nowrap;align-items:center;gap:5px;overflow-x:auto;padding:4px 0}
 .prep-kh-sep{width:1px;height:36px;background:rgba(255,255,255,0.13);margin:0 5px;flex-shrink:0}
 .prep-kh-sq.quiz-sq{background:rgba(168,85,247,0.1);border:2px dashed rgba(168,85,247,0.55);color:#a855f7}
 .prep-kh-sq.quiz-sq.selected,.prep-kh-sq.quiz-sq:hover{background:rgba(168,85,247,0.26);border-style:solid}
 .prep-kh-sq.exam-sq{background:rgba(250,204,21,0.07);border:2px solid rgba(250,204,21,0.5);color:#facc15}
 .prep-kh-sq.exam-sq:hover{background:rgba(250,204,21,0.18)}
-.prep-kh-sq{width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:transform .14s,box-shadow .14s;color:rgba(255,255,255,0.75);flex-shrink:0;user-select:none}
+.prep-kh-sq{width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.22);background:rgba(255,255,255,0.14);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:transform .14s,box-shadow .14s;color:#fff;flex-shrink:0;user-select:none}
 .prep-kh-sq:hover{transform:scale(1.11);box-shadow:0 3px 14px rgba(0,0,0,0.45)}
 .prep-kh-sq.dominado{background:rgba(109,40,217,0.85);border-color:rgba(168,85,247,0.9);color:#fff}
 .prep-kh-sq.competente{background:rgba(139,92,246,0.45);border-color:rgba(168,85,247,0.55);color:#e0aaff}
@@ -3063,7 +3063,7 @@ const BINGO_TOPICS = {
   em_bq2: { ico:'⚡', lbl:'Quiz II — Sucesos y Probabilidad',qCount:5, qCountRapida:3, gen:()=>_genEM_BQ2(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
-Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = '□'; });
+Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
 const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
@@ -5768,7 +5768,7 @@ function _prepConfigHtml() {
           const sq=`<div class="prep-kh-sq quiz-sq${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="Cuestionario: ${def.lbl||sk}" style="cursor:pointer">⚡</div>`;
           return sq+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
         }
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?'♛':(def.ico||'?')}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?'♛':(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit">
         <div class="prep-kh-unit-name">Unidad ${String(ui+1).padStart(2,'0')} — ${unit.lbl}</div>
