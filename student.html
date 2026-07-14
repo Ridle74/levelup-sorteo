@@ -2368,41 +2368,98 @@ function _c4ints(n,min,max,ex=[]){
   const pool=[];for(let i=min;i<=max;i++)if(!ex.includes(i))pool.push(i);
   return _c4shuf(pool).slice(0,n).sort((a,b)=>a-b);
 }
-// b1: ¿Cuántos elementos tiene A∪B? (conjuntos numéricos)
+// ── SVG helpers para ejercicios visuales ──────────────────────────────────────
+// Venn diagram con números colocados en cada región
+function _c4venn(onlyA,common,onlyB){
+  const uid='cv'+Math.random().toString(36).slice(2,6);
+  const pA=[[68,68],[65,55],[65,82],[54,62],[54,80],[76,58]];
+  const pI=[[145,68],[145,56],[145,82],[136,62],[155,62],[145,76]];
+  const pB=[[222,68],[220,55],[220,82],[210,62],[210,80],[230,58]];
+  const lbl=(arr,pos,col)=>arr.slice(0,5).map((n,i)=>
+    `<text x="${pos[i][0]}" y="${pos[i][1]}" font-size="13" fill="${col}" text-anchor="middle" font-weight="700">${n}</text>`
+  ).join('');
+  return `<svg viewBox="0 0 290 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:290px;margin:4px auto;display:block">
+    <circle cx="102" cy="70" r="62" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="2.5"/>
+    <circle cx="188" cy="70" r="62" fill="rgba(132,204,22,0.1)" stroke="#84cc16" stroke-width="2.5"/>
+    <text x="36" y="25" font-size="16" fill="#38bdf8" font-weight="700">A</text>
+    <text x="244" y="25" font-size="16" fill="#84cc16" font-weight="700">B</text>
+    ${lbl(onlyA,pA,'#7dd3fc')}${lbl(common,pI,'#fde68a')}${lbl(onlyB,pB,'#86efac')}
+  </svg>`;
+}
+// Diagrama de círculos concéntricos para subconjunto (con números)
+function _incl4nestedSvg(A,B,isSubset){
+  if(isSubset){
+    const bOnly=B.filter(x=>!A.includes(x));
+    // B-only elements positioned in the outer ring area
+    const ringPos=[[68,45],[148,40],[218,50],[72,100],[142,105],[215,98],[40,70],[240,72]];
+    // A elements in the inner circle
+    const aPos=[[140,72],[125,60],[155,60],[125,82],[155,82],[140,58]];
+    const bOnlyLbls=bOnly.slice(0,8).map((n,i)=>
+      `<text x="${ringPos[i][0]}" y="${ringPos[i][1]}" font-size="13" fill="#7dd3fc" text-anchor="middle" font-weight="700">${n}</text>`
+    ).join('');
+    const aLbls=A.slice(0,5).map((n,i)=>
+      `<text x="${aPos[i][0]}" y="${aPos[i][1]}" font-size="13" fill="#fde68a" text-anchor="middle" font-weight="700">${n}</text>`
+    ).join('');
+    return `<svg viewBox="0 0 290 148" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:290px;margin:4px auto;display:block">
+      <circle cx="145" cy="74" r="68" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="18" y="28" font-size="15" fill="#38bdf8" font-weight="700">B</text>
+      ${bOnlyLbls}
+      <circle cx="145" cy="76" r="36" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="114" y="44" font-size="14" fill="#fbbf24" font-weight="700">A</text>
+      ${aLbls}
+    </svg>`;
+  } else {
+    const outside=A.filter(x=>!B.includes(x));
+    const inside=A.filter(x=>B.includes(x));
+    const bPos=[[70,65],[80,80],[60,80],[55,65],[72,50],[88,65]];
+    const aInPos=[[190,60],[210,60],[190,80],[210,80]];
+    const aOutPos=[[175,42],[210,42],[248,60],[248,80],[175,88],[230,88]];
+    const bLbls=B.slice(0,6).map((n,i)=>`<text x="${bPos[i][0]}" y="${bPos[i][1]}" font-size="13" fill="#7dd3fc" text-anchor="middle" font-weight="700">${n}</text>`).join('');
+    const aInLbls=inside.slice(0,4).map((n,i)=>`<text x="${aInPos[i][0]}" y="${aInPos[i][1]}" font-size="13" fill="#fde68a" text-anchor="middle" font-weight="700">${n}</text>`).join('');
+    const aOutLbls=outside.slice(0,4).map((n,i)=>`<text x="${aOutPos[i][0]}" y="${aOutPos[i][1]}" font-size="13" fill="#f87171" text-anchor="middle" font-weight="700">${n}</text>`).join('');
+    return `<svg viewBox="0 0 290 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:290px;margin:4px auto;display:block">
+      <circle cx="80" cy="70" r="58" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="22" y="26" font-size="15" fill="#38bdf8" font-weight="700">B</text>
+      ${bLbls}
+      <rect x="160" y="18" width="124" height="100" rx="12" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6,3"/>
+      <text x="168" y="34" font-size="14" fill="#fbbf24" font-weight="700">A</text>
+      ${aInLbls}${aOutLbls}
+      <text x="247" y="105" font-size="10" fill="#f87171">∉ B</text>
+    </svg>`;
+  }
+}
+// b1: ¿Cuántos elementos tiene A∪B? — con diagrama Venn
 function _genConj4B1(){
-  const common=_c4ints(_c4rnd(1,3),2,25);
-  const onlyA=_c4ints(_c4rnd(2,4),2,25,common);
-  const onlyB=_c4ints(_c4rnd(2,4),2,25,[...common,...onlyA]);
-  const A=[...common,...onlyA].sort((a,b)=>a-b);
-  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const common=_c4ints(_c4rnd(1,3),2,20);
+  const onlyA=_c4ints(_c4rnd(2,3),2,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),2,20,[...common,...onlyA]);
   const ans=common.length+onlyA.length+onlyB.length;
-  const wrongs=_c4shuf([A.length,B.length,A.length+B.length,ans-1,ans+1,ans+2].filter(v=>v!==ans&&v>0)).slice(0,3);
-  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuántos elementos tiene A∪B?`,
-    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∪B reúne todos los elementos de A y B sin repetir.`};
+  const wrongs=_c4shuf([onlyA.length+onlyB.length,common.length+onlyA.length,common.length+onlyB.length,ans-1,ans+1].filter(v=>v!==ans&&v>0)).slice(0,3);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuántos elementos tiene A∪B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∪B incluye todos los números del diagrama sin repetir: ${ans} en total.`};
 }
-// b2: ¿Cuántos elementos tiene A∩B? (conjuntos numéricos)
+// b2: ¿Cuántos elementos tiene A∩B? — con diagrama Venn
 function _genConj4B2(){
-  const common=_c4ints(_c4rnd(1,3),2,25);
-  const onlyA=_c4ints(_c4rnd(2,4),2,25,common);
-  const onlyB=_c4ints(_c4rnd(2,4),2,25,[...common,...onlyA]);
-  const A=[...common,...onlyA].sort((a,b)=>a-b);
-  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const common=_c4ints(_c4rnd(1,3),2,20);
+  const onlyA=_c4ints(_c4rnd(2,3),2,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),2,20,[...common,...onlyA]);
   const ans=common.length;
-  const wrongs=_c4shuf([A.length,B.length,ans+1,ans+2,onlyA.length].filter(v=>v!==ans&&v>=0)).slice(0,3);
-  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuántos elementos tiene A∩B?`,
-    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∩B solo incluye los elementos que aparecen en ambos conjuntos.`};
+  const wrongs=_c4shuf([onlyA.length,onlyB.length,ans+1,ans+2,ans+onlyA.length].filter(v=>v!==ans&&v>=0)).slice(0,3);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuántos elementos tiene A∩B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∩B son los números del centro (amarillo): ${common.join(', ')} → ${ans} elemento${ans!==1?'s':''}.`};
 }
-// b3: ¿Qué número pertenece a A∩B?
+// b3: ¿Qué número pertenece a A∩B? — con diagrama Venn
 function _genConj4B3(){
   const common=_c4ints(_c4rnd(1,2),2,20);
-  const onlyA=_c4ints(3,2,20,common);
-  const onlyB=_c4ints(3,2,20,[...common,...onlyA]);
-  const A=[...common,...onlyA].sort((a,b)=>a-b);
-  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const onlyA=_c4ints(2,2,20,common);
+  const onlyB=_c4ints(2,2,20,[...common,...onlyA]);
   const ans=common[0];
-  const d=[onlyA[0],onlyB[0],_c4ints(1,21,30,[...A,...B])[0]||99];
-  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Qué número pertenece a A∩B?`,
-    a:ans,opts:_c4shuf([ans,...d.slice(0,3)]),mc:true,ste:`Busca el número que aparece en los dos conjuntos al mismo tiempo.`};
+  const d=_c4shuf([onlyA[0],onlyB[0],_c4ints(1,21,30,[...common,...onlyA,...onlyB])[0]||88]);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Qué número pertenece a A∩B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...d.slice(0,3)]),mc:true,ste:`El número del centro (donde se cruzan A y B) es ${ans}.`};
 }
 // b4: Problema contexto → calcular UNIÓN
 function _genConj4B4(){
@@ -2427,39 +2484,35 @@ function _genConj4BQ1(){const f=[_genConj4B1,_genConj4B2,_genConj4B3];return f[_
 // bq2: Quiz — Problemas de Contexto (mezcla b4 + b5)
 function _genConj4BQ2(){return Math.random()<0.5?_genConj4B4():_genConj4B5();}
 
-// b6: ¿Cuáles son los elementos de A∪B? (seleccionar conjunto correcto)
+// b6: ¿Cuáles son los elementos de A∪B? — con diagrama Venn
 function _genConj4B6(){
-  const common=_c4ints(_c4rnd(1,3),1,20);
+  const common=_c4ints(_c4rnd(1,2),1,20);
   const onlyA=_c4ints(_c4rnd(2,3),1,20,common);
   const onlyB=_c4ints(_c4rnd(2,3),1,20,[...common,...onlyA]);
-  const A=[...common,...onlyA].sort((a,b)=>a-b);
-  const B=[...common,...onlyB].sort((a,b)=>a-b);
   const union=[...common,...onlyA,...onlyB].sort((a,b)=>a-b);
   const ans=`{${union.join(', ')}}`;
-  const d1=`{${[...onlyA,...onlyB].sort((a,b)=>a-b).join(', ')}}`; // sin los comunes
-  const d2=`{${common.join(', ')}}`; // solo la intersección
-  const d3=`{${[...A,...onlyB.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`; // incompleto
+  const d1=`{${[...onlyA,...onlyB].sort((a,b)=>a-b).join(', ')}}`;    // sin los comunes
+  const d2=`{${common.join(', ')}}`;                                    // solo intersección
+  const d3=`{${[...common,...onlyA].sort((a,b)=>a-b).join(', ')}}`;   // solo A
   const pool=[d1,d2,d3].filter(v=>v!==ans);
-  const opts=_c4shuf([ans,...pool.slice(0,3)]);
-  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuáles son los elementos de A∪B?`,
-    a:ans,opts,mc:true,ste:`A∪B reúne todos los elementos de A y B sin repetir → ${ans}`};
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuáles son los elementos de A∪B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...pool.slice(0,3)]),mc:true,ste:`A∪B incluye todos los números del diagrama → ${ans}`};
 }
-// b7: ¿Cuáles son los elementos de A∩B? (seleccionar conjunto correcto)
+// b7: ¿Cuáles son los elementos de A∩B? — con diagrama Venn
 function _genConj4B7(){
   const common=_c4ints(_c4rnd(2,3),1,20);
   const onlyA=_c4ints(_c4rnd(2,3),1,20,common);
   const onlyB=_c4ints(_c4rnd(2,3),1,20,[...common,...onlyA]);
-  const A=[...common,...onlyA].sort((a,b)=>a-b);
-  const B=[...common,...onlyB].sort((a,b)=>a-b);
   const inter=[...common].sort((a,b)=>a-b);
   const ans=`{${inter.join(', ')}}`;
-  const d1=`{${[...common,...onlyA.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`; // demasiado
-  const d2=`{${A.join(', ')}}`; // todo A
-  const d3=`{${[...common,...onlyB.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`; // demasiado B
+  const d1=`{${[...common,...onlyA.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`;  // demasiado
+  const d2=`{${[...common,...onlyA,...onlyB].sort((a,b)=>a-b).join(', ')}}`;    // todo A∪B
+  const d3=`{${[...common,...onlyB.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`;  // demasiado B
   const pool=[d1,d2,d3].filter(v=>v!==ans);
-  const opts=_c4shuf([ans,...pool.slice(0,3)]);
-  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuáles son los elementos de A∩B?`,
-    a:ans,opts,mc:true,ste:`A∩B incluye solo los elementos que están en ambos conjuntos → ${ans}`};
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuáles son los elementos de A∩B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...pool.slice(0,3)]),mc:true,ste:`A∩B son los números del centro (amarillo) → ${ans}`};
 }
 // b8: Identificar operación en diagrama Venn sombreado (visual SVG)
 function _genConj4B8(){
@@ -2490,14 +2543,13 @@ function _incl4pool(n,min,max,ex=[]){
   const pool=[];for(let i=min;i<=max;i++)if(!ex.includes(i))pool.push(i);
   return _incl4shuf(pool).slice(0,n).sort((a,b)=>a-b);
 }
-// b1: Dado A y B numéricos — ¿A ⊂ B o A ⊄ B?
+// b1: Diagrama de cajas/círculos — ¿A ⊂ B o A ⊄ B?
 function _genIncl4B1(){
   const isSubset=Math.random()<0.5;
-  const bigSet=_incl4pool(_incl4rnd(5,8),1,20);
   let A,B;
   if(isSubset){
-    A=_incl4shuf(bigSet).slice(0,_incl4rnd(2,Math.floor(bigSet.length*0.6))).sort((a,b)=>a-b);
-    B=bigSet;
+    B=_incl4pool(_incl4rnd(5,7),1,20);
+    A=_incl4shuf(B).slice(0,_incl4rnd(2,3)).sort((a,b)=>a-b);
   } else {
     B=_incl4pool(_incl4rnd(4,6),1,20);
     const outside=_incl4pool(1,21,30);
@@ -2507,8 +2559,9 @@ function _genIncl4B1(){
   const ans=isSubset?'⊂':'⊄';
   const ste=isSubset
     ?`Todos los elementos de A (${A.join(', ')}) también están en B → A ⊂ B.`
-    :`El elemento ${A.find(x=>!B.includes(x))} está en A pero no en B → A ⊄ B.`;
-  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Qué símbolo va en el espacio?\n\nA _____ B`,
+    :`El elemento ${A.find(x=>!B.includes(x))} no está en B → A ⊄ B.`;
+  const svg=_incl4nestedSvg(A,B,isSubset);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Qué símbolo va entre A y B?<br><strong>A _____ B</strong></div></div>`,
     a:ans,opts:_incl4shuf([ans,isSubset?'⊄':'⊂','⊃','∈']),mc:true,ste};
 }
 // b2: Diagrama de cajas (visual SVG) — ¿A ⊂ B o A ⊄ B?
@@ -12119,7 +12172,6 @@ REF.onSnapshot(doc => {
     // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
     // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
     (function seedJoannaMult(){
-      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
       if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
         taskMultipliers[String(joanna.id)] = 3;
         saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
