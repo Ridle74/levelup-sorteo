@@ -6610,13 +6610,14 @@ function _bingoPaneHtml() {
         </div>
         ${_bingoTopicsMode === 'global' ? `
         <div class="blc-speed" style="grid-template-columns:1fr 1fr 1fr;margin:0 0 8px">
-          ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')}
+          ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${lv.lbl}</button>`).join('')}
         </div>
         ${(()=>{
           const lv = PREP_LEVELS[_bingoLobbyNivel];
           if (!lv) return '';
-          if (lv.areas) {
-            const areasHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico} ${a.lbl}</button>`).join('')}</div>`;
+          // Pre-univ: tiene áreas pero sin grados → mostrar áreas (próximamente)
+          if (lv.areas && !Object.keys(lv.grades||{}).length) {
+            const areasHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')}</div>`;
             return areasHtml + (_bingoLobbyGrade ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>` : '');
           }
           const grades = lv.grades || {};
