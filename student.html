@@ -3148,6 +3148,7 @@ function _bingoNewTiersMap(count) { const m={}; for (let i=0;i<count;i++) m[i]={
 // -- estado efímero local (solo-cliente, no se guarda en Firestore) del reto/bloqueo/poderes --
 let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false, bingoChallengeWrongs = 0, bingoChallengeWrongOpts = new Set();
 let bingoChallengeReview = false, bingoChallengeReviewQ = null; // pantalla de resolución al agotar vidas
+let _bingoChallengeSeenAt = null; // timestamp de cuando este cliente vio el reto por primera vez (para detectar late-joiners)
 let _bingoChallengeKeyListener = null;
 let bingoBlockSelection = [];
 let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
@@ -3666,7 +3667,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
 }
 
 function _bingoResetLocalState() {
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null;
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
@@ -3813,7 +3814,7 @@ function _selectBingoGame(gameId) {
         // Nuevo reto: limpiar estado local para que el jugador pueda participar limpiamente
         bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
         bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set();
-        bingoChallengeReview = false; bingoChallengeReviewQ = null;
+        bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null;
         bingoBlockSelection = []; _bingoChallengeResult = null;
         const _ac2 = bingoGame.activeChallenge;
         if (_ac2 && _ac2.status === 'pending' && _ac2.toUid === _me2.uid) {
@@ -4662,9 +4663,26 @@ function _bingoCheckMyChallengeEnd() {
   if (!player || player.lastChallengeId === bingoGame.challengeId) return; // ya resuelto este reto
   const questions = bingoGame.questions || [];
   if (!questions.length) return; // preguntas aún no cargadas del snapshot — esperar
+  // Registrar la primera vez que este cliente detecta el reto activo con preguntas cargadas
+  if (_bingoChallengeSeenAt === null) _bingoChallengeSeenAt = Date.now();
+  const endsAt = bingoGame.challengeEndsAt || 0;
+  const timeUp = Date.now() >= endsAt;
+  // Late-joiner: si el tiempo ya había expirado cuando vimos el reto por primera vez → saltar sin penalidad
+  if (timeUp && endsAt <= _bingoChallengeSeenAt) {
+    _bingoSkipChallengeNoPenalty();
+    return;
+  }
   const allAnswered = bingoChallengeIdx >= questions.length;
-  const timeUp = Date.now() >= (bingoGame.challengeEndsAt||0);
   if (allAnswered || timeUp) _bingoFinishChallenge(bingoChallengeIdx);
+}
+function _bingoSkipChallengeNoPenalty() {
+  const me = _bingoMe();
+  if (!bingoGame || !me) return;
+  _bingoChallengeSeenAt = null;
+  // Marcar el reto como visto para que no se evalúe en el próximo tick
+  db.collection('bingo').doc(bingoGame.id)
+    .update({ [`players.${me.uid}.lastChallengeId`]: bingoGame.challengeId })
+    .catch(e => console.warn('skipChallengeNoPenalty', e));
 }
 function _bingoCheckMyDuelEnd() {
   if (!bingoGame) return;
