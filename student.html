@@ -3148,7 +3148,8 @@ function _bingoNewTiersMap(count) { const m={}; for (let i=0;i<count;i++) m[i]={
 // -- estado efímero local (solo-cliente, no se guarda en Firestore) del reto/bloqueo/poderes --
 let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false, bingoChallengeWrongs = 0, bingoChallengeWrongOpts = new Set();
 let bingoChallengeReview = false, bingoChallengeReviewQ = null; // pantalla de resolución al agotar vidas
-let _bingoChallengeSeenAt = null; // timestamp de cuando este cliente vio el reto por primera vez (para detectar late-joiners)
+let _bingoChallengeSeenAt = null;      // timestamp de cuando este cliente vio el reto por primera vez
+let _bingoChallengePlayerEndsAt = null; // fin personal del jugador (seenAt + duración completa)
 let _bingoChallengeKeyListener = null;
 let bingoBlockSelection = [];
 let bingoActivePower = null, bingoPowerForm = {}, bingoPowerMsg = '';
@@ -3667,7 +3668,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
 }
 
 function _bingoResetLocalState() {
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null;
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null; _bingoChallengePlayerEndsAt = null;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
@@ -3814,7 +3815,7 @@ function _selectBingoGame(gameId) {
         // Nuevo reto: limpiar estado local para que el jugador pueda participar limpiamente
         bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
         bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set();
-        bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null;
+        bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null; _bingoChallengePlayerEndsAt = null;
         bingoBlockSelection = []; _bingoChallengeResult = null;
         const _ac2 = bingoGame.activeChallenge;
         if (_ac2 && _ac2.status === 'pending' && _ac2.toUid === _me2.uid) {
@@ -3998,10 +3999,11 @@ function _bingoTick() {
   if (!bingoGame || (bingoGame.status !== 'playing' && bingoGame.status !== 'lobby')) { _bingoEnsureTimer(); return; }
   _renderBingoPane(); // refresca cuenta atrás/temporizadores visibles para todos por igual; en lobby refresca lista de jugadores
   // Sonido tick del cronómetro del reto (solo para el jugador que tiene el reto activo)
-  if (bingoGame.status === 'playing' && bingoGame.challengeActive) {
+  if (bingoGame.status === 'playing' && (bingoGame.challengeActive || (_bingoChallengePlayerEndsAt && Date.now() < _bingoChallengePlayerEndsAt))) {
     const _bMe = _bingoMe(), _bMp = _bMe && (bingoGame.players||{})[_bMe.uid];
     if (_bMp && _bMp.lastChallengeId !== bingoGame.challengeId) {
-      const _rem = Math.ceil(((bingoGame.challengeEndsAt||0) - Date.now()) / 1000);
+      const _effEnd = _bingoChallengePlayerEndsAt || (bingoGame.challengeEndsAt||0);
+      const _rem = Math.ceil((_effEnd - Date.now()) / 1000);
       if (_rem > 0 && _rem !== _bSndTickSec) { _bSndTickSec = _rem; if (_rem <= 5) _bSnd.tickUrgent(); else _bSnd.tick(); }
     }
   } else { _bSndTickSec = -1; }
@@ -4656,29 +4658,36 @@ function submitBingoCalcAnswer(raw) {
 // las MISMAS 5 preguntas a todos por igual; cada cliente resuelve y reporta su propio resultado,
 // igual de "confiado" que ya hacían markBingoCell/claimBingoPrize). --
 function _bingoCheckMyChallengeEnd() {
-  if (!bingoGame || !bingoGame.challengeActive) return;
+  if (!bingoGame) return;
   if (bingoChallengeReview) return; // en pantalla de resolución, no interrumpir
   const me = _bingoMe();
   const player = (bingoGame.players||{})[me.uid];
   if (!player || player.lastChallengeId === bingoGame.challengeId) return; // ya resuelto este reto
   const questions = bingoGame.questions || [];
   if (!questions.length) return; // preguntas aún no cargadas del snapshot — esperar
-  // Registrar la primera vez que este cliente detecta el reto activo con preguntas cargadas
-  if (_bingoChallengeSeenAt === null) _bingoChallengeSeenAt = Date.now();
-  const endsAt = bingoGame.challengeEndsAt || 0;
-  const timeUp = Date.now() >= endsAt;
-  // Late-joiner: si el tiempo ya había expirado cuando vimos el reto por primera vez → saltar sin penalidad
-  if (timeUp && endsAt <= _bingoChallengeSeenAt) {
-    _bingoSkipChallengeNoPenalty();
-    return;
+  // Registrar la primera vez que este cliente ve el reto y calcular su ventana personal de tiempo
+  if (_bingoChallengeSeenAt === null) {
+    _bingoChallengeSeenAt = Date.now();
+    const _durMs = ((bingoGame.gameSpeed||'media')==='rapida' ? 30 : 60) * 1000;
+    _bingoChallengePlayerEndsAt = _bingoChallengeSeenAt + _durMs;
   }
+  const globalEndsAt = bingoGame.challengeEndsAt || 0;
+  // Late-joiner: el reto ya había expirado globalmente cuando este cliente lo vio → saltar sin penalidad
+  if (globalEndsAt && globalEndsAt <= _bingoChallengeSeenAt) {
+    _bingoSkipChallengeNoPenalty(); return;
+  }
+  // Usar fin personal (seenAt + duración completa) para que todos tengan el mismo tiempo
+  const playerEndsAt = _bingoChallengePlayerEndsAt || globalEndsAt;
+  const playerActive = Date.now() < playerEndsAt;
+  if (!bingoGame.challengeActive && !playerActive) return; // ni global ni personal activo
   const allAnswered = bingoChallengeIdx >= questions.length;
+  const timeUp = Date.now() >= playerEndsAt;
   if (allAnswered || timeUp) _bingoFinishChallenge(bingoChallengeIdx);
 }
 function _bingoSkipChallengeNoPenalty() {
   const me = _bingoMe();
   if (!bingoGame || !me) return;
-  _bingoChallengeSeenAt = null;
+  _bingoChallengeSeenAt = null; _bingoChallengePlayerEndsAt = null;
   // Marcar el reto como visto para que no se evalúe en el próximo tick
   db.collection('bingo').doc(bingoGame.id)
     .update({ [`players.${me.uid}.lastChallengeId`]: bingoGame.challengeId })
@@ -7396,7 +7405,8 @@ function _bingoPaneHtml() {
         <button class="bcc-submit" style="margin-top:18px" onclick="_bingoDesafioDeclineAck=true;_bingoDesafioDeclineMsg='';_renderBingoPane()">💪 ¡Bien merecido!</button>
       </div></div>`;
     }
-    const _showChallenge = bingoGame.challengeActive && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId;
+    const _playerChallengeStillActive = !!(_bingoChallengePlayerEndsAt && Date.now() < _bingoChallengePlayerEndsAt);
+    const _showChallenge = (bingoGame.challengeActive || _playerChallengeStillActive) && myPlayer && myPlayer.lastChallengeId !== bingoGame.challengeId;
     const _showResult = !!_bingoChallengeResult;
     const _isRapidaMode = (bingoGame.gameSpeed||'media') === 'rapida';
     // Modal: número bonus pendiente (rápida <15s)
@@ -7474,8 +7484,10 @@ function _bingoPaneHtml() {
       } else {
         const qs = myPlayer?.challengeQuestions || bingoGame.questions || [];
         const q = qs[bingoChallengeIdx];
-        const remain = Math.max(0, Math.round(((bingoGame.challengeEndsAt||0)-Date.now())/1000));
-        const pct = Math.max(0, Math.min(100, (remain/(((bingoGame.gameSpeed||'media')==='rapida'?30:60)))*100));
+        const _durSec = ((bingoGame.gameSpeed||'media')==='rapida' ? 30 : 60);
+        const _effEndsAt = _bingoChallengePlayerEndsAt || (bingoGame.challengeEndsAt||0);
+        const remain = Math.max(0, Math.round((_effEndsAt - Date.now()) / 1000));
+        const pct = Math.max(0, Math.min(100, (remain / _durSec) * 100));
         const _barThresh = _isRapidaMode ? 15 : 30;
         const barCls = remain > _barThresh ? 'ok' : 'warn';
         const _rTopics = (myPlayer?.topics?.length ? myPlayer.topics : null) || bingoGame.topics || [];
@@ -11985,40 +11997,4 @@ REF.onSnapshot(doc => {
   document.getElementById('initial-loading').classList.add('hidden');
   // OJO: appReady se pone en true para no dejar al usuario atascado en la pantalla de carga,
   // pero lmsDataLoaded queda en false (nunca se tocó arriba) — eso bloquea los guardados de lms (saveTasks/savePointsLog/savePrompts/saveTaskMultipliers/savePointsHistory) y saveMeta()
-  // y los REF.set() de setTotalNumbers()/doReset() mientras dure el problema de conexión, para
-  // que la app no pueda guardar por accidente el estado vacío por defecto y borrar los datos
-  // reales en la nube. En cuanto Firestore reconecte y llegue un snapshot real, se desbloquea solo.
-  appReady = true;
-  router();
-  showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
-});
-
-// Image viewer modal
-function openImgViewer(url, name){
-  let modal = document.getElementById('img-viewer-modal');
-  if (!modal){
-    modal = document.createElement('div');
-    modal.id = 'img-viewer-modal';
-    modal.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:16px;box-sizing:border-box';
-    modal.innerHTML = `<img id="img-viewer-img" style="max-width:100%;max-height:75dvh;border-radius:10px;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,0.6)">
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <a id="img-viewer-dl" download="" style="background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;text-decoration:none;letter-spacing:0.08em">⬇ DESCARGAR</a>
-        <button onclick="closeImgViewer()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.7);border-radius:12px;padding:10px 22px;font-weight:900;font-size:13px;cursor:pointer;letter-spacing:0.08em">✕ CERRAR</button>
-      </div>`;
-    modal.addEventListener('click', e=>{ if(e.target===modal) closeImgViewer(); });
-    document.body.appendChild(modal);
-  }
-  document.getElementById('img-viewer-img').src = url;
-  const dl = document.getElementById('img-viewer-dl');
-  dl.href = url; dl.download = name||'imagen.jpg';
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-function closeImgViewer(){
-  const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
-  document.body.style.overflow = '';
-}
-</script>
-</body>
-</html>
+  // y los REF.set() de setTotalNumb
