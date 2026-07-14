@@ -12172,6 +12172,7 @@ REF.onSnapshot(doc => {
     // Migración inicial única: si "Joanna Prado" todavía no tiene multiplicador configurado, se le asigna ×3
     // (caso conocido actual: lleva temas de un nivel más avanzado). El admin puede cambiarlo luego desde el panel.
     (function seedJoannaMult(){
+      const joanna = getStudents().find(s => normName(s.name)===normName('Joanna Prado'));
       if (joanna && taskMultipliers[String(joanna.id)]===undefined) {
         taskMultipliers[String(joanna.id)] = 3;
         saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
