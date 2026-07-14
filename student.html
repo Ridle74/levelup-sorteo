@@ -2427,6 +2427,160 @@ function _genConj4BQ1(){const f=[_genConj4B1,_genConj4B2,_genConj4B3];return f[_
 // bq2: Quiz — Problemas de Contexto (mezcla b4 + b5)
 function _genConj4BQ2(){return Math.random()<0.5?_genConj4B4():_genConj4B5();}
 
+// b6: ¿Cuáles son los elementos de A∪B? (seleccionar conjunto correcto)
+function _genConj4B6(){
+  const common=_c4ints(_c4rnd(1,3),1,20);
+  const onlyA=_c4ints(_c4rnd(2,3),1,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),1,20,[...common,...onlyA]);
+  const A=[...common,...onlyA].sort((a,b)=>a-b);
+  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const union=[...common,...onlyA,...onlyB].sort((a,b)=>a-b);
+  const ans=`{${union.join(', ')}}`;
+  const d1=`{${[...onlyA,...onlyB].sort((a,b)=>a-b).join(', ')}}`; // sin los comunes
+  const d2=`{${common.join(', ')}}`; // solo la intersección
+  const d3=`{${[...A,...onlyB.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`; // incompleto
+  const pool=[d1,d2,d3].filter(v=>v!==ans);
+  const opts=_c4shuf([ans,...pool.slice(0,3)]);
+  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuáles son los elementos de A∪B?`,
+    a:ans,opts,mc:true,ste:`A∪B reúne todos los elementos de A y B sin repetir → ${ans}`};
+}
+// b7: ¿Cuáles son los elementos de A∩B? (seleccionar conjunto correcto)
+function _genConj4B7(){
+  const common=_c4ints(_c4rnd(2,3),1,20);
+  const onlyA=_c4ints(_c4rnd(2,3),1,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),1,20,[...common,...onlyA]);
+  const A=[...common,...onlyA].sort((a,b)=>a-b);
+  const B=[...common,...onlyB].sort((a,b)=>a-b);
+  const inter=[...common].sort((a,b)=>a-b);
+  const ans=`{${inter.join(', ')}}`;
+  const d1=`{${[...common,...onlyA.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`; // demasiado
+  const d2=`{${A.join(', ')}}`; // todo A
+  const d3=`{${[...common,...onlyB.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`; // demasiado B
+  const pool=[d1,d2,d3].filter(v=>v!==ans);
+  const opts=_c4shuf([ans,...pool.slice(0,3)]);
+  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Cuáles son los elementos de A∩B?`,
+    a:ans,opts,mc:true,ste:`A∩B incluye solo los elementos que están en ambos conjuntos → ${ans}`};
+}
+// b8: Identificar operación en diagrama Venn sombreado (visual SVG)
+function _genConj4B8(){
+  const uid='v'+Math.random().toString(36).slice(2,7);
+  const shade=Math.random()<0.5?'union':'inter';
+  let circles='';
+  if(shade==='union'){
+    circles=`<circle cx="88" cy="80" r="64" fill="rgba(251,191,36,0.42)" stroke="#fbbf24" stroke-width="2.5"/>
+    <circle cx="168" cy="80" r="64" fill="rgba(251,191,36,0.42)" stroke="#fbbf24" stroke-width="2.5"/>`;
+  } else {
+    circles=`<circle cx="88" cy="80" r="64" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+    <circle cx="168" cy="80" r="64" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+    <clipPath id="${uid}"><circle cx="88" cy="80" r="64"/></clipPath>
+    <circle cx="168" cy="80" r="64" fill="rgba(251,191,36,0.55)" clip-path="url(#${uid})" stroke="none"/>`;
+  }
+  const svgQ=`<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 256 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:256px;margin:4px auto;display:block">${circles}<text x="28" y="33" font-size="15" fill="#e2e8f0" font-weight="700">A</text><text x="214" y="33" font-size="15" fill="#e2e8f0" font-weight="700">B</text></svg><div style="font-size:14px;margin-top:2px">La región en amarillo representa:</div></div>`;
+  const ans=shade==='union'?'A∪B':'A∩B';
+  const ste=shade==='union'?'Toda la figura está sombreada → A∪B (todos los elementos de A y B).':'Solo el centro está sombreado → A∩B (los elementos en común).';
+  return{q:svgQ,a:ans,opts:_c4shuf(['A∪B','A∩B','solo A','solo B']),mc:true,ste};
+}
+// bq3: Quiz — Unión e Intersección avanzado (mezcla b6 + b7 + b8)
+function _genConj4BQ3(){const f=[_genConj4B6,_genConj4B7,_genConj4B8];return f[_c4rnd(0,2)]();}
+
+// ── Incluido y No Incluido 4° Primaria – Colegio Belén ───────────────────────
+function _incl4rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _incl4shuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+function _incl4pool(n,min,max,ex=[]){
+  const pool=[];for(let i=min;i<=max;i++)if(!ex.includes(i))pool.push(i);
+  return _incl4shuf(pool).slice(0,n).sort((a,b)=>a-b);
+}
+// b1: Dado A y B numéricos — ¿A ⊂ B o A ⊄ B?
+function _genIncl4B1(){
+  const isSubset=Math.random()<0.5;
+  const bigSet=_incl4pool(_incl4rnd(5,8),1,20);
+  let A,B;
+  if(isSubset){
+    A=_incl4shuf(bigSet).slice(0,_incl4rnd(2,Math.floor(bigSet.length*0.6))).sort((a,b)=>a-b);
+    B=bigSet;
+  } else {
+    B=_incl4pool(_incl4rnd(4,6),1,20);
+    const outside=_incl4pool(1,21,30);
+    const inside=_incl4shuf(B).slice(0,_incl4rnd(1,2));
+    A=[..._incl4shuf(inside).slice(0,1),...outside].sort((a,b)=>a-b);
+  }
+  const ans=isSubset?'⊂':'⊄';
+  const ste=isSubset
+    ?`Todos los elementos de A (${A.join(', ')}) también están en B → A ⊂ B.`
+    :`El elemento ${A.find(x=>!B.includes(x))} está en A pero no en B → A ⊄ B.`;
+  return{q:`A = {${A.join(', ')}}  y  B = {${B.join(', ')}}\n¿Qué símbolo va en el espacio?\n\nA _____ B`,
+    a:ans,opts:_incl4shuf([ans,isSubset?'⊄':'⊂','⊃','∈']),mc:true,ste};
+}
+// b2: Diagrama de cajas (visual SVG) — ¿A ⊂ B o A ⊄ B?
+function _genIncl4B2(){
+  const isSubset=Math.random()<0.5;
+  const B=_incl4pool(_incl4rnd(4,6),1,20);
+  let A;
+  if(isSubset){
+    A=_incl4shuf(B).slice(0,_incl4rnd(2,Math.min(3,B.length-1))).sort((a,b)=>a-b);
+  } else {
+    const outside=_incl4pool(1,21,30);
+    const inside=_incl4shuf(B).slice(0,_incl4rnd(1,2));
+    A=[...inside,...outside].sort((a,b)=>a-b);
+  }
+  const ans=isSubset?'⊂':'⊄';
+  const ste=isSubset
+    ?`En el diagrama, A está completamente dentro de B → A ⊂ B.`
+    :`A tiene el elemento ${A.find(x=>!B.includes(x))} que no está en B → A ⊄ B.`;
+  let svg;
+  if(isSubset){
+    svg=`<svg viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block">
+      <rect x="8" y="8" width="264" height="124" rx="12" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="18" y="28" font-size="14" fill="#38bdf8" font-weight="700">B</text>
+      <text x="16" y="122" font-size="11" fill="#7dd3fc">{${B.join(', ')}}</text>
+      <rect x="38" y="34" width="170" height="64" rx="10" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="48" y="52" font-size="13" fill="#fbbf24" font-weight="700">A</text>
+      <text x="46" y="80" font-size="12" fill="#fde68a">{${A.join(', ')}}</text>
+    </svg>`;
+  } else {
+    svg=`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;margin:4px auto;display:block">
+      <rect x="8" y="22" width="134" height="90" rx="12" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="18" y="42" font-size="14" fill="#38bdf8" font-weight="700">B</text>
+      <text x="14" y="100" font-size="11" fill="#7dd3fc">{${B.slice(0,5).join(', ')}}</text>
+      <rect x="158" y="22" width="132" height="90" rx="12" fill="rgba(251,191,36,0.12)" stroke="#fbbf24" stroke-width="2.5"/>
+      <text x="168" y="42" font-size="14" fill="#fbbf24" font-weight="700">A</text>
+      <text x="164" y="100" font-size="11" fill="#fde68a">{${A.join(', ')}}</text>
+    </svg>`;
+  }
+  return{
+    q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">Según el diagrama, ¿qué símbolo va en el espacio?&nbsp;&nbsp;A _____ B</div></div>`,
+    a:ans,opts:_incl4shuf([ans,isSubset?'⊄':'⊂','⊃','∈']),mc:true,ste};
+}
+// b3: Diagrama de círculos concéntricos Z⊃W⊃M → ¿V o F?
+function _genIncl4B3(){
+  const stmts=[
+    {txt:'M ⊂ W',val:true, exp:'M está dentro de W → M ⊂ W es Verdadero.'},
+    {txt:'W ⊂ Z',val:true, exp:'W está dentro de Z → W ⊂ Z es Verdadero.'},
+    {txt:'M ⊂ Z',val:true, exp:'M está dentro de Z (y de W) → M ⊂ Z es Verdadero.'},
+    {txt:'Z ⊂ W',val:false,exp:'Z es el mayor; no cabe dentro de W → Z ⊂ W es Falso.'},
+    {txt:'Z ⊂ M',val:false,exp:'Z es el mayor y M el menor; Z no está en M → Falso.'},
+    {txt:'W ⊂ M',val:false,exp:'W es más grande que M; no está incluido en M → Falso.'},
+    {txt:'M ⊄ Z',val:false,exp:'M sí está dentro de Z → M ⊄ Z es Falso.'},
+    {txt:'Z ⊄ W',val:true, exp:'Z es mayor que W; Z no está dentro de W → Z ⊄ W es Verdadero.'},
+    {txt:'W ⊄ M',val:true, exp:'W es mayor que M; W no está dentro de M → W ⊄ M es Verdadero.'},
+  ];
+  const st=_incl4shuf(stmts)[0];
+  const ans=st.val?'V':'F';
+  const svg=`<svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px;margin:4px auto;display:block">
+    <ellipse cx="110" cy="95" rx="100" ry="78" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="16" y="34" font-size="15" fill="#38bdf8" font-weight="700">Z</text>
+    <ellipse cx="110" cy="100" rx="64" ry="50" fill="rgba(167,139,250,0.12)" stroke="#a78bfa" stroke-width="2.5"/>
+    <text x="54" y="60" font-size="15" fill="#a78bfa" font-weight="700">W</text>
+    <ellipse cx="115" cy="106" rx="32" ry="24" fill="rgba(251,191,36,0.18)" stroke="#fbbf24" stroke-width="2.5"/>
+    <text x="104" y="111" font-size="14" fill="#fbbf24" font-weight="700">M</text>
+  </svg>`;
+  return{
+    q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:15px;font-weight:700;margin-top:6px">¿La afirmación <span style="color:#fbbf24">${st.txt}</span> es Verdadera (V) o Falsa (F)?</div></div>`,
+    a:ans,opts:['V','F'],mc:true,ste:st.exp};
+}
+// bq1: Quiz — Incluido y No Incluido
+function _genIncl4BQ1(){const f=[_genIncl4B1,_genIncl4B2,_genIncl4B3];return f[_incl4rnd(0,2)]();}
+
 // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
 const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
 const _EM_CAJAS = [
@@ -3053,6 +3207,15 @@ const BINGO_TOPICS = {
   conj4_b4:  { ico:'⊕', lbl:'Problema – Unión',        qCount:4, gen:()=>_genConj4B4() },
   conj4_b5:  { ico:'⊖', lbl:'Problema – Intersección', qCount:4, gen:()=>_genConj4B5() },
   conj4_bq2: { ico:'⚡', lbl:'Quiz – Problemas Contexto', qCount:5, gen:()=>_genConj4BQ2(), quiz:true },
+  conj4_b6:  { ico:'∪', lbl:'Elementos de A∪B',        qCount:4, gen:()=>_genConj4B6() },
+  conj4_b7:  { ico:'∩', lbl:'Elementos de A∩B',        qCount:4, gen:()=>_genConj4B7() },
+  conj4_b8:  { ico:'🔵', lbl:'Región sombreada en Venn', qCount:4, gen:()=>_genConj4B8() },
+  conj4_bq3: { ico:'⚡', lbl:'Quiz – Unión e Intersección avanzado', qCount:5, gen:()=>_genConj4BQ3(), quiz:true },
+  // ── Incluido y No Incluido 4° Primaria – Colegio Belén ──
+  incl4_b1:  { ico:'⊂', lbl:'¿A ⊂ B o A ⊄ B? (numérico)',        qCount:4, gen:()=>_genIncl4B1() },
+  incl4_b2:  { ico:'⊂', lbl:'Diagrama de cajas: ¿incluido o no?', qCount:4, gen:()=>_genIncl4B2() },
+  incl4_b3:  { ico:'🔵', lbl:'Verdadero o Falso (círculos)',       qCount:4, gen:()=>_genIncl4B3() },
+  incl4_bq1: { ico:'⚡', lbl:'Quiz – Incluido y No Incluido',      qCount:5, gen:()=>_genIncl4BQ1(), quiz:true },
   // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ──
   em_b0:  { ico:'📖', lbl:'Definiciones – Espacio Muestral', qCount:4, gen:()=>_genEM_B0() },
   em_b1:  { ico:'Ω',  lbl:'Cardinal del Espacio Muestral', qCount:4, gen:()=>_genEM_B1() },
@@ -3065,10 +3228,10 @@ const BINGO_TOPICS = {
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b6','conj4_b7','conj4_b8','conj4_bq3'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
+    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
     areas:[{key:'matematica', lbl:'Matemática'}] },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -3092,7 +3255,10 @@ const PREP_CURRICULUM = {
     '1':[{lbl:'Adición y Sustracción',    area:'matematica', skills:['suma','suma10','resta']}],
     '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
-    '4':[{lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2']}], '5':[],
+    '4':[
+      {lbl:'Incluido y No Incluido',          area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1']},
+      {lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
+    ], '5':[],
     '6':[{lbl:'División de 5 entre 2 Dígitos', area:'matematica', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', area:'matematica', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', area:'matematica', skills:['neg','ecuacion']}],
   },
   secundaria: {
