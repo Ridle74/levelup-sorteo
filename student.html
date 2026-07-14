@@ -4660,7 +4660,9 @@ function _bingoCheckMyChallengeEnd() {
   const me = _bingoMe();
   const player = (bingoGame.players||{})[me.uid];
   if (!player || player.lastChallengeId === bingoGame.challengeId) return; // ya resuelto este reto
-  const allAnswered = bingoChallengeIdx >= (bingoGame.questions||[]).length;
+  const questions = bingoGame.questions || [];
+  if (!questions.length) return; // preguntas aún no cargadas del snapshot — esperar
+  const allAnswered = bingoChallengeIdx >= questions.length;
   const timeUp = Date.now() >= (bingoGame.challengeEndsAt||0);
   if (allAnswered || timeUp) _bingoFinishChallenge(bingoChallengeIdx);
 }
@@ -4763,7 +4765,8 @@ function _bingoFinishChallenge(correctCount) {
   const me = _bingoMe();
   const player = (bingoGame.players||{})[me.uid];
   if (!player || player.lastChallengeId === bingoGame.challengeId) return;
-  const total = (bingoGame.questions||[]).length || 5;
+  const total = (bingoGame.questions||[]).length;
+  if (!total) return; // preguntas no cargadas aún — no aplicar penalidad
   const perfect = correctCount >= total;
   const patch = { [`players.${me.uid}.lastChallengeId`]: bingoGame.challengeId };
   let charges = 0, fast = false, fails = 0;
