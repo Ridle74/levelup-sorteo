@@ -88,6 +88,9 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .banner-preset { height:56px; border-radius:12px; cursor:pointer; border:2px solid transparent; transition:border-color 0.15s; }
 .banner-preset.sel { border-color:#22e5ff; box-shadow:0 0 0 1px #22e5ff; }
 .banner-upload-row { display:flex; align-items:center; gap:10px; margin-top:10px; }
+.banner-crop-wrap { position:relative; width:100%; height:120px; overflow:hidden; border-radius:12px; background:#1a1a2e; cursor:grab; margin:10px 0; touch-action:none; user-select:none; -webkit-user-select:none; }
+.banner-crop-wrap.dragging { cursor:grabbing; }
+.banner-crop-img { position:absolute; pointer-events:none; user-select:none; -webkit-user-drag:none; }
 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .dash-stat { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; }
 .ds-lbl { font-size:8px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:4px; }
@@ -11783,6 +11786,10 @@ const BANNER_PRESETS = [
 ];
 let _bannerPickerSel = null;
 let _bannerFileObj   = null;
+let _bannerDataUrl   = null;
+let _bannerCropNW = 0, _bannerCropNH = 0;
+let _bannerCropX = 0, _bannerCropY = 0, _bannerCropScale = 1;
+let _bannerCropDrag = false, _bannerCropLX = 0, _bannerCropLY = 0;
 let _cropImg = null, _cropX = 0, _cropY = 0, _cropScale = 1;
 let _cropDragging = false, _cropLX = 0, _cropLY = 0;
 
@@ -12054,6 +12061,40 @@ function _bannerHeroStyle(id) {
   return `background:url(${ban}) center/cover no-repeat`;
 }
 
+function _bannerCropApply() {
+  const img = document.getElementById('banner-crop-img');
+  if (!img) return;
+  img.style.left   = _bannerCropX + 'px';
+  img.style.top    = _bannerCropY + 'px';
+  img.style.width  = Math.round(_bannerCropNW * _bannerCropScale) + 'px';
+  img.style.height = Math.round(_bannerCropNH * _bannerCropScale) + 'px';
+}
+function _bannerCropClamp(x, y) {
+  const wrap = document.getElementById('banner-crop-wrap');
+  const pw = wrap ? wrap.clientWidth : 360, ph = 120;
+  const iw = _bannerCropNW * _bannerCropScale;
+  const ih = _bannerCropNH * _bannerCropScale;
+  x = Math.max(pw - iw, Math.min(0, x));
+  y = Math.max(ph - ih, Math.min(0, y));
+  return [x, y];
+}
+function _bannerCropStart(cx, cy) {
+  _bannerCropDrag = true; _bannerCropLX = cx; _bannerCropLY = cy;
+  const w = document.getElementById('banner-crop-wrap');
+  if (w) w.classList.add('dragging');
+}
+function _bannerCropMove(cx, cy) {
+  if (!_bannerCropDrag) return;
+  const dx = cx - _bannerCropLX, dy = cy - _bannerCropLY;
+  _bannerCropLX = cx; _bannerCropLY = cy;
+  [_bannerCropX, _bannerCropY] = _bannerCropClamp(_bannerCropX + dx, _bannerCropY + dy);
+  _bannerCropApply();
+}
+function _bannerCropEnd() {
+  _bannerCropDrag = false;
+  const w = document.getElementById('banner-crop-wrap');
+  if (w) w.classList.remove('dragging');
+}
 function openBannerPicker() {
   _bannerPickerSel = null;
   _bannerFileObj   = null;
@@ -12077,7 +12118,15 @@ function openBannerPicker() {
           <input id="banner-file-inp" type="file" accept="image/*" style="display:none" onchange="onBannerFileSelect(this)">
         </label>
       </div>
-      <button onclick="saveBannerPicker()" style="width:100%;margin-top:14px;padding:12px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em">GUARDAR BANNER</button>
+      <div id="banner-crop-wrap" class="banner-crop-wrap" style="display:none"
+        onmousedown="_bannerCropStart(event.clientX,event.clientY)"
+        onmousemove="_bannerCropMove(event.clientX,event.clientY)"
+        onmouseup="_bannerCropEnd()" onmouseleave="_bannerCropEnd()"
+        ontouchstart="if(event.touches[0]){_bannerCropStart(event.touches[0].clientX,event.touches[0].clientY);event.preventDefault()}"
+        ontouchmove="if(event.touches[0]){_bannerCropMove(event.touches[0].clientX,event.touches[0].clientY);event.preventDefault()}"
+        ontouchend="_bannerCropEnd()"></div>
+      <div id="banner-crop-hint" style="display:none;font-size:10px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:4px">✋ Arrastra para encuadrar</div>
+      <button onclick="saveBannerPicker()" style="width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em">GUARDAR BANNER</button>
     </div>
   </div>`;
   document.body.insertAdjacentHTML('beforeend', html);
@@ -12103,25 +12152,65 @@ function onBannerFileSelect(input) {
   if (!input.files?.[0]) return;
   _bannerFileObj   = input.files[0];
   _bannerPickerSel = null;
+  _bannerDataUrl   = null;
   document.querySelectorAll('.banner-preset').forEach(b => b.classList.remove('sel'));
   const lbl = document.getElementById('banner-file-lbl');
   if (lbl) lbl.textContent = _bannerFileObj.name;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    _bannerDataUrl = ev.target.result;
+    const tmpImg = new Image();
+    tmpImg.onload = function() {
+      _bannerCropNW = this.naturalWidth;
+      _bannerCropNH = this.naturalHeight;
+      const wrap = document.getElementById('banner-crop-wrap');
+      if (!wrap) return;
+      wrap.style.display = 'block';
+      const pw = wrap.clientWidth || 320, ph = 120;
+      const sc = Math.max(pw / _bannerCropNW, ph / _bannerCropNH);
+      _bannerCropScale = sc;
+      _bannerCropX = (pw - _bannerCropNW * sc) / 2;
+      _bannerCropY = (ph - _bannerCropNH * sc) / 2;
+      wrap.innerHTML = '<img id="banner-crop-img" class="banner-crop-img" src="' + _bannerDataUrl + '"">';
+      _bannerCropApply();
+      const hint = document.getElementById('banner-crop-hint');
+      if (hint) hint.style.display = 'block';
+    };
+    tmpImg.src = _bannerDataUrl;
+  };
+  reader.readAsDataURL(_bannerFileObj);
 }
 
 async function saveBannerPicker() {
   const id = getLoggedId();
   if (id === null) { showToast('Inicia sesión primero'); return; }
   let bannerValue = null;
-  if (_bannerFileObj) {
-    const ext = _bannerFileObj.name.split('.').pop().toLowerCase();
-    const path = `banner-images/${id}.${ext}`;
+  if (_bannerFileObj && _bannerDataUrl) {
+    // Crop via canvas
+    const wrap = document.getElementById('banner-crop-wrap');
+    const pw = (wrap ? wrap.clientWidth : 360) || 360;
+    const ph = 120;
+    const OUT_W = 800, OUT_H = Math.round(OUT_W * ph / pw);
+    const canvas = document.createElement('canvas');
+    canvas.width = OUT_W; canvas.height = OUT_H;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = _bannerDataUrl;
+    await new Promise(r => { img.onload = r; if (img.complete && img.naturalWidth) r(); });
+    const sx = -_bannerCropX / _bannerCropScale;
+    const sy = -_bannerCropY / _bannerCropScale;
+    const sw = pw / _bannerCropScale;
+    const sh = ph / _bannerCropScale;
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, OUT_W, OUT_H);
     showToast('Subiendo imagen…');
     try {
-      const storRef = firebase.storage().ref(path);
-      await storRef.put(_bannerFileObj);
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
+      const storRef = firebase.storage().ref(`banner-images/${id}.jpg`);
+      await storRef.put(blob, { contentType: 'image/jpeg' });
       bannerValue = await storRef.getDownloadURL();
     } catch(e) {
-      showToast('Error al subir la imagen'); return;
+      console.error('Banner upload:', e);
+      showToast('Error al subir: ' + (e.code || e.message || 'desconocido')); return;
     }
   } else if (_bannerPickerSel) {
     bannerValue = _bannerPickerSel;
