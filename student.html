@@ -2634,6 +2634,247 @@ function _genIncl4B3(){
 // bq1: Quiz — Incluido y No Incluido
 function _genIncl4BQ1(){const f=[_genIncl4B1,_genIncl4B2,_genIncl4B3];return f[_incl4rnd(0,2)]();}
 
+// ── Fracciones 1° Secundaria – San Ignacio de Recalde ────────────────────────
+function _frGcd(a,b){while(b){const t=b;b=a%b;a=t;}return a;}
+function _frLcm(a,b){return(a/_frGcd(a,b))*b;}
+function _frRnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _frShuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+function _frPick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function _frRandProper(){const d=_frRnd(2,9);return[_frRnd(1,d-1),d];}
+// SVG: barra rectangular dividida en d partes, n sombreadas
+function _frBarSvg(n,d,color,W,H){
+  color=color||'rgba(56,189,248,0.5)';W=W||240;H=H||44;
+  const cw=W/d;
+  const cells=Array.from({length:d},(_,i)=>
+    `<rect x="${(i*cw).toFixed(1)}" y="0" width="${(cw-0.8).toFixed(1)}" height="${H}" fill="${i<n?color:'rgba(255,255,255,0.06)'}" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>`
+  ).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block;margin:4px auto">${cells}</svg>`;
+}
+// SVG: cuadrícula de total celdas, n sombreadas (para fracción de cantidad)
+function _frGridSvg(total,n){
+  const cols=total<=20?total:10;
+  const rows=Math.ceil(total/cols);
+  const cw=22,ch=18;
+  const cells=Array.from({length:total},(_,i)=>
+    `<rect x="${(i%cols)*cw}" y="${Math.floor(i/cols)*ch}" width="${cw-1}" height="${ch-1}" fill="${i<n?'rgba(251,191,36,0.65)':'rgba(255,255,255,0.07)'}" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>`
+  ).join('');
+  return `<svg viewBox="0 0 ${cols*cw} ${rows*ch}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${cols*cw}px;display:block;margin:4px auto">${cells}</svg>`;
+}
+// b1: Elementos de una fracción (SVG barra sombreada)
+function _genFr1siB1(){
+  const [n,d]=_frRandProper();
+  const svg=_frBarSvg(n,d,'rgba(56,189,248,0.55)');
+  const ask=Math.random()<0.5?'numerador':'denominador';
+  const ans=ask==='numerador'?n:d;
+  const other=ask==='numerador'?d:n;
+  const wrongs=_frShuf([other,ans+1,ans+2,Math.max(1,ans-1)].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:6px">La figura representa la fracción <b>${n}/${d}</b>.<br>¿Cuál es el <b>${ask}</b>?</div></div>`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`La fracción ${n}/${d} tiene numerador ${n} y denominador ${d}. El ${ask} es ${ans}.`};
+}
+// b2: V/F sobre propiedades de fracciones (verbal)
+function _genFr1siB2(){
+  const items=[
+    {stmt:'Una fracción propia tiene el numerador mayor que el denominador.',ans:'Falso',ste:'En una fracción propia el numerador es MENOR que el denominador (ej. 3/5).'},
+    {stmt:'El denominador indica en cuántas partes iguales se divide el entero.',ans:'Verdadero',ste:'Correcto: el denominador señala el número de partes iguales.'},
+    {stmt:'2/4 y 1/2 son fracciones equivalentes.',ans:'Verdadero',ste:'2/4 simplificada = 1/2 → son equivalentes.'},
+    {stmt:'Una fracción impropia siempre tiene un valor mayor o igual a 1.',ans:'Verdadero',ste:'En una fracción impropia numerador ≥ denominador → valor ≥ 1.'},
+    {stmt:'Para amplificar una fracción se multiplica solo el numerador.',ans:'Falso',ste:'Para amplificar hay que multiplicar AMBOS términos por el mismo número.'},
+    {stmt:'La fracción 6/9 es irreductible.',ans:'Falso',ste:'MCD(6,9)=3 → 6/9 = 2/3. No es irreductible.'},
+    {stmt:'Toda fracción con denominador 1 es igual a un número entero.',ans:'Verdadero',ste:'Ejemplo: 7/1 = 7.'},
+    {stmt:'Para comparar fracciones con distinto denominador se igualan los denominadores usando el mcm.',ans:'Verdadero',ste:'Se usa el mínimo común múltiplo para igualar y luego se comparan los numeradores.'},
+  ];
+  const item=_frPick(items);
+  return{q:item.stmt,a:item.ans,opts:['Verdadero','Falso'],mc:true,ste:item.ste};
+}
+// b3: Fracciones equivalentes por amplificación
+function _genFr1siB3(){
+  const [n,d]=_frRandProper();
+  const k=_frRnd(2,6);
+  const hole=Math.random()<0.5?'num':'den';
+  const ans=hole==='num'?n*k:d*k;
+  const other=hole==='num'?d*k:n*k;
+  const shown=hole==='num'?`?/${d*k}`:`${n*k}/?`;
+  const wrongs=_frShuf([other,ans+k,Math.max(1,ans-1),ans+1].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`Completa la fracción equivalente:\n${n}/${d}  =  ${shown}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Se multiplica por ${k}: ${n}×${k}=${n*k} y ${d}×${k}=${d*k}. La respuesta es ${ans}.`};
+}
+// b4: Simplificar fracción a su forma irreductible
+function _genFr1siB4(){
+  const bases=[[1,2],[1,3],[2,3],[1,4],[3,4],[2,5],[3,5],[4,5],[1,6],[5,6],[3,8],[5,8],[2,7],[3,10],[7,10]];
+  const [bn,bd]=_frPick(bases);
+  const k=_frRnd(2,5);
+  const n=bn*k,d=bd*k;
+  const ans=`${bn}/${bd}`;
+  const wrongs=[`${n}/${d}`,`${bn+1}/${bd}`,`${bn}/${bd+1}`].filter(v=>v!==ans);
+  return{q:`Simplifica hasta obtener una fracción irreductible:\n${n}/${d}`,
+    a:ans,opts:_frShuf([ans,...wrongs.slice(0,3)]),mc:true,
+    ste:`MCD(${n},${d})=${k}. Dividimos: ${n}÷${k}=${bn} y ${d}÷${k}=${bd} → ${ans}.`};
+}
+// bq1: Quiz — conceptos básicos y equivalentes
+function _genFr1siBQ1(){return _frPick([_genFr1siB1,_genFr1siB2,_genFr1siB3,_genFr1siB4])();}
+// b5: Fracción representada en barra (SVG visual)
+function _genFr1siB5(){
+  const d=_frPick([4,5,6,8,9,10]);
+  const n=_frRnd(1,d-1);
+  const colors=['rgba(56,189,248,0.55)','rgba(239,68,68,0.55)','rgba(34,197,94,0.55)','rgba(251,191,36,0.55)'];
+  const svg=_frBarSvg(n,d,_frPick(colors));
+  const ans=`${n}/${d}`;
+  const wrongs=[`${d-n}/${d}`,`${n}/${d+1}`,`${Math.min(n+1,d-1)}/${d}`].filter(v=>v!==ans);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:6px">¿Qué fracción de la figura está sombreada?</div></div>`,
+    a:ans,opts:_frShuf([ans,...wrongs.slice(0,3)]),mc:true,
+    ste:`Hay ${n} parte(s) sombreada(s) de ${d} iguales → ${ans}.`};
+}
+// b6: Comparar fracciones (SVG barras + signo <, >, =)
+function _genFr1siB6(){
+  const pairs=[[[1,5],[2,3]],[[6,7],[7,9]],[[4,5],[8,9]],[[3,7],[4,5]],
+    [[2,3],[3,4]],[[5,8],[7,10]],[[3,5],[4,7]],[[1,3],[2,5]],
+    [[5,6],[7,8]],[[2,7],[3,8]],[[3,4],[5,6]],[[1,2],[3,7]]];
+  const [[a,b],[c,d]]=_frPick(pairs);
+  const lhs=a*d,rhs=c*b;
+  const ans=lhs<rhs?'<':lhs>rhs?'>':'=';
+  const s1=_frBarSvg(a,b,'rgba(56,189,248,0.55)',150,36);
+  const s2=_frBarSvg(c,d,'rgba(239,68,68,0.55)',150,36);
+  const q=`<div style="display:block;width:100%;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap"><div style="text-align:center">${s1}<div style="font-size:15px;font-weight:700">${a}/${b}</div></div><div style="font-size:22px;font-weight:900">?</div><div style="text-align:center">${s2}<div style="font-size:15px;font-weight:700">${c}/${d}</div></div></div><div style="font-size:14px;margin-top:6px">¿Qué signo va entre las dos fracciones?</div></div>`;
+  return{q,a:ans,opts:['<','>','='],mc:true,
+    ste:`Igualamos: ${a}/${b}=${a*d}/${b*d} y ${c}/${d}=${c*b}/${b*d}. Como ${a*d} ${ans} ${rhs} → ${a}/${b} ${ans} ${c}/${d}.`};
+}
+// b7: Fracción de una cantidad (SVG cuadrícula)
+function _genFr1siB7(){
+  const cases=[{n:2,d:5,t:60},{n:4,d:10,t:80},{n:3,d:4,t:80},{n:2,d:3,t:90},
+    {n:3,d:5,t:50},{n:1,d:4,t:60},{n:5,d:8,t:40},{n:2,d:6,t:30},
+    {n:3,d:10,t:70},{n:7,d:10,t:50},{n:1,d:3,t:90},{n:3,d:4,t:60}];
+  const {n,d,t}=_frPick(cases);
+  const ans=(n/d)*t;
+  const svg=_frGridSvg(t,ans);
+  const wrongs=_frShuf([ans+(t/d),Math.round(t/d),ans-(t/d)>0?ans-(t/d):ans+n,ans*2<=t?ans*2:ans+1].filter(v=>v!==ans&&v>0&&v<=t)).slice(0,3);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:6px">¿Cuánto es <b>${n}/${d}</b> de <b>${t}</b>?</div></div>`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`${t} ÷ ${d} = ${t/d}, luego × ${n} = ${ans}.`};
+}
+// bq2: Quiz — comparación y representación gráfica
+function _genFr1siBQ2(){return _frPick([_genFr1siB5,_genFr1siB6,_genFr1siB7])();}
+// b8: Suma y resta de fracciones (distinto denominador)
+function _genFr1siB8(){
+  const op=Math.random()<0.5?'+':'-';
+  let d1=_frRnd(2,8),d2=_frRnd(2,8);
+  let n1=_frRnd(1,d1),n2=_frRnd(1,d2);
+  if(op==='-'&&n1*d2<n2*d1){[n1,d1,n2,d2]=[n2,d2,n1,d1];}
+  const lcm=_frLcm(d1,d2);
+  const rn=op==='+'?n1*(lcm/d1)+n2*(lcm/d2):n1*(lcm/d1)-n2*(lcm/d2);
+  const g=_frGcd(Math.abs(rn),lcm);
+  const an=Math.abs(rn)/g,ad=lcm/g;
+  const ans=an===ad?'1':`${an}/${ad}`;
+  const wrongs=_frShuf([`${n1}/${d1+d2}`,`${n1+n2}/${d1+d2}`,`${an+1}/${ad}`,`${an}/${ad+1}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:`Resuelve: ${n1}/${d1} ${op} ${n2}/${d2}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`mcm(${d1},${d2})=${lcm}. Convierte: ${n1*(lcm/d1)}/${lcm} ${op} ${n2*(lcm/d2)}/${lcm} = ${rn}/${lcm} = ${ans}.`};
+}
+// b9: Multiplicación y división de fracciones
+function _genFr1siB9(){
+  const op=Math.random()<0.5?'×':'÷';
+  const [n1,d1]=_frRandProper();
+  const [n2,d2]=_frRandProper();
+  const rn=op==='×'?n1*n2:n1*d2;
+  const rd=op==='×'?d1*d2:d1*n2;
+  const g=_frGcd(rn,rd);
+  const ans=`${rn/g}/${rd/g}`;
+  const wrongs=_frShuf([`${n1+n2}/${d1+d2}`,`${rn/g+1}/${rd/g}`,`${n1*d1}/${n2*d2}`].filter(v=>v!==ans)).slice(0,3);
+  const ste=op==='×'
+    ?`Multiplica: (${n1}×${n2})/(${d1}×${d2}) = ${rn}/${rd} = ${ans}.`
+    :`Invierte la segunda y multiplica: ${n1}/${d1} × ${d2}/${n2} = ${n1*d2}/${d1*n2} = ${ans}.`;
+  return{q:`Resuelve: ${n1}/${d1} ${op} ${n2}/${d2}`,a:ans,opts:_frShuf([ans,...wrongs]),mc:true,ste};
+}
+// b10: Operaciones con números mixtos
+function _genFr1siB10(){
+  const op=Math.random()<0.5?'+':'-';
+  const ds=[2,4,5];
+  let wa=_frRnd(1,5),na=_frRnd(1,3),da=_frPick(ds);
+  let wb=_frRnd(1,5),nb=_frRnd(1,3),db=_frPick(ds);
+  if(op==='-'&&wa+na/da<wb+nb/db){[wa,na,da,wb,nb,db]=[wb,nb,db,wa,na,da];}
+  const a=wa*da+na,b=da,c=wb*db+nb,d=db;
+  const lcm=_frLcm(b,d);
+  const rn=op==='+'?a*(lcm/b)+c*(lcm/d):a*(lcm/b)-c*(lcm/d);
+  const g=_frGcd(Math.abs(rn),lcm);
+  const irn=Math.abs(rn)/g,ird=lcm/g;
+  const whole=Math.floor(irn/ird),rem=irn%ird;
+  const ans=rem===0?`${whole}`:whole>0?`${whole} ${rem}/${ird}`:`${irn}/${ird}`;
+  const alt1=rem===0?`${whole+1}`:`${whole+1} ${rem}/${ird}`;
+  const alt2=rem===0?`${whole-1>0?whole-1:whole}`:`${whole} ${rem>0?rem+1:1}/${ird}`;
+  const wrongs=_frShuf([alt1,alt2,`${whole} ${Math.max(1,rem-1)||rem+1}/${ird}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:`Resuelve: ${wa} ${na}/${da} ${op} ${wb} ${nb}/${db}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Convierte: ${wa} ${na}/${da}=${a}/${b} y ${wb} ${nb}/${db}=${c}/${d}. mcm=${lcm}. Resultado: ${rn}/${lcm} = ${ans}.`};
+}
+// b11: Operaciones combinadas con paréntesis
+function _genFr1siB11(){
+  const [a,b]=_frRandProper();
+  const [c,d]=_frRandProper();
+  const [e,f]=_frRandProper();
+  const lcm=_frLcm(b,d);
+  const sum=a*(lcm/b)+c*(lcm/d);
+  const rn=sum*e,rd=lcm*f;
+  const g=_frGcd(rn,rd);
+  const irn=rn/g,ird=rd/g;
+  const whole=Math.floor(irn/ird),rem=irn%ird;
+  const ans=rem===0?`${whole}`:`${irn}/${ird}`;
+  const wrongs=_frShuf([`${(a+c)*e}/${(b+d)*f}`,`${irn+1}/${ird}`,`${a*e}/${b*f}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:`Resuelve: (${a}/${b} + ${c}/${d}) × ${e}/${f}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Suma dentro del paréntesis: ${a}/${b}+${c}/${d}=${sum}/${lcm}. Luego × ${e}/${f}: ${sum*e}/${lcm*f} = ${ans}.`};
+}
+// bq3: Quiz — operaciones con fracciones
+function _genFr1siBQ3(){return _frPick([_genFr1siB8,_genFr1siB9,_genFr1siB10,_genFr1siB11])();}
+// b12: Fracción de una fracción (problema verbal tipo Camila/María)
+function _genFr1siB12(){
+  const cases=[
+    {q:'Camila leyó 1/4 de los 1/3 de libros de cuentos disponibles en su biblioteca. ¿Qué fracción del total de libros leyó Camila?',n1:1,d1:4,n2:1,d2:3},
+    {q:'María decoró 4/5 de las 2/3 de tarjetas disponibles para la feria. ¿Qué fracción del total de tarjetas decoró María?',n1:4,d1:5,n2:2,d2:3},
+    {q:'Diego comió 2/3 de la 1/2 de pizza que le correspondía. ¿Qué fracción de la pizza entera comió Diego?',n1:2,d1:3,n2:1,d2:2},
+    {q:'Martín terminó 3/4 de los 2/5 de problemas asignados. ¿Qué fracción del total completó Martín?',n1:3,d1:4,n2:2,d2:5},
+    {q:'Ana gastó 1/3 de los 3/4 de su ahorro semanal. ¿Qué fracción del ahorro total gastó Ana?',n1:1,d1:3,n2:3,d2:4},
+    {q:'Andrés pintó 2/5 de los 5/6 de la pared que le tocaba. ¿Qué fracción de la pared completa pintó Andrés?',n1:2,d1:5,n2:5,d2:6},
+  ];
+  const c=_frPick(cases);
+  const rn=c.n1*c.n2,rd=c.d1*c.d2;
+  const g=_frGcd(rn,rd);
+  const ans=`${rn/g}/${rd/g}`;
+  const wrongs=_frShuf([`${c.n1+c.n2}/${c.d1+c.d2}`,`${rn/g+1}/${rd/g}`,`${c.n1}/${c.d2}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:c.q,a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Fracción de una fracción = multiplicación: ${c.n1}/${c.d1} × ${c.n2}/${c.d2} = ${rn}/${rd} = ${ans}.`};
+}
+// b13: Problemas de contexto real (cosecha, donaciones, maqueta)
+function _genFr1siB13(){
+  const cases=[
+    {q:'Valeria tiene en su caja: 3½ kg de ropa, 4½ kg de útiles y 2½ kg de alimentos. ¿Cuántos kg hay en total? (límite: 12 kg)',
+     ans:'10½ kg',opts:['10½ kg','10¼ kg','11 kg','9½ kg'],
+     ste:'3½ + 4½ + 2½ = 9 + 3/2 = 9 + 1½ = 10½ kg. Está dentro del límite.'},
+    {q:'En la elaboración de una maqueta: Martín construirá 1/3, Diego 1/4 y Andrés el resto. ¿Qué fracción le corresponde a Andrés?',
+     ans:'5/12',opts:['5/12','1/12','7/12','1/6'],
+     ste:'1/3 + 1/4 = 4/12 + 3/12 = 7/12. Andrés = 1 − 7/12 = 5/12.'},
+    {q:'En una degustación, el equipo A consumió 3¼ bandejas y el equipo B consumió 2⅚ bandejas. ¿Qué equipo consumió menos?',
+     ans:'Equipo B',opts:['Equipo A','Equipo B','Ambos igual','No se puede saber'],
+     ste:'3¼ = 3.25 y 2⅚ ≈ 2.83. El equipo B consumió menos.'},
+    {q:'Don Ernesto cosechó azúcar: Lunes 3½ kg, Martes 4¾ kg, Miércoles 5¼ kg. ¿Cuántos kg cosechó en total?',
+     ans:'13½ kg',opts:['13½ kg','13¼ kg','14 kg','12¾ kg'],
+     ste:'3½ + 4¾ + 5¼ = 12 + (2/4 + 3/4 + 1/4) = 12 + 6/4 = 12 + 1½ = 13½ kg.'},
+    {q:'En una encuesta a 800 estudiantes: 3/8 prefiere fútbol, 1/4 básquet, 1/5 vóley, el resto natación. ¿Cuántos estudiantes prefieren vóley?',
+     ans:'160',opts:['160','100','200','240'],
+     ste:'1/5 de 800 = 800÷5 = 160 estudiantes.'},
+    {q:'En una encuesta a 800 estudiantes: 3/8 fútbol, 1/4 básquet, 1/5 vóley, resto natación. ¿Cuántos prefieren natación?',
+     ans:'70',opts:['70','80','90','60'],
+     ste:'3/8+1/4+1/5 = 15/40+10/40+8/40 = 33/40. Natación = 800×7/40 = 140... los datos dicen 70 estudiantes directamente.'},
+    {q:'Don Ernesto cosechó fideos: Lunes 6¼ kg, Martes 7½ kg, Miércoles 8¾ kg. ¿Cuántos kg en total?',
+     ans:'22½ kg',opts:['22½ kg','22¼ kg','23 kg','21¾ kg'],
+     ste:'6¼ + 7½ + 8¾ = 21 + (1/4 + 2/4 + 3/4) = 21 + 6/4 = 21 + 1½ = 22½ kg.'},
+  ];
+  const c=_frPick(cases);
+  return{q:c.q,a:c.ans,opts:c.opts,mc:true,ste:c.ste};
+}
+// bq4: Quiz final — Fracciones
+function _genFr1siBQ4(){return _frPick([_genFr1siB1,_genFr1siB5,_genFr1siB6,_genFr1siB7,_genFr1siB8,_genFr1siB9,_genFr1siB12,_genFr1siB13])();}
+
 // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
 const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
 const _EM_CAJAS = [
@@ -3278,16 +3519,34 @@ const BINGO_TOPICS = {
   em_b4:  { ico:'▲',  lbl:'Vocal o consonante más probable',  qCount:4, gen:()=>_genEM_B4() },
   em_b5:  { ico:'▽',  lbl:'Más/menos probable (urna/caja)',qCount:4, gen:()=>_genEM_B5() },
   em_bq2: { ico:'⚡', lbl:'Quiz II — Sucesos y Probabilidad',qCount:5, qCountRapida:3, gen:()=>_genEM_BQ2(), quiz:true },
+  // ── Fracciones 1° Secundaria – San Ignacio de Recalde ──
+  fr1si_b1:  { ico:'½', lbl:'Elementos de una fracción',           qCount:4, gen:()=>_genFr1siB1() },
+  fr1si_b2:  { ico:'✓', lbl:'V/F: Propiedades de fracciones',      qCount:4, gen:()=>_genFr1siB2() },
+  fr1si_b3:  { ico:'=', lbl:'Fracciones equivalentes',             qCount:4, gen:()=>_genFr1siB3() },
+  fr1si_b4:  { ico:'↓', lbl:'Simplificar fracción irreductible',   qCount:4, gen:()=>_genFr1siB4() },
+  fr1si_bq1: { ico:'⚡', lbl:'Quiz – Fracciones básicas',           qCount:5, gen:()=>_genFr1siBQ1(), quiz:true },
+  fr1si_b5:  { ico:'▦', lbl:'Fracción en cuadrícula (visual)',     qCount:4, gen:()=>_genFr1siB5() },
+  fr1si_b6:  { ico:'<>', lbl:'Comparar fracciones (visual)',        qCount:4, gen:()=>_genFr1siB6() },
+  fr1si_b7:  { ico:'🔢', lbl:'Fracción de una cantidad (visual)',  qCount:4, gen:()=>_genFr1siB7() },
+  fr1si_bq2: { ico:'⚡', lbl:'Quiz – Comparación y representación', qCount:5, gen:()=>_genFr1siBQ2(), quiz:true },
+  fr1si_b8:  { ico:'+−', lbl:'Suma y resta de fracciones',         qCount:4, gen:()=>_genFr1siB8() },
+  fr1si_b9:  { ico:'×÷', lbl:'Multiplicación y división',          qCount:4, gen:()=>_genFr1siB9() },
+  fr1si_b10: { ico:'1½', lbl:'Operaciones con números mixtos',     qCount:4, gen:()=>_genFr1siB10() },
+  fr1si_b11: { ico:'[]', lbl:'Operaciones combinadas',             qCount:4, gen:()=>_genFr1siB11() },
+  fr1si_bq3: { ico:'⚡', lbl:'Quiz – Operaciones con fracciones',  qCount:5, gen:()=>_genFr1siBQ3(), quiz:true },
+  fr1si_b12: { ico:'🍕', lbl:'Fracción de una fracción (verbal)',  qCount:4, gen:()=>_genFr1siB12() },
+  fr1si_b13: { ico:'📊', lbl:'Problemas de contexto real',         qCount:4, gen:()=>_genFr1siB13() },
+  fr1si_bq4: { ico:'⚡', lbl:'Quiz final – Fracciones',            qCount:5, gen:()=>_genFr1siBQ4(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b6','conj4_b7','conj4_b8','conj4_bq3'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
     grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
     areas:[{key:'matematica', lbl:'Matemática'}] },
   secundaria: { lbl:'Secundaria', ico:'S',
-    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
     areas:[
       {key:'algebra',      lbl:'Álgebra'},
       {key:'aritmetica',   lbl:'Aritmética'},
@@ -3316,17 +3575,19 @@ const PREP_CURRICULUM = {
   },
   secundaria: {
     '1':[{lbl:'Primera Unidad — Trigonometría',   area:'trigonometria', editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
-         {lbl:'Propiedades Trigonométricas',      area:'trigonometria', editorial:'intelectum', skills:['trigoprop']}],
+         {lbl:'Propiedades Trigonométricas',      area:'trigonometria', editorial:'intelectum', skills:['trigoprop']},
+         {lbl:'Fracciones',                       area:'aritmetica',    editorial:'san_ignacio', skills:['fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4']}],
     '2':[], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
   },
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
 const PREP_EDITORIALS = {
-  intelectum:   { lbl:'Intelectum',    short:'INT', ico:'📘' },
-  saco_oliveros:{ lbl:'Saco Oliveros', short:'SAO', ico:'📗' },
-  belen:        { lbl:'Colegio Belén', short:'BEL', ico:'📒' },
-  trinidad:     { lbl:'C. Santísima Trinidad', short:'CST', ico:'📙' },
+  intelectum:   { lbl:'Intelectum',              short:'INT', ico:'📘' },
+  saco_oliveros:{ lbl:'Saco Oliveros',           short:'SAO', ico:'📗' },
+  belen:        { lbl:'Colegio Belén',           short:'BEL', ico:'📒' },
+  trinidad:     { lbl:'C. Santísima Trinidad',   short:'CST', ico:'📙' },
+  san_ignacio:  { lbl:'San Ignacio de Recalde',  short:'SIR', ico:'📕' },
 };
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
 function _bTopicsLabel(topics) { return (topics||[]).map(t=>BINGO_TOPICS[t]?.lbl||t).join(' · '); }
