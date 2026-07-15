@@ -80,6 +80,14 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 }
 .dash-hero::before { content:''; position:absolute; inset:0; background:linear-gradient(115deg, rgba(5,7,14,0.58) 0%, rgba(5,7,14,0.34) 45%, rgba(5,7,14,0.58) 100%); }
 .dash-hero > * { position: relative; z-index: 1; }
+/* ── Banner picker ── */
+.banner-edit-btn { position:absolute; bottom:10px; right:10px; z-index:2; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; font-size:11px; font-weight:700; padding:5px 9px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; letter-spacing:0.06em; }
+.banner-modal-ov { position:fixed; inset:0; z-index:9900; background:rgba(0,0,0,0.65); display:flex; align-items:flex-end; justify-content:center; }
+.banner-modal-box { background:#111827; border-radius:20px 20px 0 0; padding:20px; width:100%; max-width:480px; max-height:75vh; overflow-y:auto; }
+.banner-preset-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0; }
+.banner-preset { height:56px; border-radius:12px; cursor:pointer; border:2px solid transparent; transition:border-color 0.15s; }
+.banner-preset.sel { border-color:#22e5ff; box-shadow:0 0 0 1px #22e5ff; }
+.banner-upload-row { display:flex; align-items:center; gap:10px; margin-top:10px; }
 .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .dash-stat { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; }
 .ds-lbl { font-size:8px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:4px; }
@@ -2096,9 +2104,11 @@ function vDashboard() {
   const myTasks   = tasks.filter(t => taskAssignedTo(t, loggedId));
   const pending   = myTasks.filter(t => !(t.completedBy||[]).includes(loggedId)).length;
 
+  const _heroBannerStyle = _bannerHeroStyle(loggedId);
   return `
   <div style="padding:12px">
-    <div class="dash-hero">
+    <div class="dash-hero"${_heroBannerStyle ? ` style="${_heroBannerStyle}"` : ''}>
+      <button class="banner-edit-btn" onclick="openBannerPicker()">🖼️ Cambiar</button>
       <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
         <div>
           <div style="font-size:10px;color:rgba(220,200,255,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">BIENVENIDO</div>
@@ -11758,6 +11768,21 @@ let _perfilPendingIcon  = null;
 let _perfilPendingColor = null;
 let _perfilPendingFrame = null;
 let _perfilPendingPhoto = null;
+
+// ── Banner ──
+const BANNER_PRESETS = [
+  { key:'default', css:'linear-gradient(115deg,#5b21b6,#7c3aed,#22e5ff)' },
+  { key:'sunset',  css:'linear-gradient(115deg,#b91c1c,#ea580c,#f59e0b)' },
+  { key:'ocean',   css:'linear-gradient(115deg,#0c4a6e,#0284c7,#38bdf8)' },
+  { key:'forest',  css:'linear-gradient(115deg,#14532d,#16a34a,#86efac)' },
+  { key:'night',   css:'linear-gradient(115deg,#1e1b4b,#4338ca,#818cf8)' },
+  { key:'rose',    css:'linear-gradient(115deg,#881337,#db2777,#f9a8d4)' },
+  { key:'gold',    css:'linear-gradient(115deg,#78350f,#b45309,#fcd34d)' },
+  { key:'neon',    css:'linear-gradient(115deg,#022c22,#059669,#6ee7b7)' },
+  { key:'candy',   css:'linear-gradient(115deg,#701a75,#c026d3,#f0abfc)' },
+];
+let _bannerPickerSel = null;
+let _bannerFileObj   = null;
 let _cropImg = null, _cropX = 0, _cropY = 0, _cropScale = 1;
 let _cropDragging = false, _cropLX = 0, _cropLY = 0;
 
@@ -12018,6 +12043,102 @@ async function perfilSavePin() {
   document.getElementById('perfil-pin-old').value='';
   document.getElementById('perfil-pin-new').value='';
   document.getElementById('perfil-pin-new2').value='';
+}
+
+// ── Banner picker ──────────────────────────────────────────
+function _bannerHeroStyle(id) {
+  const ban = (overrides[String(id)] || {}).banner;
+  if (!ban || ban === 'default') return '';
+  const preset = BANNER_PRESETS.find(p => p.key === ban);
+  if (preset) return `background:${preset.css}`;
+  return `background:url(${ban}) center/cover no-repeat`;
+}
+
+function openBannerPicker() {
+  _bannerPickerSel = null;
+  _bannerFileObj   = null;
+  const id  = getLoggedId();
+  const cur = (overrides[String(id)] || {}).banner || 'default';
+  const presetsHtml = BANNER_PRESETS.map(p =>
+    `<div class="banner-preset${cur===p.key?' sel':''}" data-key="${p.key}" style="background:${p.css}" onclick="_bannerPickSel('${p.key}')"></div>`
+  ).join('');
+  const html = `<div id="banner-modal-ov" class="banner-modal-ov" onclick="if(event.target===this)closeBannerPicker()">
+    <div class="banner-modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;letter-spacing:0.05em">ELIGE TU BANNER</div>
+        <button onclick="closeBannerPicker()" style="background:rgba(255,255,255,0.07);border:none;border-radius:8px;color:#fff;padding:4px 10px;cursor:pointer;font-size:16px">✕</button>
+      </div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-weight:700;letter-spacing:0.12em">FONDOS PREDISEÑADOS</div>
+      <div class="banner-preset-grid">${presetsHtml}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:14px;margin-bottom:6px;font-weight:700;letter-spacing:0.12em">O SUBE TU FOTO</div>
+      <div class="banner-upload-row">
+        <label style="flex:1;background:rgba(255,255,255,0.05);border:1px dashed rgba(255,255,255,0.2);border-radius:10px;padding:10px 14px;cursor:pointer;font-size:12px;color:rgba(255,255,255,0.55)">
+          📷 <span id="banner-file-lbl">Elegir imagen…</span>
+          <input id="banner-file-inp" type="file" accept="image/*" style="display:none" onchange="onBannerFileSelect(this)">
+        </label>
+      </div>
+      <button onclick="saveBannerPicker()" style="width:100%;margin-top:14px;padding:12px;border-radius:12px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em">GUARDAR BANNER</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeBannerPicker() {
+  const el = document.getElementById('banner-modal-ov');
+  if (el) el.remove();
+}
+
+function _bannerPickSel(key) {
+  _bannerPickerSel = key;
+  _bannerFileObj   = null;
+  document.querySelectorAll('.banner-preset').forEach(b =>
+    b.classList.toggle('sel', b.dataset.key === key));
+  const fi = document.getElementById('banner-file-inp');
+  if (fi) fi.value = '';
+  const lbl = document.getElementById('banner-file-lbl');
+  if (lbl) lbl.textContent = 'Elegir imagen…';
+}
+
+function onBannerFileSelect(input) {
+  if (!input.files?.[0]) return;
+  _bannerFileObj   = input.files[0];
+  _bannerPickerSel = null;
+  document.querySelectorAll('.banner-preset').forEach(b => b.classList.remove('sel'));
+  const lbl = document.getElementById('banner-file-lbl');
+  if (lbl) lbl.textContent = _bannerFileObj.name;
+}
+
+async function saveBannerPicker() {
+  const id = getLoggedId();
+  if (id === null) { showToast('Inicia sesión primero'); return; }
+  let bannerValue = null;
+  if (_bannerFileObj) {
+    const ext = _bannerFileObj.name.split('.').pop().toLowerCase();
+    const path = `banner-images/${id}.${ext}`;
+    showToast('Subiendo imagen…');
+    try {
+      const storRef = firebase.storage().ref(path);
+      await storRef.put(_bannerFileObj);
+      bannerValue = await storRef.getDownloadURL();
+    } catch(e) {
+      showToast('Error al subir la imagen'); return;
+    }
+  } else if (_bannerPickerSel) {
+    bannerValue = _bannerPickerSel;
+  } else {
+    showToast('Elige un fondo o sube una foto'); return;
+  }
+  const snap = await REF.get();
+  const data = snap.exists ? snap.data() : {};
+  const ov   = data.overrides || {};
+  const key  = String(id);
+  ov[key]    = ov[key] || {};
+  ov[key].banner = bannerValue;
+  await REF.set({ overrides: ov }, { merge: true });
+  overrides = ov;
+  closeBannerPicker();
+  showToast('Banner actualizado ✓');
+  renderAll(id);
 }
 
 // ════════════════════════════════════════════════════════

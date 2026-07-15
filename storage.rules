@@ -15,6 +15,9 @@ service firebase.storage {
     match /task-files/{fileName} {
       allow read, write: if true;
     }
+    match /banner-images/{fileName} {
+      allow read, write: if true;
+    }
     match /{allPaths=**} {
       allow read, write: if false;
     }
