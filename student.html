@@ -12185,49 +12185,50 @@ async function saveBannerPicker() {
   const id = getLoggedId();
   if (id === null) { showToast('Inicia sesión primero'); return; }
   let bannerValue = null;
-  if (_bannerFileObj && _bannerDataUrl) {
-    // Crop via canvas
+
+  if (_bannerDataUrl) {
+    // Recortar via canvas y guardar como base64 (igual que fotos de perfil)
     const wrap = document.getElementById('banner-crop-wrap');
-    const pw = (wrap ? wrap.clientWidth : 360) || 360;
+    const pw = (wrap && wrap.offsetWidth > 0 ? wrap.offsetWidth : 320);
     const ph = 120;
-    const OUT_W = 800, OUT_H = Math.round(OUT_W * ph / pw);
+    const OUT_W = 480, OUT_H = Math.round(OUT_W * ph / pw);
     const canvas = document.createElement('canvas');
     canvas.width = OUT_W; canvas.height = OUT_H;
     const ctx = canvas.getContext('2d');
     const img = new Image();
     img.src = _bannerDataUrl;
-    await new Promise(r => { img.onload = r; if (img.complete && img.naturalWidth) r(); });
+    if (!img.complete || !img.naturalWidth) {
+      await new Promise(r => { img.onload = r; img.onerror = r; });
+    }
     const sx = -_bannerCropX / _bannerCropScale;
     const sy = -_bannerCropY / _bannerCropScale;
     const sw = pw / _bannerCropScale;
     const sh = ph / _bannerCropScale;
     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, OUT_W, OUT_H);
-    showToast('Subiendo imagen…');
-    try {
-      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
-      const storRef = firebase.storage().ref(`banner-images/${id}.jpg`);
-      await storRef.put(blob, { contentType: 'image/jpeg' });
-      bannerValue = await storRef.getDownloadURL();
-    } catch(e) {
-      console.error('Banner upload:', e);
-      showToast('Error al subir: ' + (e.code || e.message || 'desconocido')); return;
-    }
+    bannerValue = canvas.toDataURL('image/jpeg', 0.78);
   } else if (_bannerPickerSel) {
     bannerValue = _bannerPickerSel;
   } else {
     showToast('Elige un fondo o sube una foto'); return;
   }
-  const snap = await REF.get();
-  const data = snap.exists ? snap.data() : {};
-  const ov   = data.overrides || {};
-  const key  = String(id);
-  ov[key]    = ov[key] || {};
-  ov[key].banner = bannerValue;
-  await REF.set({ overrides: ov }, { merge: true });
-  overrides = ov;
-  closeBannerPicker();
-  showToast('Banner actualizado ✓');
-  renderAll(id);
+
+  showToast('Guardando…');
+  try {
+    const snap = await REF.get();
+    const data = snap.exists ? snap.data() : {};
+    const ov   = data.overrides || {};
+    const key  = String(id);
+    ov[key]    = ov[key] || {};
+    ov[key].banner = bannerValue;
+    await REF.set({ overrides: ov }, { merge: true });
+    overrides = ov;
+    closeBannerPicker();
+    showToast('Banner actualizado ✓');
+    renderAll(id);
+  } catch(e) {
+    console.error('Banner save:', e);
+    showToast('Error: ' + (e.code || e.message || 'desconocido'));
+  }
 }
 
 // ════════════════════════════════════════════════════════
