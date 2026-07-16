@@ -2659,6 +2659,55 @@ function _genIncl4B3(){
 }
 // bq1: Quiz — Incluido y No Incluido
 function _genIncl4BQ1(){const f=[_genIncl4B1,_genIncl4B2,_genIncl4B3];return f[_incl4rnd(0,2)]();}
+// b4: Pertenencia — dado A = {...}, x pertenece o no pertenece (texto)
+function _genIncl4B4(){
+  var A=_incl4pool(_incl4rnd(4,6),1,20);
+  var belongs=Math.random()<0.5;
+  var x;
+  if(belongs){x=_incl4shuf(A)[0];}
+  else{var all=[];for(var i=1;i<=30;i++)if(!A.includes(i))all.push(i);x=_incl4shuf(all)[0];}
+  var ans=belongs?'\u2208':'\u2209';
+  var ste=belongs?x+' aparece en A = {'+A.join(', ')+'} \u2192 '+x+' \u2208 A.':x+' no aparece en A = {'+A.join(', ')+'} \u2192 '+x+' \u2209 A.';
+  return{q:'A = {'+A.join(', ')+'} \u2014 \u00bfqu\u00e9 s\u00edmbolo va en el espacio?    '+x+' _____ A',a:ans,opts:_incl4shuf([ans,belongs?'\u2209':'\u2208','\u2282','\u2284']),mc:true,ste:ste};
+}
+// b5: Pertenencia — diagrama circular: elementos dentro/fuera, x pertenece?
+function _genIncl4B5(){
+  var A=_incl4pool(_incl4rnd(4,6),1,20);
+  var all=[];for(var i=1;i<=30;i++)if(!A.includes(i))all.push(i);
+  var outside=_incl4shuf(all).slice(0,_incl4rnd(2,3));
+  var belongs=Math.random()<0.5;
+  var x=belongs?_incl4shuf(A)[0]:_incl4shuf(outside)[0];
+  var ans=belongs?'\u2208':'\u2209';
+  var inPos=[[108,72],[140,72],[172,72],[108,100],[140,100],[172,100]];
+  var outPos=[[28,54],[240,54],[28,138],[240,138]];
+  var svgE='';
+  A.forEach(function(e,i){
+    var p=inPos[i%inPos.length];
+    if(e===x){
+      svgE+='<ellipse cx="'+p[0]+'" cy="'+(p[1]-5)+'" rx="14" ry="11" fill="rgba(255,215,0,0.28)" stroke="#ffd700" stroke-width="2"/>';
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="14" fill="#ffd700" font-weight="900" text-anchor="middle">'+e+'</text>';
+    } else {
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="12" fill="#fde68a" font-weight="700" text-anchor="middle">'+e+'</text>';
+    }
+  });
+  outside.forEach(function(e,i){
+    var p=outPos[i%outPos.length];
+    if(e===x){
+      svgE+='<ellipse cx="'+p[0]+'" cy="'+(p[1]-5)+'" rx="14" ry="11" fill="rgba(255,215,0,0.28)" stroke="#ffd700" stroke-width="2"/>';
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="14" fill="#ffd700" font-weight="900" text-anchor="middle">'+e+'</text>';
+    } else {
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="12" fill="rgba(255,255,255,0.5)" font-weight="700" text-anchor="middle">'+e+'</text>';
+    }
+  });
+  var svg='<svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block">'
+         +'<ellipse cx="140" cy="92" rx="80" ry="68" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="2.5"/>'
+         +'<text x="140" y="33" font-size="14" fill="#fbbf24" font-weight="700" text-anchor="middle">A</text>'
+         +svgE+'</svg>';
+  var ste=belongs?x+' est\u00e1 dentro del c\u00edrculo de A \u2192 '+x+' \u2208 A.':x+' est\u00e1 fuera del c\u00edrculo de A \u2192 '+x+' \u2209 A.';
+  return{q:'<div style="display:block;width:100%;text-align:center">'+svg+'<div style="font-size:15px;font-weight:700;margin-top:4px">\u00bfEl n\u00famero <span style="color:#ffd700">'+x+'</span> pertenece a A? (\u2208 \u00f3 \u2209)</div></div>',a:ans,opts:_incl4shuf([ans,belongs?'\u2209':'\u2208','\u2282','\u2284']),mc:true,ste:ste};
+}
+// bq2: Quiz — Pertenencia y No Pertenencia
+function _genIncl4BQ2(){return Math.random()<0.5?_genIncl4B4():_genIncl4B5();}
 
 // ── Fracciones 1° Secundaria – San Ignacio de Recalde ────────────────────────
 function _frGcd(a,b){while(b){const t=b;b=a%b;a=t;}return a;}
@@ -3717,6 +3766,10 @@ const BINGO_TOPICS = {
   incl4_b2:  { ico:'⊂', lbl:'Diagrama de cajas: ¿incluido o no?', qCount:4, gen:()=>_genIncl4B2() },
   incl4_b3:  { ico:'🔵', lbl:'Verdadero o Falso (círculos)',       qCount:4, gen:()=>_genIncl4B3() },
   incl4_bq1: { ico:'⚡', lbl:'Quiz – Incluido y No Incluido',      qCount:5, gen:()=>_genIncl4BQ1(), quiz:true },
+  // ── Pertenencia y No Pertenencia ──
+  incl4_b4:  { ico:'∈', lbl:'¿x ∈ A o x ∉ A? (numérico)',         qCount:4, gen:()=>_genIncl4B4() },
+  incl4_b5:  { ico:'∈', lbl:'Pertenencia: diagrama circular',       qCount:4, gen:()=>_genIncl4B5() },
+  incl4_bq2: { ico:'⚡', lbl:'Quiz – Pertenencia y No Pertenencia', qCount:5, gen:()=>_genIncl4BQ2(), quiz:true },
   // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ──
   em_b0:  { ico:'📖', lbl:'Definiciones – Espacio Muestral', qCount:4, gen:()=>_genEM_B0() },
   em_b1:  { ico:'Ω',  lbl:'Cardinal del Espacio Muestral', qCount:4, gen:()=>_genEM_B1() },
@@ -3784,10 +3837,10 @@ const BINGO_TOPICS = {
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
     areas:[{key:'matematica', lbl:'Matemática'}] },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -3815,7 +3868,7 @@ const PREP_CURRICULUM = {
     '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
     '4':[
-      {lbl:'Incluido y No Incluido',          area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1']},
+      {lbl:'Incluido y No Incluido',          area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
       {lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
       {lbl:'Sumas de 3 Cifras',                  area:'matematica', editorial:'belen', skills:['sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1']},
       {lbl:'Multiplicación del 2 al 9',             area:'matematica', editorial:'belen', skills:['mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu']},
@@ -13136,3 +13189,4 @@ function closeImgViewer(){
 </script>
 </body>
 </html>
+                                   
