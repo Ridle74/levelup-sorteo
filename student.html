@@ -2901,6 +2901,80 @@ function _genFr1siB13(){
 // bq4: Quiz final — Fracciones
 function _genFr1siBQ4(){return _frPick([_genFr1siB1,_genFr1siB5,_genFr1siB6,_genFr1siB7,_genFr1siB8,_genFr1siB9,_genFr1siB12,_genFr1siB13])();}
 
+// ── Regletas de Cuisenaire 1° Primaria – Colegio Belén ───────────────────────
+const _RG_C={1:'#f5f5f5',2:'#e53e3e',3:'#68d391',4:'#f687b3',5:'#ecc94b',6:'#276749',7:'#1a1a1a',8:'#8B4513',9:'#3182ce',10:'#f6ad55'};
+const _RG_N={1:'blanca',2:'roja',3:'verde claro',4:'rosada',5:'amarilla',6:'verde oscuro',7:'negra',8:'marrón',9:'azul',10:'naranja'};
+function _rgRod(v,hidden){
+  var S=10,H=28;
+  var bg=hidden?'rgba(255,255,255,0.1)':_RG_C[v];
+  var bdr=hidden?'2px dashed rgba(255,255,255,0.45)':'2px solid rgba(0,0,0,0.2)';
+  var fc=hidden?'#ffd700':(v===1||v===5)?'#444':'#fff';
+  var fs=hidden?'13px':(v===1)?'8px':(v<=3)?'10px':'12px';
+  var txt=hidden?'?':v;
+  var w=v*S;
+  return '<div style="display:inline-flex;align-items:center;justify-content:center;background:'+bg+';border:'+bdr+';border-radius:4px;width:'+w+'px;height:'+H+'px;color:'+fc+';font-weight:900;font-size:'+fs+';flex-shrink:0;font-family:Barlow Condensed,sans-serif">'+txt+'</div>';
+}
+function _rgQ(N,a,b,hideA){
+  var ans=hideA?a:b;
+  var all=[1,2,3,4,5,6,7,8,9,10].filter(function(v){return v!==ans;});
+  var wrongs=all.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  var rodA=_rgRod(a,hideA), rodB=_rgRod(b,!hideA);
+  var q='<div style="display:block;width:100%;text-align:center">'
+      +'<div style="font-size:13px;margin-bottom:9px;color:rgba(255,255,255,0.85);line-height:1.35">'
+      +'¿Cuánto vale la regleta <span style="color:#ffd700;font-weight:900;background:rgba(255,215,0,0.12);border-radius:3px;padding:0 5px">?</span>'
+      +' para hacer el <b style="color:#ffd700;font-size:15px">'+N+'</b>?</div>'
+      +'<div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap">'
+      +rodA
+      +'<span style="color:rgba(255,255,255,0.65);font-size:18px;font-weight:700">+</span>'
+      +rodB
+      +'<span style="color:rgba(255,255,255,0.5);font-size:13px;margin-left:2px">= '+N+'</span>'
+      +'</div></div>';
+  return{q:q,a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'. La regleta '+_RG_N[ans]+' vale '+ans+'.'};
+}
+function _rgGen(N){
+  var pairs=[];
+  for(var av=Math.max(1,N-10);av<=Math.min(10,N-1)&&av<=N-av;av++) pairs.push([av,N-av]);
+  var pool=[];
+  pairs.forEach(function(p){
+    pool.push(p);
+    if(p[0]===10||p[1]===10||p[0]===9||p[1]===9) pool.push(p);
+  });
+  var pick=pool[Math.floor(Math.random()*pool.length)];
+  return _rgQ(N,pick[0],pick[1],Math.random()<0.5);
+}
+function _genReg_B11(){return _rgGen(11);}
+function _genReg_B12(){return _rgGen(12);}
+function _genReg_B13(){return _rgGen(13);}
+function _genReg_B14(){return _rgGen(14);}
+function _genReg_B15(){return _rgGen(15);}
+function _genReg_B16(){return _rgGen(16);}
+function _genReg_B17(){return _rgGen(17);}
+function _genReg_B18(){return _rgGen(18);}
+function _genReg_B19(){return _rgGen(19);}
+function _genReg_BQ1(){
+  var N=Math.floor(Math.random()*9)+2;
+  var a=Math.floor(Math.random()*(N-1))+1,b=N-a;
+  var hideA=Math.random()<0.5, ans=hideA?a:b;
+  var all=[1,2,3,4,5,6,7,8,9,10].filter(function(v){return v!==ans;});
+  var wrongs=all.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  var qText=hideA?'? + '+b+' = '+N:a+' + ? = '+N;
+  return{q:qText,a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'. La respuesta es '+ans+'.'};
+}
+function _genReg_BQ2(){
+  var N=Math.floor(Math.random()*10)+11;
+  if(N===20) return{q:'¿Cuánto es 10 + 10?',a:'20',opts:['20','19','18','21'],mc:true,ste:'10 + 10 = 20.'};
+  return _rgGen(N);
+}
+function _genReg_BPU(){
+  var N=Math.floor(Math.random()*19)+2;
+  var a=Math.floor(Math.random()*(N-1))+1,b=N-a;
+  var wrongs=[N-2,N-1,N+1,N+2].filter(function(v){return v>0;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[N].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(N),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'.'};
+}
+
 // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
 const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
 const _EM_CAJAS = [
@@ -3563,13 +3637,26 @@ const BINGO_TOPICS = {
   fr1si_b12: { ico:'🍕', lbl:'Fracción de una fracción (verbal)',  qCount:4, gen:()=>_genFr1siB12() },
   fr1si_b13: { ico:'📊', lbl:'Problemas de contexto real',         qCount:4, gen:()=>_genFr1siB13() },
   fr1si_bq4: { ico:'⚡', lbl:'Quiz final – Fracciones',            qCount:5, gen:()=>_genFr1siBQ4(), quiz:true },
+  // ── Regletas de Cuisenaire 1° Primaria – Colegio Belén ──
+  reg_b11: { ico:'▬', lbl:'Regletas: Descomponemos el 11', qCount:4, gen:()=>_genReg_B11() },
+  reg_b12: { ico:'▬', lbl:'Regletas: Descomponemos el 12', qCount:4, gen:()=>_genReg_B12() },
+  reg_b13: { ico:'▬', lbl:'Regletas: Descomponemos el 13', qCount:4, gen:()=>_genReg_B13() },
+  reg_b14: { ico:'▬', lbl:'Regletas: Descomponemos el 14', qCount:4, gen:()=>_genReg_B14() },
+  reg_b15: { ico:'▬', lbl:'Regletas: Descomponemos el 15', qCount:4, gen:()=>_genReg_B15() },
+  reg_b16: { ico:'▬', lbl:'Regletas: Descomponemos el 16', qCount:4, gen:()=>_genReg_B16() },
+  reg_b17: { ico:'▬', lbl:'Regletas: Descomponemos el 17', qCount:4, gen:()=>_genReg_B17() },
+  reg_b18: { ico:'▬', lbl:'Regletas: Descomponemos el 18', qCount:4, gen:()=>_genReg_B18() },
+  reg_b19: { ico:'▬', lbl:'Regletas: Descomponemos el 19', qCount:4, gen:()=>_genReg_B19() },
+  reg_bq1: { ico:'⚡', lbl:'Quiz I – Descomposición 1 al 10',    qCount:5, gen:()=>_genReg_BQ1(), quiz:true },
+  reg_bq2: { ico:'⚡', lbl:'Quiz II – Descomposición 11 al 20',  qCount:5, gen:()=>_genReg_BQ2(), quiz:true },
+  reg_bpu: { ico:'⚡', lbl:'Prueba de Unidad – Sumas del 1 al 20', qCount:8, gen:()=>_genReg_BPU(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
-    grades:{ '1':['suma','suma10','resta'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
     areas:[{key:'matematica', lbl:'Matemática'}] },
   secundaria: { lbl:'Secundaria', ico:'S',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -3590,7 +3677,10 @@ const PREP_LEVELS = {
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
-    '1':[{lbl:'Adición y Sustracción',    area:'matematica', skills:['suma','suma10','resta']}],
+    '1':[
+      {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
+      {lbl:'Descomposemos del 11 al 19 – Regletas',              area:'matematica', editorial:'belen', skills:['reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu']},
+    ],
     '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
     '4':[
