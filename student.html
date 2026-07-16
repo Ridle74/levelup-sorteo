@@ -1919,7 +1919,7 @@ const PUBLIC_ROUTES = new Set(['login','ranking','numeros','ganadores','bingo'])
 const ADMIN_ROUTES  = new Set([]);
 // Rutas "inmersivas": pantalla completa sin nav inferior ni barra atrás/inicio/adelante
 // (pedido explícito: que /student/bingo "solo se vea el sorteo").
-const IMMERSIVE_ROUTES = new Set(['bingo']);
+const IMMERSIVE_ROUTES = new Set(['bingo','levelup']);
 
 function go(view) {
   currentView = view;
@@ -1952,7 +1952,7 @@ function router() {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
     ranking: vRankingPage, numeros: vNumerosPage, ganadores: vGanadoresPage,
     tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil,
-    bingo: vBingoFull
+    bingo: vBingoFull, levelup: vLevelUpFull
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
@@ -1978,7 +1978,7 @@ function router() {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
     ranking:vRankingSetup, numeros:vNumerosSetup, ganadores:vGanadoresSetup,
     tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{},
-    bingo: vBingoFullSetup
+    bingo: vBingoFullSetup, levelup: vLevelUpFullSetup
   };
   if (setup[hash]) setup[hash]();
 
@@ -2136,9 +2136,9 @@ function vDashboard() {
             <div class="game-card-desc">Bingo multijugador en vivo con poderes, retos matemáticos y bloqueos.</div>
             <button class="game-card-btn">▶ Jugar</button>
           </div>
-          <div class="game-card gc-prep" onclick="setGamingMode('preparate')">
-            <div class="game-card-icon">📚</div>
-            <div class="game-card-name">Prepárate</div>
+          <div class="game-card gc-prep" onclick="go('levelup')">
+            <div class="game-card-icon">🚀</div>
+            <div class="game-card-name">Level Up</div>
             <div class="game-card-desc">Practica ejercicios, cuestionarios y pruebas de unidad a tu ritmo.</div>
             <button class="game-card-btn">▶ Empezar</button>
           </div>
@@ -8079,6 +8079,18 @@ function vBingoFullSetup() {
   startBingoListener();
   _renderBingoPane();
 }
+function vLevelUpFull() {
+  return `
+    <div style="background:#070714;min-height:100vh">
+      <div style="display:flex;align-items:center;padding:10px 14px 0">
+        <button onclick="navHome()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:6px 12px;color:rgba(255,255,255,0.65);font-size:11px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.1em">← INICIO</button>
+      </div>
+      <div id="preparate-pane">${_preparatePaneHtml()}</div>
+    </div>`;
+}
+function vLevelUpFullSetup() {
+  if (!isAdmin() && _prepHistoryData === null && !_prepHistoryLoading) loadPrepHistory();
+}
 
 // ════════════════════════════════════════════════════════
 // VIEW: TABLERO
@@ -9285,7 +9297,7 @@ function vTareas() {
           <option value="" disabled selected style="background:#fff;color:#111">Tipo de tarea...</option>
           <option value="enlace" style="background:#fff;color:#111">🔗 Enlace</option>
           <option value="documento" style="background:#fff;color:#111">📄 Documento</option>
-          <option value="preparate" style="background:#fff;color:#111">🧠 Prepárate</option>
+          <option value="preparate" style="background:#fff;color:#111">🚀 Level Up</option>
         </select>
         <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:38px;flex-shrink:0;cursor:pointer;font-size:14px;line-height:1">✕</button>
       </div>
@@ -10617,10 +10629,7 @@ function _launchPrepFromTask(cfg) {
     showToast('Configuración de práctica no válida.');
     return;
   }
-  // 'preparate' no es una ruta del router — es dashGamingMode dentro del dashboard
-  dashTab = 'gaming';
-  dashGamingMode = 'preparate';
-  go('dashboard');
+  go('levelup');
 }
 function _resetTaskPrepForm() {
   _taskPrepOpen = false;
