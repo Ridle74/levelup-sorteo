@@ -592,6 +592,13 @@ textarea.fsm { resize:none; height:64px; }
 .prep-next-btn{width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;transition:opacity .15s;margin-top:4px}
 .prep-next-btn:hover:not(:disabled){opacity:.88}
 .prep-next-btn:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);cursor:default}
+.prep-report-btn{background:none;border:none;color:rgba(255,255,255,0.22);font-size:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.05em;padding:4px 8px;border-radius:6px;transition:color .2s}
+.prep-report-btn:hover{color:rgba(251,191,36,0.82)}
+.prep-report-modal-ov{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0.82);display:flex;align-items:center;justify-content:center;padding:16px}
+.prep-report-modal-box{background:#100d2e;border:1px solid rgba(255,255,255,0.13);border-radius:18px;padding:20px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto}
+.prep-report-tag{display:inline-block;background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.5);border-radius:8px;padding:2px 10px;font-size:12px;font-weight:900;color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em}
+.prep-report-ta{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 12px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;resize:none;outline:none;box-sizing:border-box;min-height:80px;margin-top:8px}
+.prep-report-ta:focus{border-color:rgba(168,85,247,0.6);box-shadow:0 0 0 2px rgba(168,85,247,0.15)}
 .prep-score-wrap{text-align:center;padding:8px 0 16px}
 .prep-score-num{font-size:58px;font-weight:900;line-height:1;color:#fff}
 .prep-score-denom{font-size:28px;font-weight:700;color:rgba(255,255,255,0.35)}
@@ -1261,6 +1268,12 @@ let _prepAdminHistLoading = false;
 let _prepAdminShowHist = false;
 let _prepAdminFilterUid = null;  // null = todos
 let _prepAdminExpandedId = null;
+// Reportes de errores en ejercicios de Level Up
+let _prepReportModalOpen = false;
+let _prepAdminReportsData = null;
+let _prepAdminReportsLoading = false;
+let _prepAdminShowReports = false;
+let _prepAdminReportsFilter = 'pending'; // 'pending' | 'confirmed' | 'dismissed'
 let bingoGame     = null;      // snapshot en vivo de BINGO_REF (null = todavía no llegó el primer snapshot)
 let bingoUnsub    = null;      // unsubscribe del listener de BINGO_REF (se queda activo toda la sesión, como msgsListeners)
 let bingoTickTimer = null;     // setInterval de 1s: refresca cuenta atrás y dispara el sorteo si soy el host
@@ -6278,7 +6291,7 @@ function _prepConfigHtml() {
           <div class="prep-kh-skills"><span style="font-size:11px;color:rgba(255,255,255,0.2)">🚧 Próximamente</span></div>
         </div>`).join('')}
       </div>
-      ${isAdmin() ? _prepAdminHistoryHtml() : _prepHistorySectionHtml()}
+      ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
     </div>`;
   }
 
@@ -6365,7 +6378,7 @@ function _prepConfigHtml() {
     ${legend}
     ${unitsHtml}
     ${startPanel}
-    ${isAdmin() ? _prepAdminHistoryHtml() : _prepHistorySectionHtml()}
+    ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
   </div>`;
 }
 function _prepHistCardHtml(h, dateStr, timeStr, ok) {
@@ -6787,7 +6800,28 @@ function _prepExamHtml() {
     <button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()">
       ${idx===total-1?'🏁 Ver resultados':'Siguiente →'}
     </button>
-  </div>`;
+    <div style="text-align:center;margin-top:10px">
+      <button class="prep-report-btn" onclick="openPrepReportModal()">⚠️ Reportar error en este ejercicio</button>
+    </div>
+  </div>${_prepReportModalOpen ? `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepReportModal()">
+    <div class="prep-report-modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:0.05em">⚠️ REPORTAR ERROR</span>
+        <button onclick="closePrepReportModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
+      </div>
+      <div style="margin-bottom:10px"><span class="prep-report-tag">ID: ${_prep.topic}</span></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Ejercicio</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;line-height:1.4">${q.q}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Respuesta oficial</div>
+      <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${q.a}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Describe el error <span style="color:rgba(255,255,255,0.3);font-weight:600;text-transform:none;letter-spacing:0">(obligatorio)</span></div>
+      <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser 3/4 porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+        <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Enviar reporte</button>
+      </div>
+    </div>
+  </div>` : ''}`;
 }
 function _prepResultHtml() {
   const total = _prep.questions.length;
@@ -6837,6 +6871,144 @@ function _prepResultHtml() {
       ${_prep.showReview?'▲ Ocultar revisión':'▼ Revisar respuestas'}
     </button>
     ${reviewHtml}
+  </div>`;
+}
+// ── Report modal helpers ─────────────────────────────────────────────────────
+function openPrepReportModal() {
+  _prepReportModalOpen = true;
+  _renderPreparatePane();
+  setTimeout(()=>{ const ta=document.getElementById('prep-report-ta'); if(ta)ta.focus(); },80);
+}
+function closePrepReportModal() {
+  _prepReportModalOpen = false;
+  _renderPreparatePane();
+}
+async function submitPrepReport() {
+  const ta = document.getElementById('prep-report-ta');
+  const comment = ta ? ta.value.trim() : '';
+  if (!comment) { showToast('Escribe el error antes de enviar'); if(ta)ta.focus(); return; }
+  const q = _prep.questions[_prep.currentIdx];
+  if (!q) return;
+  const def = BINGO_TOPICS[_prep.topic] || {};
+  const id = getLoggedId();
+  const students = getStudents();
+  const stu = id !== null && id !== 0 ? students.find(s=>s.id===id) : null;
+  const sName = stu ? stu.name : (id===0 ? 'Profesor' : 'Invitado');
+  const sid = id !== null ? id : -1;
+  const btn = document.getElementById('prep-report-submit-btn');
+  if (btn) { btn.disabled=true; btn.textContent='Enviando…'; btn.style.opacity='0.5'; }
+  try {
+    await db.collection('prepReports').add({
+      skillKey:   _prep.topic,
+      skillLabel: def.lbl || _prep.topic,
+      q:          q.q,
+      correctAns: String(q.a),
+      comment,
+      sid,
+      sName,
+      ts:     firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'pending'
+    });
+    _prepReportModalOpen = false;
+    _renderPreparatePane();
+    showToast('Reporte enviado. ¡Gracias! 👍');
+  } catch(e) {
+    console.error('prepReport submit', e);
+    showToast('Error al enviar: ' + (e.message||''));
+    if (btn) { btn.disabled=false; btn.textContent='Enviar reporte'; btn.style.opacity=''; }
+  }
+}
+// ── Admin: load + update reports ─────────────────────────────────────────────
+async function loadPrepReportsAdmin() {
+  if (!isAdmin()) return;
+  _prepAdminReportsLoading = true;
+  try {
+    const snap = await db.collection('prepReports').orderBy('ts','desc').limit(300).get();
+    _prepAdminReportsData = [];
+    snap.forEach(doc => _prepAdminReportsData.push({ id: doc.id, ...doc.data() }));
+  } catch(e) { _prepAdminReportsData = []; console.error('prepReports load', e); }
+  _prepAdminReportsLoading = false;
+  if (dashGamingMode==='preparate') _renderPreparatePane();
+}
+async function setPrepReportStatus(docId, status) {
+  try {
+    await db.collection('prepReports').doc(docId).update({ status });
+    const rec = (_prepAdminReportsData||[]).find(r=>r.id===docId);
+    if (rec) rec.status = status;
+    _renderPreparatePane();
+  } catch(e) { showToast('Error: ' + (e.message||'')); }
+}
+function _prepAdminReportsHtml() {
+  const data    = _prepAdminReportsData;
+  const loading = _prepAdminReportsLoading;
+  const f       = _prepAdminReportsFilter;
+  const filtered   = Array.isArray(data) ? data.filter(r=>r.status===f) : null;
+  const confirmedIds = Array.isArray(data) ? [...new Set(data.filter(r=>r.status==='confirmed').map(r=>r.skillKey))] : [];
+  const counts = Array.isArray(data)
+    ? { pending: data.filter(r=>r.status==='pending').length,
+        confirmed: data.filter(r=>r.status==='confirmed').length,
+        dismissed: data.filter(r=>r.status==='dismissed').length }
+    : { pending:0, confirmed:0, dismissed:0 };
+
+  const filterBtns = [
+    { key:'pending',   lbl:'⏳ Pendientes' },
+    { key:'confirmed', lbl:'✅ Confirmados' },
+    { key:'dismissed', lbl:'🚫 Descartados' }
+  ].map(({key,lbl})=>{
+    const active = f===key;
+    return `<button onclick="_prepAdminReportsFilter='${key}';_renderPreparatePane()" style="padding:4px 10px;border-radius:14px;border:1px solid ${active?'rgba(168,85,247,0.7)':'rgba(255,255,255,0.12)'};background:${active?'rgba(168,85,247,0.2)':'rgba(255,255,255,0.04)'};color:${active?'#d8b4fe':'rgba(255,255,255,0.5)'};font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer">${lbl} (${counts[key]})</button>`;
+  }).join('');
+
+  let cardsHtml = '';
+  if (loading || !Array.isArray(filtered)) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`;
+  } else if (filtered.length===0) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">No hay reportes en esta categoría.</div>`;
+  } else {
+    cardsHtml = filtered.map(r=>{
+      const dateStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
+      const timeStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
+      const safeId  = (r.id||'').replace(/'/g,"\'");
+      const actionHtml = r.status==='pending'
+        ? `<div style="display:flex;gap:6px;margin-top:10px">
+            <button onclick="setPrepReportStatus('${safeId}','confirmed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">✅ Confirmar</button>
+            <button onclick="setPrepReportStatus('${safeId}','dismissed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.07);color:#f87171;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">🚫 Descartar</button>
+          </div>`
+        : `<div style="text-align:right;margin-top:8px"><button onclick="setPrepReportStatus('${safeId}','pending')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;cursor:pointer">↩ Reabrir</button></div>`;
+      return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
+          <span class="prep-report-tag">ID: ${r.skillKey||'?'}</span>
+          <span style="font-size:11px;color:rgba(255,255,255,0.3);white-space:nowrap;flex-shrink:0">${r.sName||'—'} · ${dateStr} ${timeStr}</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Ejercicio</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:6px;line-height:1.4">${r.q||''}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Respuesta oficial</div>
+        <div style="font-size:13px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif;margin-bottom:6px">${r.correctAns||''}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Comentario</div>
+        <div style="font-size:13px;color:#fde68a;line-height:1.4">${r.comment||''}</div>
+        ${actionHtml}
+      </div>`;
+    }).join('');
+  }
+
+  const idsStr = confirmedIds.join(', ');
+  const copyBtn = confirmedIds.length
+    ? `<button onclick="navigator.clipboard.writeText(${JSON.stringify(idsStr)}).then(()=>showToast('IDs copiados ✓')).catch(()=>showToast('Error al copiar'))" style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px">📋 Copiar ${confirmedIds.length} ID${confirmedIds.length>1?'s':''} confirmado${confirmedIds.length>1?'s':''}</button>`
+    : '';
+
+  const pendingBadge = Array.isArray(_prepAdminReportsData) && counts.pending > 0
+    ? ' (' + counts.pending + ' pendiente' + (counts.pending>1?'s':'') + ')'
+    : '';
+
+  return `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowReports=!_prepAdminShowReports;if(_prepAdminShowReports&&!Array.isArray(_prepAdminReportsData)&&!_prepAdminReportsLoading)loadPrepReportsAdmin();_renderPreparatePane()">
+      ⚠️ ${_prepAdminShowReports ? '▲ Ocultar' : '▼ Ver'} reportes de errores${pendingBadge}
+    </button>
+    ${_prepAdminShowReports ? `<div style="margin-top:10px">
+      ${copyBtn}
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${filterBtns}</div>
+      ${cardsHtml}
+    </div>` : ''}
   </div>`;
 }
 function _renderBingoPane() {
