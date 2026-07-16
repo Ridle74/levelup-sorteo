@@ -3908,7 +3908,8 @@ function _bingoGenQuestions(topicsOrLevel, count=5, retoIndex=0, speed='media') 
   const t = topics[retoIndex % topics.length];
   const topicDef = BINGO_TOPICS[t];
   const gen = topicDef?.gen;
-  const finalCount = (speed==='rapida' && topicDef?.qCountRapida != null ? topicDef.qCountRapida : topicDef?.qCount) ?? count;
+  const _rawCount = (speed==='rapida' && topicDef?.qCountRapida != null ? topicDef.qCountRapida : topicDef?.qCount) ?? count;
+  const finalCount = topicDef?.quiz ? Math.min(_rawCount, 3) : _rawCount;
   const qs = [];
   for (let i=0; i<finalCount; i++) {
     qs.push(gen ? gen() : {q:`${_bGetRandomInt(5,40)} + ${_bGetRandomInt(5,40)} = ?`,a:0});
@@ -7386,7 +7387,7 @@ function _bingoPlayerTopicSelectorHtml(uid, ptopics) {
   let topicsHtml = '';
   if (pNivel && pGrade && lv && !lv.areas) {
     const units = (PREP_CURRICULUM[pNivel]||{})[pGrade] || [];
-    const tks = units.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]);
+    const tks = units.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]?.quiz);
     topicsHtml = tks.length
       ? `<div style="display:flex;flex-direction:column;gap:3px;width:100%">
           ${tks.map(k => { const def=BINGO_TOPICS[k]||{}; const on=ptopics.includes(k);
@@ -7600,7 +7601,7 @@ function _bingoPaneHtml() {
           const gradeHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>`;
           if (!_bingoLobbyGrade) return gradeHtml;
           const _currUnits = (PREP_CURRICULUM[_bingoLobbyNivel]||{})[_bingoLobbyGrade] || [];
-          const tks = _currUnits.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]);
+          const tks = _currUnits.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]?.quiz);
           const topicsHtml = tks.length
             ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
             : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
