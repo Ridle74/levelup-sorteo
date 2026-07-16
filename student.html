@@ -5517,6 +5517,7 @@ function _bingoCheckMyDuelEnd() {
 }
 function submitBingoChallengeAnswer(raw) {
   if (!bingoGame || !bingoGame.challengeActive) return;
+  if (_bingoChallengeLocalFailed) return; // vidas agotadas — esperar al próximo reto
   const me = _bingoMe();
   const player = (bingoGame.players||{})[me.uid];
   if (!player || player.lastChallengeId === bingoGame.challengeId) return;
@@ -5717,7 +5718,8 @@ function _bingoFinishChallenge(correctCount) {
   BINGO_REF.update(patch)
     .then(()=> showToast(toastMsg, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); _bingoChallengeLocalFailed = false; bingoChallengeReview = false; bingoChallengeReviewQ = null; bingoBlockSelection = [];
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; bingoBlockSelection = [];
+  // _bingoChallengeLocalFailed NO se resetea aquí — debe persistir hasta que empiece un NUEVO reto
 }
 
 // -- v2: bloqueo (penalidad por reto imperfecto) --
