@@ -3932,6 +3932,7 @@ function _bingoNewTiersMap(count) { const m={}; for (let i=0;i<count;i++) m[i]={
 
 // -- estado efímero local (solo-cliente, no se guarda en Firestore) del reto/bloqueo/poderes --
 let bingoChallengeIdx = 0, bingoChallengeAnswer = '', bingoChallengeError = false, bingoChallengeWrongs = 0, bingoChallengeWrongOpts = new Set();
+let _bingoChallengeLocalFailed = false; // true = agotó vidas en este reto → impedir marcar hasta próximo reto
 let bingoChallengeReview = false, bingoChallengeReviewQ = null; // pantalla de resolución al agotar vidas
 let _bingoChallengeSeenAt = null;      // timestamp de cuando este cliente vio el reto por primera vez
 let _bingoChallengePlayerEndsAt = null; // fin personal del jugador (seenAt + duración completa)
@@ -4453,7 +4454,7 @@ function _bingoCellPowerClick(cardIdx, num, rivalUid) {
 }
 
 function _bingoResetLocalState() {
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null; _bingoChallengePlayerEndsAt = null;
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null; _bingoChallengePlayerEndsAt = null; _bingoChallengeLocalFailed = false;
   bingoBlockSelection = []; bingoActivePower = null; bingoPowerForm = {}; bingoPowerMsg = '';
   _prevBingoTierWinners = {}; _bingoRulesShown = false; _bingoPaused = false;
   _bingoExpandedPlayer = null; _bingoViewingPlayer = null; _bingoPowerStep = null;
@@ -4599,7 +4600,7 @@ function _selectBingoGame(gameId) {
       if (_nowCA && !_prevChallengeActive) {
         // Nuevo reto: limpiar estado local para que el jugador pueda participar limpiamente
         bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false;
-        bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set();
+        bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); _bingoChallengeLocalFailed = false;
         bingoChallengeReview = false; bingoChallengeReviewQ = null; _bingoChallengeSeenAt = null; _bingoChallengePlayerEndsAt = null;
         bingoBlockSelection = []; _bingoChallengeResult = null;
         const _ac2 = bingoGame.activeChallenge;
@@ -5317,6 +5318,7 @@ function markBingoCell(cardIdx, num) {
   const player = (bingoGame.players||{})[me.uid];
   if (!player) return;
   if (_bingoAmFrozen(player)) { showToast('🥶 Estás congelado, no puedes marcar todavía.','error'); return; }
+  if (bingoGame.challengeActive && _bingoChallengeLocalFailed) { showToast('⛔ Sin vidas — espera al próximo reto para marcar.','error'); return; }
   const _drawLen = (bingoGame.drawnNumbers||[]).length;
   if ((player.desafiadoUntilDraw||0) > _drawLen) {
     const _remPen = (player.desafiadoUntilDraw||0) - _drawLen;
@@ -5547,6 +5549,7 @@ function submitBingoChallengeAnswer(raw) {
     const _maxW = (bingoGame?.gameSpeed==='rapida') ? 2 : (_singleTopicDef?.maxWrongs ?? 3);
     if (bingoChallengeWrongs >= _maxW) {
       // Vidas agotadas → aplicar penalidad AHORA (dentro de este reto), luego mostrar review
+      _bingoChallengeLocalFailed = true;
       _bingoFinishChallenge(bingoChallengeIdx);
       // Nota: _bingoFinishChallenge resetea bingoChallengeReview=false, lo reactivamos para la pantalla de revisión
       bingoChallengeReview = true;
@@ -5714,7 +5717,7 @@ function _bingoFinishChallenge(correctCount) {
   BINGO_REF.update(patch)
     .then(()=> showToast(toastMsg, perfect?'success':'error'))
     .catch(e=>console.error('bingo challenge-finish',e));
-  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); bingoChallengeReview = false; bingoChallengeReviewQ = null; bingoBlockSelection = [];
+  bingoChallengeIdx = 0; bingoChallengeAnswer = ''; bingoChallengeError = false; bingoChallengeWrongs = 0; bingoChallengeWrongOpts = new Set(); _bingoChallengeLocalFailed = false; bingoChallengeReview = false; bingoChallengeReviewQ = null; bingoBlockSelection = [];
 }
 
 // -- v2: bloqueo (penalidad por reto imperfecto) --
