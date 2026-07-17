@@ -6789,13 +6789,18 @@ function _prepSetLevel(lvl) {
   _renderPreparatePane();
 }
 function _prepSetGrade(g) {
-  _prep.grade = g; _prep.editorial = null; _prep.openSelector = null;
-  _prep.topic = '';
+  _prep.grade = g; _prep.editorial = null; _prep.topic = '';
+  // Auto-open área si hay opciones; si no, abrir colegios
+  const areaOpts = (PREP_LEVELS[_prep.level]||{}).areas || [];
+  _prep.openSelector = areaOpts.length ? 'area' : 'editorial';
   _renderPreparatePane();
 }
 function _prepSetArea(key) {
-  _prep.area = (_prep.area === key) ? null : key;
-  _prep.openSelector = null; _prep.topic = '';
+  const wasSelected = _prep.area === key;
+  _prep.area = wasSelected ? null : key;
+  // Auto-open colegios al seleccionar área (no al deseleccionar)
+  _prep.openSelector = wasSelected ? null : 'editorial';
+  _prep.topic = '';
   _renderPreparatePane();
 }
 function _prepConfigHtml() {
