@@ -1812,7 +1812,7 @@ function _prepConfigHtml() {
         if(isQuiz){
           const qPct=_prepLastPct(sk);
           const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
-          const qIcon=lvl==='dominado'?`<svg width="9" height="18" viewBox="0 0 435.48 950.25" fill="currentColor"><polygon points="225.25,362.82 319.54,0 0,494.29 174.21,485.06 36.27,950.25 435.48,343.86"/></svg>`:'⚡';
+          const qIcon=lvl==='dominado'?`<svg width="16" height="18" viewBox="0 0 652.27 754.35" fill="currentColor"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08"/></svg>`:'⚡';
           return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
