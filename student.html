@@ -554,6 +554,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-sep{width:1px;height:36px;background:rgba(255,255,255,0.13);margin:0 5px;flex-shrink:0}
 .prep-kh-sq.quiz-sq{background:rgba(168,85,247,0.1);border:2px dashed rgba(168,85,247,0.55);color:#a855f7}
 .prep-kh-sq.quiz-sq.dominado{background:linear-gradient(135deg,#d2d2d2,#a4a4a4);border:2px solid #888;color:#fff}
+.prep-kh-sq.quiz-sq.dominado:hover{background:rgba(109,40,217,0.92);border-color:rgba(168,85,247,1)}
 .prep-kh-sq.quiz-sq.selected,.prep-kh-sq.quiz-sq:hover{background:rgba(168,85,247,0.26);border-style:solid}
 .prep-kh-sq.exam-sq{background:rgba(250,204,21,0.07);border:2px solid rgba(250,204,21,0.5);color:#facc15}
 .prep-kh-sq.exam-sq:hover{background:rgba(250,204,21,0.18)}
@@ -11114,7 +11115,7 @@ function openImgViewer(url, name){
 }
 function closeImgViewer(){
   const m = document.getElementById('img-viewer-modal');
-  if (m) m.style.display = 'none';
+ if (m) m.style.display = 'none';
   document.body.style.overflow = '';
 }
 </script>
