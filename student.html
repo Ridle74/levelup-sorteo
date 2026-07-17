@@ -7311,6 +7311,18 @@ async function _prepSaveHistory() {
     const correct = _prep.answers.filter(a=>a.correct).length;
     const total = _prep.questions.length;
     const secs = _prep.startTime && _prep.endTime ? Math.round((_prep.endTime-_prep.startTime)/1000) : 0;
+    const pct = total>0 ? Math.round((correct/total)*100) : 0;
+    // Actualización optimista: insertar resultado localmente de inmediato
+    // para que los colores de dominio se refresquen sin esperar a Firestore
+    const localEntry = {
+      uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
+      topic: _prep.topic, topicLabel: def.lbl||_prep.topic,
+      correct, total, pct, timeSec: secs,
+      answers: _prep.answers.map(a=>({q:a.q,a:a.a,given:a.given,correct:a.correct})),
+      completedAt: { seconds: Math.floor(Date.now()/1000) }
+    };
+    if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
+    else _prepHistoryData = [localEntry];
     await db.collection('prepHistory').add({
       uid:        me.uid,
       name:       me.name,
@@ -7318,13 +7330,12 @@ async function _prepSaveHistory() {
       grade:      _prep.grade || '',
       topic:      _prep.topic,
       topicLabel: def.lbl || _prep.topic,
-      correct, total,
-      pct:        total>0 ? Math.round((correct/total)*100) : 0,
+      correct, total, pct,
       timeSec:    secs,
       answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct})),
       completedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    // Recargar historial para mostrarlo actualizado
+    // Recargar historial desde Firestore para sincronizar
     loadPrepHistory();
   } catch(e) { console.error('prep history save', e); }
 }
