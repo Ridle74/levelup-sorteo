@@ -1612,8 +1612,8 @@ const PREP_CURRICULUM = {
     '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
     '4':[
-      {lbl:'Incluido y No Incluido',          area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
-      {lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
+      {lbl:'Relaciones entre Conjuntos',       area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
+      {lbl:'Operaciones con Conjuntos',          area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
       {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
