@@ -1825,13 +1825,13 @@ function _prepConfigHtml() {
         const _lvlSuffix=_lvlLbl[lvl]?' · Nivel: '+_lvlLbl[lvl]:'';
         if(isQuiz){
           const qPct=_prepLastPct(sk);
-          const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
+          const qTip='Cuestionario: '+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
           const qIcon=lvl==='dominado'?_bolt(16,18):(lvl==='pendiente'||lvl==='unknown')?_bolt(16,18):'⚡';
           return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
-        const skTip=(def.lbl||sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
+        const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
@@ -1871,7 +1871,7 @@ function _prepConfigHtml() {
           return `<div class="prep-kh-quiz-card" style="margin-top:14px">
             <div class="prep-kh-quiz-info">
               <div class="prep-kh-quiz-tag">Cuestionario ${quizCount}</div>
-              <div class="prep-kh-quiz-desc">${def.lbl||sk}${qPct}${qDone?' · ✓ Completado':''}</div>
+              <div class="prep-kh-quiz-desc">${_cleanLbl(def.lbl,sk)}${qPct}${qDone?' · ✓ Completado':''}</div>
               <button class="prep-kh-quiz-btn" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">${qDone?'↺ Repetir':'Iniciar cuestionario'}</button>
             </div>
             <div class="prep-kh-quiz-ico" style="color:${qDone?'#545454':'#a0a0a0'}">${_boltSvg2.replace('14','28').replace('16','32')}</div>
@@ -1880,7 +1880,7 @@ function _prepConfigHtml() {
         const cta = lvl==='competente'?'¡Bien! Estás listo para avanzar':lvl==='pendiente'||lvl==='unknown'?'Practica para subir de nivel':null;
         return `<div class="prep-kh-sk-row${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">
           <div class="prep-kh-sk-info">
-            <div class="prep-kh-sk-name">${def.lbl||sk}</div>
+            <div class="prep-kh-sk-name">${_cleanLbl(def.lbl,sk)}</div>
             <div class="prep-kh-sk-lvl ${lvl==='unknown'?'pendiente':lvl}">${lvlText}</div>
             ${cta?`<div class="prep-kh-sk-cta">${cta}</div>`:''}
           </div>
@@ -1922,7 +1922,7 @@ function _prepConfigHtml() {
     const qOpts=[5,10,15,20];
     const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
     startPanel = `<div class="prep-kh-panel">
-      <div class="prep-kh-panel-topic">${def.ico||''} ${def.lbl||_prep.topic}</div>
+      <div class="prep-kh-panel-topic">${def.ico||''} ${_cleanLbl(def.lbl,_prep.topic)}</div>
       <div class="prep-kh-panel-opts">
         <div>
           <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
@@ -2115,7 +2115,7 @@ function _prepUnitPaneHtml() {
     const isDone = done.has(sk);
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,${isDone?'0.03':'0.06'});border:1px solid rgba(255,255,255,${isDone?'0.05':'0.1'});margin-bottom:6px;${isDone?'opacity:0.55':'cursor:pointer'}" ${isDone?'':('onclick="_prepStartFromUnit(\''+sk+'\')"')}>`
       +`<span style="font-size:18px;flex-shrink:0">${def.ico||'📝'}</span>`
-      +`<span style="flex:1;min-width:0;font-size:12px;font-weight:700;color:rgba(255,255,255,${isDone?'0.4':'0.85'})">${def.lbl||sk}</span>`
+      +`<span style="flex:1;min-width:0;font-size:12px;font-weight:700;color:rgba(255,255,255,${isDone?'0.4':'0.85'})">${_cleanLbl(def.lbl,sk)}</span>`
       +(isDone
         ? '<span style="font-size:11px;color:#39ff7a;font-weight:900;flex-shrink:0">✓ LISTO</span>'
         : '<span style="padding:4px 12px;border-radius:8px;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;font-size:11px;font-weight:900;flex-shrink:0">▶ HACER</span>')
@@ -2179,6 +2179,9 @@ function _prepTickTimer() {
   }
 }
 function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+// ── LABEL CLEANER ────────────────────────────────────────────────────────────
+const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').trim(); return s || fallback || lbl || ''; };
+
 // ── LEVEL UP SOUNDS ──────────────────────────────────────────────────────────
 const _snd = (() => {
   let ctx = null;
@@ -2474,7 +2477,7 @@ function _prepExamHtml() {
         </div>
         <div style="padding-right:48px;flex-shrink:0">${timerHtml}</div>
       </div>
-      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_cleanLbl(def.lbl,_prep.topic)}</div>
     </div>
     <div class="prep-progress-row">
       <span class="prep-prog-label">${idx+1}/${total}</span>
@@ -2523,7 +2526,7 @@ function _prepResultHtml() {
     </div>`).join('')}</div>` : '';
   return `<div class="prep-wrap">
     <div class="prep-score-wrap">
-      <div class="prep-topic-badge-sm" style="margin:0 auto 10px;display:inline-flex">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+      <div class="prep-topic-badge-sm" style="margin:0 auto 10px;display:inline-flex">${def.ico||'📚'} ${_cleanLbl(def.lbl,_prep.topic)}</div>
       <div class="prep-score-emoji">${emoji}</div>
       <div><span class="prep-score-num">${correct}</span><span class="prep-score-denom">/${total}</span></div>
       <div class="prep-score-pct">${pct}%</div>
