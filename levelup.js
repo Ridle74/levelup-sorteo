@@ -1663,7 +1663,10 @@ function _preparatePaneHtml() {
   if (_prep.state === 'result') return _prepResultHtml();
   return '';
 }
+function _prepOpen(sel) { _snd.click(); _prep.openSelector=sel; _renderPreparatePane(); }
+function _prepClose()  { _snd.click(); _prep.openSelector=null; _renderPreparatePane(); }
 function _prepSetLevel(lvl) {
+  _snd.click();
   _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.grade = null;
   const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
   _prep.openSelector = gradeKeys.length ? 'grade' : null;
@@ -1671,16 +1674,16 @@ function _prepSetLevel(lvl) {
   _renderPreparatePane();
 }
 function _prepSetGrade(g) {
+  _snd.click();
   _prep.grade = g; _prep.editorial = null; _prep.topic = '';
-  // Auto-open área si hay opciones; si no, abrir colegios
   const areaOpts = (PREP_LEVELS[_prep.level]||{}).areas || [];
   _prep.openSelector = areaOpts.length ? 'area' : 'editorial';
   _renderPreparatePane();
 }
 function _prepSetArea(key) {
+  _snd.click();
   const wasSelected = _prep.area === key;
   _prep.area = wasSelected ? null : key;
-  // Auto-open colegios al seleccionar área (no al deseleccionar)
   _prep.openSelector = wasSelected ? null : 'editorial';
   _prep.topic = '';
   _renderPreparatePane();
@@ -1705,26 +1708,26 @@ function _prepConfigHtml() {
   // Nivel
   const nivelSel = openSel === 'level'
     ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
+      + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prepOpen('level')">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
   // Grado
   const gradeSel = openSel === 'grade' && gradeKeys.length
     ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="${gradeKeys.length?`_prep.openSelector='grade';_renderPreparatePane()`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
+      + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
   // Área
   const areaSel = areaOpts.length
     ? (openSel === 'area'
       ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.lbl}</button>`).join('')
-        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-      : `<button class="prep-sel-btn" onclick="_prep.openSelector='area';_renderPreparatePane()">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
+        + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+      : `<button class="prep-sel-btn" onclick="_prepOpen('area')">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
     : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
-    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
-      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
+    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prepOpen('editorial')">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
   const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
@@ -2025,6 +2028,7 @@ function _prepStartFromUnit(sk) {
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
   clearInterval(_prepTimerIntv);
   if (_prep.timeSec>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+  _snd.start();
   _renderPreparatePane();
 }
 function _prepUnitPaneHtml() {
@@ -2463,17 +2467,17 @@ function _prepResultHtml() {
           ? `<div style="text-align:center;padding:10px;margin-bottom:10px;border-radius:12px;background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);color:#39ff7a;font-size:13px;font-weight:900">🏆 ¡Unidad completada!</div>
              <div class="prep-result-row">
                <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
-               <button class="prep-result-btn" onclick="_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Ver unidad</button>
+               <button class="prep-result-btn" onclick="_snd.click();_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Ver unidad</button>
              </div>`
           : `<button class="prep-result-btn primary" style="width:100%;margin-bottom:8px" onclick="_prepStartFromUnit('${nextSk}')">▶ Siguiente: ${nextDef?.lbl||nextSk}</button>
              <div class="prep-result-row">
                <button class="prep-result-btn" onclick="_prepStart()">↺ Repetir</button>
-               <button class="prep-result-btn" onclick="_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Lista</button>
+               <button class="prep-result-btn" onclick="_snd.click();_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Lista</button>
              </div>`;
       }
       return `<div class="prep-result-row">
         <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
-        <button class="prep-result-btn" onclick="_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
+        <button class="prep-result-btn" onclick="_snd.click();_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
       </div>`;
     })()}
     <button class="prep-result-btn" style="width:100%;margin-top:8px" onclick="_prep.showReview=!_prep.showReview;_renderPreparatePane()">
