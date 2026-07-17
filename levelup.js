@@ -1812,7 +1812,8 @@ function _prepConfigHtml() {
         if(isQuiz){
           const qPct=_prepLastPct(sk);
           const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
-          const qIcon=lvl==='dominado'?`<svg width="16" height="18" viewBox="0 0 652.27 754.35" fill="currentColor"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08"/></svg>`:'⚡';
+          const _boltSvg=`<svg width="16" height="18" viewBox="0 0 652.27 754.35" fill="currentColor"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08"/></svg>`;
+          const qIcon=(lvl==='dominado'||lvl==='pendiente'||lvl==='unknown')?_boltSvg:'⚡';
           return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
@@ -1823,7 +1824,7 @@ function _prepConfigHtml() {
         <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
           ${skillsHtml}
-          <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · Nivel: Dominado · ¡Completado!':''}" style="cursor:pointer">★</div>
+          ${(()=>{const sc=_prepCourseScore(unit.skills);const el=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" title="${et}" style="cursor:pointer">★</div>`;})()}
         </div>
       </div>`;
     };
@@ -2050,16 +2051,17 @@ function _prepUnitPaneHtml() {
   </div>`;
 }
 // Examen de unidad (★): más preguntas, mezcla todos los temas de la unidad en orden aleatorio
-function _prepUnitExam(skills) {
+function _prepUnitExam(skills, unitIdx) {
   const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
   if (!valid.length) return;
-  const total = Math.max(10, valid.length * 5); // al menos 5 por habilidad
+  const total = Math.max(10, valid.length * 5);
   const qs = [];
   for (let i=0;i<total;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(_prepApplyMcMode(def.gen())); }
-  // Mezclar preguntas para que no vayan por grupos
   for (let i=qs.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
   _prep.topic = valid[0];
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false}); // tiempo libre para examen
+  _prep.isUnitExam = true;
+  _prep.examUnitSkills = [...valid];
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false});
   clearInterval(_prepTimerIntv);
   _renderPreparatePane();
 }
@@ -2067,6 +2069,7 @@ function _prepStart() {
   const def = BINGO_TOPICS[_prep.topic];
   if (!def || !def.gen) { console.warn('_prepStart: no def for topic', _prep.topic); return; }
   try {
+    _prep.isUnitExam = false; _prep.examUnitSkills = [];
     const qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
     clearInterval(_prepTimerIntv);
@@ -2163,6 +2166,17 @@ async function _prepSaveHistory() {
     };
     if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
     else _prepHistoryData = [localEntry];
+    // Si examen de unidad al 100%: marcar TODAS las habilidades de la unidad como dominado
+    if (pct === 100 && _prep.isUnitExam && (_prep.examUnitSkills||[]).length) {
+      const now = Math.floor(Date.now()/1000);
+      for (const sk of _prep.examUnitSkills) {
+        if (_prepMasteryLevel(sk)==='dominado') continue;
+        const skDef=BINGO_TOPICS[sk]||{};
+        const skE={uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:{seconds:now}};
+        if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skE);
+        db.collection('prepHistory').add({uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(e=>console.error('exam auto-dominate',e));
+      }
+    }
     // Si cuestionario al 100%: marcar automáticamente las habilidades cubiertas como dominado
     if (pct === 100 && BINGO_TOPICS[_prep.topic]?.quiz) {
       const coveredSkills = _prepGetQuizSkills(_prep.topic);
