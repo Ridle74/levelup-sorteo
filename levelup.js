@@ -2120,17 +2120,18 @@ function _prepFinish() {
   _renderPreparatePane();
 }
 function _prepGetQuizSkills(quizTopic) {
-  const units = (PREP_CURRICULUM[_prep.level]||[]).filter(u=>
-    (!_prep.area||u.area===_prep.area) && (!_prep.editorial||u.editorial===_prep.editorial)
-  );
-  for (const unit of units) {
-    if (!unit.skills) continue;
+  // Buscar en todo el curriculum del nivel actual (los topic keys son únicos)
+  const allUnits = PREP_CURRICULUM[_prep.level] || [];
+  for (const unit of allUnits) {
+    if (!Array.isArray(unit.skills)) continue;
     const idx = unit.skills.indexOf(quizTopic);
     if (idx === -1) continue;
+    // Encontrar cuestionario anterior (si lo hay)
     let prevIdx = -1;
     for (let i = idx-1; i >= 0; i--) {
       if (BINGO_TOPICS[unit.skills[i]]?.quiz) { prevIdx = i; break; }
     }
+    // Habilidades entre el cuestionario anterior y este (excluir quizzes)
     return unit.skills.slice(prevIdx+1, idx).filter(sk => !BINGO_TOPICS[sk]?.quiz);
   }
   return [];
