@@ -1838,8 +1838,9 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     };
-    const leftCol = units.filter((_,i)=>i%2===0).map((u,i)=>_renderUnit(u,i*2)).join('');
-    const rightCol = units.filter((_,i)=>i%2===1).map((u,i)=>_renderUnit(u,i*2+1)).join('');
+    const half = Math.ceil(units.length/2);
+    const leftCol = units.slice(0,half).map((u,i)=>_renderUnit(u,i)).join('');
+    const rightCol = units.slice(half).map((u,i)=>_renderUnit(u,half+i)).join('');
     unitsHtml = `<div class="prep-kh-units"><div class="prep-kh-col">${leftCol}</div><div class="prep-kh-col">${rightCol}</div></div>`;
   }
 
