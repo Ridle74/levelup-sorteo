@@ -1991,12 +1991,11 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
   const _prefix = _histTypePrefix(h);
   const _lbl = _cleanLbl(h.topicLabel||h.topic);
   return '<div class="prep-review-item ' + (ok?'ok':'fail') + '">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center">'
-    + '<div style="display:flex;flex-direction:column;gap:1px">'
-    + '<span style="font-size:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.38)">' + _prefix + '</span>'
-    + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">' + _lbl + '</span>'
-    + '</div>'
-    + '<span style="font-size:14px;font-weight:900;color:' + (ok?'#39ff7a':'#f87171') + '">' + h.correct + '/' + h.total + ' · ' + h.pct + '%</span>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
+    + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85);flex:1;min-width:0">'
+    + '<span style="font-weight:700;color:rgba(255,255,255,0.45)">' + _prefix + ': </span>' + _lbl
+    + '</span>'
+    + '<span style="font-size:14px;font-weight:900;color:' + (ok?'#39ff7a':'#f87171') + ';flex-shrink:0">' + h.correct + '/' + h.total + ' · ' + h.pct + '%</span>'
     + '</div>'
     + '<div style="display:flex;justify-content:space-between;margin-top:2px">'
     + '<span style="font-size:11px;color:rgba(255,255,255,0.35)">' + lvlLbl + gradeLbl + '</span>'
@@ -2460,15 +2459,14 @@ function _prepAdminHistoryHtml() {
         : '';
       const _adPfx=_histTypePrefix(h), _adLbl=_cleanLbl(h.topicLabel||h.topic);
       return '<div class="prep-review-item '+(ok?'ok':'fail')+'">'
-        +'<div style="display:flex;justify-content:space-between;align-items:center">'
-        +'<div style="display:flex;align-items:center;gap:6px">'
-        +(stu?'<span style="font-size:13px;background:'+stu.color+'22;border:1px solid '+stu.color+'55;border-radius:10px;padding:1px 7px;color:'+stu.color+';font-weight:900;font-size:12px">'+stu.icon+' '+stu.name.split(' ')[0]+'</span>':'')
-        +'<div style="display:flex;flex-direction:column;gap:1px">'
-        +'<span style="font-size:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.38)">'+_adPfx+'</span>'
-        +'<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">'+_adLbl+'</span>'
+        +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
+        +'<div style="display:flex;align-items:center;gap:6px;flex:1;min-width:0">'
+        +(stu?'<span style="flex-shrink:0;background:'+stu.color+'22;border:1px solid '+stu.color+'55;border-radius:10px;padding:1px 7px;color:'+stu.color+';font-weight:900;font-size:12px">'+stu.icon+' '+stu.name.split(' ')[0]+'</span>':'')
+        +'<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85);min-width:0">'
+        +'<span style="font-weight:700;color:rgba(255,255,255,0.45)">'+_adPfx+': </span>'+_adLbl
+        +'</span>'
         +'</div>'
-        +'</div>'
-        +'<span style="font-size:14px;font-weight:900;color:'+(ok?'#39ff7a':'#f87171')+'">'+h.correct+'/'+h.total+' · '+h.pct+'%</span>'
+        +'<span style="font-size:14px;font-weight:900;color:'+(ok?'#39ff7a':'#f87171')+';flex-shrink:0">'+h.correct+'/'+h.total+' · '+h.pct+'%</span>'
         +'</div>'
         +'<div style="display:flex;justify-content:space-between;margin-top:2px">'
         +'<span style="font-size:11px;color:rgba(255,255,255,0.35)">'+lvlLbl+gradeLbl+'</span>'
