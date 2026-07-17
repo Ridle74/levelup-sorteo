@@ -1709,25 +1709,25 @@ function _prepConfigHtml() {
   const nivelSel = openSel === 'level'
     ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prepOpen('level')">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
+    : `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
   // Grado
   const gradeSel = openSel === 'grade' && gradeKeys.length
     ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
+    : `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
   // Área
   const areaSel = areaOpts.length
     ? (openSel === 'area'
       ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.lbl}</button>`).join('')
         + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-      : `<button class="prep-sel-btn" onclick="_prepOpen('area')">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
+      : `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="_prepOpen('area')">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
     : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
     ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
       + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prepOpen('editorial')">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
+    : `<button class="prep-sel-btn${_prep.editorial?' sel':''}" onclick="_prepOpen('editorial')">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
   const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
