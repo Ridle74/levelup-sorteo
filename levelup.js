@@ -1796,7 +1796,7 @@ function _prepConfigHtml() {
       : '🚧 Próximamente habrá contenido para este grado.';
     unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">${_emptyMsg}</div>`;
   } else {
-    unitsHtml = `<div class="prep-kh-units">${units.map((unit,ui)=>{
+    const _renderUnit = (unit, ui) => {
       const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
       const skillsHtml = unit.skills.map((sk,si)=>{
         const def=BINGO_TOPICS[sk]||{};
@@ -1821,7 +1821,10 @@ function _prepConfigHtml() {
           <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · ¡Completado!':''}" style="cursor:pointer;margin-left:4px">★</div>
         </div>
       </div>`;
-    }).join('')}</div>`;
+    };
+    const leftCol = units.filter((_,i)=>i%2===0).map((u,i)=>_renderUnit(u,i*2)).join('');
+    const rightCol = units.filter((_,i)=>i%2===1).map((u,i)=>_renderUnit(u,i*2+1)).join('');
+    unitsHtml = `<div class="prep-kh-units"><div class="prep-kh-col">${leftCol}</div><div class="prep-kh-col">${rightCol}</div></div>`;
   }
 
   // Panel de inicio para la habilidad seleccionada
