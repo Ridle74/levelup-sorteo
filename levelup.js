@@ -1824,7 +1824,7 @@ function _prepConfigHtml() {
         <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
           ${skillsHtml}
-          ${(()=>{const sc=_prepCourseScore(unit.skills);const el=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" title="${et}" style="cursor:pointer">★</div>`;})()}
+          ${(()=>{const sc=_prepCourseScore(unit.skills);const el=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" title="${et}" style="cursor:pointer">${_starSvg}</div>`;})()}
         </div>
       </div>`;
     };
