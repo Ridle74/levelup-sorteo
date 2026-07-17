@@ -4,7 +4,7 @@
 
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
-let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -1777,8 +1777,8 @@ function _prepConfigHtml() {
   const sidebarItems = units.map((unit, ui) => {
     const unitDone = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
     const dotColor = unitDone ? '#7c3aed' : 'rgba(255,255,255,0.12)';
-    const isActive = _prep.topic && unit.skills.includes(_prep.topic);
-    return `<div class="prep-kh-sidebar-item${isActive?' active':''}" onclick="document.getElementById('prep-unit-${ui}')?.scrollIntoView({behavior:'smooth',block:'start'})">
+    const isActive = _prep.selectedUnit === ui || (_prep.selectedUnit === null && _prep.topic && unit.skills.includes(_prep.topic));
+    return `<div class="prep-kh-sidebar-item${isActive?' active':''}" onclick="_snd.click();_prep.selectedUnit=(_prep.selectedUnit===${ui}?null:${ui});_renderPreparatePane()">
       <span class="prep-kh-sidebar-num">U${String(ui+1).padStart(2,'0')}</span>
       <span class="prep-kh-sidebar-name">${unit.lbl}</span>
       <span class="prep-kh-sidebar-dot" style="background:${dotColor}"></span>
@@ -1842,10 +1842,57 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     };
+    if (_prep.selectedUnit !== null && units[_prep.selectedUnit]) {
+      const unit = units[_prep.selectedUnit];
+      const ui = _prep.selectedUnit;
+      const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
+      const _lvlCls = {'dominado':'dominado','competente':'competente','familiar':'familiar','intentado':'intentado'};
+      const _lvlLbl2 = {'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
+      const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
+      const _starSvg2=`<svg width="24" height="23" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
+      const expSkills = unit.skills.map(sk=>{
+        const def=BINGO_TOPICS[sk]||{};
+        const lvl=_prepMasteryLevel(sk);
+        const isSel=_prep.topic===sk;
+        const isQuiz=!!def.quiz;
+        const lvlSuffix=_lvlLbl2[lvl]?' · '+_lvlLbl2[lvl]:'';
+        const pct=_prepLastPct(sk);
+        const tip=(isQuiz?'Cuestionario: ':'')+(def.lbl||sk)+lvlSuffix+(pct!==null?' · Último: '+pct+'%':'');
+        const extraCls=(lvl==='unknown'||lvl==='pendiente'?'':' '+(_lvlCls[lvl]||lvl))+(isSel?' selected':'');
+        let icon,sqCls;
+        if(isQuiz){
+          sqCls='quiz-sq'+extraCls;
+          icon=lvl==='dominado'?_bolt(19,22):_bolt(19,22);
+        } else {
+          sqCls=extraCls.trim();
+          icon=lvl==='dominado'?`<svg width="22" height="16" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'');
+        }
+        return `<div class="prep-kh-skill-item">
+          <div class="prep-kh-sq-lg ${sqCls}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${tip}" style="cursor:pointer">${icon}</div>
+          <span class="prep-kh-skill-lbl" title="${def.lbl||sk}">${def.lbl||sk}</span>
+        </div>`;
+      }).join('');
+      const sc=_prepCourseScore(unit.skills);
+      const el=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;
+      const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc>0?` · Último: ${sc}%`:'')+(unitDone2?' · ¡Completado!':'');
+      const examItem=`<div class="prep-kh-skill-item">
+        <div class="prep-kh-sq-lg exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" title="${et}" style="cursor:pointer">${_starSvg2}</div>
+        <span class="prep-kh-skill-lbl">Examen</span>
+      </div>`;
+      unitsHtml = `<div class="prep-kh-unit-exp">
+        <div class="prep-kh-unit-exp-hdr">
+          <span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>
+          <span class="prep-kh-unit-exp-lbl">${unit.lbl}</span>
+          <button class="prep-kh-unit-exp-back" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()">← Todas las unidades</button>
+        </div>
+        <div class="prep-kh-skills-exp">${expSkills}${examItem}</div>
+      </div>`;
+    } else {
     const half = Math.ceil(units.length/2);
     const leftCol = units.slice(0,half).map((u,i)=>_renderUnit(u,i)).join('');
     const rightCol = units.slice(half).map((u,i)=>_renderUnit(u,half+i)).join('');
     unitsHtml = `<div class="prep-kh-units"><div class="prep-kh-col">${leftCol}</div><div class="prep-kh-col">${rightCol}</div></div>`;
+    }
   }
 
   // Panel de inicio para la habilidad seleccionada
