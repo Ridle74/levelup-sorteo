@@ -2001,7 +2001,7 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
 }
 function _prepHistorySectionHtml() {
   const loading = _prepHistoryLoading;
-  const data = _prepHistoryData;
+  const data = Array.isArray(_prepHistoryData) ? _prepHistoryData.filter(h=>!h.autoFromExam&&!h.autoFromQuiz) : _prepHistoryData;
   const empty = Array.isArray(data) && data.length === 0;
   return `<div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
     <button class="prep-result-btn" style="width:100%" onclick="_prepShowHistory=!_prepShowHistory;_renderPreparatePane()">
@@ -2376,13 +2376,15 @@ function _prepAdminHistoryHtml() {
   // Incluir profesor como persona filtrable
   const teacherEntry = { id:'teacher', name: ADMIN.name.split(' ')[0], icon: ADMIN.icon, color:'#6366f1' };
   const allPeople = [teacherEntry, ...students];
+  // Solo entradas directas (excluir auto-dominados indirectos)
+  const direct = Array.isArray(raw) ? raw.filter(h=>!h.autoFromExam && !h.autoFromQuiz) : raw;
   // Filtrar por persona si hay filtro activo
-  const data = Array.isArray(raw)
-    ? (_prepAdminFilterUid ? raw.filter(h=>h.uid===_prepAdminFilterUid) : raw)
+  const data = Array.isArray(direct)
+    ? (_prepAdminFilterUid ? direct.filter(h=>h.uid===_prepAdminFilterUid) : direct)
     : null;
   const empty = Array.isArray(data) && data.length === 0;
   // Pills (alumnos + profesor, solo los que tienen entradas)
-  const uidsWithData = Array.isArray(raw) ? [...new Set(raw.map(h=>h.uid))] : [];
+  const uidsWithData = Array.isArray(direct) ? [...new Set(direct.map(h=>h.uid))] : [];
   const studentPills = allPeople
     .filter(s=>uidsWithData.includes(String(s.id)))
     .map(s=>{
