@@ -1279,7 +1279,7 @@ let msgsUploading = false;
 let dashTab       = 'resumen'; // 'resumen' | 'gaming' — sub-pestaña activa del Dashboard
 let dashGamingMode = 'catalog'; // 'catalog' | 'bingo' | 'preparate' — sub-modo dentro de GAMING
 // Estado del modo Prepárate (examen de práctica con los temas del Reto Matemático)
-let _prep = { state:'config', level:'primaria', grade:'1', topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:'level', questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -6740,9 +6740,9 @@ function _preparatePaneHtml() {
   return '';
 }
 function _prepSetLevel(lvl) {
-  _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.openSelector = null;
+  _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.grade = null;
   const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
-  _prep.grade = gradeKeys[0] || '';
+  _prep.openSelector = gradeKeys.length ? 'grade' : null;
   _prep.topic = '';
   _renderPreparatePane();
 }
@@ -6777,14 +6777,12 @@ function _prepConfigHtml() {
   const nivelSel = openSel === 'level'
     ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${lvDef.lbl} ▾</button>`;
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
   // Grado
-  const gradeSel = gradeKeys.length
-    ? (openSel === 'grade'
-      ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
-        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-      : `<button class="prep-sel-btn" onclick="_prep.openSelector='grade';_renderPreparatePane()">${_prep.grade}° ▾</button>`)
-    : '';
+  const gradeSel = openSel === 'grade' && gradeKeys.length
+    ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="${gradeKeys.length?`_prep.openSelector='grade';_renderPreparatePane()`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
   // Área
   const areaSel = areaOpts.length
     ? (openSel === 'area'
@@ -6794,12 +6792,12 @@ function _prepConfigHtml() {
     : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
-    ? `<button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" title="Todos">✦</button>`
-      + edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'}</button>`).join('')
+    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
     : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?dot+gradeSel:''}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
   if (!gradeKeys.length && areaOpts.length) {
     const visibleAreas = _prep.area ? areaOpts.filter(a=>a.key===_prep.area) : areaOpts;
@@ -13469,5 +13467,4 @@ function closeImgViewer(){
   document.body.style.overflow = '';
 }
 </script>
-</body>
-</html>
+</body
