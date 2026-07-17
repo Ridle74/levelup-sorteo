@@ -1846,38 +1846,57 @@ function _prepConfigHtml() {
       const unit = units[_prep.selectedUnit];
       const ui = _prep.selectedUnit;
       const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
-      const _lvlCls = {'dominado':'dominado','competente':'competente','familiar':'familiar','intentado':'intentado'};
-      const _lvlLbl2 = {'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
-      const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-      const _starSvg2=`<svg width="24" height="23" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
-      const expSkills = unit.skills.map(sk=>{
+      const _lvlLbl2={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
+      const _crownSvg2=`<svg width="14" height="10" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
+      const _boltSvg2=`<svg width="14" height="16" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
+      // Badge por nivel
+      const _badge=(lvl)=>{
+        const styles={dominado:`background:rgba(109,40,217,0.92);border:2px solid rgba(168,85,247,1);color:#fff`,competente:`background:rgba(146,94,227,0.91);border:2px solid rgba(190,128,249,0.88);color:#fff`,familiar:`background:rgba(182,148,236,0.90);border:2px solid rgba(212,170,251,0.75);color:#fff`,intentado:`background:rgba(219,201,246,0.89);border:2px solid rgba(233,213,253,0.63);color:rgba(109,40,217,0.6)`,pendiente:`background:rgba(255,255,255,0.10);border:2px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.3)`};
+        const st=styles[lvl]||styles.pendiente;
+        return `<div class="prep-kh-sk-badge" style="${st}">${lvl==='dominado'?_crownSvg2:''}</div>`;
+      };
+      // Separar skills normales de quizzes
+      let quizCount=0;
+      const rowsHtml = unit.skills.map(sk=>{
         const def=BINGO_TOPICS[sk]||{};
         const lvl=_prepMasteryLevel(sk);
         const isSel=_prep.topic===sk;
         const isQuiz=!!def.quiz;
-        const lvlSuffix=_lvlLbl2[lvl]?' · '+_lvlLbl2[lvl]:'';
         const pct=_prepLastPct(sk);
-        const tip=(isQuiz?'Cuestionario: ':'')+(def.lbl||sk)+lvlSuffix+(pct!==null?' · Último: '+pct+'%':'');
-        const extraCls=(lvl==='unknown'||lvl==='pendiente'?'':' '+(_lvlCls[lvl]||lvl))+(isSel?' selected':'');
-        let icon,sqCls;
+        const lvlText=_lvlLbl2[lvl]||'No empezado';
         if(isQuiz){
-          sqCls='quiz-sq'+extraCls;
-          icon=lvl==='dominado'?_bolt(19,22):_bolt(19,22);
-        } else {
-          sqCls=extraCls.trim();
-          icon=lvl==='dominado'?`<svg width="22" height="16" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'');
+          quizCount++;
+          const qDone=lvl==='dominado';
+          const qPct=pct!==null?` · Último: ${pct}%`:'';
+          return `<div class="prep-kh-quiz-card" style="margin-top:14px">
+            <div class="prep-kh-quiz-info">
+              <div class="prep-kh-quiz-tag">Cuestionario ${quizCount}</div>
+              <div class="prep-kh-quiz-desc">${def.lbl||sk}${qPct}${qDone?' · ✓ Completado':''}</div>
+              <button class="prep-kh-quiz-btn" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">${qDone?'↺ Repetir':'Iniciar cuestionario'}</button>
+            </div>
+            <div class="prep-kh-quiz-ico" style="color:${qDone?'#545454':'#a0a0a0'}">${_boltSvg2.replace('14','28').replace('16','32')}</div>
+          </div>`;
         }
-        return `<div class="prep-kh-skill-item">
-          <div class="prep-kh-sq-lg ${sqCls}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${tip}" style="cursor:pointer">${icon}</div>
-          <span class="prep-kh-skill-lbl" title="${def.lbl||sk}">${def.lbl||sk}</span>
+        const cta = lvl==='competente'?'¡Bien! Estás listo para avanzar':lvl==='pendiente'||lvl==='unknown'?'Practica para subir de nivel':null;
+        return `<div class="prep-kh-sk-row${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">
+          <div class="prep-kh-sk-info">
+            <div class="prep-kh-sk-name">${def.lbl||sk}</div>
+            <div class="prep-kh-sk-lvl ${lvl==='unknown'?'pendiente':lvl}">${lvlText}</div>
+            ${cta?`<div class="prep-kh-sk-cta">${cta}</div>`:''}
+          </div>
+          ${_badge(lvl==='unknown'?'pendiente':lvl)}
         </div>`;
       }).join('');
       const sc=_prepCourseScore(unit.skills);
-      const el=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;
-      const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc>0?` · Último: ${sc}%`:'')+(unitDone2?' · ¡Completado!':'');
-      const examItem=`<div class="prep-kh-skill-item">
-        <div class="prep-kh-sq-lg exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" title="${et}" style="cursor:pointer">${_starSvg2}</div>
-        <span class="prep-kh-skill-lbl">Examen</span>
+      const examLvl=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;
+      const examDesc=examLvl?`Nivel: ${examLvl}${!unitDone2&&sc>0?' · Último: '+sc+'%':''}`:'Sube de nivel en todas las habilidades de esta unidad.';
+      const examCard=`<div class="prep-kh-quiz-card exam-card" style="margin-top:6px">
+        <div class="prep-kh-quiz-info">
+          <div class="prep-kh-quiz-tag exam-tag">Prueba de unidad</div>
+          <div class="prep-kh-quiz-desc">${examDesc}${unitDone2?' · ✓ ¡Completado!':''}</div>
+          <button class="prep-kh-quiz-btn exam-btn" onclick="_snd.start();_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')">${unitDone2?'↺ Repetir':'Empezar prueba de unidad'}</button>
+        </div>
+        <div class="prep-kh-quiz-ico">${`<svg width="28" height="27" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg" style="color:${unitDone2?'#ca8a04':'rgba(250,204,21,0.4)'}"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`}</div>
       </div>`;
       unitsHtml = `<div class="prep-kh-unit-exp">
         <div class="prep-kh-unit-exp-hdr">
@@ -1885,7 +1904,8 @@ function _prepConfigHtml() {
           <span class="prep-kh-unit-exp-lbl">${unit.lbl}</span>
           <button class="prep-kh-unit-exp-back" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()">← Todas las unidades</button>
         </div>
-        <div class="prep-kh-skills-exp">${expSkills}${examItem}</div>
+        ${rowsHtml}
+        ${examCard}
       </div>`;
     } else {
     const half = Math.ceil(units.length/2);
