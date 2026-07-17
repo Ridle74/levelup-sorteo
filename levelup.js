@@ -1747,8 +1747,9 @@ function _prepConfigHtml() {
 
   // Leyenda de dominio
   const _legBorder = 'border:1px solid rgba(255,255,255,0.12)';
+  const _crownSvg = `<svg width="10" height="7" viewBox="0 0 20 13" fill="white"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
   const legend = `<div class="prep-kh-legend">
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);${_legBorder}"></div>Dominado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);${_legBorder};display:flex;align-items:center;justify-content:center">${_crownSvg}</div>Dominado</div>
     <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(146,94,227,0.91);${_legBorder}"></div>Competente</div>
     <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(182,148,236,0.90);${_legBorder}"></div>Familiar</div>
     <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(219,201,246,0.89);${_legBorder}"></div>Intentado</div>
@@ -1811,7 +1812,8 @@ function _prepConfigHtml() {
         if(isQuiz){
           const qPct=_prepLastPct(sk);
           const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
-          return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">⚡</div>`;
+          const qIcon=lvl==='dominado'?`<svg width="10" height="18" viewBox="0 0 10 18" fill="currentColor"><polygon points="7,0 10,9 6,9 3,18 0,9 4,9"/></svg>`:'⚡';
+          return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=(def.lbl||sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
