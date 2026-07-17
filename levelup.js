@@ -1583,18 +1583,18 @@ function _bingoGenAngTrig() {
 // ── Datos curriculares ──────────────────────────────────────────────────────────
 
 const PREP_LEVELS = {
-  primaria:   { lbl:'Primaria',   ico:'P',
+  primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
     grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
-    areas:[{key:'matematica', lbl:'Matemática'},{key:'razonamiento', lbl:'Razonamiento Matemático'}] },
-  secundaria: { lbl:'Secundaria', ico:'S',
+    areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
+  secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
     areas:[
-      {key:'algebra',      lbl:'Álgebra'},
-      {key:'aritmetica',   lbl:'Aritmética'},
-      {key:'trigonometria',lbl:'Trigonometría'},
-      {key:'geometria',    lbl:'Geometría'},
+      {key:'algebra',      lbl:'Álgebra',         ico:'α'},
+      {key:'aritmetica',   lbl:'Aritmética',       ico:'🔢'},
+      {key:'trigonometria',lbl:'Trigonometría',    ico:'∠'},
+      {key:'geometria',    lbl:'Geometría',        ico:'◻'},
     ] },
-  preuniversitario:{ lbl:'Preuniversitario', ico:'U', grades:{},
+  preuniversitario:{ lbl:'Preuniversitario', ico:'🎓', gradeIco:'🏛️', grades:{},
     areas:[
       {key:'algebra',      lbl:'Álgebra',      ico:'α'},
       {key:'aritmetica',   lbl:'Aritmética',   ico:'🔢'},
@@ -1707,21 +1707,22 @@ function _prepConfigHtml() {
   const openSel = _prep.openSelector;
   const areaOpts = lvDef.areas || [];
   // Nivel
+  const _gradeIco = lvDef.gradeIco || '📅';
   const nivelSel = openSel === 'level'
-    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
+    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
+    : `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')">${_prep.level ? lvDef.ico+' '+lvDef.lbl : 'Nivel'} ▾</button>`;
   // Grado
   const gradeSel = openSel === 'grade' && gradeKeys.length
-    ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
+    ? gradeKeys.map(g=>`<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${_gradeIco} ${g}°</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
+    : `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _gradeIco+' '+_prep.grade+'° ▾' : 'Grado ▾'}</button>`;
   // Área
   const areaSel = areaOpts.length
     ? (openSel === 'area'
-      ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.lbl}</button>`).join('')
+      ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')
         + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-      : `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="_prepOpen('area')">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
+      : `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="_prepOpen('area')">${(()=>{const a=areaOpts.find(x=>x.key===_prep.area);return _prep.area?((a?.ico||'')+' '+(a?.lbl||'Área')):'Área'})()} ▾</button>`)
     : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
