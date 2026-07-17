@@ -1894,9 +1894,9 @@ function _prepConfigHtml() {
       const examDesc=examLvl?`Nivel: ${examLvl}${!unitDone2&&sc>0?' · Último: '+sc+'%':''}`:'Sube de nivel en todas las habilidades de esta unidad.';
       const examCard=`<div class="prep-kh-quiz-card exam-card" style="margin-top:6px">
         <div class="prep-kh-quiz-info">
-          <div class="prep-kh-quiz-tag exam-tag">Prueba de unidad</div>
+          <div class="prep-kh-quiz-tag exam-tag">Examen</div>
           <div class="prep-kh-quiz-desc">${examDesc}${unitDone2?' · ✓ ¡Completado!':''}</div>
-          <button class="prep-kh-quiz-btn exam-btn" onclick="_snd.start();_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')">${unitDone2?'↺ Repetir':'Empezar prueba de unidad'}</button>
+          <button class="prep-kh-quiz-btn exam-btn" onclick="_snd.start();_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')">${unitDone2?'↺ Repetir':'Empezar examen'}</button>
         </div>
         <div class="prep-kh-quiz-ico">${`<svg width="28" height="27" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg" style="color:${unitDone2?'#ca8a04':'rgba(250,204,21,0.4)'}"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`}</div>
       </div>`;
@@ -1988,9 +1988,14 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
       + (expanded ? '▲ Ocultar ejercicios' : '▼ Ver ejercicios (' + h.answers.length + ')') + '</button>'
       + (expanded ? '<div style="margin-top:6px">' + ansRows + '</div>' : '')
     : '';
+  const _prefix = _histTypePrefix(h);
+  const _lbl = _cleanLbl(h.topicLabel||h.topic);
   return '<div class="prep-review-item ' + (ok?'ok':'fail') + '">'
     + '<div style="display:flex;justify-content:space-between;align-items:center">'
-    + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">' + (h.topicLabel||h.topic) + '</span>'
+    + '<div style="display:flex;flex-direction:column;gap:1px">'
+    + '<span style="font-size:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.38)">' + _prefix + '</span>'
+    + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">' + _lbl + '</span>'
+    + '</div>'
     + '<span style="font-size:14px;font-weight:900;color:' + (ok?'#39ff7a':'#f87171') + '">' + h.correct + '/' + h.total + ' · ' + h.pct + '%</span>'
     + '</div>'
     + '<div style="display:flex;justify-content:space-between;margin-top:2px">'
@@ -2187,7 +2192,31 @@ function _prepTickTimer() {
 }
 function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
 // ── LABEL CLEANER ────────────────────────────────────────────────────────────
-const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').trim(); return s || fallback || lbl || ''; };
+const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').replace(/[Pp]rueba\s+de\s+unidad/gi,'Examen').replace(/[Pp]rueba\s+do[nñ]at/gi,'Examen').trim(); return s || fallback || lbl || ''; };
+
+// ── QUIZ NUMBER FROM KEY (busca en PREP_CURRICULUM) ──────────────────────────
+function _prepQuizNumFromKey(topicKey) {
+  for (const gradeObj of Object.values(PREP_CURRICULUM||{})) {
+    for (const units of Object.values(gradeObj)) {
+      for (const unit of (Array.isArray(units) ? units : [])) {
+        if (!unit.skills?.includes(topicKey)) continue;
+        return unit.skills.slice(0, unit.skills.indexOf(topicKey)+1).filter(s=>BINGO_TOPICS[s]?.quiz).length;
+      }
+    }
+  }
+  return 0;
+}
+
+// ── HISTORY TYPE PREFIX ───────────────────────────────────────────────────────
+function _histTypePrefix(h) {
+  const key = h.topic||'';
+  if (h.isUnitExam || key.includes('_bpu')) return 'Examen';
+  if (/_bq\d/i.test(key) || BINGO_TOPICS[key]?.quiz) {
+    const n = _prepQuizNumFromKey(key);
+    return n ? `Cuestionario ${n}` : 'Cuestionario';
+  }
+  return 'Habilidad';
+}
 
 // ── EXERCISE ID (deterministic short hash of question text) ──────────────────
 const _exId = (q) => { let h=5381; const s=String(q||''); for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return Math.abs(h).toString(36).toUpperCase().slice(0,5).padStart(5,'0'); };
@@ -2290,7 +2319,7 @@ async function _prepSaveHistory() {
     // para que los colores de dominio se refresquen sin esperar a Firestore
     const localEntry = {
       uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
-      topic: _prep.topic, topicLabel: def.lbl||_prep.topic,
+      topic: _prep.topic, topicLabel: _cleanLbl(def.lbl||_prep.topic), isUnitExam: !!_prep.isUnitExam,
       correct, total, pct, timeSec: secs,
       answers: _prep.answers.map(a=>({q:a.q,a:a.a,given:a.given,correct:a.correct})),
       completedAt: { seconds: Math.floor(Date.now()/1000) }
@@ -2337,7 +2366,8 @@ async function _prepSaveHistory() {
       level:      _prep.level,
       grade:      _prep.grade || '',
       topic:      _prep.topic,
-      topicLabel: def.lbl || _prep.topic,
+      topicLabel: _cleanLbl(def.lbl || _prep.topic),
+      isUnitExam: !!_prep.isUnitExam,
       correct, total, pct,
       timeSec:    secs,
       answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct})),
@@ -2427,11 +2457,15 @@ function _prepAdminHistoryHtml() {
       const expandBtn = (h.answers||[]).length
         ? '<button onclick="_prepAdminExpandedId=_prepAdminExpandedId===\''+h.id+'\'?null:\''+h.id+'\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'+(expanded?'▲ Ocultar ejercicios':'▼ Ver ejercicios ('+h.answers.length+')')+'</button>'+(expanded?'<div style="margin-top:6px">'+ansRows+'</div>':'')
         : '';
+      const _adPfx=_histTypePrefix(h), _adLbl=_cleanLbl(h.topicLabel||h.topic);
       return '<div class="prep-review-item '+(ok?'ok':'fail')+'">'
         +'<div style="display:flex;justify-content:space-between;align-items:center">'
         +'<div style="display:flex;align-items:center;gap:6px">'
         +(stu?'<span style="font-size:13px;background:'+stu.color+'22;border:1px solid '+stu.color+'55;border-radius:10px;padding:1px 7px;color:'+stu.color+';font-weight:900;font-size:12px">'+stu.icon+' '+stu.name.split(' ')[0]+'</span>':'')
-        +'<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">'+(h.topicLabel||h.topic)+'</span>'
+        +'<div style="display:flex;flex-direction:column;gap:1px">'
+        +'<span style="font-size:10px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:rgba(255,255,255,0.38)">'+_adPfx+'</span>'
+        +'<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">'+_adLbl+'</span>'
+        +'</div>'
         +'</div>'
         +'<span style="font-size:14px;font-weight:900;color:'+(ok?'#39ff7a':'#f87171')+'">'+h.correct+'/'+h.total+' · '+h.pct+'%</span>'
         +'</div>'
