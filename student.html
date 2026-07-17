@@ -13463,4 +13463,11 @@ function openImgViewer(url, name){
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
-function c
+function closeImgViewer(){
+  const m = document.getElementById('img-viewer-modal');
+  if (m) m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+</script>
+</body>
+</html>
