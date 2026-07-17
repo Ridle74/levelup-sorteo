@@ -1645,10 +1645,14 @@ function _renderPreparatePane() {
   // Guardar valor del input de texto si existe (para no perderlo al re-render)
   const savedVal = (!(_prep.questions[_prep.currentIdx]?.mc) && !_prep.answered)
     ? (document.getElementById('prep-ans-input')?.value || '') : '';
+  const prevState = el.dataset.prepState;
   el.innerHTML = _preparatePaneHtml();
-  el.classList.remove('prep-pane-in');
-  void el.offsetWidth;
-  el.classList.add('prep-pane-in');
+  if (prevState !== _prep.state) {
+    el.classList.remove('prep-pane-in');
+    void el.offsetWidth;
+    el.classList.add('prep-pane-in');
+  }
+  el.dataset.prepState = _prep.state;
   const inp = document.getElementById('prep-ans-input');
   if (inp) { if (savedVal) inp.value = savedVal; inp.focus(); }
 }

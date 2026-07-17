@@ -40,8 +40,8 @@ body.nav-visible .vw { padding-bottom: calc(88px + env(safe-area-inset-bottom));
 #initial-loading.hidden { display: none; }
 
 /* ── VIEW TRANSITION ──────────────────────────────── */
-.vw { animation: vIn 0.42s cubic-bezier(0.22,1,0.36,1); }
-@keyframes vIn { from { opacity: 0; transform: translateY(18px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.vw { animation: vIn 0.22s ease-out; }
+@keyframes vIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* ── BOTTOM NAV ───────────────────────────────────── */
 #bottom-nav {
@@ -577,8 +577,8 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-panel-topic{font-size:16px;font-weight:900;color:#facc15;margin-bottom:9px;letter-spacing:.03em}
 .prep-kh-panel-opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 @keyframes prep-pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes prepPaneIn{from{opacity:0;transform:translateY(12px) scale(0.975)}to{opacity:1;transform:translateY(0) scale(1)}}
-.prep-pane-in{animation:prepPaneIn .38s cubic-bezier(0.22,1,0.36,1)}
+@keyframes prepPaneIn{from{opacity:0}to{opacity:1}}
+.prep-pane-in{animation:prepPaneIn .18s ease-out}
 /* ── Level Up KH sidebar layout ────────────────────────── */
 .prep-kh-layout{display:flex;align-items:flex-start;gap:0}
 .prep-kh-sidebar{width:244px;flex-shrink:0;border-right:1px solid rgba(255,255,255,0.07);padding:0 0 16px;max-height:calc(100dvh - 56px);overflow-y:auto;position:sticky;top:0}
