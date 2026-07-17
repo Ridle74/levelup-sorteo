@@ -1746,11 +1746,13 @@ function _prepConfigHtml() {
   </div>`;
 
   // Leyenda de dominio
+  const _crownSvg = `<svg width="10" height="7" viewBox="0 0 20 13" fill="white"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
   const legend = `<div class="prep-kh-legend">
-    ${[['rgba(109,40,217,0.85)','transparent','♛ Dominado'],['rgba(139,92,246,0.45)','transparent','Competente'],
-       ['rgba(249,115,22,0.42)','transparent','Familiar'],['transparent','rgba(249,115,22,0.55)','Intentado'],
-       ['rgba(255,255,255,0.04)','rgba(255,255,255,0.12)','No empezado']]
-    .map(([bg,bc,lb])=>`<div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:${bg};border:2px solid ${bc}"></div>${lb}</div>`).join('')}
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);border:2px solid rgba(168,85,247,1);display:flex;align-items:center;justify-content:center">${_crownSvg}</div>Dominado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(146,94,227,0.91);border:2px solid rgba(190,128,249,0.88)"></div>Competente</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(182,148,236,0.90);border:2px solid rgba(212,170,251,0.75)"></div>Familiar</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(255,255,255,0.88);border:2px solid rgba(233,213,253,0.63)"></div>Intentado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(255,255,255,0.88);border:2px solid rgba(255,255,255,0.5)"></div>No empezado</div>
   </div>`;
 
   // Sidebar con lista de unidades
@@ -1804,20 +1806,22 @@ function _prepConfigHtml() {
         const isSel=_prep.topic===sk;
         const isQuiz=!!def.quiz;
         const nextIsEx=si<unit.skills.length-1&&!BINGO_TOPICS[unit.skills[si+1]]?.quiz;
+        const _lvlLbl={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
+        const _lvlSuffix=_lvlLbl[lvl]?' · Nivel: '+_lvlLbl[lvl]:'';
         if(isQuiz){
           const qPct=_prepLastPct(sk);
-          const qTip='Cuestionario: '+(def.lbl||sk)+(qPct!==null?' · Último: '+qPct+'%':'');
+          const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">⚡</div>`;
         }
         const skPct=_prepLastPct(sk);
-        const skTip=(def.lbl||sk)+(skPct!==null?' · Último: '+skPct+'%':'');
+        const skTip=(def.lbl||sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
         <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
           ${skillsHtml}
-          <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · ¡Completado!':''}" style="cursor:pointer">★</div>
+          <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · Nivel: Dominado · ¡Completado!':''}" style="cursor:pointer">★</div>
         </div>
       </div>`;
     };
