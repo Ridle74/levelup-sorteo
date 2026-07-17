@@ -1684,7 +1684,7 @@ function _prepSetArea(key) {
   _snd.click();
   const wasSelected = _prep.area === key;
   _prep.area = wasSelected ? null : key;
-  _prep.openSelector = wasSelected ? null : 'editorial';
+  _prep.openSelector = (!wasSelected && !_prep.editorialChosen) ? 'editorial' : null;
   _prep.topic = '';
   _renderPreparatePane();
 }
