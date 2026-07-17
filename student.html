@@ -6797,7 +6797,7 @@ function _prepConfigHtml() {
     ? `<button class="prep-opt-sq ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" title="Todos">✦</button>`
       + edKeys.map(k=>`<button class="prep-opt-sq ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 ▾'}</button>`;
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
   const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${gradeSel?dot+gradeSel:''}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
