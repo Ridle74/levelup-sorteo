@@ -2346,7 +2346,7 @@ async function _prepSaveHistory() {
 async function loadPrepHistory() {
   _prepHistoryLoading = true;
   try {
-    const uid = String(getLoggedId());
+    const uid = isAdmin() ? 'teacher' : String(getLoggedId());
     const snap = await db.collection('prepHistory').where('uid','==',uid).limit(50).get();
     _prepHistoryData = [];
     snap.forEach(doc => _prepHistoryData.push({ id:doc.id, ...doc.data() }));
@@ -2373,14 +2373,17 @@ function _prepAdminHistoryHtml() {
   const loading = _prepAdminHistLoading;
   const raw = _prepAdminHistData;
   const students = getStudents();
-  // Filtrar por alumno si hay filtro activo
+  // Incluir profesor como persona filtrable
+  const teacherEntry = { id:'teacher', name: ADMIN.name.split(' ')[0], icon: ADMIN.icon, color:'#6366f1' };
+  const allPeople = [teacherEntry, ...students];
+  // Filtrar por persona si hay filtro activo
   const data = Array.isArray(raw)
     ? (_prepAdminFilterUid ? raw.filter(h=>h.uid===_prepAdminFilterUid) : raw)
     : null;
   const empty = Array.isArray(data) && data.length === 0;
-  // Pills de alumnos (solo los que tienen al menos una entrada)
+  // Pills (alumnos + profesor, solo los que tienen entradas)
   const uidsWithData = Array.isArray(raw) ? [...new Set(raw.map(h=>h.uid))] : [];
-  const studentPills = students
+  const studentPills = allPeople
     .filter(s=>uidsWithData.includes(String(s.id)))
     .map(s=>{
       const active = _prepAdminFilterUid === String(s.id);
@@ -2393,7 +2396,7 @@ function _prepAdminHistoryHtml() {
     cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">Aún no hay partidas guardadas.</div>`;
   } else {
     cardsHtml = `<div class="prep-review-list">${data.map(h=>{
-      const stu = students.find(s=>String(s.id)===String(h.uid));
+      const stu = allPeople.find(s=>String(s.id)===String(h.uid));
       const dateStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
       const timeStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
       const ok = (h.pct||0) >= 70;
