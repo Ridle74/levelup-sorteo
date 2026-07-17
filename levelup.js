@@ -1807,8 +1807,7 @@ function _prepConfigHtml() {
         if(isQuiz){
           const qPct=_prepLastPct(sk);
           const qTip='Cuestionario: '+(def.lbl||sk)+(qPct!==null?' · Último: '+qPct+'%':'');
-          const qIcon=lvl==='dominado'?`<svg width="10" height="18" viewBox="0 0 10 18" fill="white"><polygon points="7,0 10,9 6,9 3,18 0,9 4,9"/></svg>`:'⚡';
-          const sq=`<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
+          const sq=`<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">⚡</div>`;
           return sq+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
         }
         const skPct=_prepLastPct(sk);
