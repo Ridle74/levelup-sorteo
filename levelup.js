@@ -1701,6 +1701,7 @@ function _prepConfigHtml() {
   const allTopicKeys = units.flatMap(u=>u.skills||[]);
   const masLoading = !Array.isArray(_prepHistoryData);
   const coursePct = _prepCourseScore(allTopicKeys);
+  const shown = _prep.editorialChosen;
 
   // ── Selector desplegable: Nivel · Grado · Área · Colegio ────────────────────
   const openSel = _prep.openSelector;
@@ -1791,7 +1792,6 @@ function _prepConfigHtml() {
   </div>`;
 
   // Topbar: racha, nivel, habilidades, botón desafío
-  const shown = _prep.editorialChosen;
   const topbar = `<div class="prep-kh-topbar">
     <div class="prep-kh-topbar-streak">🔥 <span>0</span></div>
     <span class="prep-kh-topbar-arr">→</span>
