@@ -1817,11 +1817,11 @@ function _prepConfigHtml() {
           const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
           const qIcon=lvl==='dominado'?_bolt(16,18):(lvl==='pendiente'||lvl==='unknown')?_bolt(16,18):'⚡';
-          return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=(def.lbl||sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
         <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
@@ -2066,6 +2066,7 @@ function _prepUnitExam(skills, unitIdx) {
   _prep.examUnitSkills = [...valid];
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false});
   clearInterval(_prepTimerIntv);
+  _snd.start();
   _renderPreparatePane();
 }
 function _prepStart() {
@@ -2077,6 +2078,7 @@ function _prepStart() {
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
     clearInterval(_prepTimerIntv);
     if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+    _snd.start();
     _renderPreparatePane();
   } catch(e) {
     console.error('_prepStart error:', e);
@@ -2088,6 +2090,7 @@ function _prepTickTimer() {
   if (_prep.state !== 'exam') { clearInterval(_prepTimerIntv); return; }
   _prep.timeLeft--;
   if (_prep.timeLeft <= 0) { _prep.timeLeft = 0; _prepFinish(); return; }
+  if (_prep.timeLeft <= 10) _snd.tick();
   const el = document.getElementById('prep-timer');
   if (el) {
     const m = Math.floor(_prep.timeLeft/60), s = _prep.timeLeft%60;
@@ -2096,12 +2099,43 @@ function _prepTickTimer() {
   }
 }
 function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+// ── LEVEL UP SOUNDS ──────────────────────────────────────────────────────────
+const _snd = (() => {
+  let ctx = null;
+  const ac = () => {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  const tone = (c, freq, type, gain, t, dur, freqEnd) => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (freqEnd !== undefined) o.frequency.linearRampToValueAtTime(freqEnd, t + dur);
+    g.gain.setValueAtTime(gain, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.start(t); o.stop(t + dur + 0.01);
+  };
+  return {
+    click()    { const c=ac(),t=c.currentTime; tone(c,650,'sine',0.06,t,0.06,520); },
+    correct()  { const c=ac(),t=c.currentTime; tone(c,523,'triangle',0.18,t,0.14); tone(c,784,'triangle',0.18,t+0.12,0.22); },
+    wrong()    { const c=ac(),t=c.currentTime; tone(c,200,'sawtooth',0.1,t,0.1); tone(c,170,'sawtooth',0.07,t+0.08,0.14); },
+    next()     { const c=ac(),t=c.currentTime; tone(c,440,'sine',0.06,t,0.1,600); },
+    start()    { const c=ac(),t=c.currentTime; tone(c,330,'sine',0.1,t,0.08); tone(c,440,'sine',0.1,t+0.07,0.08); tone(c,523,'sine',0.12,t+0.14,0.18); },
+    finish()   { const c=ac(),t=c.currentTime; [523,659,784].forEach((f,i)=>tone(c,f,'triangle',0.15,t+i*0.13,0.18)); },
+    dominate() { const c=ac(),t=c.currentTime; [523,659,784,1047,1047].forEach((f,i)=>tone(c,f,'triangle',0.2,t+i*0.1,0.18)); tone(c,2094,'sine',0.07,t+0.45,0.35); },
+    tick()     { const c=ac(),t=c.currentTime; tone(c,1100,'square',0.035,t,0.04); },
+  };
+})();
+
 function _prepSelectOpt(opt) {
   if (_prep.answered) return;
   _prep.selectedOpt = opt;
   _prep.answered = true;
   const q = _prep.questions[_prep.currentIdx];
-  _prep.answers.push({ given:opt, correct: String(q.a).toLowerCase()===String(opt).toLowerCase(), q:q.q, a:q.a, opts:q.opts, mc:true });
+  const correct = String(q.a).toLowerCase()===String(opt).toLowerCase();
+  _prep.answers.push({ given:opt, correct, q:q.q, a:q.a, opts:q.opts, mc:true });
+  correct ? _snd.correct() : _snd.wrong();
   _renderPreparatePane();
 }
 function _prepSubmitText() {
@@ -2112,6 +2146,7 @@ function _prepSubmitText() {
   const q = _prep.questions[_prep.currentIdx];
   const correct = parseFloat(val) === parseFloat(q.a) || String(val).toLowerCase() === String(q.a).toLowerCase();
   _prep.answers.push({ given:val, correct, q:q.q, a:q.a, mc:false });
+  correct ? _snd.correct() : _snd.wrong();
   _renderPreparatePane();
 }
 function _prepNextQ() {
@@ -2119,11 +2154,12 @@ function _prepNextQ() {
   _prep.currentIdx++;
   _prep.answered = false; _prep.selectedOpt = null;
   if (_prep.currentIdx >= _prep.questions.length) _prepFinish();
-  else _renderPreparatePane();
+  else { _snd.next(); _renderPreparatePane(); }
 }
 function _prepFinish() {
   clearInterval(_prepTimerIntv);
   _prep.state = 'result'; _prep.endTime = Date.now();
+  _snd.finish();
   // Marcar skill actual como completado en el contexto de unidad
   if (_prep.unitSkillList.length>0 && _prep.topic && !_prep.unitDone.includes(_prep.topic)) {
     _prep.unitDone.push(_prep.topic);
@@ -2169,6 +2205,7 @@ async function _prepSaveHistory() {
     };
     if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
     else _prepHistoryData = [localEntry];
+    if (pct === 100) setTimeout(()=>_snd.dominate(), 400);
     // Si examen de unidad al 100%: marcar TODAS las habilidades de la unidad como dominado
     if (pct === 100 && _prep.isUnitExam && (_prep.examUnitSkills||[]).length) {
       const now = Math.floor(Date.now()/1000);
