@@ -3281,6 +3281,69 @@ function _genSum3B4(){ // doble reagrupación
   return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en unidades y decenas. Resultado: '+ans+'.'};
 }
 function _genSum3BQ1(){return [_genSum3B1,_genSum3B2,_genSum3B3,_genSum3B4][_s3rnd(0,3)]();}
+// ── Sumas de 2 cifras – 4° Primaria Belén ────────────────────────────────────
+function _genSum2B1(){ // sin reagrupación
+  var at=_s3rnd(1,4),au=_s3rnd(0,4);
+  var bt=_s3rnd(1,9-at),bu=_s3rnd(0,9-au);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'. Sin reagrupación.'};
+}
+function _genSum2B2(){ // reagrupación en unidades
+  var at=_s3rnd(1,4),au=_s3rnd(5,9);
+  var bt=_s3rnd(1,Math.min(4,8-at)),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Unidades: '+au+'+'+bu+'='+(au+bu)+', lleva 1. Resultado: '+ans+'.'};
+}
+function _genSum2B3(){ // números mayores, sin reagrupación
+  var at=_s3rnd(5,8),au=_s3rnd(0,4);
+  var bt=_s3rnd(1,9-at),bu=_s3rnd(0,9-au);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genSum2B4(){ // con reagrupación, resultado ≥ 100
+  var at=_s3rnd(5,9),au=_s3rnd(5,9);
+  var bt=_s3rnd(1,9),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Con reagrupación. Resultado: '+ans+'.'};
+}
+function _genSum2BQ1(){return [_genSum2B1,_genSum2B2,_genSum2B3,_genSum2B4][_s3rnd(0,3)]();}
+// ── Sumas de 4 cifras – 4° Primaria Belén ────────────────────────────────────
+function _s4wrs(ans){
+  return [ans-1,ans+1,ans-10,ans+10,ans+100,ans-100,ans+1000,ans-1000].filter(function(v){return v!==ans&&v>0;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+}
+function _genSum4B1(){ // sin reagrupación
+  var am=_s3rnd(1,3),ah=_s3rnd(0,4),at=_s3rnd(0,4),au=_s3rnd(0,4);
+  var bm=_s3rnd(1,Math.min(4,8-am)),bh=_s3rnd(0,9-ah),bt=_s3rnd(0,9-at),bu=_s3rnd(0,9-au);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'. Sin reagrupación.'};
+}
+function _genSum4B2(){ // reagrupación en unidades
+  var am=_s3rnd(1,3),ah=_s3rnd(0,4),at=_s3rnd(0,4),au=_s3rnd(5,9);
+  var bm=_s3rnd(1,Math.min(4,8-am)),bh=_s3rnd(0,9-ah),bt=_s3rnd(0,Math.min(8,8-at)),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en unidades. Resultado: '+ans+'.'};
+}
+function _genSum4B3(){ // reagrupación en decenas
+  var am=_s3rnd(1,3),ah=_s3rnd(0,3),at=_s3rnd(5,8),au=_s3rnd(0,4);
+  var bm=_s3rnd(1,Math.min(3,8-am)),bh=_s3rnd(0,Math.min(4,8-ah)),bt=_s3rnd(Math.max(0,10-at),9),bu=_s3rnd(0,9-au);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en decenas. Resultado: '+ans+'.'};
+}
+function _genSum4B4(){ // doble reagrupación
+  var am=_s3rnd(1,3),ah=_s3rnd(0,3),at=_s3rnd(5,8),au=_s3rnd(5,9);
+  var bm=_s3rnd(1,Math.min(3,8-am)),bh=_s3rnd(0,Math.min(4,8-ah)),bt=_s3rnd(Math.max(0,9-at),9),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en unidades y decenas. Resultado: '+ans+'.'};
+}
+function _genSum4BQ1(){return [_genSum4B1,_genSum4B2,_genSum4B3,_genSum4B4][_s3rnd(0,3)]();}
 // ── Multiplicación del 2 al 9 4° Primaria – Colegio Belén ────────────────────
 function _genMult4B(k){
   var n=Math.floor(Math.random()*10)+1, ans=k*n;
@@ -4079,6 +4142,16 @@ const BINGO_TOPICS = {
   sum3_b3:  { ico:'➕', lbl:'Suma 3 cifras: reagrupa decenas',    qCount:4, gen:()=>_genSum3B3() },
   sum3_b4:  { ico:'➕', lbl:'Suma 3 cifras: doble reagrupación',  qCount:4, gen:()=>_genSum3B4() },
   sum3_bq1: { ico:'⚡', lbl:'Quiz – Sumas de 3 cifras',           qCount:5, gen:()=>_genSum3BQ1(), quiz:true },
+  sum2_b1:  { ico:'➕', lbl:'Suma 2 cifras: sin reagrupación',    qCount:4, gen:()=>_genSum2B1() },
+  sum2_b2:  { ico:'➕', lbl:'Suma 2 cifras: con reagrupación',    qCount:4, gen:()=>_genSum2B2() },
+  sum2_b3:  { ico:'➕', lbl:'Suma 2 cifras: números mayores',     qCount:4, gen:()=>_genSum2B3() },
+  sum2_b4:  { ico:'➕', lbl:'Suma 2 cifras: resultado ≥ 100',    qCount:4, gen:()=>_genSum2B4() },
+  sum2_bq1: { ico:'⚡', lbl:'Quiz – Sumas de 2 cifras',           qCount:5, gen:()=>_genSum2BQ1(), quiz:true },
+  sum4_b1:  { ico:'➕', lbl:'Suma 4 cifras: sin reagrupación',    qCount:4, gen:()=>_genSum4B1() },
+  sum4_b2:  { ico:'➕', lbl:'Suma 4 cifras: reagrupa unidades',   qCount:4, gen:()=>_genSum4B2() },
+  sum4_b3:  { ico:'➕', lbl:'Suma 4 cifras: reagrupa decenas',    qCount:4, gen:()=>_genSum4B3() },
+  sum4_b4:  { ico:'➕', lbl:'Suma 4 cifras: doble reagrupación',  qCount:4, gen:()=>_genSum4B4() },
+  sum4_bq1: { ico:'⚡', lbl:'Quiz – Sumas de 4 cifras',           qCount:5, gen:()=>_genSum4BQ1(), quiz:true },
   // ── Multiplicación del 2 al 9 4° Primaria – Colegio Belén ──
   mult4_b2: { ico:'✕', lbl:'Tabla del 2', qCount:4, gen:()=>_genMult4B2() },
   mult4_b3: { ico:'✕', lbl:'Tabla del 3', qCount:4, gen:()=>_genMult4B3() },
@@ -4115,7 +4188,7 @@ const BINGO_TOPICS = {
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
     grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
@@ -4148,7 +4221,7 @@ const PREP_CURRICULUM = {
     '4':[
       {lbl:'Incluido y No Incluido',          area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
       {lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
-      {lbl:'Sumas de 3 Cifras',                  area:'matematica', editorial:'belen', skills:['sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1']},
+      {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
     ], '5':[],
@@ -13514,4 +13587,5 @@ function closeImgViewer(){
   document.body.style.overflow = '';
 }
 </script>
-</body
+</body>
+</html>
