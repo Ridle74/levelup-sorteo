@@ -1875,18 +1875,19 @@ function _prepConfigHtml() {
     </div>`;
   }
 
+  const shown = _prep.editorialChosen;
   const contentArea = `<div class="prep-kh-content">
-    ${topbar}
+    ${shown ? topbar : ''}
     ${selectorRow}
-    ${courseHeader}
-    ${legend}
+    ${shown ? courseHeader : ''}
+    ${shown ? legend : ''}
     ${unitsHtml}
     ${startPanel}
-    ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
+    ${shown ? (isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()) : ''}
   </div>`;
 
   return `<div class="prep-wrap" style="padding-bottom:8px">
-    <div class="prep-kh-layout">${sidebar}${contentArea}</div>
+    <div class="prep-kh-layout">${shown ? sidebar : ''}${contentArea}</div>
   </div>`;
 }
 function _prepHistCardHtml(h, dateStr, timeStr, ok) {
