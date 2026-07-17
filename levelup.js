@@ -1,0 +1,2515 @@
+// levelup.js — Level Up (Prepárate): state, generators, curriculum data, functions
+// Cargado como <script src="/levelup.js"> independiente de student.html
+// Un error de sintaxis aquí NO rompe la carga de student.html
+
+// ── Estado ─────────────────────────────────────────────────────────────────────
+
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prepTimerIntv = null;
+let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
+let _prepHistoryLoading = false;
+let _prepShowHistory = false;
+let _prepExpandedHistId = null;
+// Admin: historial global de todos los alumnos
+let _prepAdminHistData = null;
+let _prepAdminHistLoading = false;
+let _prepAdminShowHist = false;
+let _prepAdminFilterUid = null;  // null = todos
+let _prepAdminExpandedId = null;
+// Reportes de errores en ejercicios de Level Up
+let _prepReportModalOpen = false;
+let _prepAdminReportsData = null;
+let _prepAdminReportsLoading = false;
+let _prepAdminShowReports = false;
+let _prepAdminReportsFilter = 'pending'; // 'pending' | 'confirmed' | 'dismissed'
+
+// ── Generadores de ejercicios ───────────────────────────────────────────────────
+
+// b1: ¿Cuántos elementos tiene A∪B? — con diagrama Venn
+function _genConj4B1(){
+  const common=_c4ints(_c4rnd(1,3),2,20);
+  const onlyA=_c4ints(_c4rnd(2,3),2,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),2,20,[...common,...onlyA]);
+  const ans=common.length+onlyA.length+onlyB.length;
+  const wrongs=_c4shuf([onlyA.length+onlyB.length,common.length+onlyA.length,common.length+onlyB.length,ans-1,ans+1].filter(v=>v!==ans&&v>0)).slice(0,3);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuántos elementos tiene A∪B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∪B incluye todos los números del diagrama sin repetir: ${ans} en total.`};
+}
+// b2: ¿Cuántos elementos tiene A∩B? — con diagrama Venn
+function _genConj4B2(){
+  const common=_c4ints(_c4rnd(1,3),2,20);
+  const onlyA=_c4ints(_c4rnd(2,3),2,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),2,20,[...common,...onlyA]);
+  const ans=common.length;
+  const wrongs=_c4shuf([onlyA.length,onlyB.length,ans+1,ans+2,ans+onlyA.length].filter(v=>v!==ans&&v>=0)).slice(0,3);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuántos elementos tiene A∩B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`A∩B son los números del centro (amarillo): ${common.join(', ')} → ${ans} elemento${ans!==1?'s':''}.`};
+}
+// b3: ¿Qué número pertenece a A∩B? — con diagrama Venn
+function _genConj4B3(){
+  const common=_c4ints(_c4rnd(1,2),2,20);
+  const onlyA=_c4ints(2,2,20,common);
+  const onlyB=_c4ints(2,2,20,[...common,...onlyA]);
+  const ans=common[0];
+  const d=_c4shuf([onlyA[0],onlyB[0],_c4ints(1,21,30,[...common,...onlyA,...onlyB])[0]||88]);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Qué número pertenece a A∩B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...d.slice(0,3)]),mc:true,ste:`El número del centro (donde se cruzan A y B) es ${ans}.`};
+}
+// b4: Problema contexto → calcular UNIÓN
+function _genConj4B4(){
+  const inter=_c4rnd(3,10),aO=_c4rnd(5,18),bO=_c4rnd(5,18);
+  const a=aO+inter,b=bO+inter,ans=a+b-inter;
+  const ctx=_c4pick(_CONJ4_CTX);
+  const wrongs=_c4shuf([a+b,ans+_c4rnd(1,4),a,b,ans-_c4rnd(1,3)].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`En un grupo:\n· ${a} estudiantes ${ctx.A}\n· ${b} estudiantes ${ctx.B}\n· ${inter} estudiantes ${ctx.both}\n¿Cuántos estudiantes ${ctx.q_u}?`,
+    a:ans,opts:_c4shuf([ans,...wrongs]),mc:true,ste:`|A∪B| = |A| + |B| − |A∩B| = ${a} + ${b} − ${inter} = ${ans}`};
+}
+// b5: Problema contexto → calcular INTERSECCIÓN (dado el total de la unión)
+function _genConj4B5(){
+  const inter=_c4rnd(3,10),aO=_c4rnd(5,18),bO=_c4rnd(5,18);
+  const a=aO+inter,b=bO+inter,total=a+b-inter;
+  const ctx=_c4pick(_CONJ4_CTX);
+  const wrongs=_c4shuf([inter+_c4rnd(1,4),Math.max(1,inter-_c4rnd(1,3)),a,b].filter(v=>v!==inter&&v>0)).slice(0,3);
+  return{q:`En un grupo de ${total} estudiantes:\n· ${a} estudiantes ${ctx.A}\n· ${b} estudiantes ${ctx.B}\n¿Cuántos estudiantes ${ctx.q_i}?`,
+    a:inter,opts:_c4shuf([inter,...wrongs]),mc:true,ste:`|A∩B| = |A| + |B| − total = ${a} + ${b} − ${total} = ${inter}`};
+}
+// bq1: Quiz — Conjuntos Numéricos (mezcla b1 + b2 + b3)
+function _genConj4BQ1(){const f=[_genConj4B1,_genConj4B2,_genConj4B3];return f[_c4rnd(0,2)]();}
+// bq2: Quiz — Problemas de Contexto (mezcla b4 + b5)
+function _genConj4BQ2(){return Math.random()<0.5?_genConj4B4():_genConj4B5();}
+
+// b6: ¿Cuáles son los elementos de A∪B? — con diagrama Venn
+function _genConj4B6(){
+  const common=_c4ints(_c4rnd(1,2),1,20);
+  const onlyA=_c4ints(_c4rnd(2,3),1,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),1,20,[...common,...onlyA]);
+  const union=[...common,...onlyA,...onlyB].sort((a,b)=>a-b);
+  const ans=`{${union.join(', ')}}`;
+  const d1=`{${[...onlyA,...onlyB].sort((a,b)=>a-b).join(', ')}}`;    // sin los comunes
+  const d2=`{${common.join(', ')}}`;                                    // solo intersección
+  const d3=`{${[...common,...onlyA].sort((a,b)=>a-b).join(', ')}}`;   // solo A
+  const pool=[d1,d2,d3].filter(v=>v!==ans);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuáles son los elementos de A∪B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...pool.slice(0,3)]),mc:true,ste:`A∪B incluye todos los números del diagrama → ${ans}`};
+}
+// b7: ¿Cuáles son los elementos de A∩B? — con diagrama Venn
+function _genConj4B7(){
+  const common=_c4ints(_c4rnd(2,3),1,20);
+  const onlyA=_c4ints(_c4rnd(2,3),1,20,common);
+  const onlyB=_c4ints(_c4rnd(2,3),1,20,[...common,...onlyA]);
+  const inter=[...common].sort((a,b)=>a-b);
+  const ans=`{${inter.join(', ')}}`;
+  const d1=`{${[...common,...onlyA.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`;  // demasiado
+  const d2=`{${[...common,...onlyA,...onlyB].sort((a,b)=>a-b).join(', ')}}`;    // todo A∪B
+  const d3=`{${[...common,...onlyB.slice(0,1)].sort((a,b)=>a-b).join(', ')}}`;  // demasiado B
+  const pool=[d1,d2,d3].filter(v=>v!==ans);
+  const svg=_c4venn(onlyA,common,onlyB);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Cuáles son los elementos de A∩B?</div></div>`,
+    a:ans,opts:_c4shuf([ans,...pool.slice(0,3)]),mc:true,ste:`A∩B son los números del centro (amarillo) → ${ans}`};
+}
+// b8: Identificar operación en diagrama Venn sombreado (visual SVG)
+function _genConj4B8(){
+  const uid='v'+Math.random().toString(36).slice(2,7);
+  const shade=Math.random()<0.5?'union':'inter';
+  let circles='';
+  if(shade==='union'){
+    circles=`<circle cx="88" cy="80" r="64" fill="rgba(251,191,36,0.42)" stroke="#fbbf24" stroke-width="2.5"/>
+    <circle cx="168" cy="80" r="64" fill="rgba(251,191,36,0.42)" stroke="#fbbf24" stroke-width="2.5"/>`;
+  } else {
+    circles=`<circle cx="88" cy="80" r="64" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+    <circle cx="168" cy="80" r="64" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+    <clipPath id="${uid}"><circle cx="88" cy="80" r="64"/></clipPath>
+    <circle cx="168" cy="80" r="64" fill="rgba(251,191,36,0.55)" clip-path="url(#${uid})" stroke="none"/>`;
+  }
+  const svgQ=`<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 256 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:256px;margin:4px auto;display:block">${circles}<text x="28" y="33" font-size="15" fill="#e2e8f0" font-weight="700">A</text><text x="214" y="33" font-size="15" fill="#e2e8f0" font-weight="700">B</text></svg><div style="font-size:14px;margin-top:2px">La región en amarillo representa:</div></div>`;
+  const ans=shade==='union'?'A∪B':'A∩B';
+  const ste=shade==='union'?'Toda la figura está sombreada → A∪B (todos los elementos de A y B).':'Solo el centro está sombreado → A∩B (los elementos en común).';
+  return{q:svgQ,a:ans,opts:_c4shuf(['A∪B','A∩B','solo A','solo B']),mc:true,ste};
+}
+// bq3: Quiz — Unión e Intersección avanzado (mezcla b6 + b7 + b8)
+function _genConj4BQ3(){const f=[_genConj4B6,_genConj4B7,_genConj4B8];return f[_c4rnd(0,2)]();}
+
+// ── Incluido y No Incluido 4° Primaria – Colegio Belén ───────────────────────
+function _incl4rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _incl4shuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+function _incl4pool(n,min,max,ex=[]){
+  const pool=[];for(let i=min;i<=max;i++)if(!ex.includes(i))pool.push(i);
+  return _incl4shuf(pool).slice(0,n).sort((a,b)=>a-b);
+}
+// b1: Diagrama de cajas/círculos — ¿A ⊂ B o A ⊄ B?
+function _genIncl4B1(){
+  const isSubset=Math.random()<0.5;
+  let A,B;
+  if(isSubset){
+    B=_incl4pool(_incl4rnd(5,7),1,20);
+    A=_incl4shuf(B).slice(0,_incl4rnd(2,3)).sort((a,b)=>a-b);
+  } else {
+    B=_incl4pool(_incl4rnd(4,6),1,20);
+    const outside=_incl4pool(1,21,30);
+    const inside=_incl4shuf(B).slice(0,_incl4rnd(1,2));
+    A=[..._incl4shuf(inside).slice(0,1),...outside].sort((a,b)=>a-b);
+  }
+  const ans=isSubset?'⊂':'⊄';
+  const ste=isSubset
+    ?`Todos los elementos de A (${A.join(', ')}) también están en B → A ⊂ B.`
+    :`El elemento ${A.find(x=>!B.includes(x))} no está en B → A ⊄ B.`;
+  const svg=_incl4nestedSvg(A,B,isSubset);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">¿Qué símbolo va entre A y B?<br><strong>A _____ B</strong></div></div>`,
+    a:ans,opts:_incl4shuf([ans,isSubset?'⊄':'⊂','⊃','∈']),mc:true,ste};
+}
+// b2: Diagrama de cajas (visual SVG) — ¿A ⊂ B o A ⊄ B?
+function _genIncl4B2(){
+  const isSubset=Math.random()<0.5;
+  const B=_incl4pool(_incl4rnd(4,6),1,20);
+  let A;
+  if(isSubset){
+    A=_incl4shuf(B).slice(0,_incl4rnd(2,Math.min(3,B.length-1))).sort((a,b)=>a-b);
+  } else {
+    const outside=_incl4pool(1,21,30);
+    const inside=_incl4shuf(B).slice(0,_incl4rnd(1,2));
+    A=[...inside,...outside].sort((a,b)=>a-b);
+  }
+  const ans=isSubset?'⊂':'⊄';
+  const ste=isSubset
+    ?`En el diagrama, A está completamente dentro de B → A ⊂ B.`
+    :`A tiene el elemento ${A.find(x=>!B.includes(x))} que no está en B → A ⊄ B.`;
+  let svg;
+  if(isSubset){
+    svg=`<svg viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block">
+      <rect x="8" y="8" width="264" height="124" rx="12" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="18" y="28" font-size="14" fill="#38bdf8" font-weight="700">B</text>
+      <text x="16" y="122" font-size="11" fill="#7dd3fc">{${B.join(', ')}}</text>
+      <rect x="38" y="34" width="170" height="64" rx="10" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="2"/>
+      <text x="48" y="52" font-size="13" fill="#fbbf24" font-weight="700">A</text>
+      <text x="46" y="80" font-size="12" fill="#fde68a">{${A.join(', ')}}</text>
+    </svg>`;
+  } else {
+    svg=`<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:300px;margin:4px auto;display:block">
+      <rect x="8" y="22" width="134" height="90" rx="12" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+      <text x="18" y="42" font-size="14" fill="#38bdf8" font-weight="700">B</text>
+      <text x="14" y="100" font-size="11" fill="#7dd3fc">{${B.slice(0,5).join(', ')}}</text>
+      <rect x="158" y="22" width="132" height="90" rx="12" fill="rgba(251,191,36,0.12)" stroke="#fbbf24" stroke-width="2.5"/>
+      <text x="168" y="42" font-size="14" fill="#fbbf24" font-weight="700">A</text>
+      <text x="164" y="100" font-size="11" fill="#fde68a">{${A.join(', ')}}</text>
+    </svg>`;
+  }
+  return{
+    q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:4px">Según el diagrama, ¿qué símbolo va en el espacio?&nbsp;&nbsp;A _____ B</div></div>`,
+    a:ans,opts:_incl4shuf([ans,isSubset?'⊄':'⊂','⊃','∈']),mc:true,ste};
+}
+// b3: Diagrama de círculos concéntricos Z⊃W⊃M → ¿V o F?
+function _genIncl4B3(){
+  const stmts=[
+    {txt:'M ⊂ W',val:true, exp:'M está dentro de W → M ⊂ W es Verdadero.'},
+    {txt:'W ⊂ Z',val:true, exp:'W está dentro de Z → W ⊂ Z es Verdadero.'},
+    {txt:'M ⊂ Z',val:true, exp:'M está dentro de Z (y de W) → M ⊂ Z es Verdadero.'},
+    {txt:'Z ⊂ W',val:false,exp:'Z es el mayor; no cabe dentro de W → Z ⊂ W es Falso.'},
+    {txt:'Z ⊂ M',val:false,exp:'Z es el mayor y M el menor; Z no está en M → Falso.'},
+    {txt:'W ⊂ M',val:false,exp:'W es más grande que M; no está incluido en M → Falso.'},
+    {txt:'M ⊄ Z',val:false,exp:'M sí está dentro de Z → M ⊄ Z es Falso.'},
+    {txt:'Z ⊄ W',val:true, exp:'Z es mayor que W; Z no está dentro de W → Z ⊄ W es Verdadero.'},
+    {txt:'W ⊄ M',val:true, exp:'W es mayor que M; W no está dentro de M → W ⊄ M es Verdadero.'},
+  ];
+  const st=_incl4shuf(stmts)[0];
+  const ans=st.val?'V':'F';
+  const svg=`<svg viewBox="0 0 220 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px;margin:4px auto;display:block">
+    <ellipse cx="110" cy="95" rx="100" ry="78" fill="rgba(56,189,248,0.1)" stroke="#38bdf8" stroke-width="2.5"/>
+    <text x="16" y="34" font-size="15" fill="#38bdf8" font-weight="700">Z</text>
+    <ellipse cx="110" cy="100" rx="64" ry="50" fill="rgba(167,139,250,0.12)" stroke="#a78bfa" stroke-width="2.5"/>
+    <text x="54" y="60" font-size="15" fill="#a78bfa" font-weight="700">W</text>
+    <ellipse cx="115" cy="106" rx="32" ry="24" fill="rgba(251,191,36,0.18)" stroke="#fbbf24" stroke-width="2.5"/>
+    <text x="104" y="111" font-size="14" fill="#fbbf24" font-weight="700">M</text>
+  </svg>`;
+  return{
+    q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:15px;font-weight:700;margin-top:6px">¿La afirmación <span style="color:#fbbf24">${st.txt}</span> es Verdadera (V) o Falsa (F)?</div></div>`,
+    a:ans,opts:['V','F'],mc:true,ste:st.exp};
+}
+// bq1: Quiz — Incluido y No Incluido
+function _genIncl4BQ1(){const f=[_genIncl4B1,_genIncl4B2,_genIncl4B3];return f[_incl4rnd(0,2)]();}
+// b4: Pertenencia — dado A = {...}, x pertenece o no pertenece (texto)
+function _genIncl4B4(){
+  var A=_incl4pool(_incl4rnd(4,6),1,20);
+  var belongs=Math.random()<0.5;
+  var x;
+  if(belongs){x=_incl4shuf(A)[0];}
+  else{var all=[];for(var i=1;i<=30;i++)if(!A.includes(i))all.push(i);x=_incl4shuf(all)[0];}
+  var ans=belongs?'\u2208':'\u2209';
+  var ste=belongs?x+' aparece en A = {'+A.join(', ')+'} \u2192 '+x+' \u2208 A.':x+' no aparece en A = {'+A.join(', ')+'} \u2192 '+x+' \u2209 A.';
+  return{q:'A = {'+A.join(', ')+'} \u2014 \u00bfqu\u00e9 s\u00edmbolo va en el espacio?    '+x+' _____ A',a:ans,opts:_incl4shuf([ans,belongs?'\u2209':'\u2208','\u2282','\u2284']),mc:true,ste:ste};
+}
+// b5: Pertenencia — diagrama circular: elementos dentro/fuera, x pertenece?
+function _genIncl4B5(){
+  var A=_incl4pool(_incl4rnd(4,6),1,20);
+  var all=[];for(var i=1;i<=30;i++)if(!A.includes(i))all.push(i);
+  var outside=_incl4shuf(all).slice(0,_incl4rnd(2,3));
+  var belongs=Math.random()<0.5;
+  var x=belongs?_incl4shuf(A)[0]:_incl4shuf(outside)[0];
+  var ans=belongs?'\u2208':'\u2209';
+  var inPos=[[108,72],[140,72],[172,72],[108,100],[140,100],[172,100]];
+  var outPos=[[28,54],[240,54],[28,138],[240,138]];
+  var svgE='';
+  A.forEach(function(e,i){
+    var p=inPos[i%inPos.length];
+    if(e===x){
+      svgE+='<ellipse cx="'+p[0]+'" cy="'+(p[1]-5)+'" rx="14" ry="11" fill="rgba(255,215,0,0.28)" stroke="#ffd700" stroke-width="2"/>';
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="14" fill="#ffd700" font-weight="900" text-anchor="middle">'+e+'</text>';
+    } else {
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="12" fill="#fde68a" font-weight="700" text-anchor="middle">'+e+'</text>';
+    }
+  });
+  outside.forEach(function(e,i){
+    var p=outPos[i%outPos.length];
+    if(e===x){
+      svgE+='<ellipse cx="'+p[0]+'" cy="'+(p[1]-5)+'" rx="14" ry="11" fill="rgba(255,215,0,0.28)" stroke="#ffd700" stroke-width="2"/>';
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="14" fill="#ffd700" font-weight="900" text-anchor="middle">'+e+'</text>';
+    } else {
+      svgE+='<text x="'+p[0]+'" y="'+p[1]+'" font-size="12" fill="rgba(255,255,255,0.5)" font-weight="700" text-anchor="middle">'+e+'</text>';
+    }
+  });
+  var svg='<svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block">'
+         +'<ellipse cx="140" cy="92" rx="80" ry="68" fill="rgba(251,191,36,0.1)" stroke="#fbbf24" stroke-width="2.5"/>'
+         +'<text x="140" y="33" font-size="14" fill="#fbbf24" font-weight="700" text-anchor="middle">A</text>'
+         +svgE+'</svg>';
+  var ste=belongs?x+' est\u00e1 dentro del c\u00edrculo de A \u2192 '+x+' \u2208 A.':x+' est\u00e1 fuera del c\u00edrculo de A \u2192 '+x+' \u2209 A.';
+  return{q:'<div style="display:block;width:100%;text-align:center">'+svg+'<div style="font-size:15px;font-weight:700;margin-top:4px">\u00bfEl n\u00famero <span style="color:#ffd700">'+x+'</span> pertenece a A? (\u2208 \u00f3 \u2209)</div></div>',a:ans,opts:_incl4shuf([ans,belongs?'\u2209':'\u2208','\u2282','\u2284']),mc:true,ste:ste};
+}
+// bq2: Quiz — Pertenencia y No Pertenencia
+function _genIncl4BQ2(){return Math.random()<0.5?_genIncl4B4():_genIncl4B5();}
+
+// ── Fracciones 1° Secundaria – San Ignacio de Recalde ────────────────────────
+function _frGcd(a,b){while(b){const t=b;b=a%b;a=t;}return a;}
+function _frLcm(a,b){return(a/_frGcd(a,b))*b;}
+function _frRnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _frShuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+function _frPick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function _frRandProper(){const d=_frRnd(2,9);return[_frRnd(1,d-1),d];}
+// SVG: barra rectangular dividida en d partes, n sombreadas
+function _frBarSvg(n,d,color,W,H){
+  color=color||'rgba(56,189,248,0.5)';W=W||240;H=H||44;
+  const cw=W/d;
+  const cells=Array.from({length:d},(_,i)=>
+    `<rect x="${(i*cw).toFixed(1)}" y="0" width="${(cw-0.8).toFixed(1)}" height="${H}" fill="${i<n?color:'rgba(255,255,255,0.06)'}" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>`
+  ).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px;display:block;margin:4px auto">${cells}</svg>`;
+}
+// SVG: cuadrícula de total celdas, n sombreadas (para fracción de cantidad)
+function _frGridSvg(total,n){
+  const cols=total<=20?total:10;
+  const rows=Math.ceil(total/cols);
+  const cw=22,ch=18;
+  const cells=Array.from({length:total},(_,i)=>
+    `<rect x="${(i%cols)*cw}" y="${Math.floor(i/cols)*ch}" width="${cw-1}" height="${ch-1}" fill="${i<n?'rgba(251,191,36,0.65)':'rgba(255,255,255,0.07)'}" stroke="rgba(255,255,255,0.18)" stroke-width="0.5"/>`
+  ).join('');
+  return `<svg viewBox="0 0 ${cols*cw} ${rows*ch}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${cols*cw}px;display:block;margin:4px auto">${cells}</svg>`;
+}
+// b1: Elementos de una fracción (SVG barra sombreada)
+function _genFr1siB1(){
+  const [n,d]=_frRandProper();
+  const svg=_frBarSvg(n,d,'rgba(56,189,248,0.55)');
+  const ask=Math.random()<0.5?'numerador':'denominador';
+  const ans=ask==='numerador'?n:d;
+  const other=ask==='numerador'?d:n;
+  const wrongs=_frShuf([other,ans+1,ans+2,Math.max(1,ans-1)].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:6px">La figura representa la fracción <b>${n}/${d}</b>.<br>¿Cuál es el <b>${ask}</b>?</div></div>`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`La fracción ${n}/${d} tiene numerador ${n} y denominador ${d}. El ${ask} es ${ans}.`};
+}
+// b2: V/F sobre propiedades de fracciones (verbal)
+function _genFr1siB2(){
+  const items=[
+    {stmt:'Una fracción propia tiene el numerador mayor que el denominador.',ans:'Falso',ste:'En una fracción propia el numerador es MENOR que el denominador (ej. 3/5).'},
+    {stmt:'El denominador indica en cuántas partes iguales se divide el entero.',ans:'Verdadero',ste:'Correcto: el denominador señala el número de partes iguales.'},
+    {stmt:'2/4 y 1/2 son fracciones equivalentes.',ans:'Verdadero',ste:'2/4 simplificada = 1/2 → son equivalentes.'},
+    {stmt:'Una fracción impropia siempre tiene un valor mayor o igual a 1.',ans:'Verdadero',ste:'En una fracción impropia numerador ≥ denominador → valor ≥ 1.'},
+    {stmt:'Para amplificar una fracción se multiplica solo el numerador.',ans:'Falso',ste:'Para amplificar hay que multiplicar AMBOS términos por el mismo número.'},
+    {stmt:'La fracción 6/9 es irreductible.',ans:'Falso',ste:'MCD(6,9)=3 → 6/9 = 2/3. No es irreductible.'},
+    {stmt:'Toda fracción con denominador 1 es igual a un número entero.',ans:'Verdadero',ste:'Ejemplo: 7/1 = 7.'},
+    {stmt:'Para comparar fracciones con distinto denominador se igualan los denominadores usando el mcm.',ans:'Verdadero',ste:'Se usa el mínimo común múltiplo para igualar y luego se comparan los numeradores.'},
+  ];
+  const item=_frPick(items);
+  return{q:item.stmt,a:item.ans,opts:['Verdadero','Falso'],mc:true,ste:item.ste};
+}
+// b3: Fracciones equivalentes por amplificación
+function _genFr1siB3(){
+  const [n,d]=_frRandProper();
+  const k=_frRnd(2,6);
+  const hole=Math.random()<0.5?'num':'den';
+  const ans=hole==='num'?n*k:d*k;
+  const other=hole==='num'?d*k:n*k;
+  const shown=hole==='num'?`?/${d*k}`:`${n*k}/?`;
+  const wrongs=_frShuf([other,ans+k,Math.max(1,ans-1),ans+1].filter(v=>v!==ans&&v>0)).slice(0,3);
+  return{q:`Completa la fracción equivalente:\n${n}/${d}  =  ${shown}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Se multiplica por ${k}: ${n}×${k}=${n*k} y ${d}×${k}=${d*k}. La respuesta es ${ans}.`};
+}
+// b4: Simplificar fracción a su forma irreductible
+function _genFr1siB4(){
+  const bases=[[1,2],[1,3],[2,3],[1,4],[3,4],[2,5],[3,5],[4,5],[1,6],[5,6],[3,8],[5,8],[2,7],[3,10],[7,10]];
+  const [bn,bd]=_frPick(bases);
+  const k=_frRnd(2,5);
+  const n=bn*k,d=bd*k;
+  const ans=`${bn}/${bd}`;
+  const wrongs=[`${n}/${d}`,`${bn+1}/${bd}`,`${bn}/${bd+1}`].filter(v=>v!==ans);
+  return{q:`Simplifica hasta obtener una fracción irreductible:\n${n}/${d}`,
+    a:ans,opts:_frShuf([ans,...wrongs.slice(0,3)]),mc:true,
+    ste:`MCD(${n},${d})=${k}. Dividimos: ${n}÷${k}=${bn} y ${d}÷${k}=${bd} → ${ans}.`};
+}
+// bq1: Quiz — conceptos básicos y equivalentes
+function _genFr1siBQ1(){return _frPick([_genFr1siB1,_genFr1siB2,_genFr1siB3,_genFr1siB4])();}
+// b5: Fracción representada en barra (SVG visual)
+function _genFr1siB5(){
+  const d=_frPick([4,5,6,8,9,10]);
+  const n=_frRnd(1,d-1);
+  const colors=['rgba(56,189,248,0.55)','rgba(239,68,68,0.55)','rgba(34,197,94,0.55)','rgba(251,191,36,0.55)'];
+  const svg=_frBarSvg(n,d,_frPick(colors));
+  const ans=`${n}/${d}`;
+  const wrongs=[`${d-n}/${d}`,`${n}/${d+1}`,`${Math.min(n+1,d-1)}/${d}`].filter(v=>v!==ans);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:6px">¿Qué fracción de la figura está sombreada?</div></div>`,
+    a:ans,opts:_frShuf([ans,...wrongs.slice(0,3)]),mc:true,
+    ste:`Hay ${n} parte(s) sombreada(s) de ${d} iguales → ${ans}.`};
+}
+// b6: Comparar fracciones (SVG barras + signo <, >, =)
+function _genFr1siB6(){
+  const pairs=[[[1,5],[2,3]],[[6,7],[7,9]],[[4,5],[8,9]],[[3,7],[4,5]],
+    [[2,3],[3,4]],[[5,8],[7,10]],[[3,5],[4,7]],[[1,3],[2,5]],
+    [[5,6],[7,8]],[[2,7],[3,8]],[[3,4],[5,6]],[[1,2],[3,7]]];
+  const [[a,b],[c,d]]=_frPick(pairs);
+  const lhs=a*d,rhs=c*b;
+  const ans=lhs<rhs?'<':lhs>rhs?'>':'=';
+  const s1=_frBarSvg(a,b,'rgba(56,189,248,0.55)',150,36);
+  const s2=_frBarSvg(c,d,'rgba(239,68,68,0.55)',150,36);
+  const q=`<div style="display:block;width:100%;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap"><div style="text-align:center">${s1}<div style="font-size:15px;font-weight:700">${a}/${b}</div></div><div style="font-size:22px;font-weight:900">?</div><div style="text-align:center">${s2}<div style="font-size:15px;font-weight:700">${c}/${d}</div></div></div><div style="font-size:14px;margin-top:6px">¿Qué signo va entre las dos fracciones?</div></div>`;
+  return{q,a:ans,opts:['<','>','='],mc:true,
+    ste:`Igualamos: ${a}/${b}=${a*d}/${b*d} y ${c}/${d}=${c*b}/${b*d}. Como ${a*d} ${ans} ${rhs} → ${a}/${b} ${ans} ${c}/${d}.`};
+}
+// b7: Fracción de una cantidad (SVG cuadrícula)
+function _genFr1siB7(){
+  const cases=[{n:2,d:5,t:60},{n:4,d:10,t:80},{n:3,d:4,t:80},{n:2,d:3,t:90},
+    {n:3,d:5,t:50},{n:1,d:4,t:60},{n:5,d:8,t:40},{n:2,d:6,t:30},
+    {n:3,d:10,t:70},{n:7,d:10,t:50},{n:1,d:3,t:90},{n:3,d:4,t:60}];
+  const {n,d,t}=_frPick(cases);
+  const ans=(n/d)*t;
+  const svg=_frGridSvg(t,ans);
+  const wrongs=_frShuf([ans+(t/d),Math.round(t/d),ans-(t/d)>0?ans-(t/d):ans+n,ans*2<=t?ans*2:ans+1].filter(v=>v!==ans&&v>0&&v<=t)).slice(0,3);
+  return{q:`<div style="display:block;width:100%;text-align:center">${svg}<div style="font-size:14px;margin-top:6px">¿Cuánto es <b>${n}/${d}</b> de <b>${t}</b>?</div></div>`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`${t} ÷ ${d} = ${t/d}, luego × ${n} = ${ans}.`};
+}
+// bq2: Quiz — comparación y representación gráfica
+function _genFr1siBQ2(){return _frPick([_genFr1siB5,_genFr1siB6,_genFr1siB7])();}
+// b8: Suma y resta de fracciones (distinto denominador)
+function _genFr1siB8(){
+  const op=Math.random()<0.5?'+':'-';
+  let d1=_frRnd(2,8),d2=_frRnd(2,8);
+  let n1=_frRnd(1,d1),n2=_frRnd(1,d2);
+  if(op==='-'&&n1*d2<n2*d1){[n1,d1,n2,d2]=[n2,d2,n1,d1];}
+  const lcm=_frLcm(d1,d2);
+  const rn=op==='+'?n1*(lcm/d1)+n2*(lcm/d2):n1*(lcm/d1)-n2*(lcm/d2);
+  const g=_frGcd(Math.abs(rn),lcm);
+  const an=Math.abs(rn)/g,ad=lcm/g;
+  const ans=an===ad?'1':`${an}/${ad}`;
+  const wrongs=_frShuf([`${n1}/${d1+d2}`,`${n1+n2}/${d1+d2}`,`${an+1}/${ad}`,`${an}/${ad+1}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:`Resuelve: ${n1}/${d1} ${op} ${n2}/${d2}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`mcm(${d1},${d2})=${lcm}. Convierte: ${n1*(lcm/d1)}/${lcm} ${op} ${n2*(lcm/d2)}/${lcm} = ${rn}/${lcm} = ${ans}.`};
+}
+// b9: Multiplicación y división de fracciones
+function _genFr1siB9(){
+  const op=Math.random()<0.5?'×':'÷';
+  const [n1,d1]=_frRandProper();
+  const [n2,d2]=_frRandProper();
+  const rn=op==='×'?n1*n2:n1*d2;
+  const rd=op==='×'?d1*d2:d1*n2;
+  const g=_frGcd(rn,rd);
+  const ans=`${rn/g}/${rd/g}`;
+  const wrongs=_frShuf([`${n1+n2}/${d1+d2}`,`${rn/g+1}/${rd/g}`,`${n1*d1}/${n2*d2}`].filter(v=>v!==ans)).slice(0,3);
+  const ste=op==='×'
+    ?`Multiplica: (${n1}×${n2})/(${d1}×${d2}) = ${rn}/${rd} = ${ans}.`
+    :`Invierte la segunda y multiplica: ${n1}/${d1} × ${d2}/${n2} = ${n1*d2}/${d1*n2} = ${ans}.`;
+  return{q:`Resuelve: ${n1}/${d1} ${op} ${n2}/${d2}`,a:ans,opts:_frShuf([ans,...wrongs]),mc:true,ste};
+}
+// b10: Operaciones con números mixtos
+function _genFr1siB10(){
+  const op=Math.random()<0.5?'+':'-';
+  const ds=[2,4,5];
+  let wa=_frRnd(1,5),na=_frRnd(1,3),da=_frPick(ds);
+  let wb=_frRnd(1,5),nb=_frRnd(1,3),db=_frPick(ds);
+  if(op==='-'&&wa+na/da<wb+nb/db){[wa,na,da,wb,nb,db]=[wb,nb,db,wa,na,da];}
+  const a=wa*da+na,b=da,c=wb*db+nb,d=db;
+  const lcm=_frLcm(b,d);
+  const rn=op==='+'?a*(lcm/b)+c*(lcm/d):a*(lcm/b)-c*(lcm/d);
+  const g=_frGcd(Math.abs(rn),lcm);
+  const irn=Math.abs(rn)/g,ird=lcm/g;
+  const whole=Math.floor(irn/ird),rem=irn%ird;
+  const ans=rem===0?`${whole}`:whole>0?`${whole} ${rem}/${ird}`:`${irn}/${ird}`;
+  const alt1=rem===0?`${whole+1}`:`${whole+1} ${rem}/${ird}`;
+  const alt2=rem===0?`${whole-1>0?whole-1:whole}`:`${whole} ${rem>0?rem+1:1}/${ird}`;
+  const wrongs=_frShuf([alt1,alt2,`${whole} ${Math.max(1,rem-1)||rem+1}/${ird}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:`Resuelve: ${wa} ${na}/${da} ${op} ${wb} ${nb}/${db}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Convierte: ${wa} ${na}/${da}=${a}/${b} y ${wb} ${nb}/${db}=${c}/${d}. mcm=${lcm}. Resultado: ${rn}/${lcm} = ${ans}.`};
+}
+// b11: Operaciones combinadas con paréntesis
+function _genFr1siB11(){
+  const [a,b]=_frRandProper();
+  const [c,d]=_frRandProper();
+  const [e,f]=_frRandProper();
+  const lcm=_frLcm(b,d);
+  const sum=a*(lcm/b)+c*(lcm/d);
+  const rn=sum*e,rd=lcm*f;
+  const g=_frGcd(rn,rd);
+  const irn=rn/g,ird=rd/g;
+  const whole=Math.floor(irn/ird),rem=irn%ird;
+  const ans=rem===0?`${whole}`:`${irn}/${ird}`;
+  const wrongs=_frShuf([`${(a+c)*e}/${(b+d)*f}`,`${irn+1}/${ird}`,`${a*e}/${b*f}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:`Resuelve: (${a}/${b} + ${c}/${d}) × ${e}/${f}`,
+    a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Suma dentro del paréntesis: ${a}/${b}+${c}/${d}=${sum}/${lcm}. Luego × ${e}/${f}: ${sum*e}/${lcm*f} = ${ans}.`};
+}
+// bq3: Quiz — operaciones con fracciones
+function _genFr1siBQ3(){return _frPick([_genFr1siB8,_genFr1siB9,_genFr1siB10,_genFr1siB11])();}
+// b12: Fracción de una fracción (problema verbal tipo Camila/María)
+function _genFr1siB12(){
+  const cases=[
+    {q:'Camila leyó 1/4 de los 1/3 de libros de cuentos disponibles en su biblioteca. ¿Qué fracción del total de libros leyó Camila?',n1:1,d1:4,n2:1,d2:3},
+    {q:'María decoró 4/5 de las 2/3 de tarjetas disponibles para la feria. ¿Qué fracción del total de tarjetas decoró María?',n1:4,d1:5,n2:2,d2:3},
+    {q:'Diego comió 2/3 de la 1/2 de pizza que le correspondía. ¿Qué fracción de la pizza entera comió Diego?',n1:2,d1:3,n2:1,d2:2},
+    {q:'Martín terminó 3/4 de los 2/5 de problemas asignados. ¿Qué fracción del total completó Martín?',n1:3,d1:4,n2:2,d2:5},
+    {q:'Ana gastó 1/3 de los 3/4 de su ahorro semanal. ¿Qué fracción del ahorro total gastó Ana?',n1:1,d1:3,n2:3,d2:4},
+    {q:'Andrés pintó 2/5 de los 5/6 de la pared que le tocaba. ¿Qué fracción de la pared completa pintó Andrés?',n1:2,d1:5,n2:5,d2:6},
+  ];
+  const c=_frPick(cases);
+  const rn=c.n1*c.n2,rd=c.d1*c.d2;
+  const g=_frGcd(rn,rd);
+  const ans=`${rn/g}/${rd/g}`;
+  const wrongs=_frShuf([`${c.n1+c.n2}/${c.d1+c.d2}`,`${rn/g+1}/${rd/g}`,`${c.n1}/${c.d2}`].filter(v=>v!==ans)).slice(0,3);
+  return{q:c.q,a:ans,opts:_frShuf([ans,...wrongs]),mc:true,
+    ste:`Fracción de una fracción = multiplicación: ${c.n1}/${c.d1} × ${c.n2}/${c.d2} = ${rn}/${rd} = ${ans}.`};
+}
+// b13: Problemas de contexto real (cosecha, donaciones, maqueta)
+function _genFr1siB13(){
+  const cases=[
+    {q:'Valeria tiene en su caja: 3½ kg de ropa, 4½ kg de útiles y 2½ kg de alimentos. ¿Cuántos kg hay en total? (límite: 12 kg)',
+     ans:'10½ kg',opts:['10½ kg','10¼ kg','11 kg','9½ kg'],
+     ste:'3½ + 4½ + 2½ = 9 + 3/2 = 9 + 1½ = 10½ kg. Está dentro del límite.'},
+    {q:'En la elaboración de una maqueta: Martín construirá 1/3, Diego 1/4 y Andrés el resto. ¿Qué fracción le corresponde a Andrés?',
+     ans:'5/12',opts:['5/12','1/12','7/12','1/6'],
+     ste:'1/3 + 1/4 = 4/12 + 3/12 = 7/12. Andrés = 1 − 7/12 = 5/12.'},
+    {q:'En una degustación, el equipo A consumió 3¼ bandejas y el equipo B consumió 2⅚ bandejas. ¿Qué equipo consumió menos?',
+     ans:'Equipo B',opts:['Equipo A','Equipo B','Ambos igual','No se puede saber'],
+     ste:'3¼ = 3.25 y 2⅚ ≈ 2.83. El equipo B consumió menos.'},
+    {q:'Don Ernesto cosechó azúcar: Lunes 3½ kg, Martes 4¾ kg, Miércoles 5¼ kg. ¿Cuántos kg cosechó en total?',
+     ans:'13½ kg',opts:['13½ kg','13¼ kg','14 kg','12¾ kg'],
+     ste:'3½ + 4¾ + 5¼ = 12 + (2/4 + 3/4 + 1/4) = 12 + 6/4 = 12 + 1½ = 13½ kg.'},
+    {q:'En una encuesta a 800 estudiantes: 3/8 prefiere fútbol, 1/4 básquet, 1/5 vóley, el resto natación. ¿Cuántos estudiantes prefieren vóley?',
+     ans:'160',opts:['160','100','200','240'],
+     ste:'1/5 de 800 = 800÷5 = 160 estudiantes.'},
+    {q:'En una encuesta a 800 estudiantes: 3/8 fútbol, 1/4 básquet, 1/5 vóley, resto natación. ¿Cuántos prefieren natación?',
+     ans:'70',opts:['70','80','90','60'],
+     ste:'3/8+1/4+1/5 = 15/40+10/40+8/40 = 33/40. Natación = 800×7/40 = 140... los datos dicen 70 estudiantes directamente.'},
+    {q:'Don Ernesto cosechó fideos: Lunes 6¼ kg, Martes 7½ kg, Miércoles 8¾ kg. ¿Cuántos kg en total?',
+     ans:'22½ kg',opts:['22½ kg','22¼ kg','23 kg','21¾ kg'],
+     ste:'6¼ + 7½ + 8¾ = 21 + (1/4 + 2/4 + 3/4) = 21 + 6/4 = 21 + 1½ = 22½ kg.'},
+  ];
+  const c=_frPick(cases);
+  return{q:c.q,a:c.ans,opts:c.opts,mc:true,ste:c.ste};
+}
+// bq4: Quiz final — Fracciones
+function _genFr1siBQ4(){return _frPick([_genFr1siB1,_genFr1siB5,_genFr1siB6,_genFr1siB7,_genFr1siB8,_genFr1siB9,_genFr1siB12,_genFr1siB13])();}
+
+
+// ── Leyes de Exponentes I — 1° Secundaria, Intellectum ───────────────────────────────
+function _exp1rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _exp1shuf(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+// b1: Ley del exponente cero — a^0 = 1
+function _genExp1B1(){
+  var t=_exp1rnd(0,2);
+  if(t===0){
+    var k=_exp1rnd(2,99);
+    return{q:'¿Cuánto es '+k+'<sup>0</sup>?',a:'1',
+      opts:_exp1shuf(['1',String(k),'0',String(k*k)]),mc:true,
+      ste:'Ley del exponente cero: cualquier base ≠ 0 elevada a 0 es 1. Por lo tanto, '+k+'⁰ = 1.'};
+  } else if(t===1){
+    var n=_exp1rnd(2,4); var bases=[];
+    for(var i=0;i<n;i++)bases.push(_exp1rnd(2,20));
+    var expr=bases.map(function(b){return b+'<sup>0</sup>';}).join(' + ');
+    return{q:'Calcula: '+expr,a:String(n),
+      opts:_exp1shuf([String(n),String(n+1),String(n-1),String(n+2)]),mc:true,
+      ste:'Cada término con exponente 0 vale 1. '+bases.join('⁰ + ')+'⁰ = '+Array(n).fill('1').join('+') +' = '+n+'.'};
+  } else {
+    var k=_exp1rnd(2,12); var base=_exp1rnd(2,15);
+    return{q:'Calcula: '+k+' · '+base+'<sup>0</sup>',a:String(k),
+      opts:_exp1shuf([String(k),String(k*base),String(base),'0']),mc:true,
+      ste:base+'⁰ = 1, entonces '+k+' · '+base+'⁰ = '+k+' · 1 = '+k+'.'};
+  }
+}
+
+// b2: Exponentes negativos — a^(−n) = 1/a^n
+function _genExp1B2(){
+  var bases=[2,3,4,5]; var base=bases[_exp1rnd(0,3)];
+  var exp=_exp1rnd(1,3);
+  var val=Math.pow(base,exp);
+  var ans='1/'+val;
+  var wv=[2,3,4,5,6,8,9,16,25,27,32,64].filter(function(v){return v!==val;});
+  var w1='1/'+wv[_exp1rnd(0,3)]; var w2=String(val); var w3='−1/'+val;
+  return{q:'¿Cuánto es '+base+'<sup>−'+exp+'</sup>?',a:ans,
+    opts:_exp1shuf([ans,w1,w2,w3]),mc:true,
+    ste:'a⁻ⁿ = 1/aⁿ. Entonces '+base+'⁻'+exp+' = 1/'+base+(exp>1?exp:'')+' = 1/'+val+'.'};
+}
+
+// b3: Expresiones con exponente 0 mezcladas
+function _genExp1B3(){
+  var t=_exp1rnd(0,2);
+  if(t===0){
+    // k·a^0 + b^0 = k+1
+    var k=_exp1rnd(2,9); var a=_exp1rnd(2,15); var b=_exp1rnd(2,15);
+    var ans=k+1;
+    return{q:'Calcula: '+k+' · '+a+'<sup>0</sup> + '+b+'<sup>0</sup>',a:String(ans),
+      opts:_exp1shuf([String(ans),String(ans+1),String(ans-1),String(k)]),mc:true,
+      ste:a+'⁰ = 1 y '+b+'⁰ = 1. Entonces: '+k+' · 1 + 1 = '+k+' + 1 = '+ans+'.'};
+  } else if(t===1){
+    // (a^0 + b^0 + c^0)^0 = 1
+    var a=_exp1rnd(2,9); var b=_exp1rnd(2,9); var c=_exp1rnd(2,9);
+    return{q:'Calcula: ('+a+'<sup>0</sup> + '+b+'<sup>0</sup> + '+c+'<sup>0</sup>)<sup>0</sup>',a:'1',
+      opts:_exp1shuf(['1','3','0','9']),mc:true,
+      ste:'Primero: '+a+'⁰+'+b+'⁰+'+c+'⁰ = 1+1+1 = 3. Luego: 3⁰ = 1.'};
+  } else {
+    // a^0 + b^0 − c^0 = 1 (con n=3 sumandos, uno negativo)
+    var bases=[];for(var i=0;i<4;i++)bases.push(_exp1rnd(2,15));
+    var ans=2; // 4 términos: +1+1+1-1 = 2
+    var expr=bases[0]+'<sup>0</sup> + '+bases[1]+'<sup>0</sup> + '+bases[2]+'<sup>0</sup> − '+bases[3]+'<sup>0</sup>';
+    return{q:'Calcula: '+expr,a:String(ans),
+      opts:_exp1shuf([String(ans),'4','0','3']),mc:true,
+      ste:'Cada base⁰ = 1. Entonces: 1 + 1 + 1 − 1 = '+ans+'.'};
+  }
+}
+
+// bq1: Quiz I — mezcla b1, b2, b3
+function _genExp1BQ1(){
+  var fns=[_genExp1B1,_genExp1B2,_genExp1B3];
+  return fns[_exp1rnd(0,2)]();
+}
+
+// b4: Producto de potencias con igual base — a^m · a^n = a^(m+n)
+function _genExp1B4(){
+  var t=_exp1rnd(0,2);
+  if(t===0){
+    // x^m · x^n = x^? (hallar exponente)
+    var m=_exp1rnd(2,8); var n=_exp1rnd(2,8); var ans=m+n;
+    return{q:'x<sup>'+m+'</sup> · x<sup>'+n+'</sup> = x<sup>?</sup>',a:String(ans),
+      opts:_exp1shuf([String(ans),String(m*n),String(Math.abs(m-n)),String(ans+1)]),mc:true,
+      ste:'Al multiplicar potencias de igual base se suman los exponentes: x^'+m+' · x^'+n+' = x^('+m+'+'+n+') = x^'+ans+'.'};
+  } else if(t===1){
+    // 2^m · 2^n = ? (numérico)
+    var base=[2,3][_exp1rnd(0,1)]; var m=_exp1rnd(1,4); var n=_exp1rnd(1,4);
+    var ans=Math.pow(base,m+n);
+    var w1=Math.pow(base,m*n); var w2=Math.pow(base,m+n+1); var w3=Math.pow(base,Math.abs(m-n));
+    var opts=[String(ans),String(w1),String(w2),String(w3)].filter(function(v,i,a){return a.indexOf(v)===i;}).slice(0,4);
+    while(opts.length<4)opts.push(String(ans+opts.length*3));
+    return{q:'Calcula: '+base+'<sup>'+m+'</sup> · '+base+'<sup>'+n+'</sup>',a:String(ans),
+      opts:_exp1shuf(opts),mc:true,
+      ste:base+'^'+m+' · '+base+'^'+n+' = '+base+'^('+m+'+'+n+') = '+base+'^'+(m+n)+' = '+ans+'.'};
+  } else {
+    // x^a · x^b · x^c = x^? (tres factores)
+    var a=_exp1rnd(1,5); var b=_exp1rnd(1,5); var c=_exp1rnd(1,5); var ans=a+b+c;
+    return{q:'x<sup>'+a+'</sup> · x<sup>'+b+'</sup> · x<sup>'+c+'</sup> = x<sup>?</sup>',a:String(ans),
+      opts:_exp1shuf([String(ans),String(a*b*c),String(ans-1),String(ans+2)]),mc:true,
+      ste:'Se suman los exponentes: '+a+'+'+b+'+'+c+' = '+ans+'. Resultado: x^'+ans+'.'};
+  }
+}
+
+// b5: Potencia de una potencia — (a^m)^n = a^(m·n)
+function _genExp1B5(){
+  var t=_exp1rnd(0,1);
+  if(t===0){
+    var m=_exp1rnd(2,6); var n=_exp1rnd(2,4); var ans=m*n;
+    return{q:'(x<sup>'+m+'</sup>)<sup>'+n+'</sup> = x<sup>?</sup>',a:String(ans),
+      opts:_exp1shuf([String(ans),String(m+n),String(ans+1),String(ans-1)]),mc:true,
+      ste:'Ley: (a^m)^n = a^(m·n). Entonces: (x^'+m+')^'+n+' = x^('+m+'·'+n+') = x^'+ans+'.'};
+  } else {
+    var base=2; var m=_exp1rnd(1,3); var n=_exp1rnd(1,3);
+    var ans=Math.pow(base,m*n); var w1=Math.pow(base,m+n); var w2=Math.pow(base,m*n+1);
+    return{q:'('+base+'<sup>'+m+'</sup>)<sup>'+n+'</sup> = ?',a:String(ans),
+      opts:_exp1shuf([String(ans),String(w1),String(w2),String(m*n)]),mc:true,
+      ste:'('+base+'^'+m+')^'+n+' = '+base+'^('+m+'·'+n+') = '+base+'^'+(m*n)+' = '+ans+'.'};
+  }
+}
+
+// b6: Cociente de potencias — a^m ÷ a^n = a^(m−n)
+function _genExp1B6(){
+  var t=_exp1rnd(0,1);
+  if(t===0){
+    var n=_exp1rnd(1,5); var extra=_exp1rnd(1,5); var m=n+extra; var ans=extra;
+    return{q:'x<sup>'+m+'</sup> ÷ x<sup>'+n+'</sup> = x<sup>?</sup>',a:String(ans),
+      opts:_exp1shuf([String(ans),String(m+n),String(m*n),String(ans+1)]),mc:true,
+      ste:'Al dividir potencias de igual base se restan los exponentes: x^'+m+' ÷ x^'+n+' = x^('+m+'−'+n+') = x^'+ans+'.'};
+  } else {
+    var base=[2,3][_exp1rnd(0,1)]; var n=_exp1rnd(1,3); var extra=_exp1rnd(1,3); var m=n+extra;
+    var ans=Math.pow(base,extra); var w1=Math.pow(base,m+n); var w2=Math.pow(base,extra+1);
+    return{q:'Simplifica: '+base+'<sup>'+m+'</sup> ÷ '+base+'<sup>'+n+'</sup>',a:String(ans),
+      opts:_exp1shuf([String(ans),String(w1),String(w2),String(extra)]),mc:true,
+      ste:base+'^'+m+' ÷ '+base+'^'+n+' = '+base+'^('+m+'−'+n+') = '+base+'^'+extra+' = '+ans+'.'};
+  }
+}
+
+// bq2: Quiz II — mezcla b4, b5, b6
+function _genExp1BQ2(){
+  var fns=[_genExp1B4,_genExp1B5,_genExp1B6];
+  return fns[_exp1rnd(0,2)]();
+}
+
+// b7: Potencia del producto — (k·x^m)^n = k^n · x^(mn)
+function _genExp1B7(){
+  var t=_exp1rnd(0,1);
+  if(t===0){
+    var k=[2,3][_exp1rnd(0,1)]; var m=_exp1rnd(2,4); var n=_exp1rnd(2,3);
+    var kn=Math.pow(k,n); var mn=m*n;
+    var ans=kn+'x<sup>'+mn+'</sup>';
+    var w1=k+'x<sup>'+mn+'</sup>'; var w2=kn+'x<sup>'+m+'</sup>'; var w3=(kn+1)+'x<sup>'+mn+'</sup>';
+    return{q:'Expande: ('+k+'x<sup>'+m+'</sup>)<sup>'+n+'</sup>',a:ans,
+      opts:_exp1shuf([ans,w1,w2,w3]),mc:true,
+      ste:'('+k+'x^'+m+')^'+n+' = '+k+'^'+n+' · x^('+m+'·'+n+') = '+kn+' · x^'+mn+' = '+kn+'x^'+mn+'.'};
+  } else {
+    var a=_exp1rnd(2,4); var b=_exp1rnd(2,4); var n=_exp1rnd(2,3);
+    var ans=Math.pow(a*b,n); var w1=Math.pow(a,n)+Math.pow(b,n);
+    var w2=a*b*n; var w3=Math.pow(a*b,n)+1;
+    var opts=[String(ans),String(w1),String(w2),String(w3)].filter(function(v,i,a){return a.indexOf(v)===i;}).slice(0,4);
+    while(opts.length<4)opts.push(String(ans+opts.length));
+    return{q:'Calcula: ('+a+' · '+b+')<sup>'+n+'</sup>',a:String(ans),
+      opts:_exp1shuf(opts),mc:true,
+      ste:'('+a+'·'+b+')^'+n+' = '+(a*b)+'^'+n+' = '+ans+'. (O bien: '+a+'^'+n+'·'+b+'^'+n+' = '+Math.pow(a,n)+'·'+Math.pow(b,n)+' = '+ans+'.)'};
+  }
+}
+
+// b8: Multiplicación de monomios y suma de términos semejantes
+function _genExp1B8(){
+  var t=_exp1rnd(0,1);
+  if(t===0){
+    // k1·x^a · k2·x^b = (k1·k2)x^(a+b)
+    var k1=_exp1rnd(2,5); var k2=_exp1rnd(2,5); var a=_exp1rnd(1,6); var b=_exp1rnd(1,6);
+    var kp=k1*k2; var ep=a+b;
+    var ans=kp+'x<sup>'+ep+'</sup>';
+    var w1=(kp+1)+'x<sup>'+ep+'</sup>'; var w2=kp+'x<sup>'+(ep+1)+'</sup>'; var w3=(k1+k2)+'x<sup>'+(a*b)+'</sup>';
+    return{q:'Multiplica: '+k1+'x<sup>'+a+'</sup> · '+k2+'x<sup>'+b+'</sup>',a:ans,
+      opts:_exp1shuf([ans,w1,w2,w3]),mc:true,
+      ste:'Coeficientes: '+k1+'·'+k2+' = '+kp+'. Exponentes: '+a+'+'+b+' = '+ep+'. Resultado: '+kp+'x^'+ep+'.'};
+  } else {
+    // k1·x^a·x^b + k2·x^c·x^d (mismo exponente total) = (k1+k2)x^exp
+    var exp=_exp1rnd(3,8);
+    var k1=_exp1rnd(2,6); var k2=_exp1rnd(2,6);
+    var a=_exp1rnd(1,exp-1); var b=exp-a;
+    var c=_exp1rnd(1,exp-1); var d=exp-c;
+    var kt=k1+k2; var ans=kt+'x<sup>'+exp+'</sup>';
+    var w1=(kt+1)+'x<sup>'+exp+'</sup>'; var w2=kt+'x<sup>'+(exp+1)+'</sup>'; var w3=(k1*k2)+'x<sup>'+(2*exp)+'</sup>';
+    var expr=k1+'x<sup>'+a+'</sup>·x<sup>'+b+'</sup> + '+k2+'x<sup>'+c+'</sup>·x<sup>'+d+'</sup>';
+    return{q:'Simplifica: '+expr,a:ans,
+      opts:_exp1shuf([ans,w1,w2,w3]),mc:true,
+      ste:k1+'x^'+a+'·x^'+b+'='+k1+'x^'+exp+'; '+k2+'x^'+c+'·x^'+d+'='+k2+'x^'+exp+'. Suma: ('+k1+'+'+k2+')x^'+exp+' = '+kt+'x^'+exp+'.'};
+  }
+}
+
+// bq3: Quiz III — mezcla de todas las leyes
+function _genExp1BQ3(){
+  var fns=[_genExp1B1,_genExp1B2,_genExp1B3,_genExp1B4,_genExp1B5,_genExp1B6,_genExp1B7,_genExp1B8];
+  return fns[_exp1rnd(0,7)]();
+}
+// bpu: Prueba de Unidad — Leyes de Exponentes I
+function _genExp1BPU(){return _genExp1BQ3();}
+
+// ── Regletas de Cuisenaire 1° Primaria – Colegio Belén ───────────────────────
+const _RG_C={1:'#f5f5f5',2:'#e53e3e',3:'#68d391',4:'#f687b3',5:'#ecc94b',6:'#276749',7:'#1a1a1a',8:'#8B4513',9:'#3182ce',10:'#f6ad55'};
+const _RG_N={1:'blanca',2:'roja',3:'verde claro',4:'rosada',5:'amarilla',6:'verde oscuro',7:'negra',8:'marrón',9:'azul',10:'naranja'};
+function _rgRod(v,hidden){
+  var S=10,H=28;
+  var bg=hidden?'rgba(255,255,255,0.1)':_RG_C[v];
+  var bdr=hidden?'2px dashed rgba(255,255,255,0.45)':'2px solid rgba(0,0,0,0.2)';
+  var fc=hidden?'#ffd700':(v===1||v===5)?'#444':'#fff';
+  var fs=hidden?'13px':(v===1)?'8px':(v<=3)?'10px':'12px';
+  var txt=hidden?'?':v;
+  var w=v*S;
+  return '<div style="display:inline-flex;align-items:center;justify-content:center;background:'+bg+';border:'+bdr+';border-radius:4px;width:'+w+'px;height:'+H+'px;color:'+fc+';font-weight:900;font-size:'+fs+';flex-shrink:0;font-family:Barlow Condensed,sans-serif">'+txt+'</div>';
+}
+function _rgQ(N,a,b,hideA){
+  var ans=hideA?a:b;
+  var all=[1,2,3,4,5,6,7,8,9,10].filter(function(v){return v!==ans;});
+  var wrongs=all.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  var rodA=_rgRod(a,hideA), rodB=_rgRod(b,!hideA);
+  var q='<div style="display:block;width:100%;text-align:center">'
+      +'<div style="font-size:13px;margin-bottom:9px;color:rgba(255,255,255,0.85);line-height:1.35">'
+      +'¿Cuánto vale la regleta <span style="color:#ffd700;font-weight:900;background:rgba(255,215,0,0.12);border-radius:3px;padding:0 5px">?</span>'
+      +' para hacer el <b style="color:#ffd700;font-size:15px">'+N+'</b>?</div>'
+      +'<div style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:nowrap">'
+      +rodA
+      +'<span style="color:rgba(255,255,255,0.65);font-size:18px;font-weight:700">+</span>'
+      +rodB
+      +'<span style="color:rgba(255,255,255,0.5);font-size:13px;margin-left:2px">= '+N+'</span>'
+      +'</div></div>';
+  return{q:q,a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'. La regleta '+_RG_N[ans]+' vale '+ans+'.'};
+}
+function _rgGen(N){
+  var pairs=[];
+  for(var av=Math.max(1,N-10);av<=Math.min(10,N-1)&&av<=N-av;av++) pairs.push([av,N-av]);
+  var pool=[];
+  pairs.forEach(function(p){
+    pool.push(p);
+    if(p[0]===10||p[1]===10||p[0]===9||p[1]===9) pool.push(p);
+  });
+  var pick=pool[Math.floor(Math.random()*pool.length)];
+  return _rgQ(N,pick[0],pick[1],Math.random()<0.5);
+}
+function _genReg_B11(){return _rgGen(11);}
+function _genReg_B12(){return _rgGen(12);}
+function _genReg_B13(){return _rgGen(13);}
+function _genReg_B14(){return _rgGen(14);}
+function _genReg_B15(){return _rgGen(15);}
+function _genReg_B16(){return _rgGen(16);}
+function _genReg_B17(){return _rgGen(17);}
+function _genReg_B18(){return _rgGen(18);}
+function _genReg_B19(){return _rgGen(19);}
+function _genReg_BQ1(){
+  var N=Math.floor(Math.random()*9)+2;
+  var a=Math.floor(Math.random()*(N-1))+1,b=N-a;
+  var hideA=Math.random()<0.5, ans=hideA?a:b;
+  var all=[1,2,3,4,5,6,7,8,9,10].filter(function(v){return v!==ans;});
+  var wrongs=all.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  var qText=hideA?'? + '+b+' = '+N:a+' + ? = '+N;
+  return{q:qText,a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'. La respuesta es '+ans+'.'};
+}
+function _genReg_BQ2(){
+  var N=Math.floor(Math.random()*10)+11;
+  if(N===20) return{q:'¿Cuánto es 10 + 10?',a:'20',opts:['20','19','18','21'],mc:true,ste:'10 + 10 = 20.'};
+  return _rgGen(N);
+}
+function _genReg_BPU(){
+  var N=Math.floor(Math.random()*19)+2;
+  var a=Math.floor(Math.random()*(N-1))+1,b=N-a;
+  var wrongs=[N-2,N-1,N+1,N+2].filter(function(v){return v>0;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[N].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(N),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'.'};
+}
+
+// ── Sumas de 3 Cifras 4° Primaria – Colegio Belén ────────────────────────────
+function _s3rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _s3wrs(ans){
+  return [ans-1,ans+1,ans-10,ans+10,ans+100,ans-100].filter(function(v){return v!==ans&&v>0;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+}
+function _genSum3B1(){ // sin reagrupación
+  var ah=_s3rnd(1,4),at=_s3rnd(0,4),au=_s3rnd(0,4);
+  var bh=_s3rnd(1,9-ah),bt=_s3rnd(0,9-at),bu=_s3rnd(0,9-au);
+  var a=ah*100+at*10+au,b=bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'. Suma cifra por cifra sin reagrupar.'};
+}
+function _genSum3B2(){ // reagrupación en unidades
+  var ah=_s3rnd(1,4),at=_s3rnd(0,4),au=_s3rnd(5,9);
+  var bh=_s3rnd(1,4),bt=_s3rnd(0,Math.min(8,8-at)),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=ah*100+at*10+au,b=bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Unidades: '+au+'+'+bu+'='+(au+bu)+', lleva 1. Resultado: '+ans+'.'};
+}
+function _genSum3B3(){ // reagrupación en decenas
+  var ah=_s3rnd(1,4),at=_s3rnd(5,8),au=_s3rnd(0,4);
+  var bh=_s3rnd(1,Math.min(4,8-ah)),bt=_s3rnd(Math.max(0,10-at),9),bu=_s3rnd(0,9-au);
+  var a=ah*100+at*10+au,b=bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Decenas: '+at+'+'+bt+'='+(at+bt)+', lleva 1. Resultado: '+ans+'.'};
+}
+function _genSum3B4(){ // doble reagrupación
+  var ah=_s3rnd(1,4),at=_s3rnd(5,8),au=_s3rnd(5,9);
+  var bh=_s3rnd(1,Math.min(4,8-ah)),bt=_s3rnd(Math.max(0,9-at),9),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=ah*100+at*10+au,b=bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en unidades y decenas. Resultado: '+ans+'.'};
+}
+function _genSum3BQ1(){return [_genSum3B1,_genSum3B2,_genSum3B3,_genSum3B4][_s3rnd(0,3)]();}
+// ── Sumas de 2 cifras – 4° Primaria Belén ────────────────────────────────────
+function _genSum2B1(){ // sin reagrupación
+  var at=_s3rnd(1,4),au=_s3rnd(0,4);
+  var bt=_s3rnd(1,9-at),bu=_s3rnd(0,9-au);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'. Sin reagrupación.'};
+}
+function _genSum2B2(){ // reagrupación en unidades
+  var at=_s3rnd(1,4),au=_s3rnd(5,9);
+  var bt=_s3rnd(1,Math.min(4,8-at)),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Unidades: '+au+'+'+bu+'='+(au+bu)+', lleva 1. Resultado: '+ans+'.'};
+}
+function _genSum2B3(){ // números mayores, sin reagrupación
+  var at=_s3rnd(5,8),au=_s3rnd(0,4);
+  var bt=_s3rnd(1,9-at),bu=_s3rnd(0,9-au);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genSum2B4(){ // con reagrupación, resultado ≥ 100
+  var at=_s3rnd(5,9),au=_s3rnd(5,9);
+  var bt=_s3rnd(1,9),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=at*10+au,b=bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s3wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Con reagrupación. Resultado: '+ans+'.'};
+}
+function _genSum2BQ1(){return [_genSum2B1,_genSum2B2,_genSum2B3,_genSum2B4][_s3rnd(0,3)]();}
+// ── Sumas de 4 cifras – 4° Primaria Belén ────────────────────────────────────
+function _s4wrs(ans){
+  return [ans-1,ans+1,ans-10,ans+10,ans+100,ans-100,ans+1000,ans-1000].filter(function(v){return v!==ans&&v>0;}).sort(function(){return Math.random()-0.5;}).slice(0,3);
+}
+function _genSum4B1(){ // sin reagrupación
+  var am=_s3rnd(1,3),ah=_s3rnd(0,4),at=_s3rnd(0,4),au=_s3rnd(0,4);
+  var bm=_s3rnd(1,Math.min(4,8-am)),bh=_s3rnd(0,9-ah),bt=_s3rnd(0,9-at),bu=_s3rnd(0,9-au);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:a+' + '+b+' = '+ans+'. Sin reagrupación.'};
+}
+function _genSum4B2(){ // reagrupación en unidades
+  var am=_s3rnd(1,3),ah=_s3rnd(0,4),at=_s3rnd(0,4),au=_s3rnd(5,9);
+  var bm=_s3rnd(1,Math.min(4,8-am)),bh=_s3rnd(0,9-ah),bt=_s3rnd(0,Math.min(8,8-at)),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en unidades. Resultado: '+ans+'.'};
+}
+function _genSum4B3(){ // reagrupación en decenas
+  var am=_s3rnd(1,3),ah=_s3rnd(0,3),at=_s3rnd(5,8),au=_s3rnd(0,4);
+  var bm=_s3rnd(1,Math.min(3,8-am)),bh=_s3rnd(0,Math.min(4,8-ah)),bt=_s3rnd(Math.max(0,10-at),9),bu=_s3rnd(0,9-au);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en decenas. Resultado: '+ans+'.'};
+}
+function _genSum4B4(){ // doble reagrupación
+  var am=_s3rnd(1,3),ah=_s3rnd(0,3),at=_s3rnd(5,8),au=_s3rnd(5,9);
+  var bm=_s3rnd(1,Math.min(3,8-am)),bh=_s3rnd(0,Math.min(4,8-ah)),bt=_s3rnd(Math.max(0,9-at),9),bu=_s3rnd(Math.max(1,10-au),9);
+  var a=am*1000+ah*100+at*10+au,b=bm*1000+bh*100+bt*10+bu,ans=a+b;
+  var opts=[ans].concat(_s4wrs(ans)).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:opts,mc:true,ste:'Reagrupa en unidades y decenas. Resultado: '+ans+'.'};
+}
+function _genSum4BQ1(){return [_genSum4B1,_genSum4B2,_genSum4B3,_genSum4B4][_s3rnd(0,3)]();}
+// ── Multiplicación del 2 al 9 4° Primaria – Colegio Belén ────────────────────
+function _genMult4B(k){
+  var n=Math.floor(Math.random()*10)+1, ans=k*n;
+  var seen={}; seen[ans]=1; var pool=[];
+  [-2,-1,1,2].forEach(function(d){var v=k*(n+d);if(v>0&&!seen[v]){seen[v]=1;pool.push(v);}});
+  var k2a=k>2?k-1:0, k2b=k<9?k+1:0;
+  [k2a,k2b].forEach(function(k2){if(k2>0){var v=k2*n;if(!seen[v]){seen[v]=1;pool.push(v);}}});
+  var wrongs=pool.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:k+' × '+n+' = ?',a:String(ans),opts:opts,mc:true,ste:'Tabla del '+k+': '+k+' × '+n+' = '+ans+'.'};
+}
+function _genMult4B2(){return _genMult4B(2);}
+function _genMult4B3(){return _genMult4B(3);}
+function _genMult4B4(){return _genMult4B(4);}
+function _genMult4B5(){return _genMult4B(5);}
+function _genMult4B6(){return _genMult4B(6);}
+function _genMult4B7(){return _genMult4B(7);}
+function _genMult4B8(){return _genMult4B(8);}
+function _genMult4B9(){return _genMult4B(9);}
+function _genMult4BQ1(){return _genMult4B([2,3,4,5][Math.floor(Math.random()*4)]);}
+function _genMult4BQ2(){return _genMult4B([6,7,8,9][Math.floor(Math.random()*4)]);}
+function _genMult4BPU(){return _genMult4B(Math.floor(Math.random()*8)+2);}
+function _genTablaK(k){
+  var n=Math.floor(Math.random()*10)+1, ans=k*n;
+  var seen={}; seen[ans]=1; var pool=[];
+  [-2,-1,1,2].forEach(function(d){var v=k*(n+d);if(v>0&&!seen[v]){seen[v]=1;pool.push(v);}});
+  var k2a=k>1?k-1:0, k2b=k<12?k+1:0;
+  [k2a,k2b].forEach(function(k2){if(k2>0){var v=k2*n;if(!seen[v]){seen[v]=1;pool.push(v);}}});
+  var wrongs=pool.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  while(wrongs.length<3){var w=k*(Math.floor(Math.random()*10)+1);if(!seen[w]){seen[w]=1;wrongs.push(w);}}
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:k+' × '+n+' = ?',a:String(ans),opts:opts,mc:true,ste:'Tabla del '+k+': '+k+' × '+n+' = '+ans+'.'};
+}
+function _genTabla1(){return _genTablaK(1);}
+function _genTabla2(){return _genTablaK(2);}
+function _genTabla3(){return _genTablaK(3);}
+function _genTabla4(){return _genTablaK(4);}
+function _genTabla5(){return _genTablaK(5);}
+function _genTabla6(){return _genTablaK(6);}
+function _genTabla7(){return _genTablaK(7);}
+function _genTabla8(){return _genTablaK(8);}
+function _genTabla9(){return _genTablaK(9);}
+function _genTabla10(){return _genTablaK(10);}
+function _genTabla11(){return _genTablaK(11);}
+function _genTabla12(){return _genTablaK(12);}
+function _genTablaBQ1(){return _genTablaK([1,2,3,4][Math.floor(Math.random()*4)]);}
+function _genTablaBQ2(){return _genTablaK([5,6,7,8][Math.floor(Math.random()*4)]);}
+function _genTablaBQ3(){return _genTablaK([9,10,11,12][Math.floor(Math.random()*4)]);}
+function _genTablaBPU(){return _genTablaK(Math.floor(Math.random()*12)+1);}
+// ── Conjuntos: Comprensión y Extensión 4° Primaria – Colegio Belén ───────────
+var _CCE=[
+  {ext:'{2, 4, 6, 8, 10}',    rule:'x es par, 2 ≤ x ≤ 10',          pred:function(x){return x%2===0&&x>=2&&x<=10;},
+   wE:['{2, 4, 6, 8}','{2, 4, 6, 8, 10, 12}','{1, 3, 5, 7, 9}'],             wR:['x es impar, 1 ≤ x ≤ 9','x es par, 2 ≤ x ≤ 8','x es múltiplo de 2, 4 ≤ x ≤ 10']},
+  {ext:'{5, 10, 15, 20}',     rule:'x es múltiplo de 5, 5 ≤ x ≤ 20', pred:function(x){return x%5===0&&x>=5&&x<=20;},
+   wE:['{5, 10, 15}','{5, 10, 15, 20, 25}','{10, 15, 20, 25}'],               wR:['x es múltiplo de 5, 5 ≤ x ≤ 15','x es par y múltiplo de 5','x es múltiplo de 10']},
+  {ext:'{3, 6, 9, 12}',       rule:'x es múltiplo de 3, 3 ≤ x ≤ 12', pred:function(x){return x%3===0&&x>=3&&x<=12;},
+   wE:['{3, 6, 9}','{6, 9, 12}','{3, 6, 9, 12, 15}'],                        wR:['x es múltiplo de 3, 3 ≤ x ≤ 9','x es impar múltiplo de 3','x es múltiplo de 6']},
+  {ext:'{1, 4, 9, 16, 25}',   rule:'x es cuadrado perfecto, 1 ≤ x ≤ 25', pred:function(x){return[1,4,9,16,25].indexOf(x)>=0;},
+   wE:['{1, 4, 9, 16}','{4, 9, 16, 25}','{1, 4, 9, 16, 25, 36}'],            wR:['x es primo menor que 30','x es cuadrado perfecto, 4 ≤ x ≤ 25','x es cuadrado perfecto, 1 ≤ x ≤ 36']},
+  {ext:'{2, 3, 5, 7, 11, 13}',rule:'x es número primo, 2 ≤ x ≤ 13',  pred:function(x){return[2,3,5,7,11,13].indexOf(x)>=0;},
+   wE:['{1, 2, 3, 5, 7}','{2, 3, 5, 7, 9, 11}','{3, 5, 7, 11, 13}'],         wR:['x es impar, 2 ≤ x ≤ 13','x es primo menor que 10','x es primo, 3 ≤ x ≤ 13']},
+  {ext:'{4, 8, 12, 16, 20}',  rule:'x es múltiplo de 4, 4 ≤ x ≤ 20', pred:function(x){return x%4===0&&x>=4&&x<=20;},
+   wE:['{4, 8, 12, 16}','{8, 12, 16, 20}','{4, 8, 12, 16, 20, 24}'],         wR:['x es múltiplo de 4, 4 ≤ x ≤ 16','x es par, 4 ≤ x ≤ 20','x es múltiplo de 4, 8 ≤ x ≤ 20']},
+  {ext:'{6, 12, 18, 24}',     rule:'x es múltiplo de 6, 6 ≤ x ≤ 24', pred:function(x){return x%6===0&&x>=6&&x<=24;},
+   wE:['{6, 12, 18}','{6, 12, 18, 24, 30}','{3, 6, 9, 12}'],                 wR:['x es múltiplo de 6, 6 ≤ x ≤ 18','x es múltiplo de 3, 3 ≤ x ≤ 24','x es múltiplo de 6, 6 ≤ x ≤ 30']},
+  {ext:'{1, 3, 5, 7, 9}',     rule:'x es impar, 1 ≤ x ≤ 9',           pred:function(x){return x%2!==0&&x>=1&&x<=9;},
+   wE:['{1, 3, 5, 7}','{3, 5, 7, 9}','{1, 3, 5, 7, 9, 11}'],                 wR:['x es par, 1 ≤ x ≤ 9','x es impar, 1 ≤ x ≤ 7','x es impar, 3 ≤ x ≤ 9']},
+  {ext:'{10, 20, 30, 40, 50}',rule:'x es múltiplo de 10, 10 ≤ x ≤ 50',pred:function(x){return x%10===0&&x>=10&&x<=50;},
+   wE:['{10, 20, 30, 40}','{10, 20, 30, 40, 50, 60}','{5, 10, 15, 20}'],     wR:['x es múltiplo de 10, 10 ≤ x ≤ 40','x es múltiplo de 5, 5 ≤ x ≤ 50','x es múltiplo de 10, 10 ≤ x ≤ 60']},
+];
+function _ccePick(){return _CCE[Math.floor(Math.random()*_CCE.length)];}
+function _genCCEB1(){
+  var c=_ccePick(),isExt=Math.random()<0.5;
+  var q=isExt?'A = '+c.ext+'  —  ¿Cómo está determinado?':'A = {x / '+c.rule+'}  —  ¿Cómo está determinado?';
+  var ans=isExt?'Extensión':'Comprensión';
+  return{q:q,a:ans,opts:['Extensión','Comprensión'],mc:true,ste:isExt?'Se listan sus elementos → Forma extensión.':'Se describe con una regla → Forma comprensión.'};
+}
+function _genCCEB2(){
+  var c=_ccePick();
+  var bList=[],nList=[];
+  for(var i=1;i<=30;i++){if(c.pred(i))bList.push(i);else nList.push(i);}
+  var useBelongs=Math.random()<0.5&&bList.length>0||nList.length===0;
+  var pool=useBelongs?bList:nList;
+  var x=pool[Math.floor(Math.random()*pool.length)];
+  var yA='Sí  ('+x+' ∈ A)', nA='No  ('+x+' ∉ A)';
+  return{q:'A = {x / '+c.rule+'}  →  ¿Pertenece '+x+' a A?',a:useBelongs?yA:nA,opts:[yA,nA],mc:true,
+    ste:useBelongs?x+' cumple la condición → sí pertenece.':x+' no cumple la condición → no pertenece.'};
+}
+function _genCCEB3(){
+  var c=_ccePick();
+  var opts=[c.ext].concat(c.wE).sort(function(){return Math.random()-0.5;});
+  return{q:'Forma extensión de: A = {x / '+c.rule+'}',a:c.ext,opts:opts,mc:true,ste:'Aplicamos la regla: A = '+c.ext+'.'};
+}
+function _genCCEB4(){
+  var c=_ccePick();
+  var opts=[c.rule].concat(c.wR).sort(function(){return Math.random()-0.5;});
+  return{q:'Forma comprensión de: A = '+c.ext,a:c.rule,opts:opts,mc:true,ste:'La propiedad común es: "'+c.rule+'".'};
+}
+function _genCCEBQ1(){return [_genCCEB1,_genCCEB2,_genCCEB3,_genCCEB4][Math.floor(Math.random()*4)]();}
+
+// ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
+const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
+const _EM_CAJAS = [
+  { plural:'DVDs',      cats:['ciencia ficción','acción','suspenso','terror'] },
+  { plural:'caramelos', cats:['naranja','fresa','piña','uva'] },
+  { plural:'libros',    cats:['aventura','misterio','ciencia','poesía'] },
+  { plural:'pelotas',   cats:['roja','azul','verde','amarilla'] },
+  { plural:'bolitas',   cats:['roja','azul','verde','amarilla'] },
+];
+const _EM_PALABRAS = [
+  { word:'EUCALIPTO',  v:5, c:4 },
+  { word:'COLOMBIA',   v:4, c:4 },
+  { word:'MATEMATICA', v:5, c:5 },
+  { word:'PRIMARIA',   v:4, c:4 },
+  { word:'TRIANGULO',  v:4, c:5 },
+  { word:'DINOSAURIO', v:6, c:4 },
+  { word:'SORPRESA',   v:3, c:5 },
+  { word:'COMPUTADORA',v:5, c:6 },
+  { word:'BIBLIOTECA', v:5, c:5 },
+  { word:'CALCETINES', v:4, c:6 },
+  { word:'AGUACATE',   v:5, c:3 },
+  { word:'ELEFANTE',   v:4, c:4 },
+  { word:'CHOCOLATE',  v:4, c:5 },
+  { word:'UNIVERSO',   v:4, c:4 },
+  { word:'COLEGIO',    v:5, c:3 },
+  { word:'PLANETA',    v:3, c:4 },
+  { word:'SOMBRERO',   v:3, c:5 },
+  { word:'ESTRELLA',   v:3, c:5 },
+  { word:'ESTUDIANTE', v:5, c:5 },
+  { word:'MARIPOSA',   v:4, c:4 },
+  { word:'EJERCICIO',  v:6, c:3 },
+  { word:'TORTUGA',    v:3, c:4 },
+];
+
+// b0: Definiciones — Espacio Muestral y Suceso
+function _genEM_B0(){
+  const defs=[
+    {q:'¿Qué es el ESPACIO MUESTRAL (Ω) de un experimento?',
+     a:'El conjunto de todos los resultados posibles',
+     w:['El resultado más probable del experimento','Un subconjunto de resultados favorables','El número total de experimentos realizados']},
+    {q:'¿Qué representa el CARDINAL de un conjunto?',
+     a:'El número de elementos que contiene',
+     w:['El elemento de mayor valor del conjunto','La suma de todos sus elementos','El primer elemento del conjunto']},
+    {q:'¿Qué es un SUCESO (o evento) en probabilidad?',
+     a:'Un subconjunto del espacio muestral',
+     w:['El espacio muestral completo Ω','El número de resultados posibles','El experimento en sí mismo']},
+    {q:'¿Qué es un EXPERIMENTO ALEATORIO?',
+     a:'Un proceso cuyos resultados no se pueden predecir con certeza',
+     w:['Un experimento que siempre da el mismo resultado','Un proceso con un único resultado posible','Un experimento sin resultados favorables']},
+    {q:'¿Qué es el SUCESO COMPLEMENTARIO de A (notación A\')?',
+     a:'Los resultados de Ω que NO pertenecen a A',
+     w:['Los resultados que sí pertenecen a A','El espacio muestral completo Ω','El conjunto vacío ∅']},
+    {q:'¿Qué es un SUCESO IMPOSIBLE?',
+     a:'Un suceso que nunca puede ocurrir; se representa con ∅',
+     w:['Un suceso que ocurre la mitad de las veces','Un suceso igual al espacio muestral Ω','Un suceso con exactamente un elemento']},
+    {q:'¿Qué es un SUCESO SEGURO?',
+     a:'Un suceso que siempre ocurre; es igual al espacio muestral Ω',
+     w:['Un suceso con probabilidad cero','Un suceso con un solo resultado posible','El complementario del espacio muestral']},
+    {q:'¿Qué notación se usa para el cardinal del espacio muestral?',
+     a:'n(Ω)',
+     w:['n(A)','P(Ω)','A\'']},
+    {q:'¿Qué es un SUCESO ELEMENTAL?',
+     a:'Un suceso formado por un solo elemento del espacio muestral',
+     w:['El conjunto de todos los resultados posibles','Un suceso con más de 5 elementos','El suceso que nunca puede ocurrir']},
+    {q:'Si Ω = {1,2,3,4,5,6}, ¿qué valor tiene n(Ω)?',
+     a:'6',
+     w:['1','3','12']},
+    {q:'¿Cómo se llama el conjunto de todos los resultados posibles de un experimento aleatorio?',
+     a:'Espacio muestral',
+     w:['Suceso','Evento elemental','Muestra estadística']},
+    {q:'Si A = {2, 4, 6} dentro de Ω = {1,2,3,4,5,6}, ¿qué es A?',
+     a:'Un suceso del experimento',
+     w:['El espacio muestral completo','Un experimento aleatorio','El suceso imposible']},
+    {q:'¿Qué símbolo se usa para representar el ESPACIO MUESTRAL?',
+     a:'Ω (omega mayúscula)',
+     w:['Δ (delta)','Σ (sigma)','∅ (conjunto vacío)']},
+    {q:'¿Cuántos elementos tiene el suceso imposible?',
+     a:'Ninguno (es el conjunto vacío ∅)',
+     w:['Uno','Todos los del espacio muestral','Depende del experimento']},
+    {q:'¿Qué relación tiene el suceso seguro con el espacio muestral?',
+     a:'Son iguales: el suceso seguro ES el espacio muestral Ω',
+     w:['El suceso seguro es un subconjunto propio de Ω','El suceso seguro está fuera de Ω','El suceso seguro tiene la mitad de elementos de Ω']},
+    {q:'Si lanzamos un dado, ¿el suceso "sacar un 7" es un suceso posible?',
+     a:'No, es un suceso imposible porque 7 ∉ Ω',
+     w:['Sí, es un suceso elemental','Sí, con probabilidad muy baja','No, es el suceso seguro']},
+    {q:'¿Cuántos sucesos elementales tiene el espacio muestral de lanzar una moneda?',
+     a:'2 (cara y sello)',
+     w:['1','3','4']},
+    {q:'¿Qué significa A\' (A prima) en probabilidad?',
+     a:'El complementario de A: todos los elementos de Ω que no están en A',
+     w:['Lo mismo que A pero escrito de otra forma','El conjunto vacío','La unión de A con otro suceso']},
+    {q:'Si n(Ω) = 6 y n(A) = 2, ¿cuántos elementos tiene el complementario de A?',
+     a:'4',
+     w:['2','6','8']},
+    {q:'¿Un experimento aleatorio puede tener un solo resultado posible?',
+     a:'No, porque entonces el resultado sería predecible (sería determinista)',
+     w:['Sí, si ese único resultado es el suceso seguro','Sí, si el espacio muestral es el conjunto vacío','Sí, cualquier experimento puede tener un solo resultado']},
+  ];
+  const d=defs[_c4rnd(0,defs.length-1)];
+  return{q:d.q,a:d.a,opts:_c4shuf([d.a,...d.w.slice(0,3)]),mc:true};
+}
+
+// b1: ¿Cuántos elementos tiene el espacio muestral? (cardinal n)
+function _genEM_B1(){
+  const exps=[
+    {q:'Anotar los números PARES del 1 al 10',n:5,o:'2,4,6,8,10'},
+    {q:'Anotar los múltiplos de 3 del 1 al 12',n:4,o:'3,6,9,12'},
+    {q:'Anotar los números IMPARES del 1 al 9',n:5,o:'1,3,5,7,9'},
+    {q:'Anotar los múltiplos de 4 menores que 20',n:4,o:'4,8,12,16'},
+    {q:'Anotar los números del 1 al 15 divisibles entre 5',n:3,o:'5,10,15'},
+    {q:'Elegir los meses del año que tienen exactamente 30 días',n:4,o:'Abril,Junio,Septiembre,Noviembre'},
+    {q:'Anotar los días de la semana que tienen MÁS de 6 letras',n:3,o:'Miércoles,Viernes,Domingo'},
+    {q:'Extraer las vocales distintas de la palabra MURCIÉLAGO',n:5,o:'U,I,É,A,O'},
+    {q:'Extraer las letras de la palabra LIMA que son consonantes',n:2,o:'L,M'},
+    {q:'Anotar los números del 1 al 20 mayores que 16',n:4,o:'17,18,19,20'},
+    {q:'Anotar los múltiplos de 6 menores que 30',n:4,o:'6,12,18,24'},
+    {q:'Extraer los colores de la lista (rojo, azul, verde, amarillo, morado) que empiezan con vocal',n:2,o:'azul,amarillo'},
+    {q:'Anotar los números primos menores que 15',n:6,o:'2,3,5,7,11,13'},
+    {q:'Extraer las vocales de la palabra PRIMARIA',n:3,o:'I,A,I,A → 4 letras pero distintas: I,A'},
+    {q:'Anotar los divisores del número 12',n:6,o:'1,2,3,4,6,12'},
+    {q:'Elegir las estaciones del año que tienen más de 6 letras en español',n:2,o:'primavera,otoño→solo primavera,invierno'},
+    {q:'Anotar los números del 1 al 30 divisibles entre 7',n:4,o:'7,14,21,28'},
+    {q:'Extraer las consonantes de la palabra LIMA',n:2,o:'L,M'},
+    {q:'Anotar los múltiplos de 8 menores que 50',n:6,o:'8,16,24,32,40,48'},
+    {q:'Elegir los planetas del sistema solar que tienen 6 letras o menos',n:5,o:'Marte,Venus,Tierra,Júpiter→Marte,Venus,Tierra,Urano,Saturno'},
+    {q:'Anotar los números del 1 al 20 que son cuadrados perfectos',n:4,o:'1,4,9,16'},
+    {q:'Extraer las letras de la palabra BINGO que son vocales',n:2,o:'I,O'},
+  ];
+  const e=exps[_c4rnd(0,exps.length-1)];
+  const ws=_c4shuf([e.n-1,e.n+1,e.n+2,Math.max(1,e.n-2)].filter(v=>v!==e.n&&v>0)).slice(0,3);
+  return{q:`Experimento: "${e.q}"\n¿Cuál es el cardinal del espacio muestral? n(Ω) =`,a:e.n,opts:_c4shuf([e.n,...ws]),mc:true};
+}
+
+// b2: Identificar el espacio muestral correcto (Ω)
+function _genEM_B2(){
+  const probs=[
+    {q:'Se lanza una moneda',correct:'{cara, sello}',wrong:['{cara, sello, canto}','{cara, escudo}','{par, impar}']},
+    {q:'Se lanza un dado de 6 caras',correct:'{1, 2, 3, 4, 5, 6}',wrong:['{1, 2, 3, 4, 5}','{1, 2, 3, 4, 5, 6, 7}','{par, impar}']},
+    {q:'Se saca una bola de una bolsa con bolas roja, azul y verde',correct:'{roja, azul, verde}',wrong:['{roja, azul}','{roja, azul, verde, amarilla}','{azul, verde}']},
+    {q:'Se elige una fruta entre manzana, pera y plátano',correct:'{manzana, pera, plátano}',wrong:['{manzana, pera}','{manzana, pera, plátano, uva}','{manzana, plátano}']},
+    {q:'Se extrae una figura entre círculo, cuadrado y triángulo',correct:'{círculo, cuadrado, triángulo}',wrong:['{círculo, cuadrado}','{círculo, cuadrado, triángulo, rombo}','{cuadrado, triángulo}']},
+    {q:'Se escoge un día del fin de semana',correct:'{sábado, domingo}',wrong:['{sábado}','{viernes, sábado, domingo}','{lunes, sábado, domingo}']},
+    {q:'Se saca una carta de un mazo solo de ases (corazón, pica, trébol, diamante)',correct:'{corazón, pica, trébol, diamante}',wrong:['{corazón, pica, trébol}','{corazón, diamante}','{corazón, pica, trébol, diamante, joker}']},
+    {q:'Se elige un color de semáforo',correct:'{rojo, amarillo, verde}',wrong:['{rojo, verde}','{rojo, amarillo, verde, azul}','{rojo, amarillo}']},
+    {q:'Se gira una ruleta con sectores 1, 2, 3, 4 y 5',correct:'{1, 2, 3, 4, 5}',wrong:['{1, 2, 3, 4}','{0, 1, 2, 3, 4, 5}','{1, 2, 3, 4, 5, 6}']},
+    {q:'Se extrae una letra de la palabra "AMOR"',correct:'{A, M, O, R}',wrong:['{A, M, O}','{A, M, O, R, E}','{M, O, R}']},
+    {q:'Se lanza un dado de 4 caras',correct:'{1, 2, 3, 4}',wrong:['{1, 2, 3}','{1, 2, 3, 4, 5}','{0, 1, 2, 3, 4}']},
+    {q:'Se escoge un punto cardinal',correct:'{norte, sur, este, oeste}',wrong:['{norte, sur, este}','{norte, sur, este, oeste, noreste}','{norte, sur}']},
+    {q:'Se elige una vocal del abecedario español',correct:'{a, e, i, o, u}',wrong:['{a, e, i, o}','{a, e, i, o, u, y}','{a, i, o, u}']},
+    {q:'Se extrae un palo de una baraja española (oros, copas, espadas, bastos)',correct:'{oros, copas, espadas, bastos}',wrong:['{oros, copas, espadas}','{oros, espadas, bastos}','{oros, copas, espadas, bastos, comodín}']},
+    {q:'Se lanza una moneda dos veces y se anota el resultado de cada lanzamiento',correct:'{CC, CS, SC, SS}',wrong:['{CC, CS, SC}','{CC, SS}','{C, S}']},
+    {q:'Se elige el turno de un semáforo (verde primero o rojo primero)',correct:'{verde primero, rojo primero}',wrong:['{verde}','{verde, rojo, amarillo primero}','{rojo, verde, azul primero}']},
+  ];
+  const p=probs[_c4rnd(0,probs.length-1)];
+  return{q:`Experimento: "${p.q}"\n¿Cuál es el espacio muestral Ω correcto?`,a:p.correct,opts:_c4shuf([p.correct,...p.wrong.slice(0,3)]),mc:true};
+}
+
+// b3: ¿Cuál es el cardinal del suceso A? n(A) =
+function _genEM_B3(){
+  const probs=[
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número PAR',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número IMPAR',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MAYOR QUE 4',ans:2,w:[3,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número MENOR QUE 3',ans:2,w:[3,4,1]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso A: obtener un CUADRILÁTERO',ans:3,w:[4,5,6]},
+    {q:'Ω = {corazón, círculo, triángulo, rombo, cuadrado, rectángulo, óvalo, estrella, pentágono}\nSuceso B: obtener una figura NO POLIGONAL\nSuceso A: complemento de B',ans:6,w:[3,4,5]},
+    {q:'Ω = {rojo, azul, verde, amarillo, naranja} (bolas en urna)\nSuceso A: sacar un color PRIMARIO',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un múltiplo de 3',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6} (dado de 6 caras)\nSuceso A: sacar un número PRIMO',ans:3,w:[2,4,1]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10} (números del 1 al 10)\nSuceso A: sacar un número CUADRADO PERFECTO',ans:3,w:[2,4,1]},
+    {q:'Ω = {a,e,i,o,u} (vocales)\nSuceso A: elegir una vocal que tenga menos de 2 letras',ans:5,w:[3,4,2]},
+    {q:'Ω = {rojo,azul,verde,amarillo,naranja,morado,rosado,blanco} (bolas)\nSuceso A: sacar un color que empiece con vocal',ans:3,w:[2,4,1]},
+    {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día del FIN DE SEMANA',ans:2,w:[3,4,5]},
+    {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día de la semana que tenga más de 6 letras',ans:4,w:[3,5,2]},
+    {q:'Ω = {enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre}\nSuceso A: elegir un mes que tenga 30 días exactos',ans:4,w:[3,5,6]},
+    {q:'Ω = {A,M,O,R} (letras de "AMOR")\nSuceso A: elegir una VOCAL',ans:2,w:[1,3,4]},
+    {q:'Ω = {cara,sello} (moneda)\nSuceso A: obtener cara',ans:1,w:[2,0,3]},
+    {q:'Ω = {1,2,3,4,5,6,7,8,9,10,11,12} (dado de 12 caras)\nSuceso A: sacar un múltiplo de 4',ans:3,w:[2,4,6]},
+    {q:'Ω = {norte,sur,este,oeste} (puntos cardinales)\nSuceso A: elegir un punto que empiece con vocal',ans:1,w:[2,3,4]},
+  ];
+  const p=probs[_c4rnd(0,probs.length-1)];
+  const ws=_c4shuf(p.w.filter(v=>v!==p.ans)).slice(0,3);
+  return{q:`${p.q}\n¿Cuál es el cardinal del suceso A? n(A) =`,a:p.ans,opts:_c4shuf([p.ans,...ws]),mc:true};
+}
+
+// b4: ¿Vocal o consonante más probable? (letras de una palabra)
+function _genEM_B4(){
+  const w=_EM_PALABRAS[_c4rnd(0,_EM_PALABRAS.length-1)];
+  const ans=w.v>w.c?'vocal':w.v<w.c?'consonante':'igual de probable';
+  const otras=['vocal','consonante','igual de probable'].filter(x=>x!==ans);
+  return{q:`Se colocan tarjetas con las letras de "${w.word}" en una bolsa.\nAl sacar una tarjeta al azar, ¿qué es MÁS probable?`,a:ans,opts:_c4shuf([ans,...otras,'no se puede saber']),mc:true};
+}
+
+// b5: ¿Qué color es MÁS o MENOS probable? (urna con bolas)
+function _genEM_B5(){
+  const askMost=Math.random()<0.5;
+  const cols=_c4shuf(_EM_COLS).slice(0,4);
+  const cnts=askMost?[_c4rnd(7,11),_c4rnd(1,3),_c4rnd(1,3),_c4rnd(2,4)]:[_c4rnd(1,2),_c4rnd(6,10),_c4rnd(5,9),_c4rnd(3,7)];
+  const items=cols.map((c,i)=>({c,n:cnts[i]}));
+  const sh=_c4shuf(items);
+  const target=askMost?sh.reduce((a,b)=>a.n>=b.n?a:b).c:sh.reduce((a,b)=>a.n<=b.n?a:b).c;
+  return{q:`En una urna hay: ${sh.map(x=>`${x.n} bolas ${x.c}`).join(', ')}.\n¿Qué color es ${askMost?'MÁS':'MENOS'} probable al sacar una bola al azar?`,a:target,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
+}
+
+// bq1: Quiz I — Espacio Muestral (b1+b2+b3)
+function _genEM_BQ1(){const f=[_genEM_B1,_genEM_B2,_genEM_B3];return f[_c4rnd(0,2)]();}
+// bq2: Quiz II — Probabilidad Comparada (b4+b5+más/menos en caja)
+function _genEM_BQ2(){
+  if(Math.random()<0.33) return _genEM_B4();
+  if(Math.random()<0.5){
+    // más probable en caja
+    const ctx=_c4pick(_EM_CAJAS);const cats=_c4shuf(ctx.cats).slice(0,4);
+    const cnts=[_c4rnd(10,16),_c4rnd(1,4),_c4rnd(1,4),_c4rnd(2,5)];
+    const sh=_c4shuf(cats.map((c,i)=>({c,n:cnts[i]})));
+    const total=sh.reduce((s,x)=>s+x.n,0);const most=sh.reduce((a,b)=>a.n>=b.n?a:b).c;
+    return{q:`En una caja hay ${total} ${ctx.plural}: ${sh.map(x=>`${x.n} de ${x.c}`).join(', ')}.\nAl sacar uno al azar, ¿cuál es MÁS probable?`,a:most,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
+  }
+  // menos probable en caja
+  const ctx=_c4pick(_EM_CAJAS);const cats=_c4shuf(ctx.cats).slice(0,4);
+  const cnts=[_c4rnd(1,2),_c4rnd(9,14),_c4rnd(6,10),_c4rnd(4,8)];
+  const sh=_c4shuf(cats.map((c,i)=>({c,n:cnts[i]})));
+  const total=sh.reduce((s,x)=>s+x.n,0);const least=sh.reduce((a,b)=>a.n<=b.n?a:b).c;
+  return{q:`En una caja hay ${total} ${ctx.plural}: ${sh.map(x=>`${x.n} de ${x.c}`).join(', ')}.\nAl sacar uno al azar, ¿cuál es MENOS probable?`,a:least,opts:_c4shuf(sh.map(x=>x.c)),mc:true};
+}
+
+// Propiedades de Razones Trigonométricas: identidades cofunction y recíprocas
+// Tipos de pregunta generados aleatoriamente basados en el libro (págs 33-37):
+// 1) trig1(ax) = trig2(bx)            → x = 90/(a+b)
+// 2) trig1(ax+p) = trig2(bx+q)        → (a+b)x = 90-p-q
+// 3) trig(ax+p)·recip(bx+q) = 1       → ax+p = bx+q
+// 4) Calcula k·trig(α)·recip_comp(β)  → siempre = k (identidad)
+function _bingoGenTrigoProp() {
+  const t=_bGetRandomInt(0,9);
+  return t<=3?_tpCompBasic():t<=6?_tpCompOffset():t<=8?_tpRecipProd():_tpCalcIdent();
+}
+function _tpWrong(x){
+  const pool=[5,6,8,9,10,12,14,15,16,18,20,22,24,25,27,30,36,40,42,45];
+  return _bingShufArr(pool.filter(v=>v!==x)).slice(0,3);
+}
+function _tpFmtA(c,o){
+  return `${c===1?'x':`${c}x`}${o>0?` + ${o}°`:o<0?` − ${Math.abs(o)}°`:''}`;
+}
+// Tipo 1: trig1(ax) = trig2(bx) → x = 90/(a+b)
+function _tpCompBasic(){
+  const PAIRS=[['sen','cos'],['cos','sen'],['tan','cot'],['cot','tan'],['sec','csc'],['csc','sec']];
+  const [t1,t2]=PAIRS[_bGetRandomInt(0,5)];
+  const CFGS=[{s:3,x:30},{s:5,x:18},{s:6,x:15},{s:9,x:10},{s:10,x:9},{s:15,x:6},{s:18,x:5}];
+  const {s,x}=CFGS[_bGetRandomInt(0,CFGS.length-1)];
+  let a,b; do{a=_bGetRandomInt(1,s-1);b=s-a;}while(a===b);
+  const steps=[
+    `Cofunción: ${t2}(θ) = ${t1}(90° − θ)`,
+    `${t1}(${a}x) = ${t1}(90° − ${b}x)`,
+    `Igualamos argumentos: ${a}x = 90° − ${b}x`,
+    `${a}x + ${b}x = 90°`,
+    `${s}x = 90°`,
+    `x = 90° ÷ ${s} = ${x}°`,
+  ];
+  return {q:`Halla x (agudo):\n${t1}(${a}x) = ${t2}(${b}x)`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true,steps};
+}
+// Tipo 2: trig1(ax+p) = trig2(bx+q) → (a+b)x = 90 - p - q
+function _tpCompOffset(){
+  const PAIRS=[['sen','cos'],['cos','sen'],['tan','cot'],['cot','tan'],['sec','csc'],['csc','sec']];
+  const [t1,t2]=PAIRS[_bGetRandomInt(0,5)];
+  const xOpts=[10,15,20,25,30,40]; const x=xOpts[_bGetRandomInt(0,xOpts.length-1)];
+  const ab=_bGetRandomInt(2,4); const a=_bGetRandomInt(1,ab); const b=ab-a;
+  if(b<1) return _tpCompOffset();
+  const pq=90-ab*x; if(pq<-70||pq>70) return _tpCompBasic();
+  const pChoices=[]; for(let p=-50;p<=50;p+=5){const q=pq-p;if(Math.abs(q)<=50)pChoices.push({p,q});}
+  if(!pChoices.length) return _tpCompBasic();
+  const {p,q}=pChoices[_bGetRandomInt(0,pChoices.length-1)];
+  const _sgn = n => n===0?'': n>0?` − ${n}°`:` + ${Math.abs(n)}°`;
+  const rhs = 90 - p - q; // = ab * x
+  const steps=[
+    `Cofunción: ${t2}(θ) = ${t1}(90° − θ)`,
+    `${t1}(${_tpFmtA(a,p)}) = ${t1}(90° − (${_tpFmtA(b,q)}))`,
+    `Igualamos: ${_tpFmtA(a,p)} = 90° − (${_tpFmtA(b,q)})`,
+    `${a}x + ${b}x = 90°${_sgn(p)}${_sgn(q)}`,
+    `${ab}x = ${rhs}°`,
+    `x = ${rhs}° ÷ ${ab} = ${x}°`,
+  ];
+  return {q:`Halla x (agudo):\n${t1}(${_tpFmtA(a,p)}) = ${t2}(${_tpFmtA(b,q)})`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true,steps};
+}
+// Tipo 3: trig(ax+p)·recip(bx+q) = 1 → ax+p = bx+q (mismo ángulo, recíproco)
+function _tpRecipProd(){
+  const RPAIRS=[['sen','csc'],['cos','sec'],['tan','cot'],['csc','sen'],['sec','cos'],['cot','tan']];
+  const [t1,t2]=RPAIRS[_bGetRandomInt(0,5)];
+  const xOpts=[5,8,10,12,15,16,18,20,25,30]; const x=xOpts[_bGetRandomInt(0,xOpts.length-1)];
+  const a=_bGetRandomInt(2,5); const p=_bGetRandomInt(0,3)*10;
+  const diff=_bGetRandomInt(1,Math.min(a-1,2)); const b=a-diff;
+  if(b<1) return _tpRecipProd();
+  const q=p+diff*x; if(q>80) return _tpRecipProd();
+  const steps=[
+    `Propiedad recíproca: ${t1}(θ) · ${t2}(φ) = 1 implica θ = φ`,
+    `${_tpFmtA(a,p)} = ${_tpFmtA(b,q)}`,
+    `${a}x − ${b}x = ${q}° − ${p}°`,
+    `${diff}x = ${q-p}°`,
+    `x = ${q-p}° ÷ ${diff} = ${x}°`,
+  ];
+  return {q:`Halla x (agudo):\n${t1}(${_tpFmtA(a,p)}) · ${t2}(${_tpFmtA(b,q)}) = 1`,a:`${x}°`,opts:_bingShufArr([`${x}°`,..._tpWrong(x).map(v=>`${v}°`)]),mc:true,steps};
+}
+// Tipo 4: Calcula M = k·trig(α)·cofun_recip(β) + n = k + n (producto siempre = 1)
+function _tpCalcIdent(){
+  const α=[18,24,33,36,42,54,66,72][_bGetRandomInt(0,7)];
+  const comp=90-α, k=_bGetRandomInt(2,8), n=_bGetRandomInt(1,6), r=k+n;
+  const ei=_bGetRandomInt(0,5);
+  const EXPRS=[
+    `${k}·sen(${α}°)·csc(${α}°) + ${n}`,
+    `${k}·cos(${α}°)·sec(${α}°) + ${n}`,
+    `${k}·tan(${α}°)·cot(${α}°) + ${n}`,
+    `${k}·cos(${comp}°)·csc(${α}°) + ${n}`,
+    `${k}·sen(${comp}°)·sec(${α}°) + ${n}`,
+    `${k}·tan(${comp}°)·tan(${α}°) + ${n}`,
+  ];
+  const STEPS=[
+    [`sen(α)·csc(α) = 1  (identidad recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`cos(α)·sec(α) = 1  (identidad recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`tan(α)·cot(α) = 1  (identidad recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`cos(${comp}°) = sen(${α}°)  (cofunción: complemento)`,`= ${k}·sen(${α}°)·csc(${α}°) + ${n}`,`sen(α)·csc(α) = 1  (recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`sen(${comp}°) = cos(${α}°)  (cofunción: complemento)`,`= ${k}·cos(${α}°)·sec(${α}°) + ${n}`,`cos(α)·sec(α) = 1  (recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+    [`tan(${comp}°) = cot(${α}°)  (cofunción: complemento)`,`= ${k}·cot(${α}°)·tan(${α}°) + ${n}`,`cot(α)·tan(α) = 1  (recíproca)`,`${k}·1 + ${n}`,`M = ${r}`],
+  ];
+  const steps=STEPS[ei];
+  const expr=EXPRS[ei];
+  const wrongs=[r-1,r+1,r+2,r-2].filter(w=>w>0&&w!==r).slice(0,3);
+  return {q:`Calcula:\nM = ${expr}`,a:String(r),opts:_bingShufArr([String(r),...wrongs.map(String)]),mc:true,steps};
+}
+
+// ── Bingo Sound Engine (Web Audio API, sin archivos externos) ──────────────
+const _bSnd = (() => {
+  let _ctx = null;
+  const ctx = () => {
+    if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (_ctx.state === 'suspended') _ctx.resume();
+    return _ctx;
+  };
+  // Tono básico: frecuencia, duración, forma, volumen, frecuencia inicial (glide)
+  const tone = (freq, dur, type='sine', vol=0.25, freqStart=null, delay=0) => {
+    try {
+      const c = ctx(), t = c.currentTime + delay;
+      const osc = c.createOscillator(), g = c.createGain();
+      osc.connect(g); g.connect(c.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freqStart||freq, t);
+      if (freqStart) osc.frequency.linearRampToValueAtTime(freq, t + dur * 0.7);
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur + 0.01);
+    } catch(e){}
+  };
+  // Ruido blanco filtrado (whoosh / impact)
+  const noise = (dur, vol=0.15, cutoff=1800, delay=0) => {
+    try {
+      const c = ctx(), t = c.currentTime + delay;
+      const buf = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate);
+      const d = buf.getChannelData(0); for (let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+      const src = c.createBufferSource(); src.buffer = buf;
+      const flt = c.createBiquadFilter(); flt.type='lowpass'; flt.frequency.value=cutoff;
+      const g = c.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.001, t+dur);
+      src.connect(flt); flt.connect(g); g.connect(c.destination);
+      src.start(t); src.stop(t+dur+0.01);
+    } catch(e){}
+  };
+  return {
+    // Click suave para botones de lobby/config
+    click()       { tone(720, 0.07, 'square', 0.1); },
+    // Marcar una casilla — ding satisfactorio
+    mark()        { tone(880, 0.18, 'sine', 0.22); tone(1320, 0.12, 'sine', 0.12, null, 0.04); },
+    // Desmarcar — click seco
+    unmark()      { tone(550, 0.08, 'sine', 0.12); },
+    // Número nuevo salido — arpegio rápido ascendente
+    newNumber()   { [440,554,659].forEach((f,i)=>tone(f, 0.14, 'sine', 0.2, null, i*0.07)); },
+    // Inicio de reto — dos pulsos de alarma
+    challengeStart() { [0, 0.22].forEach(d=>{ tone(880,0.14,'square',0.18,440,d); }); },
+    // Tick segundero del reto (normal)
+    tick()        { tone(950, 0.07, 'sine', 0.1); },
+    // Tick urgente (<5 s)
+    tickUrgent()  { tone(1350, 0.08, 'square', 0.22); noise(0.06, 0.05, 3000); },
+    // Respuesta incorrecta — baja descendente
+    wrong()       { tone(200, 0.38, 'sawtooth', 0.22, 360); noise(0.3, 0.1, 600); },
+    // Respuesta correcta — mini acorde ascendente
+    correct()     { [523,659,784].forEach((f,i)=>tone(f,0.18,'sine',0.18,null,i*0.07)); },
+    // Reto perfecto — fanfarria completa
+    perfect()     { [523,659,784,1047].forEach((f,i)=>tone(f,0.3,'sine',0.2,null,i*0.08)); tone(1568,0.5,'sine',0.25,null,0.38); },
+    // Fallo / reto no completado — triste descendente
+    fail()        { [349,311,261].forEach((f,i)=>tone(f,0.35,'sine',0.2,null,i*0.15)); },
+    // Premio ganado — fanfarria escalonada por tier
+    prize(tier)   {
+      const maps = { terna:[[523,659,784],100], cuaterna:[[523,659,784,1047],90], quina:[[523,659,784,1047,1319],80], bingo:[[523,659,784,1047,1319,1568],70] };
+      const [notes, gap] = maps[tier] || maps.terna;
+      notes.forEach((f,i)=>tone(f, 0.4, 'sine', 0.22, null, i*gap/1000));
+      if (tier==='bingo') {
+        noise(0.4, 0.12, 4000, 0.0);
+        setTimeout(()=>{ [784,1047,784,1047].forEach((f,i)=>tone(f,0.2,'square',0.12,null,i*0.08)); }, 600);
+      }
+    },
+    // Activar poder — whoosh ascendente
+    powerUse()    { tone(300, 0.35, 'sine', 0.2, 800); noise(0.3, 0.12, 3500); },
+    // Bloqueo recibido — golpe bajo
+    blocked()     { tone(90, 0.5, 'sawtooth', 0.28, 140); noise(0.25, 0.18, 500); },
+  };
+})();
+let _bSndLastNum = null, _bSndChalWas = false, _bSndTickSec = -1;
+let _bingoLobbyNivel = 'primaria'; // nivel activo en el selector de temas del lobby
+let _bingoLobbyGrade = null;       // grado/área seleccionado dentro del nivel
+// ─── Helpers compartidos ─────────────────────────────────────────────────────
+function _t1Rnd(lo,hi){return Math.floor(Math.random()*(hi-lo+1))+lo;}
+function _t1Shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function _t1Opts4(ans){const d=_t1Shuf([-7,-5,-3,-2,-1,1,2,3,5,7,10,-10,15,-15].map(v=>ans+v).filter(v=>v!==ans&&v>-90&&v<360));return _t1Shuf([ans,...d.slice(0,3)]);}
+function _t1AngStr(k,n){return n>0?`${k}x + ${n}`:`${k}x`;}
+// ─── Ejercicios individuales Subtema 1: Ángulo Trigonométrico ────────────────
+function _angTrigA1(){ // Dos ángulos consecutivos → 90°
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,12),a=_t1Rnd(1,3),b=_t1Rnd(1,10),c=_t1Rnd(1,4);
+    const α=a*x+b; if(α>=85||α<=3) continue;
+    const β=90-α,d=β-c*x; if(d<0||d>50) continue;
+    return{q:`∠AOB = (${_t1AngStr(a,b)})° y ∠BOC = (${_t1AngStr(c,d)})° son consecutivos con ∠AOC = 90°. Halla x.`,
+      a:x,opts:_t1Opts4(x),mc:true,
+      steps:[`α + β = 90°`,`(${_t1AngStr(a,b)}) + (${_t1AngStr(c,d)}) = 90`,`${a+c}x + ${b+d} = 90`,`${a+c}x = ${90-b-d}`,`x = ${x}`]};
+  } return _angTrigA1();
+}
+function _angTrigA2(){ // Dos ángulos consecutivos → 180°
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(3,18),a=_t1Rnd(1,4),b=_t1Rnd(1,15),c=_t1Rnd(1,4);
+    const α=a*x+b; if(α>=170||α<=10) continue;
+    const β=180-α,d=β-c*x; if(d<0||d>60) continue;
+    return{q:`∠AOB = (${_t1AngStr(a,b)})° y ∠BOC = (${_t1AngStr(c,d)})° son consecutivos con ∠AOC = 180°. Halla x.`,
+      a:x,opts:_t1Opts4(x),mc:true,
+      steps:[`α + β = 180°`,`(${_t1AngStr(a,b)}) + (${_t1AngStr(c,d)}) = 180`,`${a+c}x + ${b+d} = 180`,`${a+c}x = ${180-b-d}`,`x = ${x}`]};
+  } return _angTrigA2();
+}
+function _angTrigA3(){ // Tres ángulos consecutivos → 180°
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,15),a=_t1Rnd(1,3),b=_t1Rnd(1,10),K=_t1Rnd(2,7)*10,c=_t1Rnd(1,3);
+    const α=a*x+b; if(α<=0) continue;
+    const γt=180-α-K; if(γt<=0) continue;
+    const d=γt-c*x; if(d<0||d>40) continue;
+    return{q:`Tres ángulos consecutivos forman un ángulo llano: (${_t1AngStr(a,b)})°, ${K}° y (${_t1AngStr(c,d)})°. Halla x.`,
+      a:x,opts:_t1Opts4(x),mc:true,
+      steps:[`(${_t1AngStr(a,b)}) + ${K} + (${_t1AngStr(c,d)}) = 180`,`${a+c}x + ${b+K+d} = 180`,`${a+c}x = ${180-b-K-d}`,`x = ${x}`]};
+  } return _angTrigA3();
+}
+function _angTrigA4(){ // Ángulos opuestos por vértice
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,15),a=_t1Rnd(2,6),b=_t1Rnd(1,20),c=_t1Rnd(1,a-1);
+    const v=a*x+b; if(v<=0||v>=180) continue;
+    const d=v-c*x; if(d<0||d>60) continue;
+    return{q:`∠AOB = (${a}x + ${b})° y ∠COD = (${c}x + ${d})° son ángulos opuestos por vértice. Halla x.`,
+      a:x,opts:_t1Opts4(x),mc:true,
+      steps:[`Ángulos opuestos por vértice son iguales`,`${a}x + ${b} = ${c}x + ${d}`,`${a-c}x = ${d-b}`,`x = ${d-b}/${a-c} = ${x}`]};
+  } return _angTrigA4();
+}
+function _angTrigA5(){ // Bisectriz
+  for(let t=0;t<50;t++){
+    const x=_t1Rnd(2,12),a=_t1Rnd(2,5),b=_t1Rnd(1,15),c=_t1Rnd(1,a-1);
+    const v=a*x+b; if(v<=0||v>=90) continue;
+    const d=v-c*x; if(d<0||d>40) continue;
+    return{q:`OT es bisectriz de ∠AOB. Si ∠AOT = (${a}x + ${b})° y ∠TOB = (${c}x + ${d})°, halla x.`,
+      a:x,opts:_t1Opts4(x),mc:true,
+      steps:[`La bisectriz divide ∠AOB en dos partes iguales`,`${a}x + ${b} = ${c}x + ${d}`,`${a-c}x = ${d-b}`,`x = ${d-b}/${a-c} = ${x}`]};
+  } return _angTrigA5();
+}
+// ─── Subtema 2: Sistemas de Medición Angular ──────────────────────────────────
+const _T1_SC=[[9,10],[18,20],[27,30],[36,40],[45,50],[54,60],[63,70],[72,80],[81,90],[90,100],[108,120],[135,150],[162,180],[180,200]];
+const _T1_SR=[[30,'π/6'],[45,'π/4'],[60,'π/3'],[90,'π/2'],[120,'2π/3'],[135,'3π/4'],[150,'5π/6'],[180,'π'],[36,'π/5'],[72,'2π/5'],[54,'3π/10'],[108,'3π/5']];
+const _T1_CR=[[100,'π/2'],[200,'π'],[50,'π/4'],[150,'3π/4'],[80,'2π/5'],[120,'3π/5'],[160,'4π/5'],[40,'π/5'],[20,'π/10'],[60,'3π/10']];
+const _T1_RF=['π/6','π/4','π/3','π/2','2π/3','3π/4','5π/6','π','π/5','2π/5','3π/10','3π/5','4π/5','π/10'];
+function _bingoGenMedicion1(){ // S ↔ C
+  const[S,C]=_T1_SC[_t1Rnd(0,_T1_SC.length-1)];
+  const toC=Math.random()<0.5;
+  const wr=a=>_t1Shuf([a+10,a-10,a+20,a-20,Math.round(a*9/10),Math.round(a*10/9)].filter(v=>v!==a&&v>0)).slice(0,4);
+  if(toC){return{q:`Convierte ${S}° a grados centesimales.`,a:C+'g',opts:_t1Shuf([C+'g',...wr(C).map(v=>v+'g')]),mc:true,steps:[`C = S × 10/9`,`C = ${S} × 10/9`,`C = ${C}g`]};}
+  return{q:`Convierte ${C}g a grados sexagesimales.`,a:S+'°',opts:_t1Shuf([S+'°',...wr(S).map(v=>v+'°')]),mc:true,steps:[`S = C × 9/10`,`S = ${C} × 9/10`,`S = ${S}°`]};
+}
+function _bingoGenMedicion2(){ // S ↔ R
+  const[S,R]=_T1_SR[_t1Rnd(0,_T1_SR.length-1)];
+  const toR=Math.random()<0.5;
+  const wrR=_t1Shuf(_T1_RF.filter(f=>f!==R)).slice(0,4).map(f=>f+' rad');
+  if(toR){return{q:`Convierte ${S}° a radianes.`,a:R+' rad',opts:_t1Shuf([R+' rad',...wrR]),mc:true,steps:[`R = S × π/180`,`R = ${S} × π/180`,`R = ${R} rad`]};}
+  const wrS=_t1Shuf([S+30,S-30,S+45,S-45,S+15].filter(v=>v!==S&&v>0&&v<=360)).slice(0,4).map(v=>v+'°');
+  return{q:`Convierte ${R} rad a grados sexagesimales.`,a:S+'°',opts:_t1Shuf([S+'°',...wrS]),mc:true,steps:[`S = R × 180/π`,`S = ${R} × 180/π`,`S = ${S}°`]};
+}
+function _bingoGenMedicion3(){ // C ↔ R
+  const[C,R]=_T1_CR[_t1Rnd(0,_T1_CR.length-1)];
+  const toR=Math.random()<0.5;
+  const wrR=_t1Shuf(_T1_RF.filter(f=>f!==R)).slice(0,4).map(f=>f+' rad');
+  if(toR){return{q:`Convierte ${C}g a radianes.`,a:R+' rad',opts:_t1Shuf([R+' rad',...wrR]),mc:true,steps:[`R = C × π/200`,`R = ${C} × π/200`,`R = ${R} rad`]};}
+  const wrC=_t1Shuf([C+20,C-20,C+40,C-40,C+10].filter(v=>v!==C&&v>0&&v<=400)).slice(0,4).map(v=>v+'g');
+  return{q:`Convierte ${R} rad a grados centesimales.`,a:C+'g',opts:_t1Shuf([C+'g',...wrC]),mc:true,steps:[`C = R × 200/π`,`C = ${R} × 200/π`,`C = ${C}g`]};
+}
+function _bingoGenMedicion(){const t=_t1Rnd(0,2);return t===0?_bingoGenMedicion1():t===1?_bingoGenMedicion2():_bingoGenMedicion3();}
+// ─── Subtema 3: Longitud de Arco ─────────────────────────────────────────────
+const _T1_ARC_R=[[6,'π/3 rad','2π'],[12,'2π/3 rad','8π'],[8,'π/4 rad','2π'],[5,'π/5 rad','π'],[10,'π/2 rad','5π'],[4,'π/4 rad','π'],[9,'π/3 rad','3π'],[15,'π/3 rad','5π'],[6,'π/2 rad','3π'],[7,'π/7 rad','π'],[3,'π/3 rad','π'],[14,'π/7 rad','2π']];
+const _T1_ARC_D=[[12,'120°','8π'],[6,'60°','2π'],[8,'90°','4π'],[5,'36°','π'],[10,'180°','10π'],[3,'60°','π'],[4,'90°','2π'],[9,'120°','6π'],[15,'60°','5π'],[12,'30°','2π']];
+const _T1_ARC_Lwrong=['π','2π','3π','4π','5π','6π','7π','8π','9π','10π','π/2','3π/2'];
+function _bingoGenArco1(){ // Hallar L dado r y θ (radianes)
+  const[r,θ,L]=_T1_ARC_R[_t1Rnd(0,_T1_ARC_R.length-1)];
+  const wr=_t1Shuf(_T1_ARC_Lwrong.filter(v=>v!==L)).slice(0,4).map(v=>v+' m');
+  return{q:`Sector circular: r = ${r} m, θ = ${θ}. Halla la longitud del arco L.`,a:L+' m',opts:_t1Shuf([L+' m',...wr]),mc:true,
+    steps:[`L = r × θ`,`L = ${r} × ${θ}`,`L = ${L} m`]};
+}
+function _bingoGenArco2(){ // Hallar L dado r y θ (grados)
+  const[r,θ,L]=_T1_ARC_D[_t1Rnd(0,_T1_ARC_D.length-1)];
+  const wr=_t1Shuf(_T1_ARC_Lwrong.filter(v=>v!==L)).slice(0,4).map(v=>v+' m');
+  return{q:`Sector circular: r = ${r} m, θ = ${θ}. Halla la longitud del arco L.`,a:L+' m',opts:_t1Shuf([L+' m',...wr]),mc:true,
+    steps:[`Convertir θ: θ_rad = ${θ} × π/180`,`L = r × θ_rad`,`L = ${L} m`]};
+}
+function _bingoGenArco3(){ // Hallar r o θ dado L
+  const findR=Math.random()<0.5;
+  if(findR){
+    const D=[['8π m','2π/3 rad',12],['2π m','π/3 rad',6],['4π m','π/2 rad',8],['π m','π/5 rad',5],['5π m','π/2 rad',10],['3π m','π/3 rad',9],['3π m','π/2 rad',6],['2π m','π/4 rad',8]];
+    const[L,θ,r]=D[_t1Rnd(0,D.length-1)];
+    const wr=_t1Shuf([r+2,r-2,r+4,r-4,r*2].filter(v=>v!==r&&v>0)).slice(0,4).map(v=>v+' m');
+    return{q:`Si L = ${L} y θ = ${θ}, halla el radio r.`,a:r+' m',opts:_t1Shuf([r+' m',...wr]),mc:true,
+      steps:[`r = L / θ`,`r = ${L} / ${θ}`,`r = ${r} m`]};
+  }
+  const D=[['2π m',6,'π/3 rad'],['8π m',12,'2π/3 rad'],['4π m',8,'π/2 rad'],['π m',5,'π/5 rad'],['6 m',3,'2 rad'],['10 m',5,'2 rad'],['3 m',3,'1 rad'],['π m',7,'π/7 rad']];
+  const[L,r,θ]=D[_t1Rnd(0,D.length-1)];
+  const allT=['π/6 rad','π/4 rad','π/3 rad','π/2 rad','2π/3 rad','3π/4 rad','1 rad','2 rad','3 rad','π/5 rad','π/7 rad'];
+  const wr=_t1Shuf(allT.filter(v=>v!==θ)).slice(0,4);
+  return{q:`Si L = ${L} y r = ${r} m, halla el ángulo central θ.`,a:θ,opts:_t1Shuf([θ,...wr]),mc:true,
+    steps:[`θ = L / r`,`θ = ${L} / ${r}`,`θ = ${θ}`]};
+}
+function _bingoGenArco(){const t=_t1Rnd(0,2);return t===0?_bingoGenArco1():t===1?_bingoGenArco2():_bingoGenArco3();}
+// ─── Ángulo Trigonométrico (Subtema 1, Secundaria 1°) ────────────────────────
+function _bingoGenAngTrig() {
+  const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+  const shuf=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+  function opts4(ans){
+    const d=shuf([-7,-5,-3,-2,-1,1,2,3,5,7,10,-10,15,-15].map(v=>ans+v).filter(v=>v!==ans&&v>-90&&v<360));
+    return shuf([ans,...d.slice(0,3)]);
+  }
+  const ang=(k,n)=>n>0?`${k}x + ${n}`:`${k}x`;
+  const type=rnd(0,4);
+  if(type===0){
+    // Dos ángulos consecutivos → 90°
+    for(let t=0;t<30;t++){
+      const x=rnd(2,12),a=rnd(1,3),b=rnd(1,10),c=rnd(1,4);
+      const α=a*x+b; if(α>=85||α<=3) continue;
+      const β=90-α, d=β-c*x; if(d<0||d>50) continue;
+      return{q:`∠AOB = (${ang(a,b)})° y ∠BOC = (${ang(c,d)})° son consecutivos con ∠AOC = 90°. Halla x.`,
+        a:x,opts:opts4(x),mc:true,
+        steps:[`α + β = 90°`,`(${ang(a,b)}) + (${ang(c,d)}) = 90`,`${a+c}x + ${b+d} = 90`,`${a+c}x = ${90-b-d}`,`x = ${x}`]};
+    }
+  } else if(type===1){
+    // Dos ángulos consecutivos → 180°
+    for(let t=0;t<30;t++){
+      const x=rnd(3,18),a=rnd(1,4),b=rnd(1,15),c=rnd(1,4);
+      const α=a*x+b; if(α>=170||α<=10) continue;
+      const β=180-α, d=β-c*x; if(d<0||d>60) continue;
+      return{q:`∠AOB = (${ang(a,b)})° y ∠BOC = (${ang(c,d)})° son consecutivos con ∠AOC = 180°. Halla x.`,
+        a:x,opts:opts4(x),mc:true,
+        steps:[`α + β = 180°`,`(${ang(a,b)}) + (${ang(c,d)}) = 180`,`${a+c}x + ${b+d} = 180`,`${a+c}x = ${180-b-d}`,`x = ${x}`]};
+    }
+  } else if(type===2){
+    // Tres ángulos consecutivos → 180° (ángulo del medio fijo)
+    for(let t=0;t<30;t++){
+      const x=rnd(2,15),a=rnd(1,3),b=rnd(1,10),K=rnd(2,7)*10,c=rnd(1,3);
+      const α=a*x+b; if(α<=0) continue;
+      const γt=180-α-K; if(γt<=0) continue;
+      const d=γt-c*x; if(d<0||d>40) continue;
+      return{q:`Tres ángulos consecutivos forman un ángulo llano: (${ang(a,b)})°, ${K}° y (${ang(c,d)})°. Halla x.`,
+        a:x,opts:opts4(x),mc:true,
+        steps:[`(${ang(a,b)}) + ${K} + (${ang(c,d)}) = 180`,`${a+c}x + ${b+K+d} = 180`,`${a+c}x = ${180-b-K-d}`,`x = ${x}`]};
+    }
+  } else if(type===3){
+    // Ángulos opuestos por vértice → iguales
+    for(let t=0;t<30;t++){
+      const x=rnd(2,15),a=rnd(2,6),b=rnd(1,20),c=rnd(1,a-1);
+      const v=a*x+b; if(v<=0||v>=180) continue;
+      const d=v-c*x; if(d<0||d>60) continue;
+      return{q:`∠AOB = (${a}x + ${b})° y ∠COD = (${c}x + ${d})° son ángulos opuestos por vértice. Halla x.`,
+        a:x,opts:opts4(x),mc:true,
+        steps:[`Ángulos opuestos por vértice son iguales`,`${a}x + ${b} = ${c}x + ${d}`,`${a-c}x = ${d-b}`,`x = ${d-b}/${a-c} = ${x}`]};
+    }
+  } else {
+    // Bisectriz → dos partes iguales
+    for(let t=0;t<30;t++){
+      const x=rnd(2,12),a=rnd(2,5),b=rnd(1,15),c=rnd(1,a-1);
+      const v=a*x+b; if(v<=0||v>=90) continue;
+      const d=v-c*x; if(d<0||d>40) continue;
+      return{q:`OT es bisectriz de ∠AOB. Si ∠AOT = (${a}x + ${b})° y ∠TOB = (${c}x + ${d})°, halla x.`,
+        a:x,opts:opts4(x),mc:true,
+        steps:[`La bisectriz divide ∠AOB en dos partes iguales`,`${a}x + ${b} = ${c}x + ${d}`,`${a-c}x = ${d-b}`,`x = ${d-b}/${a-c} = ${x}`]};
+    }
+  }
+  return _bingoGenAngTrig();
+}
+// Temas disponibles para retos matemáticos — una partida puede combinar varios
+// ── Datos curriculares ──────────────────────────────────────────────────────────
+
+const PREP_LEVELS = {
+  primaria:   { lbl:'Primaria',   ico:'P',
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
+    areas:[{key:'matematica', lbl:'Matemática'},{key:'razonamiento', lbl:'Razonamiento Matemático'}] },
+  secundaria: { lbl:'Secundaria', ico:'S',
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
+    areas:[
+      {key:'algebra',      lbl:'Álgebra'},
+      {key:'aritmetica',   lbl:'Aritmética'},
+      {key:'trigonometria',lbl:'Trigonometría'},
+      {key:'geometria',    lbl:'Geometría'},
+    ] },
+  preuniversitario:{ lbl:'Preuniversitario', ico:'U', grades:{},
+    areas:[
+      {key:'algebra',      lbl:'Álgebra',      ico:'α'},
+      {key:'aritmetica',   lbl:'Aritmética',   ico:'🔢'},
+      {key:'trigonometria',lbl:'Trigonometría',ico:'∠'},
+      {key:'geometria',    lbl:'Geometría',    ico:'◻'},
+    ] },
+};
+// Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
+const PREP_CURRICULUM = {
+  primaria: {
+    '1':[
+      {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
+      {lbl:'Descomposemos del 11 al 19 – Regletas',              area:'matematica', editorial:'belen', skills:['reg_b11','reg_b12','reg_b13','reg_bq1','reg_b14','reg_b15','reg_b16','reg_bq2','reg_b17','reg_b18','reg_b19','reg_bpu']},
+    ],
+    '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
+    '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
+    '4':[
+      {lbl:'Incluido y No Incluido',          area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
+      {lbl:'Unión e Intersección de Conjuntos', area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
+      {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
+      {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
+      {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
+    ], '5':[],
+    '6':[{lbl:'División de 5 entre 2 Dígitos', area:'matematica', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', area:'matematica', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', area:'matematica', skills:['neg','ecuacion']}],
+  },
+  secundaria: {
+    '1':[{lbl:'Primera Unidad — Trigonometría',   area:'trigonometria', editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
+         {lbl:'Propiedades Trigonométricas',      area:'trigonometria', editorial:'intelectum', skills:['trigoprop']},
+         {lbl:'Fracciones',                       area:'aritmetica',    editorial:'san_ignacio', skills:['fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4']},
+         {lbl:'Leyes de Exponentes I',                area:'algebra',       editorial:'intelectum', skills:['exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu']}],
+    '2':[], '4':[], '5':[],
+    '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
+  },
+  preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
+};
+const PREP_EDITORIALS = {
+  intelectum:   { lbl:'Intelectum',              short:'INT', ico:'📘' },
+  saco_oliveros:{ lbl:'Saco Oliveros',           short:'SAO', ico:'📗' },
+  belen:        { lbl:'Colegio Belén',           short:'BEL', ico:'📒' },
+  trinidad:     { lbl:'C. Santísima Trinidad',   short:'CST', ico:'📙' },
+  san_ignacio:  { lbl:'San Ignacio de Recalde',  short:'SIR', ico:'📕' },
+};
+// ── Funciones de Level Up ───────────────────────────────────────────────────────
+
+function _renderPreparatePane() {
+  const el = document.getElementById('preparate-pane');
+  if (!el) return;
+  // Guardar valor del input de texto si existe (para no perderlo al re-render)
+  const savedVal = (!(_prep.questions[_prep.currentIdx]?.mc) && !_prep.answered)
+    ? (document.getElementById('prep-ans-input')?.value || '') : '';
+  el.innerHTML = _preparatePaneHtml();
+  const inp = document.getElementById('prep-ans-input');
+  if (inp) { if (savedVal) inp.value = savedVal; inp.focus(); }
+}
+function _preparatePaneHtml() {
+  if (_prep.state === 'config') return _prepConfigHtml();
+  if (_prep.state === 'unit')   return _prepUnitPaneHtml();
+  if (_prep.state === 'exam')   return _prepExamHtml();
+  if (_prep.state === 'result') return _prepResultHtml();
+  return '';
+}
+function _prepSetLevel(lvl) {
+  _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.grade = null;
+  const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
+  _prep.openSelector = gradeKeys.length ? 'grade' : null;
+  _prep.topic = '';
+  _renderPreparatePane();
+}
+function _prepSetGrade(g) {
+  _prep.grade = g; _prep.editorial = null; _prep.topic = '';
+  // Auto-open área si hay opciones; si no, abrir colegios
+  const areaOpts = (PREP_LEVELS[_prep.level]||{}).areas || [];
+  _prep.openSelector = areaOpts.length ? 'area' : 'editorial';
+  _renderPreparatePane();
+}
+function _prepSetArea(key) {
+  const wasSelected = _prep.area === key;
+  _prep.area = wasSelected ? null : key;
+  // Auto-open colegios al seleccionar área (no al deseleccionar)
+  _prep.openSelector = wasSelected ? null : 'editorial';
+  _prep.topic = '';
+  _renderPreparatePane();
+}
+function _prepConfigHtml() {
+  const lvDef = PREP_LEVELS[_prep.level] || {};
+  const gradeKeys = Object.keys(lvDef.grades||{}).sort((a,b)=>+a-+b);
+  const allUnits = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
+  const edKeys = Object.keys(PREP_EDITORIALS); // siempre todos los colegios
+  const units = allUnits.filter(u=>{
+    if (_prep.editorial && u.editorial !== _prep.editorial) return false;
+    if (_prep.area && u.area !== _prep.area) return false;
+    return true;
+  });
+  const allTopicKeys = units.flatMap(u=>u.skills||[]);
+  const masLoading = !Array.isArray(_prepHistoryData);
+  const coursePct = _prepCourseScore(allTopicKeys);
+
+  // ── Selector desplegable: Nivel · Grado · Área · Colegio ────────────────────
+  const openSel = _prep.openSelector;
+  const areaOpts = lvDef.areas || [];
+  // Nivel
+  const nivelSel = openSel === 'level'
+    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.lbl}</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='level';_renderPreparatePane()">${_prep.level ? lvDef.lbl : 'Nivel'} ▾</button>`;
+  // Grado
+  const gradeSel = openSel === 'grade' && gradeKeys.length
+    ? gradeKeys.map(g=>`<button class="prep-opt-sq ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${g}°</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="${gradeKeys.length?`_prep.openSelector='grade';_renderPreparatePane()`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _prep.grade+'° ▾' : 'Grado ▾'}</button>`;
+  // Área
+  const areaSel = areaOpts.length
+    ? (openSel === 'area'
+      ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.lbl}</button>`).join('')
+        + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+      : `<button class="prep-sel-btn" onclick="_prep.openSelector='area';_renderPreparatePane()">${_prep.area?(areaOpts.find(a=>a.key===_prep.area)?.lbl||'Área'):'Área'} ▾</button>`)
+    : '';
+  // Colegio (siempre visible)
+  const colegioSel = openSel === 'editorial'
+    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
+      + `<button class="prep-opt-sq" onclick="_prep.openSelector=null;_renderPreparatePane()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
+    : `<button class="prep-sel-btn" onclick="_prep.openSelector='editorial';_renderPreparatePane()">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
+  const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
+  // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
+  if (!gradeKeys.length && areaOpts.length) {
+    const visibleAreas = _prep.area ? areaOpts.filter(a=>a.key===_prep.area) : areaOpts;
+    return `<div class="prep-wrap" style="padding-bottom:8px">
+      ${selectorRow}
+      <div class="prep-kh-units">${visibleAreas.map((a,ai)=>`
+        <div class="prep-kh-unit">
+          <div class="prep-kh-unit-name">${a.lbl}</div>
+          <div class="prep-kh-skills"><span style="font-size:11px;color:rgba(255,255,255,0.2)">🚧 Próximamente</span></div>
+        </div>`).join('')}
+      </div>
+      ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
+    </div>`;
+  }
+
+  // Encabezado con dominio de curso
+  const courseHeader = `<div class="prep-kh-course-hdr">
+    <div class="prep-kh-course-name">${lvDef.lbl||''}${_prep.grade?' · '+_prep.grade+'° Grado':''}</div>
+    <div class="prep-kh-mastery-row">
+      <span class="prep-kh-mastery-lbl">Dominio del curso:</span>
+      <div class="prep-kh-bar"><div class="prep-kh-bar-fill" style="width:${masLoading||!allTopicKeys.length?0:coursePct}%"></div></div>
+      <span class="prep-kh-mastery-lbl">${masLoading||!allTopicKeys.length?'…':coursePct+'%'}</span>
+    </div>
+  </div>`;
+
+  // Leyenda de dominio
+  const legend = `<div class="prep-kh-legend">
+    ${[['rgba(109,40,217,0.85)','transparent','♛ Dominado'],['rgba(139,92,246,0.45)','transparent','Competente'],
+       ['rgba(249,115,22,0.42)','transparent','Familiar'],['transparent','rgba(249,115,22,0.55)','Intentado'],
+       ['rgba(255,255,255,0.04)','rgba(255,255,255,0.12)','No empezado']]
+    .map(([bg,bc,lb])=>`<div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:${bg};border:2px solid ${bc}"></div>${lb}</div>`).join('')}
+  </div>`;
+
+  // Sidebar con lista de unidades
+  // Cuestionarios (bqN) y pruebas de unidad (bpu) NO cuentan como habilidades
+  const pureSkillKeys   = allTopicKeys.filter(k => !/_bq\d/.test(k) && !k.includes('_bpu'));
+  const totalSkillCount = pureSkillKeys.length;
+  const doneSkillCount  = masLoading ? 0 : pureSkillKeys.filter(k=>_prepMasteryLevel(k)==='dominado').length;
+  const levelNum = Math.floor(doneSkillCount / 5) + 1;
+  const sidebarItems = units.map((unit, ui) => {
+    const unitDone = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
+    const dotColor = unitDone ? '#7c3aed' : 'rgba(255,255,255,0.12)';
+    const isActive = _prep.topic && unit.skills.includes(_prep.topic);
+    return `<div class="prep-kh-sidebar-item${isActive?' active':''}" onclick="document.getElementById('prep-unit-${ui}')?.scrollIntoView({behavior:'smooth',block:'start'})">
+      <span class="prep-kh-sidebar-num">U${String(ui+1).padStart(2,'0')}</span>
+      <span class="prep-kh-sidebar-name">${unit.lbl}</span>
+      <span class="prep-kh-sidebar-dot" style="background:${dotColor}"></span>
+    </div>`;
+  }).join('');
+  const sidebar = `<div class="prep-kh-sidebar">
+    <div class="prep-kh-sidebar-hdr">
+      <div class="prep-kh-sidebar-title">${lvDef.lbl||''}${_prep.grade?' '+_prep.grade+'°':''}</div>
+      <div class="prep-kh-sidebar-sub">${units.length} UNIDADES · ${totalSkillCount} HABILIDADES</div>
+    </div>
+    ${sidebarItems}
+  </div>`;
+
+  // Topbar: racha, nivel, habilidades, botón desafío
+  const topbar = totalSkillCount ? `<div class="prep-kh-topbar">
+    <div class="prep-kh-topbar-streak">🔥 <span>0</span></div>
+    <span class="prep-kh-topbar-arr">→</span>
+    <div class="prep-kh-topbar-level">Nivel ${levelNum}</div>
+    <div class="prep-kh-topbar-skills">⭐ ${doneSkillCount}/${totalSkillCount} habilidades</div>
+    <div class="prep-kh-topbar-right">
+      <button class="prep-kh-btn-challenge" onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])">Comenzar desafío de dominio</button>
+    </div>
+  </div>` : '';
+
+  // Unidades con cuadros de habilidad + botón examen de unidad (★)
+  let unitsHtml = '';
+  if (!allTopicKeys.length) {
+    const _emptyMsg = _prep.editorial
+      ? `🏫 Aún no hay ejercicios de <b>${PREP_EDITORIALS[_prep.editorial]?.lbl||_prep.editorial}</b> para este grado.`
+      : '🚧 Próximamente habrá contenido para este grado.';
+    unitsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">${_emptyMsg}</div>`;
+  } else {
+    unitsHtml = `<div class="prep-kh-units">${units.map((unit,ui)=>{
+      const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
+      const skillsHtml = unit.skills.map((sk,si)=>{
+        const def=BINGO_TOPICS[sk]||{};
+        const lvl=_prepMasteryLevel(sk);
+        const isSel=_prep.topic===sk;
+        const isQuiz=!!def.quiz;
+        const nextIsEx=si<unit.skills.length-1&&!BINGO_TOPICS[unit.skills[si+1]]?.quiz;
+        if(isQuiz){
+          const qPct=_prepLastPct(sk);
+          const qTip='Cuestionario: '+(def.lbl||sk)+(qPct!==null?' · Último: '+qPct+'%':'');
+          const sq=`<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">⚡</div>`;
+          return sq+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
+        }
+        const skPct=_prepLastPct(sk);
+        const skTip=(def.lbl||sk)+(skPct!==null?' · Último: '+skPct+'%':'');
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
+      }).join('');
+      return `<div class="prep-kh-unit" id="prep-unit-${ui}">
+        <div class="prep-kh-unit-name">Unidad ${String(ui+1).padStart(2,'0')} — ${unit.lbl}</div>
+        <div class="prep-kh-skills">${skillsHtml}
+          <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · ¡Completado!':''}" style="cursor:pointer;margin-left:4px">★</div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // Panel de inicio para la habilidad seleccionada
+  let startPanel = '';
+  if (_prep.topic && allTopicKeys.includes(_prep.topic)) {
+    const def=BINGO_TOPICS[_prep.topic]||{};
+    const qOpts=[5,10,15,20];
+    const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
+    startPanel = `<div class="prep-kh-panel">
+      <div class="prep-kh-panel-topic">${def.ico||''} ${def.lbl||_prep.topic}</div>
+      <div class="prep-kh-panel-opts">
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
+          <div class="prep-option-row">${qOpts.map(n=>`<button class="prep-opt-sq ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()" title="${n} preguntas">${n}</button>`).join('')}</div>
+        </div>
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Tiempo</div>
+          <div class="prep-option-row">${tOpts.map(([s,l])=>`<button class="prep-opt-sq ${_prep.timeSec===s?'active':''}" onclick="_prep.timeSec=${s};_renderPreparatePane()" title="${s===0?'Sin límite':l}">${s===0?'∞':(s/60)+"'"}</button>`).join('')}</div>
+        </div>
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Modo</div>
+          <div class="prep-option-row">
+            <button class="prep-opt-sq ${_prep.ansMode==='mc'?'active':''}" onclick="_prep.ansMode='mc';_renderPreparatePane()" title="Opción múltiple">☰</button>
+            <button class="prep-opt-sq ${_prep.ansMode==='text'?'active':''}" onclick="_prep.ansMode='text';_renderPreparatePane()" title="Escribir respuesta">✏️</button>
+          </div>
+        </div>
+      </div>
+      <button class="prep-start-btn" style="margin-top:8px" onclick="_prepStart()">▶ Practicar ahora</button>
+    </div>`;
+  }
+
+  const contentArea = `<div class="prep-kh-content">
+    ${topbar}
+    ${selectorRow}
+    ${courseHeader}
+    ${legend}
+    ${unitsHtml}
+    ${startPanel}
+    ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
+  </div>`;
+
+  return `<div class="prep-wrap" style="padding-bottom:8px">
+    <div class="prep-kh-layout">${sidebar}${contentArea}</div>
+  </div>`;
+}
+function _prepHistCardHtml(h, dateStr, timeStr, ok) {
+  const expanded = _prepExpandedHistId === h.id;
+  const lvlLbl = h.level==='primaria' ? '🏫 Primaria' : h.level==='secundaria' ? '📐 Secundaria' : '🎓 Pre-univ.';
+  const gradeLbl = h.grade ? ' · ' + h.grade + '° Grado' : '';
+  let ansRows = '';
+  if (expanded && (h.answers||[]).length) {
+    (h.answers||[]).forEach(function(ans, i) {
+      const ico = ans.correct ? '✅' : '❌';
+      const ansLine = ans.correct
+        ? '<span style="font-size:11px;color:#39ff7a">Tu respuesta: ' + ans.given + '</span>'
+        : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + ans.given + '</span>'
+          + ' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
+          + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + ans.a + '</span>';
+      ansRows += '<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
+        + '<span style="font-size:14px;flex-shrink:0">' + ico + '</span>'
+        + '<div style="flex:1;min-width:0">'
+        + '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px">' + (i+1) + '. ' + (ans.q||'') + '</div>'
+        + ansLine
+        + '</div></div>';
+    });
+  }
+  const btnHtml = (h.answers||[]).length
+    ? '<button onclick="_prepExpandedHistId=_prepExpandedHistId===\'' + h.id + '\'?null:\'' + h.id + '\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'
+      + (expanded ? '▲ Ocultar ejercicios' : '▼ Ver ejercicios (' + h.answers.length + ')') + '</button>'
+      + (expanded ? '<div style="margin-top:6px">' + ansRows + '</div>' : '')
+    : '';
+  return '<div class="prep-review-item ' + (ok?'ok':'fail') + '">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center">'
+    + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">' + (h.topicLabel||h.topic) + '</span>'
+    + '<span style="font-size:14px;font-weight:900;color:' + (ok?'#39ff7a':'#f87171') + '">' + h.correct + '/' + h.total + ' · ' + h.pct + '%</span>'
+    + '</div>'
+    + '<div style="display:flex;justify-content:space-between;margin-top:2px">'
+    + '<span style="font-size:11px;color:rgba(255,255,255,0.35)">' + lvlLbl + gradeLbl + '</span>'
+    + '<span style="font-size:11px;color:rgba(255,255,255,0.3)">' + dateStr + ' ' + timeStr + '</span>'
+    + '</div>'
+    + btnHtml
+    + '</div>';
+}
+function _prepHistorySectionHtml() {
+  const loading = _prepHistoryLoading;
+  const data = _prepHistoryData;
+  const empty = Array.isArray(data) && data.length === 0;
+  return `<div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepShowHistory=!_prepShowHistory;_renderPreparatePane()">
+      📋 ${_prepShowHistory ? '▲ Ocultar' : '▼ Ver'} mi historial
+    </button>
+    ${_prepShowHistory ? `<div style="margin-top:10px">
+      ${loading ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`
+      : empty   ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">Aún no hay partidas guardadas.</div>`
+      : `<div class="prep-review-list">${(data||[]).map(h => {
+          const dateStr = h.completedAt?.seconds
+            ? new Date(h.completedAt.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'})
+            : '—';
+          const timeStr = h.completedAt?.seconds
+            ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
+            : '';
+          const ok = h.pct >= 70;
+          return _prepHistCardHtml(h, dateStr, timeStr, ok);
+        }).join('')}</div>`}
+    </div>` : ''}
+  </div>`;
+}
+function _prepMasteryLevel(topicKey) {
+  if (!Array.isArray(_prepHistoryData)) return 'unknown';
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
+  if (!sessions.length) return 'pendiente';
+  const best = Math.max(...sessions.map(h=>h.pct||0));
+  if (best>=100) return 'dominado';
+  if (best>=75) return 'competente';
+  if (best>=50) return 'familiar';
+  if (best>=25) return 'intentado';
+  return 'intentado'; // intentado pero < 25% correcto
+}
+function _prepLastPct(topicKey) {
+  if (!Array.isArray(_prepHistoryData)) return null;
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
+  if (!sessions.length) return null;
+  return sessions[0].pct ?? null; // historial ya ordenado desc por fecha
+}
+function _prepCourseScore(topicKeys) {
+  const W={dominado:100,competente:75,familiar:50,intentado:25,pendiente:0,unknown:0};
+  if (!topicKeys.length) return 0;
+  return Math.round(topicKeys.map(k=>W[_prepMasteryLevel(k)]||0).reduce((a,b)=>a+b,0)/topicKeys.length);
+}
+function _prepGenOpts(answer) {
+  // Genera 3 distractores numéricos para usar en modo MC cuando el generador no incluye opts
+  const n = Number(answer);
+  if (isNaN(n) || !isFinite(n)) return null; // respuesta no numérica → sin opciones
+  const abs = Math.abs(n);
+  // Paso de variación: pequeño para números chicos, mayor para números grandes
+  const step = abs >= 1000 ? Math.round(abs*0.08) : abs >= 100 ? Math.round(abs*0.12) : abs >= 10 ? Math.max(2,Math.round(abs*0.2)) : Math.max(1, Math.round(abs*0.3)||1);
+  const used = new Set([n]);
+  const wrongs = [];
+  const dirs = [1,-1,2,-2,3,-3,4,-4,5,-5];
+  for (const d of dirs) {
+    if (wrongs.length >= 3) break;
+    const w = Math.round((n + d * step) * 100) / 100;
+    if (!used.has(w) && (Number.isInteger(n) ? Number.isInteger(w) : true)) { used.add(w); wrongs.push(String(w)); }
+  }
+  // fallback: sumar enteros simples
+  for (let d=1; wrongs.length<3; d++) {
+    if (!used.has(n+d)) { used.add(n+d); wrongs.push(String(n+d)); }
+    if (wrongs.length<3 && !used.has(n-d)) { used.add(n-d); wrongs.push(String(n-d)); }
+  }
+  return _bingShufArr([String(answer), ...wrongs.slice(0,3)]);
+}
+function _prepApplyMcMode(q) {
+  // Si está en modo MC y la pregunta no tiene opts, genera opciones automáticamente
+  if (_prep.ansMode === 'mc' && !q.opts) {
+    const opts = _prepGenOpts(q.a);
+    if (opts) { q.opts = opts; q.mc = true; }
+  }
+  return q;
+}
+function _prepStartUnit(skills) {
+  const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
+  if (!valid.length) return;
+  _prep.unitSkillList = valid;
+  _prep.unitDone = [];
+  _prep.state = 'unit';
+  _renderPreparatePane();
+}
+// Genera preguntas únicas (sin repetir enunciado) para una sesión
+function _prepGenUniqueQs(gen, count) {
+  const qs = [], seen = new Set();
+  let tries = 0, limit = count * 30;
+  while (qs.length < count && tries < limit) {
+    tries++;
+    const q = _prepApplyMcMode(gen());
+    if (!seen.has(q.q)) { seen.add(q.q); qs.push(q); }
+  }
+  // Si el pool es menor que count, completar sin restricción
+  while (qs.length < count) qs.push(_prepApplyMcMode(gen()));
+  return qs;
+}
+function _prepStartFromUnit(sk) {
+  const def = BINGO_TOPICS[sk]; if (!def) return;
+  _prep.topic = sk;
+  const qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
+  clearInterval(_prepTimerIntv);
+  if (_prep.timeSec>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+  _renderPreparatePane();
+}
+function _prepUnitPaneHtml() {
+  const skills = _prep.unitSkillList;
+  const done   = new Set(_prep.unitDone);
+  const total  = skills.length;
+  const doneN  = done.size;
+  const pct    = total>0 ? Math.round((doneN/total)*100) : 0;
+  const allDone = doneN === total && total > 0;
+  const rows = skills.map(sk=>{
+    const def = BINGO_TOPICS[sk]||{};
+    const isDone = done.has(sk);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,${isDone?'0.03':'0.06'});border:1px solid rgba(255,255,255,${isDone?'0.05':'0.1'});margin-bottom:6px;${isDone?'opacity:0.55':'cursor:pointer'}" ${isDone?'':('onclick="_prepStartFromUnit(\''+sk+'\')"')}>`
+      +`<span style="font-size:18px;flex-shrink:0">${def.ico||'📝'}</span>`
+      +`<span style="flex:1;min-width:0;font-size:12px;font-weight:700;color:rgba(255,255,255,${isDone?'0.4':'0.85'})">${def.lbl||sk}</span>`
+      +(isDone
+        ? '<span style="font-size:11px;color:#39ff7a;font-weight:900;flex-shrink:0">✓ LISTO</span>'
+        : '<span style="padding:4px 12px;border-radius:8px;background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;font-size:11px;font-weight:900;flex-shrink:0">▶ HACER</span>')
+      +'</div>';
+  }).join('');
+  return `<div class="prep-wrap" style="padding:16px">
+    <button onclick="_prep.state='config';_prep.unitSkillList=[];_prep.unitDone=[];_renderPreparatePane()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:12px;font-weight:700;cursor:pointer;margin-bottom:12px;padding:0;display:block">← Volver al catálogo</button>
+    ${allDone?'<div style="text-align:center;padding:10px;margin-bottom:12px;border-radius:12px;background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);color:#39ff7a;font-size:13px;font-weight:900">🏆 ¡Unidad completada!</div>':''}
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <div style="flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden">
+        <div style="height:100%;border-radius:3px;background:linear-gradient(90deg,#39ff7a,#00e5ff);width:${pct}%;transition:width 0.3s"></div>
+      </div>
+      <span style="font-size:11px;font-weight:900;color:rgba(255,255,255,0.5);flex-shrink:0">${doneN}/${total}</span>
+    </div>
+    ${rows}
+  </div>`;
+}
+// Examen de unidad (★): más preguntas, mezcla todos los temas de la unidad en orden aleatorio
+function _prepUnitExam(skills) {
+  const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
+  if (!valid.length) return;
+  const total = Math.max(10, valid.length * 5); // al menos 5 por habilidad
+  const qs = [];
+  for (let i=0;i<total;i++) { const sk=valid[i%valid.length]; const def=BINGO_TOPICS[sk]; if(def?.gen) qs.push(_prepApplyMcMode(def.gen())); }
+  // Mezclar preguntas para que no vayan por grupos
+  for (let i=qs.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]]; }
+  _prep.topic = valid[0];
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false}); // tiempo libre para examen
+  clearInterval(_prepTimerIntv);
+  _renderPreparatePane();
+}
+function _prepStart() {
+  const def = BINGO_TOPICS[_prep.topic];
+  if (!def || !def.gen) { console.warn('_prepStart: no def for topic', _prep.topic); return; }
+  try {
+    const qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
+    Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_prep.timeSec, showReview:false });
+    clearInterval(_prepTimerIntv);
+    if (_prep.timeSec > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+    _renderPreparatePane();
+  } catch(e) {
+    console.error('_prepStart error:', e);
+    const el = document.getElementById('preparate-pane');
+    if (el) el.insertAdjacentHTML('afterbegin', `<div style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#f87171;font-family:monospace">⚠️ Error al generar preguntas: ${e.message}</div>`);
+  }
+}
+function _prepTickTimer() {
+  if (_prep.state !== 'exam') { clearInterval(_prepTimerIntv); return; }
+  _prep.timeLeft--;
+  if (_prep.timeLeft <= 0) { _prep.timeLeft = 0; _prepFinish(); return; }
+  const el = document.getElementById('prep-timer');
+  if (el) {
+    const m = Math.floor(_prep.timeLeft/60), s = _prep.timeLeft%60;
+    el.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    el.classList.toggle('urgent', _prep.timeLeft <= 30);
+  }
+}
+function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+function _prepSelectOpt(opt) {
+  if (_prep.answered) return;
+  _prep.selectedOpt = opt;
+  _prep.answered = true;
+  const q = _prep.questions[_prep.currentIdx];
+  _prep.answers.push({ given:opt, correct: String(q.a).toLowerCase()===String(opt).toLowerCase(), q:q.q, a:q.a, opts:q.opts, mc:true });
+  _renderPreparatePane();
+}
+function _prepSubmitText() {
+  if (_prep.answered) return;
+  const inp = document.getElementById('prep-ans-input');
+  const val = (inp ? inp.value : '').trim(); if (!val) return;
+  _prep.answered = true;
+  const q = _prep.questions[_prep.currentIdx];
+  const correct = parseFloat(val) === parseFloat(q.a) || String(val).toLowerCase() === String(q.a).toLowerCase();
+  _prep.answers.push({ given:val, correct, q:q.q, a:q.a, mc:false });
+  _renderPreparatePane();
+}
+function _prepNextQ() {
+  if (!_prep.answered) return;
+  _prep.currentIdx++;
+  _prep.answered = false; _prep.selectedOpt = null;
+  if (_prep.currentIdx >= _prep.questions.length) _prepFinish();
+  else _renderPreparatePane();
+}
+function _prepFinish() {
+  clearInterval(_prepTimerIntv);
+  _prep.state = 'result'; _prep.endTime = Date.now();
+  // Marcar skill actual como completado en el contexto de unidad
+  if (_prep.unitSkillList.length>0 && _prep.topic && !_prep.unitDone.includes(_prep.topic)) {
+    _prep.unitDone.push(_prep.topic);
+  }
+  _prepSaveHistory();
+  _renderPreparatePane();
+}
+async function _prepSaveHistory() {
+  if (isAdmin()) return;
+  try {
+    const me = _bingoMe();
+    const def = BINGO_TOPICS[_prep.topic] || {};
+    const correct = _prep.answers.filter(a=>a.correct).length;
+    const total = _prep.questions.length;
+    const secs = _prep.startTime && _prep.endTime ? Math.round((_prep.endTime-_prep.startTime)/1000) : 0;
+    const pct = total>0 ? Math.round((correct/total)*100) : 0;
+    // Actualización optimista: insertar resultado localmente de inmediato
+    // para que los colores de dominio se refresquen sin esperar a Firestore
+    const localEntry = {
+      uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
+      topic: _prep.topic, topicLabel: def.lbl||_prep.topic,
+      correct, total, pct, timeSec: secs,
+      answers: _prep.answers.map(a=>({q:a.q,a:a.a,given:a.given,correct:a.correct})),
+      completedAt: { seconds: Math.floor(Date.now()/1000) }
+    };
+    if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
+    else _prepHistoryData = [localEntry];
+    await db.collection('prepHistory').add({
+      uid:        me.uid,
+      name:       me.name,
+      level:      _prep.level,
+      grade:      _prep.grade || '',
+      topic:      _prep.topic,
+      topicLabel: def.lbl || _prep.topic,
+      correct, total, pct,
+      timeSec:    secs,
+      answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct})),
+      completedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // Recargar historial desde Firestore para sincronizar
+    loadPrepHistory();
+  } catch(e) { console.error('prep history save', e); }
+}
+async function loadPrepHistory() {
+  if (isAdmin()) return;
+  _prepHistoryLoading = true;
+  try {
+    const uid = String(getLoggedId());
+    const snap = await db.collection('prepHistory').where('uid','==',uid).limit(50).get();
+    _prepHistoryData = [];
+    snap.forEach(doc => _prepHistoryData.push({ id:doc.id, ...doc.data() }));
+    // Ordenar por fecha desc en cliente (evita índice compuesto)
+    _prepHistoryData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
+    _prepHistoryData = _prepHistoryData.slice(0,30);
+  } catch(e) { _prepHistoryData = []; console.error('prep history load', e); }
+  _prepHistoryLoading = false;
+  if (dashGamingMode==='preparate') _renderPreparatePane();
+}
+async function loadPrepHistoryAdmin() {
+  if (!isAdmin()) return;
+  _prepAdminHistLoading = true;
+  try {
+    const snap = await db.collection('prepHistory').limit(200).get();
+    _prepAdminHistData = [];
+    snap.forEach(doc => _prepAdminHistData.push({ id:doc.id, ...doc.data() }));
+    _prepAdminHistData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
+  } catch(e) { _prepAdminHistData = []; console.error('prep admin history load', e); }
+  _prepAdminHistLoading = false;
+  if (dashGamingMode==='preparate') _renderPreparatePane();
+}
+function _prepAdminHistoryHtml() {
+  const loading = _prepAdminHistLoading;
+  const raw = _prepAdminHistData;
+  const students = getStudents();
+  // Filtrar por alumno si hay filtro activo
+  const data = Array.isArray(raw)
+    ? (_prepAdminFilterUid ? raw.filter(h=>h.uid===_prepAdminFilterUid) : raw)
+    : null;
+  const empty = Array.isArray(data) && data.length === 0;
+  // Pills de alumnos (solo los que tienen al menos una entrada)
+  const uidsWithData = Array.isArray(raw) ? [...new Set(raw.map(h=>h.uid))] : [];
+  const studentPills = students
+    .filter(s=>uidsWithData.includes(String(s.id)))
+    .map(s=>{
+      const active = _prepAdminFilterUid === String(s.id);
+      return `<button onclick="_prepAdminFilterUid=${active?'null':"'"+String(s.id)+"'"};_renderPreparatePane()" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:16px;border:1px solid ${active?s.color:'rgba(255,255,255,0.15)'};background:${active?s.color+'22':'rgba(255,255,255,0.05)'};color:${active?s.color:'rgba(255,255,255,0.6)'};font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">${s.icon} ${s.name.split(' ')[0]}</button>`;
+    }).join('');
+  let cardsHtml = '';
+  if (loading || !Array.isArray(data)) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`;
+  } else if (empty) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">Aún no hay partidas guardadas.</div>`;
+  } else {
+    cardsHtml = `<div class="prep-review-list">${data.map(h=>{
+      const stu = students.find(s=>String(s.id)===String(h.uid));
+      const dateStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
+      const timeStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
+      const ok = (h.pct||0) >= 70;
+      const lvlLbl = h.level==='primaria'?'🏫 Primaria':h.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
+      const gradeLbl = h.grade ? ' · '+h.grade+'° Grado' : '';
+      const expanded = _prepAdminExpandedId === h.id;
+      let ansRows = '';
+      if (expanded && (h.answers||[]).length) {
+        (h.answers||[]).forEach(function(a,i){
+          const ico=a.correct?'✅':'❌';
+          const ansLine=a.correct
+            ?'<span style="font-size:11px;color:#39ff7a">Tu resp: '+a.given+'</span>'
+            :'<span style="font-size:11px;color:#f87171">Tu resp: '+a.given+'</span>'
+              +' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
+              +' <span style="font-size:11px;color:#39ff7a">Correcta: '+a.a+'</span>';
+          ansRows+='<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
+            +'<span style="font-size:14px;flex-shrink:0">'+ico+'</span>'
+            +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px">'+(i+1)+'. '+(a.q||'')+'</div>'+ansLine+'</div></div>';
+        });
+      }
+      const expandBtn = (h.answers||[]).length
+        ? '<button onclick="_prepAdminExpandedId=_prepAdminExpandedId===\''+h.id+'\'?null:\''+h.id+'\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'+(expanded?'▲ Ocultar ejercicios':'▼ Ver ejercicios ('+h.answers.length+')')+'</button>'+(expanded?'<div style="margin-top:6px">'+ansRows+'</div>':'')
+        : '';
+      return '<div class="prep-review-item '+(ok?'ok':'fail')+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:center">'
+        +'<div style="display:flex;align-items:center;gap:6px">'
+        +(stu?'<span style="font-size:13px;background:'+stu.color+'22;border:1px solid '+stu.color+'55;border-radius:10px;padding:1px 7px;color:'+stu.color+';font-weight:900;font-size:12px">'+stu.icon+' '+stu.name.split(' ')[0]+'</span>':'')
+        +'<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85)">'+(h.topicLabel||h.topic)+'</span>'
+        +'</div>'
+        +'<span style="font-size:14px;font-weight:900;color:'+(ok?'#39ff7a':'#f87171')+'">'+h.correct+'/'+h.total+' · '+h.pct+'%</span>'
+        +'</div>'
+        +'<div style="display:flex;justify-content:space-between;margin-top:2px">'
+        +'<span style="font-size:11px;color:rgba(255,255,255,0.35)">'+lvlLbl+gradeLbl+'</span>'
+        +'<span style="font-size:11px;color:rgba(255,255,255,0.3)">'+dateStr+' '+timeStr+'</span>'
+        +'</div>'+expandBtn+'</div>';
+    }).join('')}</div>`;
+  }
+  return `<div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowHist=!_prepAdminShowHist;if(_prepAdminShowHist&&!Array.isArray(_prepAdminHistData)&&!_prepAdminHistLoading)loadPrepHistoryAdmin();_renderPreparatePane()">
+      📊 ${_prepAdminShowHist ? '▲ Ocultar' : '▼ Ver'} historial de alumnos
+    </button>
+    ${_prepAdminShowHist ? `<div style="margin-top:10px">
+      ${uidsWithData.length > 1 ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${studentPills}</div>` : ''}
+      ${cardsHtml}
+    </div>` : ''}
+  </div>`;
+}
+function _prepExamHtml() {
+  const q = _prep.questions[_prep.currentIdx]; if (!q) return '';
+  const def = BINGO_TOPICS[_prep.topic]||{};
+  const total = _prep.questions.length, idx = _prep.currentIdx;
+  const pct = Math.round((idx/total)*100);
+  const isMC = !!q.mc && _prep.ansMode !== 'text', isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
+  const timerHtml = _prep.timeSec > 0 ? `<div id="prep-timer" class="prep-timer${_prep.timeLeft<=30?' urgent':''}">${_prepFmtTime(_prep.timeLeft)}</div>` : '';
+  let ansHtml = '';
+  if (isMC && isVF) {
+    ansHtml = `<div class="prep-vf-row">${(q.opts||[]).map(opt=>{
+      let cls='prep-vf-btn';
+      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${opt}</button>`;
+    }).join('')}</div>`;
+  } else if (isMC) {
+    ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
+      let cls='prep-mc-btn';
+      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1}. ${opt}</button>`;
+    }).join('')}</div>`;
+  } else {
+    const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
+    ansHtml = `<div class="prep-text-row">
+      <input id="prep-ans-input" class="prep-text-input" type="text" placeholder="Tu respuesta…" ${_prep.answered?'disabled':''} autocomplete="off" onkeydown="if(event.key==='Enter')_prepSubmitText()">
+      <button class="prep-submit-btn" onclick="_prepSubmitText()" ${_prep.answered?'disabled':''}>OK</button>
+    </div>`;
+    if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${q.a}</b></span>`}</div>`;
+  }
+  const _nivelLbl = _prep.level==='primaria'?'🏫 Primaria':_prep.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
+  const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
+  const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].ico} ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
+  return `<div class="prep-wrap">
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:6px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0">
+          <button onclick="_prep.state='config';clearInterval(_prepTimerIntv);_renderPreparatePane()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir">✕</button>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.35);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
+        </div>
+        <div style="padding-right:48px;flex-shrink:0">${timerHtml}</div>
+      </div>
+      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+    </div>
+    <div class="prep-progress-row">
+      <span class="prep-prog-label">${idx+1}/${total}</span>
+      <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="prep-question-card">${q.q}</div>
+    ${ansHtml}
+    <button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()">
+      ${idx===total-1?'🏁 Ver resultados':'Siguiente →'}
+    </button>
+    <div style="text-align:center;margin-top:10px">
+      <button class="prep-report-btn" onclick="openPrepReportModal()">⚠️ Reportar error en este ejercicio</button>
+    </div>
+  </div>${_prepReportModalOpen ? `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepReportModal()">
+    <div class="prep-report-modal-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:0.05em">⚠️ REPORTAR ERROR</span>
+        <button onclick="closePrepReportModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
+      </div>
+      <div style="margin-bottom:10px"><span class="prep-report-tag">ID: ${_prep.topic}</span></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Ejercicio</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;line-height:1.4">${q.q}</div>
+      ${isAdmin() ? `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Respuesta oficial</div>
+      <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${q.a}</div>` : ''}
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Describe el error <span style="color:rgba(255,255,255,0.3);font-weight:600;text-transform:none;letter-spacing:0">(obligatorio)</span></div>
+      <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser 3/4 porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+        <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Enviar reporte</button>
+      </div>
+    </div>
+  </div>` : ''}`;
+}
+function _prepResultHtml() {
+  const total = _prep.questions.length;
+  const correct = _prep.answers.filter(a=>a.correct).length;
+  const pct = total>0 ? Math.round((correct/total)*100) : 0;
+  const secs = _prep.startTime&&_prep.endTime ? Math.round((_prep.endTime-_prep.startTime)/1000) : 0;
+  const emoji = pct>=90?'🏆':pct>=70?'🌟':pct>=50?'👍':'💪';
+  const label = pct>=90?'¡Excelente!':pct>=70?'¡Bien hecho!':pct>=50?'Puedes mejorar':'Sigue practicando';
+  const def = BINGO_TOPICS[_prep.topic]||{};
+  const reviewHtml = _prep.showReview ? `<div class="prep-review-list">${_prep.answers.map((ans,i)=>`
+    <div class="prep-review-item ${ans.correct?'ok':'fail'}">
+      <div class="prep-review-q">${i+1}. ${ans.q}</div>
+      <div>${ans.correct?`<span class="prep-review-ok">✓ ${ans.given}</span>`:`<span class="prep-review-fail">✗ ${ans.given}</span> · <span class="prep-review-correct">Correcta: ${ans.a}</span>`}</div>
+    </div>`).join('')}</div>` : '';
+  return `<div class="prep-wrap">
+    <div class="prep-score-wrap">
+      <div class="prep-topic-badge-sm" style="margin:0 auto 10px;display:inline-flex">${def.ico||'📚'} ${def.lbl||_prep.topic}</div>
+      <div class="prep-score-emoji">${emoji}</div>
+      <div><span class="prep-score-num">${correct}</span><span class="prep-score-denom">/${total}</span></div>
+      <div class="prep-score-pct">${pct}%</div>
+      <div class="prep-score-label">${label}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:4px">Tiempo: ${_prepFmtTime(secs)}</div>
+    </div>
+    ${(()=>{
+      if (_prep.unitSkillList.length>0) {
+        const nextSk = _prep.unitSkillList.find(sk=>!_prep.unitDone.includes(sk));
+        const nextDef = nextSk ? BINGO_TOPICS[nextSk] : null;
+        const allDone = !nextSk;
+        return allDone
+          ? `<div style="text-align:center;padding:10px;margin-bottom:10px;border-radius:12px;background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);color:#39ff7a;font-size:13px;font-weight:900">🏆 ¡Unidad completada!</div>
+             <div class="prep-result-row">
+               <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
+               <button class="prep-result-btn" onclick="_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Ver unidad</button>
+             </div>`
+          : `<button class="prep-result-btn primary" style="width:100%;margin-bottom:8px" onclick="_prepStartFromUnit('${nextSk}')">▶ Siguiente: ${nextDef?.lbl||nextSk}</button>
+             <div class="prep-result-row">
+               <button class="prep-result-btn" onclick="_prepStart()">↺ Repetir</button>
+               <button class="prep-result-btn" onclick="_prep.state='unit';_prep.showReview=false;_renderPreparatePane()">☰ Lista</button>
+             </div>`;
+      }
+      return `<div class="prep-result-row">
+        <button class="prep-result-btn primary" onclick="_prepStart()">↺ Repetir</button>
+        <button class="prep-result-btn" onclick="_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
+      </div>`;
+    })()}
+    <button class="prep-result-btn" style="width:100%;margin-top:8px" onclick="_prep.showReview=!_prep.showReview;_renderPreparatePane()">
+      ${_prep.showReview?'▲ Ocultar revisión':'▼ Revisar respuestas'}
+    </button>
+    ${reviewHtml}
+  </div>`;
+}
+// ── Report modal helpers ─────────────────────────────────────────────────────
+function openPrepReportModal() {
+  _prepReportModalOpen = true;
+  _renderPreparatePane();
+  setTimeout(()=>{ const ta=document.getElementById('prep-report-ta'); if(ta)ta.focus(); },80);
+}
+function closePrepReportModal() {
+  _prepReportModalOpen = false;
+  _renderPreparatePane();
+}
+async function submitPrepReport() {
+  const ta = document.getElementById('prep-report-ta');
+  const comment = ta ? ta.value.trim() : '';
+  if (!comment) { showToast('Escribe el error antes de enviar'); if(ta)ta.focus(); return; }
+  const q = _prep.questions[_prep.currentIdx];
+  if (!q) return;
+  const def = BINGO_TOPICS[_prep.topic] || {};
+  const id = getLoggedId();
+  const students = getStudents();
+  const stu = id !== null && id !== 0 ? students.find(s=>s.id===id) : null;
+  const sName = stu ? stu.name : (id===0 ? 'Profesor' : 'Invitado');
+  const sid = id !== null ? id : -1;
+  const btn = document.getElementById('prep-report-submit-btn');
+  if (btn) { btn.disabled=true; btn.textContent='Enviando…'; btn.style.opacity='0.5'; }
+  try {
+    await db.collection('prepReports').add({
+      skillKey:   _prep.topic,
+      skillLabel: def.lbl || _prep.topic,
+      q:          q.q,
+      correctAns: String(q.a),
+      comment,
+      sid,
+      sName,
+      ts:     firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'pending'
+    });
+    _prepReportModalOpen = false;
+    _renderPreparatePane();
+    showToast('Reporte enviado. ¡Gracias! 👍');
+  } catch(e) {
+    console.error('prepReport submit', e);
+    showToast('Error al enviar: ' + (e.message||''));
+    if (btn) { btn.disabled=false; btn.textContent='Enviar reporte'; btn.style.opacity=''; }
+  }
+}
+// ── Admin: load + update reports ─────────────────────────────────────────────
+async function loadPrepReportsAdmin() {
+  if (!isAdmin()) return;
+  _prepAdminReportsLoading = true;
+  try {
+    const snap = await db.collection('prepReports').orderBy('ts','desc').limit(300).get();
+    _prepAdminReportsData = [];
+    snap.forEach(doc => _prepAdminReportsData.push({ id: doc.id, ...doc.data() }));
+  } catch(e) { _prepAdminReportsData = []; console.error('prepReports load', e); }
+  _prepAdminReportsLoading = false;
+  if (dashGamingMode==='preparate') _renderPreparatePane();
+}
+async function setPrepReportStatus(docId, status) {
+  try {
+    await db.collection('prepReports').doc(docId).update({ status });
+    const rec = (_prepAdminReportsData||[]).find(r=>r.id===docId);
+    if (rec) rec.status = status;
+    _renderPreparatePane();
+  } catch(e) { showToast('Error: ' + (e.message||'')); }
+}
+function _prepAdminReportsHtml() {
+  const data    = _prepAdminReportsData;
+  const loading = _prepAdminReportsLoading;
+  const f       = _prepAdminReportsFilter;
+  const filtered   = Array.isArray(data) ? data.filter(r=>r.status===f) : null;
+  const confirmedIds = Array.isArray(data) ? [...new Set(data.filter(r=>r.status==='confirmed').map(r=>r.skillKey))] : [];
+  const counts = Array.isArray(data)
+    ? { pending: data.filter(r=>r.status==='pending').length,
+        confirmed: data.filter(r=>r.status==='confirmed').length,
+        dismissed: data.filter(r=>r.status==='dismissed').length }
+    : { pending:0, confirmed:0, dismissed:0 };
+
+  const filterBtns = [
+    { key:'pending',   lbl:'⏳ Pendientes' },
+    { key:'confirmed', lbl:'✅ Confirmados' },
+    { key:'dismissed', lbl:'🚫 Descartados' }
+  ].map(({key,lbl})=>{
+    const active = f===key;
+    return `<button onclick="_prepAdminReportsFilter='${key}';_renderPreparatePane()" style="padding:4px 10px;border-radius:14px;border:1px solid ${active?'rgba(168,85,247,0.7)':'rgba(255,255,255,0.12)'};background:${active?'rgba(168,85,247,0.2)':'rgba(255,255,255,0.04)'};color:${active?'#d8b4fe':'rgba(255,255,255,0.5)'};font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer">${lbl} (${counts[key]})</button>`;
+  }).join('');
+
+  let cardsHtml = '';
+  if (loading || !Array.isArray(filtered)) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`;
+  } else if (filtered.length===0) {
+    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">No hay reportes en esta categoría.</div>`;
+  } else {
+    cardsHtml = filtered.map(r=>{
+      const dateStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
+      const timeStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
+      const safeId  = (r.id||'').replace(/'/g,"\'");
+      const actionHtml = r.status==='pending'
+        ? `<div style="display:flex;gap:6px;margin-top:10px">
+            <button onclick="setPrepReportStatus('${safeId}','confirmed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">✅ Confirmar</button>
+            <button onclick="setPrepReportStatus('${safeId}','dismissed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.07);color:#f87171;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">🚫 Descartar</button>
+          </div>`
+        : `<div style="text-align:right;margin-top:8px"><button onclick="setPrepReportStatus('${safeId}','pending')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;cursor:pointer">↩ Reabrir</button></div>`;
+      return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
+          <span class="prep-report-tag">ID: ${r.skillKey||'?'}</span>
+          <span style="font-size:11px;color:rgba(255,255,255,0.3);white-space:nowrap;flex-shrink:0">${r.sName||'—'} · ${dateStr} ${timeStr}</span>
+        </div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Ejercicio</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:6px;line-height:1.4">${r.q||''}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Respuesta oficial</div>
+        <div style="font-size:13px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif;margin-bottom:6px">${r.correctAns||''}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Comentario</div>
+        <div style="font-size:13px;color:#fde68a;line-height:1.4">${r.comment||''}</div>
+        ${actionHtml}
+      </div>`;
+    }).join('');
+  }
+
+  const idsStr = confirmedIds.join(', ');
+  const copyBtn = confirmedIds.length
+    ? `<button onclick="navigator.clipboard.writeText(${JSON.stringify(idsStr)}).then(()=>showToast('IDs copiados ✓')).catch(()=>showToast('Error al copiar'))" style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px">📋 Copiar ${confirmedIds.length} ID${confirmedIds.length>1?'s':''} confirmado${confirmedIds.length>1?'s':''}</button>`
+    : '';
+
+  const pendingBadge = Array.isArray(_prepAdminReportsData) && counts.pending > 0
+    ? ' (' + counts.pending + ' pendiente' + (counts.pending>1?'s':'') + ')'
+    : '';
+
+  return `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowReports=!_prepAdminShowReports;if(_prepAdminShowReports&&!Array.isArray(_prepAdminReportsData)&&!_prepAdminReportsLoading)loadPrepReportsAdmin();_renderPreparatePane()">
+      ⚠️ ${_prepAdminShowReports ? '▲ Ocultar' : '▼ Ver'} reportes de errores${pendingBadge}
+    </button>
+    ${_prepAdminShowReports ? `<div style="margin-top:10px">
+      ${copyBtn}
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${filterBtns}</div>
+      ${cardsHtml}
+    </div>` : ''}
+  </div>`;
+}
