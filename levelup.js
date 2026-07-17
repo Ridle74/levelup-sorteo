@@ -1974,7 +1974,7 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
         : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + ans.given + '</span>'
           + ' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
           + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + ans.a + '</span>';
-      const idTag = '<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">#' + String(i+1).padStart(2,'0') + '</span>';
+      const idTag = '<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">#' + _exId(ans.q) + '</span>';
       ansRows += '<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
         + '<span style="font-size:14px;flex-shrink:0">' + ico + '</span>'
         + '<div style="flex:1;min-width:0">'
@@ -2188,6 +2188,9 @@ function _prepTickTimer() {
 function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
 // ── LABEL CLEANER ────────────────────────────────────────────────────────────
 const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').trim(); return s || fallback || lbl || ''; };
+
+// ── EXERCISE ID (deterministic short hash of question text) ──────────────────
+const _exId = (q) => { let h=5381; const s=String(q||''); for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))|0; return Math.abs(h).toString(36).toUpperCase().slice(0,5).padStart(5,'0'); };
 
 // ── LEVEL UP SOUNDS ──────────────────────────────────────────────────────────
 const _snd = (() => {
@@ -2415,7 +2418,7 @@ function _prepAdminHistoryHtml() {
             :'<span style="font-size:11px;color:#f87171">Tu resp: '+a.given+'</span>'
               +' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
               +' <span style="font-size:11px;color:#39ff7a">Correcta: '+a.a+'</span>';
-          const idTag2='<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">#'+String(i+1).padStart(2,'0')+'</span>';
+          const idTag2='<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">#'+_exId(a.q)+'</span>';
           ansRows+='<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
             +'<span style="font-size:14px;flex-shrink:0">'+ico+'</span>'
             +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px;display:flex;justify-content:space-between;align-items:flex-start"><span style="flex:1">'+(i+1)+'. '+(a.q||'')+'</span>'+idTag2+'</div>'+ansLine+'</div></div>';
@@ -2509,7 +2512,10 @@ function _prepExamHtml() {
         <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:0.05em">⚠️ REPORTAR ERROR</span>
         <button onclick="closePrepReportModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
       </div>
-      <div style="margin-bottom:10px"><span class="prep-report-tag">ID: ${_prep.topic}</span></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span class="prep-report-tag">Habilidad: ${_prep.topic}</span>
+        <span class="prep-report-tag" style="font-family:'Barlow Condensed',monospace;letter-spacing:0.06em">Ejercicio: #${_exId(q.q)}</span>
+      </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Ejercicio</div>
       <div style="font-size:13px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;line-height:1.4">${q.q}</div>
       ${isAdmin() ? `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Respuesta oficial</div>
@@ -2602,6 +2608,7 @@ async function submitPrepReport() {
     await db.collection('prepReports').add({
       skillKey:   _prep.topic,
       skillLabel: def.lbl || _prep.topic,
+      exId:       _exId(q.q),
       q:          q.q,
       correctAns: String(q.a),
       comment,
@@ -2678,7 +2685,8 @@ function _prepAdminReportsHtml() {
         : `<div style="text-align:right;margin-top:8px"><button onclick="setPrepReportStatus('${safeId}','pending')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;cursor:pointer">↩ Reabrir</button></div>`;
       return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
-          <span class="prep-report-tag">ID: ${r.skillKey||'?'}</span>
+          <span class="prep-report-tag">Habilidad: ${r.skillKey||'?'}</span>
+          <span class="prep-report-tag" style="font-family:'Barlow Condensed',monospace;letter-spacing:0.06em">Ejercicio: #${r.exId||_exId(r.q||'')}</span>
           <span style="font-size:11px;color:rgba(255,255,255,0.3);white-space:nowrap;flex-shrink:0">${r.sName||'—'} · ${dateStr} ${timeStr}</span>
         </div>
         <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Ejercicio</div>
