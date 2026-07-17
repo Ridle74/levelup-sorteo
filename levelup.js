@@ -4,7 +4,7 @@
 
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
-let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -1667,7 +1667,7 @@ function _prepOpen(sel) { _snd.click(); _prep.openSelector=sel; _renderPreparate
 function _prepClose()  { _snd.click(); _prep.openSelector=null; _renderPreparatePane(); }
 function _prepSetLevel(lvl) {
   _snd.click();
-  _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.grade = null;
+  _prep.level = lvl; _prep.editorial = null; _prep.area = null; _prep.grade = null; _prep.editorialChosen = false;
   const gradeKeys = Object.keys(PREP_LEVELS[lvl]?.grades||{}).sort((a,b)=>+a-+b);
   _prep.openSelector = gradeKeys.length ? 'grade' : null;
   _prep.topic = '';
@@ -1675,7 +1675,7 @@ function _prepSetLevel(lvl) {
 }
 function _prepSetGrade(g) {
   _snd.click();
-  _prep.grade = g; _prep.editorial = null; _prep.topic = '';
+  _prep.grade = g; _prep.editorial = null; _prep.topic = ''; _prep.editorialChosen = false;
   const areaOpts = (PREP_LEVELS[_prep.level]||{}).areas || [];
   _prep.openSelector = areaOpts.length ? 'area' : 'editorial';
   _renderPreparatePane();
@@ -1724,8 +1724,8 @@ function _prepConfigHtml() {
     : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
-    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
-      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
+    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
     : `<button class="prep-sel-btn${_prep.editorial?' sel':''}" onclick="_prepOpen('editorial')">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
@@ -1803,7 +1803,9 @@ function _prepConfigHtml() {
 
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
   let unitsHtml = '';
-  if (!allTopicKeys.length) {
+  if (!_prep.editorialChosen) {
+    unitsHtml = '';
+  } else if (!allTopicKeys.length) {
     const _emptyMsg = _prep.editorial
       ? `🏫 Aún no hay ejercicios de <b>${PREP_EDITORIALS[_prep.editorial]?.lbl||_prep.editorial}</b> para este grado.`
       : '🚧 Próximamente habrá contenido para este grado.';
