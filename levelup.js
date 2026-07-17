@@ -2212,7 +2212,7 @@ function _histTypePrefix(h) {
   const key = h.topic||'';
   if (h.isUnitExam || key.includes('_bpu')) return 'Examen';
   if (/_bq\d/i.test(key) || BINGO_TOPICS[key]?.quiz) {
-    const n = _prepQuizNumFromKey(key);
+    const n = h.quizNum || _prepQuizNumFromKey(key);
     return n ? `Cuestionario ${n}` : 'Cuestionario';
   }
   return 'Habilidad';
@@ -2319,7 +2319,7 @@ async function _prepSaveHistory() {
     // para que los colores de dominio se refresquen sin esperar a Firestore
     const localEntry = {
       uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
-      topic: _prep.topic, topicLabel: _cleanLbl(def.lbl||_prep.topic), isUnitExam: !!_prep.isUnitExam,
+      topic: _prep.topic, topicLabel: _cleanLbl(def.lbl||_prep.topic), isUnitExam: !!_prep.isUnitExam, quizNum: _prep.quizNum||0,
       correct, total, pct, timeSec: secs,
       answers: _prep.answers.map(a=>({q:a.q,a:a.a,given:a.given,correct:a.correct})),
       completedAt: { seconds: Math.floor(Date.now()/1000) }
@@ -2368,6 +2368,7 @@ async function _prepSaveHistory() {
       topic:      _prep.topic,
       topicLabel: _cleanLbl(def.lbl || _prep.topic),
       isUnitExam: !!_prep.isUnitExam,
+      quizNum:    _prep.quizNum || 0,
       correct, total, pct,
       timeSec:    secs,
       answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct})),
