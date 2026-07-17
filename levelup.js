@@ -2367,7 +2367,7 @@ async function loadPrepHistoryAdmin() {
     _prepAdminHistData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   } catch(e) { _prepAdminHistData = []; console.error('prep admin history load', e); }
   _prepAdminHistLoading = false;
-  if (dashGamingMode==='preparate') _renderPreparatePane();
+  _renderPreparatePane();
 }
 function _prepAdminHistoryHtml() {
   const loading = _prepAdminHistLoading;
@@ -2432,7 +2432,7 @@ function _prepAdminHistoryHtml() {
     }).join('')}</div>`;
   }
   return `<div style="margin-top:18px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
-    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowHist=!_prepAdminShowHist;if(_prepAdminShowHist&&!Array.isArray(_prepAdminHistData)&&!_prepAdminHistLoading)loadPrepHistoryAdmin();_renderPreparatePane()">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowHist=!_prepAdminShowHist;if(_prepAdminShowHist&&!Array.isArray(_prepAdminHistData)&&!_prepAdminHistLoading)loadPrepHistoryAdmin();else _renderPreparatePane()">
       📊 ${_prepAdminShowHist ? '▲ Ocultar' : '▼ Ver'} historial de alumnos
     </button>
     ${_prepAdminShowHist ? `<div style="margin-top:10px">

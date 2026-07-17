@@ -5260,6 +5260,7 @@ function setGamingMode(mode) {
   if (mode === 'preparate') {
     try { _renderPreparatePane(); } catch(e) { console.error('[LevelUp]',e); }
     try { if (_prepHistoryData === null && !_prepHistoryLoading) loadPrepHistory(); } catch(e) {}
+    try { if (isAdmin() && !Array.isArray(_prepAdminHistData) && !_prepAdminHistLoading) loadPrepHistoryAdmin(); } catch(e) {}
   }
   _syncGFSBtn(!isCatalog);
 }
@@ -6516,6 +6517,7 @@ function vLevelUpFull() {
 }
 function vLevelUpFullSetup() {
   try { if (_prepHistoryData === null && !_prepHistoryLoading) loadPrepHistory(); } catch(e) {}
+  try { if (isAdmin() && !Array.isArray(_prepAdminHistData) && !_prepAdminHistLoading) loadPrepHistoryAdmin(); } catch(e) {}
 }
 
 // ════════════════════════════════════════════════════════
