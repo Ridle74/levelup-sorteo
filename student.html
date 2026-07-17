@@ -3303,6 +3303,33 @@ function _genMult4B9(){return _genMult4B(9);}
 function _genMult4BQ1(){return _genMult4B([2,3,4,5][Math.floor(Math.random()*4)]);}
 function _genMult4BQ2(){return _genMult4B([6,7,8,9][Math.floor(Math.random()*4)]);}
 function _genMult4BPU(){return _genMult4B(Math.floor(Math.random()*8)+2);}
+function _genTablaK(k){
+  var n=Math.floor(Math.random()*10)+1, ans=k*n;
+  var seen={}; seen[ans]=1; var pool=[];
+  [-2,-1,1,2].forEach(function(d){var v=k*(n+d);if(v>0&&!seen[v]){seen[v]=1;pool.push(v);}});
+  var k2a=k>1?k-1:0, k2b=k<12?k+1:0;
+  [k2a,k2b].forEach(function(k2){if(k2>0){var v=k2*n;if(!seen[v]){seen[v]=1;pool.push(v);}}});
+  var wrongs=pool.sort(function(){return Math.random()-0.5;}).slice(0,3);
+  while(wrongs.length<3){var w=k*(Math.floor(Math.random()*10)+1);if(!seen[w]){seen[w]=1;wrongs.push(w);}}
+  var opts=[ans].concat(wrongs).sort(function(){return Math.random()-0.5;}).map(String);
+  return{q:k+' × '+n+' = ?',a:String(ans),opts:opts,mc:true,ste:'Tabla del '+k+': '+k+' × '+n+' = '+ans+'.'};
+}
+function _genTabla1(){return _genTablaK(1);}
+function _genTabla2(){return _genTablaK(2);}
+function _genTabla3(){return _genTablaK(3);}
+function _genTabla4(){return _genTablaK(4);}
+function _genTabla5(){return _genTablaK(5);}
+function _genTabla6(){return _genTablaK(6);}
+function _genTabla7(){return _genTablaK(7);}
+function _genTabla8(){return _genTablaK(8);}
+function _genTabla9(){return _genTablaK(9);}
+function _genTabla10(){return _genTablaK(10);}
+function _genTabla11(){return _genTablaK(11);}
+function _genTabla12(){return _genTablaK(12);}
+function _genTablaBQ1(){return _genTablaK([1,2,3,4][Math.floor(Math.random()*4)]);}
+function _genTablaBQ2(){return _genTablaK([5,6,7,8][Math.floor(Math.random()*4)]);}
+function _genTablaBQ3(){return _genTablaK([9,10,11,12][Math.floor(Math.random()*4)]);}
+function _genTablaBPU(){return _genTablaK(Math.floor(Math.random()*12)+1);}
 // ── Conjuntos: Comprensión y Extensión 4° Primaria – Colegio Belén ───────────
 var _CCE=[
   {ext:'{2, 4, 6, 8, 10}',    rule:'x es par, 2 ≤ x ≤ 10',          pred:function(x){return x%2===0&&x>=2&&x<=10;},
@@ -4064,6 +4091,22 @@ const BINGO_TOPICS = {
   mult4_bq1:{ ico:'⚡', lbl:'Quiz – Tablas del 2 al 5',             qCount:5, gen:()=>_genMult4BQ1(), quiz:true },
   mult4_bq2:{ ico:'⚡', lbl:'Quiz – Tablas del 6 al 9',             qCount:5, gen:()=>_genMult4BQ2(), quiz:true },
   mult4_bpu:{ ico:'⚡', lbl:'Prueba de Unidad – Tablas del 2 al 9', qCount:8, gen:()=>_genMult4BPU(), quiz:true },
+  tabla1:   { ico:'✕', lbl:'Tabla del 1',  qCount:4, gen:()=>_genTabla1() },
+  tabla2:   { ico:'✕', lbl:'Tabla del 2',  qCount:4, gen:()=>_genTabla2() },
+  tabla3:   { ico:'✕', lbl:'Tabla del 3',  qCount:4, gen:()=>_genTabla3() },
+  tabla4:   { ico:'✕', lbl:'Tabla del 4',  qCount:4, gen:()=>_genTabla4() },
+  tabla_bq1:{ ico:'⚡', lbl:'Quiz – Tablas del 1 al 4',  qCount:5, gen:()=>_genTablaBQ1(), quiz:true },
+  tabla5:   { ico:'✕', lbl:'Tabla del 5',  qCount:4, gen:()=>_genTabla5() },
+  tabla6:   { ico:'✕', lbl:'Tabla del 6',  qCount:4, gen:()=>_genTabla6() },
+  tabla7:   { ico:'✕', lbl:'Tabla del 7',  qCount:4, gen:()=>_genTabla7() },
+  tabla8:   { ico:'✕', lbl:'Tabla del 8',  qCount:4, gen:()=>_genTabla8() },
+  tabla_bq2:{ ico:'⚡', lbl:'Quiz – Tablas del 5 al 8',  qCount:5, gen:()=>_genTablaBQ2(), quiz:true },
+  tabla9:   { ico:'✕', lbl:'Tabla del 9',  qCount:4, gen:()=>_genTabla9() },
+  tabla10:  { ico:'✕', lbl:'Tabla del 10', qCount:4, gen:()=>_genTabla10() },
+  tabla11:  { ico:'✕', lbl:'Tabla del 11', qCount:4, gen:()=>_genTabla11() },
+  tabla12:  { ico:'✕', lbl:'Tabla del 12', qCount:4, gen:()=>_genTabla12() },
+  tabla_bq3:{ ico:'⚡', lbl:'Quiz – Tablas del 9 al 12', qCount:5, gen:()=>_genTablaBQ3(), quiz:true },
+  tabla_bpu:{ ico:'★', lbl:'Prueba de Unidad – Tablas del 1 al 12', qCount:12, gen:()=>_genTablaBPU(), quiz:true },
   // ── Conjuntos: Comprensión y Extensión 4° Primaria – Colegio Belén ──
   conjce_b1: { ico:'∈', lbl:'¿Extensión o Comprensión?',       qCount:4, gen:()=>_genCCEB1() },
   conjce_b2: { ico:'∈', lbl:'¿Pertenece al conjunto?',         qCount:4, gen:()=>_genCCEB2() },
@@ -4073,7 +4116,7 @@ const BINGO_TOPICS = {
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','tabla_bpu'];
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'P',
     grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
@@ -4109,6 +4152,7 @@ const PREP_CURRICULUM = {
       {lbl:'Sumas de 3 Cifras',                  area:'matematica', editorial:'belen', skills:['sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1']},
       {lbl:'Multiplicación del 2 al 9',             area:'matematica', editorial:'belen', skills:['mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
+      {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','tabla_bpu']},
     ], '5':[],
     '6':[{lbl:'División de 5 entre 2 Dígitos', area:'matematica', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', area:'matematica', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', area:'matematica', skills:['neg','ecuacion']}],
   },
