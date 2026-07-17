@@ -1812,8 +1812,8 @@ function _prepConfigHtml() {
         if(isQuiz){
           const qPct=_prepLastPct(sk);
           const qTip='Cuestionario: '+(def.lbl||sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
-          const _bolt=(color,thick)=>`<svg width="16" height="18" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="${color}"${thick?` stroke="${color}" stroke-width="80" stroke-linejoin="round"`:''}/></svg>`;
-          const qIcon=lvl==='dominado'?_bolt('#545454',true):(lvl==='pendiente'||lvl==='unknown')?_bolt('#ca8a04',false):'⚡';
+          const _bolt=(color,w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="${color}"/></svg>`;
+          const qIcon=lvl==='dominado'?_bolt('#545454',20,23):(lvl==='pendiente'||lvl==='unknown')?_bolt('#ca8a04',16,18):'⚡';
           return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
