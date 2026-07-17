@@ -1974,10 +1974,11 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
         : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + ans.given + '</span>'
           + ' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
           + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + ans.a + '</span>';
+      const idTag = '<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">#' + String(i+1).padStart(2,'0') + '</span>';
       ansRows += '<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
         + '<span style="font-size:14px;flex-shrink:0">' + ico + '</span>'
         + '<div style="flex:1;min-width:0">'
-        + '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px">' + (i+1) + '. ' + (ans.q||'') + '</div>'
+        + '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px;display:flex;justify-content:space-between;align-items:flex-start"><span style="flex:1">' + (i+1) + '. ' + (ans.q||'') + '</span>' + idTag + '</div>'
         + ansLine
         + '</div></div>';
     });
@@ -2414,9 +2415,10 @@ function _prepAdminHistoryHtml() {
             :'<span style="font-size:11px;color:#f87171">Tu resp: '+a.given+'</span>'
               +' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
               +' <span style="font-size:11px;color:#39ff7a">Correcta: '+a.a+'</span>';
+          const idTag2='<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">#'+String(i+1).padStart(2,'0')+'</span>';
           ansRows+='<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
             +'<span style="font-size:14px;flex-shrink:0">'+ico+'</span>'
-            +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px">'+(i+1)+'. '+(a.q||'')+'</div>'+ansLine+'</div></div>';
+            +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px;display:flex;justify-content:space-between;align-items:flex-start"><span style="flex:1">'+(i+1)+'. '+(a.q||'')+'</span>'+idTag2+'</div>'+ansLine+'</div></div>';
         });
       }
       const expandBtn = (h.answers||[]).length
