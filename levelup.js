@@ -1646,6 +1646,9 @@ function _renderPreparatePane() {
   const savedVal = (!(_prep.questions[_prep.currentIdx]?.mc) && !_prep.answered)
     ? (document.getElementById('prep-ans-input')?.value || '') : '';
   el.innerHTML = _preparatePaneHtml();
+  el.classList.remove('prep-pane-in');
+  void el.offsetWidth;
+  el.classList.add('prep-pane-in');
   const inp = document.getElementById('prep-ans-input');
   if (inp) { if (savedVal) inp.value = savedVal; inp.focus(); }
 }
