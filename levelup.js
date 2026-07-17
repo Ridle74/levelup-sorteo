@@ -4,7 +4,7 @@
 
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
-let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -1815,6 +1815,7 @@ function _prepConfigHtml() {
   } else {
     const _renderUnit = (unit, ui) => {
       const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
+      let _qn2 = 0;
       const skillsHtml = unit.skills.map((sk,si)=>{
         const def=BINGO_TOPICS[sk]||{};
         const lvl=_prepMasteryLevel(sk);
@@ -1824,11 +1825,12 @@ function _prepConfigHtml() {
         const _lvlLbl={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
         const _lvlSuffix=_lvlLbl[lvl]?' · Nivel: '+_lvlLbl[lvl]:'';
         if(isQuiz){
+          _qn2++;
           const qPct=_prepLastPct(sk);
-          const qTip='Cuestionario: '+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
+          const qTip=`Cuestionario ${_qn2}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
           const qIcon=lvl==='dominado'?_bolt(16,18):(lvl==='pendiente'||lvl==='unknown')?_bolt(16,18):'⚡';
-          return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='unknown'||lvl==='pendiente'?'':' '+lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn2};_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${qIcon}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
@@ -1872,7 +1874,7 @@ function _prepConfigHtml() {
             <div class="prep-kh-quiz-info">
               <div class="prep-kh-quiz-tag">Cuestionario ${quizCount}</div>
               <div class="prep-kh-quiz-desc">${_cleanLbl(def.lbl,sk)}${qPct}${qDone?' · ✓ Completado':''}</div>
-              <button class="prep-kh-quiz-btn" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">${qDone?'↺ Repetir':'Iniciar cuestionario'}</button>
+              <button class="prep-kh-quiz-btn" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${quizCount};_renderPreparatePane()">${qDone?'↺ Repetir':'Iniciar cuestionario'}</button>
             </div>
             <div class="prep-kh-quiz-ico" style="color:${qDone?'#545454':'#a0a0a0'}">${_boltSvg2.replace('14','28').replace('16','32')}</div>
           </div>`;
@@ -1919,10 +1921,11 @@ function _prepConfigHtml() {
   let startPanel = '';
   if (_prep.topic && allTopicKeys.includes(_prep.topic)) {
     const def=BINGO_TOPICS[_prep.topic]||{};
+    const _isQT=!!def.quiz, _qnLbl=_isQT&&_prep.quizNum?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
     const qOpts=[5,10,15,20];
     const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
     startPanel = `<div class="prep-kh-panel">
-      <div class="prep-kh-panel-topic">${def.ico||''} ${_cleanLbl(def.lbl,_prep.topic)}</div>
+      <div class="prep-kh-panel-topic">${def.ico||''} ${_qnLbl}</div>
       <div class="prep-kh-panel-opts">
         <div>
           <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
@@ -2096,6 +2099,9 @@ function _prepGenUniqueQs(gen, count) {
 function _prepStartFromUnit(sk) {
   const def = BINGO_TOPICS[sk]; if (!def) return;
   _prep.topic = sk;
+  if (def.quiz && _prep.unitSkillList.length) {
+    _prep.quizNum = _prep.unitSkillList.slice(0, _prep.unitSkillList.indexOf(sk)+1).filter(s=>BINGO_TOPICS[s]?.quiz).length;
+  } else { _prep.quizNum = 0; }
   const qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_prep.timeSec,showReview:false});
   clearInterval(_prepTimerIntv);
@@ -2269,7 +2275,6 @@ function _prepGetQuizSkills(quizTopic) {
   return [];
 }
 async function _prepSaveHistory() {
-  if (isAdmin()) return;
   try {
     const me = _bingoMe();
     const def = BINGO_TOPICS[_prep.topic] || {};
@@ -2339,7 +2344,6 @@ async function _prepSaveHistory() {
   } catch(e) { console.error('prep history save', e); }
 }
 async function loadPrepHistory() {
-  if (isAdmin()) return;
   _prepHistoryLoading = true;
   try {
     const uid = String(getLoggedId());
@@ -2440,6 +2444,7 @@ function _prepAdminHistoryHtml() {
 function _prepExamHtml() {
   const q = _prep.questions[_prep.currentIdx]; if (!q) return '';
   const def = BINGO_TOPICS[_prep.topic]||{};
+  const _examLbl = (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
   const total = _prep.questions.length, idx = _prep.currentIdx;
   const pct = Math.round((idx/total)*100);
   const isMC = !!q.mc && _prep.ansMode !== 'text', isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
@@ -2477,7 +2482,7 @@ function _prepExamHtml() {
         </div>
         <div style="padding-right:48px;flex-shrink:0">${timerHtml}</div>
       </div>
-      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_cleanLbl(def.lbl,_prep.topic)}</div>
+      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_examLbl}</div>
     </div>
     <div class="prep-progress-row">
       <span class="prep-prog-label">${idx+1}/${total}</span>
@@ -2519,6 +2524,7 @@ function _prepResultHtml() {
   const emoji = pct>=90?'🏆':pct>=70?'🌟':pct>=50?'👍':'💪';
   const label = pct>=90?'¡Excelente!':pct>=70?'¡Bien hecho!':pct>=50?'Puedes mejorar':'Sigue practicando';
   const def = BINGO_TOPICS[_prep.topic]||{};
+  const _resLbl = (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
   const reviewHtml = _prep.showReview ? `<div class="prep-review-list">${_prep.answers.map((ans,i)=>`
     <div class="prep-review-item ${ans.correct?'ok':'fail'}">
       <div class="prep-review-q">${i+1}. ${ans.q}</div>
@@ -2526,7 +2532,7 @@ function _prepResultHtml() {
     </div>`).join('')}</div>` : '';
   return `<div class="prep-wrap">
     <div class="prep-score-wrap">
-      <div class="prep-topic-badge-sm" style="margin:0 auto 10px;display:inline-flex">${def.ico||'📚'} ${_cleanLbl(def.lbl,_prep.topic)}</div>
+      <div class="prep-topic-badge-sm" style="margin:0 auto 10px;display:inline-flex">${def.ico||'📚'} ${_resLbl}</div>
       <div class="prep-score-emoji">${emoji}</div>
       <div><span class="prep-score-num">${correct}</span><span class="prep-score-denom">/${total}</span></div>
       <div class="prep-score-pct">${pct}%</div>
