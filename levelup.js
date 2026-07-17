@@ -1815,8 +1815,9 @@ function _prepConfigHtml() {
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
-        <div class="prep-kh-unit-name">Unidad ${String(ui+1).padStart(2,'0')} — ${unit.lbl}</div>
-        <div class="prep-kh-skills">${skillsHtml}
+        <div class="prep-kh-skills">
+          <span class="prep-kh-unit-num">U${String(ui+1).padStart(2,'0')}</span>
+          ${skillsHtml}
           <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · ¡Completado!':''}" style="cursor:pointer;margin-left:4px">★</div>
         </div>
       </div>`;
