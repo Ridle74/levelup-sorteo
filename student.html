@@ -7005,7 +7005,7 @@ function _prepConfigHtml() {
           const sq=`<div class="prep-kh-sq quiz-sq${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="Cuestionario: ${def.lbl||sk}" style="cursor:pointer">⚡</div>`;
           return sq+(nextIsEx?'<div class="prep-kh-sep"></div>':'');
         }
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 18 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><polyline points="1,11 1,4 5,8 9,1 13,8 17,4 17,11"/><line x1="1" y1="11" x2="17" y2="11"/></svg>`:(def.ico||'')}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${def.lbl||sk}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
         <div class="prep-kh-unit-name">Unidad ${String(ui+1).padStart(2,'0')} — ${unit.lbl}</div>
