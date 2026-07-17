@@ -1814,7 +1814,7 @@ function _prepConfigHtml() {
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
-        <span class="prep-kh-unit-num">U${String(ui+1).padStart(2,'0')}</span>
+        <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
           ${skillsHtml}
           <div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'])" title="Examen: ${unit.lbl}${unitDone2?' · ¡Completado!':''}" style="cursor:pointer">★</div>
@@ -2119,6 +2119,22 @@ function _prepFinish() {
   _prepSaveHistory();
   _renderPreparatePane();
 }
+function _prepGetQuizSkills(quizTopic) {
+  const units = (PREP_CURRICULUM[_prep.level]||[]).filter(u=>
+    (!_prep.area||u.area===_prep.area) && (!_prep.editorial||u.editorial===_prep.editorial)
+  );
+  for (const unit of units) {
+    if (!unit.skills) continue;
+    const idx = unit.skills.indexOf(quizTopic);
+    if (idx === -1) continue;
+    let prevIdx = -1;
+    for (let i = idx-1; i >= 0; i--) {
+      if (BINGO_TOPICS[unit.skills[i]]?.quiz) { prevIdx = i; break; }
+    }
+    return unit.skills.slice(prevIdx+1, idx).filter(sk => !BINGO_TOPICS[sk]?.quiz);
+  }
+  return [];
+}
 async function _prepSaveHistory() {
   if (isAdmin()) return;
   try {
@@ -2139,6 +2155,28 @@ async function _prepSaveHistory() {
     };
     if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
     else _prepHistoryData = [localEntry];
+    // Si cuestionario al 100%: marcar automáticamente las habilidades cubiertas como dominado
+    if (pct === 100 && BINGO_TOPICS[_prep.topic]?.quiz) {
+      const coveredSkills = _prepGetQuizSkills(_prep.topic);
+      const now = Math.floor(Date.now()/1000);
+      for (const sk of coveredSkills) {
+        const skDef = BINGO_TOPICS[sk]||{};
+        const skEntry = {
+          uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
+          topic: sk, topicLabel: skDef.lbl||sk,
+          correct: 4, total: 4, pct: 100, timeSec: 0, answers: [],
+          autoFromQuiz: _prep.topic, completedAt: { seconds: now }
+        };
+        if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skEntry);
+        db.collection('prepHistory').add({
+          uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
+          topic: sk, topicLabel: skDef.lbl||sk,
+          correct: 4, total: 4, pct: 100, timeSec: 0, answers: [],
+          autoFromQuiz: _prep.topic,
+          completedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(e=>console.error('auto-dominate save',e));
+      }
+    }
     await db.collection('prepHistory').add({
       uid:        me.uid,
       name:       me.name,
