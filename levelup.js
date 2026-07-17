@@ -2339,8 +2339,8 @@ async function _prepSaveHistory() {
       answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct})),
       completedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    // Recargar historial desde Firestore para sincronizar
-    loadPrepHistory();
+    // Actualización optimista ya aplicada arriba — no recargar desde Firestore
+    // para evitar race condition con los auto-dominados (fire-and-forget)
   } catch(e) { console.error('prep history save', e); }
 }
 async function loadPrepHistory() {
