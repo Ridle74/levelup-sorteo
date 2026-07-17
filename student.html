@@ -6834,8 +6834,10 @@ function _prepConfigHtml() {
   </div>`;
 
   // Sidebar con lista de unidades
-  const totalSkillCount = allTopicKeys.length;
-  const doneSkillCount  = masLoading ? 0 : allTopicKeys.filter(k=>_prepMasteryLevel(k)==='dominado').length;
+  // Cuestionarios (bqN) y pruebas de unidad (bpu) NO cuentan como habilidades
+  const pureSkillKeys   = allTopicKeys.filter(k => !/_bq\d/.test(k) && !k.includes('_bpu'));
+  const totalSkillCount = pureSkillKeys.length;
+  const doneSkillCount  = masLoading ? 0 : pureSkillKeys.filter(k=>_prepMasteryLevel(k)==='dominado').length;
   const levelNum = Math.floor(doneSkillCount / 5) + 1;
   const sidebarItems = units.map((unit, ui) => {
     const unitDone = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
