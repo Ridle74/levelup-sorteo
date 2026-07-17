@@ -2622,7 +2622,7 @@ async function loadPrepReportsAdmin() {
     snap.forEach(doc => _prepAdminReportsData.push({ id: doc.id, ...doc.data() }));
   } catch(e) { _prepAdminReportsData = []; console.error('prepReports load', e); }
   _prepAdminReportsLoading = false;
-  if (dashGamingMode==='preparate') _renderPreparatePane();
+  _renderPreparatePane();
 }
 async function setPrepReportStatus(docId, status) {
   try {
@@ -2695,7 +2695,7 @@ function _prepAdminReportsHtml() {
     : '';
 
   return `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
-    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowReports=!_prepAdminShowReports;if(_prepAdminShowReports&&!Array.isArray(_prepAdminReportsData)&&!_prepAdminReportsLoading)loadPrepReportsAdmin();_renderPreparatePane()">
+    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowReports=!_prepAdminShowReports;if(_prepAdminShowReports&&!Array.isArray(_prepAdminReportsData)&&!_prepAdminReportsLoading)loadPrepReportsAdmin();else _renderPreparatePane()">
       ⚠️ ${_prepAdminShowReports ? '▲ Ocultar' : '▼ Ver'} reportes de errores${pendingBadge}
     </button>
     ${_prepAdminShowReports ? `<div style="margin-top:10px">
