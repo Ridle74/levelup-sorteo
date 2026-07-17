@@ -1746,13 +1746,13 @@ function _prepConfigHtml() {
   </div>`;
 
   // Leyenda de dominio
-  const _crownSvg = `<svg width="10" height="7" viewBox="0 0 20 13" fill="white"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
+  const _legBorder = 'border:1px solid rgba(255,255,255,0.12)';
   const legend = `<div class="prep-kh-legend">
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);border:2px solid rgba(168,85,247,1);display:flex;align-items:center;justify-content:center">${_crownSvg}</div>Dominado</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(146,94,227,0.91);border:2px solid rgba(190,128,249,0.88)"></div>Competente</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(182,148,236,0.90);border:2px solid rgba(212,170,251,0.75)"></div>Familiar</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(255,255,255,0.88);border:2px solid rgba(233,213,253,0.63)"></div>Intentado</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(255,255,255,0.88);border:2px solid rgba(255,255,255,0.5)"></div>No empezado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);${_legBorder}"></div>Dominado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(146,94,227,0.91);${_legBorder}"></div>Competente</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(182,148,236,0.90);${_legBorder}"></div>Familiar</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(219,201,246,0.89);${_legBorder}"></div>Intentado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(255,255,255,0.88);${_legBorder}"></div>No empezado</div>
   </div>`;
 
   // Sidebar con lista de unidades
