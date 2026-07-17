@@ -2120,8 +2120,9 @@ function _prepFinish() {
   _renderPreparatePane();
 }
 function _prepGetQuizSkills(quizTopic) {
-  // Buscar en todo el curriculum del nivel actual (los topic keys son únicos)
-  const allUnits = PREP_CURRICULUM[_prep.level] || [];
+  // PREP_CURRICULUM[level] es objeto por grado → aplanar todos los arrays de unidades
+  const levelData = PREP_CURRICULUM[_prep.level] || {};
+  const allUnits = Object.values(levelData).flat();
   for (const unit of allUnits) {
     if (!Array.isArray(unit.skills)) continue;
     const idx = unit.skills.indexOf(quizTopic);
