@@ -1631,11 +1631,11 @@ const PREP_CURRICULUM = {
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
 const PREP_EDITORIALS = {
-  intelectum:   { lbl:'Intelectum',              short:'INT', ico:'📘' },
-  saco_oliveros:{ lbl:'Saco Oliveros',           short:'SAO', ico:'📗' },
-  belen:        { lbl:'Colegio Belén',           short:'BEL', ico:'📒' },
-  trinidad:     { lbl:'C. Santísima Trinidad',   short:'CST', ico:'📙' },
-  san_ignacio:  { lbl:'San Ignacio de Recalde',  short:'SIR', ico:'📕' },
+  intelectum:   { lbl:'Intelectum',                    ico:'📘', abbr:'Intelectum' },
+  saco_oliveros:{ lbl:'Saco Oliveros',                 ico:'📗' },
+  belen:        { lbl:'Sagrado Corazones Belén',        ico:'📒', abbr:'S.C. Belén' },
+  trinidad:     { lbl:'Santísima Trinidad',             ico:'📙', abbr:'S. Trinidad' },
+  san_ignacio:  { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
@@ -1727,9 +1727,9 @@ function _prepConfigHtml() {
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
     ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
-      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn${_prep.editorial?' sel':''}" onclick="_prepOpen('editorial')">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+PREP_EDITORIALS[_prep.editorial]?.lbl):'🏫 Colegios ▾'}</button>`;
+    : `<button class="prep-sel-btn${_prep.editorial?' sel':''}" onclick="_prepOpen('editorial')" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:''}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):'🏫 Colegios ▾'} ▾</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
   const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
