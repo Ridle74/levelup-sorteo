@@ -1996,7 +1996,7 @@ function _prepConfigHtml() {
 
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
-    <div class="prep-kh-course-name">${lvDef.lbl||'?'}${_prep.grade?' · '+_prep.grade+'° Grado':' · ? Grado'}</div>
+    <div class="prep-kh-course-name">${lvDef.lbl||'¿?'}${_prep.grade?' · '+_prep.grade+'° Grado':' · ¿? Grado'}</div>
     <div class="prep-kh-mastery-row">
       <span class="prep-kh-mastery-lbl">Dominio del curso:</span>
       <div class="prep-kh-bar"><div class="prep-kh-bar-fill" style="width:${shown&&!masLoading&&allTopicKeys.length?coursePct:0}%"></div></div>
@@ -2036,8 +2036,8 @@ function _prepConfigHtml() {
       <button class="prep-sel-btn" onclick="navHome()">← INICIO</button>
     </div>
     <div class="prep-kh-sidebar-hdr">
-      <div class="prep-kh-sidebar-sub">${shown ? units.length+' Unidades' : '? Unidades'}</div>
-      <div class="prep-kh-sidebar-sub2">${shown ? totalSkillCount+' Habilidades' : '? Habilidades'}</div>
+      <div class="prep-kh-sidebar-sub">${shown ? units.length+' Unidades' : '¿? Unidades'}</div>
+      <div class="prep-kh-sidebar-sub2">${shown ? totalSkillCount+' Habilidades' : '¿? Habilidades'}</div>
     </div>
     ${shown ? sidebarItems : ''}
   </div>`;
@@ -2046,8 +2046,8 @@ function _prepConfigHtml() {
   const topbar = `<div class="prep-kh-topbar">
     <div class="prep-kh-topbar-streak">🔥 <span>0</span></div>
     <span class="prep-kh-topbar-arr">→</span>
-    <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel —'}</div>
-    <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '— habilidades'}</div>
+    <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel ¿?'}</div>
+    <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '¿? habilidades'}</div>
   </div>`;
 
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
