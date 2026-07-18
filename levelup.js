@@ -2032,7 +2032,7 @@ function _prepConfigHtml() {
     </div>`;
   }).join('');
   const sidebar = `<div class="prep-kh-sidebar">
-    <div style="height:46px"></div>
+    <div style="height:42px"></div>
     <div class="prep-kh-sidebar-inicio">
       <button class="prep-sel-btn" onclick="navHome()">← INICIO</button>
     </div>
