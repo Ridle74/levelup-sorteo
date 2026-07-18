@@ -2664,10 +2664,61 @@ const BINGO_TOPICS = {
   conjce_b3: { ico:'{}', lbl:'Comprensión → Extensión',        qCount:4, gen:()=>_genCCEB3() },
   conjce_b4: { ico:'∈', lbl:'Extensión → Comprensión',         qCount:4, gen:()=>_genCCEB4() },
   conjce_bq1:{ ico:'⚡', lbl:'Quiz – Comprensión y Extensión',  qCount:5, gen:()=>_genCCEBQ1(), quiz:true },
+  // ── Matemática 6° Primaria – San Francisco de Asís ──────────────────────
+  // Unidad 1: Multiplicación y División
+  sf6_u1_b1:  { ico:'✕', lbl:'Multiplicación 3×1 dígitos',               qCount:4, gen:()=>_genSF6_U1_B1() },
+  sf6_u1_b2:  { ico:'✕', lbl:'Multiplicación 3×2 dígitos',               qCount:4, gen:()=>_genSF6_U1_B2() },
+  sf6_u1_b3:  { ico:'✕', lbl:'Multiplicación 4×2 dígitos',               qCount:4, gen:()=>_genSF6_U1_B3() },
+  sf6_u1_bq1: { ico:'⚡', lbl:'Quiz I – Multiplicación',                  qCount:5, gen:()=>_genSF6_U1_BQ1(), quiz:true },
+  sf6_u1_b4:  { ico:'÷', lbl:'División exacta',                           qCount:4, gen:()=>_genSF6_U1_B4() },
+  sf6_u1_b5:  { ico:'÷', lbl:'División con residuo',                      qCount:4, gen:()=>_genSF6_U1_B5() },
+  sf6_u1_b6:  { ico:'÷', lbl:'Hallar dividendo (D = d×c + r)',            qCount:4, gen:()=>_genSF6_U1_B6() },
+  sf6_u1_bq2: { ico:'⚡', lbl:'Quiz II – División',                       qCount:5, gen:()=>_genSF6_U1_BQ2(), quiz:true },
+  sf6_u1_bpu: { ico:'⭐', lbl:'Examen – Multiplicación y División',       qCount:10, gen:()=>_genSF6_U1_BPU(), quiz:true },
+  // Unidad 2: Potencias y Raíces Cuadradas
+  sf6_u2_b1:  { ico:'²', lbl:'Potencias básicas (base 2–9)',              qCount:4, gen:()=>_genSF6_U2_B1() },
+  sf6_u2_b2:  { ico:'³', lbl:'Potencias mayores (3⁵, 8³, 14²…)',         qCount:4, gen:()=>_genSF6_U2_B2() },
+  sf6_u2_bq1: { ico:'⚡', lbl:'Quiz I – Potencias',                       qCount:5, gen:()=>_genSF6_U2_BQ1(), quiz:true },
+  sf6_u2_b3:  { ico:'√', lbl:'Raíces cuadradas √1 a √100',               qCount:4, gen:()=>_genSF6_U2_B3() },
+  sf6_u2_b4:  { ico:'√', lbl:'Raíces cuadradas √121 a √441',             qCount:4, gen:()=>_genSF6_U2_B4() },
+  sf6_u2_bq2: { ico:'⚡', lbl:'Quiz II – Raíces Cuadradas',               qCount:5, gen:()=>_genSF6_U2_BQ2(), quiz:true },
+  sf6_u2_bpu: { ico:'⭐', lbl:'Examen – Potencias y Raíces',              qCount:10, gen:()=>_genSF6_U2_BPU(), quiz:true },
+  // Unidad 3: Jerarquía de Operaciones
+  sf6_u3_b1:  { ico:'⊙', lbl:'Jerarquía: ×÷ antes de +−',               qCount:4, gen:()=>_genSF6_U3_B1() },
+  sf6_u3_b2:  { ico:'()', lbl:'Jerarquía con paréntesis',                 qCount:4, gen:()=>_genSF6_U3_B2() },
+  sf6_u3_bq1: { ico:'⚡', lbl:'Quiz I – Jerarquía básica',                qCount:5, gen:()=>_genSF6_U3_BQ1(), quiz:true },
+  sf6_u3_b3:  { ico:'²√', lbl:'Jerarquía con potencias y raíces',        qCount:4, gen:()=>_genSF6_U3_B3() },
+  sf6_u3_b4:  { ico:'∑', lbl:'Jerarquía compleja (nivel examen)',         qCount:4, gen:()=>_genSF6_U3_B4() },
+  sf6_u3_bq2: { ico:'⚡', lbl:'Quiz II – Jerarquía avanzada',             qCount:5, gen:()=>_genSF6_U3_BQ2(), quiz:true },
+  sf6_u3_bpu: { ico:'⭐', lbl:'Examen – Jerarquía de Operaciones',        qCount:10, gen:()=>_genSF6_U3_BPU(), quiz:true },
+  // Unidad 4: Divisibilidad y Criterios
+  sf6_u4_b1:  { ico:'÷', lbl:'Criterio de divisibilidad por 2',          qCount:4, gen:()=>_genSF6_U4_B1() },
+  sf6_u4_b2:  { ico:'÷', lbl:'Criterio de divisibilidad por 3',          qCount:4, gen:()=>_genSF6_U4_B2() },
+  sf6_u4_b3:  { ico:'÷', lbl:'Criterio de divisibilidad por 5',          qCount:4, gen:()=>_genSF6_U4_B3() },
+  sf6_u4_bq1: { ico:'⚡', lbl:'Quiz I – Criterios 2, 3 y 5',             qCount:5, gen:()=>_genSF6_U4_BQ1(), quiz:true },
+  sf6_u4_b4:  { ico:'÷', lbl:'Criterio de divisibilidad por 7',          qCount:4, gen:()=>_genSF6_U4_B4() },
+  sf6_u4_b5:  { ico:'÷', lbl:'Criterio de divisibilidad por 9',          qCount:4, gen:()=>_genSF6_U4_B5() },
+  sf6_u4_b6:  { ico:'÷', lbl:'Criterio de divisibilidad por 11',         qCount:4, gen:()=>_genSF6_U4_B6() },
+  sf6_u4_bq2: { ico:'⚡', lbl:'Quiz II – Criterios 7, 9 y 11',           qCount:5, gen:()=>_genSF6_U4_BQ2(), quiz:true },
+  sf6_u4_b7:  { ico:'÷', lbl:'Criterio de divisibilidad por 25',         qCount:4, gen:()=>_genSF6_U4_B7() },
+  sf6_u4_b8:  { ico:'_', lbl:'Dígito desconocido para divisibilidad',    qCount:4, gen:()=>_genSF6_U4_B8() },
+  sf6_u4_bq3: { ico:'⚡', lbl:'Quiz III – Criterios combinados',          qCount:5, gen:()=>_genSF6_U4_BQ3(), quiz:true },
+  sf6_u4_bpu: { ico:'⭐', lbl:'Examen – Divisibilidad',                   qCount:10, gen:()=>_genSF6_U4_BPU(), quiz:true },
+  // Unidad 5: Múltiplos, Divisores, Primos y Factorización
+  sf6_u5_b1:  { ico:'×', lbl:'Múltiplos de un número',                   qCount:4, gen:()=>_genSF6_U5_B1() },
+  sf6_u5_b2:  { ico:'|', lbl:'Divisores de un número',                   qCount:4, gen:()=>_genSF6_U5_B2() },
+  sf6_u5_bq1: { ico:'⚡', lbl:'Quiz I – Múltiplos y Divisores',           qCount:5, gen:()=>_genSF6_U5_BQ1(), quiz:true },
+  sf6_u5_b3:  { ico:'P', lbl:'Número primo o compuesto',                 qCount:4, gen:()=>_genSF6_U5_B3() },
+  sf6_u5_b4:  { ico:'∏', lbl:'Descomposición canónica',                  qCount:4, gen:()=>_genSF6_U5_B4() },
+  sf6_u5_bq2: { ico:'⚡', lbl:'Quiz II – Primos y Factorización',         qCount:5, gen:()=>_genSF6_U5_BQ2(), quiz:true },
+  sf6_u5_b5:  { ico:'#', lbl:'Cantidad de divisores (fórmula CD)',        qCount:4, gen:()=>_genSF6_U5_B5() },
+  sf6_u5_b6:  { ico:'?', lbl:'Dígito para divisibilidad (avanzado)',      qCount:4, gen:()=>_genSF6_U5_B6() },
+  sf6_u5_bq3: { ico:'⚡', lbl:'Quiz III – Factorización avanzada',        qCount:5, gen:()=>_genSF6_U5_BQ3(), quiz:true },
+  sf6_u5_bpu: { ico:'⭐', lbl:'Examen – Múltiplos, Divisores y Primos',   qCount:10, gen:()=>_genSF6_U5_BPU(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u1_bpu','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u2_bpu','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u3_bpu','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u4_bpu','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','sf6_u5_bpu'];
 // [PREP_LEVELS / PREP_CURRICULUM / PREP_EDITORIALS — see levelup.js]
 
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'

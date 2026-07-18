@@ -992,6 +992,231 @@ function _genCCEB4(){
 }
 function _genCCEBQ1(){return [_genCCEB1,_genCCEB2,_genCCEB3,_genCCEB4][Math.floor(Math.random()*4)]();}
 
+// ── Matemática 6° Primaria – San Francisco de Asís ──────────────────────────
+// Utilidad: construye 4 opciones únicas (numéricas) con la respuesta correcta incluida
+function _sf6w4(r,...cands){
+  const seen=new Set([r]); const ok=[];
+  for(const v of cands){ if(Number.isFinite(v)&&!seen.has(v)){seen.add(v);ok.push(v);} }
+  let i=1; while(ok.length<3){const n=r+i*13; if(!seen.has(n)){seen.add(n);ok.push(n);} i++;}
+  return _bingShufArr([r,...ok.slice(0,3)]);
+}
+const _SF6_SUP={2:'²',3:'³',4:'⁴',5:'⁵'};
+
+// ── Unidad 1: Multiplicación y División ─────────────────────────────────────
+function _genSF6_U1_B1(){ // 3×1 dígitos
+  const a=_bGetRandomInt(100,999),b=_bGetRandomInt(2,9),r=a*b;
+  return {q:`${a} × ${b} = ?`,a:r,opts:_sf6w4(r,r-b*10,r+b*10,r-b,r+b*20),mc:true};
+}
+function _genSF6_U1_B2(){ // 3×2 dígitos
+  const a=_bGetRandomInt(100,499),b=_bGetRandomInt(11,49),r=a*b;
+  return {q:`${a} × ${b} = ?`,a:r,opts:_sf6w4(r,r-a,r+a,r-b*10,r+b*10),mc:true};
+}
+function _genSF6_U1_B3(){ // 4×2 dígitos
+  const a=_bGetRandomInt(1000,3999),b=_bGetRandomInt(11,49),r=a*b;
+  return {q:`${a} × ${b} = ?`,a:r,opts:_sf6w4(r,r-a,r+a,r-b*100,r+b*100),mc:true};
+}
+function _genSF6_U1_BQ1(){ return [_genSF6_U1_B1,_genSF6_U1_B2,_genSF6_U1_B3][_bGetRandomInt(0,2)](); }
+function _genSF6_U1_B4(){ // División exacta
+  const d=_bGetRandomInt(2,12),q=_bGetRandomInt(10,99),dvd=d*q;
+  return {q:`${dvd} ÷ ${d} = ?`,a:q,opts:_sf6w4(q,q-2,q+2,q-1,q+1),mc:true};
+}
+function _genSF6_U1_B5(){ // División con residuo – hallar el residuo
+  const d=_bGetRandomInt(3,12),qc=_bGetRandomInt(5,50),r=_bGetRandomInt(1,d-1),dvd=d*qc+r;
+  return {q:`${dvd} ÷ ${d}: ¿cuál es el residuo?`,a:r,opts:_sf6w4(r,0,r-1>0?r-1:r+2,r+1,d-1),mc:true};
+}
+function _genSF6_U1_B6(){ // Hallar dividendo dados divisor, cociente y tipo de residuo
+  const d=_bGetRandomInt(5,20),c=_bGetRandomInt(8,40);
+  const useMax=Math.random()<0.5,r=useMax?(d-1):0,dvd=d*c+r;
+  return {q:`Divisor = ${d}, cociente = ${c}, residuo ${useMax?'máximo':'mínimo'}. ¿Cuál es el dividendo?`,
+          a:dvd,opts:_sf6w4(dvd,dvd-d,dvd+d,dvd-1,dvd+c),mc:true};
+}
+function _genSF6_U1_BQ2(){ return [_genSF6_U1_B4,_genSF6_U1_B5,_genSF6_U1_B6][_bGetRandomInt(0,2)](); }
+function _genSF6_U1_BPU(){ return [_genSF6_U1_B1,_genSF6_U1_B2,_genSF6_U1_B3,_genSF6_U1_B4,_genSF6_U1_B5,_genSF6_U1_B6][_bGetRandomInt(0,5)](); }
+
+// ── Unidad 2: Potencias y Raíces Cuadradas ──────────────────────────────────
+function _genSF6_U2_B1(){ // Potencias básicas (base 2–9, exp 2–3)
+  const base=_bGetRandomInt(2,9),exp=_bGetRandomInt(2,3),r=Math.pow(base,exp);
+  return {q:`${base}${_SF6_SUP[exp]} = ?`,a:r,opts:_sf6w4(r,r-base,r+base,base*exp,r+exp),mc:true};
+}
+function _genSF6_U2_B2(){ // Potencias mayores (como en las imágenes)
+  const pairs=[[5,3],[5,4],[5,5],[7,2],[8,3],[10,2],[10,3],[12,2],[14,2],[3,5],[4,4],[6,3],[2,6]];
+  const [base,exp]=pairs[_bGetRandomInt(0,pairs.length-1)];
+  const r=Math.pow(base,exp),d=Math.max(base,Math.floor(r*0.08));
+  return {q:`${base}${_SF6_SUP[exp]||'^'+exp} = ?`,a:r,opts:_sf6w4(r,r-d,r+d,r-base,r+base*2),mc:true};
+}
+function _genSF6_U2_BQ1(){ return Math.random()<0.5?_genSF6_U2_B1():_genSF6_U2_B2(); }
+function _genSF6_U2_B3(){ // Raíces cuadradas √1–√100
+  const r=_bGetRandomInt(1,10),sq=r*r;
+  return {q:`√${sq} = ?`,a:r,opts:_sf6w4(r,r-1,r+1,r+2,r-2),mc:true};
+}
+function _genSF6_U2_B4(){ // Raíces cuadradas √121–√441
+  const r=_bGetRandomInt(11,21),sq=r*r;
+  return {q:`√${sq} = ?`,a:r,opts:_sf6w4(r,r-2,r-1,r+1,r+2),mc:true};
+}
+function _genSF6_U2_BQ2(){ return Math.random()<0.5?_genSF6_U2_B3():_genSF6_U2_B4(); }
+function _genSF6_U2_BPU(){ return [_genSF6_U2_B1,_genSF6_U2_B2,_genSF6_U2_B3,_genSF6_U2_B4][_bGetRandomInt(0,3)](); }
+
+// ── Unidad 3: Jerarquía de Operaciones ──────────────────────────────────────
+function _genSF6_U3_B1(){ // ×/÷ antes de +/−
+  const a=_bGetRandomInt(2,9),b=_bGetRandomInt(2,9),c=_bGetRandomInt(2,15);
+  if(Math.random()<0.5){ const r=a*b+c; return {q:`${a} × ${b} + ${c} = ?`,a:r,opts:_sf6w4(r,(a+b)*c,a*b,a*b-c>0?a*b-c:a*b+c+1),mc:true}; }
+  const c2=_bGetRandomInt(1,a*b-1),r=a*b-c2;
+  return {q:`${a} × ${b} − ${c2} = ?`,a:r,opts:_sf6w4(r,a*b,(a-b+1)*c2||2,a*b+c2),mc:true};
+}
+function _genSF6_U3_B2(){ // Con paréntesis
+  const a=_bGetRandomInt(2,8),b=_bGetRandomInt(2,8),c=_bGetRandomInt(2,6);
+  if(Math.random()<0.5){ const r=(a+b)*c; return {q:`(${a} + ${b}) × ${c} = ?`,a:r,opts:_sf6w4(r,a*c+b,a+b*c,r+c),mc:true}; }
+  const lo=Math.min(a,b),hi=Math.max(a,b),r=(hi-lo)*c;
+  return {q:`(${hi} − ${lo}) × ${c} = ?`,a:r,opts:_sf6w4(r,hi*c-lo,hi-lo+c,hi*c+lo),mc:true};
+}
+function _genSF6_U3_BQ1(){ return Math.random()<0.5?_genSF6_U3_B1():_genSF6_U3_B2(); }
+function _genSF6_U3_B3(){ // Con potencias y raíces
+  const base=_bGetRandomInt(2,7),exp=_bGetRandomInt(2,3),pow=Math.pow(base,exp);
+  if(Math.random()<0.5){ const c=_bGetRandomInt(2,20),r=pow+c; return {q:`${base}${_SF6_SUP[exp]} + ${c} = ?`,a:r,opts:_sf6w4(r,pow,base*exp+c,pow-c>0?pow-c:pow+1),mc:true}; }
+  const sqArr=[4,9,16,25,36,49,64,81,100],sq=sqArr[_bGetRandomInt(0,8)],sqr=Math.sqrt(sq),c2=_bGetRandomInt(2,20),r=sqr+c2;
+  return {q:`√${sq} + ${c2} = ?`,a:r,opts:_sf6w4(r,sq+c2,sqr*c2,r+1),mc:true};
+}
+function _genSF6_U3_B4(){ // Jerarquía compleja (todo combinado, nivel examen)
+  const a=_bGetRandomInt(2,6),b=_bGetRandomInt(2,5),c=_bGetRandomInt(2,8);
+  const base=_bGetRandomInt(2,5),exp=_bGetRandomInt(2,3),pow=Math.pow(base,exp);
+  const r=pow+a*b+c;
+  return {q:`${base}${_SF6_SUP[exp]} + ${a} × ${b} + ${c} = ?`,a:r,opts:_sf6w4(r,pow+a*b,pow*c,r+a),mc:true};
+}
+function _genSF6_U3_BQ2(){ return Math.random()<0.5?_genSF6_U3_B3():_genSF6_U3_B4(); }
+function _genSF6_U3_BPU(){ return [_genSF6_U3_B1,_genSF6_U3_B2,_genSF6_U3_B3,_genSF6_U3_B4][_bGetRandomInt(0,3)](); }
+
+// ── Unidad 4: Divisibilidad y Criterios ─────────────────────────────────────
+function _genSF6_U4_B1(){ // Por 2 (último dígito par)
+  if(Math.random()<0.5){
+    const even=_bGetRandomInt(10,200)*2;
+    const odds=[_bGetRandomInt(5,100)*2+1,_bGetRandomInt(5,100)*2+1,_bGetRandomInt(5,100)*2+1];
+    return {q:`¿Cuál número es divisible por 2?`,a:String(even),opts:_bingShufArr([String(even),...odds.map(String)]),mc:true};
+  }
+  const isDivisible=Math.random()<0.5,n=isDivisible?_bGetRandomInt(10,200)*2:_bGetRandomInt(10,100)*2+1;
+  return {q:`¿${n} es divisible por 2?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_B2(){ // Por 3 (suma de dígitos)
+  const digSum=n=>String(n).split('').reduce((s,d)=>s+parseInt(d),0);
+  const isDivisible=Math.random()<0.5;
+  let n=_bGetRandomInt(10,999);
+  while((digSum(n)%3===0)!==isDivisible) n=_bGetRandomInt(10,999);
+  if(Math.random()<0.5){ const s=digSum(n); return {q:`La suma de dígitos de ${n} es ${s}. ¿Es divisible por 3?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true}; }
+  return {q:`¿${n} es divisible por 3?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_B3(){ // Por 5 (último dígito 0 o 5)
+  if(Math.random()<0.5){
+    const div5=[150,875,350,625,510,245,1000][_bGetRandomInt(0,6)];
+    const odds=[_bGetRandomInt(10,200)*10+3,_bGetRandomInt(10,200)*10+7,_bGetRandomInt(10,200)*10+1];
+    return {q:`¿Cuál número es divisible por 5?`,a:String(div5),opts:_bingShufArr([String(div5),...odds.map(String)]),mc:true};
+  }
+  const isDivisible=Math.random()<0.5;
+  const n=isDivisible?_bGetRandomInt(2,200)*5:_bGetRandomInt(2,100)*10+_bGetRandomInt(1,4);
+  return {q:`¿${n} es divisible por 5?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_BQ1(){ return [_genSF6_U4_B1,_genSF6_U4_B2,_genSF6_U4_B3][_bGetRandomInt(0,2)](); }
+function _genSF6_U4_B4(){ // Por 7 (comprobación directa)
+  const isDivisible=Math.random()<0.5,n=isDivisible?_bGetRandomInt(2,20)*7:_bGetRandomInt(2,20)*7+_bGetRandomInt(1,6);
+  return {q:`¿${n} es divisible por 7?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_B5(){ // Por 9 (suma de dígitos)
+  const digSum=n=>String(n).split('').reduce((s,d)=>s+parseInt(d),0);
+  const isDivisible=Math.random()<0.5;
+  let n=_bGetRandomInt(10,999);
+  while((digSum(n)%9===0)!==isDivisible) n=_bGetRandomInt(10,999);
+  if(Math.random()<0.5){ const s=digSum(n); return {q:`La suma de dígitos de ${n} es ${s}. ¿Es divisible por 9?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true}; }
+  return {q:`¿${n} es divisible por 9?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_B6(){ // Por 11 (suma alternada de dígitos)
+  const isDivisible=Math.random()<0.5,n=isDivisible?_bGetRandomInt(1,50)*11:_bGetRandomInt(1,50)*11+_bGetRandomInt(1,10);
+  const digits=String(n).split('').map(Number),altSum=digits.reduce((s,d,i)=>s+(i%2===0?d:-d),0);
+  if(Math.random()<0.5 && n>=100){ return {q:`La suma alternada de dígitos de ${n} es ${altSum}. ¿Es divisible por 11?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true}; }
+  return {q:`¿${n} es divisible por 11?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_BQ2(){ return [_genSF6_U4_B4,_genSF6_U4_B5,_genSF6_U4_B6][_bGetRandomInt(0,2)](); }
+function _genSF6_U4_B7(){ // Por 25 (últimos dos dígitos)
+  const ends=[0,25,50,75],bad=[10,15,20,30,35,40,45,55,60,65,70,80,85,90,95];
+  const isDivisible=Math.random()<0.5,base=_bGetRandomInt(1,20)*100;
+  const n=isDivisible?base+ends[_bGetRandomInt(0,3)]:base+bad[_bGetRandomInt(0,bad.length-1)];
+  return {q:`¿${n} es divisible por 25?`,a:isDivisible?'Sí':'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U4_B8(){ // Dígito desconocido para divisibilidad (criterios 3 y 9)
+  const div=Math.random()<0.5?3:9;
+  const prefix=_bGetRandomInt(10,99),prefixSum=String(prefix).split('').reduce((s,c)=>s+parseInt(c),0);
+  const needed=((div-(prefixSum%div))%div);
+  const w1=(needed+3)%10,w2=(needed+5)%10,w3=(needed+7)%10;
+  return {q:`¿Qué dígito va en el espacio para que ${prefix}_ sea divisible por ${div}?`,
+          a:String(needed),opts:_bingShufArr([String(needed),String(w1),String(w2),String(w3)]),mc:true};
+}
+function _genSF6_U4_BQ3(){ return [_genSF6_U4_B1,_genSF6_U4_B2,_genSF6_U4_B3,_genSF6_U4_B4,_genSF6_U4_B5,_genSF6_U4_B6,_genSF6_U4_B7,_genSF6_U4_B8][_bGetRandomInt(0,7)](); }
+function _genSF6_U4_BPU(){ return _genSF6_U4_BQ3(); }
+
+// ── Unidad 5: Múltiplos, Divisores, Primos y Factorización ──────────────────
+function _genSF6_U5_B1(){ // Múltiplos de un número
+  const n=_bGetRandomInt(2,12),k=_bGetRandomInt(2,10),r=n*k;
+  if(Math.random()<0.5){ return {q:`¿${r} es múltiplo de ${n}?`,a:'Sí',opts:['Sí','No'],mc:true}; }
+  const notMult=n*k+_bGetRandomInt(1,n-1);
+  return {q:`¿${notMult} es múltiplo de ${n}?`,a:'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U5_B2(){ // Divisores de un número
+  const ns=[12,18,24,30,36,48],n=ns[_bGetRandomInt(0,ns.length-1)];
+  const divs=[];for(let i=1;i<=n;i++){if(n%i===0)divs.push(i);}
+  const d=divs[_bGetRandomInt(0,divs.length-1)];
+  const nonDiv=d+1<=n&&n%(d+1)!==0?d+1:d+2;
+  if(Math.random()<0.5){ return {q:`¿${d} es divisor de ${n}?`,a:'Sí',opts:['Sí','No'],mc:true}; }
+  return {q:`¿${nonDiv} es divisor de ${n}?`,a:'No',opts:['Sí','No'],mc:true};
+}
+function _genSF6_U5_BQ1(){ return Math.random()<0.5?_genSF6_U5_B1():_genSF6_U5_B2(); }
+function _genSF6_U5_B3(){ // Número primo o compuesto
+  const primes=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47];
+  const composites=[4,6,8,9,10,12,14,15,16,18,20,21,22,24,25,26,27,28,30,32,33,35,36];
+  const isPrime=Math.random()<0.5;
+  const n=isPrime?primes[_bGetRandomInt(0,primes.length-1)]:composites[_bGetRandomInt(0,composites.length-1)];
+  return {q:`¿${n} es primo o compuesto?`,a:isPrime?'primo':'compuesto',opts:['primo','compuesto'],mc:true};
+}
+function _genSF6_U5_B4(){ // Descomposición canónica (factorización prima)
+  const items=[
+    {n:8,  ans:'2³'},     {n:12, ans:'2² × 3'},  {n:16, ans:'2⁴'},     {n:18, ans:'2 × 3²'},
+    {n:20, ans:'2² × 5'}, {n:24, ans:'2³ × 3'},  {n:25, ans:'5²'},      {n:27, ans:'3³'},
+    {n:28, ans:'2² × 7'}, {n:30, ans:'2 × 3 × 5'},{n:32, ans:'2⁵'},    {n:36, ans:'2² × 3²'},
+    {n:45, ans:'3² × 5'}, {n:48, ans:'2⁴ × 3'},  {n:50, ans:'2 × 5²'}, {n:56, ans:'2³ × 7'},
+    {n:60, ans:'2² × 3 × 5'},{n:72,ans:'2³ × 3²'},{n:90,ans:'2 × 3² × 5'},{n:100,ans:'2² × 5²'},
+  ];
+  const item=items[_bGetRandomInt(0,items.length-1)];
+  const wrong=[items[_bGetRandomInt(0,items.length-1)].ans,items[_bGetRandomInt(0,items.length-1)].ans,items[_bGetRandomInt(0,items.length-1)].ans].filter(w=>w!==item.ans);
+  const wo=[...new Set(wrong)].slice(0,3);
+  while(wo.length<3){const x=items[_bGetRandomInt(0,items.length-1)].ans;if(!wo.includes(x)&&x!==item.ans)wo.push(x);}
+  return {q:`Descomposición canónica de ${item.n}:`,a:item.ans,opts:_bingShufArr([item.ans,...wo.slice(0,3)]),mc:true};
+}
+function _genSF6_U5_BQ2(){ return Math.random()<0.5?_genSF6_U5_B3():_genSF6_U5_B4(); }
+function _genSF6_U5_B5(){ // Cantidad de divisores CD usando fórmula (e₁+1)(e₂+1)...
+  const items=[
+    {n:8,  fact:'2³',       cd:4},  {n:12, fact:'2²×3',      cd:6},
+    {n:16, fact:'2⁴',       cd:5},  {n:18, fact:'2×3²',      cd:6},
+    {n:20, fact:'2²×5',     cd:6},  {n:24, fact:'2³×3',      cd:8},
+    {n:25, fact:'5²',       cd:3},  {n:27, fact:'3³',         cd:4},
+    {n:36, fact:'2²×3²',    cd:9},  {n:48, fact:'2⁴×3',      cd:10},
+    {n:56, fact:'2³×7',     cd:8},  {n:72, fact:'2³×3²',     cd:12},
+    {n:90, fact:'2×3²×5',   cd:12}, {n:120,fact:'2³×3×5',    cd:16},
+  ];
+  const item=items[_bGetRandomInt(0,items.length-1)];
+  return {q:`Si ${item.n} = ${item.fact}, ¿cuántos divisores tiene ${item.n}?`,
+          a:item.cd,opts:_sf6w4(item.cd,item.cd-2,item.cd+2,item.cd-1,item.cd+4),mc:true};
+}
+function _genSF6_U5_B6(){ // Suma de valores para divisibilidad (problemas avanzados)
+  const div=Math.random()<0.5?3:9;
+  // Find digit 'n' in a number like 14n8 that makes it divisible by div
+  const a=_bGetRandomInt(1,9),b=_bGetRandomInt(0,9),c=_bGetRandomInt(0,9);
+  const fixedSum=a+b+c; // sum of known digits
+  // Find all x (0-9) such that (fixedSum+x)%div===0
+  const valid=[];for(let x=0;x<=9;x++){if((fixedSum+x)%div===0)valid.push(x);}
+  if(valid.length===0){return _genSF6_U5_B6();} // retry
+  const sumV=valid.reduce((s,v)=>s+v,0);
+  return {q:`¿Cuántos valores puede tomar 'x' si ${a}${b}x${c} es divisible por ${div}? Suma de esos valores:`,
+          a:sumV,opts:_sf6w4(sumV,sumV-div,sumV+div,sumV+valid.length,sumV-valid.length>0?sumV-valid.length:sumV+div+1),mc:true};
+}
+function _genSF6_U5_BQ3(){ return [_genSF6_U5_B3,_genSF6_U5_B4,_genSF6_U5_B5,_genSF6_U5_B6][_bGetRandomInt(0,3)](); }
+function _genSF6_U5_BPU(){ return [_genSF6_U5_B1,_genSF6_U5_B2,_genSF6_U5_B3,_genSF6_U5_B4,_genSF6_U5_B5,_genSF6_U5_B6][_bGetRandomInt(0,5)](); }
+
 // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
 const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
 const _EM_CAJAS = [
@@ -1584,7 +1809,7 @@ function _bingoGenAngTrig() {
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u1_bpu','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u2_bpu','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u3_bpu','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u4_bpu','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','sf6_u5_bpu'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -1618,7 +1843,16 @@ const PREP_CURRICULUM = {
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
     ], '5':[],
-    '6':[{lbl:'División de 5 entre 2 Dígitos', area:'matematica', skills:['div5x2']},{lbl:'Espacio Muestral y Suceso', area:'matematica', editorial:'trinidad', skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},{lbl:'Números Negativos y Ecuaciones', area:'matematica', skills:['neg','ecuacion']}],
+    '6':[
+      {lbl:'División de 5 entre 2 Dígitos',          area:'matematica',                          skills:['div5x2']},
+      {lbl:'Espacio Muestral y Suceso',               area:'matematica', editorial:'trinidad',    skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},
+      {lbl:'Números Negativos y Ecuaciones',          area:'matematica',                          skills:['neg','ecuacion']},
+      {lbl:'Multiplicación y División',               area:'matematica', editorial:'san_francisco', skills:['sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u1_bpu']},
+      {lbl:'Potencias y Raíces Cuadradas',            area:'matematica', editorial:'san_francisco', skills:['sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u2_bpu']},
+      {lbl:'Jerarquía de Operaciones',                area:'matematica', editorial:'san_francisco', skills:['sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u3_bpu']},
+      {lbl:'Divisibilidad y Criterios',               area:'matematica', editorial:'san_francisco', skills:['sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u4_bpu']},
+      {lbl:'Múltiplos, Divisores, Primos y Factorización', area:'matematica', editorial:'san_francisco', skills:['sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','sf6_u5_bpu']},
+    ],
   },
   secundaria: {
     '1':[{lbl:'Primera Unidad — Trigonometría',   area:'trigonometria', editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
