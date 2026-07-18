@@ -2144,7 +2144,7 @@ function _prepConfigHtml() {
           <div class="prep-kh-quiz-desc">${examDesc}${unitDone2?' · ✓ ¡Completado!':''}</div>
           <button class="prep-kh-quiz-btn exam-btn" onclick="_snd.start();_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')">${unitDone2?'↺ Repetir':'Empezar examen'}</button>
         </div>
-        <div class="prep-kh-quiz-ico">${`<svg width="28" height="27" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg" style="color:${unitDone2?'#ca8a04':'rgba(250,204,21,0.4)'}"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`}</div>
+        <div class="prep-kh-quiz-ico"><svg width="22" height="21" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg></div>
       </div>`;
       let _qn3=0;
       const expSquaresHtml=unit.skills.map((sk,si)=>{
