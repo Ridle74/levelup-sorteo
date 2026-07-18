@@ -15,7 +15,12 @@ const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intele
 const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde'};
 
 function _prepApplyUrlSlug() {
-  const m = location.pathname.match(/^\/student\/levelup\/([^/?#]+)/);
+  // Usa la URL actual; si ya fue cambiada por go(), usa el path guardado al inicio de página
+  let pathname = location.pathname;
+  if (!pathname.match(/^\/student\/levelup\//) && typeof _levelUpInitPath !== 'undefined') {
+    pathname = _levelUpInitPath;
+  }
+  const m = pathname.match(/^\/student\/levelup\/([^/?#]+)/);
   if (!m) return false;
   const sm = m[1].match(/^([psu])(\d+)([a-z]+)(?:-(.+))?$/);
   if (!sm) return false;
@@ -37,6 +42,8 @@ function _prepSyncUrl() {
   const a = _prep.area ? (_PREP_URL_AREA_R[_prep.area] || '') : '';
   const c = _prep.editorial ? (_PREP_URL_ED_R[_prep.editorial] || '') : '';
   if (!n || !g || !a) {
+    // No borrar un slug existente — solo limpiar si ya estamos en la URL base
+    if (location.pathname.startsWith('/student/levelup/')) return; // dejar el slug intacto
     if (location.pathname !== '/student/levelup') history.replaceState({view:'levelup'}, '', '/student/levelup');
     return;
   }
@@ -2702,7 +2709,7 @@ async function loadPrepHistory() {
     _prepHistoryData = _prepHistoryData.slice(0,30);
   } catch(e) { _prepHistoryData = []; console.error('prep history load', e); }
   _prepHistoryLoading = false;
-  if (dashGamingMode==='preparate') _renderPreparatePane();
+  if (dashGamingMode==='preparate' || document.getElementById('preparate-pane')) _renderPreparatePane();
 }
 async function loadPrepHistoryAdmin() {
   if (!isAdmin()) return;

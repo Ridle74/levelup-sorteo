@@ -1456,6 +1456,7 @@ function viewFromLocation() {
 }
 
 let currentView = viewFromLocation();
+const _levelUpInitPath = location.pathname; // guardado antes de cualquier pushState/replaceState
 let taskFilter       = 'tasks';   // 'tasks' | 'prompts' | 'msgs'
 let taskSort         = 'recent';  // 'recent' (ACTIVAS) | 'old' (VENCIDAS) | 'student' (ALUMNO) | 'review' (APROBAR, admin)
 let taskStudentView  = null;      // null = todos, o String(id) = alumno específico
