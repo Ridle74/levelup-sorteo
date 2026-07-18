@@ -1850,12 +1850,178 @@ function _bingoGenAngTrig() {
   }
   return _bingoGenAngTrig();
 }
+// ── Sustracción 6° Primaria – Colegio Santísima Trinidad ─────────────────────
+// 1 dígito
+function _genT6Sust1B1() {
+  const b=_bGetRandomInt(1,8), a=_bGetRandomInt(b+1,9), ans=a-b;
+  const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2,ans+3].filter(v=>v>=0&&v!==ans)).slice(0,3);
+  return {q:`${a} − ${b} = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6Sust1B2() {
+  // __ − b = c → buscar a
+  const b=_bGetRandomInt(1,7), c=_bGetRandomInt(1,9-b), a=b+c;
+  const ws=_bingShufArr([a-2,a-1,a+1,a+2].filter(v=>v>=1&&v<=9&&v!==a)).slice(0,3);
+  return {q:`__ − ${b} = ${c}`,a:String(a),opts:_bingShufArr([String(a),...ws.map(String)]),mc:true};
+}
+function _genT6Sust1BQ1() { return [_genT6Sust1B1,_genT6Sust1B2][_bGetRandomInt(0,1)](); }
+
+// 2 dígitos
+function _genT6Sust2B1() {
+  // Sin préstamo: unidades de a ≥ unidades de b
+  const bD=_bGetRandomInt(1,7),bU=_bGetRandomInt(0,7);
+  const aD=_bGetRandomInt(bD+1,9),aU=_bGetRandomInt(bU,9);
+  const a=aD*10+aU,b=bD*10+bU,ans=a-b;
+  const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2,ans+3].filter(v=>v>0&&v<99&&v!==ans)).slice(0,3);
+  return {q:`${a} − ${b} = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6Sust2B2() {
+  // Con préstamo: unidades de a < unidades de b
+  const bD=_bGetRandomInt(1,4),bU=_bGetRandomInt(2,9);
+  const aU=_bGetRandomInt(0,bU-1),aD=_bGetRandomInt(bD+1,9);
+  const a=aD*10+aU,b=bD*10+bU,ans=a-b;
+  const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2].filter(v=>v>0&&v<99&&v!==ans)).slice(0,3);
+  return {q:`${a} − ${b} = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6Sust2BQ1() { return [_genT6Sust2B1,_genT6Sust2B2][_bGetRandomInt(0,1)](); }
+
+// 3 dígitos
+function _genT6Sust3B1() {
+  // Sin préstamo
+  const bC=_bGetRandomInt(1,6),bD=_bGetRandomInt(0,7),bU=_bGetRandomInt(0,7);
+  const aC=_bGetRandomInt(bC+1,9),aD=_bGetRandomInt(bD,9),aU=_bGetRandomInt(bU,9);
+  const a=aC*100+aD*10+aU,b=bC*100+bD*10+bU,ans=a-b;
+  const ws=_bingShufArr([ans-10,ans-1,ans+1,ans+10,ans+11].filter(v=>v>0&&v<999&&v!==ans)).slice(0,3);
+  return {q:`${a} − ${b} = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6Sust3B2() {
+  // Con préstamo: unidades de a < unidades de b
+  const bC=_bGetRandomInt(1,4),bD=_bGetRandomInt(0,8),bU=_bGetRandomInt(2,9);
+  const aC=_bGetRandomInt(bC+1,9),aD=_bGetRandomInt(0,9),aU=_bGetRandomInt(0,bU-1);
+  const a=aC*100+aD*10+aU,b=bC*100+bD*10+bU,ans=a-b;
+  const ws=_bingShufArr([ans-10,ans-1,ans+1,ans+10].filter(v=>v>0&&v<999&&v!==ans)).slice(0,3);
+  return {q:`${a} − ${b} = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6Sust3BQ1() { return [_genT6Sust3B1,_genT6Sust3B2][_bGetRandomInt(0,1)](); }
+function _genT6SustBPU() { return [_genT6Sust1B1,_genT6Sust1B2,_genT6Sust2B1,_genT6Sust2B2,_genT6Sust3B1,_genT6Sust3B2][_bGetRandomInt(0,5)](); }
+
+// ── Valor Absoluto 6° Primaria – Colegio Santísima Trinidad ──────────────────
+function _genT6VA_B1() {
+  const defs=[
+    {q:'¿Qué es el VALOR ABSOLUTO de un número?',
+     a:'La distancia del número al cero en la recta numérica',
+     w:['El número multiplicado por −1','El número elevado al cuadrado','El número con signo positivo forzado']},
+    {q:'¿Con qué símbolo se escribe el valor absoluto de x?',
+     a:'|x|',
+     w:['(x)','[x]','‖x‖']},
+    {q:'El valor absoluto de cualquier número es siempre:',
+     a:'Mayor o igual que cero',
+     w:['Siempre positivo (nunca cero)','Siempre igual al número','Puede ser negativo']},
+    {q:'¿Cuánto vale |0|?',
+     a:'0',
+     w:['1','-1','No tiene valor absoluto']},
+    {q:'¿Qué representa |−7| en la recta numérica?',
+     a:'La distancia de −7 al cero, que es 7',
+     w:['El número 7 negativo','El cuadrado de −7','La suma de 7 y −7']},
+    {q:'Si x es un número positivo, entonces |x| es igual a:',
+     a:'El mismo número x',
+     w:['−x','0','x²']},
+    {q:'Si x es un número negativo, entonces |x| es igual a:',
+     a:'−x (su opuesto, que es positivo)',
+     w:['x (sigue negativo)','0','x²']},
+    {q:'¿Cuál de estas afirmaciones sobre el valor absoluto es CORRECTA?',
+     a:'|−5| = |5| = 5',
+     w:['|−5| = −5','|5| = −5','|−5| ≠ |5|']},
+    {q:'¿Es posible que el valor absoluto de un número sea negativo?',
+     a:'No, el valor absoluto nunca puede ser negativo',
+     w:['Sí, cuando el número es impar','Sí, cuando el número es muy pequeño','Sí, siempre que el número sea negativo']},
+    {q:'¿Qué tienen en común 6 y −6 en cuanto a valor absoluto?',
+     a:'Ambos tienen el mismo valor absoluto: 6',
+     w:['No tienen nada en común','Sus valores absolutos se suman en 0','Uno tiene valor absoluto y el otro no']},
+    {q:'En la expresión |−12| = 12, el resultado 12 representa:',
+     a:'La distancia de −12 al punto cero en la recta numérica',
+     w:['El doble de 6','El opuesto de −12 elevado al cuadrado','La mitad de 24']},
+    {q:'¿Cuál es el valor absoluto de un número que está a 9 unidades del cero?',
+     a:'9',
+     w:['−9','0','18']},
+  ];
+  return defs[_bGetRandomInt(0,defs.length-1)];
+}
+function _genT6VA_B2() {
+  // Calcular |x| para enteros simples
+  const sign=Math.random()<0.6?-1:1;
+  const n=_bGetRandomInt(1,20)*sign;
+  const ans=Math.abs(n);
+  const label=n<0?`(${n})`:String(n);
+  const ws=_bingShufArr([ans+1,ans+2,ans-1,(n<0?n:-n)].filter(v=>v!==ans&&v>=0)).slice(0,3);
+  if(ws.length<3)ws.push(ans+5);
+  return {q:`|${label}| = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6VA_B3() {
+  // Comparar |a| vs |b|
+  let a,b;
+  do { a=_bGetRandomInt(-20,20)||1; b=_bGetRandomInt(-20,20)||2; } while(Math.abs(a)===Math.abs(b));
+  const la=a<0?`(${a})`:String(a);
+  const lb=b<0?`(${b})`:String(b);
+  const bigLabel=Math.abs(a)>Math.abs(b)?`|${la}| = ${Math.abs(a)}`:`|${lb}| = ${Math.abs(b)}`;
+  const smallLabel=Math.abs(a)<Math.abs(b)?`|${la}| = ${Math.abs(a)}`:`|${lb}| = ${Math.abs(b)}`;
+  return {q:`¿Cuál tiene mayor valor absoluto: |${la}| o |${lb}|?`,
+    a:bigLabel,
+    w:[smallLabel,'Son iguales','No se pueden comparar'],
+    mc:true};
+}
+function _genT6VA_BQ1() { return [_genT6VA_B1,_genT6VA_B2,_genT6VA_B3][_bGetRandomInt(0,2)](); }
+
+function _genT6VA_B4() {
+  // Distancia entre dos puntos en la recta numérica
+  let a,b;
+  do { a=_bGetRandomInt(-10,10); b=_bGetRandomInt(-10,10); } while(a===b);
+  const ans=Math.abs(a-b);
+  const la=a<0?`(${a})`:String(a);
+  const lb=b<0?`(${b})`:String(b);
+  const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2,ans+3].filter(v=>v>0&&v!==ans)).slice(0,3);
+  return {q:`¿Cuál es la distancia entre ${la} y ${lb} en la recta numérica?`,
+    a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+}
+function _genT6VA_B5() {
+  const type=_bGetRandomInt(0,3);
+  if(type===0){
+    // |a| + |b|
+    const a=_bGetRandomInt(-9,-2),b=_bGetRandomInt(-9,-2);
+    const ans=Math.abs(a)+Math.abs(b);
+    const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2].filter(v=>v>0&&v!==ans)).slice(0,3);
+    return {q:`|(${a})| + |(${b})| = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+  } else if(type===1){
+    // |a| − |b| con |a|>|b|
+    const b=_bGetRandomInt(-5,-1),a=_bGetRandomInt(-9,-6);
+    const ans=Math.abs(a)-Math.abs(b);
+    const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2].filter(v=>v>=0&&v!==ans)).slice(0,3);
+    return {q:`|(${a})| − |(${b})| = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+  } else if(type===2){
+    // |a + b|
+    const a=_bGetRandomInt(-8,8)||1,b=_bGetRandomInt(-8,8)||1;
+    const sum=a+b,ans=Math.abs(sum);
+    const la=a<0?`(${a})`:String(a);
+    const lb=b<0?`(${b})`:String(b);
+    const ws=_bingShufArr([ans-2,ans-1,ans+1,ans+2].filter(v=>v>=0&&v!==ans)).slice(0,3);
+    return {q:`|${la} + ${lb}| = ?`,a:String(ans),opts:_bingShufArr([String(ans),...ws.map(String)]),mc:true};
+  } else {
+    // V/F: |−n| = |n|
+    const n=_bGetRandomInt(2,15);
+    return {q:`¿Es verdad que |(−${n})| = |${n}|?`,
+      a:`Sí, ambos valen ${n}`,
+      w:[`No, |(−${n})| = −${n}`,'Solo si el número es par','Solo si el número es mayor que 10'],
+      mc:true};
+  }
+}
+function _genT6VA_BQ2() { return [_genT6VA_B4,_genT6VA_B5][_bGetRandomInt(0,1)](); }
+function _genT6VA_BPU() { return [_genT6VA_B1,_genT6VA_B2,_genT6VA_B3,_genT6VA_B4,_genT6VA_B5][_bGetRandomInt(0,4)](); }
+
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 // ── Datos curriculares ──────────────────────────────────────────────────────────
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2','t6_va_bpu'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -1892,6 +2058,8 @@ const PREP_CURRICULUM = {
     '6':[
       {lbl:'División de 5 entre 2 Dígitos',          area:'matematica',                          skills:['div5x2']},
       {lbl:'Espacio Muestral y Suceso',               area:'matematica', editorial:'trinidad',    skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},
+      {lbl:'Sustracción',                              area:'matematica', editorial:'trinidad',    skills:['t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu']},
+      {lbl:'Valor Absoluto',                           area:'matematica', editorial:'trinidad',    skills:['t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2','t6_va_bpu']},
       {lbl:'Números Negativos y Ecuaciones',          area:'matematica',                          skills:['neg','ecuacion']},
       {lbl:'Multiplicación y División',               area:'matematica', editorial:'san_francisco', skills:['sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2']},
       {lbl:'Potencias y Raíces Cuadradas',            area:'matematica', editorial:'san_francisco', skills:['sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2']},
