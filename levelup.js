@@ -1631,11 +1631,12 @@ const PREP_CURRICULUM = {
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
 const PREP_EDITORIALS = {
-  intelectum:   { lbl:'Intelectum',                    ico:'📘', abbr:'Intelectum' },
-  saco_oliveros:{ lbl:'Saco Oliveros',                 ico:'📗' },
-  belen:        { lbl:'Sagrado Corazones Belén',        ico:'📒', abbr:'S.C. Belén' },
-  trinidad:     { lbl:'Santísima Trinidad',             ico:'📙', abbr:'S. Trinidad' },
-  san_ignacio:  { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
+  intelectum:     { lbl:'Intelectum',                    ico:'📘', abbr:'Intelectum' },
+  saco_oliveros:  { lbl:'Saco Oliveros',                 ico:'📗' },
+  belen:          { lbl:'Sagrado Corazones Belén',        ico:'📒', abbr:'S.C. Belén' },
+  trinidad:       { lbl:'Santísima Trinidad',             ico:'📙', abbr:'S. Trinidad' },
+  san_ignacio:    { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
+  san_francisco:  { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S. Francisco', grades:{ primaria:['6'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
@@ -1692,7 +1693,11 @@ function _prepConfigHtml() {
   const lvDef = PREP_LEVELS[_prep.level] || {};
   const gradeKeys = Object.keys(lvDef.grades||{}).sort((a,b)=>+a-+b);
   const allUnits = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
-  const edKeys = Object.keys(PREP_EDITORIALS); // siempre todos los colegios
+  const edKeys = Object.keys(PREP_EDITORIALS).filter(k=>{
+    const g = PREP_EDITORIALS[k].grades;
+    if (!g) return true; // sin restricción → siempre visible
+    return !!(g[_prep.level]?.includes(_prep.grade));
+  });
   const units = allUnits.filter(u=>{
     if (_prep.editorial && u.editorial !== _prep.editorial) return false;
     if (_prep.area && u.area !== _prep.area) return false;
