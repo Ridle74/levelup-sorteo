@@ -2311,19 +2311,7 @@ function _prepGenOpts(answer) {
   }
   return _bingShufArr([String(answer), ...wrongs.slice(0,3)]);
 }
-// Convierte <sup>...</sup> → <span> con CSS de superíndice
-// Usar span en lugar de Unicode porque caracteres como ⁻ tienen baseline inconsistente
-// en fuentes como Barlow Condensed (el negativo aparecía más bajo que los dígitos).
-// Con vertical-align:0.5em todo el contenido queda a la misma altura, sin importar el carácter.
-function _supToUni(s){
-  return (s||'').replace(/<sup>([\s\S]*?)<\/sup>/gi,function(_,inner){
-    return '<span style="font-size:0.65em;vertical-align:0.5em">'+inner+'</span>';
-  });
-}
 function _prepApplyMcMode(q) {
-  // Normalizar <sup> a Unicode antes de cualquier otra cosa
-  if(q.q) q.q=_supToUni(q.q);
-  if(q.opts) q.opts=q.opts.map(_supToUni);
   // Si está en modo MC y la pregunta no tiene opts, genera opciones automáticamente
   if (_prep.ansMode === 'mc' && !q.opts) {
     const opts = _prepGenOpts(q.a);
@@ -2782,7 +2770,7 @@ function _prepExamHtml() {
       <span class="prep-prog-label">${idx+1}/${total}</span>
       <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
     </div>
-    <div class="prep-question-card">${q.q}</div>
+    <div class="prep-question-card"><span>${q.q}</span></div>
     ${ansHtml}
     <button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()">
       ${idx===total-1?'🏁 Ver resultados':'Siguiente →'}
