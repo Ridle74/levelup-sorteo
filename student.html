@@ -6611,7 +6611,7 @@ function vTablero() {
       </div>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="user-pill">
-          <div id="hdr-icon" style="width:28px;height:28px;border-radius:50%;background:${student.color||'#8B5CF6'};display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;font-size:16px;line-height:1">${student.icon}</div>
+          <div id="hdr-icon" style="flex-shrink:0">${makeAvatarHTML(student.icon,student.color||'#8B5CF6',(overrides[String(student.id)]||{}).photo||null,getStudentFrame(student.id),28)}</div>
           <span id="hdr-name" class="uname">${student.name.split(' ')[0]}</span>
         </div>
         <button class="btn-logout" onclick="doLogout()">
@@ -7407,7 +7407,7 @@ function vRankingSetup() {
     return `<div style="background:${bg};border:1px solid ${border};border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px">
       <div style="display:flex;align-items:center;gap:10px">
         ${rankEl}
-        <div style="width:36px;height:36px;border-radius:50%;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px ${s.color}55">${s.icon}</div>
+        ${makeAvatarHTML(s.icon,s.color,(overrides[String(s.id)]||{}).photo||null,getStudentFrame(s.id),36)}
         <div style="flex:1;min-width:0">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
           <div style="height:6px;background:rgba(0,0,0,0.4);border-radius:10px;overflow:hidden;margin-top:5px">
@@ -7477,7 +7477,7 @@ function vNumerosSetup() {
       :`<span style="font-size:11px;color:rgba(255,255,255,0.3);font-style:italic">Sin números aún</span>`;
     return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:12px;border-left:4px solid ${s.color}">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div style="width:36px;height:36px;border-radius:10px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 10px ${s.color}55">${s.icon}</div>
+        ${makeAvatarHTML(s.icon,s.color,(overrides[String(s.id)]||{}).photo||null,getStudentFrame(s.id),36)}
         <div style="flex:1">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900">${s.name}</div>
           <div style="height:4px;background:rgba(0,0,0,0.4);border-radius:10px;margin-top:4px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${s.color};border-radius:10px"></div></div>
@@ -7743,7 +7743,7 @@ function vTareas() {
     ${admin && taskStudentView && svStudent && taskFilter==='prompts' ? `
     <div style="background:${svStudent.color}11;border:1px solid ${svStudent.color}33;border-radius:16px;padding:14px;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div style="width:36px;height:36px;border-radius:10px;background:${svStudent.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${svStudent.icon}</div>
+        ${makeAvatarHTML(svStudent.icon,svStudent.color,(overrides[String(svStudent.id)]||{}).photo||null,getStudentFrame(svStudent.id),36)}
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900">${svStudent.name}</div>
           <div style="font-size:10px;color:${svStudent.color};font-weight:700;letter-spacing:0.1em;text-transform:uppercase">PROMPTS PERSONALIZADOS</div>
@@ -10264,11 +10264,11 @@ function makeAvatarHTML(icon, color, photo, frameId, size) {
   const border = FRAME_BORDER[fid];
   const _br = '50%';
   const inner = photo
-    ? '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover">'
-    : '<span style="font-size:'+Math.round(size*0.5)+'px;line-height:1">'+(icon||'😀')+'</span>';
+    ? '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;display:block">'
+    : '<span style="font-size:'+Math.round(size*0.5)+'px;line-height:1;display:block;text-align:center">'+(icon||'😀')+'</span>';
   const bStyle = 'border:1.5px solid '+(color||'#8B5CF6')+';';
   return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0">'
-    +'<div style="width:'+size+'px;height:'+size+'px;border-radius:'+_br+';background:'+(color||'#8B5CF6')+';'+bStyle+'display:flex;align-items:center;justify-content:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
+    +'<div style="width:'+size+'px;height:'+size+'px;border-radius:'+_br+';background:'+(color||'#8B5CF6')+';'+bStyle+'display:grid;place-items:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
     +(img?'<img src="'+img+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
     +'</div>';
 }
