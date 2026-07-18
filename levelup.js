@@ -2032,9 +2032,9 @@ function _prepConfigHtml() {
     </div>`;
   }).join('');
   const sidebar = `<div class="prep-kh-sidebar">
-    <div style="height:50px"></div>
+    <div style="height:46px"></div>
     <div class="prep-kh-sidebar-inicio">
-      <button onclick="navHome()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:6px 12px;color:rgba(255,255,255,0.65);font-size:11px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.1em">← INICIO</button>
+      <button class="prep-sel-btn" onclick="navHome()">← INICIO</button>
     </div>
     <div class="prep-kh-sidebar-hdr">
       <div class="prep-kh-sidebar-title">${lvDef.lbl||''}${_prep.grade?' '+_prep.grade+'°':''}</div>
