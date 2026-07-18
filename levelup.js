@@ -2311,7 +2311,20 @@ function _prepGenOpts(answer) {
   }
   return _bingShufArr([String(answer), ...wrongs.slice(0,3)]);
 }
+// Convierte <sup>...</sup> → caracteres Unicode superíndice (⁰¹²³…⁻ⁿᵐ…)
+// Aplicado automáticamente en _prepApplyMcMode para q.q y q.opts
+function _supToUni(s){
+  var SU={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹',
+          '-':'⁻','−':'⁻','+':'⁺',
+          'a':'ᵃ','b':'ᵇ','c':'ᶜ','m':'ᵐ','n':'ⁿ','x':'ˣ','y':'ʸ','z':'ᶻ','?':'?'};
+  return (s||'').replace(/<sup>([\s\S]*?)<\/sup>/gi,function(_,inner){
+    return inner.split('').map(function(c){return SU[c]||c;}).join('');
+  });
+}
 function _prepApplyMcMode(q) {
+  // Normalizar <sup> a Unicode antes de cualquier otra cosa
+  if(q.q) q.q=_supToUni(q.q);
+  if(q.opts) q.opts=q.opts.map(_supToUni);
   // Si está en modo MC y la pregunta no tiene opts, genera opciones automáticamente
   if (_prep.ansMode === 'mc' && !q.opts) {
     const opts = _prepGenOpts(q.a);
