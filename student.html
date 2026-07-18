@@ -2070,7 +2070,7 @@ function router() {
   // Mantiene la URL sincronizada con la vista resuelta (p.ej. si el guard
   // de autenticación cambió la vista a 'login'), sin crear historial extra.
   var syncedPath = hash === 'dashboard' ? '/student' : '/student/' + hash;
-  if (location.pathname !== syncedPath) {
+  if (location.pathname !== syncedPath && !location.pathname.startsWith(syncedPath + '/')) {
     history.replaceState({ view: hash }, '', syncedPath);
   }
 }
