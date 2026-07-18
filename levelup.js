@@ -2117,7 +2117,7 @@ function _prepConfigHtml() {
           quizCount++;
           const qDone=lvl==='dominado';
           const qPct=pct!==null?` · Último: ${pct}%`:'';
-          return `<div class="prep-kh-quiz-card" style="margin-top:14px">
+          return `<div class="prep-kh-quiz-card">
             <div class="prep-kh-quiz-info">
               <div class="prep-kh-quiz-tag">Cuestionario ${quizCount}</div>
               <div class="prep-kh-quiz-desc">${_cleanLbl(def.lbl,sk)}${qPct}${qDone?' · ✓ Completado':''}</div>
@@ -2139,7 +2139,7 @@ function _prepConfigHtml() {
       const sc=_prepCourseScore(unit.skills);
       const examLvl=unitDone2?'Dominado':sc>=75?'Competente':sc>=50?'Familiar':sc>0?'Intentado':null;
       const examDesc=examLvl?`Nivel: ${examLvl}${!unitDone2&&sc>0?' · Último: '+sc+'%':''}`:'Sube de nivel en todas las habilidades de esta unidad.';
-      const examCard=`<div class="prep-kh-quiz-card exam-card" style="margin-top:6px">
+      const examCard=`<div class="prep-kh-quiz-card exam-card">
         <div class="prep-kh-quiz-info">
           <div class="prep-kh-quiz-tag exam-tag">Examen</div>
           <div class="prep-kh-quiz-desc">${examDesc}${unitDone2?' · ✓ ¡Completado!':''}</div>
