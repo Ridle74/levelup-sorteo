@@ -99,7 +99,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .dash-link {
   display:flex; align-items:center; gap:12px;
   background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-  border-radius:14px; padding:14px 16px; margin-bottom:12px; cursor:pointer;
+  border-radius:14px; padding:14px 16px; margin-bottom:10px; cursor:pointer;
   color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900;
   text-transform:uppercase; letter-spacing:0.05em; transition:background 0.12s;
   -webkit-tap-highlight-color:transparent;
@@ -116,7 +116,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 }
 .task-hero::before { content:''; position:absolute; inset:0; background:linear-gradient(115deg, rgba(5,7,14,0.58) 0%, rgba(5,7,14,0.34) 45%, rgba(5,7,14,0.58) 100%); }
 .task-hero > * { position: relative; z-index: 1; }
-.task-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:12px; }
+.task-card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:10px; }
 .task-card.tdone { opacity:0.45; }
 .task-card.tnotdone { opacity:0.45; }
 .task-card.twait { opacity:0.8; border-color:rgba(234,179,8,0.3); }
@@ -138,7 +138,7 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .btn-dt { background:rgba(239,68,68,0.1); border:2px solid rgba(239,68,68,0.2); color:#ff5c7a; border-radius:10px; padding:9px 12px; cursor:pointer; font-size:14px; flex-shrink:0; }
 .btn-dt.on { background:#ef4444; color:#06170c; border:2px solid #ef4444; }
 .add-task-box { background:rgba(34,229,255,0.07); border:1px solid rgba(34,229,255,0.2); border-radius:16px; padding:16px; margin-top:12px; }
-.fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:12px; outline:none; }
+.fsm { width:100%; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:9px 12px; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; box-sizing:border-box; margin-bottom:10px; outline:none; }
 .fsm::placeholder { color:rgba(255,255,255,0.4); font-family:'Barlow',sans-serif; font-size:13px; }
 .fsm option { background:#fff; color:#111; }
 .fsm:focus { border-color:rgba(34,229,255,0.5); }
@@ -157,7 +157,7 @@ textarea.fsm { resize:none; height:64px; }
 }
 .pts-hero::before { content:''; position:absolute; inset:0; background:linear-gradient(115deg, rgba(5,7,14,0.58) 0%, rgba(5,7,14,0.34) 45%, rgba(5,7,14,0.58) 100%); }
 .pts-hero > * { position: relative; z-index: 1; }
-.pts-row { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:12px; }
+.pts-row { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:14px; margin-bottom:10px; }
 .vr-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
 .vr-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.15em; text-transform:uppercase; width:74px; flex-shrink:0; }
 .vr-bg  { flex:1; height:7px; background:rgba(0,0,0,0.4); border-radius:10px; overflow:hidden; }
@@ -183,7 +183,7 @@ textarea.fsm { resize:none; height:64px; }
 .pub-list { padding:10px 12px 20px; display:flex; flex-direction:column; gap:8px; }
 
 /* ── MISC ─────────────────────────────────────────── */
-.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:12px; }
+.sec-lbl { font-size:9px; font-weight:900; color:#6b7280; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:10px; }
 .btn-sm {
   border:none; border-radius:10px; padding:9px 16px; cursor:pointer;
   font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px;
@@ -488,9 +488,9 @@ textarea.fsm { resize:none; height:64px; }
 .msgs-btn-icon{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);border-radius:8px;padding:7px 9px;cursor:pointer;font-size:14px;line-height:1;height:34px;flex-shrink:0}
 .msgs-btn-send{background:rgba(79,182,255,0.2);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff;border-radius:8px;padding:7px 12px;font-weight:900;font-size:15px;cursor:pointer;line-height:1;height:34px;flex-shrink:0}
 .msgs-btn-send:disabled{opacity:0.4;cursor:default}
-.msgs-link-row{display:none;gap:6px;margin-bottom:12px;align-items:center}
+.msgs-link-row{display:none;gap:6px;margin-bottom:10px;align-items:center}
 .msgs-link-row input{flex:1;margin-bottom:0 !important;font-size:12px}
-.msgs-file-row{display:none;align-items:center;gap:8px;margin-bottom:12px;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px}
+.msgs-file-row{display:none;align-items:center;gap:8px;margin-bottom:10px;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:8px}
 .msgs-file-row span{font-size:12px;color:rgba(255,255,255,0.7);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .msgs-dm-pill{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
 .msgs-dm-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);border-radius:20px;padding:5px 13px;font-size:11px;font-weight:700;cursor:pointer;position:relative;white-space:nowrap}
@@ -516,7 +516,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-mode-tab.active{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.6);color:#e0aaff;box-shadow:0 0 12px -4px rgba(124,58,237,0.5)}
 .prep-wrap{font-family:'Lato',sans-serif;color:#e5e7eb;padding:2px 0}
 .prep-title{font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;margin-bottom:2px}
-.prep-sub{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:12px}
+.prep-sub{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:10px}
 .prep-section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin:12px 0 6px}
 .prep-topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:4px}
 .prep-topic-btn{padding:10px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .18s;text-align:left}
@@ -536,7 +536,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-start-btn:hover{transform:scale(1.04);box-shadow:0 6px 28px -5px rgba(124,58,237,0.75)}
 .prep-start-btn:active{transform:scale(0.96);transition-duration:.08s}
 .prep-start-btn:hover{opacity:.88}
-.prep-exam-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.prep-exam-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .prep-topic-badge-sm{display:inline-flex;align-items:center;gap:5px;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.4);border-radius:16px;padding:4px 12px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#e0aaff}
 .prep-timer{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:#39ff7a}
 .prep-timer.urgent{color:#ef4444;animation:prep-pulse .7s infinite}
@@ -576,7 +576,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-quiz:hover{background:rgba(168,85,247,0.2)}
 .prep-kh-panel{margin-top:12px;background:rgba(250,204,21,0.05);border:1px solid rgba(250,204,21,0.16);border-radius:12px;padding:12px 14px}
 .prep-kh-panel-topic{font-size:16px;font-weight:900;color:#facc15;margin-bottom:9px;letter-spacing:.03em}
-.prep-kh-panel-opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.prep-kh-panel-opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 @keyframes prep-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes prepPaneIn{from{opacity:0}to{opacity:1}}
 .prep-pane-in{animation:prepPaneIn .18s ease-out}
@@ -592,12 +592,12 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-sidebar-item:hover{background:rgba(255,255,255,0.04)}
 .prep-kh-sidebar-item.active{background:rgba(109,40,217,0.14);border-left-color:#7c3aed}
 .prep-kh-unit-exp{}
-.prep-kh-unit-exp-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.prep-kh-unit-exp-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.07)}
 .prep-kh-unit-exp-num{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.06);border-radius:6px;padding:3px 8px}
 .prep-kh-unit-exp-lbl{font-size:16px;font-weight:800;color:rgba(255,255,255,0.9);flex:1}
 .prep-kh-unit-exp-back{font-size:11px;color:rgba(255,255,255,0.35);cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:3px 9px;transition:color .15s,border-color .15s;white-space:nowrap}
 .prep-kh-unit-exp-back:hover{color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3)}
-.prep-kh-sk-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.025);margin-bottom:12px;cursor:pointer;transition:background .15s}
+.prep-kh-sk-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.025);margin-bottom:10px;cursor:pointer;transition:background .15s}
 .prep-kh-sk-row:hover{background:rgba(255,255,255,0.05)}
 .prep-kh-sk-row.selected{border-color:rgba(109,40,217,0.5);background:rgba(109,40,217,0.08)}
 .prep-kh-sk-info{flex:1;min-width:0}
@@ -610,17 +610,20 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-sk-badge{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .prep-kh-sk-act{font-size:11px;font-weight:700;color:#7c3aed;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:7px;padding:4px 10px;cursor:pointer;white-space:nowrap;transition:background .15s}
 .prep-kh-sk-act:hover{background:rgba(124,58,237,0.22)}
-.prep-kh-quiz-card{border-radius:12px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.prep-kh-quiz-card{border-radius:12px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
 .prep-kh-quiz-card.exam-card{border-color:rgba(250,204,21,0.2);background:rgba(250,204,21,0.04)}
 .prep-kh-quiz-info{flex:1;min-width:0}
 .prep-kh-quiz-tag{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,0.3);margin-bottom:4px}
 .prep-kh-quiz-tag.exam-tag{color:rgba(250,204,21,0.6)}
-.prep-kh-quiz-desc{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:12px}
+.prep-kh-quiz-desc{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px}
 .prep-kh-quiz-btn{font-size:12px;font-weight:700;color:#7c3aed;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:7px;padding:5px 12px;cursor:pointer;transition:background .15s}
 .prep-kh-quiz-btn:hover{background:rgba(124,58,237,0.22)}
 .prep-kh-quiz-btn.exam-btn{color:#ca8a04;background:rgba(202,138,4,0.1);border-color:rgba(202,138,4,0.3)}
 .prep-kh-quiz-btn.exam-btn:hover{background:rgba(202,138,4,0.2)}
-.prep-kh-quiz-ico{font-size:28px;flex-shrink:0;opacity:0.7}
+.prep-kh-quiz-ico{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);color:#a0a0a0}
+.exam-card .prep-kh-quiz-ico{background:rgba(250,204,21,0.07);border:2px dashed rgba(250,204,21,0.5);color:#facc15}
+.prep-kh-quiz-card.done .prep-kh-quiz-ico{background:linear-gradient(135deg,#3f3f3f,#666);border:2px solid #3f3f3f;color:#e8e8e8}
+.exam-card.done .prep-kh-quiz-ico{background:rgba(202,138,4,0.9);border:2px solid #fbbf24;color:#fff}
 .prep-kh-sidebar-num{font-size:8px;font-weight:900;color:rgba(255,255,255,0.25);letter-spacing:.08em;min-width:20px;text-transform:uppercase}
 .prep-kh-sidebar-name{font-size:12px;font-weight:400;color:rgba(255,255,255,0.65);line-height:1.3;flex:1}
 .prep-kh-sidebar-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
@@ -640,7 +643,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-prog-label{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
 .prep-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden}
 .prep-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:10px;transition:width .3s}
-.prep-question-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;margin-bottom:12px;font-size:20px;font-weight:700;text-align:center;color:#fff;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center}
+.prep-question-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;margin-bottom:10px;font-size:20px;font-weight:700;text-align:center;color:#fff;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center}
 .prep-question-card sup{font-size:0.65em;vertical-align:0.45em;line-height:0}
 .prep-mc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
 .prep-mc-btn{padding:12px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e5e7eb;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),background .2s cubic-bezier(0.25,0.46,0.45,0.94),border-color .2s cubic-bezier(0.25,0.46,0.45,0.94);text-align:center}
@@ -731,7 +734,7 @@ textarea.fsm { resize:none; height:64px; }
 .game-card-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:6px;position:relative}
 .gc-bingo .game-card-name{color:#c4b5fd}
 .gc-prep .game-card-name{color:#5eead4}
-.game-card-desc{font-size:11px;color:rgba(255,255,255,0.42);line-height:1.45;margin-bottom:12px;position:relative;flex:1}
+.game-card-desc{font-size:11px;color:rgba(255,255,255,0.42);line-height:1.45;margin-bottom:10px;position:relative;flex:1}
 .game-card-btn{position:relative;padding:7px 20px;border-radius:20px;border:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;letter-spacing:0.08em;cursor:pointer;text-transform:uppercase;transition:all .18s}
 .gc-bingo .game-card-btn{background:rgba(124,58,237,0.3);color:#e0aaff;border:1px solid rgba(124,58,237,0.5)}
 .gc-bingo .game-card-btn:hover{background:rgba(124,58,237,0.5);box-shadow:0 0 14px -4px rgba(124,58,237,0.7)}
@@ -752,7 +755,7 @@ body.gaming-fs .game-back-btn{display:none!important}
 body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#070714;overflow-y:auto;padding:8px 0 0}
 /* ── BINGO (tab GAMING + /student/bingo) — diseño "Neon Bingo" ───────────────────────────────── */
 .bingo-wrap{background:#0a0e1a;border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:14px;font-family:'Barlow Condensed',sans-serif;box-shadow:0 0 30px -10px rgba(124,58,237,0.25)}
-.bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .bingo-titlebar .btb-ico{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;box-shadow:0 0 16px -2px #ec4899}
 .bingo-titlebar .btb-text{font-weight:900;font-size:18px;letter-spacing:0.1em;text-transform:uppercase;line-height:1;background:linear-gradient(to right,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .bingo-titlebar .btb-sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.18em;text-transform:uppercase;margin-top:2px}
@@ -791,7 +794,7 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bingo-commentator-btn.on{background:rgba(99,102,241,0.3);border-color:#6366f1;color:#fff}
 .bsp-wrap{display:flex;flex-direction:column;gap:10px;margin-top:8px}
 .bsp-sec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px 14px}
-.bsp-sec-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:12px}
+.bsp-sec-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:10px}
 .bsp-leaders{display:flex;flex-direction:column;gap:6px}
 .bsp-leader{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:9px 11px}
 .bsp-leader.bsp-danger{border-color:rgba(234,179,8,0.45);background:rgba(234,179,8,0.06)}
@@ -821,7 +824,7 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 /* --- Aviso sorteo --- */
 #sorteo-notice-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 #sorteo-notice-box{background:linear-gradient(135deg,#1e1b4b 0%,#0f172a 100%);border:1px solid rgba(251,191,36,0.4);border-radius:20px;padding:28px 26px;max-width:360px;width:100%;text-align:center;box-shadow:0 0 60px -10px rgba(251,191,36,0.25)}
-#sorteo-notice-icon{font-size:42px;line-height:1;margin-bottom:12px}
+#sorteo-notice-icon{font-size:42px;line-height:1;margin-bottom:10px}
 #sorteo-notice-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:19px;letter-spacing:0.06em;text-transform:uppercase;color:#fbbf24;margin-bottom:10px}
 #sorteo-notice-msg{font-family:'Barlow Condensed',sans-serif;font-size:15px;line-height:1.45;color:rgba(255,255,255,0.82);margin-bottom:18px}
 #sorteo-notice-date{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:#f0abfc;letter-spacing:0.04em;margin-bottom:18px}
@@ -1007,7 +1010,7 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 /* ── Leaderboard Desafío ── */
 .bdl-overlay{position:fixed;bottom:80px;right:12px;z-index:9998;width:min(340px,calc(100vw - 24px))}
 .bdl-panel{background:#0a0e1a;border:1px solid rgba(245,158,11,0.5);border-radius:16px;padding:14px 16px;box-shadow:0 0 40px -8px rgba(245,158,11,0.35);font-family:'Barlow Condensed',sans-serif}
-.bdl-header{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:900;color:#fde68a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px}
+.bdl-header{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:900;color:#fde68a;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px}
 .bdl-close{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;font-family:'Barlow Condensed',sans-serif}
 .bdl-myrow{font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.08)}
 .bdl-rows{display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto}
@@ -1017,7 +1020,7 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bdl-time{font-size:12px;color:#facc15;font-weight:900;text-align:right}
 .bdl-btn{background:linear-gradient(135deg,#b45309,#dc2626);color:#fff;border:none;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:900;cursor:pointer;font-family:'Barlow Condensed',sans-serif;white-space:nowrap}
 .bpx-revenge-btn{background:linear-gradient(135deg,#b45309,#ea580c);color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0}
-.bpx-revenge-active{background:linear-gradient(135deg,rgba(234,179,8,0.25),rgba(239,68,68,0.15));border:1px solid rgba(234,179,8,0.6);border-radius:10px;padding:8px 14px;margin-bottom:12px;font-size:12px;font-weight:700;color:#fde68a;display:flex;align-items:center;flex-wrap:wrap;gap:6px;animation:twPulse 1.2s ease-in-out infinite}
+.bpx-revenge-active{background:linear-gradient(135deg,rgba(234,179,8,0.25),rgba(239,68,68,0.15));border:1px solid rgba(234,179,8,0.6);border-radius:10px;padding:8px 14px;margin-bottom:10px;font-size:12px;font-weight:700;color:#fde68a;display:flex;align-items:center;flex-wrap:wrap;gap:6px;animation:twPulse 1.2s ease-in-out infinite}
 .bpx-cat-lbl{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);margin:10px 0 5px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)}
 .bpx-cat-lbl:first-child{margin-top:4px;padding-top:0;border-top:none}
 .bpx-col-picker{margin-top:6px}
@@ -1038,7 +1041,7 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bpn-pill.power-target-pill:hover .bpn-main{background:rgba(96,165,250,0.12);border-color:#60a5fa}
 /* Historial de sorteo — pills tipo chip (rounded-lg px-3 py-1.5 font-mono font-bold text-sm border) */
 .bingo-hist-wrap{margin-top:20px;padding-top:20px;border-top:1px solid #1f2937}
-.bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:12px}
+.bingo-hist-lbl{font-size:10px;color:#6b7280;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:10px}
 .bingo-hist-row{display:flex;align-items:center;gap:8px}
 .bingo-hist-arrow{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#1f2937;border:1px solid #374151;color:#d1d5db;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .bingo-drawn-strip{display:flex;gap:8px;overflow-x:auto;flex:1;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -1068,7 +1071,7 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bingo-winners-box .bw-tier{font-weight:900;color:#facc15;letter-spacing:0.05em;min-width:62px}
 .bingo-ended-banner{text-align:center;padding:14px;background:linear-gradient(135deg,rgba(250,204,21,0.12),rgba(236,72,153,0.12));border:1px solid rgba(250,204,21,0.35);border-radius:14px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:0.04em;font-size:13px}
 .bingo-full-wrap{min-height:100vh;background:#030712;padding:14px}
-.bingo-back-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:10px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-bottom:12px}
+.bingo-back-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:10px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-bottom:10px}
 /* -- v2: retos matemáticos, bloqueo y poderes -- */
 .bingo-settings-box{background:rgba(255,255,255,0.04);border:1px solid rgba(124,58,237,0.25);border-radius:14px;padding:10px 12px;margin:8px 0;display:flex;flex-direction:column;gap:8px}
 .bs-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:rgba(255,255,255,0.7);font-weight:700}
@@ -1088,9 +1091,9 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bingo-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:start}
 .bingo-card-block{position:relative;max-width:420px;width:100%;margin:0 auto;background:#111827;border:1px solid rgba(132,204,22,0.3);border-radius:16px;padding:20px;box-shadow:0 0 15px rgba(132,204,22,0.1)}
 .bingo-card-block.blocking{border-color:#ef4444}
-.bcb-label{font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;color:#a3e635}
+.bcb-label{font-size:14px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;color:#a3e635}
 .bingo-card-block.blocking .bcb-label{color:#f87171}
-.bingo-cards-section-lbl{color:#a3e635;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-size:14px;display:flex;align-items:center;gap:8px;margin-top:16px;margin-bottom:12px}
+.bingo-cards-section-lbl{color:#a3e635;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;font-size:14px;display:flex;align-items:center;gap:8px;margin-top:16px;margin-bottom:10px}
 .bingo-frozen-banner{text-align:center;padding:10px;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.35);border-radius:12px;margin:8px 0;font-size:12px;font-weight:700;color:#67e8f9}
 .bingo-block-banner{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);border-radius:14px;padding:10px 12px;margin:10px 0}
 .bbb-title{font-size:12px;font-weight:900;color:#f87171}
@@ -1131,14 +1134,14 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bcc-result-green{background:linear-gradient(135deg,rgba(21,128,61,0.35),rgba(34,197,94,0.15));border-color:#22c55e;box-shadow:0 0 60px -10px rgba(34,197,94,0.6)}
 .bcc-result-yellow{background:linear-gradient(135deg,rgba(161,98,7,0.35),rgba(250,204,21,0.15));border-color:#facc15;box-shadow:0 0 60px -10px rgba(250,204,21,0.5)}
 .bcc-result-red{background:linear-gradient(135deg,rgba(127,29,29,0.35),rgba(239,68,68,0.15));border-color:#ef4444;box-shadow:0 0 60px -10px rgba(239,68,68,0.5)}
-.bcc-result-ico{font-size:56px;line-height:1;margin-bottom:12px}
+.bcc-result-ico{font-size:56px;line-height:1;margin-bottom:10px}
 .bcc-result-h{font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em;color:#fff;margin-bottom:10px}
 .bcc-result-body{font-size:15px;color:rgba(255,255,255,0.8);line-height:1.4;max-width:340px}
 /* ── Review de respuesta correcta (al agotar vidas) ── */
 .bcc-review-card{background:linear-gradient(135deg,rgba(127,29,29,0.4),rgba(30,10,40,0.6));border-color:#ef4444;box-shadow:0 0 60px -10px rgba(239,68,68,0.4)}
 .bcc-review-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.12em;margin:8px 0 2px}
 .bcc-review-q{font-size:14px;color:rgba(255,255,255,0.55);white-space:pre-line;margin:4px 0 10px;line-height:1.4}
-.bcc-review-answer{font-size:28px;font-weight:900;color:#4ade80;letter-spacing:0.04em;margin-bottom:12px}
+.bcc-review-answer{font-size:28px;font-weight:900;color:#4ade80;letter-spacing:0.04em;margin-bottom:10px}
 .bcc-review-steps{text-align:left;width:100%;border-top:1px solid rgba(255,255,255,0.1);padding-top:10px;margin-top:4px}
 .bcc-review-step{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px;color:rgba(255,255,255,0.82);line-height:1.4}
 .bcc-review-step-n{color:rgba(168,85,247,0.7);font-weight:900;font-size:11px;min-width:18px;text-align:right;flex-shrink:0}
@@ -4182,7 +4185,7 @@ function _bingoConfirmClaim(cardIdx, tier) {
   const tierColor  = { terna:'#f59e0b', cuaterna:'#fb923c', quina:'#a78bfa', bingo:'#22d3ee' }[tier] || '#a855f7';
   _bingoShowModal(`<div class="bpm-box" style="border-color:${tierColor};box-shadow:0 0 60px -10px ${tierColor}55">
     <div class="bpm-title" style="color:${tierColor}">🏆 ¿Canjear ${tierLabel.toUpperCase()}?</div>
-    <div class="bpm-sub" style="color:rgba(255,255,255,0.55);font-size:13px;margin-bottom:12px">Necesitas <b>${tierReq}</b> con los números ya cantados.</div>
+    <div class="bpm-sub" style="color:rgba(255,255,255,0.55);font-size:13px;margin-bottom:10px">Necesitas <b>${tierReq}</b> con los números ya cantados.</div>
     <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:10px 14px;font-size:12px;color:#fca5a5;line-height:1.5;margin-bottom:6px;text-align:left">
       ⚠️ <b>Castigo si no la tienes:</b><br>${penalty}
     </div>
@@ -5515,7 +5518,7 @@ function _bingoPaneHtml() {
       const fmtTime = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
       const fmtDateOnly = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}); };
       listBody += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-top:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">📊 Historial de partidas</span>
           <button class="bingo-leave-btn" onclick="_bingoShowHistory=false;_bingoHistoryData=null;_renderBingoPane()">✕ Cerrar</button>
         </div>
@@ -5529,14 +5532,14 @@ function _bingoPaneHtml() {
                 <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">📅 ${fmtDateOnly(h.startedAt)}</span>
                 <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ${h.retoCount||0} retos</span>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:10px;flex-wrap:wrap">
                 <span>🟢 <span style="color:rgba(255,255,255,0.6);font-size:11px">Inicio:</span> <b style="color:#4ade80">${fmtTime(h.startedAt)}</b></span>
                 <span style="color:rgba(255,255,255,0.25)">→</span>
                 <span>🔴 <span style="color:rgba(255,255,255,0.6);font-size:11px">Fin:</span> <b style="color:#f87171">${fmtTime(h.endedAt)}</b></span>
                 <span style="color:rgba(255,255,255,0.25)">·</span>
                 <span style="color:rgba(255,255,255,0.6);font-size:12px">⏱ <b style="color:#fff">${fmtDur(h.durationMs)}</b></span>
               </div>
-              <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:12px">
+              <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:10px">
                 ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
               </div>
               ${realPlayers.map(p=>{
@@ -5633,7 +5636,7 @@ function _bingoPaneHtml() {
             ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
             : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
           return gradeHtml + topicsHtml;
-        })()}` : `<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 14px;font-size:11.5px;color:rgba(255,255,255,0.4);margin-bottom:12px">👤 Configura el nivel, grado y temas de cada alumno cuando se unan en la sala de espera</div>`}
+        })()}` : `<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 14px;font-size:11.5px;color:rgba(255,255,255,0.4);margin-bottom:10px">👤 Configura el nivel, grado y temas de cada alumno cuando se unan en la sala de espera</div>`}
         <div class="blc-grid">
           <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
             <span class="blc-clabel">Modo directo</span>
@@ -5649,7 +5652,7 @@ function _bingoPaneHtml() {
             </div>
           </div>
         </div>
-        <div class="blc-card" style="margin-bottom:12px">
+        <div class="blc-card" style="margin-bottom:10px">
           <span class="blc-clabel">Bots 🤖</span>
           <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
             <div class="blc-stepper">
@@ -5861,7 +5864,7 @@ function _bingoPaneHtml() {
       const fmtTime = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}); };
       const fmtDateOnly = ts => { if(!ts) return '—'; const d=new Date(ts); return d.toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'}); };
       body += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;margin-top:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:.06em">📊 Historial de partidas</span>
           <button class="bingo-leave-btn" onclick="_bingoShowHistory=false;_bingoHistoryData=null;_renderBingoPane()">✕ Cerrar</button>
         </div>
@@ -5875,14 +5878,14 @@ function _bingoPaneHtml() {
                 <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px">📅 ${fmtDateOnly(h.startedAt)}</span>
                 <span style="font-size:11px;color:rgba(255,255,255,0.45)">${h.gameSpeed||'media'} · ${h.topicsLabel||h.diffLabel||'nivel '+(h.difficulty||1)} · ${h.totalNumbers||0} números · ${h.retoCount||0} retos</span>
               </div>
-              <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:12px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:10px;flex-wrap:wrap">
                 <span>🟢 <span style="color:rgba(255,255,255,0.6);font-size:11px">Inicio:</span> <b style="color:#4ade80">${fmtTime(h.startedAt)}</b></span>
                 <span style="color:rgba(255,255,255,0.25)">→</span>
                 <span>🔴 <span style="color:rgba(255,255,255,0.6);font-size:11px">Fin:</span> <b style="color:#f87171">${fmtTime(h.endedAt)}</b></span>
                 <span style="color:rgba(255,255,255,0.25)">·</span>
                 <span style="color:rgba(255,255,255,0.6);font-size:12px">⏱ <b style="color:#fff">${fmtDur(h.durationMs)}</b></span>
               </div>
-              <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:12px">
+              <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:10px">
                 ${BINGO_TIER_ORDER.filter(t=>(tw[t]||[]).length).map(t=>`<span style="margin-right:10px">${BINGO_TIER_LABEL?.[t]||t}: <b style="color:#fff">${(tw[t]||[]).join(', ')}</b></span>`).join('')}
               </div>
               ${realPlayers.map(p=>{
@@ -6305,9 +6308,9 @@ function _bingoPaneHtml() {
           const _pendLeft = Math.max(0, Math.ceil(((_ac.startedAt||Date.now()) + 5000 - Date.now()) / 1000));
           const _toName2 = _acTo?.name || 'rival';
           body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-yellow" style="max-width:340px;text-align:center;padding:24px 20px">
-            <div style="font-size:36px;margin-bottom:12px">⚔️</div>
+            <div style="font-size:36px;margin-bottom:10px">⚔️</div>
             <div style="font-size:17px;font-weight:900;color:#fff;margin-bottom:6px">Desafío enviado a <b style="color:#fbbf24">${_toName2}</b></div>
-            <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:12px">Esperando que acepte o rechace…</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:10px">Esperando que acepte o rechace…</div>
             <div style="font-size:64px;font-weight:900;line-height:1;color:${_pendLeft<=2?'#ef4444':'#f59e0b'};text-shadow:0 0 24px ${_pendLeft<=2?'rgba(239,68,68,0.7)':'rgba(245,158,11,0.7)'}">${_pendLeft}</div>
             <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:6px">Si no responde en tiempo, se le penalizará automáticamente.</div>
           </div></div>`;
@@ -6320,7 +6323,7 @@ function _bingoPaneHtml() {
           // Challenger ve modal "aceptó" una sola vez
           if (me.uid === _ac.fromUid && !_desafioAcceptedAck) {
             body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:340px;text-align:center;padding:24px 20px">
-              <div style="font-size:36px;margin-bottom:12px">🤝</div>
+              <div style="font-size:36px;margin-bottom:10px">🤝</div>
               <div style="font-size:17px;font-weight:900;color:#fff;margin-bottom:6px"><b style="color:#34d399">${_rivalName}</b> aceptó el duelo</div>
               <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:18px">El próximo reto matemático será el duelo.<br>Quien lo termine más rápido <b style="color:#fff">gana</b>.</div>
               <button onclick="_desafioAcceptedAck=true;_renderBingoPane()" class="bcc-submit" style="background:linear-gradient(135deg,#16a34a,#15803d)">¡Entendido! 💪</button>
@@ -6421,7 +6424,7 @@ function _bingoPaneHtml() {
         body += `<div class="bingo-modal-bg"><div class="bingo-challenge-card bcc-result bcc-result-green" style="max-width:420px">
           <div class="bcc-result-ico">⭐</div>
           <div class="bcc-result-h">¡Elige tu número bonus!</div>
-          <div class="bcc-result-body" style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:12px">
+          <div class="bcc-result-body" style="text-align:center;font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:10px">
             Selecciona un número de tus cartones para marcarlo como si hubiera salido.
           </div>
           ${_visionHtml}
@@ -7039,7 +7042,7 @@ function renderStudentList() {
 
         </div>
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:12px">
+      <div style="display:flex;gap:6px;margin-bottom:10px">
         <input type="text" value="${s.icon||''}" placeholder="emoji" class="mini-input" style="width:42px;text-align:center;font-size:16px;padding:6px 4px" oninput="setOverride(${s.id},'icon',this.value)">
         <div style="flex:1;display:flex;flex-direction:column;gap:4px">
           <div class="mini-input" title="${nameTitle}" style="padding:6px 10px;font-size:12px;text-transform:uppercase;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.18);color:rgba(255,255,255,0.78);cursor:default">${s.name||''}${linkedOk?' 🔒':' ⚠️'}</div>
@@ -7166,7 +7169,7 @@ function renderPadresRequests() {
     <div class="section-label" style="color:#39ff7a">🆕 SOLICITUDES NUEVAS (${reqs.length})</div>
     <div style="margin-bottom:14px">
       ${reqs.map(r => `
-        <div style="background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);border-radius:14px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="background:rgba(57,255,122,0.08);border:1px solid rgba(57,255,122,0.25);border-radius:14px;padding:10px 12px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
           <div style="flex:1;min-width:120px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;text-transform:uppercase">${r.name}</div>
           <div style="display:flex;gap:6px">
             <button onclick="acceptPadresStudent('${r.pid}')" style="background:rgba(57,255,122,0.25);border:1px solid rgba(57,255,122,0.4);color:#39ff7a;border-radius:8px;padding:7px 12px;font-weight:900;font-size:11px;cursor:pointer;letter-spacing:0.05em">✅ ACEPTAR</button>
@@ -7450,7 +7453,7 @@ function vNumerosSetup() {
       ?nums.map(n=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:${s.color};color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;box-shadow:0 2px 6px ${s.color}66">${n}</span>`).join('')
       :`<span style="font-size:11px;color:rgba(255,255,255,0.3);font-style:italic">Sin números aún</span>`;
     return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:12px;border-left:4px solid ${s.color}">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <div style="width:36px;height:36px;border-radius:10px;background:${s.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 10px ${s.color}55">${s.icon}</div>
         <div style="flex:1">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900">${s.name}</div>
@@ -7697,7 +7700,7 @@ function vTareas() {
     </div>
 
     ${taskFilter==='tasks' ? `
-    <div style="margin-bottom:12px">
+    <div style="margin-bottom:10px">
       <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">${admin?'ORDENAR Y FILTRAR POR ALUMNO':'ORDENAR'}</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
         <button onclick="setTaskSort('recent')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.08em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskSort==='recent'?'rgba(79,182,255,0.6)':'rgba(255,255,255,0.12)'};background:${taskSort==='recent'?'rgba(79,182,255,0.15)':'rgba(255,255,255,0.04)'};color:${taskSort==='recent'?'#4fb6ff':'rgba(255,255,255,0.5)'}">🟢 ACTIVAS</button>
@@ -7716,7 +7719,7 @@ function vTareas() {
 
     ${admin && taskStudentView && svStudent && taskFilter==='prompts' ? `
     <div style="background:${svStudent.color}11;border:1px solid ${svStudent.color}33;border-radius:16px;padding:14px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
         <div style="width:36px;height:36px;border-radius:10px;background:${svStudent.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${svStudent.icon}</div>
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900">${svStudent.name}</div>
@@ -7768,8 +7771,8 @@ function vTareas() {
 
     ${isAdmin()?`
     <div id="add-task-box" class="add-task-box" style="display:none">
-      <div class="sec-lbl" id="add-task-label" style="margin-bottom:12px">NUEVA TAREA</div>
-      <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+      <div class="sec-lbl" id="add-task-label" style="margin-bottom:10px">NUEVA TAREA</div>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
         <input type="text" class="fsm" id="t-title" placeholder="Título de la tarea..." maxlength="60" style="flex:1;margin-bottom:0;height:38px">
         <select id="task-tipo-sel" class="fsm" onchange="_updateTaskTipo()" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
           <option value="" disabled selected style="background:#fff;color:#111">Tipo de tarea...</option>
@@ -7780,7 +7783,7 @@ function vTareas() {
         <button onclick="toggleAddTask()" title="Cerrar" style="background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);border-radius:8px;width:34px;height:38px;flex-shrink:0;cursor:pointer;font-size:14px;line-height:1">✕</button>
       </div>
       <div id="task-link-section">
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
           <div id="task-link-row" style="flex:1;margin-bottom:0;display:flex;gap:6px">
             <input type="text" id="task-link-url" class="fsm" placeholder="https://..." style="flex:1;margin-bottom:0;height:38px">
             <input type="text" id="task-link-name" class="fsm" placeholder="Texto del enlace..." style="flex:1;margin-bottom:0;height:38px">
@@ -7788,8 +7791,8 @@ function vTareas() {
           <button class="msgs-btn-icon" title="Copiar enlace" onclick="copyTaskLink()" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0">🔗</button>
         </div>
       </div>
-      <div id="task-prep-section" style="display:none;margin-bottom:12px">
-        <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center">
+      <div id="task-prep-section" style="display:none;margin-bottom:10px">
+        <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
           <select class="fsm" id="tp-nivel" onchange="_updateTaskPrepGrado();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Nivel —</option>
             <option value="primaria">Primaria</option>
@@ -7807,7 +7810,7 @@ function vTareas() {
           </select>
           <button onclick="_clearTaskPrepRow1()" title="Limpiar selección" style="flex-shrink:0;width:34px;height:38px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">↺</button>
         </div>
-        <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center">
+        <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
           <select class="fsm" id="tp-tipo" onchange="_updateTaskPrepItem();_syncPrepSel(this)" style="flex:1;margin-bottom:0;height:38px;color:rgba(255,255,255,0.4)">
             <option value="" disabled selected>— Tipo de actividad —</option>
           </select>
@@ -7834,12 +7837,12 @@ function vTareas() {
           </select>
           <button onclick="_clearTaskPrepRow2()" title="Limpiar selección" style="flex-shrink:0;width:34px;height:38px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:rgba(255,255,255,0.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0">↺</button>
         </div>
-        <select class="fsm" id="tp-item" onchange="_syncPrepSel(this)" style="margin-bottom:12px;height:38px;color:rgba(255,255,255,0.4);display:none">
+        <select class="fsm" id="tp-item" onchange="_syncPrepSel(this)" style="margin-bottom:10px;height:38px;color:rgba(255,255,255,0.4);display:none">
           <option value="" disabled selected>— Selecciona —</option>
         </select>
       </div>
       <div id="task-file-section" style="display:none">
-        <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
           <div id="task-file-row" style="flex:1;display:flex;gap:6px" data-url="">
             <div id="task-file-name" onclick="cancelTaskFile();document.getElementById('task-file-input').click()" style="flex:1;cursor:pointer;height:38px;box-sizing:border-box;display:flex;align-items:center;padding:0 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Subir archivo...</div>
             <input type="text" class="fsm" id="t-desc" placeholder="Título del archivo" style="flex:1;margin-bottom:0;height:38px">
@@ -7848,7 +7851,7 @@ function vTareas() {
           <input type="file" id="task-file-input" style="display:none" accept="image/*,.pdf,.doc,.docx,.ppt,.pptx" onchange="onTaskFileSelect(this)">
         </div>
       </div>
-      <div style="display:flex;gap:6px;margin-bottom:12px;align-items:center">
+      <div style="display:flex;gap:6px;margin-bottom:10px;align-items:center">
         <div style="flex:1;position:relative">
           <input type="date" class="fsm" id="t-due" oninput="syncDueTimeUI()" style="margin-bottom:0;height:38px">
           <div id="t-due-ph" class="dt-ph" style="display:flex">Fecha límite</div>
@@ -7859,7 +7862,7 @@ function vTareas() {
         </div>
         <button class="msgs-btn-icon" id="t-delete-btn" title="Eliminar tarea" onclick="deleteTaskFromForm()" disabled style="width:34px;height:38px;visibility:visible;opacity:0.35;cursor:not-allowed;align-items:center;justify-content:center;padding:0;flex-shrink:0;background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.3);color:#ff5c7a">🗑️</button>
       </div>
-      <div style="margin-bottom:12px">
+      <div style="margin-bottom:10px">
         <div style="font-size:9px;color:#6b7280;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A</div>
         <div style="display:flex;flex-wrap:nowrap;align-items:flex-start;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px">
           <div id="t-assign-pills" style="display:flex;flex-wrap:nowrap;gap:5px;flex-shrink:0">${_renderTaskAssignPills()}</div>
@@ -7881,7 +7884,7 @@ function vTareas() {
       ${renderReviewQueue(sorted)}
     </div>` : `
     <div id="tasks-list">
-      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskSort==='old'?'SIN TAREAS VENCIDAS':taskSort==='student'?'SIN TAREAS':'SIN TAREAS ACTIVAS'}</div></div>`
+      ${sorted.length===0?`<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:10px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskSort==='old'?'SIN TAREAS VENCIDAS':taskSort==='student'?'SIN TAREAS':'SIN TAREAS ACTIVAS'}</div></div>`
       : sorted.map(t => renderTask(t, loggedId)).join('')}
     </div>`}
   </div>
@@ -7971,7 +7974,7 @@ function renderReviewQueue(list) {
     (t.pendingReview||[]).forEach(sid => rows.push({ t, sid }));
   });
   if (rows.length === 0) {
-    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">📝</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN ENTREGAS POR APROBAR</div></div>`;
+    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:10px">📝</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN ENTREGAS POR APROBAR</div></div>`;
   }
   return rows.map(({t,sid}) => {
     const s = students.find(x => String(x.id) === String(sid));
@@ -8179,7 +8182,7 @@ function _scrollMsgsToBottom(){
 function _buildMsgsBubbles(){
   const me = isAdmin() ? 'teacher' : String(getLoggedId());
   const arr = msgsDmView===null ? msgsGroupArr : (msgsDmObj[msgsDmView]||[]);
-  if (!arr.length) return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:36px;margin-bottom:12px">💬</div><div style="font-size:13px">Sin mensajes aún</div></div>`;
+  if (!arr.length) return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.25)"><div style="font-size:36px;margin-bottom:10px">💬</div><div style="font-size:13px">Sin mensajes aún</div></div>`;
   return arr.map(m => {
     const mine = m.from===me;
     const ts = new Date(m.ts);
@@ -8231,7 +8234,7 @@ function vMensajes(){
       <button class="msgs-dm-btn${msgsDmView===null?' active':''}" data-v="null" onclick="setMsgsDmView('null')" style="position:relative">📢 CANAL${groupU>0?` <span class="msgs-badge">${groupU}</span>`:''}</button>
       ${dmBtns}
     </div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px">
       <div id="msgs-ch-lbl" style="font-size:9px;color:rgba(255,255,255,0.3);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">${_getMsgsChLabel()}</div>
       <div id="msgs-notif-wrap" style="flex-shrink:0">${_notifBtnHtml()}</div>
     </div>
@@ -8411,7 +8414,7 @@ function refreshTasksListInPlace() {
     : allMyTasks;
   const sorted = _computeSortedTasks(myTasks, loggedId);
   el.innerHTML = sorted.length===0
-    ? `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskSort==='old'?'SIN TAREAS VENCIDAS':taskSort==='student'?'SIN TAREAS':'SIN TAREAS ACTIVAS'}</div></div>`
+    ? `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:10px">✅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">${taskSort==='old'?'SIN TAREAS VENCIDAS':taskSort==='student'?'SIN TAREAS':'SIN TAREAS ACTIVAS'}</div></div>`
     : sorted.map(t => renderTask(t, loggedId)).join('');
 }
 function setTaskSearch(value) {
@@ -8612,7 +8615,7 @@ function _computeFilteredPrompts() {
 }
 function _renderPromptsFilterRow() {
   return `
-  <div style="margin-bottom:12px">
+  <div style="margin-bottom:10px">
     <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">ORDENAR Y FILTRAR</div>
     <div id="prompts-filter-row" style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">${_renderPromptsFilterRowInner()}</div>
   </div>`;
@@ -8689,10 +8692,10 @@ function getAllUniquePrompts() {
 function renderAllPromptsList(groups) {
   groups = groups || getAllUniquePrompts();
   if (groups.length === 0) {
-    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">🧠</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN PROMPTS AÚN</div></div>`;
+    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:10px">🧠</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">SIN PROMPTS AÚN</div></div>`;
   }
   return groups.map(g => `
-    <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 12px;margin-bottom:12px">
+    <div style="background:rgba(0,0,0,0.22);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:10px 12px;margin-bottom:10px">
       <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
         <div style="flex:1;min-width:0">
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:#a78bfa;letter-spacing:0.05em">${g.name}${g.ts?`<span style="margin-left:8px;font-size:9px;color:rgba(255,255,255,0.28);font-weight:400;font-family:'Barlow',sans-serif;letter-spacing:0">${new Date(g.ts).toLocaleDateString('es-ES',{day:'numeric',month:'short'})}, ${new Date(g.ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</span>`:''}</div>
@@ -8778,9 +8781,9 @@ function renderGlobalPromptForm() {
   const students = getStudents();
   return `
   <div style="background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.2);border-radius:14px;padding:12px;margin-bottom:14px">
-    <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:12px">➕ NUEVO PROMPT</div>
+    <div style="font-size:9px;color:#a78bfa;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:10px">➕ NUEVO PROMPT</div>
     <input type="text" id="gprompt-name" class="fsm" placeholder="Nombre del prompt..." maxlength="50" style="margin-bottom:6px">
-    <textarea id="gprompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:12px;resize:vertical;min-height:70px"></textarea>
+    <textarea id="gprompt-text" class="fsm" placeholder="Texto del prompt..." style="margin-bottom:10px;resize:vertical;min-height:70px"></textarea>
     <div style="font-size:9px;color:rgba(255,255,255,0.35);font-weight:900;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px">ASIGNAR A${gpromptChecked.size>0?` (${gpromptChecked.size})`:''}</div>
     <div style="display:flex;flex-wrap:nowrap;align-items:flex-start;gap:8px;margin-bottom:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px">
       <div id="gprompt-tag-list" style="display:flex;gap:5px;flex-wrap:nowrap;flex-shrink:0">${_renderTagPills(gpromptTag, 'toggleGPromptTag')}</div>
@@ -9608,7 +9611,7 @@ function vPuntosHistorial() {
   }
   const medals = ['🥇','🥈','🥉'];
   if (meses.length === 0) {
-    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:12px">📅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">AÚN NO HAY HISTORIAL</div></div>`;
+    return `<div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3)"><div style="font-size:40px;margin-bottom:10px">📅</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900">AÚN NO HAY HISTORIAL</div></div>`;
   }
   return `
   <div style="display:flex;flex-direction:column;gap:12px">
@@ -9712,7 +9715,7 @@ function vPtsDateChecklist(s) {
   };
   return `
   <div id="pts-dates-${s.id}" style="margin-top:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <button onclick="changePtsMonth(-1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">◀</button>
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:0.05em">${fmtPtsMonth(offset)}</span>
       <button onclick="changePtsMonth(1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">▶</button>
@@ -9735,7 +9738,7 @@ function vPtsDateChecklist(s) {
         }).join('');
         return `
         <div style="flex:0 0 auto;min-width:152px;background:rgba(255,255,255,0.03);border:1px solid ${absent?'rgba(255,92,122,0.25)':isFuture?'rgba(255,255,255,0.06)':'rgba(255,255,255,0.1)'};border-radius:10px;padding:10px">
-          <div style="margin-bottom:12px;${isFuture?'opacity:0.45':''}">
+          <div style="margin-bottom:10px;${isFuture?'opacity:0.45':''}">
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;line-height:1.1">${dlabel} <span style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:600">${hours}h</span></div>
             ${slotBadges}
           </div>
@@ -9792,7 +9795,7 @@ function vHorarios() {
 
   if (!sessions.length) {
     return `<div class="hor-outer" style="align-items:center;justify-content:center;padding:24px;text-align:center">
-      <div style="font-size:48px;margin-bottom:12px">📅</div>
+      <div style="font-size:48px;margin-bottom:10px">📅</div>
       <div style="font-size:14px;color:rgba(255,255,255,0.5)">No hay horarios registrados aún.<br>Los horarios se sincronizan desde el portal de padres.</div>
     </div>`;
   }
@@ -10319,7 +10322,7 @@ function vPerfil() {
   const frameGrid = ''; // próximamente
 
   const fotoContent='<div style="text-align:center">'
-    +'<div style="font-size:12px;color:#aaa;margin-bottom:12px">Elegí una foto y ajustá el encuadre arrastrando</div>'
+    +'<div style="font-size:12px;color:#aaa;margin-bottom:10px">Elegí una foto y ajustá el encuadre arrastrando</div>'
     +'<input type="file" id="perfil-file-input" accept="image/*" style="display:none" onchange="perfilPhotoSelected()">'
     +'<button onclick="perfilOpenFilePicker()" style="padding:10px 22px;border-radius:10px;background:#1a1a2e;border:1px solid #333;color:#ccc;cursor:pointer;font-size:13px;margin-bottom:14px">📁 Elegir foto</button>'
     +'<div id="perfil-crop-wrap" style="display:none;flex-direction:column;align-items:center;gap:10px">'
@@ -10333,8 +10336,8 @@ function vPerfil() {
 
   const pinContent='<div>'
     +'<div style="font-size:12px;color:#aaa;margin-bottom:10px">Ingresa tu PIN actual para poder cambiarlo</div>'
-    +'<input id="perfil-pin-old" type="password" inputmode="numeric" maxlength="10" placeholder="PIN actual" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:12px;box-sizing:border-box;font-size:15px">'
-    +'<input id="perfil-pin-new" type="password" inputmode="numeric" maxlength="10" placeholder="PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:12px;box-sizing:border-box;font-size:15px">'
+    +'<input id="perfil-pin-old" type="password" inputmode="numeric" maxlength="10" placeholder="PIN actual" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:10px;box-sizing:border-box;font-size:15px">'
+    +'<input id="perfil-pin-new" type="password" inputmode="numeric" maxlength="10" placeholder="PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:10px;box-sizing:border-box;font-size:15px">'
     +'<input id="perfil-pin-new2" type="password" inputmode="numeric" maxlength="10" placeholder="Repetir PIN nuevo" style="width:100%;padding:10px;border-radius:10px;border:1px solid #333;background:#0a0a0a;color:#fff;margin-bottom:14px;box-sizing:border-box;font-size:15px">'
     +'<button onclick="perfilSavePin()" style="width:100%;padding:12px;border-radius:10px;background:#7c3aed;border:none;color:#fff;font-weight:700;cursor:pointer;font-size:14px">Cambiar PIN</button>'
     +'</div>';
@@ -10357,9 +10360,9 @@ function vPerfil() {
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
     +'<button onclick="go(&quot;dashboard&quot;)" style="background:none;border:none;color:#aaa;font-size:24px;cursor:pointer;padding:0;line-height:1">&#8249;</button>'
     +'<h2 style="margin:0;font-size:18px;font-weight:700">Mi Perfil</h2></div>'
-    +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:12px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,60)+'</div>'
+    +'<div id="perfil-avatar-wrap" style="display:flex;justify-content:center;margin-bottom:10px">'+makeAvatarHTML(curIcon,curColor,curPhoto,curFrame,60)+'</div>'
     +'<div style="text-align:center;margin-bottom:18px"><div style="font-size:15px;font-weight:600;color:#ccc">'+(st.name||'')+'</div>'+(_pNivelBadge?'<div style="margin-top:5px">'+_pNivelBadge+'</div>':'')+'</div>'
-    +'<div style="display:flex;gap:4px;margin-bottom:12px;overflow-x:auto">'+tabButtons+'</div>'
+    +'<div style="display:flex;gap:4px;margin-bottom:10px;overflow-x:auto">'+tabButtons+'</div>'
     +'<div id="perfil-tab-body" style="background:#111;border-radius:12px;padding:10px;min-height:80px">'+(tabContents[_perfilTab]||'')+'</div>'
     +saveBtn+'</div>';
 }
@@ -10592,7 +10595,7 @@ function openBannerPicker() {
   ).join('');
   const html = `<div id="banner-modal-ov" class="banner-modal-ov" onclick="if(event.target===this)closeBannerPicker()">
     <div class="banner-modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
         <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;letter-spacing:0.05em">ELIGE TU BANNER</div>
         <button onclick="closeBannerPicker()" style="background:rgba(255,255,255,0.07);border:none;border-radius:8px;color:#fff;padding:4px 10px;cursor:pointer;font-size:16px">✕</button>
       </div>
