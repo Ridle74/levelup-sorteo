@@ -2100,9 +2100,8 @@ function _prepConfigHtml() {
       const _boltSvg2=`<svg width="14" height="16" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
       // Badge por nivel
       const _badge=(lvl)=>{
-        const styles={dominado:`background:rgba(109,40,217,0.92);border:2px solid rgba(168,85,247,1);color:#fff`,competente:`background:rgba(146,94,227,0.91);border:2px solid rgba(190,128,249,0.88);color:#fff`,familiar:`background:rgba(182,148,236,0.90);border:2px solid rgba(212,170,251,0.75);color:#fff`,intentado:`background:rgba(219,201,246,0.89);border:2px solid rgba(233,213,253,0.63);color:rgba(109,40,217,0.6)`,pendiente:`background:rgba(255,255,255,0.10);border:2px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.3)`};
-        const st=styles[lvl]||styles.pendiente;
-        return `<div class="prep-kh-sk-badge" style="${st}">${lvl==='dominado'?_crownSvg2:''}</div>`;
+        const sqLvl=lvl==='pendiente'||lvl==='unknown'?'':lvl;
+        return `<div class="prep-kh-sq prep-kh-sk-badge${sqLvl?' '+sqLvl:''}">${lvl==='dominado'?_crownSvg2:''}</div>`;
       };
       // Separar skills normales de quizzes
       let quizCount=0;
