@@ -2202,7 +2202,7 @@ function _prepConfigHtml() {
   </div>`;
 
   return `<div class="prep-wrap" style="padding-bottom:8px">
-    <div style="margin-left:245px">${topbar}</div>
+    <div style="margin-left:259px">${topbar}</div>
     <div class="prep-kh-layout">${sidebar}${contentArea}</div>
   </div>`;
 }
