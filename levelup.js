@@ -1436,12 +1436,12 @@ function _genEM_B3(){
     {q:'Ω = {a,e,i,o,u} (vocales)\nSuceso A: elegir una vocal que tenga menos de 2 letras',ans:5,w:[3,4,2]},
     {q:'Ω = {rojo,azul,verde,amarillo,naranja,morado,rosado,blanco} (bolas)\nSuceso A: sacar un color que empiece con vocal',ans:3,w:[2,4,1]},
     {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día del FIN DE SEMANA',ans:2,w:[3,4,5]},
-    {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día de la semana que tenga más de 6 letras',ans:4,w:[3,5,2]},
+    {q:'Ω = {lunes,martes,miércoles,jueves,viernes,sábado,domingo} (días)\nSuceso A: elegir un día de la semana que tenga más de 6 letras',ans:3,w:[2,4,5]},
     {q:'Ω = {enero,febrero,marzo,abril,mayo,junio,julio,agosto,septiembre,octubre,noviembre,diciembre}\nSuceso A: elegir un mes que tenga 30 días exactos',ans:4,w:[3,5,6]},
     {q:'Ω = {A,M,O,R} (letras de "AMOR")\nSuceso A: elegir una VOCAL',ans:2,w:[1,3,4]},
     {q:'Ω = {cara,sello} (moneda)\nSuceso A: obtener cara',ans:1,w:[2,0,3]},
     {q:'Ω = {1,2,3,4,5,6,7,8,9,10,11,12} (dado de 12 caras)\nSuceso A: sacar un múltiplo de 4',ans:3,w:[2,4,6]},
-    {q:'Ω = {norte,sur,este,oeste} (puntos cardinales)\nSuceso A: elegir un punto que empiece con vocal',ans:1,w:[2,3,4]},
+    {q:'Ω = {norte,sur,este,oeste} (puntos cardinales)\nSuceso A: elegir un punto que empiece con vocal',ans:2,w:[1,3,4]},
   ];
   const p=probs[_c4rnd(0,probs.length-1)];
   const ws=_c4shuf(p.w.filter(v=>v!==p.ans)).slice(0,3);
@@ -1966,7 +1966,7 @@ function _genT6VA_B3() {
   const smallLabel=Math.abs(a)<Math.abs(b)?`|${la}| = ${Math.abs(a)}`:`|${lb}| = ${Math.abs(b)}`;
   return {q:`¿Cuál tiene mayor valor absoluto: |${la}| o |${lb}|?`,
     a:bigLabel,
-    w:[smallLabel,'Son iguales','No se pueden comparar'],
+    opts:_bingShufArr([bigLabel,smallLabel,'Son iguales','No se pueden comparar']),
     mc:true};
 }
 function _genT6VA_BQ1() { return [_genT6VA_B1,_genT6VA_B2,_genT6VA_B3][_bGetRandomInt(0,2)](); }
@@ -2009,7 +2009,7 @@ function _genT6VA_B5() {
     const n=_bGetRandomInt(2,15);
     return {q:`¿Es verdad que |(−${n})| = |${n}|?`,
       a:`Sí, ambos valen ${n}`,
-      w:[`No, |(−${n})| = −${n}`,'Solo si el número es par','Solo si el número es mayor que 10'],
+      opts:_bingShufArr([`Sí, ambos valen ${n}`,`No, |(−${n})| = −${n}`,'Solo si el número es par','Solo si el número es mayor que 10']),
       mc:true};
   }
 }
