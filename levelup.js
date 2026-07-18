@@ -2037,7 +2037,7 @@ function _prepConfigHtml() {
     </div>
     <div class="prep-kh-sidebar-hdr">
       <div class="prep-kh-sidebar-sub">${shown ? units.length+' UNIDADES' : '? UNIDADES'}</div>
-      <div class="prep-kh-sidebar-sub2">${shown ? totalSkillCount+' habilidades' : '? habilidades'}</div>
+      <div class="prep-kh-sidebar-sub2">${shown ? totalSkillCount+' Habilidades' : '? Habilidades'}</div>
     </div>
     ${shown ? sidebarItems : ''}
   </div>`;
