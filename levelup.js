@@ -2458,12 +2458,21 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
   const expanded = _prepExpandedHistId === h.id;
   const lvlLbl = h.level==='primaria' ? '🏫 Primaria' : h.level==='secundaria' ? '📐 Secundaria' : '🎓 Pre-univ.';
   const gradeLbl = h.grade ? ' · ' + h.grade + '° Grado' : '';
+  // Re-evaluar respuestas con lógica actual (retroactivamente corrige bugs de respuesta)
+  const answers = h.answers || [];
+  const reEvalAnswers = answers.map(a => ({ ...a, correct: _prepReEvalAnswer(a) }));
+  const reCorrect = reEvalAnswers.filter(a=>a.correct).length;
+  const reTotal   = reEvalAnswers.length || h.total || 1;
+  const rePct     = reTotal > 0 ? Math.round((reCorrect/reTotal)*100) : (h.pct||0);
+  const displayOk = rePct >= 70;
   let ansRows = '';
-  if (expanded && (h.answers||[]).length) {
-    (h.answers||[]).forEach(function(ans, i) {
+  if (expanded && reEvalAnswers.length) {
+    reEvalAnswers.forEach(function(ans, i) {
+      const wasFixed = ans.correct && !(h.answers[i]?.correct); // era incorrecto, ahora corregido
       const ico = ans.correct ? '✅' : '❌';
+      const fixedTag = wasFixed ? ' <span style="font-size:10px;background:rgba(57,255,122,0.15);color:#39ff7a;border-radius:4px;padding:1px 5px;margin-left:4px">corregido ✓</span>' : '';
       const ansLine = ans.correct
-        ? '<span style="font-size:11px;color:#39ff7a">Tu respuesta: ' + ans.given + '</span>'
+        ? '<span style="font-size:11px;color:#39ff7a">Tu respuesta: ' + ans.given + '</span>' + fixedTag
         : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + ans.given + '</span>'
           + ' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
           + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + ans.a + '</span>';
@@ -2476,19 +2485,19 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
         + '</div></div>';
     });
   }
-  const btnHtml = (h.answers||[]).length
+  const btnHtml = reEvalAnswers.length
     ? '<button onclick="_prepExpandedHistId=_prepExpandedHistId===\'' + h.id + '\'?null:\'' + h.id + '\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'
-      + (expanded ? '▲ Ocultar ejercicios' : '▼ Ver ejercicios (' + h.answers.length + ')') + '</button>'
+      + (expanded ? '▲ Ocultar ejercicios' : '▼ Ver ejercicios (' + reEvalAnswers.length + ')') + '</button>'
       + (expanded ? '<div style="margin-top:6px">' + ansRows + '</div>' : '')
     : '';
   const _prefix = _histTypePrefix(h);
   const _lbl = _cleanLbl(h.topicLabel||h.topic);
-  return '<div class="prep-review-item ' + (ok?'ok':'fail') + '">'
+  return '<div class="prep-review-item ' + (displayOk?'ok':'fail') + '">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
     + '<span style="font-size:13px;font-weight:900;color:rgba(255,255,255,0.85);flex:1;min-width:0">'
     + '<span style="font-weight:700;color:rgba(255,255,255,0.45)">' + _prefix + ': </span>' + _lbl
     + '</span>'
-    + '<span style="font-size:14px;font-weight:900;color:' + (ok?'#39ff7a':'#f87171') + ';flex-shrink:0">' + h.correct + '/' + h.total + ' · ' + h.pct + '%</span>'
+    + '<span style="font-size:14px;font-weight:900;color:' + (displayOk?'#39ff7a':'#f87171') + ';flex-shrink:0">' + reCorrect + '/' + reTotal + ' · ' + rePct + '%</span>'
     + '</div>'
     + '<div style="display:flex;justify-content:space-between;margin-top:2px">'
     + '<span style="font-size:11px;color:rgba(255,255,255,0.35)">' + lvlLbl + gradeLbl + '</span>'
@@ -2515,28 +2524,77 @@ function _prepHistorySectionHtml() {
           const timeStr = h.completedAt?.seconds
             ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
             : '';
-          const ok = h.pct >= 70;
+          const ok = _prepReEvalPct(h) >= 70;
           return _prepHistCardHtml(h, dateStr, timeStr, ok);
         }).join('')}</div>`}
     </div>` : ''}
   </div>`;
 }
+// Re-evalúa si una respuesta guardada era correcta según la lógica actual.
+// Cubre dos casos:
+//   1. Bug en el flag: given === a pero correct===false (error al comparar)
+//   2. Bug en la respuesta: a tenía el valor equivocado; parseamos la pregunta
+//      para preguntas aritméticas y recalculamos la respuesta real.
+function _prepReEvalAnswer(ans) {
+  if (!ans) return false;
+  if (ans.correct) return true; // ya marcada correcta — mantener
+  const given = String(ans.given ?? '').trim();
+  const stored = String(ans.a ?? '').trim();
+  // Caso 1: given === a pero el flag estaba mal
+  if (given === stored) return true;
+  // Caso 2: preguntas aritméticas — recalcular desde el texto de la pregunta
+  const q = String(ans.q || '');
+  // Operación básica: "A OP B = ?" con OP = + − × ÷
+  const arith = q.match(/^\(?(-?\d+(?:[.,]\d+)?)\)?\s*([+\-−×÷×÷])\s*\(?(-?\d+(?:[.,]\d+)?)\)?\s*=\s*\?/);
+  if (arith) {
+    const x = parseFloat(arith[1].replace(',','.')), op = arith[2], y = parseFloat(arith[3].replace(',','.'));
+    let computed = null;
+    if (op==='+') computed = x+y;
+    else if (op==='-'||op==='−') computed = x-y;
+    else if (op==='×'||op==='×') computed = x*y;
+    else if ((op==='÷'||op==='÷') && y!==0) computed = x/y;
+    if (computed !== null) {
+      const r = Math.round(computed*1000)/1000;
+      if (String(r) === given || String(Math.round(r)) === given) return true;
+    }
+  }
+  // Valor absoluto: "|X| = ?" o "|(X)| = ?"
+  const absM = q.match(/\|\(?(-?\d+(?:[.,]\d+)?)\)?\|\s*=\s*\?/);
+  if (absM) {
+    const computed = Math.abs(parseFloat(absM[1].replace(',','.')));
+    if (String(computed) === given || String(Math.round(computed)) === given) return true;
+  }
+  // Número desconocido: "__ − B = C" → A = B + C
+  const blankM = q.match(/^__\s*[−\-]\s*(-?\d+)\s*=\s*(-?\d+)/);
+  if (blankM) {
+    const computed = parseFloat(blankM[1]) + parseFloat(blankM[2]);
+    if (String(computed) === given) return true;
+  }
+  return false;
+}
+// Recalcula el pct de una sesión aplicando re-evaluación de respuestas
+function _prepReEvalPct(h) {
+  if (!h) return 0;
+  if (!Array.isArray(h.answers) || !h.answers.length) return h.pct || 0;
+  const reCorrect = h.answers.filter(a => _prepReEvalAnswer(a)).length;
+  return Math.round((reCorrect / h.answers.length) * 100);
+}
 function _prepMasteryLevel(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return 'unknown';
   const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
   if (!sessions.length) return 'pendiente';
-  const best = Math.max(...sessions.map(h=>h.pct||0));
+  const best = Math.max(...sessions.map(h=>_prepReEvalPct(h)));
   if (best>=100) return 'dominado';
   if (best>=75) return 'competente';
   if (best>=50) return 'familiar';
   if (best>=25) return 'intentado';
-  return 'intentado'; // intentado pero < 25% correcto
+  return 'intentado';
 }
 function _prepLastPct(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return null;
   const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
   if (!sessions.length) return null;
-  return sessions[0].pct ?? null; // historial ya ordenado desc por fecha
+  return _prepReEvalPct(sessions[0]); // historial ya ordenado desc por fecha
 }
 function _prepCourseScore(topicKeys) {
   const W={dominado:100,competente:75,familiar:50,intentado:25,pendiente:0,unknown:0};
@@ -3226,9 +3284,9 @@ function _prepAdminReportsHtml() {
     }).join('');
   }
 
-  const idsStr = confirmedIds.join(', ');
-  const copyBtn = confirmedIds.length
-    ? `<button onclick="navigator.clipboard.writeText(${JSON.stringify(idsStr)}).then(()=>showToast('IDs copiados ✓')).catch(()=>showToast('Error al copiar'))" style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px">📋 Copiar ${confirmedIds.length} ID${confirmedIds.length>1?'s':''} confirmado${confirmedIds.length>1?'s':''}</button>`
+  const confirmedReports = Array.isArray(data) ? data.filter(r=>r.status==='confirmed') : [];
+  const copyBtn = confirmedReports.length
+    ? `<button onclick="_prepCopyConfirmedErrors()" style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px">📋 Copiar ${confirmedReports.length} error${confirmedReports.length>1?'es':''} confirmado${confirmedReports.length>1?'s':''} (todos los detalles)</button>`
     : '';
 
   const pendingBadge = Array.isArray(_prepAdminReportsData) && counts.pending > 0
@@ -3245,4 +3303,29 @@ function _prepAdminReportsHtml() {
       ${cardsHtml}
     </div>` : ''}
   </div>`;
+}
+function _prepCopyConfirmedErrors() {
+  const confirmed = (Array.isArray(_prepAdminReportsData) ? _prepAdminReportsData : [])
+    .filter(r => r.status === 'confirmed');
+  if (!confirmed.length) { showToast('No hay errores confirmados'); return; }
+  const lines = ['===== ERRORES CONFIRMADOS (' + confirmed.length + ') =====\n'];
+  confirmed.forEach((r, i) => {
+    const dateStr = r.ts?.seconds
+      ? new Date(r.ts.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short',year:'numeric'})
+        + ' ' + new Date(r.ts.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})
+      : '—';
+    lines.push(
+      '[' + (i+1) + '] Habilidad: ' + (r.skillKey||'?') + '  ·  Ejercicio: #' + (r.exId||_exId(r.q||'')),
+      'Alumno: ' + (r.sName||'—') + '  ·  ' + dateStr,
+      'Ejercicio: ' + (r.q||'—'),
+      'Respuesta oficial: ' + (r.correctAns||'—'),
+      'Respuesta del alumno: ' + (r.givenAns||'—'),
+      'Comentario: ' + (r.comment||'—'),
+      ''
+    );
+  });
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text)
+    .then(()  => showToast('✅ ' + confirmed.length + ' error' + (confirmed.length>1?'es':'') + ' copiado' + (confirmed.length>1?'s':'')))
+    .catch(()  => showToast('Error al copiar — intenta de nuevo'));
 }
