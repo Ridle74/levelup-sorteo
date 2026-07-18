@@ -2103,7 +2103,6 @@ function _prepConfigHtml() {
     <span class="prep-kh-topbar-arr">→</span>
     <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel ¿?'}</div>
     <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '¿? habilidades'}</div>
-    ${_studentName ? `<span style="margin-left:auto;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);white-space:nowrap">${_studentName}</span>` : ''}
   </div>`;
 
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
