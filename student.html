@@ -2200,7 +2200,7 @@ function vDashboard() {
       <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
         <div>
           <div style="font-size:10px;color:rgba(220,200,255,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">BIENVENIDO</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:1;letter-spacing:-0.02em">${student.icon} ${firstName.toUpperCase()}</div>
+          <div style="display:flex;align-items:center;gap:8px"><div style="flex-shrink:0">${_av(student,44)}</div><span style="font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:1;letter-spacing:-0.02em">${firstName.toUpperCase()}</span></div>
           <div style="font-size:11px;color:rgba(220,200,255,0.8);font-weight:600;margin-top:4px">MATHS LEVEL UP</div>
         </div>
         <button onclick="doLogout()" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;flex-shrink:0">SALIR</button>
@@ -7613,7 +7613,7 @@ function _renderAssignAccordion(students, state, opts) {
     : `<button onclick="${opts.toggleFn}(${groupOpen})" style="${pillClose}">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
       + alphaGroups[groupOpen].students.map(s=>{
           const on = state.checked.has(String(s.id));
-          return `<button onclick="${opts.checkFn}('${s.id}')" style="${on?pillMemberOn:pillMemberOff}">${s.icon} ${s.name.split(' ')[0]}</button>`;
+          return `<button onclick="${opts.checkFn}('${s.id}')" style="${on?pillMemberOn:pillMemberOff};display:inline-flex;align-items:center;gap:5px">${_av(s,20)} ${s.name.split(' ')[0]}</button>`;
         }).join('');
   return `<div style="display:flex;gap:5px;flex-wrap:wrap">${todosHtml}${groupsHtml}</div>`;
 }
@@ -7733,7 +7733,7 @@ function vTareas() {
         <button onclick="setTaskStudentView(null)" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${!taskStudentView?'rgba(186,255,41,0.5)':'rgba(255,255,255,0.1)'};background:${!taskStudentView?'rgba(186,255,41,0.1)':'rgba(255,255,255,0.04)'};color:${!taskStudentView?'#baff29':'rgba(255,255,255,0.5)'}">🌍 Todos</button>
         ${groupOpen===null ? alphaGroups.map((g,i)=>`<button onclick="toggleTaskGroup(${i})" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5)">🔤 ${g.label}</button>`).join('')
           : `<button onclick="closeTaskGroup()" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid rgba(79,182,255,0.6);background:rgba(79,182,255,0.15);color:#4fb6ff">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
-            + alphaGroups[groupOpen].students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'}">${s.icon} ${s.name.split(' ')[0]}</button>`).join('')
+            + alphaGroups[groupOpen].students.map(s=>`<button onclick="setTaskStudentView('${s.id}')" style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;cursor:pointer;border:1px solid ${taskStudentView===String(s.id)?s.color+'99':'rgba(255,255,255,0.1)'};background:${taskStudentView===String(s.id)?s.color+'22':'rgba(255,255,255,0.04)'};color:${taskStudentView===String(s.id)?s.color:'rgba(255,255,255,0.5)'};display:inline-flex;align-items:center;gap:5px">${_av(s,20)} ${s.name.split(' ')[0]}</button>`).join('')
         }
         <input type="text" id="task-search-input" placeholder="🔍 Buscar tarea por título / tema..." value="${String(taskSearchQuery||'').replace(/"/g,'&quot;')}" oninput="setTaskSearch(this.value)" style="flex:1 1 160px;min-width:160px;box-sizing:border-box;padding:7px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-size:12px;font-family:'Barlow',sans-serif">
         `:''}
@@ -8004,7 +8004,7 @@ function renderReviewQueue(list) {
     return `
     <div class="task-card twait" id="tr-${t.id}-${sid}">
       <div class="task-t">${t.title}</div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;margin-top:2px">${s?`${s.icon} ${s.name}`:'Alumno'} la marcó como hecha — esperando tu aprobación</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;margin-top:2px;display:flex;align-items:center;gap:5px">${s?`${_av(s,16)} ${s.name}`:'Alumno'} la marcó como hecha — esperando tu aprobación</div>
       ${t.desc?`<div class="task-d">${t.desc}</div>`:''}
       <div class="task-btns">
         <button class="btn-dg on" onclick="approveTask('${t.id}','${sid}')">✅ APROBAR</button>
@@ -8250,7 +8250,7 @@ function vMensajes(){
   const dmU = admin ? 0 : msgsUnreadCount(msgsDmObj[sid]||[],'dm_'+sid);
   setMsgLastRead(msgsDmView===null ? 'group' : 'dm_'+(msgsDmView||sid));
   const dmBtns = admin
-    ? getStudents().map(s=>{ const u=msgsUnreadCount(msgsDmObj[String(s.id)]||[],'dm_'+s.id); return `<button class="msgs-dm-btn${msgsDmView===String(s.id)?' active':''}" data-v="${s.id}" onclick="setMsgsDmView('${s.id}')" style="position:relative">${s.icon} ${s.name.split(' ')[0]}${u>0?` <span class="msgs-badge">${u}</span>`:''}</button>`; }).join('')
+    ? getStudents().map(s=>{ const u=msgsUnreadCount(msgsDmObj[String(s.id)]||[],'dm_'+s.id); return `<button class="msgs-dm-btn${msgsDmView===String(s.id)?' active':''}" data-v="${s.id}" onclick="setMsgsDmView('${s.id}')" style="position:relative;display:inline-flex;align-items:center;gap:5px">${_av(s,20)} ${s.name.split(' ')[0]}${u>0?` <span class="msgs-badge">${u}</span>`:''}</button>`; }).join('')
     : `<button class="msgs-dm-btn${msgsDmView!==null?' active':''}" data-v="${sid}" onclick="setMsgsDmView('${sid}')" style="position:relative">💬 MI CHAT${dmU>0?` <span class="msgs-badge">${dmU}</span>`:''}</button>`;
   return `<div style="padding:12px 12px 6px">
     <div class="msgs-dm-pill">
@@ -8724,7 +8724,7 @@ function renderAllPromptsList(groups) {
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:#a78bfa;letter-spacing:0.05em">${g.name}${g.ts?`<span style="margin-left:8px;font-size:9px;color:rgba(255,255,255,0.28);font-weight:400;font-family:'Barlow',sans-serif;letter-spacing:0">${new Date(g.ts).toLocaleDateString('es-ES',{day:'numeric',month:'short'})}, ${new Date(g.ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</span>`:''}</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:5px">
             ${g.tag&&_tagInfo(g.tag)?`<span style="font-size:11px;background:rgba(186,255,41,0.12);border:1px solid rgba(186,255,41,0.35);color:#baff29;border-radius:8px;padding:2px 6px;font-weight:700">${_tagInfo(g.tag).icon} ${_tagInfo(g.tag).label}</span>`:''}
-            ${g.students.map(s=>`<span title="${s.name}" style="font-size:11px;background:${s.color}22;border:1px solid ${s.color}55;color:${s.color};border-radius:8px;padding:2px 6px;font-weight:700">${s.icon} ${s.name.split(' ')[0]}</span>`).join('')}
+            ${g.students.map(s=>`<span title="${s.name}" style="font-size:11px;background:${s.color}22;border:1px solid ${s.color}55;color:${s.color};border-radius:8px;padding:2px 6px;font-weight:700;display:inline-flex;align-items:center;gap:4px">${_av(s,16)} ${s.name.split(' ')[0]}</span>`).join('')}
           </div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0">
@@ -8882,7 +8882,7 @@ function _renderTaskAssignPills() {
     : `<button onclick="toggleTaskAssignGroup(${groupOpen})" style="${pillClose}">🔤 ${alphaGroups[groupOpen].label} ✕</button>`
       + alphaGroups[groupOpen].students.map(s=>{
           const on = taskAssignChecked.has(String(s.id));
-          return `<button onclick="toggleTaskAssignCheck('${s.id}')" style="${on?pillMemberOn:pillMemberOff}">${s.icon} ${s.name.split(' ')[0]}</button>`;
+          return `<button onclick="toggleTaskAssignCheck('${s.id}')" style="${on?pillMemberOn:pillMemberOff};display:inline-flex;align-items:center;gap:5px">${_av(s,20)} ${s.name.split(' ')[0]}</button>`;
         }).join('');
   return todosHtml + groupsHtml;
 }
@@ -10271,6 +10271,12 @@ function makeAvatarHTML(icon, color, photo, frameId, size) {
     +'<div style="width:'+size+'px;height:'+size+'px;border-radius:'+_br+';background:'+(color||'#8B5CF6')+';'+bStyle+'display:grid;place-items:center;overflow:hidden;box-sizing:border-box">'+inner+'</div>'
     +(img?'<img src="'+img+'" style="position:absolute;top:-20%;left:-20%;width:140%;height:140%;pointer-events:none;object-fit:contain">':'')
     +'</div>';
+}
+
+// Shorthand: ícono de alumno dentro de su círculo coloreado
+function _av(s, size) {
+  if (!s) return '';
+  return makeAvatarHTML(s.icon, s.color||'#8B5CF6', (overrides[String(s.id)]||{}).photo||null, getStudentFrame(s.id), size||24);
 }
 
 function getStudentFrame(id) {
