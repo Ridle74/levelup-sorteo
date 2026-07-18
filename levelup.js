@@ -2032,7 +2032,6 @@ function _prepConfigHtml() {
     </div>`;
   }).join('');
   const sidebar = `<div class="prep-kh-sidebar">
-    <div style="height:42px"></div>
     <div class="prep-kh-sidebar-inicio">
       <button class="prep-sel-btn" onclick="navHome()">← INICIO</button>
     </div>
@@ -2195,7 +2194,6 @@ function _prepConfigHtml() {
   }
 
   const contentArea = `<div class="prep-kh-content">
-    ${topbar}
     ${selectorRow}
     ${courseHeader}
     ${legend}
@@ -2205,6 +2203,7 @@ function _prepConfigHtml() {
   </div>`;
 
   return `<div class="prep-wrap" style="padding-bottom:8px">
+    ${topbar}
     <div class="prep-kh-layout">${sidebar}${contentArea}</div>
   </div>`;
 }
