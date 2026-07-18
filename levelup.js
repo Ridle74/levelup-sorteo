@@ -2016,12 +2016,76 @@ function _genT6VA_B5() {
 function _genT6VA_BQ2() { return [_genT6VA_B4,_genT6VA_B5][_bGetRandomInt(0,1)](); }
 function _genT6VA_BPU() { return [_genT6VA_B1,_genT6VA_B2,_genT6VA_B3,_genT6VA_B4,_genT6VA_B5][_bGetRandomInt(0,4)](); }
 
+// ── Ecuaciones 6° Primaria – Colegio Santísima Trinidad ──────────────────────
+function _genT6EC_B1() {
+  // x + a = b (enteros positivos, x positivo)
+  const a = _bGetRandomInt(1, 9);
+  const x = _bGetRandomInt(1, 9);
+  const b = a + x;
+  const candidates = [x+1, x+2, x-1, b, a, x+3].filter(v => v !== x && v > 0);
+  const ws = [...new Set(candidates)].slice(0, 3);
+  return {q:`x + ${a} = ${b}`, a:String(x), opts:_bingShufArr([String(x), ...ws.map(String)]), mc:true};
+}
+function _genT6EC_B2() {
+  // x + a = b  o  x − a = b  con enteros (x puede ser negativo)
+  const type = _bGetRandomInt(0, 1);
+  const a = _bGetRandomInt(1, 9);
+  const x = _bGetRandomInt(-8, 8);
+  const ws = [x+1, x-1, x+2].filter(v => v !== x);
+  if (type === 0) {
+    const b = x + a;
+    return {q:`x + ${a} = ${b}`, a:String(x), opts:_bingShufArr([String(x), ...ws.map(String)]), mc:true};
+  } else {
+    const b = x - a;
+    return {q:`x − ${a} = ${b}`, a:String(x), opts:_bingShufArr([String(x), ...ws.map(String)]), mc:true};
+  }
+}
+function _genT6EC_BQ1() { return [_genT6EC_B1, _genT6EC_B2][_bGetRandomInt(0, 1)](); }
+function _genT6EC_B3() {
+  // a·x = b, despejar x
+  const a = _bGetRandomInt(2, 9);
+  const x = _bGetRandomInt(1, 9);
+  const b = a * x;
+  const candidates = [x+1, x+2, x-1, b, a].filter(v => v !== x && v > 0);
+  const ws = [...new Set(candidates)].slice(0, 3);
+  return {q:`${a}x = ${b}`, a:String(x), opts:_bingShufArr([String(x), ...ws.map(String)]), mc:true};
+}
+function _genT6EC_B4() {
+  // ax + b = c, dos pasos
+  const a = _bGetRandomInt(2, 5);
+  const x = _bGetRandomInt(1, 8);
+  const b = _bGetRandomInt(1, 9);
+  const c = a * x + b;
+  const ws = [x+1, x-1, x+2].filter(v => v !== x);
+  return {q:`${a}x + ${b} = ${c}`, a:String(x), opts:_bingShufArr([String(x), ...ws.map(String)]), mc:true};
+}
+function _genT6EC_BQ2() { return [_genT6EC_B3, _genT6EC_B4][_bGetRandomInt(0, 1)](); }
+function _genT6EC_B5() {
+  // a(x + b) = c, distribución
+  const a = _bGetRandomInt(2, 4);
+  const x = _bGetRandomInt(1, 8);
+  const b = _bGetRandomInt(1, 5);
+  const c = a * (x + b);
+  const ws = [x+1, x-1, x+2].filter(v => v !== x);
+  return {q:`${a}(x + ${b}) = ${c}`, a:String(x), opts:_bingShufArr([String(x), ...ws.map(String)]), mc:true};
+}
+function _genT6EC_B6() {
+  // |x| = a → x puede ser positivo o negativo; pregunta por el valor negativo
+  const a = _bGetRandomInt(1, 9);
+  const ans = -a;
+  const ws = [a, -(a+1), -(a === 1 ? a+2 : a-1)].filter(v => v !== ans);
+  while (ws.length < 3) ws.push(ans - ws.length - 10);
+  return {q:`Si |x| = ${a}, ¿cuál es el valor negativo de x?`, a:String(ans), opts:_bingShufArr([String(ans), ...ws.slice(0,3).map(String)]), mc:true};
+}
+function _genT6EC_BQ3() { return [_genT6EC_B5, _genT6EC_B6][_bGetRandomInt(0, 1)](); }
+function _genT6EC_BPU() { return [_genT6EC_B1,_genT6EC_B2,_genT6EC_B3,_genT6EC_B4,_genT6EC_B5,_genT6EC_B6][_bGetRandomInt(0, 5)](); }
+
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 // ── Datos curriculares ──────────────────────────────────────────────────────────
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2','t6_va_bpu'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -2060,6 +2124,7 @@ const PREP_CURRICULUM = {
       {lbl:'Espacio Muestral y Suceso',               area:'matematica', editorial:'trinidad',    skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},
       {lbl:'Sustracción',                              area:'matematica', editorial:'trinidad',    skills:['t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1']},
       {lbl:'Valor Absoluto',                           area:'matematica', editorial:'trinidad',    skills:['t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2']},
+      {lbl:'Ecuaciones',                               area:'matematica', editorial:'trinidad',    skills:['t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3']},
       {lbl:'Números Negativos y Ecuaciones',          area:'matematica',                          skills:['neg','ecuacion']},
       {lbl:'Multiplicación y División',               area:'matematica', editorial:'san_francisco', skills:['sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2']},
       {lbl:'Potencias y Raíces Cuadradas',            area:'matematica', editorial:'san_francisco', skills:['sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2']},
@@ -3244,12 +3309,14 @@ function _prepAdminReportsHtml() {
   const counts = Array.isArray(data)
     ? { pending: data.filter(r=>r.status==='pending').length,
         confirmed: data.filter(r=>r.status==='confirmed').length,
-        dismissed: data.filter(r=>r.status==='dismissed').length }
-    : { pending:0, confirmed:0, dismissed:0 };
+        dismissed: data.filter(r=>r.status==='dismissed').length,
+        resolved: data.filter(r=>r.status==='resolved').length }
+    : { pending:0, confirmed:0, dismissed:0, resolved:0 };
 
   const filterBtns = [
     { key:'pending',   lbl:'⏳ Pendientes' },
     { key:'confirmed', lbl:'✅ Confirmados' },
+    { key:'resolved',  lbl:'🔧 Resueltos' },
     { key:'dismissed', lbl:'🚫 Descartados' }
   ].map(({key,lbl})=>{
     const active = f===key;
@@ -3266,12 +3333,18 @@ function _prepAdminReportsHtml() {
       const dateStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
       const timeStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
       const safeId  = (r.id||'').replace(/'/g,"\'");
+      const _reopenBtn = `<button onclick="setPrepReportStatus('${safeId}','pending')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;cursor:pointer">↩ Reabrir</button>`;
       const actionHtml = r.status==='pending'
         ? `<div style="display:flex;gap:6px;margin-top:10px">
             <button onclick="setPrepReportStatus('${safeId}','confirmed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">✅ Confirmar</button>
             <button onclick="setPrepReportStatus('${safeId}','dismissed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.07);color:#f87171;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">🚫 Descartar</button>
           </div>`
-        : `<div style="text-align:right;margin-top:8px"><button onclick="setPrepReportStatus('${safeId}','pending')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;cursor:pointer">↩ Reabrir</button></div>`;
+        : r.status==='confirmed'
+        ? `<div style="display:flex;gap:6px;margin-top:10px;align-items:center">
+            <button onclick="setPrepReportStatus('${safeId}','resolved')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.12);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">🔧 Marcar como resuelto</button>
+            ${_reopenBtn}
+          </div>`
+        : `<div style="text-align:right;margin-top:8px">${_reopenBtn}</div>`;
       return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px;margin-bottom:8px">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
           <span class="prep-report-tag">Habilidad: ${r.skillKey||'?'}</span>
