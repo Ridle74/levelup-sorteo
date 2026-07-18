@@ -1970,7 +1970,11 @@ function _prepConfigHtml() {
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
     : `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:(_prep.editorialChosen?'Todos los colegios':'')}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}</div>`;
+  // Botón "Comenzar desafío" en la misma línea que los selectores, alineado a la derecha
+  const _challengeBtn = shown
+    ? `<button class="prep-kh-btn-challenge" style="margin-left:auto" onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])">Comenzar desafío de dominio</button>`
+    : '';
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}${_challengeBtn}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
   if (!gradeKeys.length && areaOpts.length) {
     const visibleAreas = _prep.area ? areaOpts.filter(a=>a.key===_prep.area) : areaOpts;
@@ -2031,15 +2035,12 @@ function _prepConfigHtml() {
     ${shown ? sidebarItems : ''}
   </div>`;
 
-  // Topbar: racha, nivel, habilidades, botón desafío
+  // Topbar: racha, nivel, habilidades (el botón de acción está ahora en el selectorRow)
   const topbar = `<div class="prep-kh-topbar">
     <div class="prep-kh-topbar-streak">🔥 <span>0</span></div>
     <span class="prep-kh-topbar-arr">→</span>
     <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel —'}</div>
     <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '— habilidades'}</div>
-    <div class="prep-kh-topbar-right">
-      <button class="prep-kh-btn-challenge" ${shown ? `onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])"` : 'disabled style="opacity:0.35;cursor:default"'}>Comenzar desafío de dominio</button>
-    </div>
   </div>`;
 
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
@@ -2187,8 +2188,8 @@ function _prepConfigHtml() {
   }
 
   const contentArea = `<div class="prep-kh-content">
-    ${topbar}
     ${selectorRow}
+    ${topbar}
     ${courseHeader}
     ${legend}
     ${unitsHtml}
