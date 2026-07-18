@@ -5,6 +5,7 @@
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
 let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prepActiveUserId = undefined; // detecta cambio de cuenta
 
 // ── URL Routing ─────────────────────────────────────────────────────────────────
 const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',u:'preuniversitario'};

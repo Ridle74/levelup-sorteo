@@ -6571,6 +6571,17 @@ function vBingoFullSetup() {
   _renderBingoPane();
 }
 function vLevelUpFull() {
+  // Si cambió de cuenta, limpiar selecciones e historial del usuario anterior
+  try {
+    const _uid = String(getLoggedId() ?? '__guest__');
+    if (typeof _prepActiveUserId !== 'undefined' && _prepActiveUserId !== _uid) {
+      _prep.level = null; _prep.grade = null; _prep.area = null;
+      _prep.editorial = null; _prep.editorialChosen = false;
+      _prep.topic = ''; _prep.selectedUnit = null; _prep.state = 'config';
+      _prepHistoryData = null; _prepHistoryLoading = false;
+    }
+    _prepActiveUserId = _uid;
+  } catch(e) {}
   try { _prepApplyUrlSlug(); } catch(e) {}
   return `
     <div style="background:#070714;min-height:100vh">
