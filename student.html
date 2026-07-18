@@ -10873,7 +10873,7 @@ function renderHorPopContent(st) {
   const showEditBtn = hasSid && isAdmin() && !isDom && !!link;
 
   let html = '<div class="hor-pop-head">'
-    +'<div class="hor-pop-icon">'+icon+'</div>'
+    +(hasSid?makeAvatarHTML(icon,color,(overrides[String(sid)]||{}).photo||null,getStudentFrame(sid),38):'<div class="hor-pop-icon">'+icon+'</div>')
     +'<div style="flex:1;min-width:0">'
     +'<div style="display:flex;align-items:baseline;justify-content:space-between;gap:6px">'
     +'<div class="hor-pop-name">'+name+'</div>'
