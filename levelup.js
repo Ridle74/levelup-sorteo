@@ -2888,26 +2888,31 @@ async function _prepSaveHistory() {
         db.collection('prepHistory').add({uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(e=>console.error('exam auto-dominate',e));
       }
     }
-    // Si cuestionario al 100%: marcar automáticamente las habilidades cubiertas como dominado
-    if (pct === 100 && BINGO_TOPICS[_prep.topic]?.quiz) {
+    // Si cuestionario completado (cualquier pct > 0): propagar nivel a habilidades cubiertas.
+    // Solo se guarda si mejora el nivel actual de la habilidad.
+    if (BINGO_TOPICS[_prep.topic]?.quiz && pct > 0) {
       const coveredSkills = _prepGetQuizSkills(_prep.topic);
       const now = Math.floor(Date.now()/1000);
+      const quizCorrect = Math.round(pct * 4 / 100);
       for (const sk of coveredSkills) {
+        // No guardar si el cuestionario no mejora el nivel ya alcanzado en la habilidad
+        const currentBest = Math.max(...((Array.isArray(_prepHistoryData)?_prepHistoryData:[]).filter(h=>h.topic===sk).map(h=>_prepReEvalPct(h))), 0);
+        if (pct <= currentBest) continue;
         const skDef = BINGO_TOPICS[sk]||{};
         const skEntry = {
           uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
           topic: sk, topicLabel: skDef.lbl||sk,
-          correct: 4, total: 4, pct: 100, timeSec: 0, answers: [],
+          correct: quizCorrect, total: 4, pct, timeSec: 0, answers: [],
           autoFromQuiz: _prep.topic, completedAt: { seconds: now }
         };
         if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skEntry);
         db.collection('prepHistory').add({
           uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
           topic: sk, topicLabel: skDef.lbl||sk,
-          correct: 4, total: 4, pct: 100, timeSec: 0, answers: [],
+          correct: quizCorrect, total: 4, pct, timeSec: 0, answers: [],
           autoFromQuiz: _prep.topic,
           completedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }).catch(e=>console.error('auto-dominate save',e));
+        }).catch(e=>console.error('quiz-propagate save',e));
       }
     }
     await db.collection('prepHistory').add({
