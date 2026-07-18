@@ -2082,7 +2082,7 @@ function _prepConfigHtml() {
   const _studentFullName = _isLogged ? (()=>{ try { const s=getFullList().find(x=>x.id===_loggedId); return s?.name||null; } catch(e){return null;} })() : null;
   const _studentName = _studentFullName ? _studentFullName.split(' ')[0] : null;
   const _btnStyle = `background:#95C11F;border-color:#7ca010;color:#fff;font-weight:400;gap:5px`;
-  const _btnLogo  = `<img src="/emaths-logo.svg" style="height:13px;width:auto;display:block">`;
+  const _btnLogo  = `<span style="font-size:13px;line-height:1">←</span><img src="/emaths-logo.svg" style="height:13px;width:auto;display:block">`;
   const _inicioBtn = _isLogged
     ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="navHome()">${_btnLogo} ${_studentFullName||'Inicio'}</button>`
     : `<button class="prep-sel-btn" style="${_btnStyle}" onclick="window.location.href='/'">${_btnLogo} ¡Inscríbete Ya!</button>`;
