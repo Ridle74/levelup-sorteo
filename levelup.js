@@ -2172,10 +2172,9 @@ function _prepConfigHtml() {
       unitsHtml = `<div class="prep-kh-unit-exp">
         <div class="prep-kh-unit-exp-hdr">
           <span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>
-          <span class="prep-kh-unit-exp-lbl">${unit.lbl}</span>
+          <div class="prep-kh-skills" style="flex:1">${expSquaresHtml}${expExamSq}</div>
           <button class="prep-kh-unit-exp-back" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()">← Todas las unidades</button>
         </div>
-        <div class="prep-kh-skills" style="margin-bottom:18px">${expSquaresHtml}${expExamSq}</div>
         ${rowsHtml}
         ${examCard}
       </div>`;
