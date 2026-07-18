@@ -1970,11 +1970,15 @@ function _prepConfigHtml() {
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
     : `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:(_prep.editorialChosen?'Todos los colegios':'')}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
-  // Botón "Comenzar desafío" en la misma línea que los selectores, alineado a la derecha
+  // Botones de acción en la misma fila que los 4 selectores, alineados a la derecha
   const _challengeBtn = shown
     ? `<button class="prep-kh-btn-challenge" style="margin-left:auto" onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])">Comenzar desafío de dominio</button>`
+    : `<span style="margin-left:auto"></span>`;
+  const _hasTopic = !!(_prep.topic && allTopicKeys.includes(_prep.topic));
+  const _startInRow = _hasTopic
+    ? `<button class="prep-start-btn" style="margin-top:0;width:auto;padding:6px 18px;font-size:13px;letter-spacing:0.03em${shown?'':';margin-left:auto'}" onclick="_prepStart()">▶ Practicar ahora</button>`
     : '';
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}${_challengeBtn}</div>`;
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}${_challengeBtn}${_startInRow}</div>`;
   // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
   if (!gradeKeys.length && areaOpts.length) {
     const visibleAreas = _prep.area ? areaOpts.filter(a=>a.key===_prep.area) : areaOpts;
@@ -2183,13 +2187,12 @@ function _prepConfigHtml() {
           </div>
         </div>
       </div>
-      <button class="prep-start-btn" style="margin-top:8px" onclick="_prepStart()">▶ Practicar ahora</button>
     </div>`;
   }
 
   const contentArea = `<div class="prep-kh-content">
-    ${selectorRow}
     ${topbar}
+    ${selectorRow}
     ${courseHeader}
     ${legend}
     ${unitsHtml}
