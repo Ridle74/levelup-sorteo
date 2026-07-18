@@ -2681,11 +2681,17 @@ function _prepMasteryLevel(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return 'unknown';
   const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
   if (!sessions.length) return 'pendiente';
-  const best = Math.max(...sessions.map(h=>_prepReEvalPct(h)));
-  if (best>=100) return 'dominado';
-  if (best>=75) return 'competente';
-  if (best>=50) return 'familiar';
-  if (best>=25) return 'intentado';
+  // Sesiones directas (sin propagación de quiz/examen) tienen prioridad.
+  // Se usan ordenadas desc por fecha → la más reciente determina el nivel actual.
+  // Si nunca se practicó directo, usar el mejor score propagado como fallback.
+  const directSessions = sessions.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
+  const pct = directSessions.length
+    ? _prepReEvalPct(directSessions[0])
+    : Math.max(...sessions.map(h=>_prepReEvalPct(h)));
+  if (pct>=100) return 'dominado';
+  if (pct>=75)  return 'competente';
+  if (pct>=50)  return 'familiar';
+  if (pct>=25)  return 'intentado';
   return 'intentado';
 }
 function _prepLastPct(topicKey) {
