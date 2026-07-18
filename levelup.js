@@ -2075,7 +2075,7 @@ function _prepConfigHtml() {
   const _studentName = _isLogged ? (()=>{ try { const s=getFullList().find(x=>x.id===_loggedId); return (s?.name||'').split(' ')[0]||null; } catch(e){return null;} })() : null;
   const _inicioBtn = _isLogged
     ? `<button class="prep-sel-btn" onclick="navHome()">← INICIO</button>`
-    : `<button class="prep-sel-btn" style="background:#95C11F;border-color:#7ca010;color:#fff;font-weight:400;gap:5px" onclick="window.location.href='/'"><img src="/favicon.svg" style="width:14px;height:14px;border-radius:3px;display:block"> EMATHS</button>`;
+    : `<button class="prep-sel-btn" style="background:#95C11F;border-color:#7ca010;color:#fff;font-weight:400;gap:5px" onclick="window.location.href='/'"><img src="/emaths-logo.svg" style="height:13px;width:auto;display:block"> EMATHS</button>`;
   const sidebar = `<div class="prep-kh-sidebar">
     <div class="prep-kh-sidebar-inicio">
       ${_inicioBtn}
