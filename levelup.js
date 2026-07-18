@@ -1944,7 +1944,8 @@ function _genT6VA_B1() {
      a:'9',
      w:['−9','0','18']},
   ];
-  return defs[_bGetRandomInt(0,defs.length-1)];
+  const d = defs[_bGetRandomInt(0, defs.length-1)];
+  return {q:d.q, a:d.a, opts:_bingShufArr([d.a, ...d.w]), mc:true};
 }
 function _genT6VA_B2() {
   // Calcular |x| para enteros simples
