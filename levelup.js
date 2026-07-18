@@ -1996,7 +1996,7 @@ function _prepConfigHtml() {
 
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
-    <div class="prep-kh-course-name">${lvDef.lbl||''}${_prep.grade?' · '+_prep.grade+'° Grado':''}</div>
+    <div class="prep-kh-course-name">${lvDef.lbl||'?'}${_prep.grade?' · '+_prep.grade+'° Grado':' · ? Grado'}</div>
     <div class="prep-kh-mastery-row">
       <span class="prep-kh-mastery-lbl">Dominio del curso:</span>
       <div class="prep-kh-bar"><div class="prep-kh-bar-fill" style="width:${shown&&!masLoading&&allTopicKeys.length?coursePct:0}%"></div></div>
