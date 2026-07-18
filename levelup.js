@@ -2430,7 +2430,7 @@ function _prepTickTimer() {
 }
 function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
 // ── LABEL CLEANER ────────────────────────────────────────────────────────────
-const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').replace(/[Pp]rueba\s+de\s+unidad/gi,'Examen').replace(/[Pp]rueba\s+do[nñ]at/gi,'Examen').trim(); return s || fallback || lbl || ''; };
+const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').replace(/^[IVXivx]+\s*[–\-—]\s*/,'').replace(/[Pp]rueba\s+de\s+unidad/gi,'Examen').replace(/[Pp]rueba\s+do[nñ]at/gi,'Examen').trim(); return s || fallback || lbl || ''; };
 
 // ── QUIZ NUMBER FROM KEY (busca en PREP_CURRICULUM) ──────────────────────────
 function _prepQuizNumFromKey(topicKey) {
