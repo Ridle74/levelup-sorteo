@@ -300,7 +300,7 @@ select { -webkit-appearance: none; appearance: none; }
 }
 .rank-card.me { border-color: var(--orange); background: rgba(249,115,22,0.1); }
 .rank-row   { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.rank-avatar { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
+.rank-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.1); }
 .rank-name  { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.01em; }
 .rank-time  { font-size: 9px; font-weight: 700; margin-top: 2px; letter-spacing: 0.04em; }
 .rank-count { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; flex-shrink: 0; }
