@@ -2070,9 +2070,15 @@ function _prepConfigHtml() {
       <span class="prep-kh-sidebar-dot" style="background:${dotColor}"></span>
     </div>`;
   }).join('');
+  const _loggedId = typeof getLoggedId === 'function' ? getLoggedId() : null;
+  const _isLogged = _loggedId !== null || (typeof isAdmin === 'function' && isAdmin());
+  const _studentName = _isLogged ? (()=>{ try { const s=getFullList().find(x=>x.id===_loggedId); return (s?.name||'').split(' ')[0]||null; } catch(e){return null;} })() : null;
+  const _inicioBtn = _isLogged
+    ? `<button class="prep-sel-btn" onclick="navHome()">← INICIO</button>`
+    : `<button class="prep-sel-btn" style="background:#95C11F;border-color:#7ca010;color:#000;font-weight:800;gap:5px" onclick="window.location.href='/'"><img src="/favicon.svg" style="width:14px;height:14px;border-radius:3px;display:block"> IMAX</button>`;
   const sidebar = `<div class="prep-kh-sidebar">
     <div class="prep-kh-sidebar-inicio">
-      <button class="prep-sel-btn" onclick="navHome()">← INICIO</button>
+      ${_inicioBtn}
     </div>
     <div class="prep-kh-sidebar-hdr">
       <div class="prep-kh-sidebar-sub">${shown ? units.length+' Unidades' : '¿? Unidades'}</div>
@@ -2087,6 +2093,7 @@ function _prepConfigHtml() {
     <span class="prep-kh-topbar-arr">→</span>
     <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel ¿?'}</div>
     <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '¿? habilidades'}</div>
+    ${_studentName ? `<span style="margin-left:auto;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);white-space:nowrap">${_studentName}</span>` : ''}
   </div>`;
 
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
