@@ -2013,8 +2013,40 @@ function _genT6VA_B5() {
       mc:true};
   }
 }
-function _genT6VA_BQ2() { return [_genT6VA_B4,_genT6VA_B5][_bGetRandomInt(0,1)](); }
-function _genT6VA_BPU() { return [_genT6VA_B1,_genT6VA_B2,_genT6VA_B3,_genT6VA_B4,_genT6VA_B5][_bGetRandomInt(0,4)](); }
+function _genT6VA_B6() {
+  // Operaciones combinadas: enteros negativos + valor absoluto en la misma expresión
+  const type = _bGetRandomInt(0, 2);
+  if (type === 0) {
+    // a − (−b) + |c|  (como el ejemplo del cuaderno: 3−(−2)+|−20|=25)
+    const a = _bGetRandomInt(-9, 9) || 3;
+    const b = _bGetRandomInt(1, 9);
+    const c = _bGetRandomInt(-9, -1);
+    const ans = a + b + Math.abs(c);
+    const la = a < 0 ? `(${a})` : String(a);
+    const ws = [ans+1, ans-1, ans+2].filter(v => v !== ans);
+    return {q:`${la} − (−${b}) + |(${c})| = ?`, a:String(ans), opts:_bingShufArr([String(ans),...ws.map(String)]), mc:true};
+  } else if (type === 1) {
+    // |a| + b − (−c)
+    const a = _bGetRandomInt(-9, -1);
+    const b = _bGetRandomInt(-9, 9) || 2;
+    const c = _bGetRandomInt(1, 9);
+    const ans = Math.abs(a) + b + c;
+    const lb = b < 0 ? `(${b})` : String(b);
+    const ws = [ans+1, ans-1, ans+2].filter(v => v !== ans);
+    return {q:`|(${a})| + ${lb} − (−${c}) = ?`, a:String(ans), opts:_bingShufArr([String(ans),...ws.map(String)]), mc:true};
+  } else {
+    // |a| − |b| + c
+    const a = _bGetRandomInt(-9, -1);
+    const b = _bGetRandomInt(-5, -1);
+    const c = _bGetRandomInt(-9, 9) || 1;
+    const ans = Math.abs(a) - Math.abs(b) + c;
+    const lc = c < 0 ? `(${c})` : String(c);
+    const ws = [ans+1, ans-1, ans+2].filter(v => v !== ans);
+    return {q:`|(${a})| − |(${b})| + ${lc} = ?`, a:String(ans), opts:_bingShufArr([String(ans),...ws.map(String)]), mc:true};
+  }
+}
+function _genT6VA_BQ2() { return [_genT6VA_B4,_genT6VA_B5,_genT6VA_B6][_bGetRandomInt(0,2)](); }
+function _genT6VA_BPU() { return [_genT6VA_B1,_genT6VA_B2,_genT6VA_B3,_genT6VA_B4,_genT6VA_B5,_genT6VA_B6][_bGetRandomInt(0,5)](); }
 
 // ── Ecuaciones 6° Primaria – Colegio Santísima Trinidad ──────────────────────
 function _genT6EC_B1() {
@@ -2085,7 +2117,7 @@ function _genT6EC_BPU() { return [_genT6EC_B1,_genT6EC_B2,_genT6EC_B3,_genT6EC_B
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
@@ -2123,7 +2155,7 @@ const PREP_CURRICULUM = {
       {lbl:'División de 5 entre 2 Dígitos',          area:'matematica',                          skills:['div5x2']},
       {lbl:'Espacio Muestral y Suceso',               area:'matematica', editorial:'trinidad',    skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},
       {lbl:'Sustracción',                              area:'matematica', editorial:'trinidad',    skills:['t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1']},
-      {lbl:'Valor Absoluto',                           area:'matematica', editorial:'trinidad',    skills:['t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_bq2']},
+      {lbl:'Valor Absoluto',                           area:'matematica', editorial:'trinidad',    skills:['t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2']},
       {lbl:'Ecuaciones',                               area:'matematica', editorial:'trinidad',    skills:['t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3']},
       {lbl:'Números Negativos y Ecuaciones',          area:'matematica',                          skills:['neg','ecuacion']},
       {lbl:'Multiplicación y División',               area:'matematica', editorial:'san_francisco', skills:['sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2']},
