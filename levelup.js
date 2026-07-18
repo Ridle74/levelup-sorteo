@@ -1636,7 +1636,7 @@ const PREP_EDITORIALS = {
   belen:          { lbl:'Sagrado Corazones Belén',        ico:'📒', abbr:'S.C. Belén' },
   trinidad:       { lbl:'Santísima Trinidad',             ico:'📙', abbr:'S. Trinidad' },
   san_ignacio:    { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
-  san_francisco:  { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S. Francisco', grades:{ primaria:['6'] } },
+  san_francisco:  { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís', grades:{ primaria:['6'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
