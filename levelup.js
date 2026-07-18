@@ -5,6 +5,44 @@
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
 let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+
+// ── URL Routing ─────────────────────────────────────────────────────────────────
+const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',u:'preuniversitario'};
+const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',preuniversitario:'u'};
+const _PREP_URL_AREA    = {m:'matematica',rm:'razonamiento',al:'algebra',ar:'aritmetica',tr:'trigonometria',ge:'geometria'};
+const _PREP_URL_AREA_R  = {matematica:'m',razonamiento:'rm',algebra:'al',aritmetica:'ar',trigonometria:'tr',geometria:'ge'};
+const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio'};
+const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde'};
+
+function _prepApplyUrlSlug() {
+  const m = location.pathname.match(/^\/student\/levelup\/([^/?#]+)/);
+  if (!m) return false;
+  const sm = m[1].match(/^([psu])(\d+)([a-z]+)(?:-(.+))?$/);
+  if (!sm) return false;
+  const level = _PREP_URL_NIVEL[sm[1]];
+  if (!level) return false;
+  _prep.level = level;
+  _prep.grade = sm[2] || null;
+  _prep.area  = _PREP_URL_AREA[sm[3]] || null;
+  if (sm[4]) {
+    _prep.editorial = _PREP_URL_ED[sm[4]] || null;
+    _prep.editorialChosen = true;
+  }
+  return true;
+}
+
+function _prepSyncUrl() {
+  const n = _PREP_URL_NIVEL_R[_prep.level];
+  const g = _prep.grade;
+  const a = _prep.area ? (_PREP_URL_AREA_R[_prep.area] || '') : '';
+  const c = _prep.editorial ? (_PREP_URL_ED_R[_prep.editorial] || '') : '';
+  if (!n || !g || !a) {
+    if (location.pathname !== '/student/levelup') history.replaceState({view:'levelup'}, '', '/student/levelup');
+    return;
+  }
+  const newPath = '/student/levelup/' + n + g + a + (c ? '-'+c : '');
+  if (location.pathname !== newPath) history.replaceState({view:'levelup'}, '', newPath);
+}
 let _prepTimerIntv = null;
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
@@ -1890,6 +1928,7 @@ function _renderPreparatePane() {
   el.dataset.prepState = _prep.state;
   const inp = document.getElementById('prep-ans-input');
   if (inp) { if (savedVal) inp.value = savedVal; inp.focus(); }
+  try { _prepSyncUrl(); } catch(e) {}
 }
 function _preparatePaneHtml() {
   if (_prep.state === 'config') return _prepConfigHtml();

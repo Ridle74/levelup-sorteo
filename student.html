@@ -6570,6 +6570,7 @@ function vBingoFullSetup() {
   _renderBingoPane();
 }
 function vLevelUpFull() {
+  try { _prepApplyUrlSlug(); } catch(e) {}
   return `
     <div style="background:#070714;min-height:100vh">
       <div style="height:38px"></div>
