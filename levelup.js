@@ -176,8 +176,59 @@ function _genConj4B8(){
   const ste=shade==='union'?'Toda la figura está sombreada → A∪B (todos los elementos de A y B).':'Solo el centro está sombreado → A∩B (los elementos en común).';
   return{q:svgQ,a:ans,opts:_c4shuf(['A∪B','A∩B','solo A','solo B']),mc:true,ste};
 }
-// bq3: Quiz — Unión e Intersección avanzado (mezcla b6 + b7 + b8)
-function _genConj4BQ3(){const f=[_genConj4B6,_genConj4B7,_genConj4B8];return f[_c4rnd(0,2)]();}
+// bq3: Quiz — Unión e Intersección avanzado (mezcla b6 + b7 + b8 + b9)
+function _genConj4BQ3(){const f=[_genConj4B6,_genConj4B7,_genConj4B8,_genConj4B9];return f[_c4rnd(0,3)]();}
+
+// b9: Interpretar vocabulario de conjuntos en problemas de contexto
+const _CONJ4_VOCAB=[
+  // UNIÓN (∪)
+  {phrase:'¿Cuántos estudiantes les gusta al menos una de las dos materias?',
+   ans:'Unión (∪)',ste:'"Al menos una" → se cuenta a quien esté en A, en B o en ambos → A∪B.'},
+  {phrase:'¿Cuántos alumnos practican fútbol o vóley (o los dos)?',
+   ans:'Unión (∪)',ste:'"A o B" incluyendo quienes tienen los dos → A∪B.'},
+  {phrase:'¿Cuántos estudiantes dominan por lo menos un idioma?',
+   ans:'Unión (∪)',ste:'"Por lo menos uno" → A∪B.'},
+  {phrase:'¿Cuántos alumnos asistieron a arte o a música?',
+   ans:'Unión (∪)',ste:'"A o B" → todos los de A más todos los de B (sin repetir) → A∪B.'},
+  {phrase:'¿Cuántos niños participaron en alguno de los dos talleres?',
+   ans:'Unión (∪)',ste:'"Alguno de los dos" → A∪B.'},
+  {phrase:'¿Cuántos estudiantes llevan matemáticas o inglés?',
+   ans:'Unión (∪)',ste:'"A o B" → unión de ambos conjuntos → A∪B.'},
+  // INTERSECCIÓN (∩)
+  {phrase:'¿Cuántos estudiantes les gustan las artes Y las matemáticas?',
+   ans:'Intersección (∩)',ste:'"A y B" al mismo tiempo → solo los del centro del diagrama Venn → A∩B.'},
+  {phrase:'¿Cuántos alumnos dominan ambos cursos?',
+   ans:'Intersección (∩)',ste:'"Ambos" → quienes están en los dos conjuntos a la vez → A∩B.'},
+  {phrase:'¿Cuántos niños practican fútbol y también vóley?',
+   ans:'Intersección (∩)',ste:'"A y también B" → elementos comunes a A y B → A∩B.'},
+  {phrase:'¿Cuántos estudiantes están en el club de ciencias y en el de arte?',
+   ans:'Intersección (∩)',ste:'"En A y en B" → intersección → A∩B.'},
+  {phrase:'¿Cuántos alumnos hablan inglés y francés?',
+   ans:'Intersección (∩)',ste:'"A y B" al mismo tiempo → A∩B.'},
+  {phrase:'¿Cuántos estudiantes llevan los dos cursos?',
+   ans:'Intersección (∩)',ste:'"Los dos" → A∩B.'},
+  // SOLO EN A (diferencia A−B)
+  {phrase:'¿Cuántos alumnos solo practican fútbol, pero no vóley?',
+   ans:'Solo en A (A−B)',ste:'"Solo A (no B)" → elementos de A que no están en B → diferencia A−B.'},
+  {phrase:'¿Cuántos estudiantes únicamente llevan matemáticas, no inglés?',
+   ans:'Solo en A (A−B)',ste:'"Únicamente A, no B" → A−B.'},
+  {phrase:'¿Cuántos niños están en arte pero no en música?',
+   ans:'Solo en A (A−B)',ste:'"En A pero no en B" → diferencia A−B.'},
+  // NINGUNO / COMPLEMENTO
+  {phrase:'¿Cuántos alumnos no les gusta ni el fútbol ni el vóley?',
+   ans:'Ninguno (fuera de A∪B)',ste:'"Ni A ni B" → quienes no pertenecen a ningún conjunto → complemento de A∪B.'},
+  {phrase:'¿Cuántos estudiantes no participaron en ninguna de las dos actividades?',
+   ans:'Ninguno (fuera de A∪B)',ste:'"Ninguna de las dos" → fuera de ambos conjuntos → complemento de A∪B.'},
+  {phrase:'¿Cuántos alumnos no llevan ningún curso extracurricular?',
+   ans:'Ninguno (fuera de A∪B)',ste:'"Ninguno" → no pertenece ni a A ni a B → complemento de A∪B.'},
+];
+function _genConj4B9(){
+  const item=_c4pick(_CONJ4_VOCAB);
+  const allOpts=['Unión (∪)','Intersección (∩)','Solo en A (A−B)','Ninguno (fuera de A∪B)'];
+  const wrongs=_c4shuf(allOpts.filter(o=>o!==item.ans)).slice(0,3);
+  return{q:`En un problema de conjuntos aparece la siguiente pregunta:\n"${item.phrase}"\n¿Qué operación de conjuntos representa?`,
+    a:item.ans,opts:_c4shuf([item.ans,...wrongs]),mc:true,ste:item.ste};
+}
 
 // ── Incluido y No Incluido 4° Primaria – Colegio Belén ───────────────────────
 function _incl4rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
@@ -2484,7 +2535,7 @@ function _genHca2R3_BPU(){return[_genHca2R3_B1,_genHca2R3_B2,_genHca2R3_B3,_genH
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_b9','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
@@ -2516,7 +2567,7 @@ const PREP_CURRICULUM = {
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
     '4':[
       {lbl:'Relaciones entre Conjuntos',       area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
-      {lbl:'Operaciones con Conjuntos',          area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
+      {lbl:'Operaciones con Conjuntos',          area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_b9','conj4_bq3']},
       {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
