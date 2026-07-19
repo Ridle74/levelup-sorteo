@@ -2536,32 +2536,34 @@ function _hca5pick(a){return a[_hca5rnd(0,a.length-1)];}
 function _hca5shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=_hca5rnd(0,i);[r[i],r[j]]=[r[j],r[i]];}return r;}
 
 // ── Potenciación ──────────────────────────────────────────────────────────────
+// helper: expresa base^exp con <sup>
+function _hca5pow(b,e){return b+'<sup>'+e+'</sup>';}
 // b1: Completar tabla — base y exponente dados, calcular potencia
 function _genHca5POT_B1(){
   const b=_hca5rnd(2,9),e=_hca5rnd(2,4);
   const p=Math.pow(b,e);
   const wrongs=_hca5shuf([p+1,p-1,b*e,Math.pow(b,e+1)].filter(x=>x>0&&x!==p)).slice(0,3);
-  return{q:`Completa la tabla de potenciación:\nBase: ${b}   Exponente: ${e}   Potencia: ?`,
+  return{q:'Completa la tabla de potenciación:<br>Base: '+b+'   Exponente: '+e+'   Potencia: ?',
     a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
-    ste:`${b}^${e} = ${Array.from({length:e},()=>b).join(' × ')} = ${p}`};
+    ste:_hca5pow(b,e)+' = '+Array.from({length:e},()=>b).join(' × ')+' = '+p};
 }
 // b2: Calcular potencia directa (bases 2–9, exponentes 2–3)
 function _genHca5POT_B2(){
   const b=_hca5rnd(2,9),e=_hca5pick([2,3]);
   const p=Math.pow(b,e);
   const wrongs=_hca5shuf([p+b,p-1,b*e,Math.pow(b+1,e)].filter(x=>x>0&&x!==p)).slice(0,3);
-  return{q:`¿Cuánto es ${b}^${e}?`,
+  return{q:'¿Cuánto es '+_hca5pow(b,e)+'?',
     a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
-    ste:`${b}^${e} = ${Array.from({length:e},()=>b).join(' × ')} = ${p}`};
+    ste:_hca5pow(b,e)+' = '+Array.from({length:e},()=>b).join(' × ')+' = '+p};
 }
 // b3: Potencias con bases 5–9, exponentes 2–3
 function _genHca5POT_B3(){
   const b=_hca5rnd(5,9),e=_hca5pick([2,3]);
   const p=Math.pow(b,e);
   const wrongs=_hca5shuf([p+b,p-b,b*(e+1),Math.pow(b+1,e)].filter(x=>x>0&&x!==p)).slice(0,3);
-  return{q:`Calcula: ${b}^${e}`,
+  return{q:'Calcula: '+_hca5pow(b,e),
     a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
-    ste:`${b}^${e} = ${Array.from({length:e},()=>b).join(' × ')} = ${p}`};
+    ste:_hca5pow(b,e)+' = '+Array.from({length:e},()=>b).join(' × ')+' = '+p};
 }
 // bq1: Quiz potenciación básica
 function _genHca5POT_BQ1(){return _hca5pick([_genHca5POT_B1,_genHca5POT_B2,_genHca5POT_B3])();}
@@ -2573,25 +2575,25 @@ function _genHca5POT_B4(){
   const p=Math.pow(b,e);
   const ans=isPow2?'cuadrado':'cubo';
   const other=isPow2?'cubo':'cuadrado';
-  return{q:`${b}^${e} = ${p}. El exponente ${e} también se llama...`,
+  return{q:_hca5pow(b,e)+' = '+p+'. El exponente '+e+' también se llama...',
     a:ans,opts:_hca5shuf([ans,other,'potencia','base']),mc:true,
-    ste:`Exponente 2 → cuadrado (${b}² = ${p}); Exponente 3 → cubo.`};
+    ste:'Exponente 2 → cuadrado ('+_hca5pow(b,2)+' = '+Math.pow(b,2)+'); Exponente 3 → cubo.'};
 }
 // b5: Problemas de combinaciones con potencias
 function _genHca5POT_B5(){
   return _hca5pick([
     {q:'Un candado tiene 3 discos con cifras del 1 al 9. ¿Cuántas combinaciones posibles hay? Expresa el resultado como potencia.',
-     a:'9³ = 729',opts:_hca5shuf(['9³ = 729','3⁹ = 19 683','9×3 = 27','3³ = 27']),mc:true,
-     ste:'3 discos × 9 opciones cada uno → 9×9×9 = 9³ = 729.'},
+     a:'9<sup>3</sup> = 729',opts:_hca5shuf(['9<sup>3</sup> = 729','3<sup>9</sup> = 19 683','9×3 = 27','3<sup>3</sup> = 27']),mc:true,
+     ste:'3 discos × 9 opciones cada uno → 9×9×9 = 9<sup>3</sup> = 729.'},
     {q:'Un trompo hexagonal (6 colores) se gira 5 veces. ¿Cuántas combinaciones de colores hay?',
-     a:'6⁵ = 7 776',opts:_hca5shuf(['6⁵ = 7 776','5⁶ = 15 625','6×5 = 30','5⁵ = 3 125']),mc:true,
-     ste:'5 giros, 6 colores posibles → 6⁵ = 7 776 combinaciones.'},
+     a:'6<sup>5</sup> = 7 776',opts:_hca5shuf(['6<sup>5</sup> = 7 776','5<sup>6</sup> = 15 625','6×5 = 30','5<sup>5</sup> = 3 125']),mc:true,
+     ste:'5 giros, 6 colores posibles → 6<sup>5</sup> = 7 776 combinaciones.'},
     {q:'Un candado tiene 4 discos con cifras del 0 al 9. ¿Cuántas combinaciones hay?',
-     a:'10⁴ = 10 000',opts:_hca5shuf(['10⁴ = 10 000','4¹⁰ = 1 048 576','9⁴ = 6 561','40⁴']),mc:true,
-     ste:'4 discos × 10 dígitos (0–9) → 10⁴ = 10 000 combinaciones.'},
+     a:'10<sup>4</sup> = 10 000',opts:_hca5shuf(['10<sup>4</sup> = 10 000','4<sup>10</sup> = 1 048 576','9<sup>4</sup> = 6 561','40<sup>4</sup>']),mc:true,
+     ste:'4 discos × 10 dígitos (0–9) → 10<sup>4</sup> = 10 000 combinaciones.'},
     {q:'Hay 5 botes, en cada bote hay 5 bolsas y en cada bolsa hay 5 pescados. ¿Cuántos pescados hay?',
-     a:'5³ = 125',opts:_hca5shuf(['5³ = 125','5×3 = 15','3⁵ = 243','5+5+5 = 15']),mc:true,
-     ste:'5 × 5 × 5 = 5³ = 125 pescados.'},
+     a:'5<sup>3</sup> = 125',opts:_hca5shuf(['5<sup>3</sup> = 125','5×3 = 15','3<sup>5</sup> = 243','5+5+5 = 15']),mc:true,
+     ste:'5 × 5 × 5 = 5<sup>3</sup> = 125 pescados.'},
   ]);
 }
 // bq2: Quiz potenciación avanzada
@@ -2875,7 +2877,7 @@ const PREP_LEVELS = {
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'],
-      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_pot_bpu','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_mpl_bpu','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_dvs_bpu','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_mul_bpu','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_div_bpu','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_ec_bpu'] },
+      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
       {key:'algebra',      lbl:'Álgebra',           ico:'α'},
@@ -2908,12 +2910,12 @@ const PREP_CURRICULUM = {
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
     ],
     '5':[
-      {lbl:'Potenciación',                    area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_pot_bpu']},
-      {lbl:'Múltiplos',                       area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_mpl_bpu']},
-      {lbl:'Divisores y Números Primos',      area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_dvs_bpu']},
-      {lbl:'Multiplicación',                  area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_mul_bpu']},
-      {lbl:'División',                        area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_div_bpu']},
-      {lbl:'Ecuaciones – Problemas Verbales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_ec_bpu']},
+      {lbl:'Potenciación',                    area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2']},
+      {lbl:'Múltiplos',                       area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2']},
+      {lbl:'Divisores y Números Primos',      area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2']},
+      {lbl:'Multiplicación',                  area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2']},
+      {lbl:'División',                        area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2']},
+      {lbl:'Ecuaciones – Problemas Verbales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2']},
     ],
     '6':[
       {lbl:'División de 5 entre 2 Dígitos',          area:'matematica',                          skills:['div5x2']},
