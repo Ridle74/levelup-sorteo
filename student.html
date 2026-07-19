@@ -2804,6 +2804,53 @@ const BINGO_TOPICS = {
   hca2_r3_b5:   { ico:'📝', lbl:'Regla de 3 inversa: problemas aplicados',     qCount:4,  gen:()=>_genHca2R3_B5() },
   hca2_r3_bq3:  { ico:'⚡', lbl:'Quiz III – Regla de 3: problemas mixtos',      qCount:5,  gen:()=>_genHca2R3_BQ3(), quiz:true },
   hca2_r3_bpu:  { ico:'⭐', lbl:'Examen – Regla de 3',                          qCount:10, gen:()=>_genHca2R3_BPU(), quiz:true },
+  // ── HCA 5° Primaria – Potenciación ──────────────────────────────────────────
+  hca5_pot_b1:  { ico:'📋', lbl:'Potenciación: completar tabla',                qCount:4,  gen:()=>_genHca5POT_B1() },
+  hca5_pot_b2:  { ico:'²',  lbl:'Calcula la potencia (básico)',                 qCount:4,  gen:()=>_genHca5POT_B2() },
+  hca5_pot_b3:  { ico:'³',  lbl:'Calcula la potencia (avanzado)',               qCount:4,  gen:()=>_genHca5POT_B3() },
+  hca5_pot_bq1: { ico:'⚡', lbl:'Quiz I – Potenciación básica',                 qCount:5,  gen:()=>_genHca5POT_BQ1(), quiz:true },
+  hca5_pot_b4:  { ico:'📐', lbl:'Cuadrado y cubo',                              qCount:4,  gen:()=>_genHca5POT_B4() },
+  hca5_pot_b5:  { ico:'🔒', lbl:'Potenciación en problemas de combinaciones',   qCount:4,  gen:()=>_genHca5POT_B5() },
+  hca5_pot_bq2: { ico:'⚡', lbl:'Quiz II – Potenciación avanzada',              qCount:5,  gen:()=>_genHca5POT_BQ2(), quiz:true },
+  hca5_pot_bpu: { ico:'⭐', lbl:'Examen – Potenciación',                        qCount:10, gen:()=>_genHca5POT_BPU(), quiz:true },
+  // ── HCA 5° Primaria – Múltiplos ─────────────────────────────────────────────
+  hca5_mpl_b1:  { ico:'✖',  lbl:'Primeros múltiplos de un número',              qCount:4,  gen:()=>_genHca5MPL_B1() },
+  hca5_mpl_b2:  { ico:'?',  lbl:'¿Es múltiplo de...?',                          qCount:4,  gen:()=>_genHca5MPL_B2() },
+  hca5_mpl_bq1: { ico:'⚡', lbl:'Quiz I – Múltiplos básico',                    qCount:5,  gen:()=>_genHca5MPL_BQ1(), quiz:true },
+  hca5_mpl_b3:  { ico:'↔',  lbl:'Múltiplos entre dos números',                  qCount:4,  gen:()=>_genHca5MPL_B3() },
+  hca5_mpl_b4:  { ico:'<',  lbl:'Múltiplos menores que N',                      qCount:4,  gen:()=>_genHca5MPL_B4() },
+  hca5_mpl_bq2: { ico:'⚡', lbl:'Quiz II – Múltiplos avanzado',                 qCount:5,  gen:()=>_genHca5MPL_BQ2(), quiz:true },
+  hca5_mpl_bpu: { ico:'⭐', lbl:'Examen – Múltiplos',                           qCount:10, gen:()=>_genHca5MPL_BPU(), quiz:true },
+  // ── HCA 5° Primaria – Divisores y Números Primos ────────────────────────────
+  hca5_dvs_b1:  { ico:'÷',  lbl:'¿Es divisor de...?',                           qCount:4,  gen:()=>_genHca5DVS_B1() },
+  hca5_dvs_b2:  { ico:'📝', lbl:'Hallar todos los divisores',                   qCount:4,  gen:()=>_genHca5DVS_B2() },
+  hca5_dvs_bq1: { ico:'⚡', lbl:'Quiz I – Divisores',                           qCount:5,  gen:()=>_genHca5DVS_BQ1(), quiz:true },
+  hca5_dvs_b3:  { ico:'🔴', lbl:'¿Primo o compuesto?',                          qCount:4,  gen:()=>_genHca5DVS_B3() },
+  hca5_dvs_b4:  { ico:'🔵', lbl:'Divisores y clasificación',                    qCount:4,  gen:()=>_genHca5DVS_B4() },
+  hca5_dvs_bq2: { ico:'⚡', lbl:'Quiz II – Primos y compuestos',                qCount:5,  gen:()=>_genHca5DVS_BQ2(), quiz:true },
+  hca5_dvs_bpu: { ico:'⭐', lbl:'Examen – Divisores y Números Primos',          qCount:10, gen:()=>_genHca5DVS_BPU(), quiz:true },
+  // ── HCA 5° Primaria – Multiplicación ────────────────────────────────────────
+  hca5_mul_b1:  { ico:'×',  lbl:'Multiplicación 3-4 cifras × 1 cifra',          qCount:4,  gen:()=>_genHca5MUL_B1() },
+  hca5_mul_b2:  { ico:'×',  lbl:'Multiplicación 4-5 cifras × 2 cifras',         qCount:4,  gen:()=>_genHca5MUL_B2() },
+  hca5_mul_bq1: { ico:'⚡', lbl:'Quiz I – Multiplicación',                      qCount:5,  gen:()=>_genHca5MUL_BQ1(), quiz:true },
+  hca5_mul_b3:  { ico:'×',  lbl:'Multiplicación 5-7 cifras × 2 cifras',         qCount:4,  gen:()=>_genHca5MUL_B3() },
+  hca5_mul_bq2: { ico:'⚡', lbl:'Quiz II – Multiplicación avanzada',             qCount:5,  gen:()=>_genHca5MUL_BQ2(), quiz:true },
+  hca5_mul_bpu: { ico:'⭐', lbl:'Examen – Multiplicación',                       qCount:10, gen:()=>_genHca5MUL_BPU(), quiz:true },
+  // ── HCA 5° Primaria – División ───────────────────────────────────────────────
+  hca5_div_b1:  { ico:'÷',  lbl:'División exacta',                              qCount:4,  gen:()=>_genHca5DIV_B1() },
+  hca5_div_b2:  { ico:'÷',  lbl:'División con resto',                           qCount:4,  gen:()=>_genHca5DIV_B2() },
+  hca5_div_bq1: { ico:'⚡', lbl:'Quiz I – División',                            qCount:5,  gen:()=>_genHca5DIV_BQ1(), quiz:true },
+  hca5_div_b3:  { ico:'÷',  lbl:'División de cifras grandes',                   qCount:4,  gen:()=>_genHca5DIV_B3() },
+  hca5_div_bq2: { ico:'⚡', lbl:'Quiz II – División avanzada',                  qCount:5,  gen:()=>_genHca5DIV_BQ2(), quiz:true },
+  hca5_div_bpu: { ico:'⭐', lbl:'Examen – División',                            qCount:10, gen:()=>_genHca5DIV_BPU(), quiz:true },
+  // ── HCA 5° Primaria – Ecuaciones ────────────────────────────────────────────
+  hca5_ec_b1:   { ico:'x',  lbl:'Ecuación suma/resta',                          qCount:4,  gen:()=>_genHca5EC_B1() },
+  hca5_ec_b2:   { ico:'x',  lbl:'Ecuación multiplicativa',                      qCount:4,  gen:()=>_genHca5EC_B2() },
+  hca5_ec_bq1:  { ico:'⚡', lbl:'Quiz I – Ecuaciones básicas',                  qCount:5,  gen:()=>_genHca5EC_BQ1(), quiz:true },
+  hca5_ec_b3:   { ico:'2x', lbl:'Doble, triple y cuádruple',                    qCount:4,  gen:()=>_genHca5EC_B3() },
+  hca5_ec_b4:   { ico:'📖', lbl:'Problemas verbales con ecuaciones',            qCount:4,  gen:()=>_genHca5EC_B4() },
+  hca5_ec_bq2:  { ico:'⚡', lbl:'Quiz II – Ecuaciones verbales',                qCount:5,  gen:()=>_genHca5EC_BQ2(), quiz:true },
+  hca5_ec_bpu:  { ico:'⭐', lbl:'Examen – Ecuaciones',                          qCount:10, gen:()=>_genHca5EC_BPU(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
@@ -2811,7 +2858,13 @@ const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','
 'hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu',
 'hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu',
 'hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu',
-'hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'];
+'hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu',
+'hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_pot_bpu',
+'hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_mpl_bpu',
+'hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_dvs_bpu',
+'hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_mul_bpu',
+'hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_div_bpu',
+'hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_ec_bpu'];
 // [PREP_LEVELS / PREP_CURRICULUM / PREP_EDITORIALS — see levelup.js]
 
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'

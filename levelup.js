@@ -2530,6 +2530,341 @@ function _genHca2R3_BQ3(){return[_genHca2R3_B3,_genHca2R3_B4,_genHca2R3_B5][_hca
 // BPU
 function _genHca2R3_BPU(){return[_genHca2R3_B1,_genHca2R3_B2,_genHca2R3_B3,_genHca2R3_B4,_genHca2R3_B5][_hca2rnd(0,4)]();}
 
+// ── HCA 5° Primaria – Matemática ─────────────────────────────────────────────
+function _hca5rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _hca5pick(a){return a[_hca5rnd(0,a.length-1)];}
+function _hca5shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=_hca5rnd(0,i);[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+// ── Potenciación ──────────────────────────────────────────────────────────────
+// b1: Completar tabla — base y exponente dados, calcular potencia
+function _genHca5POT_B1(){
+  const b=_hca5rnd(2,9),e=_hca5rnd(2,4);
+  const p=Math.pow(b,e);
+  const wrongs=_hca5shuf([p+1,p-1,b*e,Math.pow(b,e+1)].filter(x=>x>0&&x!==p)).slice(0,3);
+  return{q:`Completa la tabla de potenciación:\nBase: ${b}   Exponente: ${e}   Potencia: ?`,
+    a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
+    ste:`${b}^${e} = ${Array.from({length:e},()=>b).join(' × ')} = ${p}`};
+}
+// b2: Calcular potencia directa (bases 2–9, exponentes 2–3)
+function _genHca5POT_B2(){
+  const b=_hca5rnd(2,9),e=_hca5pick([2,3]);
+  const p=Math.pow(b,e);
+  const wrongs=_hca5shuf([p+b,p-1,b*e,Math.pow(b+1,e)].filter(x=>x>0&&x!==p)).slice(0,3);
+  return{q:`¿Cuánto es ${b}^${e}?`,
+    a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
+    ste:`${b}^${e} = ${Array.from({length:e},()=>b).join(' × ')} = ${p}`};
+}
+// b3: Potencias con bases 5–9, exponentes 2–3
+function _genHca5POT_B3(){
+  const b=_hca5rnd(5,9),e=_hca5pick([2,3]);
+  const p=Math.pow(b,e);
+  const wrongs=_hca5shuf([p+b,p-b,b*(e+1),Math.pow(b+1,e)].filter(x=>x>0&&x!==p)).slice(0,3);
+  return{q:`Calcula: ${b}^${e}`,
+    a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
+    ste:`${b}^${e} = ${Array.from({length:e},()=>b).join(' × ')} = ${p}`};
+}
+// bq1: Quiz potenciación básica
+function _genHca5POT_BQ1(){return _hca5pick([_genHca5POT_B1,_genHca5POT_B2,_genHca5POT_B3])();}
+// b4: Cuadrado y cubo — nombre especial
+function _genHca5POT_B4(){
+  const isPow2=_hca5pick([true,false]);
+  const b=isPow2?_hca5rnd(2,12):_hca5rnd(2,7);
+  const e=isPow2?2:3;
+  const p=Math.pow(b,e);
+  const ans=isPow2?'cuadrado':'cubo';
+  const other=isPow2?'cubo':'cuadrado';
+  return{q:`${b}^${e} = ${p}. El exponente ${e} también se llama...`,
+    a:ans,opts:_hca5shuf([ans,other,'potencia','base']),mc:true,
+    ste:`Exponente 2 → cuadrado (${b}² = ${p}); Exponente 3 → cubo.`};
+}
+// b5: Problemas de combinaciones con potencias
+function _genHca5POT_B5(){
+  return _hca5pick([
+    {q:'Un candado tiene 3 discos con cifras del 1 al 9. ¿Cuántas combinaciones posibles hay? Expresa el resultado como potencia.',
+     a:'9³ = 729',opts:_hca5shuf(['9³ = 729','3⁹ = 19 683','9×3 = 27','3³ = 27']),mc:true,
+     ste:'3 discos × 9 opciones cada uno → 9×9×9 = 9³ = 729.'},
+    {q:'Un trompo hexagonal (6 colores) se gira 5 veces. ¿Cuántas combinaciones de colores hay?',
+     a:'6⁵ = 7 776',opts:_hca5shuf(['6⁵ = 7 776','5⁶ = 15 625','6×5 = 30','5⁵ = 3 125']),mc:true,
+     ste:'5 giros, 6 colores posibles → 6⁵ = 7 776 combinaciones.'},
+    {q:'Un candado tiene 4 discos con cifras del 0 al 9. ¿Cuántas combinaciones hay?',
+     a:'10⁴ = 10 000',opts:_hca5shuf(['10⁴ = 10 000','4¹⁰ = 1 048 576','9⁴ = 6 561','40⁴']),mc:true,
+     ste:'4 discos × 10 dígitos (0–9) → 10⁴ = 10 000 combinaciones.'},
+    {q:'Hay 5 botes, en cada bote hay 5 bolsas y en cada bolsa hay 5 pescados. ¿Cuántos pescados hay?',
+     a:'5³ = 125',opts:_hca5shuf(['5³ = 125','5×3 = 15','3⁵ = 243','5+5+5 = 15']),mc:true,
+     ste:'5 × 5 × 5 = 5³ = 125 pescados.'},
+  ]);
+}
+// bq2: Quiz potenciación avanzada
+function _genHca5POT_BQ2(){return _hca5pick([_genHca5POT_B3,_genHca5POT_B4,_genHca5POT_B5])();}
+// bpu: BPU
+function _genHca5POT_BPU(){return _hca5pick([_genHca5POT_B1,_genHca5POT_B2,_genHca5POT_B3,_genHca5POT_B4,_genHca5POT_B5])();}
+
+// ── Múltiplos ─────────────────────────────────────────────────────────────────
+// b1: Primeros N múltiplos de X
+function _genHca5MPL_B1(){
+  const n=_hca5rnd(2,9),count=_hca5rnd(4,6);
+  const mults=Array.from({length:count},(_,i)=>n*i);
+  const correct=mults.join(', ');
+  const w1=Array.from({length:count},(_,i)=>n*(i+1)).join(', ');
+  const w2=Array.from({length:count},(_,i)=>n*i+1).join(', ');
+  const w3=mults.slice(1).join(', ');
+  return{q:`Escribe los primeros ${count} múltiplos de ${n} (empezando desde 0):`,
+    a:correct,opts:_hca5shuf([correct,w1,w2,w3]),mc:true,
+    ste:`${n}×0=0, ${n}×1=${n}, ${n}×2=${n*2}... → ${correct}`};
+}
+// b2: ¿Es X múltiplo de Y?
+function _genHca5MPL_B2(){
+  const base=_hca5rnd(2,9);
+  const isMult=_hca5pick([true,false]);
+  let num;
+  if(isMult){num=base*_hca5rnd(2,15);}
+  else{do{num=base*_hca5rnd(2,10)+_hca5rnd(1,base-1);}while(num%base===0);}
+  const ans=isMult?'Sí':'No';
+  const other=isMult?'No':'Sí';
+  const ste=isMult?`${num} ÷ ${base} = ${num/base} (resto 0) → SÍ es múltiplo.`
+    :`${num} ÷ ${base} = ${Math.floor(num/base)} R${num%base} → NO es múltiplo.`;
+  return{q:`¿Es ${num} múltiplo de ${base}?`,
+    a:ans,opts:_hca5shuf([ans,other,'Solo los pares son múltiplos','Depende del exponente']),mc:true,ste};
+}
+// bq1: Quiz múltiplos básico
+function _genHca5MPL_BQ1(){return _hca5pick([_genHca5MPL_B1,_genHca5MPL_B2])();}
+// b3: Múltiplos comprendidos entre A y B
+function _genHca5MPL_B3(){
+  const base=_hca5rnd(2,9);
+  const lo=_hca5rnd(10,30)*base+_hca5rnd(1,base-1);
+  const hi=lo+base*_hca5rnd(4,7);
+  const mults=[];
+  for(let m=Math.ceil(lo/base)*base;m<=hi;m+=base)mults.push(m);
+  const correct=mults.join(', ');
+  const w1=mults.map(x=>x+1).join(', ');
+  const w2=mults.slice(1).join(', ');
+  const w3=[...mults,mults[mults.length-1]+base].join(', ');
+  return{q:`Escribe los múltiplos de ${base} comprendidos entre ${lo} y ${hi}:`,
+    a:correct,opts:_hca5shuf([correct,w1,w2,w3]),mc:true,
+    ste:`De ${mults[0]} (${base}×${mults[0]/base}) hasta ${mults[mults.length-1]} (${base}×${mults[mults.length-1]/base}): ${correct}`};
+}
+// b4: Múltiplos menores que N
+function _genHca5MPL_B4(){
+  const base=_hca5rnd(2,9);
+  const k=_hca5rnd(4,8);
+  const limit=base*k+_hca5rnd(1,base-1);
+  const mults=[];
+  for(let m=0;m<limit;m+=base)mults.push(m);
+  const correct=mults.join(', ');
+  const withExtra=[...mults,base*k].join(', ');
+  const noZero=mults.slice(1).join(', ');
+  const wrongShift=mults.map(x=>x+1).join(', ');
+  return{q:`¿Cuáles son los múltiplos de ${base} menores que ${limit}?`,
+    a:correct,opts:_hca5shuf([correct,withExtra,noZero,wrongShift]),mc:true,
+    ste:`Múltiplos de ${base} < ${limit}: ${correct}. (El primer múltiplo es 0.)`};
+}
+// bq2: Quiz múltiplos avanzado
+function _genHca5MPL_BQ2(){return _hca5pick([_genHca5MPL_B3,_genHca5MPL_B4])();}
+// bpu: BPU
+function _genHca5MPL_BPU(){return _hca5pick([_genHca5MPL_B1,_genHca5MPL_B2,_genHca5MPL_B3,_genHca5MPL_B4])();}
+
+// ── Divisores y Números Primos ────────────────────────────────────────────────
+// b1: ¿Es X divisor de Y?
+function _genHca5DVS_B1(){
+  const nums=[12,18,20,24,30,36,45,48,60,72,100];
+  const n=_hca5pick(nums);
+  const allDivs=[];for(let i=1;i<=n;i++){if(n%i===0)allDivs.push(i);}
+  const isDiv=_hca5pick([true,false]);
+  let d;
+  if(isDiv){d=_hca5pick(allDivs.filter(x=>x>1&&x<n));}
+  else{do{d=_hca5rnd(2,n-1);}while(n%d===0);}
+  const ans=isDiv?'Sí, es divisor':'No, no es divisor';
+  const other=isDiv?'No, no es divisor':'Sí, es divisor';
+  const ste=isDiv?`${n} ÷ ${d} = ${n/d} (resto 0) → ${d} SÍ es divisor de ${n}.`
+    :`${n} ÷ ${d} = ${Math.floor(n/d)} R${n%d} → ${d} NO es divisor de ${n}.`;
+  return{q:`¿Es ${d} divisor de ${n}?`,
+    a:ans,opts:_hca5shuf([ans,other,'Solo si es primo','Solo si es par']),mc:true,ste};
+}
+// b2: Hallar todos los divisores
+function _genHca5DVS_B2(){
+  const nums=[12,15,18,20,24,28,30,36];
+  const n=_hca5pick(nums);
+  const divs=[];for(let i=1;i<=n;i++){if(n%i===0)divs.push(i);}
+  const correct=divs.join(', ');
+  const w1=divs.slice(0,-1).join(', ');
+  const w2=[...divs,n+1].join(', ');
+  const w3=divs.filter((_,i)=>i%2===0).join(', ');
+  return{q:`¿Cuáles son todos los divisores de ${n}?`,
+    a:correct,opts:_hca5shuf([correct,w1,w2,w3]),mc:true,
+    ste:`Divisores de ${n}: ${correct} (${divs.length} divisores)`};
+}
+// bq1: Quiz divisores básico
+function _genHca5DVS_BQ1(){return _hca5pick([_genHca5DVS_B1,_genHca5DVS_B2])();}
+// b3: ¿Primo o compuesto?
+function _genHca5DVS_B3(){
+  const primes=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47];
+  const composites=[4,6,8,9,10,12,14,15,16,18,20,21,22,24,25,26,27,28];
+  const isPrime=_hca5pick([true,false]);
+  const n=isPrime?_hca5pick(primes):_hca5pick(composites);
+  const divs=[];for(let i=1;i<=n;i++){if(n%i===0)divs.push(i);}
+  const ans=isPrime?'Primo':'Compuesto';
+  const other=isPrime?'Compuesto':'Primo';
+  const ste=isPrime
+    ?`${n} solo tiene 2 divisores: 1 y ${n} → PRIMO.`
+    :`${n} tiene ${divs.length} divisores: ${divs.join(', ')} → COMPUESTO.`;
+  return{q:`¿El número ${n} es primo o compuesto?`,
+    a:ans,opts:_hca5shuf([ans,other,'Ninguno (es el 1)','No se puede saber']),mc:true,ste};
+}
+// b4: Divisores + clasificar primo/compuesto
+function _genHca5DVS_B4(){
+  const nums=[14,21,25,27,33,35,49,50,42,63,48,71];
+  const n=_hca5pick(nums);
+  const divs=[];for(let i=1;i<=n;i++){if(n%i===0)divs.push(i);}
+  const isPrime=divs.length===2;
+  const tipo=isPrime?'primo':'compuesto';
+  const correct=`Divisores: ${divs.join(', ')} → ${tipo}`;
+  const w1=`Divisores: ${divs.slice(0,-1).join(', ')} → primo`;
+  const w2=`Divisores: 1, ${n} → compuesto`;
+  const w3=`Divisores: ${divs.join(', ')} → ${isPrime?'compuesto':'primo'}`;
+  return{q:`Encuentra todos los divisores de ${n} y clasifícalo.`,
+    a:correct,opts:_hca5shuf([correct,w1,w2,w3]),mc:true,
+    ste:isPrime?`${n} → 2 divisores (1 y ${n}) → PRIMO.`:`${n} → ${divs.length} divisores → COMPUESTO.`};
+}
+// bq2: Quiz primos y compuestos
+function _genHca5DVS_BQ2(){return _hca5pick([_genHca5DVS_B3,_genHca5DVS_B4])();}
+// bpu: BPU
+function _genHca5DVS_BPU(){return _hca5pick([_genHca5DVS_B1,_genHca5DVS_B2,_genHca5DVS_B3,_genHca5DVS_B4])();}
+
+// ── Multiplicación ────────────────────────────────────────────────────────────
+// b1: 3-4 cifras × 1 cifra
+function _genHca5MUL_B1(){
+  const a=_hca5rnd(100,9999),b=_hca5rnd(2,9);
+  const p=a*b;
+  const wrongs=_hca5shuf([p+b,p-a,p+a,p-1].filter(x=>x>0&&x!==p)).slice(0,3);
+  return{q:`¿Cuánto es ${a} × ${b}?`,
+    a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
+    ste:`${a} × ${b} = ${p}`};
+}
+// b2: 4-5 cifras × 2 cifras
+function _genHca5MUL_B2(){
+  const a=_hca5rnd(1000,99999),b=_hca5rnd(11,99);
+  const p=a*b;
+  const wrongs=_hca5shuf([p+b,p+100,p-100,p-b*10].filter(x=>x>0&&x!==p)).slice(0,3);
+  return{q:`¿Cuánto es ${a} × ${b}?`,
+    a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
+    ste:`${a} × ${b} = ${p}`};
+}
+// bq1: Quiz multiplicación básica
+function _genHca5MUL_BQ1(){return _hca5pick([_genHca5MUL_B1,_genHca5MUL_B2])();}
+// b3: 5-7 cifras × 2 cifras
+function _genHca5MUL_B3(){
+  const a=_hca5rnd(100000,9999999),b=_hca5rnd(11,99);
+  const p=a*b;
+  const wrongs=_hca5shuf([p+b*10,p-b*10,p+a,p-a].filter(x=>x>0&&x!==p)).slice(0,3);
+  return{q:`¿Cuánto es ${a} × ${b}?`,
+    a:String(p),opts:_hca5shuf([String(p),...wrongs.map(String)]),mc:true,
+    ste:`${a} × ${b} = ${p}`};
+}
+// bq2: Quiz multiplicación avanzada
+function _genHca5MUL_BQ2(){return _hca5pick([_genHca5MUL_B2,_genHca5MUL_B3])();}
+// bpu: BPU
+function _genHca5MUL_BPU(){return _hca5pick([_genHca5MUL_B1,_genHca5MUL_B2,_genHca5MUL_B3])();}
+
+// ── División ──────────────────────────────────────────────────────────────────
+// b1: División exacta 4-5 cifras ÷ 1 cifra
+function _genHca5DIV_B1(){
+  const b=_hca5rnd(2,9),q=_hca5rnd(1000,9999);
+  const a=b*q;
+  const wrongs=_hca5shuf([q+1,q-1,q+b,q-b].filter(x=>x>0&&x!==q)).slice(0,3);
+  return{q:`¿Cuánto es ${a} ÷ ${b}? (división exacta)`,
+    a:String(q),opts:_hca5shuf([String(q),...wrongs.map(String)]),mc:true,
+    ste:`${a} ÷ ${b} = ${q} (resto 0)`};
+}
+// b2: División con resto 4-5 cifras ÷ 1-2 cifras
+function _genHca5DIV_B2(){
+  const b=_hca5rnd(2,9),q=_hca5rnd(1000,9999),r=_hca5rnd(1,b-1);
+  const a=b*q+r;
+  const correct=`Cociente: ${q}, Resto: ${r}`;
+  const w1=`Cociente: ${q+1}, Resto: ${r>0?r-1:r}`;
+  const w2=`Cociente: ${q}, Resto: 0`;
+  const w3=`Cociente: ${q-1}, Resto: ${r+b}`;
+  return{q:`Divide ${a} ÷ ${b}. ¿Cuáles son el cociente y el resto?`,
+    a:correct,opts:_hca5shuf([correct,w1,w2,w3]),mc:true,
+    ste:`${a} = ${b} × ${q} + ${r}  →  Cociente ${q}, Resto ${r}`};
+}
+// bq1: Quiz división básica
+function _genHca5DIV_BQ1(){return _hca5pick([_genHca5DIV_B1,_genHca5DIV_B2])();}
+// b3: División 5-7 cifras ÷ 2 cifras
+function _genHca5DIV_B3(){
+  const b=_hca5rnd(11,99),q=_hca5rnd(10000,999999),r=_hca5rnd(0,b-1);
+  const a=b*q+r;
+  const correct=r===0?String(q):`Cociente: ${q}, Resto: ${r}`;
+  const w1=r===0?String(q+1):`Cociente: ${q+1}, Resto: ${Math.max(0,r-1)}`;
+  const w2=r===0?String(q-1):`Cociente: ${q}, Resto: 0`;
+  const w3=r===0?String(q+b):`Cociente: ${q-1}, Resto: ${r+b}`;
+  return{q:r===0?`¿Cuánto es ${a} ÷ ${b}?`:`Divide ${a} ÷ ${b}. Indica cociente y resto.`,
+    a:correct,opts:_hca5shuf([correct,w1,w2,w3]),mc:true,
+    ste:r===0?`${a} ÷ ${b} = ${q} (exacta)`:`${a} = ${b} × ${q} + ${r}`};
+}
+// bq2: Quiz división avanzada
+function _genHca5DIV_BQ2(){return _hca5pick([_genHca5DIV_B2,_genHca5DIV_B3])();}
+// bpu: BPU
+function _genHca5DIV_BPU(){return _hca5pick([_genHca5DIV_B1,_genHca5DIV_B2,_genHca5DIV_B3])();}
+
+// ── Ecuaciones – Problemas Verbales ───────────────────────────────────────────
+// b1: Ecuación suma/resta  x + a = b  o  b − x = a
+function _genHca5EC_B1(){
+  const x=_hca5rnd(10,50),a=_hca5rnd(5,30);
+  const b=x+a;
+  const useAdd=_hca5pick([true,false]);
+  const q=useAdd?`Si x + ${a} = ${b}, ¿cuánto es x?`:`Si ${b} − x = ${a}, ¿cuánto es x?`;
+  const wrongs=_hca5shuf([x+1,x-1,b,a].filter(v=>v>0&&v!==x)).slice(0,3);
+  return{q,a:String(x),opts:_hca5shuf([String(x),...wrongs.map(String)]),mc:true,
+    ste:`x = ${b} − ${a} = ${x}`};
+}
+// b2: Ecuación multiplicativa  ax = b
+function _genHca5EC_B2(){
+  const x=_hca5rnd(5,20),a=_hca5rnd(2,9);
+  const b=a*x;
+  const wrongs=_hca5shuf([x+1,x-1,b,a+x].filter(v=>v>0&&v!==x)).slice(0,3);
+  return{q:`Si ${a}x = ${b}, ¿cuánto es x?`,
+    a:String(x),opts:_hca5shuf([String(x),...wrongs.map(String)]),mc:true,
+    ste:`x = ${b} ÷ ${a} = ${x}`};
+}
+// bq1: Quiz ecuaciones básicas
+function _genHca5EC_BQ1(){return _hca5pick([_genHca5EC_B1,_genHca5EC_B2])();}
+// b3: El doble / triple / cuádruple de un número
+function _genHca5EC_B3(){
+  const configs=[{mult:2,lbl:'El doble'},{mult:3,lbl:'El triple'},{mult:4,lbl:'Cuatro veces'}];
+  const c=_hca5pick(configs);
+  const x=_hca5rnd(5,25);
+  const b=c.mult*x;
+  const wrongs=_hca5shuf([x+1,x-1,b,c.mult].filter(v=>v>0&&v!==x)).slice(0,3);
+  return{q:`${c.lbl} de un número es ${b}. ¿Cuál es el número?`,
+    a:String(x),opts:_hca5shuf([String(x),...wrongs.map(String)]),mc:true,
+    ste:`${c.mult}x = ${b}  →  x = ${b} ÷ ${c.mult} = ${x}`};
+}
+// b4: Problemas verbales combinados
+function _genHca5EC_B4(){
+  return _hca5pick([
+    ()=>{const x=_hca5rnd(10,50),a=_hca5rnd(5,30);const b=x+a;
+      return{q:`Andrea tiene ${x} libros. Si coloca ${a} más, tendría ${b}. ¿Cuántos tiene ahora?`,
+        a:String(x),opts:_hca5shuf([String(x),String(b),String(a),String(b+a)]),mc:true,
+        ste:`x + ${a} = ${b}  →  x = ${x}`};},
+    ()=>{const mult=_hca5rnd(2,5),x=_hca5rnd(5,15);const sum=(mult+1)*x;
+      return{q:`Julia tiene ${mult} veces la edad de su hija. Si ambas edades suman ${sum} años, ¿cuál es la edad de la hija?`,
+        a:String(x),opts:_hca5shuf([String(x),String(mult*x),String(sum),String(mult)]),mc:true,
+        ste:`${mult}x + x = ${sum}  →  ${mult+1}x = ${sum}  →  x = ${x}`};},
+    ()=>{const x=_hca5rnd(5,20);const res=2*x;
+      return{q:`Si al triple de un número le restas dicho número, resulta ${res}. ¿Cuál es el número?`,
+        a:String(x),opts:_hca5shuf([String(x),String(x+1),String(res),String(3*x)]),mc:true,
+        ste:`3x − x = ${res}  →  2x = ${res}  →  x = ${x}`};},
+    ()=>{const x=_hca5rnd(5,15),a=_hca5rnd(2,4);const b=a*x;
+      return{q:`Rebeca tiene ${a} veces el dinero de Dominique. Juntas tienen S/. ${(a+1)*x}. ¿Cuánto tiene Dominique?`,
+        a:String(x),opts:_hca5shuf([String(x),String(a*x),String((a+1)*x),String(a)]),mc:true,
+        ste:`${a}x + x = ${(a+1)*x}  →  ${a+1}x = ${(a+1)*x}  →  x = ${x}`};},
+  ])();
+}
+// bq2: Quiz ecuaciones verbales
+function _genHca5EC_BQ2(){return _hca5pick([_genHca5EC_B3,_genHca5EC_B4])();}
+// bpu: BPU
+function _genHca5EC_BPU(){return _hca5pick([_genHca5EC_B1,_genHca5EC_B2,_genHca5EC_B3,_genHca5EC_B4])();}
+
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 // ── Datos curriculares ──────────────────────────────────────────────────────────
 
@@ -2540,7 +2875,7 @@ const PREP_LEVELS = {
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'],
-      '3':['trigo','trigvf'], '4':[], '5':[] },
+      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_pot_bpu','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_mpl_bpu','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_dvs_bpu','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_mul_bpu','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_div_bpu','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_ec_bpu'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
       {key:'algebra',      lbl:'Álgebra',           ico:'α'},
@@ -2571,7 +2906,15 @@ const PREP_CURRICULUM = {
       {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
-    ], '5':[],
+    ],
+    '5':[
+      {lbl:'Potenciación',                    area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_pot_bpu']},
+      {lbl:'Múltiplos',                       area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_mpl_bpu']},
+      {lbl:'Divisores y Números Primos',      area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_dvs_bpu']},
+      {lbl:'Multiplicación',                  area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_mul_bpu']},
+      {lbl:'División',                        area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_div_bpu']},
+      {lbl:'Ecuaciones – Problemas Verbales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_ec_bpu']},
+    ],
     '6':[
       {lbl:'División de 5 entre 2 Dígitos',          area:'matematica',                          skills:['div5x2']},
       {lbl:'Espacio Muestral y Suceso',               area:'matematica', editorial:'trinidad',    skills:['em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2']},
@@ -2608,7 +2951,7 @@ const PREP_EDITORIALS = {
   trinidad:       { lbl:'Santísima Trinidad',             ico:'📙', abbr:'S. Trinidad' },
   san_ignacio:    { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
   san_francisco:         { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís',   grades:{ primaria:['6'] } },
-  hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ secundaria:['2'] } },
+  hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ primaria:['5'], secundaria:['2'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
