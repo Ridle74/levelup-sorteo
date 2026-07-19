@@ -12,8 +12,8 @@ const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',u:'preuniversitario'};
 const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',preuniversitario:'u'};
 const _PREP_URL_AREA    = {m:'matematica',rm:'razonamiento',al:'algebra',ar:'aritmetica',tr:'trigonometria',ge:'geometria'};
 const _PREP_URL_AREA_R  = {matematica:'m',razonamiento:'rm',algebra:'al',aritmetica:'ar',trigonometria:'tr',geometria:'ge'};
-const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio'};
-const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde'};
+const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen'};
+const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen'};
 
 function _prepApplyUrlSlug() {
   // Usa la URL actual; si ya fue cambiada por go(), usa el path guardado al inicio de página
