@@ -827,9 +827,10 @@ function _rgRod(v,hidden){
   var bdr=hidden?'2px dashed rgba(255,255,255,0.45)':'2px solid rgba(0,0,0,0.2)';
   var fc=hidden?'#ffd700':(v===1||v===5)?'#444':'#fff';
   var fs=hidden?'13px':(v===1)?'8px':(v<=3)?'10px':'12px';
+  var fw=hidden?'900':'400';
   var txt=hidden?'?':v;
   var w=v*S;
-  return '<div style="display:inline-flex;align-items:center;justify-content:center;background:'+bg+';border:'+bdr+';border-radius:4px;width:'+w+'px;height:'+H+'px;color:'+fc+';font-weight:900;font-size:'+fs+';flex-shrink:0;font-family:Barlow Condensed,sans-serif">'+txt+'</div>';
+  return '<div style="display:inline-flex;align-items:center;justify-content:center;background:'+bg+';border:'+bdr+';border-radius:4px;width:'+w+'px;height:'+H+'px;color:'+fc+';font-weight:'+fw+';font-size:'+fs+';flex-shrink:0;font-family:Barlow Condensed,sans-serif">'+txt+'</div>';
 }
 function _rgQ(N,a,b,hideA){
   var ans=hideA?a:b;
