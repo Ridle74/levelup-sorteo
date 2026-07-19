@@ -3452,10 +3452,21 @@ function _prepMasteryLevel(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return 'unknown';
   const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
   if (!sessions.length) return 'pendiente';
-  // Sesiones directas (sin propagación de quiz/examen) tienen prioridad.
-  // Se usan ordenadas desc por fecha → la más reciente determina el nivel actual.
-  // Si nunca se practicó directo, usar el mejor score propagado como fallback.
+  const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
   const directSessions = sessions.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
+  if (isQuiz) {
+    // Los cuestionarios solo cuentan si el alumno los hizo directamente.
+    // Entradas autoFromExam/autoFromQuiz en cuestionarios se ignoran completamente.
+    if (!directSessions.length) return 'pendiente';
+    const pct = _prepReEvalPct(directSessions[0]);
+    if (pct>=100) return 'dominado';
+    if (pct>=75)  return 'competente';
+    if (pct>=50)  return 'familiar';
+    if (pct>=25)  return 'intentado';
+    return 'intentado';
+  }
+  // Habilidades normales: sesiones directas tienen prioridad;
+  // si nunca se practicó directo, usar el mejor score propagado como fallback.
   const pct = directSessions.length
     ? _prepReEvalPct(directSessions[0])
     : Math.max(...sessions.map(h=>_prepReEvalPct(h)));
@@ -3467,9 +3478,11 @@ function _prepMasteryLevel(topicKey) {
 }
 function _prepLastPct(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return null;
-  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
+  const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
+  // Para cuestionarios: ignorar entradas propagadas (autoFromExam/autoFromQuiz)
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || (!h.autoFromExam && !h.autoFromQuiz)));
   if (!sessions.length) return null;
-  return _prepReEvalPct(sessions[0]); // historial ya ordenado desc por fecha
+  return _prepReEvalPct(sessions[0]);
 }
 function _prepCourseScore(topicKeys) {
   const W={dominado:100,competente:75,familiar:50,intentado:25,pendiente:0,unknown:0};
