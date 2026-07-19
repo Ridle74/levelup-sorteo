@@ -2491,10 +2491,11 @@ const PREP_LEVELS = {
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'],
       '3':['trigo','trigvf'], '4':[], '5':[] },
     areas:[
-      {key:'algebra',      lbl:'Álgebra',         ico:'α'},
-      {key:'aritmetica',   lbl:'Aritmética',       ico:'🔢'},
-      {key:'trigonometria',lbl:'Trigonometría',    ico:'∠'},
-      {key:'geometria',    lbl:'Geometría',        ico:'◻'},
+      {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
+      {key:'algebra',      lbl:'Álgebra',           ico:'α'},
+      {key:'aritmetica',   lbl:'Aritmética',        ico:'🔢'},
+      {key:'trigonometria',lbl:'Trigonometría',     ico:'∠'},
+      {key:'geometria',    lbl:'Geometría',         ico:'◻'},
     ] },
   preuniversitario:{ lbl:'Preuniversitario', ico:'🎓', gradeIco:'🏛️', grades:{},
     areas:[
@@ -2540,10 +2541,10 @@ const PREP_CURRICULUM = {
          {lbl:'Fracciones',                       area:'aritmetica',    editorial:'san_ignacio', skills:['fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4']},
          {lbl:'Leyes de Exponentes I',                area:'algebra',       editorial:'intelectum', skills:['exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3']}],
     '2':[
-      {lbl:'Polígonos',                 area:'geometria',  editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},
-      {lbl:'Operaciones con Decimales', area:'aritmetica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},
-      {lbl:'Ecuaciones',                area:'algebra',    editorial:'hans_christian_andersen', skills:['hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3']},
-      {lbl:'Regla de 3',                area:'aritmetica', editorial:'hans_christian_andersen', skills:['hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3']},
+      {lbl:'Polígonos',                 area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},
+      {lbl:'Operaciones con Decimales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},
+      {lbl:'Ecuaciones',                area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3']},
+      {lbl:'Regla de 3',                area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3']},
     ], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
   },
@@ -2555,7 +2556,8 @@ const PREP_EDITORIALS = {
   belen:          { lbl:'Sagrado Corazones Belén',        ico:'📒', abbr:'S.C. Belén' },
   trinidad:       { lbl:'Santísima Trinidad',             ico:'📙', abbr:'S. Trinidad' },
   san_ignacio:    { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
-  san_francisco:  { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís', grades:{ primaria:['6'] } },
+  san_francisco:         { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís',   grades:{ primaria:['6'] } },
+  hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ secundaria:['2'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
