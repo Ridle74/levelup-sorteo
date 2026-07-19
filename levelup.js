@@ -3752,10 +3752,11 @@ async function _prepSaveHistory() {
     if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
     else _prepHistoryData = [localEntry];
     if (pct === 100) setTimeout(()=>_snd.dominate(), 400);
-    // Si examen de unidad al 100%: marcar TODAS las habilidades de la unidad como dominado
+    // Si examen de unidad al 100%: marcar habilidades (no cuestionarios) de la unidad como dominado
     if (pct === 100 && _prep.isUnitExam && (_prep.examUnitSkills||[]).length) {
       const now = Math.floor(Date.now()/1000);
       for (const sk of _prep.examUnitSkills) {
+        if (BINGO_TOPICS[sk]?.quiz) continue; // los cuestionarios solo se dominan al completarlos directamente
         if (_prepMasteryLevel(sk)==='dominado') continue;
         const skDef=BINGO_TOPICS[sk]||{};
         const skE={uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:{seconds:now}};
