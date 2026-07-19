@@ -3446,7 +3446,10 @@ function _prepReEvalPct(h) {
   if (!h) return 0;
   if (!Array.isArray(h.answers) || !h.answers.length) return h.pct || 0;
   const reCorrect = h.answers.filter(a => _prepReEvalAnswer(a)).length;
-  return Math.round((reCorrect / h.answers.length) * 100);
+  // Usar h.total como denominador si es mayor que el array guardado
+  // (puede ocurrir que no todas las respuestas queden en el array pero el total sí se guarda bien)
+  const denom = (h.total && h.total >= h.answers.length) ? h.total : h.answers.length;
+  return Math.round((reCorrect / denom) * 100);
 }
 function _prepMasteryLevel(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return 'unknown';
