@@ -2113,6 +2113,372 @@ function _genT6EC_B6() {
 function _genT6EC_BQ3() { return [_genT6EC_B5, _genT6EC_B6][_bGetRandomInt(0, 1)](); }
 function _genT6EC_BPU() { return [_genT6EC_B1,_genT6EC_B2,_genT6EC_B3,_genT6EC_B4,_genT6EC_B5,_genT6EC_B6][_bGetRandomInt(0, 5)](); }
 
+// ── Polígonos 2° Secundaria – Hans Christian Andersen ────────────────────────
+const _hca2PolNames = ['triángulo','cuadrilátero','pentágono','hexágono','heptágono','octágono','nonágono','decágono','endecágono','dodecágono'];
+const _hca2PolSides = [3,4,5,6,7,8,9,10,11,12];
+function _hca2rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _hca2pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function _hca2shuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+// B1: Nombre de polígono por número de lados o viceversa (MC)
+function _genHca2POL_B1(){
+  const i=_hca2rnd(0,_hca2PolNames.length-1);
+  const n=_hca2PolSides[i],name=_hca2PolNames[i];
+  if(Math.random()<0.5){
+    const ws=_hca2shuf(_hca2PolNames.filter((_,j)=>j!==i)).slice(0,3);
+    return{q:`¿Cómo se llama el polígono de ${n} lados?`,a:name,opts:_hca2shuf([name,...ws]),mc:true};
+  }else{
+    const ws=_hca2shuf(_hca2PolSides.filter(s=>s!==n)).slice(0,3).map(String);
+    return{q:`¿Cuántos lados tiene un ${name}?`,a:String(n),opts:_hca2shuf([String(n),...ws]),mc:true};
+  }
+}
+// B2: Suma de ángulos interiores (n−2)×180°
+function _genHca2POL_B2(){
+  const n=_hca2rnd(3,12),ans=(n-2)*180;
+  const ws=[ans-180,ans+180,(n-1)*180].filter(v=>v!==ans&&v>0);
+  while(ws.length<3)ws.push(ans+ws.length*90);
+  return{q:`¿Cuánto suman los ángulos interiores de un polígono de ${n} lados?`,a:`${ans}°`,
+    opts:_hca2shuf([`${ans}°`,...ws.slice(0,3).map(v=>`${v}°`)]),mc:true,
+    ste:`Fórmula: (n−2)×180° = (${n}−2)×180° = ${n-2}×180° = ${ans}°`};
+}
+// B3: Ángulo interior de polígono regular (n−2)×180°/n
+function _genHca2POL_B3(){
+  const ns=[3,4,5,6,8,9,10,12];
+  const n=_hca2pick(ns);
+  const ans=(n-2)*180/n;
+  const fmtA=v=>Number.isInteger(v)?`${v}°`:`${v.toFixed(1)}°`;
+  const ws=[(n-1)*180/n,(n-3>1?(n-3)*180/(n-3):ans+20),(n-2)*180/(n+2)].filter(v=>fmtA(v)!==fmtA(ans)&&v>0);
+  while(ws.length<3)ws.push(ans+5*(ws.length+1));
+  return{q:`¿Cuánto mide cada ángulo interior de un polígono regular de ${n} lados?`,a:fmtA(ans),
+    opts:_hca2shuf([fmtA(ans),...ws.slice(0,3).map(fmtA)]),mc:true,
+    ste:`Ángulo interior = (n−2)×180°/n = (${n}−2)×180/${n} = ${n-2}×180/${n} = ${fmtA(ans)}`};
+}
+// BQ1
+function _genHca2POL_BQ1(){return[_genHca2POL_B1,_genHca2POL_B2][_hca2rnd(0,1)]();}
+// B4: Número de diagonales n(n−3)/2
+function _genHca2POL_B4(){
+  const n=_hca2rnd(4,10),ans=n*(n-3)/2;
+  const ws=[ans-1,ans+1,n*(n-1)/2].filter(v=>v!==ans&&v>=0);
+  while(ws.length<3)ws.push(ans+ws.length+2);
+  return{q:`¿Cuántas diagonales tiene un polígono de ${n} lados?`,a:String(ans),
+    opts:_hca2shuf([String(ans),...ws.slice(0,3).map(String)]),mc:true,
+    ste:`Diagonales = n(n−3)/2 = ${n}×${n-3}/2 = ${ans}`};
+}
+// B5: Ángulo exterior de polígono regular 360°/n
+function _genHca2POL_B5(){
+  const n=_hca2pick([3,4,5,6,8,10,12]);
+  const ans=360/n;
+  const ws=[360/(n===3?4:n-1),360/(n+2),(n-2)*180/n].filter(v=>Number.isInteger(v)&&v!==ans&&v>0).slice(0,3);
+  while(ws.length<3)ws.push(ans+5*(ws.length+1));
+  const fmtA=v=>Number.isInteger(v)?`${v}°`:`${v.toFixed(1)}°`;
+  return{q:`¿Cuánto mide cada ángulo exterior de un polígono regular de ${n} lados?`,a:fmtA(ans),
+    opts:_hca2shuf([fmtA(ans),...ws.slice(0,3).map(fmtA)]),mc:true,
+    ste:`Ángulo exterior = 360°/n = 360/${n} = ${fmtA(ans)}`};
+}
+// BQ2
+function _genHca2POL_BQ2(){return[_genHca2POL_B3,_genHca2POL_B4,_genHca2POL_B5][_hca2rnd(0,2)]();}
+// BPU
+function _genHca2POL_BPU(){return[_genHca2POL_B1,_genHca2POL_B2,_genHca2POL_B3,_genHca2POL_B4,_genHca2POL_B5][_hca2rnd(0,4)]();}
+
+// ── Operaciones con Decimales 2° Secundaria – Hans Christian Andersen ─────────
+// Helpers sin punto flotante: trabajamos con enteros (tenths / hundredths)
+function _hca2fmt1(v10){// e.g. 53→"5.3", 102→"10.2", 5→"0.5"
+  return Math.floor(v10/10)+'.'+String(v10%10);}
+function _hca2fmt2(v100){// e.g. 322→"3.22", 3220→"32.20"
+  const i=Math.floor(v100/100),c=v100%100;return i+'.'+(c<10?'0'+c:String(c));}
+// B1: Suma o resta de decimales (1 decimal)
+function _genHca2DEC_B1(){
+  const a10=_hca2rnd(100,999),b10=_hca2rnd(50,490);
+  if(Math.random()<0.5){
+    const ans10=a10+b10;
+    const ws=[ans10+1,ans10-1,ans10+10].filter(v=>v!==ans10);
+    while(ws.length<3)ws.push(ans10+ws.length*5);
+    return{q:`${_hca2fmt1(a10)} + ${_hca2fmt1(b10)} = ?`,a:_hca2fmt1(ans10),
+      opts:_hca2shuf([_hca2fmt1(ans10),...ws.slice(0,3).map(_hca2fmt1)]),mc:true};
+  }else{
+    const big=Math.max(a10,b10),sm=Math.min(a10,b10),ans10=big-sm;
+    const ws=[ans10+1,Math.max(1,ans10-1),ans10+10].filter(v=>v!==ans10&&v>=0);
+    while(ws.length<3)ws.push(ans10+ws.length*5);
+    return{q:`${_hca2fmt1(big)} − ${_hca2fmt1(sm)} = ?`,a:_hca2fmt1(ans10),
+      opts:_hca2shuf([_hca2fmt1(ans10),...ws.slice(0,3).map(_hca2fmt1)]),mc:true};
+  }
+}
+// B2: Multiplicación decimal × entero
+function _genHca2DEC_B2(){
+  const a10=_hca2rnd(11,99),n=_hca2rnd(2,9);
+  const ans10=a10*n;
+  const ws=[ans10+n,ans10-n>0?ans10-n:ans10+2*n,ans10+10].filter(v=>v!==ans10&&v>0);
+  while(ws.length<3)ws.push(ans10+ws.length*n);
+  return{q:`${_hca2fmt1(a10)} × ${n} = ?`,a:_hca2fmt1(ans10),
+    opts:_hca2shuf([_hca2fmt1(ans10),...ws.slice(0,3).map(_hca2fmt1)]),mc:true};
+}
+// B3: Multiplicación decimal × decimal (1d × 1d → 2d)
+function _genHca2DEC_B3(){
+  const a10=_hca2rnd(11,49),b10=_hca2rnd(11,49);
+  const ans100=a10*b10;
+  const ws=[ans100+10,ans100-10>0?ans100-10:ans100+20,ans100*10].filter(v=>v!==ans100&&v>0);
+  while(ws.length<3)ws.push(ans100+ws.length*5);
+  return{q:`${_hca2fmt1(a10)} × ${_hca2fmt1(b10)} = ?`,a:_hca2fmt2(ans100),
+    opts:_hca2shuf([_hca2fmt2(ans100),...ws.slice(0,3).map(_hca2fmt2)]),mc:true,
+    ste:`Multiplica como enteros: ${a10}×${b10}=${ans100}. Cuenta los decimales (1+1=2) → ${_hca2fmt2(ans100)}`};
+}
+// BQ1
+function _genHca2DEC_BQ1(){return[_genHca2DEC_B1,_genHca2DEC_B2][_hca2rnd(0,1)]();}
+// B4: División decimal entre entero
+function _genHca2DEC_B4(){
+  const n=_hca2rnd(2,9),q10=_hca2rnd(11,99);
+  const div10=q10*n;
+  const ws=[q10+1,q10-1>0?q10-1:q10+2,q10+10].filter(v=>v!==q10&&v>0);
+  while(ws.length<3)ws.push(q10+ws.length*3);
+  return{q:`${_hca2fmt1(div10)} ÷ ${n} = ?`,a:_hca2fmt1(q10),
+    opts:_hca2shuf([_hca2fmt1(q10),...ws.slice(0,3).map(_hca2fmt1)]),mc:true};
+}
+// B5: División de entero entre decimal (÷0.2 o ÷0.5)
+function _genHca2DEC_B5(){
+  const cfg=_hca2pick([{d10:2,lbl:'0.2',inv:5},{d10:5,lbl:'0.5',inv:2}]);
+  const quotient=_hca2rnd(3,15);
+  const divX10=quotient*cfg.d10; // dividend in tenths
+  const dividend=divX10%10===0?String(divX10/10):_hca2fmt1(divX10);
+  const ws=[quotient+5,quotient-3>0?quotient-3:quotient+8,quotient*2].filter(v=>v!==quotient&&v>0).slice(0,3);
+  while(ws.length<3)ws.push(quotient+ws.length*4);
+  return{q:`${dividend} ÷ ${cfg.lbl} = ?`,a:String(quotient),
+    opts:_hca2shuf([String(quotient),...ws.map(String)]),mc:true,
+    ste:`Dividir entre ${cfg.lbl} equivale a multiplicar por ${cfg.inv}: ${dividend}×${cfg.inv} = ${quotient}`};
+}
+// B6: Operación combinada (decimal×entero + decimal)
+function _genHca2DEC_B6(){
+  const a10=_hca2rnd(11,49),b=_hca2rnd(2,6),c10=_hca2rnd(10,99);
+  const prod10=a10*b,ans10=prod10+c10;
+  const ws=[ans10+10,ans10-10>0?ans10-10:ans10+20,ans10+5].filter(v=>v!==ans10);
+  while(ws.length<3)ws.push(ans10+ws.length*7);
+  return{q:`${_hca2fmt1(a10)} × ${b} + ${_hca2fmt1(c10)} = ?`,a:_hca2fmt1(ans10),
+    opts:_hca2shuf([_hca2fmt1(ans10),...ws.slice(0,3).map(_hca2fmt1)]),mc:true,
+    ste:`Primero la multiplicación: ${_hca2fmt1(a10)}×${b}=${_hca2fmt1(prod10)}, luego la suma: ${_hca2fmt1(prod10)}+${_hca2fmt1(c10)}=${_hca2fmt1(ans10)}`};
+}
+// BQ2
+function _genHca2DEC_BQ2(){return[_genHca2DEC_B3,_genHca2DEC_B4,_genHca2DEC_B5][_hca2rnd(0,2)]();}
+// BPU
+function _genHca2DEC_BPU(){return[_genHca2DEC_B1,_genHca2DEC_B2,_genHca2DEC_B3,_genHca2DEC_B4,_genHca2DEC_B5,_genHca2DEC_B6][_hca2rnd(0,5)]();}
+
+// ── Ecuaciones 2° Secundaria – Hans Christian Andersen ───────────────────────
+// B1: ax + b = cx + d  (variables en ambos lados, positivas)
+function _genHca2EC_B1(){
+  const x=_hca2rnd(1,8),a=_hca2rnd(3,8),c=_hca2rnd(1,a-1);
+  const diff=a-c,d=_hca2rnd(1,10);
+  const b=d-diff*x; // garantiza que ax+b = cx+d
+  const sign=n=>n>=0?`+ ${n}`:`− ${Math.abs(n)}`;
+  const ws=[x+1,x-1,x+2].filter(v=>v!==x);
+  while(ws.length<3)ws.push(x+ws.length+3);
+  return{q:`${a}x ${sign(b)} = ${c}x + ${d}`,a:String(x),
+    opts:_hca2shuf([String(x),...ws.map(String)]),mc:true,
+    ste:`Pasa ${c}x al lado izq: (${a}−${c})x ${sign(b)} = ${d} → ${diff}x = ${d-b} → x = ${x}`};
+}
+// B2: ax + b = cx + d con x que puede ser negativo
+function _genHca2EC_B2(){
+  const x=_hca2rnd(-5,5),a=_hca2rnd(3,8),c=_hca2rnd(1,a-1);
+  const diff=a-c,d=_hca2rnd(1,10),b=d-diff*x;
+  const sign=n=>n>=0?`+ ${n}`:`− ${Math.abs(n)}`;
+  const ws=[x+1,x-1,x+2].filter(v=>v!==x);
+  while(ws.length<3)ws.push(x+ws.length+3);
+  return{q:`${a}x ${sign(b)} = ${c}x ${sign(d)}`,a:String(x),
+    opts:_hca2shuf([String(x),...ws.map(String)]),mc:true,
+    ste:`Agrupa términos: ${diff}x = ${d-b} → x = ${x}`};
+}
+// BQ1
+function _genHca2EC_BQ1(){return[_genHca2EC_B1,_genHca2EC_B2][_hca2rnd(0,1)]();}
+// B3: a(b·x + c) = d(e·x + f), distribución en ambos lados
+function _genHca2EC_B3(){
+  const x=_hca2rnd(1,5),a=_hca2rnd(2,4),bC=_hca2rnd(1,3),c=_hca2rnd(1,5);
+  const d=_hca2rnd(1,3),e=_hca2rnd(1,2);
+  const lhsC=a*bC,lhsK=a*c,rhsC=d*e;
+  if(lhsC===rhsC)return _genHca2EC_B3();
+  const dF=(lhsC-rhsC)*x+lhsK;
+  if(dF<=0||dF%d!==0)return _genHca2EC_B3();
+  const f=dF/d;
+  const ws=[x+1,x-1>0?x-1:x+2,x+2].filter(v=>v>0&&v!==x);
+  while(ws.length<3)ws.push(x+ws.length+2);
+  return{q:`${a}(${bC}x + ${c}) = ${d}(${e}x + ${f})`,a:String(x),
+    opts:_hca2shuf([String(x),...ws.map(String)]),mc:true,
+    ste:`Distribuye: ${lhsC}x + ${lhsK} = ${rhsC}x + ${dF} → ${lhsC-rhsC}x = ${dF-lhsK} → x = ${x}`};
+}
+// B4: x/a + b = c  (ecuaciones con fracción)
+function _genHca2EC_B4(){
+  const a=_hca2rnd(2,6),x=_hca2rnd(1,8)*a,b=_hca2rnd(1,9);
+  const c=x/a+b;
+  const ws=[x+a,x-a>0?x-a:x+2*a,x+2*a].filter(v=>v!==x&&v>0);
+  while(ws.length<3)ws.push(x+ws.length*a);
+  return{q:`x / ${a} + ${b} = ${c}`,a:String(x),
+    opts:_hca2shuf([String(x),...ws.slice(0,3).map(String)]),mc:true,
+    ste:`x/${a} = ${c}−${b} = ${c-b} → x = ${c-b}×${a} = ${x}`};
+}
+// BQ2
+function _genHca2EC_BQ2(){return[_genHca2EC_B3,_genHca2EC_B4][_hca2rnd(0,1)]();}
+// B5: Problemas contextualizados
+function _genHca2EC_B5(){
+  const t=_hca2rnd(0,3);
+  if(t===0){
+    const pL=_hca2rnd(2,8),pC=_hca2rnd(3,9),nL=_hca2rnd(2,5),nC=_hca2rnd(2,4);
+    const tot=nL*pL+nC*pC;
+    const ws=[pL+1,pL-1>0?pL-1:pL+2,pL+2].filter(v=>v!==pL);
+    return{q:`Se compraron ${nL} lapiceros y ${nC} cuadernos (cada cuaderno cuesta S/. ${pC}). El total fue S/. ${tot}. ¿Cuánto cuesta cada lapicero?`,
+      a:`S/. ${pL}`,opts:_hca2shuf([`S/. ${pL}`,...ws.map(v=>`S/. ${v}`)]),mc:true,
+      ste:`${nL}x + ${nC*pC} = ${tot} → ${nL}x = ${tot-nC*pC} → x = S/. ${pL}`};
+  }else if(t===1){
+    const marcos=_hca2rnd(5,15),juana=2*marcos,total=marcos+juana;
+    const ws=[marcos+2,marcos-2>0?marcos-2:marcos+3,juana].filter(v=>v!==marcos&&v>0);
+    return{q:`Juana tiene el doble de la edad de Marcos. Juntos suman ${total} años. ¿Cuántos años tiene Marcos?`,
+      a:`${marcos} años`,opts:_hca2shuf([`${marcos} años`,...ws.slice(0,3).map(v=>`${v} años`)]),mc:true,
+      ste:`x + 2x = ${total} → 3x = ${total} → x = ${marcos} años`};
+  }else if(t===2){
+    const w=_hca2rnd(3,10),k=_hca2rnd(1,5),l=w+k,P=2*(w+l);
+    const ws=[w+1,w-1>0?w-1:w+2,l].filter(v=>v!==w&&v>0);
+    return{q:`El largo de un rectángulo es ${k} cm más que su ancho. El perímetro es ${P} cm. ¿Cuánto mide el ancho?`,
+      a:`${w} cm`,opts:_hca2shuf([`${w} cm`,...ws.slice(0,3).map(v=>`${v} cm`)]),mc:true,
+      ste:`2(x + x+${k}) = ${P} → 4x+${2*k} = ${P} → x = ${w} cm`};
+  }else{
+    const b2=_hca2rnd(1,8),x=_hca2rnd(b2+1,15),d2=x-b2;
+    const ws=[x+1,x-1>0?x-1:x+2,x+2].filter(v=>v!==x&&v>0);
+    return{q:`El triple de un número menos ${b2} es igual a ${d2} más el doble de ese número. ¿Cuál es ese número?`,
+      a:String(x),opts:_hca2shuf([String(x),...ws.slice(0,3).map(String)]),mc:true,
+      ste:`3x − ${b2} = 2x + ${d2} → x = ${d2}+${b2} = ${x}`};
+  }
+}
+// BQ3
+function _genHca2EC_BQ3(){return[_genHca2EC_B1,_genHca2EC_B3,_genHca2EC_B5][_hca2rnd(0,2)]();}
+// BPU
+function _genHca2EC_BPU(){return[_genHca2EC_B1,_genHca2EC_B2,_genHca2EC_B3,_genHca2EC_B4,_genHca2EC_B5][_hca2rnd(0,4)]();}
+
+// ── Regla de 3 Directa e Indirecta 2° Secundaria – Hans Christian Andersen ─────
+// B1: Identificar proporcionalidad directa o inversa (MC conceptual)
+function _genHca2R3_B1(){
+  const items=[
+    {q:'A mayor número de obreros, menor tiempo para construir una pared.',a:'Inversa',ste:'Una variable sube mientras la otra baja → inversa.'},
+    {q:'A mayor número de km recorridos, mayor consumo de gasolina.',a:'Directa',ste:'Ambas variables aumentan juntas → directa.'},
+    {q:'A mayor velocidad, el tiempo de viaje es menor (misma distancia).',a:'Inversa',ste:'Velocidad ↑, tiempo ↓ → inversa.'},
+    {q:'Compro más manzanas → pago más (precio fijo por unidad).',a:'Directa',ste:'Cantidad ↑, costo ↑ → directa.'},
+    {q:'Más grifos llenando una piscina → se llena en menos tiempo.',a:'Inversa',ste:'Más grifos → menos tiempo → inversa.'},
+    {q:'Un empleado trabaja más horas → gana más dinero.',a:'Directa',ste:'Horas ↑ → salario ↑ → directa.'},
+    {q:'Más personas comparten un pastel → cada una recibe menos.',a:'Inversa',ste:'Personas ↑, porción ↓ → inversa.'},
+    {q:'Más días trabajados → más dinero recibido al mes.',a:'Directa',ste:'Días ↑ → pago ↑ → directa.'},
+  ];
+  const item=_hca2pick(items);
+  return{q:`¿La siguiente relación es directa o inversa?\n"${item.q}"`,
+    a:item.a,opts:['Directa','Inversa'],mc:true,ste:item.ste};
+}
+// B2: Cálculo con regla de 3 directa
+function _genHca2R3_B2(){
+  const type=_hca2rnd(0,3);
+  const ratio=_hca2rnd(2,8),a1=_hca2rnd(2,5),b1=a1*ratio;
+  const c1=_hca2rnd(2,8),ans=c1*ratio;
+  const ws=[ans+ratio,ans-ratio>0?ans-ratio:ans+2*ratio,b1].filter(v=>v!==ans&&v>0).slice(0,3);
+  while(ws.length<3)ws.push(ans+ws.length*ratio);
+  let q,fmt;
+  if(type===0){q=`Si ${a1} cuadernos cuestan S/. ${b1}, ¿cuánto cuestan ${c1} cuadernos?`;fmt=v=>`S/. ${v}`;}
+  else if(type===1){q=`Un auto recorre ${b1} km con ${a1} litros. ¿Cuántos km recorre con ${c1} litros?`;fmt=v=>`${v} km`;}
+  else if(type===2){q=`En ${a1} días se producen ${b1} kg de queso. ¿Cuántos kg en ${c1} días?`;fmt=v=>`${v} kg`;}
+  else{q=`Por cada S/. ${a1} se compran ${b1} manzanas. ¿Cuántas manzanas con S/. ${c1}?`;fmt=v=>`${v} manzanas`;}
+  return{q,a:fmt(ans),opts:_hca2shuf([fmt(ans),...ws.map(fmt)]),mc:true,
+    ste:`Directa: ${a1} → ${b1} ; ${c1} → x = (${b1}×${c1})/${a1} = ${ans}`};
+}
+// BQ1
+function _genHca2R3_BQ1(){return[_genHca2R3_B1,_genHca2R3_B2][_hca2rnd(0,1)]();}
+// B3: Cálculo con regla de 3 inversa
+function _genHca2R3_B3(){
+  const type=_hca2rnd(0,1);
+  if(type===0){
+    // Obreros y días
+    let w1,d1,d2,k,w2,tries=0;
+    do{w1=_hca2rnd(3,8);d1=_hca2rnd(4,12);k=w1*d1;
+      const divs=[];for(let dd=1;dd<d1;dd++){if(k%dd===0)divs.push(dd);}
+      if(!divs.length){tries++;continue;}d2=_hca2pick(divs);w2=k/d2;break;
+    }while(tries<15);
+    if(!w2)return _genHca2R3_B3();
+    const ws=[w2+2,w2-2>0?w2-2:w2+4,w1].filter(v=>v!==w2&&v>0).slice(0,3);
+    while(ws.length<3)ws.push(w2+ws.length*2);
+    return{q:`${w1} obreros construyen un muro en ${d1} días. ¿Cuántos obreros lo terminan en ${d2} días?`,
+      a:`${w2} obreros`,opts:_hca2shuf([`${w2} obreros`,...ws.map(v=>`${v} obreros`)]),mc:true,
+      ste:`Inversa: ${w1}×${d1} = x×${d2} → x = ${k}÷${d2} = ${w2} obreros`};
+  }else{
+    // Velocidad y tiempo
+    const t2=_hca2rnd(1,4),t1=_hca2rnd(t2+1,t2+4);
+    const v1=_hca2rnd(2,8)*t2; // garantiza división limpia
+    const k=v1*t1,v2=k/t2;
+    const ws=[v2+10,v2-10>0?v2-10:v2+15,v1].filter(v=>v!==v2&&v>0).slice(0,3);
+    while(ws.length<3)ws.push(v2+ws.length*5);
+    return{q:`Un auto viaja a ${v1} km/h y tarda ${t1} h. ¿A qué velocidad llega en ${t2} h?`,
+      a:`${v2} km/h`,opts:_hca2shuf([`${v2} km/h`,...ws.map(v=>`${v} km/h`)]),mc:true,
+      ste:`Inversa: ${v1}×${t1} = x×${t2} → x = ${k}÷${t2} = ${v2} km/h`};
+  }
+}
+// B4: Problemas aplicados — regla de 3 directa
+function _genHca2R3_B4(){
+  const t=_hca2rnd(0,2);
+  if(t===0){
+    const sc=_hca2rnd(4,10),cm1=_hca2rnd(3,8),km1=cm1*sc,cm2=_hca2rnd(3,12),km2=cm2*sc;
+    const ws=[km2+sc,km2-sc>0?km2-sc:km2+2*sc,km2*2].filter(v=>v!==km2&&v>0).slice(0,3);
+    return{q:`En un mapa, ${cm1} cm representan ${km1} km. ¿Cuántos km representan ${cm2} cm?`,
+      a:`${km2} km`,opts:_hca2shuf([`${km2} km`,...ws.map(v=>`${v} km`)]),mc:true,
+      ste:`Directa: ${cm1} → ${km1} ; ${cm2} → x = (${km1}×${cm2})/${cm1} = ${km2} km`};
+  }else if(t===1){
+    const ppu=_hca2rnd(3,9),u1=_hca2rnd(3,8),cost1=ppu*u1,u2=_hca2rnd(2,10),cost2=ppu*u2;
+    const ws=[cost2+ppu,cost2-ppu>0?cost2-ppu:cost2+2*ppu,cost1].filter(v=>v!==cost2&&v>0).slice(0,3);
+    return{q:`${u1} kg de arroz cuestan S/. ${cost1}. ¿Cuánto cuestan ${u2} kg?`,
+      a:`S/. ${cost2}`,opts:_hca2shuf([`S/. ${cost2}`,...ws.map(v=>`S/. ${v}`)]),mc:true,
+      ste:`Directa: ${u1} → ${cost1} ; ${u2} → x = (${cost1}×${u2})/${u1} = S/. ${cost2}`};
+  }else{
+    const h1=_hca2rnd(4,10),s1=h1*_hca2rnd(5,12),h2=_hca2rnd(2,h1-1||1);
+    const s2=h2*(s1/h1);
+    if(!Number.isInteger(s2))return _genHca2R3_B4();
+    const ws=[s2+5,s2-5>0?s2-5:s2+10,s1].filter(v=>v!==s2&&v>0).slice(0,3);
+    return{q:`Un empleado gana S/. ${s1} por ${h1} horas. ¿Cuánto ganaría en ${h2} horas?`,
+      a:`S/. ${s2}`,opts:_hca2shuf([`S/. ${s2}`,...ws.map(v=>`S/. ${v}`)]),mc:true,
+      ste:`Directa: S/.${s1}/${h1}h × ${h2}h = S/. ${s2}`};
+  }
+}
+// BQ2
+function _genHca2R3_BQ2(){return[_genHca2R3_B3,_genHca2R3_B4][_hca2rnd(0,1)]();}
+// B5: Problemas aplicados — regla de 3 inversa
+function _genHca2R3_B5(){
+  const t=_hca2rnd(0,2);
+  if(t===0){
+    let g1,h1,g2,h2;
+    const candidates=[2,3,4,6];
+    g1=_hca2rnd(2,5);h1=_hca2rnd(4,12);
+    const k=g1*h1;
+    const divs=candidates.filter(v=>v!==g1&&k%v===0);
+    if(!divs.length)return _genHca2R3_B5();
+    g2=_hca2pick(divs);h2=k/g2;
+    const ws=[h2+2,h2-1>0?h2-1:h2+3,h1].filter(v=>v!==h2&&v>0).slice(0,3);
+    while(ws.length<3)ws.push(h2+ws.length*2);
+    return{q:`${g1} grifos llenan un tanque en ${h1} horas. ¿En cuántas horas lo llenan ${g2} grifos?`,
+      a:`${h2} horas`,opts:_hca2shuf([`${h2} horas`,...ws.map(v=>`${v} horas`)]),mc:true,
+      ste:`Inversa: ${g1}×${h1} = ${g2}×x → x = ${k}÷${g2} = ${h2} horas`};
+  }else if(t===1){
+    const p1=_hca2rnd(4,10),d1=_hca2rnd(6,15),k=p1*d1;
+    const mults=[2,3,4,5].map(m=>p1*m).filter(p=>k%p===0&&p!==p1);
+    if(!mults.length)return _genHca2R3_B5();
+    const p2=_hca2pick(mults),d2=k/p2;
+    const ws=[d2+2,d2-1>0?d2-1:d2+3,d1].filter(v=>v!==d2&&v>0).slice(0,3);
+    while(ws.length<3)ws.push(d2+ws.length*2);
+    return{q:`Hay provisiones para ${p1} personas durante ${d1} días. ¿Cuántos días alcanzan para ${p2} personas?`,
+      a:`${d2} días`,opts:_hca2shuf([`${d2} días`,...ws.map(v=>`${v} días`)]),mc:true,
+      ste:`Inversa: ${p1}×${d1} = ${p2}×x → x = ${k}÷${p2} = ${d2} días`};
+  }else{
+    const w1=_hca2rnd(3,8),d1=_hca2rnd(3,8),k=w1*d1;
+    const divs=[2,3,4].filter(v=>v<w1&&k%v===0);
+    if(!divs.length)return _genHca2R3_B5();
+    const w2=_hca2pick(divs),d2=k/w2;
+    const ws=[d2+2,d2-1>0?d2-1:d2+3,d1].filter(v=>v!==d2&&v>0).slice(0,3);
+    while(ws.length<3)ws.push(d2+ws.length*2);
+    return{q:`${w1} costureras terminan un pedido en ${d1} días. ¿Cuántos días necesitan ${w2} costureras para el mismo pedido?`,
+      a:`${d2} días`,opts:_hca2shuf([`${d2} días`,...ws.map(v=>`${v} días`)]),mc:true,
+      ste:`Inversa: ${w1}×${d1} = ${w2}×x → x = ${k}÷${w2} = ${d2} días`};
+  }
+}
+// BQ3
+function _genHca2R3_BQ3(){return[_genHca2R3_B3,_genHca2R3_B4,_genHca2R3_B5][_hca2rnd(0,2)]();}
+// BPU
+function _genHca2R3_BPU(){return[_genHca2R3_B1,_genHca2R3_B2,_genHca2R3_B3,_genHca2R3_B4,_genHca2R3_B5][_hca2rnd(0,4)]();}
+
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 // ── Datos curriculares ──────────────────────────────────────────────────────────
 
@@ -2121,7 +2487,9 @@ const PREP_LEVELS = {
     grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'], '2':[], '3':['trigo','trigvf'], '4':[], '5':[] },
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
+      '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'],
+      '3':['trigo','trigvf'], '4':[], '5':[] },
     areas:[
       {key:'algebra',      lbl:'Álgebra',         ico:'α'},
       {key:'aritmetica',   lbl:'Aritmética',       ico:'🔢'},
@@ -2171,7 +2539,12 @@ const PREP_CURRICULUM = {
          {lbl:'Propiedades Trigonométricas',      area:'trigonometria', editorial:'intelectum', skills:['trigoprop']},
          {lbl:'Fracciones',                       area:'aritmetica',    editorial:'san_ignacio', skills:['fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4']},
          {lbl:'Leyes de Exponentes I',                area:'algebra',       editorial:'intelectum', skills:['exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3']}],
-    '2':[], '4':[], '5':[],
+    '2':[
+      {lbl:'Polígonos',                 area:'geometria',  editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},
+      {lbl:'Operaciones con Decimales', area:'aritmetica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},
+      {lbl:'Ecuaciones',                area:'algebra',    editorial:'hans_christian_andersen', skills:['hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3']},
+      {lbl:'Regla de 3',                area:'aritmetica', editorial:'hans_christian_andersen', skills:['hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3']},
+    ], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
   },
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },

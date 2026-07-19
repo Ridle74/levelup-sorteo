@@ -374,6 +374,8 @@ let editingParentId = null;    // id de padre cuyo PIN se está editando en el p
 let editingNamesId  = null;    // id de familia cuyos nombres (padre/hijos) se están editando en el panel admin
 let editingCycleId  = null;    // id del ciclo que se está editando en el panel admin (null=ninguno, 'new'=nuevo ciclo sin guardar)
 let editingTemplateId = null; // id de la plantilla de disponibilidad que se está editando (null=ninguna, 'new'=nueva)
+let addingChildParentId  = null;  // admin: id de la familia con el panel "agregar hijo" abierto
+let addingChildForParent = false; // padre: si el formulario "solicitar hijo adicional" está visible
 let calEditMode = false;       // admin: modo edición del calendario
 let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
 let smEditFree  = false;       // true si se edita un freeSlot
@@ -1185,6 +1187,20 @@ function vPerfil() {
       <button class="btn-grn" style="background:rgba(0,0,0,0.08);color:#111" onclick="saveChildProfile(${c.id})">Guardar</button>
     </div>`).join('')}
 
+    <div style="background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:16px;padding:16px;margin-bottom:12px">
+      <div class="sec-lbl" style="margin-bottom:10px">➕ Agregar otro hijo/a</div>
+      ${addingChildForParent ? `
+      <input class="fsm" id="ac-req-name" type="text" placeholder="Nombre completo del hijo/a" autocomplete="off">
+      <label class="field-label">Nota adicional (opcional)</label>
+      <input class="fsm" id="ac-req-note" type="text" placeholder="Ej.: 5° primaria, turno tarde" autocomplete="off">
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn-grn" style="flex:1" onclick="submitAddChildRequest()">Enviar solicitud</button>
+        <button class="btn-ghost" style="margin-top:0;flex:1" onclick="addingChildForParent=false;render()">Cancelar</button>
+      </div>` : `
+      <p style="font-size:12px;color:rgba(0,0,0,0.45);line-height:1.6;margin:0 0 10px">¿Tienes otro hijo/a que también toma clases? Envía una solicitud y el profesor lo vinculará a tu cuenta.</p>
+      <button class="btn-ghost" onclick="addingChildForParent=true;render()">Solicitar</button>`}
+    </div>
+
     <button class="btn-ghost" style="margin-top:8px;margin-bottom:calc(72px + env(safe-area-inset-bottom));border-color:rgba(0,0,0,0.2);color:rgba(0,0,0,0.5)" onclick="logout()">⎋ Cerrar sesión</button>
   </div>`;
 }
@@ -1401,6 +1417,109 @@ function setQuoteRequestStatus(reqId, status) {
 }
 function startEditParentPin(id) { editingParentId = id; render(); }
 function cancelEditParentPin() { editingParentId = null; render(); }
+
+// ── Agregar hijo a cuenta existente (admin) ──────────────────
+function startAddChildPanel(parentId) { addingChildParentId = parentId; render(); }
+function cancelAddChildPanel() { addingChildParentId = null; render(); }
+function _acToggleNewFields(parentId) {
+  const sel = document.getElementById('add-child-sel-' + parentId);
+  const nd  = document.getElementById('add-child-new-' + parentId);
+  if (nd) nd.style.display = sel && sel.value === 'new' ? 'block' : 'none';
+}
+function _acUpdateGrado(parentId) {
+  const nivelSel = document.getElementById('add-child-nivel-' + parentId);
+  const gradoSel = document.getElementById('add-child-grado-' + parentId);
+  if (!nivelSel || !gradoSel) return;
+  const nivel = nivelSel.value;
+  const max   = nivel === 'secundaria' ? 5 : nivel === 'preuni' ? 2 : 6;
+  gradoSel.innerHTML = '<option value="">— Grado —</option>'
+    + Array.from({length: max}, function(_, i){ const g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
+}
+function confirmAdminAddChild(parentId) {
+  const sel = document.getElementById('add-child-sel-' + parentId);
+  const val = sel ? sel.value : '';
+  if (!val) { showToast('Selecciona un alumno o elige "Nuevo alumno"'); return; }
+  let studentId;
+  if (val === 'new') {
+    const nameEl = document.getElementById('add-child-newname-' + parentId);
+    const name   = nameEl ? nameEl.value.trim() : '';
+    if (!name) { showToast('Escribe el nombre del alumno'); return; }
+    const nivel  = (document.getElementById('add-child-nivel-' + parentId)||{}).value || '';
+    const grado  = (document.getElementById('add-child-grado-' + parentId)||{}).value || '';
+    studentId = nextStudentId();
+    DATA.students[studentId] = { name, color: '#888', icon: '👤', nivel, grado: grado ? Number(grado) : '' };
+  } else {
+    studentId = Number(val);
+  }
+  if (!DATA.parents[parentId].children) DATA.parents[parentId].children = [];
+  if (!DATA.parents[parentId].children.map(Number).includes(Number(studentId))) {
+    DATA.parents[parentId].children.push(studentId);
+  }
+  addingChildParentId = null;
+  REF.set({ parents: DATA.parents, students: DATA.students }, { merge: true })
+    .then(function() { showToast('Hijo/a vinculado/a a la cuenta ✓', 'success'); render(); })
+    .catch(function(e) { console.error(e); showToast('Error al guardar'); render(); });
+}
+
+// ── Solicitar hijo adicional (padre) ─────────────────────────
+function submitAddChildRequest() {
+  const nameEl = document.getElementById('ac-req-name');
+  const noteEl = document.getElementById('ac-req-note');
+  const name   = nameEl ? nameEl.value.trim() : '';
+  if (!name) { showToast('Escribe el nombre del hijo/a'); return; }
+  const note = noteEl ? noteEl.value.trim() : '';
+  const parentId = getLoggedParent();
+  const parent   = DATA.parents[parentId];
+  const req = {
+    id:         Date.now(),
+    type:       'add-child',
+    parentId,
+    parentName: parent ? parent.name : '',
+    childName:  name,
+    note,
+    status:     'pendiente',
+    createdAt:  new Date().toISOString()
+  };
+  DATA.accountRequests.push(req);
+  saveAccountRequests();
+  addingChildForParent = false;
+  showToast('Solicitud enviada. El profesor la revisará pronto.', 'success');
+  render();
+}
+function approveAddChildRequest(reqId) {
+  const reg = DATA.accountRequests.find(function(r){ return r.id === reqId; });
+  if (!reg || reg.status !== 'pendiente') return;
+  const selEl = document.getElementById('ac-approve-sel-' + reqId);
+  const val   = selEl ? selEl.value : '';
+  if (!val) { showToast('Selecciona el alumno al que vincular o elige "Nuevo"'); return; }
+  let studentId;
+  if (val === 'new') {
+    studentId = nextStudentId();
+    DATA.students[studentId] = { name: reg.childName, color: '#888', icon: '👤', nivel: '', grado: '' };
+  } else {
+    studentId = Number(val);
+  }
+  if (!DATA.parents[reg.parentId]) { showToast('No se encontró la cuenta del padre'); return; }
+  if (!DATA.parents[reg.parentId].children) DATA.parents[reg.parentId].children = [];
+  if (!DATA.parents[reg.parentId].children.map(Number).includes(Number(studentId))) {
+    DATA.parents[reg.parentId].children.push(studentId);
+  }
+  reg.status            = 'aprobada';
+  reg.assignedStudentId = studentId;
+  reg.resolvedAt        = new Date().toISOString();
+  REF.set({ parents: DATA.parents, students: DATA.students, accountRequests: DATA.accountRequests }, { merge: true })
+    .then(function() { showToast('Alumno vinculado a la cuenta ✓', 'success'); render(); })
+    .catch(function(e) { console.error(e); showToast('Error al guardar'); });
+}
+function rejectAddChildRequest(reqId) {
+  const reg = DATA.accountRequests.find(function(r){ return r.id === reqId; });
+  if (!reg || reg.status !== 'pendiente') return;
+  reg.status     = 'rechazada';
+  reg.resolvedAt = new Date().toISOString();
+  saveAccountRequests();
+  showToast('Solicitud rechazada.', 'success');
+  render();
+}
 function saveParentPin(id) {
   const input = document.getElementById('edit-pin-' + id);
   if (!input) return;
@@ -1696,8 +1815,14 @@ function vAdminInicio() {
 function vAdminSolicitudes() {
   const statusLabel = { pendiente:'Pendiente', aprobada:'Aprobada', rechazada:'Rechazada' };
   const statusClass = { pendiente:'pend', aprobada:'appr', rechazada:'rej' };
-  const cuentas = DATA.accountRequests.slice().reverse();
+  const allAccountReqs = DATA.accountRequests.slice().reverse();
+  const cuentas = allAccountReqs.filter(function(r){ return r.type !== 'add-child'; });
+  const addChildReqs = allAccountReqs.filter(function(r){ return r.type === 'add-child'; });
   const clases  = DATA.requests.slice().reverse();
+  // build orphan list for approve dropdown
+  const _assignedIds = new Set();
+  Object.values(DATA.parents).forEach(function(p){ (p.children||[]).forEach(function(cid){ _assignedIds.add(String(cid)); }); });
+  const _allStudents = Object.entries(DATA.students);
 
   return `
   <div style="padding:16px;max-width:640px;margin:0 auto">
@@ -1717,6 +1842,30 @@ function vAdminSolicitudes() {
         </div>
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`).join('') : `<div class="cal-empty">No hay solicitudes de cuenta.</div>`}
+
+    <div class="sec-lbl" style="margin-top:22px">Solicitudes de hijo/a adicional</div>
+    ${addChildReqs.length ? addChildReqs.map(r => {
+      const par = DATA.parents[r.parentId];
+      return `<div class="req-list-item" style="align-items:flex-start">
+        <div style="flex:1">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${r.parentName||''} · solicita agregar: ${r.childName}</div>
+          ${r.note ? `<div class="cs-meta" style="margin-top:2px;color:rgba(0,0,0,0.4)">"${r.note}"</div>` : ''}
+          ${r.status==='pendiente' ? `
+            <div style="margin-top:10px">
+              <select class="fsm" id="ac-approve-sel-${r.id}" style="margin-bottom:8px">
+                <option value="">— Vincular con alumno existente —</option>
+                ${_allStudents.map(([sid, s]) => `<option value="${sid}">${s.icon||'👤'} ${s.name}</option>`).join('')}
+                <option value="new">🆕 Crear nuevo alumno "${r.childName}"</option>
+              </select>
+              <div style="display:flex;gap:8px">
+                <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="approveAddChildRequest(${r.id})">✓ Aprobar y vincular</button>
+                <button class="btn-ghost" style="margin-top:0;padding:8px 14px;font-size:11px;width:auto" onclick="rejectAddChildRequest(${r.id})">✕ Rechazar</button>
+              </div>
+            </div>` : ''}
+        </div>
+        <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
+      </div>`;
+    }).join('') : `<div class="cal-empty">No hay solicitudes de hijo/a adicional.</div>`}
 
     <div class="sec-lbl" style="margin-top:22px">Solicitudes de clase adicional</div>
     ${clases.length ? clases.map(r => {
@@ -2022,6 +2171,35 @@ function vAdminCuentas() {
               <span class="cs-meta">Clave actual: <strong style="color:rgba(0,0,0,0.6)">${p.pin}</strong></span>
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:7px 14px;font-size:10px" onclick="startEditParentPin('${id}')">✏️ Cambiar clave</button>
             </div>`}
+          ${addingChildParentId === id ? `
+          <div style="margin-top:10px;padding:12px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.22);border-radius:12px">
+            <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:8px">Agregar hijo/a a esta cuenta</div>
+            <select class="fsm" id="add-child-sel-${id}" style="margin-bottom:8px" onchange="_acToggleNewFields('${id}')">
+              <option value="">— Selecciona un alumno existente —</option>
+              ${orphanStudents.map(([sid, s]) => `<option value="${sid}">${s.icon||'👤'} ${s.name}</option>`).join('')}
+              <option value="new">🆕 Nuevo alumno (escribir nombre)</option>
+            </select>
+            <div id="add-child-new-${id}" style="display:none">
+              <input class="fsm" id="add-child-newname-${id}" type="text" placeholder="Nombre completo del alumno" style="margin-bottom:8px">
+              <div style="display:flex;gap:8px">
+                <select class="fsm" id="add-child-nivel-${id}" style="margin-bottom:8px;flex:1" onchange="_acUpdateGrado('${id}')">
+                  <option value="">— Nivel —</option>
+                  <option value="primaria">Primaria</option>
+                  <option value="secundaria">Secundaria</option>
+                  <option value="preuni">Pre-Universitario</option>
+                </select>
+                <select class="fsm" id="add-child-grado-${id}" style="margin-bottom:8px;flex:1">
+                  <option value="">— Grado —</option>
+                  ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="confirmAdminAddChild('${id}')">Vincular</button>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="cancelAddChildPanel()">Cancelar</button>
+            </div>
+          </div>` : `
+          <button class="btn-ghost" style="margin-top:8px;padding:5px 12px;font-size:10px;width:auto" onclick="startAddChildPanel('${id}')">➕ Agregar hijo/a</button>`}
         </div>
       </div>`;
     }).join('')}

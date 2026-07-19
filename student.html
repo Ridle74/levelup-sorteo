@@ -1809,6 +1809,7 @@ function showToast(msg, type='error') {
 }
 
 function _showSorteoNotice() {
+  return; // aviso ya no vigente
   if (isAdmin()) return;
   if (new Date() >= new Date('2026-07-19T00:00:00')) return; // expiró el domingo 19
   const overlay = document.createElement('div');
@@ -2763,10 +2764,53 @@ const BINGO_TOPICS = {
   t6_ec_b6:  { ico:'||', lbl:'Ecuaciones con valor absoluto: |x|=a',       qCount:4, gen:()=>_genT6EC_B6() },
   t6_ec_bq3: { ico:'⚡', lbl:'Quiz III – Ecuaciones avanzadas',            qCount:5, gen:()=>_genT6EC_BQ3(), quiz:true },
   t6_ec_bpu: { ico:'⭐', lbl:'Examen – Ecuaciones',                        qCount:10, gen:()=>_genT6EC_BPU(), quiz:true },
+  // ── Polígonos 2° Secundaria – Hans Christian Andersen ──
+  hca2_pol_b1:  { ico:'⬡', lbl:'Polígonos: nombres y lados',                   qCount:4,  gen:()=>_genHca2POL_B1() },
+  hca2_pol_b2:  { ico:'∠', lbl:'Polígonos: suma de ángulos interiores',         qCount:4,  gen:()=>_genHca2POL_B2() },
+  hca2_pol_b3:  { ico:'∠', lbl:'Polígonos regulares: ángulo interior',          qCount:4,  gen:()=>_genHca2POL_B3() },
+  hca2_pol_bq1: { ico:'⚡', lbl:'Quiz I – Polígonos: nombre y ángulos',         qCount:5,  gen:()=>_genHca2POL_BQ1(), quiz:true },
+  hca2_pol_b4:  { ico:'⬡', lbl:'Polígonos: número de diagonales',              qCount:4,  gen:()=>_genHca2POL_B4() },
+  hca2_pol_b5:  { ico:'∠', lbl:'Polígonos regulares: ángulo exterior',          qCount:4,  gen:()=>_genHca2POL_B5() },
+  hca2_pol_bq2: { ico:'⚡', lbl:'Quiz II – Polígonos: diagonales y ángulos',    qCount:5,  gen:()=>_genHca2POL_BQ2(), quiz:true },
+  hca2_pol_bpu: { ico:'⭐', lbl:'Examen – Polígonos',                           qCount:10, gen:()=>_genHca2POL_BPU(), quiz:true },
+  // ── Operaciones con Decimales 2° Secundaria – Hans Christian Andersen ──
+  hca2_dec_b1:  { ico:'.+', lbl:'Decimales: suma y resta',                      qCount:4,  gen:()=>_genHca2DEC_B1() },
+  hca2_dec_b2:  { ico:'×', lbl:'Decimales: multiplicación por entero',          qCount:4,  gen:()=>_genHca2DEC_B2() },
+  hca2_dec_b3:  { ico:'×', lbl:'Decimales: multiplicación decimal × decimal',   qCount:4,  gen:()=>_genHca2DEC_B3() },
+  hca2_dec_bq1: { ico:'⚡', lbl:'Quiz I – Decimales: suma, resta y ×entero',    qCount:5,  gen:()=>_genHca2DEC_BQ1(), quiz:true },
+  hca2_dec_b4:  { ico:'÷', lbl:'Decimales: división entre entero',              qCount:4,  gen:()=>_genHca2DEC_B4() },
+  hca2_dec_b5:  { ico:'÷', lbl:'Decimales: división entre decimal',             qCount:4,  gen:()=>_genHca2DEC_B5() },
+  hca2_dec_b6:  { ico:'🔢', lbl:'Decimales: operaciones combinadas',            qCount:4,  gen:()=>_genHca2DEC_B6() },
+  hca2_dec_bq2: { ico:'⚡', lbl:'Quiz II – Decimales: ×, ÷ y combinadas',       qCount:5,  gen:()=>_genHca2DEC_BQ2(), quiz:true },
+  hca2_dec_bpu: { ico:'⭐', lbl:'Examen – Operaciones con Decimales',           qCount:10, gen:()=>_genHca2DEC_BPU(), quiz:true },
+  // ── Ecuaciones 2° Secundaria – Hans Christian Andersen ──
+  hca2_ec_b1:   { ico:'=', lbl:'Ecuaciones: variables en ambos lados',          qCount:4,  gen:()=>_genHca2EC_B1() },
+  hca2_ec_b2:   { ico:'=', lbl:'Ecuaciones: con valores negativos',             qCount:4,  gen:()=>_genHca2EC_B2() },
+  hca2_ec_bq1:  { ico:'⚡', lbl:'Quiz I – Ecuaciones: ambos lados',             qCount:5,  gen:()=>_genHca2EC_BQ1(), quiz:true },
+  hca2_ec_b3:   { ico:'()', lbl:'Ecuaciones con distribución en ambos lados',   qCount:4,  gen:()=>_genHca2EC_B3() },
+  hca2_ec_b4:   { ico:'÷', lbl:'Ecuaciones con fracciones: x/a + b = c',       qCount:4,  gen:()=>_genHca2EC_B4() },
+  hca2_ec_bq2:  { ico:'⚡', lbl:'Quiz II – Ecuaciones: distribución y fracciones', qCount:5, gen:()=>_genHca2EC_BQ2(), quiz:true },
+  hca2_ec_b5:   { ico:'📝', lbl:'Ecuaciones: problemas contextualizados',       qCount:4,  gen:()=>_genHca2EC_B5() },
+  hca2_ec_bq3:  { ico:'⚡', lbl:'Quiz III – Ecuaciones: aplicaciones',          qCount:5,  gen:()=>_genHca2EC_BQ3(), quiz:true },
+  hca2_ec_bpu:  { ico:'⭐', lbl:'Examen – Ecuaciones',                          qCount:10, gen:()=>_genHca2EC_BPU(), quiz:true },
+  // ── Regla de 3 2° Secundaria – Hans Christian Andersen ──
+  hca2_r3_b1:   { ico:'↔', lbl:'Regla de 3: directa vs inversa',               qCount:4,  gen:()=>_genHca2R3_B1() },
+  hca2_r3_b2:   { ico:'→', lbl:'Regla de 3 directa: cálculo',                  qCount:4,  gen:()=>_genHca2R3_B2() },
+  hca2_r3_bq1:  { ico:'⚡', lbl:'Quiz I – Regla de 3 directa',                  qCount:5,  gen:()=>_genHca2R3_BQ1(), quiz:true },
+  hca2_r3_b3:   { ico:'↩', lbl:'Regla de 3 inversa: cálculo',                  qCount:4,  gen:()=>_genHca2R3_B3() },
+  hca2_r3_b4:   { ico:'📐', lbl:'Regla de 3 directa: problemas aplicados',     qCount:4,  gen:()=>_genHca2R3_B4() },
+  hca2_r3_bq2:  { ico:'⚡', lbl:'Quiz II – Regla de 3 inversa',                 qCount:5,  gen:()=>_genHca2R3_BQ2(), quiz:true },
+  hca2_r3_b5:   { ico:'📝', lbl:'Regla de 3 inversa: problemas aplicados',     qCount:4,  gen:()=>_genHca2R3_B5() },
+  hca2_r3_bq3:  { ico:'⚡', lbl:'Quiz III – Regla de 3: problemas mixtos',      qCount:5,  gen:()=>_genHca2R3_BQ3(), quiz:true },
+  hca2_r3_bpu:  { ico:'⭐', lbl:'Examen – Regla de 3',                          qCount:10, gen:()=>_genHca2R3_BPU(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'];
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu',
+'hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu',
+'hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu',
+'hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu',
+'hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'];
 // [PREP_LEVELS / PREP_CURRICULUM / PREP_EDITORIALS — see levelup.js]
 
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
