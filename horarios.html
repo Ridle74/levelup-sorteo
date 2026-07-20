@@ -495,21 +495,21 @@ function buildNav(rs,re) {
 function buildGrid(dayList) {
   var today=new Date(); today.setHours(0,0,0,0);
 
-  /* Deduplicate sessions by day+start */
+  /* Deduplicate sessions by day+start — expande array `days` para sesiones multi-día */
   var slotMap={};
   DATA.sessions.forEach(function(s){
     var isOne=s.recurring===false && s.date;
-    var key=isOne?(s.date+'|'+s.start):('d'+s.day+'|'+s.start);
-    if(!slotMap[key]) slotMap[key]={day:Number(s.day),oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual',studentIds:[],students:[]};
-    if((s.dur||60)>slotMap[key].dur) slotMap[key].dur=s.dur||60;
-    if((s.modality||'').toLowerCase().includes('dom')) slotMap[key].modality='Domicilio';
-    if(s.studentId!==undefined && s.studentId!==null){
-      if(slotMap[key].studentIds.indexOf(s.studentId)===-1) slotMap[key].studentIds.push(s.studentId);
-      // se guarda por separado (no solo el id) para poder excluir SOLO a este alumno en una
-      // fecha puntual si su sesión tiene una excepción (skipDates) para ese día — el resto de
-      // alumnos que comparten el mismo horario día+hora no se ven afectados.
-      slotMap[key].students.push({ sid:s.studentId, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId, nWeeks:s.nWeeks||0, weekStart:s.weekStart||null });
-    }
+    var daysArr=(!isOne && Array.isArray(s.days) && s.days.length) ? s.days : [Number(s.day)];
+    daysArr.forEach(function(dow){
+      var key=isOne?(s.date+'|'+s.start):('d'+dow+'|'+s.start);
+      if(!slotMap[key]) slotMap[key]={day:dow,oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual',studentIds:[],students:[]};
+      if((s.dur||60)>slotMap[key].dur) slotMap[key].dur=s.dur||60;
+      if((s.modality||'').toLowerCase().includes('dom')) slotMap[key].modality='Domicilio';
+      if(s.studentId!==undefined && s.studentId!==null){
+        if(slotMap[key].studentIds.indexOf(s.studentId)===-1) slotMap[key].studentIds.push(s.studentId);
+        slotMap[key].students.push({ sid:s.studentId, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId, nWeeks:s.nWeeks||0, weekStart:s.weekStart||null });
+      }
+    });
   });
 
   var freeList=DATA.freeSlots||[];
