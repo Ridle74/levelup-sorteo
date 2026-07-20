@@ -1674,7 +1674,7 @@ function _gapSlots(occupied, winStart, winEnd, dur, tmpl, extraProps) {
   var gaps = []; var cursor = winStart;
   merged.forEach(function(iv){
     var s = Math.max(iv[0],winStart), e = Math.min(iv[1],winEnd);
-    if (s > cursor) gaps.push([cursor,s]);
+    if (s > cursor) gaps.push([cursor, Math.min(s, winEnd)]);
     if (e > cursor) cursor = e;
   });
   if (cursor < winEnd) gaps.push([cursor,winEnd]);
@@ -1695,6 +1695,7 @@ function _gapSlots(occupied, winStart, winEnd, dur, tmpl, extraProps) {
 function generateFromTemplate(tmplId) {
   const tmpl = (DATA.templates||[]).find(function(t){ return t.id === tmplId; });
   if (!tmpl) return;
+
   const winStart = _toMin(tmpl.windowStart);
   const winEnd   = _toMin(tmpl.windowEnd);
   const dur      = tmpl.slotDur;
@@ -1712,14 +1713,22 @@ function generateFromTemplate(tmplId) {
   }
 
   if (tmpl.scopeType === 'dateRange') {
-    // ── Rango de fechas: genera horarios one-time para cada ocurrencia del día ──
+    // ── Rango de fechas ──
     if (!tmpl.dateFrom || !tmpl.dateTo) { showToast('Falta rango de fechas en la plantilla.','error'); return; }
+    // Limpiar slots no reservados del rango antes de regenerar
+    var _from = new Date(tmpl.dateFrom + 'T00:00:00');
+    var _to   = new Date(tmpl.dateTo   + 'T00:00:00');
+    DATA.freeSlots = (DATA.freeSlots||[]).filter(function(fs){
+      if (fs.bookedBy) return true;
+      if (fs.recurring !== false || !fs.oneTimeDate) return true;
+      var fd = new Date(fs.oneTimeDate + 'T00:00:00');
+      return !(fd >= _from && fd <= _to && fd.getDay() === tmpl.day);
+    });
     var cur = new Date(tmpl.dateFrom + 'T00:00:00');
     var endD = new Date(tmpl.dateTo  + 'T00:00:00');
     while (cur <= endD) {
       if (cur.getDay() === tmpl.day) {
         var ds = cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0')+'-'+String(cur.getDate()).padStart(2,'0');
-        // Sesiones que aplican a esta fecha
         var daySessions = (DATA.sessions||[]).filter(function(s){
           if (s.oneTimeDate) return s.oneTimeDate === ds;
           if (s.recurring === false || Number(s.day) !== tmpl.day) return false;
@@ -1730,8 +1739,8 @@ function generateFromTemplate(tmplId) {
           if (cStart && cur < cStart) return false;
           return true;
         });
-        // Horarios libres ya existentes en esa fecha concreta
-        var dayFS = (DATA.freeSlots||[]).filter(function(fs){ return fs.oneTimeDate === ds; });
+        // Solo slots reservados (los no reservados ya fueron eliminados arriba)
+        var dayFS = (DATA.freeSlots||[]).filter(function(fs){ return fs.bookedBy && fs.oneTimeDate === ds; });
         var occupied = [];
         daySessions.forEach(function(s){ occupied.push(_sessInterval(s)); });
         dayFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
@@ -1742,8 +1751,30 @@ function generateFromTemplate(tmplId) {
     }
   } else {
     // ── Ciclo (recurrentes) ──
+    // Limpieza unificada para el día completo:
+    //   - Slots del propio cycleId → eliminar siempre (se van a regenerar).
+    //   - Slots de otros cycleIds en el mismo día → conservar solo si caben
+    //     dentro de la ventana de SU PROPIA plantilla; si no tienen plantilla
+    //     propietaria, o si su hora está fuera de esa ventana, se eliminan.
+    var _allDayTmpls = (DATA.templates||[]).filter(function(t){
+      return t.scopeType !== 'dateRange' && Number(t.day) === tmpl.day;
+    });
+    var _tCyc = tmpl.cycleId == null ? null : String(tmpl.cycleId);
+    DATA.freeSlots = (DATA.freeSlots||[]).filter(function(fs){
+      if (fs.bookedBy) return true;
+      if (fs.recurring === false) return true;
+      if (Number(fs.day) !== tmpl.day) return true;
+      var fCyc = fs.cycleId == null ? null : String(fs.cycleId);
+      if (fCyc === _tCyc) return false; // propio cycleId → eliminar, se regenera
+      // Otro cycleId: conservar solo si está dentro de la ventana de su plantilla.
+      var ownTmpl = _allDayTmpls.find(function(t){
+        return (t.cycleId == null ? null : String(t.cycleId)) === fCyc;
+      });
+      if (!ownTmpl) return false; // sin plantilla → slot huérfano → eliminar
+      var fsStart = _toMin(fs.start), fsEnd = fsStart + (fs.dur || 60);
+      return fsStart >= _toMin(ownTmpl.windowStart) && fsEnd <= _toMin(ownTmpl.windowEnd);
+    });
     // Excluir sesiones cuyas TODAS las ocurrencias en el ciclo están en skipDates
-    // (efectivamente ausentes — no bloquean ningún slot real)
     function _allSkipped(s, cycleId, day) {
       if (!Array.isArray(s.skipDates) || !s.skipDates.length) return false;
       var cyc = (DATA.cycles||[]).find(function(c){ return String(c.id) === String(cycleId); });
@@ -1751,35 +1782,43 @@ function generateFromTemplate(tmplId) {
       var cur = new Date(cyc.start + 'T00:00:00');
       var end = new Date(cyc.end   + 'T00:00:00');
       while (cur.getDay() !== day && cur <= end) cur.setDate(cur.getDate() + 1);
-      if (cur > end) return true; // ninguna ocurrencia en el ciclo
+      if (cur > end) return true;
       while (cur <= end) {
         var ds = cur.toISOString().slice(0, 10);
-        if (s.skipDates.indexOf(ds) === -1) return false; // al menos una no está skipeada
+        if (s.skipDates.indexOf(ds) === -1) return false;
         cur.setDate(cur.getDate() + 7);
       }
-      return true; // todas están skipeadas
+      return true;
     }
     var sessions = (DATA.sessions||[]).filter(function(s){
       if (!(s.recurring !== false && (Array.isArray(s.days) ? s.days.indexOf(tmpl.day)!==-1 : Number(s.day) === tmpl.day) &&
              (tmpl.cycleId == null || String(s.cycleId) === String(tmpl.cycleId)))) return false;
-      // Sesiones "N semanas" no son ciclo-recurrentes — no bloquean slots del ciclo
       if (s.nWeeks && s.weekStart) return false;
       if (tmpl.cycleId != null && _allSkipped(s, tmpl.cycleId, tmpl.day)) return false;
       return true;
     });
-    var existingFS = (DATA.freeSlots||[]).filter(function(fs){
-      return fs.recurring !== false && Number(fs.day) === tmpl.day &&
+    // Solo slots reservados como ocupados (los no reservados ya fueron eliminados)
+    var bookedFS = (DATA.freeSlots||[]).filter(function(fs){
+      return fs.bookedBy && fs.recurring !== false && Number(fs.day) === tmpl.day &&
              (tmpl.cycleId == null || String(fs.cycleId) === String(tmpl.cycleId));
     });
     var occupied = [];
     sessions.forEach(function(s){ occupied.push(_sessInterval(s)); });
-    existingFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
+    bookedFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
     newSlots = _gapSlots(occupied, winStart, winEnd, dur, tmpl,
       { recurring:true, cycleId:tmpl.cycleId });
+
   }
 
-  if (!newSlots.length) { showToast('No hay huecos disponibles — todos los bloques ya existen o están ocupados.','error'); return; }
   if (!DATA.freeSlots) DATA.freeSlots = [];
+  if (!newSlots.length) {
+    // La limpieza ya se aplicó en memoria (slots viejos fuera de ventana eliminados).
+    // Guardar aunque no haya slots nuevos para que Firestore refleje la limpieza.
+    saveFreeSlots();
+    render();
+    showToast('Ventana sin huecos disponibles (todas las horas están ocupadas por sesiones). Se actualizó el calendario.', 'info');
+    return;
+  }
   DATA.freeSlots = DATA.freeSlots.concat(newSlots);
   saveFreeSlots();
   render();

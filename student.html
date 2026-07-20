@@ -10128,8 +10128,34 @@ function renderHorariosCalendar() {
     ? Math.max(Math.floor((containerW - 44) / daysCount), 120)
     : Math.floor((containerW - 44) / daysCount);
 
+  // Helper: ¿está activo este alumno en la fecha dada?
+  // Mismo contrato que calIsStudentActive (calendar-utils.js) pero usando padresRaw.cycles.
+  function _pCalIsStudentActive(st, d, dstr) {
+    if ((st.skipDates||[]).indexOf(dstr) !== -1) return false;
+    if (st.nWeeks && st.weekStart) {
+      var ws = new Date(st.weekStart + 'T00:00:00');
+      var we = new Date(ws.getTime() + st.nWeeks * 7 * 24 * 60 * 60 * 1000);
+      if (d < ws || d >= we) return false;
+    } else {
+      var cycles = padresRaw.cycles || [];
+      if (st.cycleId != null) {
+        var cyc = cycles.find(function(c){ return String(c.id) === String(st.cycleId); });
+        if (cyc) {
+          if (cyc.end) { var cutoff = new Date(cyc.end + 'T00:00:00'); if (d > cutoff) return false; }
+          if (cyc.start) { var cStart = new Date(cyc.start + 'T00:00:00'); if (d < cStart) return false; }
+        }
+      } else {
+        var maxEnd = null;
+        cycles.forEach(function(c){ if (!c.end) return; var e = new Date(c.end+'T00:00:00'); if (!maxEnd || e > maxEnd) maxEnd = e; });
+        if (maxEnd && d > maxEnd) return false;
+      }
+    }
+    return true;
+  }
+
   // Build slotMap: group by day+start (recurring) or date+start (excepción puntual),
   // multiple students por slot — mismo patrón que buildPadCalGrid() en padres.html.
+  // Se expande el array s.days para soportar sesiones recurrentes en múltiples días.
   const slotMap = {};
   sessions.forEach(s => {
     const sid = String(s.studentId);
@@ -10137,20 +10163,26 @@ function renderHorariosCalendar() {
     if (!pSt || !pSt.name || !s.start) return;
     const lms  = lmsMap[normName(pSt.name)] || {};
     const isOneTime = s.recurring === false && s.date;
-    const key  = isOneTime ? (s.date+'|'+s.start) : ('d'+s.day+'|'+s.start);
-    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
-    const dur = s.dur || 60;
-    if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
-    slotMap[key].students.push({
-      name: pSt.name.split(' ')[0],
-      icon: lms.icon  || '👤',
-      color: lms.color || '#4fb6ff',
-      modality: s.modality || '',
-      dur,
-      skipDates: Array.isArray(s.skipDates) ? s.skipDates : [],
-      // id del alumno en /student (LMS) — null si no hay match por nombre con /padres.
-      // Necesario para la ventana emergente: saber de quién son los puntos/podios/enlace.
-      id: lms.id !== undefined ? lms.id : null
+    const daysArr = (!isOneTime && Array.isArray(s.days) && s.days.length) ? s.days : [Number(s.day)];
+    daysArr.forEach(function(dow) {
+      const key  = isOneTime ? (s.date+'|'+s.start) : ('d'+dow+'|'+s.start);
+      if (!slotMap[key]) slotMap[key] = { day:dow, oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
+      const dur = s.dur || 60;
+      if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
+      slotMap[key].students.push({
+        name: pSt.name.split(' ')[0],
+        icon: lms.icon  || '👤',
+        color: lms.color || '#4fb6ff',
+        modality: s.modality || '',
+        dur,
+        skipDates: Array.isArray(s.skipDates) ? s.skipDates : [],
+        cycleId:  s.cycleId  !== undefined ? s.cycleId  : null,
+        nWeeks:   s.nWeeks   || 0,
+        weekStart: s.weekStart || null,
+        // id del alumno en /student (LMS) — null si no hay match por nombre con /padres.
+        // Necesario para la ventana emergente: saber de quién son los puntos/podios/enlace.
+        id: lms.id !== undefined ? lms.id : null
+      });
     });
   });
 
@@ -10181,7 +10213,6 @@ function renderHorariosCalendar() {
   if (!bodyEl) return;
   const totalH = HOURS.length * ROW_H;
   const _dStr = function(d){ return d.toISOString().slice(0,10); };
-  const cycleEndDate = padresRaw.cycleEnd ? new Date(padresRaw.cycleEnd+'T00:00:00') : null;
 
   bodyEl.innerHTML = dates.map(function(date) {
     const jsDay = date.getDay();
@@ -10190,20 +10221,17 @@ function renderHorariosCalendar() {
     const cls = 'hor-day-col' + (isTod?' is-today':'') + (isPast?' is-past':'');
     const lines = HOURS.map(function() { return '<div class="hor-hour-line" style="height:'+ROW_H+'px"></div>'; }).join('');
 
-    // Las sesiones recurrentes solo se muestran dentro del ciclo; las de una sola
-    // fecha (excepción) siempre se muestran en su fecha exacta.
-    const afterCycle = cycleEndDate && date > cycleEndDate;
+    // Las sesiones recurrentes solo se muestran si al menos un alumno está activo
+    // en esa fecha (respeta skipDates, nWeeks, y fechas de inicio/fin del ciclo).
     const slots = Object.values(slotMap).filter(function(sl) {
       if (sl.oneTimeDate) return sl.oneTimeDate === dstr;
-      if (afterCycle) return false;
       return sl.day === jsDay;
     });
     const cards = slots.flatMap(function(slot) {
-      // Si la sesión es recurrente, en esta fecha puntual se excluye a los alumnos cuya
-      // sesión tiene este día en skipDates (porque se editó "solo esta fecha" — ya tienen
-      // su propia tarjeta de una sola vez con los valores nuevos, en otra entrada del slotMap).
+      // Filtro completo: skipDates + nWeeks + ciclo de cada alumno.
+      // (En sesiones de una sola fecha los alumnos siempre están activos ese día.)
       const activeStudents = slot.oneTimeDate ? slot.students
-        : slot.students.filter(function(st){ return !st.skipDates.includes(dstr); });
+        : slot.students.filter(function(st){ return _pCalIsStudentActive(st, date, dstr); });
       if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
       const hPx   = (slot.maxDur / 60) * ROW_H - 3;
@@ -11221,7 +11249,7 @@ PADRES_REF.onSnapshot(doc => {
   const d = doc.exists ? doc.data() : {};
   const pStudents = d.students || {};
   const pSessions = Array.isArray(d.sessions) ? d.sessions : [];
-  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null };
+  padresRaw = { students: pStudents, sessions: pSessions, cycleEnd: d.cycleEnd || null, cycles: d.cycles || [] };
   const map = {}, slotMap = {}, sessMap = {};
   Object.entries(pStudents).forEach(([sid, st]) => {
     const mySessions = pSessions.filter(s => String(s.studentId)===String(sid));
