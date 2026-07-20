@@ -131,6 +131,8 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .sm-seg button { flex:1; border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:8px; cursor:pointer; transition:all 0.15s; }
 .sm-seg button.on { background:#111; color:#fff; }
 .sm-del-btn { width:100%; border:1px solid rgba(0,0,0,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:#fff; color:rgba(0,0,0,0.45); margin-top:8px; }
+.sm-daytog { border:1px solid rgba(0,0,0,0.18); border-radius:8px; background:#fff; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:7px 4px; cursor:pointer; transition:all 0.15s; text-align:center; overflow:hidden; }
+.sm-daytog.on { background:#111; color:#fff; border-color:#111; }
 </style>
 </head>
 <body>
@@ -337,6 +339,20 @@ const SEED = {
 };
 const ADMIN_PIN_DEFAULT = '80808'; // misma clave admin que /student (editable luego desde aquí)
 const DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+
+var _padCalMinH = 8;
+function _padCalClick(e, dow, dateStr) {
+  if (e.target.closest && e.target.closest('.pcal-ev,.pcal-free-slot,.sm-overlay')) return;
+  var col = e.currentTarget;
+  var rect = col.getBoundingClientRect();
+  var y = e.clientY - rect.top;
+  var hourFloat = _padCalMinH + y / 56;
+  var totalMins = Math.round(hourFloat * 2) * 30;
+  var h = Math.max(0, Math.min(23, Math.floor(totalMins / 60)));
+  var m = totalMins % 60;
+  var timeStr = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+  openNewSession({ prefill: { day: dow, start: timeStr, date: dateStr || '' } });
+}
 const DAY_SHORT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
 // ════════════════════════════════════════════════════════
@@ -967,11 +983,15 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   DATA.sessions.forEach(function(s) {
     if (!activeSids.includes(Number(s.studentId))) return;
     const isOneTime = s.recurring === false && s.date;
-    const key = isOneTime ? (s.date+'|'+s.start) : ('d'+s.day+'|'+s.start);
-    if (!slotMap[key]) slotMap[key] = { day:Number(s.day), oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
-    const dur = s.dur || 60;
-    if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
-    slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId });
+    // Expandir días: si la sesión repite en varios días de la semana, crear una entrada por día
+    const daysArr = (!isOneTime && Array.isArray(s.days) && s.days.length) ? s.days : [Number(s.day)];
+    daysArr.forEach(function(dow) {
+      const key = isOneTime ? (s.date+'|'+s.start) : ('d'+dow+'|'+s.start);
+      if (!slotMap[key]) slotMap[key] = { day:dow, oneTimeDate:isOneTime?s.date:null, start:s.start, maxDur:0, students:[] };
+      const dur = s.dur || 60;
+      if (dur > slotMap[key].maxDur) slotMap[key].maxDur = dur;
+      slotMap[key].students.push({ sid:s.studentId, dur:dur, modality:s.modality, sessionId:s.id, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId, nWeeks:s.nWeeks||0, weekStart:s.weekStart||null });
+    });
   });
 
   // ── Smart time range: fit to actual sessions ─────────────────
@@ -990,6 +1010,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   // MIN_H: if session starts on exact hour go one earlier, else floor
   const rawMinH = hasSlots ? (Number.isInteger(dynMin) ? dynMin - 1 : Math.floor(dynMin)) : 8;
   const MIN_H = Math.max(0, rawMinH);
+  _padCalMinH = MIN_H;
   // MAX_H: for single child → same padding below as above (centering); otherwise ceil
   var MAX_H;
   if (!hasSlots) { MAX_H = 22; }
@@ -1062,10 +1083,17 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
       const activeStudents = slot.oneTimeDate ? slot.students
         : slot.students.filter(function(st){
             if (st.skipDates.includes(dstr)) return false;
-            const cutoff = cycleCutoffDate(st.cycleId);
-            if (cutoff && d > cutoff) return false;
-            const cStart = cycleStartDate(st.cycleId);
-            if (cStart && d < cStart) return false;
+            if (st.nWeeks && st.weekStart) {
+              // Sesión por N semanas: solo mostrar dentro del rango weekStart..weekStart+nWeeks*7d
+              var ws = new Date(st.weekStart + 'T00:00:00');
+              var we = new Date(ws.getTime() + st.nWeeks * 7 * 24 * 60 * 60 * 1000);
+              if (d < ws || d >= we) return false;
+            } else {
+              const cutoff = cycleCutoffDate(st.cycleId);
+              if (cutoff && d > cutoff) return false;
+              const cStart = cycleStartDate(st.cycleId);
+              if (cStart && d < cStart) return false;
+            }
             return true;
           });
       if (!activeStudents.length) return [];
@@ -1090,15 +1118,46 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
           +'</div>';
       });
     }).join('');
+    // Intervalos ocupados por sesiones activas en esta columna (para suprimir solapamientos)
+    const activeSessIntervals = [];
+    slots.forEach(function(slot) {
+      const actSt = slot.oneTimeDate ? slot.students : slot.students.filter(function(st){
+        if (st.skipDates.includes(dstr)) return false;
+        if (st.nWeeks && st.weekStart) {
+          var ws = new Date(st.weekStart+'T00:00:00');
+          var we = new Date(ws.getTime() + st.nWeeks*7*24*60*60*1000);
+          if (d < ws || d >= we) return false;
+        } else {
+          const cutoff = cycleCutoffDate(st.cycleId);
+          if (cutoff && d > cutoff) return false;
+          const cStart = cycleStartDate(st.cycleId);
+          if (cStart && d < cStart) return false;
+        }
+        return true;
+      });
+      if (actSt.length) {
+        const sMin = _toMin(slot.start);
+        activeSessIntervals.push([sMin, sMin + slot.maxDur]);
+      }
+    });
+
     const freeCards = freeSlotList.filter(function(fs){
       if (!showParent && fs.bookedBy) return false;
-      if (fs.recurring===false && fs.date) return fs.date === dstr;
-      if (Array.isArray(fs.skipDates) && fs.skipDates.includes(dstr)) return false;
-      const fsCutoff = cycleCutoffDate(fs.cycleId);
-      if (fsCutoff && d > fsCutoff) return false;
-      const fsStart = cycleStartDate(fs.cycleId);
-      if (fsStart && d < fsStart) return false;
-      return Number(fs.day) === dow;
+      if (fs.recurring===false && fs.date) { if (fs.date !== dstr) return false; }
+      else {
+        if (Array.isArray(fs.skipDates) && fs.skipDates.includes(dstr)) return false;
+        const fsCutoff = cycleCutoffDate(fs.cycleId);
+        if (fsCutoff && d > fsCutoff) return false;
+        const fsStart = cycleStartDate(fs.cycleId);
+        if (fsStart && d < fsStart) return false;
+        if (Number(fs.day) !== dow) return false;
+      }
+      // Ocultar si solapa con una sesión activa
+      const fsA = _toMin(fs.start), fsB = fsA + (fs.dur||60);
+      for (var _i = 0; _i < activeSessIntervals.length; _i++) {
+        if (fsA < activeSessIntervals[_i][1] && fsB > activeSessIntervals[_i][0]) return false;
+      }
+      return true;
     }).map(function(fs){
       const topPx = Math.max((toH(fs.start) - MIN_H) * ROW_H, 0);
       const hPx   = Math.max((fs.dur / 60) * ROW_H - 3, 28);
@@ -1117,7 +1176,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
         +'<div class="pcal-ev-badge">'+fs.modality+'</div>'
         +'</div>';
     }).join('');
-    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+freeCards+'</div>';
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px;cursor:crosshair" onclick="_padCalClick(event,'+dow+',\''+dstr+'\')">'+lines+cards+freeCards+'</div>';
   }).join('');
 
   // Current time indicator
@@ -1622,8 +1681,9 @@ const _TMPL_DAY_NAMES = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viern
 function _toMin(t) { var p=(t||'00:00').split(':').map(Number); return p[0]*60+p[1]; }
 function _toTime(m) { return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
 
-function startAddTemplate()    { editingTemplateId = 'new'; render(); }
-function cancelEditTemplate()  { editingTemplateId = null;  render(); }
+function startAddTemplate()      { editingTemplateId = 'new'; render(); }
+function startEditTemplate(id)  { editingTemplateId = id;    render(); }
+function cancelEditTemplate()   { editingTemplateId = null;  render(); }
 
 function saveTemplateForm() {
   const dayEl   = document.getElementById('tmpl-day');
@@ -1715,6 +1775,16 @@ function generateFromTemplate(tmplId) {
   const buf      = tmpl.bufferMin || 0;
   var newSlots = [];
 
+  // Helper: convierte una sesión en intervalo ocupado.
+  // Domicilio → bloquea buf min ANTES y DESPUÉS (movilidad).
+  // Virtual u otras → solo el tiempo de la sesión, sin buffer.
+  function _sessInterval(s) {
+    var st = _toMin(s.start), en = st + (s.dur||60);
+    return s.modality === 'Domicilio' && buf > 0
+      ? [Math.max(0, st - buf), en + buf]
+      : [st, en];
+  }
+
   if (tmpl.scopeType === 'dateRange') {
     // ── Rango de fechas: genera horarios one-time para cada ocurrencia del día ──
     if (!tmpl.dateFrom || !tmpl.dateTo) { showToast('Falta rango de fechas en la plantilla.','error'); return; }
@@ -1737,7 +1807,7 @@ function generateFromTemplate(tmplId) {
         // Horarios libres ya existentes en esa fecha concreta
         var dayFS = (DATA.freeSlots||[]).filter(function(fs){ return fs.oneTimeDate === ds; });
         var occupied = [];
-        daySessions.forEach(function(s){ var st=_toMin(s.start); occupied.push([st, st+(s.dur||60)+buf]); });
+        daySessions.forEach(function(s){ occupied.push(_sessInterval(s)); });
         dayFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
         newSlots = newSlots.concat(_gapSlots(occupied, winStart, winEnd, dur, tmpl,
           { recurring:false, oneTimeDate:ds }));
@@ -1746,16 +1816,37 @@ function generateFromTemplate(tmplId) {
     }
   } else {
     // ── Ciclo (recurrentes) ──
+    // Excluir sesiones cuyas TODAS las ocurrencias en el ciclo están en skipDates
+    // (efectivamente ausentes — no bloquean ningún slot real)
+    function _allSkipped(s, cycleId, day) {
+      if (!Array.isArray(s.skipDates) || !s.skipDates.length) return false;
+      var cyc = (DATA.cycles||[]).find(function(c){ return String(c.id) === String(cycleId); });
+      if (!cyc || !cyc.start || !cyc.end) return false;
+      var cur = new Date(cyc.start + 'T00:00:00');
+      var end = new Date(cyc.end   + 'T00:00:00');
+      while (cur.getDay() !== day && cur <= end) cur.setDate(cur.getDate() + 1);
+      if (cur > end) return true; // ninguna ocurrencia en el ciclo
+      while (cur <= end) {
+        var ds = cur.toISOString().slice(0, 10);
+        if (s.skipDates.indexOf(ds) === -1) return false; // al menos una no está skipeada
+        cur.setDate(cur.getDate() + 7);
+      }
+      return true; // todas están skipeadas
+    }
     var sessions = (DATA.sessions||[]).filter(function(s){
-      return s.recurring !== false && Number(s.day) === tmpl.day &&
-             (tmpl.cycleId == null || String(s.cycleId) === String(tmpl.cycleId));
+      if (!(s.recurring !== false && (Array.isArray(s.days) ? s.days.indexOf(tmpl.day)!==-1 : Number(s.day) === tmpl.day) &&
+             (tmpl.cycleId == null || String(s.cycleId) === String(tmpl.cycleId)))) return false;
+      // Sesiones "N semanas" no son ciclo-recurrentes — no bloquean slots del ciclo
+      if (s.nWeeks && s.weekStart) return false;
+      if (tmpl.cycleId != null && _allSkipped(s, tmpl.cycleId, tmpl.day)) return false;
+      return true;
     });
     var existingFS = (DATA.freeSlots||[]).filter(function(fs){
       return fs.recurring !== false && Number(fs.day) === tmpl.day &&
              (tmpl.cycleId == null || String(fs.cycleId) === String(tmpl.cycleId));
     });
     var occupied = [];
-    sessions.forEach(function(s){ var st=_toMin(s.start); occupied.push([st, st+(s.dur||60)+buf]); });
+    sessions.forEach(function(s){ occupied.push(_sessInterval(s)); });
     existingFS.forEach(function(fs){ var st=_toMin(fs.start); occupied.push([st, st+(fs.dur||60)]); });
     newSlots = _gapSlots(occupied, winStart, winEnd, dur, tmpl,
       { recurring:true, cycleId:tmpl.cycleId });
@@ -2014,106 +2105,101 @@ function vAdminCuentas() {
     <div class="req-card" style="padding:0;overflow:hidden">
       ${(DATA.templates||[]).length === 0 && editingTemplateId !== 'new' ? `
       <p style="font-size:12px;color:rgba(0,0,0,0.45);padding:14px 16px;margin:0">Sin plantillas configuradas. Agrega una para generar horarios libres automáticamente.</p>` : ''}
-      ${(DATA.templates||[]).map(function(tmpl){
-        return `<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.06)">
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600">${_TMPL_DAY_NAMES[tmpl.day]} · ${tmpl.windowStart}–${tmpl.windowEnd}</div>
-            <div style="font-size:11px;color:rgba(0,0,0,0.5);margin-top:2px">
-              ${tmpl.slotDur} min · ${tmpl.modality||'—'} · buffer ${tmpl.bufferMin||0} min
-              ${tmpl.scopeType === 'dateRange'
-                ? ' · ' + (tmpl.dateFrom||'').slice(5).replace('-','/') + '–' + (tmpl.dateTo||'').slice(5).replace('-','/')
-                : (tmpl.cycleId ? ' · ciclo ' + ((DATA.cycles||[]).find(function(c){ return String(c.id)===String(tmpl.cycleId); })||{}).name : ' · todos los ciclos')}
+      ${(function(){
+        // Helper: genera el HTML del formulario con los valores de `src` (plantilla existente o null para nueva)
+        function _tmplFormHtml(src, isNew) {
+          const _last    = !isNew ? src : ((DATA.templates||[]).length ? DATA.templates[DATA.templates.length-1] : null);
+          const _defDay  = !isNew && src ? src.day : (_last != null ? (_last.day + 1) % 7 : 1);
+          const _defWs   = _last ? _last.windowStart     : '16:00';
+          const _defWe   = _last ? _last.windowEnd       : '20:30';
+          const _defDur  = _last ? _last.slotDur         : 60;
+          const _defMod  = _last ? (_last.modality||'online') : 'online';
+          const _defBuf  = _last ? (_last.bufferMin||0)  : 30;
+          const _defCyc  = _last ? (_last.cycleId||'')   : '';
+          const _dayOpts = _TMPL_DAY_NAMES.map(function(n,i){ return '<option value="'+i+'"'+(_defDay===i?' selected':'')+'>'+n+'</option>'; }).join('');
+          const _durOpts = [30,45,60,90,120].map(function(v){ return '<option value="'+v+'"'+(_defDur===v?' selected':'')+'>'+v+' min</option>'; }).join('');
+          const _modOpts = ['online','domicilio','presencial'].map(function(v){ return '<option value="'+v+'"'+(_defMod===v?' selected':'')+'>'+v.charAt(0).toUpperCase()+v.slice(1)+'</option>'; }).join('');
+          const _bufOpts = [0,15,30,45,60].map(function(v){ return '<option value="'+v+'"'+(_defBuf===v?' selected':'')+'>'+v+' min</option>'; }).join('');
+          const _cycOpts = '<option value=""'+(!_defCyc?' selected':'')+'>Todos</option>'+cycles.map(function(c){ return '<option value="'+c.id+'"'+(_defCyc===String(c.id)?' selected':'')+'>'+c.name+'</option>'; }).join('');
+          return `<div style="padding:14px 16px;background:rgba(99,102,241,0.04);border-top:2px solid rgba(99,102,241,0.2)">
+            <input type="hidden" id="tmpl-scope" value="cycle">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+              <div style="flex:1;min-width:120px">
+                <label class="field-label" style="margin-top:0">Día</label>
+                <select class="fsm" id="tmpl-day" style="margin-bottom:0">${_dayOpts}</select>
+              </div>
+              <div style="flex:1;min-width:120px">
+                <label class="field-label" style="margin-top:0">Alcance</label>
+                <div style="display:flex;border:1px solid rgba(0,0,0,0.15);border-radius:8px;overflow:hidden">
+                  <button id="tmpl-scope-btn-cycle" onclick="(function(){document.getElementById('tmpl-scope').value='cycle';document.getElementById('tmpl-scope-cycle-div').style.display='';document.getElementById('tmpl-scope-range-div').style.display='none';document.getElementById('tmpl-scope-btn-cycle').style.background='rgba(99,102,241,0.12)';document.getElementById('tmpl-scope-btn-range').style.background='transparent';})()" type="button" style="flex:1;padding:7px 8px;font-size:12px;border:none;cursor:pointer;background:rgba(99,102,241,0.12);font-weight:600">Ciclo</button>
+                  <button id="tmpl-scope-btn-range" onclick="(function(){document.getElementById('tmpl-scope').value='dateRange';document.getElementById('tmpl-scope-cycle-div').style.display='none';document.getElementById('tmpl-scope-range-div').style.display='';document.getElementById('tmpl-scope-btn-range').style.background='rgba(99,102,241,0.12)';document.getElementById('tmpl-scope-btn-cycle').style.background='transparent';})()" type="button" style="flex:1;padding:7px 8px;font-size:12px;border:none;border-left:1px solid rgba(0,0,0,0.15);cursor:pointer;background:transparent">Fechas</button>
+                </div>
+              </div>
             </div>
-          </div>
-          <button class="btn-ghost" style="padding:5px 10px;font-size:12px;margin:0" onclick="generateFromTemplate('${tmpl.id}')">⚡ Generar</button>
-          <button class="btn-ghost" style="padding:5px 10px;font-size:12px;margin:0;color:rgba(200,50,50,0.8)" onclick="deleteTemplate(this,'${tmpl.id}')">✕</button>
-        </div>`;
-      }).join('')}
-      ${editingTemplateId === 'new' ? `
-      <div style="padding:14px 16px;border-top:${(DATA.templates||[]).length?'1px solid rgba(0,0,0,0.06)':'none'}">
-        <input type="hidden" id="tmpl-scope" value="cycle">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-          <div style="flex:1;min-width:120px">
-            <label class="field-label" style="margin-top:0">Día</label>
-            <select class="fsm" id="tmpl-day" style="margin-bottom:0">
-              ${_TMPL_DAY_NAMES.map(function(n,i){ return '<option value="'+i+'">'+n+'</option>'; }).join('')}
-            </select>
-          </div>
-          <div style="flex:1;min-width:120px">
-            <label class="field-label" style="margin-top:0">Alcance</label>
-            <div style="display:flex;gap:0;border:1px solid rgba(0,0,0,0.15);border-radius:8px;overflow:hidden">
-              <button id="tmpl-scope-btn-cycle" onclick="(function(){document.getElementById('tmpl-scope').value='cycle';document.getElementById('tmpl-scope-cycle-div').style.display='';document.getElementById('tmpl-scope-range-div').style.display='none';document.getElementById('tmpl-scope-btn-cycle').style.background='rgba(99,102,241,0.12)';document.getElementById('tmpl-scope-btn-range').style.background='transparent';})()" type="button" style="flex:1;padding:7px 8px;font-size:12px;border:none;cursor:pointer;background:rgba(99,102,241,0.12);font-weight:600">Ciclo</button>
-              <button id="tmpl-scope-btn-range" onclick="(function(){document.getElementById('tmpl-scope').value='dateRange';document.getElementById('tmpl-scope-cycle-div').style.display='none';document.getElementById('tmpl-scope-range-div').style.display='';document.getElementById('tmpl-scope-btn-range').style.background='rgba(99,102,241,0.12)';document.getElementById('tmpl-scope-btn-cycle').style.background='transparent';})()" type="button" style="flex:1;padding:7px 8px;font-size:12px;border:none;border-left:1px solid rgba(0,0,0,0.15);cursor:pointer;background:transparent">Fechas</button>
+            <div id="tmpl-scope-cycle-div" style="margin-bottom:8px">
+              <label class="field-label" style="margin-top:0">Ciclo</label>
+              <select class="fsm" id="tmpl-cycle" style="margin-bottom:0">${_cycOpts}</select>
             </div>
-          </div>
-        </div>
-        <div id="tmpl-scope-cycle-div" style="margin-bottom:8px">
-          <label class="field-label" style="margin-top:0">Ciclo</label>
-          <select class="fsm" id="tmpl-cycle" style="margin-bottom:0">
-            <option value="">Todos</option>
-            ${cycles.map(function(c){ return '<option value="'+c.id+'">'+c.name+'</option>'; }).join('')}
-          </select>
-        </div>
-        <div id="tmpl-scope-range-div" style="display:none;margin-bottom:8px">
-          <div style="display:flex;gap:8px">
-            <div style="flex:1">
-              <label class="field-label" style="margin-top:0">Desde</label>
-              <input class="fsm" id="tmpl-from" type="date" style="margin-bottom:0">
+            <div id="tmpl-scope-range-div" style="display:none;margin-bottom:8px">
+              <div style="display:flex;gap:8px">
+                <div style="flex:1"><label class="field-label" style="margin-top:0">Desde</label><input class="fsm" id="tmpl-from" type="date" style="margin-bottom:0"></div>
+                <div style="flex:1"><label class="field-label" style="margin-top:0">Hasta</label><input class="fsm" id="tmpl-to" type="date" style="margin-bottom:0"></div>
+              </div>
             </div>
-            <div style="flex:1">
-              <label class="field-label" style="margin-top:0">Hasta</label>
-              <input class="fsm" id="tmpl-to" type="date" style="margin-bottom:0">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+              <div style="flex:1;min-width:100px"><label class="field-label" style="margin-top:0">Ventana inicio</label><input class="fsm" id="tmpl-wstart" type="time" style="margin-bottom:0" value="${_defWs}"></div>
+              <div style="flex:1;min-width:100px"><label class="field-label" style="margin-top:0">Ventana fin</label><input class="fsm" id="tmpl-wend" type="time" style="margin-bottom:0" value="${_defWe}"></div>
             </div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-          <div style="flex:1;min-width:100px">
-            <label class="field-label" style="margin-top:0">Ventana inicio</label>
-            <input class="fsm" id="tmpl-wstart" type="time" style="margin-bottom:0" value="16:00">
-          </div>
-          <div style="flex:1;min-width:100px">
-            <label class="field-label" style="margin-top:0">Ventana fin</label>
-            <input class="fsm" id="tmpl-wend" type="time" style="margin-bottom:0" value="20:30">
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
-          <div style="flex:1;min-width:100px">
-            <label class="field-label" style="margin-top:0">Duración bloque (min)</label>
-            <select class="fsm" id="tmpl-dur" style="margin-bottom:0">
-              <option value="30">30 min</option>
-              <option value="45">45 min</option>
-              <option value="60" selected>60 min</option>
-              <option value="90">90 min</option>
-              <option value="120">120 min</option>
-            </select>
-          </div>
-          <div style="flex:1;min-width:100px">
-            <label class="field-label" style="margin-top:0">Modalidad</label>
-            <select class="fsm" id="tmpl-mod" style="margin-bottom:0">
-              <option value="online">Online</option>
-              <option value="domicilio">Domicilio</option>
-              <option value="presencial">Presencial</option>
-            </select>
-          </div>
-          <div style="flex:1;min-width:100px">
-            <label class="field-label" style="margin-top:0">Buffer tras sesión (min)</label>
-            <select class="fsm" id="tmpl-buf" style="margin-bottom:0">
-              <option value="0">0 min</option>
-              <option value="15">15 min</option>
-              <option value="30" selected>30 min</option>
-              <option value="45">45 min</option>
-              <option value="60">60 min</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="saveTemplateForm()">Guardar</button>
-          <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="cancelEditTemplate()">Cancelar</button>
-        </div>
-      </div>` : `
-      <div style="padding:10px 14px;${(DATA.templates||[]).length?'border-top:1px solid rgba(0,0,0,0.06)':''}">
-        <button class="btn-ghost" style="margin-top:0;padding:5px 12px;font-size:12px" onclick="startAddTemplate()">+ Nueva plantilla</button>
-      </div>`}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+              <div style="flex:1;min-width:100px"><label class="field-label" style="margin-top:0">Duración bloque (min)</label><select class="fsm" id="tmpl-dur" style="margin-bottom:0">${_durOpts}</select></div>
+              <div style="flex:1;min-width:100px"><label class="field-label" style="margin-top:0">Modalidad</label><select class="fsm" id="tmpl-mod" style="margin-bottom:0">${_modOpts}</select></div>
+              <div style="flex:1;min-width:100px"><label class="field-label" style="margin-top:0">Buffer domicilio (min)</label><select class="fsm" id="tmpl-buf" style="margin-bottom:0">${_bufOpts}</select></div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="saveTemplateForm()">Guardar</button>
+              <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="cancelEditTemplate()">Cancelar</button>
+            </div>
+          </div>`;
+        }
+
+        // Renderizar tarjetas + formulario inline donde corresponde
+        var html = (DATA.templates||[]).map(function(tmpl){
+          const cycleName = tmpl.scopeType === 'dateRange'
+            ? (tmpl.dateFrom||'').slice(5).replace('-','/') + '–' + (tmpl.dateTo||'').slice(5).replace('-','/')
+            : (tmpl.cycleId ? ((DATA.cycles||[]).find(function(c){ return String(c.id)===String(tmpl.cycleId); })||{}).name || '—' : 'Todos los ciclos');
+          const isBeingEdited = editingTemplateId === tmpl.id;
+          const card = `<div style="padding:12px 14px;border-bottom:1px solid rgba(0,0,0,0.06)${isBeingEdited?';background:rgba(99,102,241,0.03)':''}">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+              <div>
+                <div style="font-size:14px;font-weight:700;line-height:1.2">${_TMPL_DAY_NAMES[tmpl.day]}</div>
+                <div style="font-size:13px;color:rgba(0,0,0,0.55);margin-top:1px">${tmpl.windowStart} – ${tmpl.windowEnd}</div>
+              </div>
+              <div style="display:flex;gap:6px;flex-shrink:0">
+                ${!editingTemplateId ? `<button class="btn-grn" style="padding:6px 14px;font-size:12px;margin:0;white-space:nowrap" onclick="generateFromTemplate('${tmpl.id}')">⚡ Generar</button>
+                <button class="btn-ghost" style="padding:6px 12px;font-size:12px;margin:0;white-space:nowrap" onclick="startEditTemplate('${tmpl.id}')">✎ Editar</button>
+                <button class="btn-ghost" style="padding:6px 12px;font-size:13px;margin:0;color:rgba(200,50,50,0.8);line-height:1" onclick="deleteTemplate(this,'${tmpl.id}')">✕</button>` : (isBeingEdited ? `<button class="btn-ghost" style="padding:6px 12px;font-size:12px;margin:0" onclick="cancelEditTemplate()">Cancelar</button>` : '')}
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span style="background:rgba(0,0,0,0.05);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;color:rgba(0,0,0,0.6)">${tmpl.slotDur} min</span>
+              <span style="background:rgba(0,0,0,0.05);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;color:rgba(0,0,0,0.6)">${tmpl.modality||'—'}</span>
+              <span style="background:rgba(0,0,0,0.05);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;color:rgba(0,0,0,0.6)">Buffer ${tmpl.bufferMin||0} min</span>
+              <span style="background:rgba(99,102,241,0.1);border-radius:6px;padding:3px 8px;font-size:11px;font-weight:600;color:rgba(99,102,241,0.9)">${cycleName}</span>
+            </div>
+          </div>`;
+          return card + (isBeingEdited ? _tmplFormHtml(tmpl, false) : '');
+        }).join('');
+
+        // Formulario de nueva plantilla al final
+        if (editingTemplateId === 'new') {
+          html += _tmplFormHtml(null, true);
+        } else if (!editingTemplateId) {
+          html += `<div style="padding:10px 14px;${(DATA.templates||[]).length?'border-top:1px solid rgba(0,0,0,0.06)':''}">
+            <button class="btn-ghost" style="margin-top:0;padding:5px 12px;font-size:12px" onclick="startAddTemplate()">+ Nueva plantilla</button>
+          </div>`;
+        }
+        return html;
+      })()}
     </div>
 
     ${orphanStudents.length ? `
@@ -2263,14 +2349,40 @@ function _buildSM(prefill, isEdit) {
   var durVal = p.dur || 60;
   var modVal = p.modality || 'Virtual';
   var recVal = p.recurring !== false;
-  // Ciclo al que queda atado este horario semanal: si se está editando uno que ya tiene
-  // cycleId, se respeta ese (no se reasigna solo por reabrir el modal); si es nuevo, se
-  // sugiere el ciclo correspondiente vía pickCycleForNewSession (adelanta al siguiente ciclo
-  // si el actual está por terminar).
-  var smCycle = (isEdit && p.cycleId != null)
-    ? (DATA.cycles||[]).find(function(c){ return String(c.id) === String(p.cycleId); })
-    : null;
-  if (!smCycle) smCycle = pickCycleForNewSession();
+  // Ciclos para las opciones de frecuencia
+  var _smAllCycles = (DATA.cycles||[]).slice().sort(function(a,b){ return (a.start||'').localeCompare(b.start||''); });
+  var smCurCycle  = getCurrentCycle(DATA.cycles);
+  var _smCurIdx   = smCurCycle ? _smAllCycles.findIndex(function(c){ return c.id == smCurCycle.id; }) : -1;
+  var smNextCycle = (_smCurIdx !== -1 && _smCurIdx < _smAllCycles.length - 1) ? _smAllCycles[_smCurIdx + 1] : null;
+  if (!smNextCycle && !smCurCycle) {
+    var _smTn = new Date(); _smTn.setHours(0,0,0,0);
+    smNextCycle = _smAllCycles.find(function(c){ return c.start && new Date(c.start+'T00:00:00') > _smTn; }) || pickCycleForNewSession();
+  }
+  // Determinar botón preseleccionado de frecuencia
+  var _smIsNWeeks  = isEdit && !!p.nWeeks;
+  var _smIsCurCyc  = isEdit && smCurCycle  && p.cycleId != null && String(p.cycleId) === String(smCurCycle.id);
+  var _smIsNextCyc = isEdit && smNextCycle && p.cycleId != null && String(p.cycleId) === String(smNextCycle.id);
+  var _smIsOnce    = !recVal && !_smIsNWeeks;
+  var _smFreqSel   = _smIsNWeeks  ? 'nweeks'
+    : _smIsCurCyc  ? 'cur'
+    : _smIsNextCyc ? 'next'
+    : _smIsOnce    ? 'once'
+    : recVal && smNextCycle ? 'next'
+    : recVal && smCurCycle  ? 'cur'
+    : 'nweeks';
+  var _smInitCycleId = (_smIsNWeeks || _smIsOnce || _smFreqSel === 'nweeks') ? ''
+    : _smFreqSel === 'cur'  ? (smCurCycle  ? smCurCycle.id  : '')
+    : (smNextCycle ? smNextCycle.id : (smCurCycle ? smCurCycle.id : ''));
+  // smCycle mantiene compatibilidad con código heredado
+  var smCycle = (smCurCycle && _smFreqSel === 'cur') ? smCurCycle : (smNextCycle || smCurCycle);
+  // Máximo de semanas disponibles = semanas desde hoy hasta que termine el ciclo activo
+  var _smMaxWeeks = 12; // fallback si no hay ciclo activo con fecha de fin
+  if (smCurCycle && smCurCycle.end) {
+    var _smToday = new Date(); _smToday.setHours(0,0,0,0);
+    var _smEnd   = new Date(smCurCycle.end + 'T00:00:00');
+    var _smDiff  = Math.ceil((_smEnd - _smToday) / (7 * 24 * 60 * 60 * 1000));
+    _smMaxWeeks  = Math.max(1, _smDiff);
+  }
   var initPid = p.parentId || Object.keys(DATA.parents)[0] || '';
   var stuOpts = smType === 'session' ? _smStudentOpts(initPid, p.studentId) : '';
   var parOpts = Object.entries(DATA.parents)
@@ -2307,7 +2419,7 @@ function _buildSM(prefill, isEdit) {
     +'<select class="fsm" id="sm-student" style="appearance:auto">'+stuOpts+'</select>'
     +'</div>'
     +'<label class="field-label">Día de la semana</label>'
-    +'<select class="fsm" id="sm-day" style="appearance:auto">'
+    +'<select class="fsm" id="sm-day" style="appearance:auto" onchange="smSyncDays(this.value)">'
     +DAY_NAMES.map(function(n,i){ return '<option value="'+i+'"'+(i===dayVal?' selected':'')+'>'+n+'</option>'; }).join('')
     +'</select>'
     +'<label class="field-label">Hora de inicio</label>'
@@ -2321,15 +2433,34 @@ function _buildSM(prefill, isEdit) {
     +'<button class="'+(modVal==='Virtual'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Virtual</button>'
     +'<button class="'+(modVal==='Domicilio'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Domicilio</button>'
     +'</div>'
-    +'<input type="hidden" id="sm-cycle-id" value="'+(smCycle?smCycle.id:'')+'">'
+    +'<input type="hidden" id="sm-cycle-id" value="'+_smInitCycleId+'">'
+    +'<input type="hidden" id="sm-week-start" value="'+(p.date||'')+'">'
     +'<label class="field-label">Frecuencia</label>'
     +'<div class="sm-seg" id="sm-rec-seg">'
-    +'<button class="'+(recVal?'on':'')+'" data-rec="true" onclick="smToggleRec(this,true)">Semanal'+(smCycle&&smCycle.name ? ' (ciclo '+smCycle.name+')' : '')+'</button>'
-    +'<button class="'+(recVal?'':'on')+'" data-rec="false" onclick="smToggleRec(this,false)">Solo una vez</button>'
+    +(smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">Semanal – Ciclo '+smCurCycle.name+'</button>'  : '')
+    +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">Semanal – Ciclo '+smNextCycle.name+'</button>' : '')
+    +'<button class="'+(_smFreqSel==='nweeks'?'on':'')+'" data-rec="nweeks" onclick="smToggleRec(this,\'nweeks\')">N semanas</button>'
+    +(_smIsOnce ? '<button style="display:none" class="on" data-rec="false"></button>' : '')
     +'</div>'
-    +'<div id="sm-date-wrap" style="display:'+(recVal?'none':'')+'">'
+    +'<div id="sm-date-wrap" style="display:'+(_smIsOnce?'':'none')+'">'
     +'<label class="field-label">Fecha específica</label>'
     +'<input class="fsm" id="sm-date" type="date" value="'+(p.date||'')+'">'
+    +'</div>'
+    +'<div id="sm-nweeks-wrap" style="display:'+(_smIsNWeeks?'':'none')+'">'
+    +'<label class="field-label">Número de semanas</label>'
+    +'<select class="fsm" id="sm-nweeks" style="appearance:auto">'
++Array.from({length:_smMaxWeeks},function(_,i){var n=i+1;return '<option value="'+n+'"'+(n===(p.nWeeks||1)?' selected':'')+'>'+n+' semana'+(n===1?'':'s')+'</option>';}).join('')
+    +'</select>'
+    +'</div>'
+    +'<div id="sm-days-wrap" style="display:'+(_smFreqSel==='cur'||_smFreqSel==='next'?'':'none')+'">'
+    +'<label class="field-label">Días</label>'
+    +'<div id="sm-days-seg" style="display:flex;gap:4px">'
+    +[1,2,3,4,5,6,0].map(function(i){
+        var n = DAY_NAMES[i];
+        var sel = Array.isArray(p.days) ? p.days.indexOf(i)!==-1 : i===dayVal;
+        return '<button type="button" class="sm-daytog'+(sel?' on':'')+'" data-dow="'+i+'" onclick="smToggleDay(this)" style="flex:1;min-width:0">'+n.slice(0,3)+'</button>';
+      }).join('')
+    +'</div>'
     +'</div>'
     +(isEdit && smEditOccDate
       ? '<div id="sm-scope-wrap" style="display:'+(recVal?'':'none')+'">'
@@ -2398,20 +2529,50 @@ function smToggleSeg(segId, btn) {
   btn.classList.add('on');
 }
 
-function smToggleRec(btn, rec) {
+function smToggleRec(btn, rec, cycleId) {
   document.querySelectorAll('#sm-rec-seg button').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
-  document.getElementById('sm-date-wrap').style.display = rec ? 'none' : '';
-  // El selector "aplicar a todas las semanas / solo esta fecha" únicamente tiene sentido
-  // mientras la regla sigue siendo semanal — si se cambia a "Solo una vez" ya se está
-  // convirtiendo toda la regla, así que se oculta.
+  var isNWeeks  = rec === 'nweeks';
+  var isRec     = rec === true || rec === 'true';
+  var isOnce    = rec === false || rec === 'false';
+  // Actualizar campo cycleId oculto
+  var cycEl = document.getElementById('sm-cycle-id');
+  if (cycEl) cycEl.value = (isRec && cycleId !== undefined && cycleId !== null) ? cycleId : '';
+  // Visibilidad de sub-campos
+  var dateWrap = document.getElementById('sm-date-wrap');
+  if (dateWrap) dateWrap.style.display = isOnce ? '' : 'none';
+  var nweeksWrap = document.getElementById('sm-nweeks-wrap');
+  if (nweeksWrap) nweeksWrap.style.display = isNWeeks ? '' : 'none';
+  // Días multi-selección: solo para sesiones semanales de ciclo
+  var daysWrap = document.getElementById('sm-days-wrap');
+  if (daysWrap) daysWrap.style.display = isRec ? '' : 'none';
+  // "Aplicar a" solo tiene sentido en modo semanal
   var scopeWrap = document.getElementById('sm-scope-wrap');
-  if (scopeWrap) scopeWrap.style.display = rec ? '' : 'none';
+  if (scopeWrap) scopeWrap.style.display = (isRec || isNWeeks) ? '' : 'none';
 }
 
 function smUpdateStudents() {
   var pid = document.getElementById('sm-parent').value;
   document.getElementById('sm-student').innerHTML = _smStudentOpts(pid, null);
+}
+
+// Toggle individual día en la sección multi-días (siempre debe haber al menos 1 activo)
+function smToggleDay(btn) {
+  var onCount = document.querySelectorAll('#sm-days-seg button.on').length;
+  if (btn.classList.contains('on') && onCount <= 1) return;
+  btn.classList.toggle('on');
+}
+
+// Sincroniza la sección "Días" cuando el usuario cambia el dropdown principal
+// Solo actúa si el usuario no ha personalizado la selección (exactamente 1 día activo)
+function smSyncDays(dowStr) {
+  var daysWrap = document.getElementById('sm-days-wrap');
+  if (!daysWrap || daysWrap.style.display === 'none') return;
+  var onBtns = document.querySelectorAll('#sm-days-seg button.on');
+  if (onBtns.length !== 1) return; // ya tiene varios días → no sobreescribir
+  onBtns.forEach(function(b){ b.classList.remove('on'); });
+  var target = document.querySelector('#sm-days-seg button[data-dow="'+parseInt(dowStr)+'"]');
+  if (target) target.classList.add('on');
 }
 
 // Cuando se edita "solo esta fecha" y se cambia el día de la semana, la excepción de una
@@ -2437,12 +2598,42 @@ function submitSessionModal() {
   var modBtn   = document.querySelector('#sm-mod-seg .on');
   var modality = modBtn ? modBtn.textContent.trim() : 'Virtual';
   var recBtn   = document.querySelector('#sm-rec-seg .on');
-  var recurring = recBtn ? recBtn.dataset.rec !== 'false' : true;
+  var freqType = recBtn ? recBtn.dataset.rec : 'true'; // 'true', 'false', 'nweeks'
+  var isNWeeks = freqType === 'nweeks';
+  var recurring = freqType !== 'false';
   var cycleIdEl  = document.getElementById('sm-cycle-id');
-  var cycleIdVal = cycleIdEl && cycleIdEl.value !== '' ? cycleIdEl.value : null;
+  var cycleIdVal = (!isNWeeks && cycleIdEl && cycleIdEl.value !== '') ? cycleIdEl.value : null;
   var dateEl   = document.getElementById('sm-date');
   var date     = recurring ? null : (dateEl ? dateEl.value || null : null);
   if (!recurring && !date) { showToast('Indica la fecha específica.'); return; }
+  // Datos de "N semanas"
+  var nWeeksVal   = 0;
+  var weekStartVal = null;
+  if (isNWeeks) {
+    var nwEl = document.getElementById('sm-nweeks');
+    nWeeksVal = nwEl ? (parseInt(nwEl.value) || 1) : 1;
+    var wsEl  = document.getElementById('sm-week-start');
+    weekStartVal = wsEl && wsEl.value ? wsEl.value : null;
+    if (!weekStartVal) {
+      // Calcular próxima ocurrencia del día seleccionado desde hoy
+      var _td = new Date(); _td.setHours(0,0,0,0);
+      var _diff = (day - _td.getDay() + 7) % 7;
+      var _ws = new Date(_td.getTime() + _diff * 86400000);
+      weekStartVal = _ws.toISOString().slice(0, 10);
+    }
+  }
+  // Días seleccionados en la sección multi-días (solo para sesiones de ciclo)
+  var selectedDays;
+  var daysWrapEl = document.getElementById('sm-days-wrap');
+  if (!isNWeeks && recurring && daysWrapEl && daysWrapEl.style.display !== 'none') {
+    var onDayBtns = document.querySelectorAll('#sm-days-seg button.on');
+    selectedDays = Array.from(onDayBtns).map(function(b){ return parseInt(b.dataset.dow); });
+    if (!selectedDays.length) selectedDays = [day];
+  } else {
+    selectedDays = [day];
+  }
+  // El día principal es el del dropdown si está en la selección, si no el primero
+  day = selectedDays.indexOf(day) !== -1 ? day : selectedDays[0];
   var curEditId = smEditId;
   // "Solo esta fecha": al editar una clase/horario que sigue siendo semanal, en vez de
   // reescribir la regla completa (lo que afectaría TODAS las semanas del ciclo) se le
@@ -2463,7 +2654,8 @@ function submitSessionModal() {
       DATA.freeSlots.push({ id:'fs_'+Date.now(), day:day, start:start, dur:dur, modality:modality, recurring:false, date:_shiftDateToDow(smEditOccDate, day), bookedBy:null });
     } else {
       var fs = { id: curEditId !== null ? curEditId : ('fs_'+Date.now()), day:day, start:start, dur:dur, modality:modality, recurring:recurring, date:date, bookedBy:null };
-      if (recurring) fs.cycleId = cycleIdVal;
+      if (recurring && !isNWeeks) { fs.cycleId = cycleIdVal; fs.days = selectedDays; }
+      if (isNWeeks) { fs.nWeeks = nWeeksVal; fs.weekStart = weekStartVal; }
       if (curEditId !== null) {
         var idx = DATA.freeSlots.findIndex(function(s){ return s.id==curEditId; });
         if (idx>=0) { fs.bookedBy = DATA.freeSlots[idx].bookedBy; DATA.freeSlots[idx]=fs; }
@@ -2486,7 +2678,8 @@ function submitSessionModal() {
       DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:_shiftDateToDow(smEditOccDate, day) });
     } else {
       var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
-      if (recurring) sess.cycleId = cycleIdVal;
+      if (recurring && !isNWeeks) { sess.cycleId = cycleIdVal; sess.days = selectedDays; }
+      if (isNWeeks) { sess.nWeeks = nWeeksVal; sess.weekStart = weekStartVal; }
       if (curEditId !== null) {
         var idx2 = DATA.sessions.findIndex(function(s){ return s.id==curEditId; });
         if (idx2>=0) DATA.sessions[idx2]=sess; else DATA.sessions.push(sess);

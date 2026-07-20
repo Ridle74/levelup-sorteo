@@ -117,6 +117,47 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
 .pcal-now-line { flex:1; height:1px; background:rgba(0,0,0,0.35); }
 
 .pcal-empty { padding:40px; text-align:center; color:rgba(0,0,0,0.3); font-size:13px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+
+/* ── New Event Modal ── */
+.ev-ov { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center; padding:16px; }
+.ev-card { background:#fff; border-radius:16px; width:100%; max-width:420px; box-shadow:0 8px 40px rgba(0,0,0,0.22); overflow:hidden; }
+.ev-card-top { padding:20px 20px 0; border-bottom:1px solid rgba(0,0,0,0.07); }
+.ev-title-inp { width:100%; border:none; border-bottom:2px solid #1a73e8; outline:none; font-family:'Barlow',sans-serif; font-size:20px; color:#111; padding:4px 0 10px; background:transparent; }
+.ev-title-inp::placeholder { color:rgba(0,0,0,0.32); }
+.ev-row { display:flex; align-items:flex-start; gap:14px; padding:10px 20px; }
+.ev-row-ico { width:20px; flex-shrink:0; color:rgba(0,0,0,0.42); font-size:17px; margin-top:2px; text-align:center; }
+.ev-row-body { flex:1; min-width:0; }
+.ev-sel { border:none; background:transparent; font-family:'Barlow',sans-serif; font-size:13px; color:#111; cursor:pointer; padding:4px 6px; border-radius:6px; outline:none; max-width:100%; -webkit-appearance:none; }
+.ev-sel:hover { background:rgba(0,0,0,0.06); }
+.ev-inp { border:none; border-bottom:1px solid rgba(0,0,0,0.15); background:transparent; font-family:'Barlow',sans-serif; font-size:13px; color:#111; padding:4px 0; width:100%; outline:none; }
+.ev-inp:focus { border-bottom-color:#1a73e8; }
+.ev-mod-row { display:flex; gap:8px; margin-top:2px; }
+.ev-mod-btn { flex:1; border:1px solid rgba(0,0,0,0.15); background:#fff; border-radius:8px; padding:7px 0; font-family:'Barlow',sans-serif; font-size:12px; font-weight:700; color:rgba(0,0,0,0.5); cursor:pointer; transition:all .15s; }
+.ev-mod-btn.on { background:rgba(26,115,232,0.09); border-color:#1a73e8; color:#1a73e8; }
+.ev-footer { display:flex; justify-content:flex-end; gap:8px; padding:12px 20px 18px; }
+.ev-btn-cancel { border:none; background:transparent; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; color:rgba(0,0,0,0.55); padding:8px 16px; border-radius:8px; cursor:pointer; }
+.ev-btn-cancel:hover { background:rgba(0,0,0,0.06); }
+.ev-btn-save { border:none; background:#1a73e8; color:#fff; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; padding:8px 22px; border-radius:8px; cursor:pointer; transition:background .15s; }
+.ev-btn-save:hover { background:#1557b0; }
+.ev-divider { border:none; border-top:1px solid rgba(0,0,0,0.07); margin:2px 0; }
+
+/* Custom recurrence sub-dialog */
+.ev-rec-ov { position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; padding:16px; }
+.ev-rec-card { background:#fff; border-radius:16px; width:100%; max-width:360px; padding:24px; box-shadow:0 8px 40px rgba(0,0,0,0.26); }
+.ev-rec-title { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; color:#111; margin-bottom:18px; }
+.ev-rec-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; font-size:13px; color:#111; }
+.ev-rec-num { border:1px solid rgba(0,0,0,0.2); border-radius:6px; padding:5px 8px; font-family:'Barlow',sans-serif; font-size:13px; width:54px; text-align:center; outline:none; }
+.ev-rec-num:focus { border-color:#1a73e8; }
+.ev-rec-unit { border:1px solid rgba(0,0,0,0.2); border-radius:6px; padding:5px 8px; font-family:'Barlow',sans-serif; font-size:13px; background:#fff; cursor:pointer; outline:none; }
+.ev-days-row { display:flex; gap:6px; margin-bottom:16px; }
+.ev-day-btn { width:34px; height:34px; border-radius:50%; border:1px solid rgba(0,0,0,0.18); background:#fff; font-family:'Barlow',sans-serif; font-size:11px; font-weight:700; color:rgba(0,0,0,0.5); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.ev-day-btn.on { background:#1a73e8; border-color:#1a73e8; color:#fff; }
+.ev-end-row { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.ev-end-opt { display:flex; align-items:center; gap:10px; font-size:13px; color:#111; cursor:pointer; }
+.ev-end-opt input[type=radio] { accent-color:#1a73e8; }
+.ev-end-inp { border:1px solid rgba(0,0,0,0.2); border-radius:6px; padding:4px 8px; font-family:'Barlow',sans-serif; font-size:13px; width:120px; outline:none; }
+.ev-end-inp:focus { border-color:#1a73e8; }
+.ev-rec-footer { display:flex; justify-content:flex-end; gap:8px; }
 </style>
 </head>
 <body>
@@ -207,6 +248,231 @@ function slotNames(studentIds) {
 }
 
 calAnchor = defaultAnchor(calMode);
+var _calMinH = 8;
+
+/* ── New Event Modal ─────────────────────────────────────── */
+var _newEv = null;
+var _DAY_LONG = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+var _DAY_S    = ['D','L','M','X','J','V','S'];
+var _MONTHS   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+function _evClickCol(e, dateStr) {
+  if (e.target.closest && e.target.closest('.pcal-ev,.pcal-free-slot')) return;
+  var col = e.currentTarget;
+  var rect = col.getBoundingClientRect();
+  var y = e.clientY - rect.top;
+  var hourFloat = _calMinH + y / ROW_H;
+  var totalMins = Math.round(hourFloat * 2) * 30;
+  var h = Math.max(0, Math.min(23, Math.floor(totalMins / 60)));
+  var m = totalMins % 60;
+  openNewEvent(dateStr, String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0'));
+}
+
+function openNewEvent(dateStr, timeStr) {
+  var d = new Date(dateStr + 'T12:00:00');
+  var dow = d.getDay();
+  _newEv = {
+    date: d, dateStr: dateStr,
+    time: timeStr, dur: 60,
+    title: '',
+    rec: 'none',
+    customRec: { every:1, unit:'week', days:[dow], endType:'never', endDate:'', endCount:13 },
+    showCustomRec: false,
+    studentId: Object.keys(DATA.students||{})[0]||'',
+    parentName: '',
+    modality: 'Virtual',
+  };
+  _renderModal();
+}
+
+function closeModal() {
+  _newEv = null;
+  var ov = document.getElementById('ev-ov');
+  if (ov) ov.remove();
+  var rov = document.getElementById('ev-rec-ov');
+  if (rov) rov.remove();
+}
+
+function _fmtTime(t) {
+  var p = t.split(':'), h = parseInt(p[0]), m = p[1];
+  var a = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12;
+  return h + (m !== '00' ? ':' + m : '') + a;
+}
+function _addMin2(t, mins) {
+  var p = t.split(':').map(Number), tot = p[0]*60+p[1]+mins;
+  return String(Math.floor(tot/60)%24).padStart(2,'0')+':'+String(tot%60).padStart(2,'0');
+}
+
+function _renderModal() {
+  if (!_newEv) return;
+  var d = _newEv.date, dow = d.getDay();
+  var dateLabel = _DAY_LONG[dow]+', '+d.getDate()+' de '+_MONTHS[d.getMonth()];
+  var endTime = _addMin2(_newEv.time, _newEv.dur);
+  var timeLabel = _fmtTime(_newEv.time) + ' – ' + _fmtTime(endTime);
+
+  var studentOpts = '<option value="">— Sin alumno —</option>'
+    + Object.entries(DATA.students||{}).map(function(e){
+        return '<option value="'+e[0]+'"'+(String(_newEv.studentId)===String(e[0])?' selected':'')+'>'+(e[1].name||e[0])+'</option>';
+      }).join('');
+
+  var html = '<div class="ev-card" onclick="event.stopPropagation()">'
+    +'<div class="ev-card-top">'
+    +'<input class="ev-title-inp" id="ev-title" type="text" placeholder="Agregar título" autocomplete="off">'
+    +'</div>'
+    +'<div class="ev-row" style="padding-top:14px">'
+    +'<div class="ev-row-ico">🕐</div>'
+    +'<div class="ev-row-body">'
+    +'<div style="font-size:13px;color:#111;font-weight:600;margin-bottom:3px">'+dateLabel+'</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">'
+    +'<span style="font-size:13px;color:rgba(0,0,0,0.6)">'+timeLabel+'</span>'
+    +'<select class="ev-sel" id="ev-dur" style="font-size:12px;color:rgba(0,0,0,0.5)">'
+    +'<option value="30"'+(+_newEv.dur===30?' selected':'')+'>30 min</option>'
+    +'<option value="60"'+(+_newEv.dur===60?' selected':'')+'>1 hora</option>'
+    +'<option value="90"'+(+_newEv.dur===90?' selected':'')+'>1 h 30 min</option>'
+    +'<option value="120"'+(+_newEv.dur===120?' selected':'')+'>2 horas</option>'
+    +'</select></div></div></div>'
+    +'<hr class="ev-divider">'
+    +'<div class="ev-row">'
+    +'<div class="ev-row-ico">🔄</div>'
+    +'<div class="ev-row-body">'
+    +'<select class="ev-sel" id="ev-rec">'
+    +'<option value="none"'+(_newEv.rec==='none'?' selected':'')+'>No se repite</option>'
+    +'<option value="daily"'+(_newEv.rec==='daily'?' selected':'')+'>Todos los días</option>'
+    +'<option value="weekly"'+(_newEv.rec==='weekly'?' selected':'')+'>Cada semana, el '+_DAY_LONG[dow]+'</option>'
+    +'<option value="weekdays"'+(_newEv.rec==='weekdays'?' selected':'')+'>Días hábiles (lun – vie)</option>'
+    +'<option value="custom"'+(_newEv.rec==='custom'?' selected':'')+'>Personalizado...</option>'
+    +'</select></div></div>'
+    +'<hr class="ev-divider">'
+    +'<div class="ev-row">'
+    +'<div class="ev-row-ico">👤</div>'
+    +'<div class="ev-row-body"><input class="ev-inp" id="ev-parent" type="text" placeholder="Padre / apoderado" autocomplete="off"></div>'
+    +'</div>'
+    +'<div class="ev-row">'
+    +'<div class="ev-row-ico">🎒</div>'
+    +'<div class="ev-row-body"><select class="ev-sel" id="ev-student">'+studentOpts+'</select></div>'
+    +'</div>'
+    +'<hr class="ev-divider">'
+    +'<div class="ev-row">'
+    +'<div class="ev-row-ico">📍</div>'
+    +'<div class="ev-row-body">'
+    +'<div class="ev-mod-row">'
+    +'<button class="ev-mod-btn'+(_newEv.modality==='Virtual'?' on':'')+'" id="ev-mod-v">💻 Virtual</button>'
+    +'<button class="ev-mod-btn'+(_newEv.modality==='Domicilio'?' on':'')+'" id="ev-mod-d">🏠 A domicilio</button>'
+    +'</div></div></div>'
+    +'<div class="ev-footer">'
+    +'<button class="ev-btn-cancel" onclick="closeModal()">Cancelar</button>'
+    +'<button class="ev-btn-save" onclick="_evSave()">Guardar</button>'
+    +'</div></div>';
+
+  var ov = document.getElementById('ev-ov');
+  if (!ov) { ov = document.createElement('div'); ov.id='ev-ov'; ov.className='ev-ov'; ov.onclick=function(e){ if(e.target===ov) closeModal(); }; document.body.appendChild(ov); }
+  ov.innerHTML = html;
+
+  var titleEl = document.getElementById('ev-title');
+  if (titleEl) { titleEl.value = _newEv.title||''; titleEl.oninput = function(){ _newEv.title=this.value; }; titleEl.focus(); }
+  var durEl = document.getElementById('ev-dur');
+  if (durEl) durEl.onchange = function(){ _newEv.dur=parseInt(this.value); _renderModal(); };
+  var recEl = document.getElementById('ev-rec');
+  if (recEl) recEl.onchange = function(){ _evSetRec(this.value); };
+  var parentEl = document.getElementById('ev-parent');
+  if (parentEl) { parentEl.value=_newEv.parentName||''; parentEl.oninput=function(){ _newEv.parentName=this.value; }; }
+  var stuEl = document.getElementById('ev-student');
+  if (stuEl) stuEl.onchange = function(){ _newEv.studentId=this.value; };
+  var modV = document.getElementById('ev-mod-v');
+  if (modV) modV.onclick = function(){ _newEv.modality='Virtual'; _renderModal(); };
+  var modD = document.getElementById('ev-mod-d');
+  if (modD) modD.onclick = function(){ _newEv.modality='Domicilio'; _renderModal(); };
+
+  if (_newEv.showCustomRec) _renderCustomRec();
+}
+
+function _evSetRec(val) {
+  _newEv.rec = val;
+  _newEv.showCustomRec = (val === 'custom');
+  _renderModal();
+}
+
+function _renderCustomRec() {
+  var cr = _newEv.customRec;
+  var daysHtml = _DAY_LONG.map(function(_, i){
+    return '<button class="ev-day-btn'+(cr.days.indexOf(i)!==-1?' on':'')+'" onclick="_evToggleDay('+i+')" title="'+_DAY_LONG[i]+'">'+_DAY_S[i]+'</button>';
+  }).join('');
+  var html = '<div class="ev-rec-card" onclick="event.stopPropagation()">'
+    +'<div class="ev-rec-title">Recurrencia personalizada</div>'
+    +'<div class="ev-rec-row"><span>Repetir cada</span>'
+    +'<input class="ev-rec-num" id="rc-every" type="number" min="1" max="52" value="'+cr.every+'">'
+    +'<select class="ev-rec-unit" id="rc-unit">'
+    +'<option value="day"'+(cr.unit==='day'?' selected':'')+'>día</option>'
+    +'<option value="week"'+(cr.unit==='week'?' selected':'')+'>semana</option>'
+    +'<option value="month"'+(cr.unit==='month'?' selected':'')+'>mes</option>'
+    +'</select></div>'
+    +(cr.unit==='week'?'<div style="font-size:11px;color:rgba(0,0,0,0.45);font-weight:700;margin-bottom:8px;letter-spacing:.05em;text-transform:uppercase">Repetir el</div><div class="ev-days-row">'+daysHtml+'</div>':'')
+    +'<div style="font-size:11px;color:rgba(0,0,0,0.45);font-weight:700;margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase">Finaliza</div>'
+    +'<div class="ev-end-row">'
+    +'<label class="ev-end-opt"><input type="radio" name="ev-end" value="never"'+(cr.endType==='never'?' checked':'')+' onchange="_newEv.customRec.endType=\'never\';_renderCustomRec()"> Nunca</label>'
+    +'<label class="ev-end-opt"><input type="radio" name="ev-end" value="date"'+(cr.endType==='date'?' checked':'')+' onchange="_newEv.customRec.endType=\'date\';_renderCustomRec()"> El &nbsp;<input class="ev-end-inp" id="rc-end-date" type="date" value="'+cr.endDate+'" '+(cr.endType!=='date'?'disabled':'')+' oninput="_newEv.customRec.endDate=this.value"></label>'
+    +'<label class="ev-end-opt"><input type="radio" name="ev-end" value="count"'+(cr.endType==='count'?' checked':'')+' onchange="_newEv.customRec.endType=\'count\';_renderCustomRec()"> Después de &nbsp;<input class="ev-end-inp" id="rc-end-count" type="number" min="1" max="999" value="'+cr.endCount+'" '+(cr.endType!=='count'?'disabled':'')+' style="width:60px" oninput="_newEv.customRec.endCount=Math.max(1,parseInt(this.value)||1)"> ocurrencias</label>'
+    +'</div>'
+    +'<div class="ev-rec-footer">'
+    +'<button class="ev-btn-cancel" onclick="_evCancelCustomRec()">Cancelar</button>'
+    +'<button class="ev-btn-save" onclick="_evSaveCustomRec()">Listo</button>'
+    +'</div></div>';
+
+  var rov = document.getElementById('ev-rec-ov');
+  if (!rov) { rov = document.createElement('div'); rov.id='ev-rec-ov'; rov.className='ev-rec-ov'; document.body.appendChild(rov); }
+  rov.innerHTML = html;
+  var evEl = document.getElementById('rc-every');
+  if (evEl) evEl.oninput = function(){ _newEv.customRec.every=Math.max(1,parseInt(this.value)||1); };
+  var unitEl = document.getElementById('rc-unit');
+  if (unitEl) unitEl.onchange = function(){ _newEv.customRec.unit=this.value; _renderCustomRec(); };
+}
+
+function _evToggleDay(i) {
+  var days=_newEv.customRec.days, idx=days.indexOf(i);
+  if (idx===-1) days.push(i); else if (days.length>1) days.splice(idx,1);
+  _renderCustomRec();
+}
+
+function _evCancelCustomRec() {
+  _newEv.showCustomRec = false;
+  if (_newEv.rec==='custom') _newEv.rec='none';
+  var rov=document.getElementById('ev-rec-ov'); if(rov) rov.remove();
+  _renderModal();
+}
+
+function _evSaveCustomRec() {
+  var evEl=document.getElementById('rc-every'); if(evEl) _newEv.customRec.every=Math.max(1,parseInt(evEl.value)||1);
+  var unitEl=document.getElementById('rc-unit'); if(unitEl) _newEv.customRec.unit=unitEl.value;
+  _newEv.showCustomRec=false;
+  var rov=document.getElementById('ev-rec-ov'); if(rov) rov.remove();
+  _renderModal();
+}
+
+function _evSave() {
+  if (!_newEv) return;
+  var titleEl=document.getElementById('ev-title'), parentEl=document.getElementById('ev-parent'), stuEl=document.getElementById('ev-student');
+  if (titleEl) _newEv.title=titleEl.value.trim();
+  if (parentEl) _newEv.parentName=parentEl.value.trim();
+  if (stuEl) _newEv.studentId=stuEl.value;
+  var d=_newEv.date, dow=d.getDay();
+  var session={ start:_newEv.time, dur:_newEv.dur, modality:_newEv.modality, day:dow };
+  if (_newEv.title) session.title=_newEv.title;
+  if (_newEv.parentName) session.parentName=_newEv.parentName;
+  if (_newEv.studentId) session.studentId=_newEv.studentId;
+  if (_newEv.rec!=='none') {
+    session.recurring=true;
+    session.recPattern=(_newEv.rec==='custom')?JSON.parse(JSON.stringify(_newEv.customRec)):{type:_newEv.rec};
+  } else {
+    session.recurring=false; session.date=_newEv.dateStr;
+  }
+  DATA.sessions.push(session);
+  closeModal(); render();
+  db.collection('padres').doc('main').get().then(function(doc){
+    var existing=doc.exists?(doc.data().sessions||[]):[];
+    existing.push(session);
+    return doc.ref.set({sessions:existing},{merge:true});
+  }).catch(function(e){ console.error('save session',e); });
+}
 
 /* ── Controls ───────────────────────────────────────── */
 function setCalMode(m) {
@@ -285,6 +551,7 @@ function buildGrid(dayList) {
     var e=h+(fs.dur||60)/60; if(e>dynMax)dynMax=e;
   });
   var MIN_H=Math.max(0,Number.isInteger(dynMin)?dynMin-1:Math.floor(dynMin));
+  _calMinH = MIN_H;
   var MAX_H=Math.min(24,Math.ceil(dynMax));
   var HOURS=[]; for(var i=MIN_H;i<MAX_H;i++) HOURS.push(i);
   var totalH=HOURS.length*ROW_H;
@@ -388,7 +655,7 @@ function buildGrid(dayList) {
         +'</div>';
     }).join('');
 
-    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px">'+lines+cards+freeCards+'</div>';
+    return '<div class="'+cls+'" style="width:'+colW+'px;height:'+totalH+'px;cursor:crosshair" onclick="_evClickCol(event,\''+ds+'\')">'+lines+cards+freeCards+'</div>';
   }).join('');
 
   /* Now indicator */
