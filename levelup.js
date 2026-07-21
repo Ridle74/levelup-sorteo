@@ -12,8 +12,8 @@ const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',u:'preuniversitario'};
 const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',preuniversitario:'u'};
 const _PREP_URL_AREA    = {m:'matematica',rm:'razonamiento',al:'algebra',ar:'aritmetica',tr:'trigonometria',ge:'geometria'};
 const _PREP_URL_AREA_R  = {matematica:'m',razonamiento:'rm',algebra:'al',aritmetica:'ar',trigonometria:'tr',geometria:'ge'};
-const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen'};
-const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen'};
+const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen',agustin:'san_agustin'};
+const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen',san_agustin:'agustin'};
 
 function _prepApplyUrlSlug() {
   // Usa la URL actual; si ya fue cambiada por go(), usa el path guardado al inicio de página
@@ -2531,6 +2531,636 @@ function _genHca2R3_BQ3(){return[_genHca2R3_B3,_genHca2R3_B4,_genHca2R3_B5][_hca
 // BPU
 function _genHca2R3_BPU(){return[_genHca2R3_B1,_genHca2R3_B2,_genHca2R3_B3,_genHca2R3_B4,_genHca2R3_B5][_hca2rnd(0,4)]();}
 
+// ── SAN AGUSTÍN 2° SECUNDARIA – GEOMETRÍA ────────────────────────────────────
+function _sa2rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _sa2pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function _sa2shuf(arr){const r=[...arr];for(let i=r.length-1;i>0;i--){const j=_sa2rnd(0,i);[r[i],r[j]]=[r[j],r[i]];}return r;}
+
+// ── Ángulos: Bisectriz ────────────────────────────────────────────────────────
+// B1 – Habilidades previas: complementario y suplementario
+function _genSa2ANG_B1(){
+  const isComp=Math.random()<0.5,total=isComp?90:180;
+  const vals=[10,15,20,25,30,35,40,45,50,55,60,65,70,75,80].filter(v=>v<total);
+  const a=_sa2pick(vals),b=total-a;
+  const tipo=isComp?'complemento':'suplemento';
+  const q=`Calcula el ${tipo} de ${a}°.`;
+  const ws=[b+10,b-10,b+20,b-20,b+5,b-5].filter(v=>v>0&&v<180&&v!==b).slice(0,3);
+  return{q,a:`${b}°`,opts:_sa2shuf([`${b}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// B2 – Ángulos adyacentes en semirrecta (suman 180°)
+function _genSa2ANG_B2(){
+  const type=_sa2rnd(1,3);
+  if(type===1){
+    const a=_sa2pick([20,25,30,35,40,45,50,55]);
+    const b=_sa2pick([15,20,25,30,35,40].filter(v=>a+v<165));
+    const x=180-a-b;
+    const q=`Tres ángulos adyacentes están sobre una semirrecta y miden ${a}°, ${b}° y x°. Calcula x.`;
+    const ws=[x+5,x-5,x+10,x-10].filter(v=>v>0&&v<180&&v!==x).slice(0,3);
+    return{q,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+  }else if(type===2){
+    const pairs=[[1,2],[1,3],[1,4],[1,5],[2,3],[2,4],[3,6],[4,5]];
+    const[k,m]=_sa2pick(pairs.filter(([a,b])=>180%(a+b)===0));
+    const x=180/(k+m);
+    const q=`Dos ángulos adyacentes en una semirrecta miden ${k}x° y ${m}x°. Calcula x.`;
+    const ws=[x+5,x-5,x+10,x+20].filter(v=>v>0&&v!==x).slice(0,3);
+    return{q,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+  }else{
+    const g=_sa2pick([20,30,40,50,60]);
+    const pairs=[[1,2],[1,3],[2,3],[1,4],[2,1]];
+    for(const[k,m]of _sa2shuf(pairs)){
+      if((180-g)%(k+m)===0){
+        const x=(180-g)/(k+m);
+        if(x>0&&x<=45){
+          const q=`Tres ángulos adyacentes en una semirrecta miden ${k}x°, ${g}° y ${m}x°. Calcula x.`;
+          const ws=[x+5,x-5,x+10].filter(v=>v>0&&v!==x).slice(0,3);
+          return{q,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+        }
+      }
+    }
+    return _genSa2ANG_B2();
+  }
+}
+
+// BQ1 – Quiz complementario/suplementario + adyacentes
+function _genSa2ANG_BQ1(){return _sa2pick([_genSa2ANG_B1,_genSa2ANG_B2])();}
+
+// B3 – Bisectriz simple: dado ∠AOB, hallar ∠BOM = (180−AOB)/2
+function _genSa2ANG_B3(){
+  const aob=_sa2pick([100,110,120,130,140,150,160]);
+  const boc=180-aob,bom=boc/2;
+  const q=`O está sobre la recta AC. OM es bisectriz del ∠BOC y m∠AOB = ${aob}°. Calcula m∠BOM.`;
+  const ws=[bom+5,bom-5,bom+10,bom-10,bom+15].filter(v=>v>0&&v<90&&v!==bom).slice(0,3);
+  return{q,a:`${bom}°`,opts:_sa2shuf([`${bom}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// B4 – Bisectriz: dado ∠MOC = k, hallar ∠AOB = 180 − 2k
+function _genSa2ANG_B4(){
+  const moc=_sa2pick([20,25,30,35,40,45]);
+  const aob=180-2*moc;
+  const q=`O está sobre la recta AC. OM es bisectriz del ∠BOC. Si m∠MOC = ${moc}°, calcula m∠AOB.`;
+  const ws=[aob+10,aob-10,aob+20,2*moc,moc].filter(v=>v>0&&v<180&&v!==aob).slice(0,3);
+  return{q,a:`${aob}°`,opts:_sa2shuf([`${aob}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// BQ2 – Quiz bisectriz
+function _genSa2ANG_BQ2(){return _sa2pick([_genSa2ANG_B3,_genSa2ANG_B4])();}
+
+// B5 – Bisectriz algebraica: ∠BOM = ax+b, ∠MOC = k → resolver x
+function _genSa2ANG_B5(){
+  const moc=_sa2pick([20,25,30,35,40]);
+  const a=_sa2pick([2,3,4,5]);
+  const b=_sa2pick([0,4,5,8,10,12]);
+  const x=(moc-b)/a;
+  if(!Number.isInteger(x)||x<=0||x>25)return _genSa2ANG_B5();
+  const bStr=b?` + ${b}`:'';
+  const q=`OM es bisectriz del ∠BOC. Si m∠MOC = ${moc}° y m∠BOM = (${a}x${bStr})°, calcula x.`;
+  const ws=[x+3,x-3,x+5,x+8].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// B6 – Bisectriz algebraica: ∠AOB = ax+b, ∠MOC = k → resolver x  (AOB = 180−2k)
+function _genSa2ANG_B6(){
+  const moc=_sa2pick([20,25,30,35,40,45]);
+  const aob=180-2*moc;
+  const a=_sa2pick([2,3,4,5]);
+  const b=_sa2pick([0,4,5,8,10,12,15,20]);
+  const x=(aob-b)/a;
+  if(!Number.isInteger(x)||x<=0||x>60)return _genSa2ANG_B6();
+  const bStr=b?` + ${b}`:'';
+  const q=`OM es bisectriz del ∠BOC. Si m∠MOC = ${moc}° y m∠AOB = (${a}x${bStr})°, calcula x.`;
+  const ws=[x+5,x-5,x+10].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// BQ3 – Quiz algebraico
+function _genSa2ANG_BQ3(){return _sa2pick([_genSa2ANG_B5,_genSa2ANG_B6])();}
+
+// BPU – Examen ángulos
+function _genSa2ANG_BPU(){return _sa2pick([_genSa2ANG_B1,_genSa2ANG_B2,_genSa2ANG_B3,_genSa2ANG_B4,_genSa2ANG_B5,_genSa2ANG_B6])();}
+
+// ── Rectas Paralelas y Secante ────────────────────────────────────────────────
+// B1 – Ángulos correspondientes (iguales)
+function _genSa2PAR_B1(){
+  const ang=_sa2pick([30,40,45,50,55,60,65,70,75,80]);
+  const q=`L₁ // L₂. Una secante corta las paralelas formando un ángulo de ${ang}° con L₁. ¿Cuánto mide el ángulo correspondiente en L₂?`;
+  const ws=[180-ang,ang+10,ang-10,ang+20,ang-20].filter(v=>v>0&&v<180&&v!==ang).slice(0,3);
+  return{q,a:`${ang}°`,opts:_sa2shuf([`${ang}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// B2 – Ángulos alternos internos y co-interiores (simples)
+function _genSa2PAR_B2(){
+  const isAltern=Math.random()<0.5;
+  const a=_sa2pick([30,40,45,50,55,60,65,70]);
+  if(isAltern){
+    const q=`L₁ // L₂. Un ángulo alterno interno mide ${a}°. ¿Cuánto mide el otro ángulo alterno interno?`;
+    const ws=[180-a,a+10,a-10,a+20].filter(v=>v>0&&v<180&&v!==a).slice(0,3);
+    return{q,a:`${a}°`,opts:_sa2shuf([`${a}°`,...ws.map(v=>`${v}°`)]),mc:true};
+  }else{
+    const b=180-a;
+    const q=`L₁ // L₂. Un ángulo co-interior mide ${a}°. ¿Cuánto mide el otro ángulo co-interior del mismo lado?`;
+    const ws=[a,b+10,b-10,b+20].filter(v=>v>0&&v<180&&v!==b).slice(0,3);
+    return{q,a:`${b}°`,opts:_sa2shuf([`${b}°`,...ws.map(v=>`${v}°`)]),mc:true};
+  }
+}
+
+// BQ1 – Quiz ángulos entre paralelas
+function _genSa2PAR_BQ1(){return _sa2pick([_genSa2PAR_B1,_genSa2PAR_B2])();}
+
+// B3 – Paralelas con álgebra: alternos iguales → ax+b = cx+d
+function _genSa2PAR_B3(){
+  const x=_sa2rnd(5,30);
+  const a=_sa2pick([3,4,5,6]);
+  const b=_sa2pick([5,10,15,20]);
+  const c=_sa2pick([1,2,3].filter(v=>v!==a));
+  const d=a*x+b-c*x;
+  if(d<=0||!Number.isInteger(d)||d>90)return _genSa2PAR_B3();
+  const q=`L₁ // L₂. Los ángulos alternos internos miden (${a}x + ${b})° y (${c}x + ${d})°. Calcula x.`;
+  const ws=[x+5,x-5,x+10,x-10].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// B4 – Paralelas con álgebra: co-interiores → (ax+b)+(cx+d) = 180
+function _genSa2PAR_B4(){
+  const a=_sa2pick([2,3,4]),b=_sa2pick([5,10,15,20]);
+  const c=_sa2pick([1,2,3]),d=_sa2pick([5,10,15,20,25]);
+  if((180-b-d)%(a+c)!==0)return _genSa2PAR_B4();
+  const x=(180-b-d)/(a+c);
+  if(x<=0||x>45)return _genSa2PAR_B4();
+  const q=`L₁ // L₂. Los ángulos co-interiores miden (${a}x + ${b})° y (${c}x + ${d})°. Calcula x.`;
+  const ws=[x+5,x-5,x+10].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// BQ2 – Quiz algebraico
+function _genSa2PAR_BQ2(){return _sa2pick([_genSa2PAR_B3,_genSa2PAR_B4])();}
+
+// B5 – Zigzag entre paralelas: x = α + β (línea poligonal entre L₁ y L₂)
+function _genSa2PAR_B5(){
+  const a=_sa2pick([20,25,30,35,40,45]);
+  const b=_sa2pick([15,20,25,30,35,40].filter(v=>a+v<170));
+  const x=a+b;
+  const q=`L₁ // L₂. Una línea quebrada forma un ángulo de ${a}° con L₁ y un ángulo de ${b}° con L₂ (mismo lado). Calcula el ángulo x en el vértice intermedio.`;
+  const ws=[x+10,x-10,180-x,x+20,a,b].filter(v=>v>0&&v<180&&v!==x).slice(0,3);
+  return{q,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// B6 – Ángulo exterior de triángulo entre paralelas
+function _genSa2PAR_B6(){
+  const a=_sa2pick([20,25,30,35,40,45]);
+  const b=_sa2pick([20,25,30,35,40,45].filter(v=>a+v<150));
+  const x=180-(a+b); // interior angle at secant between lines = 180 - (a+b)
+  // Or use: two co-int angles sum = 180, with variable
+  const r=_sa2rnd(1,2);
+  if(r===1){
+    const q=`L₁ // L₂. La secante forma ángulos internos de ${a}° con L₁ y ${b}° con L₂ (lados opuestos). Calcula el ángulo x entre las dos paralelas en la secante.`;
+    const ans=180-a-b;
+    if(ans<=0)return _genSa2PAR_B6();
+    const ws=[ans+10,ans-10,a+b,ans+20].filter(v=>v>0&&v<180&&v!==ans).slice(0,3);
+    return{q,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+  }else{
+    // ax + bx + c = 180 (two co-interior angles with a variable each)
+    const k=_sa2pick([3,4,5,6]),c=_sa2pick([0,10,20,30]);
+    if((180-c)%k!==0)return _genSa2PAR_B6();
+    const xv=(180-c)/k;
+    if(xv<=0||xv>50)return _genSa2PAR_B6();
+    const q=`L₁ // L₂. Dos ángulos co-interiores miden ${k-1}x° y (x + ${c})°. Calcula x.`;
+    const ws=[xv+5,xv-5,xv+10].filter(v=>v>0&&v!==xv).slice(0,3);
+    return{q,a:`${xv}`,opts:_sa2shuf([`${xv}`,...ws.map(String)]),mc:true};
+  }
+}
+
+// BQ3 – Quiz final paralelas
+function _genSa2PAR_BQ3(){return _sa2pick([_genSa2PAR_B4,_genSa2PAR_B5,_genSa2PAR_B6])();}
+
+// BPU – Examen rectas paralelas
+function _genSa2PAR_BPU(){return _sa2pick([_genSa2PAR_B1,_genSa2PAR_B2,_genSa2PAR_B3,_genSa2PAR_B4,_genSa2PAR_B5,_genSa2PAR_B6])();}
+
+// ── SAN AGUSTÍN 2° SECUNDARIA – EXAMEN GENERAL GEOMETRÍA ────────────────────
+// SVG helpers
+function _sa2svgWrap(inner,w,h){w=w||220;h=h||160;return`<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="max-width:${w}px;width:100%;height:auto;display:block;margin:4px auto 8px;font-weight:normal"><g stroke="#ccc" stroke-width="1.5" fill="none" style="font-family:Arial,sans-serif;font-size:11px;font-weight:normal;fill:#ccc">${inner}</g></svg>`;}
+function _sa2ra(x,y,s,rot){s=s||8;rot=rot||0;// right-angle marker
+  const r=rot*Math.PI/180,cos=Math.cos(r),sin=Math.sin(r);
+  const pts=[[s,0],[s,-s],[0,-s]].map(([px,py])=>[x+px*cos-py*sin,y+px*sin+py*cos]);
+  return`<polyline points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" stroke-width="1"/>`;}
+function _sa2arc(cx,cy,r,a1,a2,lbl,lr,la){// arc label
+  const mid=(a1+a2)/2*Math.PI/180;
+  const lx=cx+lr*Math.cos(mid),ly=cy-lr*Math.sin(mid);
+  return`<path d="M${cx+r*Math.cos(a1*Math.PI/180).toFixed(1)},${(cy-r*Math.sin(a1*Math.PI/180)).toFixed(1)} A${r},${r} 0 0,${a2>a1?0:1} ${(cx+r*Math.cos(a2*Math.PI/180)).toFixed(1)},${(cy-r*Math.sin(a2*Math.PI/180)).toFixed(1)}" fill="none" stroke="#aaa" stroke-width="1"/><text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="10">${lbl}</text>`;}
+
+// ── EXAMEN – BISECTRIZ ────────────────────────────────────────────────────────
+// EX-A1: Tres rayos iguales de kx° en ángulo recto → x (figura con ángulo recto)
+function _genSa2EX_A1(){
+  const cfg=_sa2pick([[3,2,15],[2,3,15],[3,1,22.5]].filter(([n,k,x])=>Number.isInteger(x)&&n*k*x===90));
+  if(!cfg)return _genSa2EX_A2();
+  const[n,k,x]=cfg;
+  const CX=80,CY=110,L=65;
+  // n equal angles of kx in right angle (90°)
+  let lines='',arcs='';
+  for(let i=0;i<=n;i++){
+    const ang=(90/n)*i;// 0..90
+    const rad=ang*Math.PI/180;
+    lines+=`<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(rad)).toFixed(1)}" y2="${(CY-L*Math.sin(rad)).toFixed(1)}"/>`;
+  }
+  // label each sector
+  for(let i=0;i<n;i++){
+    const mid=((90/n)*i+(90/n)*(i+1))/2*Math.PI/180;
+    const lr=32;
+    const lx=CX+lr*Math.cos(mid),ly=CY-lr*Math.sin(mid);
+    arcs+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="10">${k}x°</text>`;
+  }
+  arcs+=_sa2ra(CX,CY,10);// right angle at origin (between 0° and 90°)
+  const svg=_sa2svgWrap(lines+arcs,180,140);
+  const ws=[x+3,x-3,x+1,x+5,x-1].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q:`${svg}Calcula el valor de x.`,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-A2: Bisectriz – dado ∠AOB, hallar ∠BOM
+function _genSa2EX_A2(){
+  const aob=_sa2pick([100,110,120,130,140,150,160]);
+  const boc=180-aob,bom=boc/2;
+  const CX=110,CY=100,L=70;
+  const bAng=(180-aob)*Math.PI/180;// angle of OB from +x
+  const mAng=bom*Math.PI/180;// OM from +x (bisects BOC)
+  const svg=_sa2svgWrap(
+    `<line x1="${CX-L}" y1="${CY}" x2="${CX+L}" y2="${CY}"/>` +// A---O---C
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(bAng)).toFixed(1)}" y2="${(CY-L*Math.sin(bAng)).toFixed(1)}"/>` +// OB
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(mAng)).toFixed(1)}" y2="${(CY-L*Math.sin(mAng)).toFixed(1)}" stroke-dasharray="4,2"/>` +// OM
+    `<text x="${CX-L-8}" y="${CY+4}" text-anchor="end">A</text>` +
+    `<text x="${CX+L+5}" y="${CY+4}">C</text>` +
+    `<text x="${(CX+L*Math.cos(bAng)).toFixed(1)}" y="${(CY-L*Math.sin(bAng)-5).toFixed(1)}" text-anchor="middle">B</text>` +
+    `<text x="${(CX+L*Math.cos(mAng)+8).toFixed(1)}" y="${(CY-L*Math.sin(mAng)).toFixed(1)}">M</text>` +
+    `<text x="${CX+3}" y="${CY+12}">O</text>` +
+    _sa2arc(CX,CY,28,0,180-aob,`${aob}°`,42,0)+// arc AOB label
+    _sa2arc(CX,CY,18,0,bom,'x°',30,0),// arc BOM label
+    230,160);
+  const ws=[bom+5,bom-5,bom+10,bom-10,bom+15].filter(v=>v>0&&v<90&&v!==bom).slice(0,3);
+  return{q:`${svg}OM es bisectriz del ∠BOC. Calcula m∠BOM (x).`,a:`${bom}°`,opts:_sa2shuf([`${bom}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-A3: Bisectriz – dado ∠MOC=k, hallar ∠AOB=180-2k
+function _genSa2EX_A3(){
+  const moc=_sa2pick([20,25,30,35,40,45]);
+  const aob=180-2*moc;
+  const CX=110,CY=100,L=70;
+  const bAng=(2*moc)*Math.PI/180;// OB from +x (BOC=2·moc, so OB at 2moc from OC)
+  const mAng=moc*Math.PI/180;// OM at moc from OC
+  const svg=_sa2svgWrap(
+    `<line x1="${CX-L}" y1="${CY}" x2="${CX+L}" y2="${CY}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(bAng)).toFixed(1)}" y2="${(CY-L*Math.sin(bAng)).toFixed(1)}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(mAng)).toFixed(1)}" y2="${(CY-L*Math.sin(mAng)).toFixed(1)}" stroke-dasharray="4,2"/>` +
+    `<text x="${CX-L-8}" y="${CY+4}" text-anchor="end">A</text>` +
+    `<text x="${CX+L+5}" y="${CY+4}">C</text>` +
+    `<text x="${(CX+L*Math.cos(bAng)).toFixed(1)}" y="${(CY-L*Math.sin(bAng)-5).toFixed(1)}" text-anchor="middle">B</text>` +
+    `<text x="${(CX+L*Math.cos(mAng)+8).toFixed(1)}" y="${(CY-L*Math.sin(mAng)).toFixed(1)}">M</text>` +
+    `<text x="${CX+3}" y="${CY+12}">O</text>` +
+    _sa2arc(CX,CY,22,0,moc,`${moc}°`,34,0)+
+    _sa2arc(CX,CY,40,0,2*moc,'x°',54,0),
+    230,160);
+  const ws=[aob+10,aob-10,aob+20,2*moc].filter(v=>v>0&&v<180&&v!==aob).slice(0,3);
+  return{q:`${svg}OM es bisectriz del ∠BOC. Si m∠MOC=${moc}°, calcula m∠AOB (x).`,a:`${aob}°`,opts:_sa2shuf([`${aob}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-A4: Bisectriz algebraica – ∠AOB=(ax+b)°, ∠MOC=k → resolver x
+function _genSa2EX_A4(){
+  const moc=_sa2pick([20,25,30,35,40,45]);
+  const aob=180-2*moc;
+  const a=_sa2pick([2,3,4,5]),b=_sa2pick([0,4,5,8,10,12,15,20]);
+  const x=(aob-b)/a;
+  if(!Number.isInteger(x)||x<=0||x>60)return _genSa2EX_A4();
+  const bStr=b?` + ${b}`:'';
+  const CX=110,CY=100,L=70;
+  const bAng=(2*moc)*Math.PI/180,mAng=moc*Math.PI/180;
+  const svg=_sa2svgWrap(
+    `<line x1="${CX-L}" y1="${CY}" x2="${CX+L}" y2="${CY}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(bAng)).toFixed(1)}" y2="${(CY-L*Math.sin(bAng)).toFixed(1)}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(mAng)).toFixed(1)}" y2="${(CY-L*Math.sin(mAng)).toFixed(1)}" stroke-dasharray="4,2"/>` +
+    `<text x="${CX-L-8}" y="${CY+4}" text-anchor="end">A</text>` +
+    `<text x="${CX+L+5}" y="${CY+4}">C</text>` +
+    `<text x="${(CX+L*Math.cos(bAng)).toFixed(1)}" y="${(CY-L*Math.sin(bAng)-5).toFixed(1)}" text-anchor="middle">B</text>` +
+    `<text x="${(CX+L*Math.cos(mAng)+8).toFixed(1)}" y="${(CY-L*Math.sin(mAng)).toFixed(1)}">M</text>` +
+    `<text x="${CX+3}" y="${CY+12}">O</text>` +
+    _sa2arc(CX,CY,22,0,moc,`${moc}°`,34,0)+
+    `<text x="${(CX-38)}" y="${CY-28}" font-size="10">(${a}x${bStr})°</text>`,
+    230,160);
+  const ws=[x+5,x-5,x+10,x-10].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q:`${svg}OM bisectriz de ∠BOC, m∠MOC=${moc}°, m∠AOB=(${a}x${bStr})°. Calcula x.`,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// ── EXAMEN – NIVEL II (comp/supl) ────────────────────────────────────────────
+// EX-B1: comp(α) + supl(β)
+function _genSa2EX_B1(){
+  const α=_sa2pick([10,15,20,25,30,35,40]),β=_sa2pick([100,110,115,120,125,130,140]);
+  const ans=(90-α)+(180-β);
+  if(ans<=0)return _genSa2EX_B1();
+  const q=`Calcula el complemento de ${α}° más el suplemento de ${β}°.`;
+  const ws=[ans+10,ans-10,ans+20,ans-20].filter(v=>v>0&&v!==ans).slice(0,3);
+  return{q,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B2: comp(supl(x))=k → x=90+k
+function _genSa2EX_B2(){
+  const k=_sa2pick([5,10,15,20]);
+  const x=90+k;
+  const q=`El complemento del suplemento de un ángulo x es ${k}°. Calcula x.`;
+  const ws=[x-20,x-10,x+10,90-k].filter(v=>v>0&&v<180&&v!==x).slice(0,3);
+  return{q,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B3: supl − comp = k·x → 90=k·x → x=90/k
+function _genSa2EX_B3(){
+  const k=_sa2pick([2,3,5,6,9,10]);
+  if(90%k!==0)return _genSa2EX_B3();
+  const x=90/k;
+  const q=`La diferencia entre el suplemento y el complemento de un ángulo es ${k} veces dicho ángulo. Calcula el ángulo.`;
+  const ws=[x+5,x-5,x+10,x*2].filter(v=>v>0&&v<90&&v!==x).slice(0,3);
+  return{q,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B4: supl(2x) − comp(x) = x/n → x
+function _genSa2EX_B4(){
+  // supl(2x)=180-2x, comp(x)=90-x → (180-2x)-(90-x) = 90-x = x/n → 90 = x+x/n = x(n+1)/n → x=90n/(n+1)
+  const n=_sa2pick([3,4,5,8]);
+  if(90*n%(n+1)!==0)return _genSa2EX_B4();
+  const x=90*n/(n+1);
+  // What the problem asks: supl(comp(x)) = 180-(90-x) = 90+x
+  const ans=90+x;
+  const q=`Al suplemento del doble de un ángulo x se le resta su complemento y se obtiene la ${n===3?'tercera':n===4?'cuarta':n===5?'quinta':'octava'} parte de x. Calcula el suplemento del complemento de x.`;
+  const ws=[ans+10,ans-10,ans+25,90-x].filter(v=>v>0&&v<180&&v!==ans).slice(0,3);
+  return{q,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B5: Dos ángulos suplementarios en razón a:b
+function _genSa2EX_B5(){
+  const ratios=[[3,7],[4,5],[2,7],[1,4],[2,3],[1,8]].filter(([a,b])=>180%(a+b)===0);
+  const[a,b]=_sa2pick(ratios);
+  const small=180*a/(a+b);
+  const q=`Dos ángulos adyacentes suplementarios están en razón ${a}:${b}. ¿Cuánto mide el ángulo menor?`;
+  const ws=[small+5,180-small,small+10,small-10].filter(v=>v>0&&v<180&&v!==small).slice(0,3);
+  return{q,a:`${small}°`,opts:_sa2shuf([`${small}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B6: AOC=α, BOD=β → find BOC (with SVG)
+function _genSa2EX_B6(){
+  const aoc=_sa2pick([120,130,140,150]);
+  const bod=_sa2pick([60,70,80,90,100,110,120].filter(v=>v<aoc));
+  const c=180-aoc,b=bod-c,a=aoc-b;
+  if(a<=0||b<=0||c<=0)return _genSa2EX_B6();
+  // SVG: line A-O-D, rays OB and OC above
+  const CX=110,CY=110,L=75;
+  const bAng=(180-a)*Math.PI/180;// OB from +x
+  const cAng=c*Math.PI/180;// OC from +x (c degrees from OD)
+  const svg=_sa2svgWrap(
+    `<line x1="${CX-L}" y1="${CY}" x2="${CX+L}" y2="${CY}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(bAng)).toFixed(1)}" y2="${(CY-L*Math.sin(bAng)).toFixed(1)}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(cAng)).toFixed(1)}" y2="${(CY-L*Math.sin(cAng)).toFixed(1)}"/>` +
+    `<text x="${CX-L-8}" y="${CY+4}" text-anchor="end">A</text>` +
+    `<text x="${CX+L+5}" y="${CY+4}">D</text>` +
+    `<text x="${(CX+L*Math.cos(bAng)).toFixed(1)}" y="${(CY-L*Math.sin(bAng)-5).toFixed(1)}" text-anchor="middle">B</text>` +
+    `<text x="${(CX+L*Math.cos(cAng)+8).toFixed(1)}" y="${(CY-L*Math.sin(cAng)).toFixed(1)}">C</text>` +
+    `<text x="${CX+3}" y="${CY+12}">O</text>` +
+    `<text x="${CX-20}" y="${CY-18}" font-size="10">x°</text>` +
+    _sa2arc(CX,CY,40,180,180-a+180,'',0,0)+// just a placeholder
+    `<text x="${CX-50}" y="${CY+32}" font-size="9">m∠AOC=${aoc}°</text>`+
+    `<text x="${CX-50}" y="${CY+44}" font-size="9">m∠BOD=${bod}°</text>`,
+    240,165);
+  const ws=[b+5,b-5,b+10,a,c].filter(v=>v>0&&v!==b).slice(0,3);
+  return{q:`${svg}Si m∠AOC=${aoc}° y m∠BOD=${bod}°, calcula m∠BOC (x).`,a:`${b}°`,opts:_sa2shuf([`${b}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B7: Bisectrices de AOB y COD en recta (BOC dado) → ángulo = 90+BOC/2
+function _genSa2EX_B7(){
+  const boc=_sa2pick([60,70,80,90,100,110,120]);
+  const ans=90+boc/2;
+  const CX=110,CY=110,L=75;
+  // Three equal sectors... simplified
+  const aEnd=Math.PI,bEnd=(boc/2+90)*Math.PI/180,cEnd=0;
+  const mAng=(180)*Math.PI/180+20*Math.PI/180;// bisectrix of AOB (rough)
+  const nAng=(boc/2)*Math.PI/180;// bisectrix of COD
+  const svg=_sa2svgWrap(
+    `<line x1="${CX-L}" y1="${CY}" x2="${CX+L}" y2="${CY}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos((180-40)*Math.PI/180)).toFixed(1)}" y2="${(CY-L*Math.sin((180-40)*Math.PI/180)).toFixed(1)}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos((boc+20)*Math.PI/180)).toFixed(1)}" y2="${(CY-L*Math.sin((boc+20)*Math.PI/180)).toFixed(1)}"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos((boc/2)*Math.PI/180)).toFixed(1)}" y2="${(CY-L*Math.sin((boc/2)*Math.PI/180)).toFixed(1)}" stroke-dasharray="4,2"/>` +
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos((180-20)*Math.PI/180)).toFixed(1)}" y2="${(CY-L*Math.sin((180-20)*Math.PI/180)).toFixed(1)}" stroke-dasharray="4,2"/>` +
+    `<text x="${CX-L-8}" y="${CY+4}" text-anchor="end">A</text>` +
+    `<text x="${CX+L+5}" y="${CY+4}">D</text>` +
+    `<text x="${CX-L+15}" y="${CY-35}">B</text>` +
+    `<text x="${CX+30}" y="${CY-35}">C</text>` +
+    `<text x="${CX+3}" y="${CY+12}">O</text>` +
+    `<text x="${CX-45}" y="${CY+36}" font-size="9">m∠BOC=${boc}°</text>`,
+    240,160);
+  const ws=[ans+5,ans-5,ans+10,90+boc].filter(v=>v>0&&v<270&&v!==ans).slice(0,3);
+  return{q:`${svg}A, O, D en línea recta con rayos OB y OC. Las líneas punteadas son bisectrices de ∠AOB y ∠COD. Si m∠BOC=${boc}°, calcula el ángulo entre las bisectrices.`,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B8: m∠AOC=k·m∠AOB (con SVG y ángulo dado en figura)
+function _genSa2EX_B8(){
+  const k=_sa2pick([3,4,5]);
+  const aob=_sa2pick([10,12,15,18,20,24,30].filter(v=>k*v<180));
+  const aoc=k*aob;
+  const boc=aoc-aob;
+  const CX=110,CY=110,L=70;
+  const bAng=aob*Math.PI/180,cAng=aoc*Math.PI/180;
+  const svg=_sa2svgWrap(
+    `<line x1="${CX}" y1="${CY}" x2="${CX+L}" y2="${CY}"/>` +// OC base
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(bAng)).toFixed(1)}" y2="${(CY-L*Math.sin(bAng)).toFixed(1)}"/>` +// OB
+    `<line x1="${CX}" y1="${CY}" x2="${(CX+L*Math.cos(cAng)).toFixed(1)}" y2="${(CY-L*Math.sin(cAng)).toFixed(1)}"/>` +// OA (farther)
+    `<text x="${CX+L+5}" y="${CY+4}">C</text>` +
+    `<text x="${(CX+L*Math.cos(bAng)+5).toFixed(1)}" y="${(CY-L*Math.sin(bAng)).toFixed(1)}">B</text>` +
+    `<text x="${(CX+L*Math.cos(cAng)+5).toFixed(1)}" y="${(CY-L*Math.sin(cAng)).toFixed(1)}">A</text>` +
+    `<text x="${CX+3}" y="${CY+12}">O</text>` +
+    _sa2arc(CX,CY,25,0,boc,`${boc}°`,37,0),
+    210,155);
+  const ws=[aob+3,aob-3,aob+6,aob-6].filter(v=>v>0&&v!==aob).slice(0,3);
+  return{q:`${svg}Si m∠AOC = ${k}·(m∠AOB) y m∠BOC = ${boc}°, calcula m∠AOB.`,a:`${aob}°`,opts:_sa2shuf([`${aob}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B9: triple(supl-comp) = doble(supl(comp(2x))) → x=45/2 generalized
+function _genSa2EX_B9(){
+  // 3((180-x)-(90-x)) = 3·90 = 270 = 2·(180-(90-2x)) = 2(90+2x) = 180+4x → 4x=90 → x=22.5
+  // Or let's vary: n(supl-comp) = m·supl(comp(2x)) → n·90 = m(90+2x) → x=(90n/m-90)/2
+  const n=3,m=2;// from the image problem
+  const x=(90*n/m-90)/2;// 22.5
+  if(!Number.isFinite(x)||x<=0)return _genSa2EX_B9();
+  const q=`El triple de la diferencia entre el suplemento y el complemento de x es igual al doble del suplemento del complemento del doble de x. Calcula x.`;
+  const ans=x;
+  const ws=[45,30,60,90].filter(v=>v!==ans);
+  return{q,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-B10: AOC=62, BOD=58, AOD=92 → BOC=28 (generalized)
+function _genSa2EX_B10(){
+  // a+b=AOC, b+c=BOD, a+b+c=AOD → c=AOD-AOC, b=BOD-c, BOC=b
+  const aod=_sa2pick([80,90,92,95,100]);
+  const aoc=_sa2pick([55,60,62,65,70].filter(v=>v<aod));
+  const bod=_sa2pick([50,55,58,60,65].filter(v=>v<aod));
+  const c=aod-aoc,b=bod-c,a=aoc-b;
+  if(a<=0||b<=0||c<=0||b>50)return _genSa2EX_B10();
+  const q=`Ángulos consecutivos AOB, BOC y COD sobre una recta. m∠AOC=${aoc}°, m∠BOD=${bod}°, m∠AOD=${aod}°. Calcula m∠BOC.`;
+  const ws=[b+4,b-4,b+8,a].filter(v=>v>0&&v!==b).slice(0,3);
+  return{q,a:`${b}°`,opts:_sa2shuf([`${b}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// ── EXAMEN – RECTAS PARALELAS (SVG) ──────────────────────────────────────────
+// EX-C1: Zigzag – x = α + β (con SVG)
+function _genSa2EX_C1(){
+  const α=_sa2pick([20,25,30,35,40,45,50]);
+  const β=_sa2pick([20,25,30,35,40].filter(v=>α+v<170));
+  const x=α+β;
+  // SVG: two horizontal parallel lines, zigzag between
+  const Y1=40,Y2=130,X1=20,X2=200,XM=100,XV=120;
+  // Zigzag: starts on L1 at (Xa,Y1), kink at (XV,Ym), ends at L2 at (Xb,Y2)
+  const Xa=50,Xb=170,Ym=(Y1+Y2)/2;
+  // angle α at L1, β at L2
+  const svg=_sa2svgWrap(
+    `<line x1="${X1}" y1="${Y1}" x2="${X2}" y2="${Y1}" stroke="#aaa"/>` +// L1
+    `<line x1="${X1}" y1="${Y2}" x2="${X2}" y2="${Y2}" stroke="#aaa"/>` +// L2
+    `<line x1="${Xa}" y1="${Y1}" x2="${XV}" y2="${Ym}"/>` +// upper segment
+    `<line x1="${XV}" y1="${Ym}" x2="${Xb}" y2="${Y2}"/>` +// lower segment
+    `<text x="${X1-5}" y="${Y1+4}" text-anchor="end" font-size="10">L₁</text>`+
+    `<text x="${X1-5}" y="${Y2+4}" text-anchor="end" font-size="10">L₂</text>`+
+    `<text x="${Xa+18}" y="${Y1-4}" font-size="10">${α}°</text>`+
+    `<text x="${Xb-30}" y="${Y2+14}" font-size="10">${β}°</text>`+
+    `<text x="${XV+8}" y="${Ym}" font-size="10">x°</text>`,
+    220,180);
+  const ws=[x+10,x-10,α,β,x+5].filter(v=>v>0&&v<180&&v!==x).slice(0,3);
+  return{q:`${svg}L₁ // L₂. Calcula el ángulo x.`,a:`${x}°`,opts:_sa2shuf([`${x}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-C2: Alternos internos algebraicos: ax+b = cx+d (con SVG)
+function _genSa2EX_C2(){
+  const xv=_sa2rnd(5,30);
+  const a=_sa2pick([3,4,5,6]),b=_sa2pick([5,10,15,20]);
+  const c=_sa2pick([1,2].filter(v=>v!==a));
+  const d=a*xv+b-c*xv;
+  if(d<=0||!Number.isInteger(d)||d>90)return _genSa2EX_C2();
+  const Y1=45,Y2=130;
+  const svg=_sa2svgWrap(
+    `<line x1="15" y1="${Y1}" x2="215" y2="${Y1}"/>` +
+    `<line x1="15" y1="${Y2}" x2="215" y2="${Y2}"/>` +
+    `<line x1="170" y1="25" x2="50" y2="150"/>` +// transversal
+    `<text x="10" y="${Y1+4}" text-anchor="end" font-size="10">L₁</text>`+
+    `<text x="10" y="${Y2+4}" text-anchor="end" font-size="10">L₂</text>`+
+    `<text x="145" y="${Y1-6}" font-size="10">(${a}x+${b})°</text>`+
+    `<text x="55" y="${Y2+14}" font-size="10">(${c}x+${d})°</text>`,
+    230,175);
+  const ws=[xv+5,xv-5,xv+10,xv-10].filter(v=>v>0&&v!==xv).slice(0,3);
+  return{q:`${svg}L₁ // L₂. Los ángulos marcados son alternos internos. Calcula x.`,a:`${xv}`,opts:_sa2shuf([`${xv}`,...ws.map(String)]),mc:true};
+}
+
+// EX-C3: Co-interiores algebraicos: (ax+b)+(cx+d)=180 (con SVG)
+function _genSa2EX_C3(){
+  const a=_sa2pick([2,3,4]),b=_sa2pick([5,10,15,20]);
+  const c=_sa2pick([1,2,3]),d=_sa2pick([5,10,15,20,25]);
+  if((180-b-d)%(a+c)!==0)return _genSa2EX_C3();
+  const x=(180-b-d)/(a+c);
+  if(x<=0||x>45)return _genSa2EX_C3();
+  const Y1=45,Y2=130;
+  const svg=_sa2svgWrap(
+    `<line x1="15" y1="${Y1}" x2="215" y2="${Y1}"/>` +
+    `<line x1="15" y1="${Y2}" x2="215" y2="${Y2}"/>` +
+    `<line x1="60" y1="20" x2="160" y2="155"/>` +
+    `<text x="10" y="${Y1+4}" text-anchor="end" font-size="10">L₁</text>`+
+    `<text x="10" y="${Y2+4}" text-anchor="end" font-size="10">L₂</text>`+
+    `<text x="85" y="${Y1-6}" font-size="10">(${a}x+${b})°</text>`+
+    `<text x="105" y="${Y2+14}" font-size="10">(${c}x+${d})°</text>`,
+    230,175);
+  const ws=[x+5,x-5,x+10].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q:`${svg}L₁ // L₂. Los ángulos marcados son co-interiores. Calcula x.`,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// EX-C4: (ax-b)+(cx+d)=180 (forma más exacta de imagen 14)
+function _genSa2EX_C4(){
+  const a=_sa2pick([4,5,6]),b=_sa2pick([3,5,10]);
+  const c=_sa2pick([3,4,5,6].filter(v=>v!==a)),d=_sa2pick([3,5,10]);
+  if((180+b-d)%(a+c)!==0)return _genSa2EX_C4();
+  const x=(180+b-d)/(a+c);
+  if(x<=0||x>40)return _genSa2EX_C4();
+  const Y1=45,Y2=130;
+  const svg=_sa2svgWrap(
+    `<line x1="15" y1="${Y1}" x2="215" y2="${Y1}"/>` +
+    `<line x1="15" y1="${Y2}" x2="215" y2="${Y2}"/>` +
+    `<line x1="160" y1="22" x2="60" y2="155"/>` +
+    `<text x="10" y="${Y1+4}" text-anchor="end" font-size="10">L₁</text>`+
+    `<text x="10" y="${Y2+4}" text-anchor="end" font-size="10">L₂</text>`+
+    `<text x="100" y="${Y1-5}" font-size="10">(${a}x−${b})°</text>`+
+    `<text x="60" y="${Y2+14}" font-size="10">(${c}x+${d})°</text>`,
+    230,175);
+  const ws=[x+5,x-5,x+10].filter(v=>v>0&&v!==x).slice(0,3);
+  return{q:`${svg}L₁ // L₂. Co-interiores. Calcula x.`,a:`${x}`,opts:_sa2shuf([`${x}`,...ws.map(String)]),mc:true};
+}
+
+// EX-C5: Alternos externos iguales con álgebra: αx+90 y β·α (del imagen 12)
+function _genSa2EX_C5(){
+  // 5α+90 = 7α (alternos externos) → 2α=90 → α=45
+  const k1=_sa2pick([3,4,5,6]),c=_sa2pick([60,70,80,90]);
+  const k2=_sa2pick([2,3].filter(v=>v!==1));
+  // (k1·α + c) = k2·something... simplify: k1·α + c = (k1+k2)·α → c = k2·α → α=c/k2
+  if(c%k2!==0)return _genSa2EX_C5();
+  const α=c/k2;
+  if(α<=0||α>60)return _genSa2EX_C5();
+  const Y1=45,Y2=130;
+  const svg=_sa2svgWrap(
+    `<line x1="15" y1="${Y1}" x2="215" y2="${Y1}"/>` +
+    `<line x1="15" y1="${Y2}" x2="215" y2="${Y2}"/>` +
+    `<line x1="55" y1="22" x2="175" y2="155"/>` +
+    `<text x="10" y="${Y1+4}" text-anchor="end" font-size="10">L₁</text>`+
+    `<text x="10" y="${Y2+4}" text-anchor="end" font-size="10">L₂</text>`+
+    `<text x="95" y="${Y1-5}" font-size="10">${k1}α + ${c}°</text>`+
+    `<text x="130" y="${Y2+14}" font-size="10">${k1+k2}α</text>`,
+    230,175);
+  const ws=[α+5,α-5,α+10].filter(v=>v>0&&v!==α).slice(0,3);
+  return{q:`${svg}L₁ // L₂. Si los ángulos marcados son iguales (alternos externos). Calcula α.`,a:`${α}°`,opts:_sa2shuf([`${α}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-C6: Suma w+x+y en tres transversales (imagen problema 9)
+function _genSa2EX_C6(){
+  // Three parallel lines cut by one transversal. Angles x, y, w are on each parallel = each is same → x+y+w = 3·base
+  // Actually: they can be a,b,c with a+b+c = 360-base or similar. Simplified version:
+  // Problem 9 in image: three parallel lines, one transversal. angles w, y, x. Sum = 3*70 = 210 for base 70.
+  const base=_sa2pick([60,70,75,80]);
+  const ans=base*3;
+  const q=`Tres rectas paralelas son cortadas por una transversal. Los ángulos alternos internos consecutivos miden w°, y° y x°. Si el ángulo de la transversal en la primera paralela es ${base}°, calcula w + y + x.`;
+  const ws=[ans+10,ans-10,ans+15,ans-15,360-base].filter(v=>v>0&&v!==ans).slice(0,3);
+  return{q,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-C7: Suma r+s+t con ángulos de 40° y 60° en punto medio (imagen problema 10)
+function _genSa2EX_C7(){
+  const p=_sa2pick([30,40,50]),q2=_sa2pick([40,50,60,70].filter(v=>v!==p));
+  // r+s+t: at the middle point, angles around = 360. r is alt to left-top, s is in the center, t is alt to right-bottom
+  // r = 180-p (supplement of angle p at L1), t = 180-q2 (supplement of angle q2 at L2), s = p+q2 (zigzag)
+  const r=180-p,t=180-q2,s=p+q2;
+  if(r+s+t>500||r+s+t<200)return _genSa2EX_C7();
+  const ans=r+s+t;
+  const q3=`Dos rectas paralelas cortadas por una secante forman ángulos de ${p}° y ${q2}° en cada paralela. Los ángulos r, s y t se forman en el punto de cruce intermedio. Calcula r + s + t.`;
+  const ws=[ans+10,ans-10,ans+20,360].filter(v=>v>0&&v!==ans).slice(0,3);
+  return{q:q3,a:`${ans}°`,opts:_sa2shuf([`${ans}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// EX-C8: Con ángulos paralelos en flecha (imagen 8, ángulo 45° con flecha)
+function _genSa2EX_C8(){
+  const a=_sa2pick([30,35,40,45,50,55,60]);
+  // Two parallel lines with arrows, transversal at angle a. What is x (alternate interior)?
+  // With arrows (same direction), alternate exterior = equal, so x = a
+  const q=`L₁ // L₂. Una secante forma un ángulo de ${a}° con L₁. Los segmentos de L₁ y L₂ van en el mismo sentido (indicado por flechas). Calcula x (ángulo correspondiente en L₂).`;
+  const ws=[180-a,a+10,a-10,a+15].filter(v=>v>0&&v<180&&v!==a).slice(0,3);
+  return{q,a:`${a}°`,opts:_sa2shuf([`${a}°`,...ws.map(v=>`${v}°`)]),mc:true};
+}
+
+// Función principal del examen
+function _genSa2EXAM(){
+  const pool=[
+    _genSa2EX_A1,_genSa2EX_A2,_genSa2EX_A3,_genSa2EX_A4,
+    _genSa2EX_B1,_genSa2EX_B2,_genSa2EX_B3,_genSa2EX_B4,_genSa2EX_B5,
+    _genSa2EX_B6,_genSa2EX_B7,_genSa2EX_B8,_genSa2EX_B9,_genSa2EX_B10,
+    _genSa2EX_C1,_genSa2EX_C2,_genSa2EX_C3,_genSa2EX_C4,_genSa2EX_C5,
+    _genSa2EX_C6,_genSa2EX_C7,_genSa2EX_C8
+  ];
+  return _sa2pick(pool)();
+}
+
 // ── HCA 5° Primaria – Matemática ─────────────────────────────────────────────
 function _hca5rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function _hca5pick(a){return a[_hca5rnd(0,a.length-1)];}
@@ -2877,7 +3507,7 @@ const PREP_LEVELS = {
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
-      '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu'],
+      '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
@@ -2942,6 +3572,9 @@ const PREP_CURRICULUM = {
       {lbl:'Operaciones con Decimales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},
       {lbl:'Ecuaciones',                area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3']},
       {lbl:'Regla de 3',                area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3']},
+      {lbl:'Ángulos y Bisectriz',       area:'geometria',  editorial:'san_agustin', skills:['sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3']},
+      {lbl:'Rectas Paralelas y Secante',area:'geometria',  editorial:'san_agustin', skills:['sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3']},
+      {lbl:'Examen General – Geometría',area:'geometria',  editorial:'san_agustin', skills:['sa2_geom_ex']},
     ], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
   },
@@ -2955,6 +3588,7 @@ const PREP_EDITORIALS = {
   san_ignacio:    { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
   san_francisco:         { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís',   grades:{ primaria:['6'] } },
   hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ primaria:['5'], secundaria:['2'] } },
+  san_agustin:             { lbl:'Colegio San Agustín',            ico:'📗', abbr:'San Agustín',   grades:{ secundaria:['2'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
