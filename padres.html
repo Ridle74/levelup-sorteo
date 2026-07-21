@@ -138,6 +138,15 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .sm-seg button { flex:1; border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:0 8px; cursor:pointer; transition:all 0.15s; height:100%; display:flex; align-items:center; justify-content:center; }
 .sm-seg button.on { background:#111; color:#fff; }
 .sm-del-btn { width:100%; border:1px solid rgba(0,0,0,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:#fff; color:rgba(0,0,0,0.45); margin-top:8px; }
+#sm-del-popup { position:fixed; inset:0; z-index:700; display:flex; align-items:center; justify-content:center; padding:20px; }
+.sm-del-popup-bg { position:absolute; inset:0; background:rgba(0,0,0,0.18); }
+.sm-del-popup-card { position:relative; z-index:1; background:#fff; border-radius:16px; padding:18px 20px 16px; width:calc((100vw - 60px) / 3); min-width:200px; box-shadow:0 8px 32px rgba(0,0,0,0.22); }
+.sm-del-popup-title { font-size:11px; font-weight:700; color:rgba(0,0,0,0.45); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
+.sm-del-popup-btn { display:block; width:100%; border:1px solid rgba(200,40,40,0.25); border-radius:10px; padding:11px 14px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:12px; letter-spacing:0.07em; text-transform:uppercase; background:#fff; color:rgba(180,30,30,0.9); text-align:left; margin-bottom:7px; }
+.sm-del-popup-btn:hover { background:rgba(200,40,40,0.05); }
+.sm-reprog-btn { border-color:rgba(22,163,74,0.30) !important; color:rgba(21,128,61,0.95) !important; }
+.sm-reprog-btn:hover { background:rgba(22,163,74,0.06) !important; }
+.sm-del-popup-cancel { display:block; width:100%; border:none; border-radius:10px; padding:9px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; background:rgba(0,0,0,0.06); color:rgba(0,0,0,0.38); margin-top:4px; }
 .sm-daytog { border:1px solid rgba(0,0,0,0.18); border-radius:8px; background:#fff; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:0 4px; cursor:pointer; transition:all 0.15s; text-align:center; overflow:hidden; height:40px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
 .sm-daytog.on { background:#111; color:#fff; border-color:#111; }
 </style>
@@ -988,15 +997,63 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     });
   });
 
-  // ── Smart time range: fit to actual sessions ─────────────────
+  // ── Smart time range: fit to what's actually visible THIS WEEK ──
   var dynMin = 23, dynMax = 0;
+  var _weekDstrs = dayList.map(function(d){ return _dStr(d); });
+
+  // Sesiones: solo incluir las que tienen alumnos activos en alguna fecha de esta semana
   Object.values(slotMap).forEach(function(sl) {
+    var matchDates = sl.oneTimeDate
+      ? dayList.filter(function(d){ return _dStr(d) === sl.oneTimeDate; })
+      : dayList.filter(function(d){ return d.getDay() === sl.day; });
+    // Calcular la duración máxima de alumnos activos en esta semana (no la global)
+    var activeDur = matchDates.reduce(function(mx, d) {
+      var ds = _dStr(d);
+      var acts = sl.students.filter(function(st){ return calIsStudentActive(st, d, ds); });
+      return Math.max(mx, acts.reduce(function(m, st){ return Math.max(m, st.dur||60); }, 0));
+    }, 0);
+    if (!activeDur) return; // sin alumnos activos esta semana
     var h = toH(sl.start);
     if (h < dynMin) dynMin = h;
-    var endH = h + sl.maxDur / 60;
+    var endH = h + activeDur / 60;
     if (endH > dynMax) dynMax = endH;
   });
-  const hasSlots = Object.keys(slotMap).length > 0;
+
+  // Horarios libres: solo los visibles en esta semana (misma lógica que calShouldShowFreeSlot)
+  var _weekDows = new Set(dayList.map(function(d){ return d.getDay(); }));
+  (DATA.freeSlots||[]).forEach(function(fs){
+    var visible = false;
+    if (fs.recurring === false && fs.date) {
+      visible = _weekDstrs.indexOf(fs.date) !== -1;
+    } else if (_weekDows.has(Number(fs.day))) {
+      var _fsDow = Number(fs.day);
+      var _fsIdx = dayList.findIndex(function(d){ return d.getDay() === _fsDow; });
+      var _fsDateStr = _fsIdx >= 0 ? _weekDstrs[_fsIdx] : null;
+      if (_fsDateStr) {
+        var _fsDate = dayList[_fsIdx];
+        if (Array.isArray(fs.skipDates) && fs.skipDates.indexOf(_fsDateStr) !== -1) {
+          visible = false;
+        } else if (fs.nWeeks && fs.weekStart) {
+          var _fsWs = new Date(fs.weekStart+'T00:00:00');
+          var _fsWe = new Date(_fsWs.getTime() + fs.nWeeks * 7 * 24 * 60 * 60 * 1000);
+          visible = _fsDate >= _fsWs && _fsDate < _fsWe;
+        } else {
+          // Verificar límites del ciclo (igual que calShouldShowFreeSlot)
+          var _fsCutoff = cycleCutoffDate(fs.cycleId);
+          var _fsCycleStart = cycleStartDate(fs.cycleId);
+          visible = !(_fsCutoff && _fsDate > _fsCutoff) && !(_fsCycleStart && _fsDate < _fsCycleStart);
+        }
+      }
+    }
+    if (visible) {
+      var h = toH(fs.start);
+      if (h < dynMin) dynMin = h;
+      var endH = h + (fs.dur||60) / 60;
+      if (endH > dynMax) dynMax = endH;
+    }
+  });
+
+  const hasSlots = Object.keys(slotMap).length > 0 || dynMax > 0;
   // ── Smart day filter: single child → only their class days ───
   // (Solo aplica en vista "4 días": en "Semana" siempre se ven los 7 días,
   // de lunes a domingo, sin importar si ese alumno tiene clase ese día.)
@@ -1005,13 +1062,16 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
   const rawMinH = hasSlots ? (Number.isInteger(dynMin) ? dynMin - 1 : Math.floor(dynMin)) : 8;
   const MIN_H = Math.max(0, rawMinH);
   _padCalMinH = MIN_H;
-  // MAX_H: for single child → same padding below as above (centering); otherwise ceil
+  // MAX_H: determina etiquetas de hora; totalH usa dynMax directamente para borde exacto
   var MAX_H;
   if (!hasSlots) { MAX_H = 22; }
   else if (singleChild) { MAX_H = Math.min(24, Math.ceil(dynMax) + (dynMin - MIN_H)); }
-  else { MAX_H = Math.min(24, Math.ceil(dynMax)); }
+  else { MAX_H = Math.min(24, Math.ceil(dynMax) + 1); }
   const HOURS = Array.from({length: MAX_H - MIN_H}, function(_, i){ return MIN_H + i; });
-  const totalH = HOURS.length * ROW_H;
+  // totalH: borde inferior = dynMax + margen (sin ceil), para que sea exactamente
+  // 1 hora (o margen simétrico en singleChild) después del último evento.
+  const _padBelow = hasSlots ? (singleChild ? (dynMin - MIN_H) : 1) : (MAX_H - MIN_H);
+  const totalH = Math.round((Math.min(24, dynMax + _padBelow) - MIN_H) * ROW_H);
   const activeDows  = new Set(Object.values(slotMap).map(function(sl){ return sl.day; }));
   const filteredDayList = singleChild
     ? dayList.filter(function(d){ return activeDows.has(d.getDay()); })
@@ -1145,8 +1205,8 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
     +'</div>'
     +'<div class="pcal-body-scroll" id="pcal-scroll"'+(showParent?' style="overflow-x:hidden"':'')+'>'
     +'<div class="pcal-body-inner" style="padding-bottom:24px">'
-    +'<div class="pcal-tl">'+tls+'</div>'
-    +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px">'+cols+nowHtml+'</div>'
+    +'<div class="pcal-tl" style="height:'+totalH+'px;overflow:hidden">'+tls+'</div>'
+    +'<div class="pcal-days-body" style="width:'+(colW*numCols)+'px;height:'+totalH+'px;overflow:hidden">'+cols+nowHtml+'</div>'
     +'</div></div>';
 }
 
@@ -1712,6 +1772,28 @@ function saveTemplateForm() {
     bufferMin:   parseInt(bufEl.value)
   };
   if (!DATA.templates) DATA.templates = [];
+  // Validar solapamiento con otras plantillas del mismo día y ciclo
+  const newS = _toMin(tmpl.windowStart), newE = _toMin(tmpl.windowEnd);
+  const conflict = (DATA.templates||[]).find(function(t){
+    if (t.id === tmpl.id) return false;                   // no comparar consigo misma al editar
+    if (t.day !== tmpl.day) return false;                 // distinto día → ok
+    // Mismo alcance: ambas cycle con mismo cycleId (o ambas sin cycleId)
+    var sameScope = t.scopeType === tmpl.scopeType;
+    if (!sameScope) return false;
+    if (scopeType === 'cycle') {
+      if (String(t.cycleId||'') !== String(tmpl.cycleId||'')) return false;
+    } else {
+      // dateRange: solapan si los rangos de fechas se cruzan
+      if ((t.dateTo||'') < (tmpl.dateFrom||'') || (t.dateFrom||'') > (tmpl.dateTo||'')) return false;
+    }
+    // Ventanas de tiempo solapan?
+    var tS = _toMin(t.windowStart), tE = _toMin(t.windowEnd);
+    return newS < tE && newE > tS;
+  });
+  if (conflict) {
+    showToast('La ventana de esta plantilla se solapa con otra del mismo día y ciclo ('+conflict.windowStart+'–'+conflict.windowEnd+').', 'error');
+    return;
+  }
   const idx = DATA.templates.findIndex(function(t){ return t.id === tmpl.id; });
   if (idx >= 0) DATA.templates[idx] = tmpl; else DATA.templates.push(tmpl);
   saveTemplates();
@@ -1829,7 +1911,19 @@ function generateFromTemplate(tmplId) {
       if (fs.recurring === false) return true;
       if (Number(fs.day) !== tmpl.day) return true;
       var fCyc = fs.cycleId == null ? null : String(fs.cycleId);
-      if (fCyc === _tCyc) return false; // propio cycleId → eliminar, se regenera
+      if (fCyc === _tCyc) {
+        // Mismo cycleId: conservar solo si OTRO template del mismo ciclo+día "posee" el slot
+        // (es decir, el slot cae dentro de la ventana de esa otra plantilla).
+        // Slots fuera de la ventana de cualquier otra plantilla → eliminar y regenerar.
+        var fsS = _toMin(fs.start), fsE = fsS + (fs.dur || 60);
+        var ownedByOther = _allDayTmpls.some(function(t){
+          if (String(t.id) === String(tmpl.id)) return false; // ignorar plantilla actual
+          if ((t.cycleId == null ? null : String(t.cycleId)) !== _tCyc) return false; // distinto ciclo
+          var tS = _toMin(t.windowStart), tE = _toMin(t.windowEnd);
+          return fsS >= tS && fsE <= tE; // slot completamente dentro de la otra ventana
+        });
+        return ownedByOther;
+      }
       // Otro cycleId: conservar solo si está dentro de la ventana de su plantilla.
       var ownTmpl = _allDayTmpls.find(function(t){
         return (t.cycleId == null ? null : String(t.cycleId)) === fCyc;
@@ -2191,8 +2285,41 @@ function vAdminCuentas() {
           </div>`;
         }
 
+        // Ordenar plantillas:
+        // 1º ciclo más cercano a hoy (activo primero, luego próximos, luego pasados, "Todos" al final)
+        // 2º día de la semana lunes→domingo (1,2,3,4,5,6,0)
+        // 3º hora de inicio más temprana
+        var _today0 = new Date(); _today0.setHours(0,0,0,0);
+        function _cyclePriority(t) {
+          if (t.scopeType === 'dateRange') {
+            // Usar fecha de inicio del rango como referencia
+            var s = t.dateFrom ? new Date(t.dateFrom+'T00:00:00') : _today0;
+            return Math.abs(s - _today0);
+          }
+          if (!t.cycleId) return 9e15; // "Todos los ciclos" → al final
+          var cyc = (DATA.cycles||[]).find(function(c){ return String(c.id)===String(t.cycleId); });
+          if (!cyc) return 9e15;
+          var cs = cyc.start ? new Date(cyc.start+'T00:00:00') : null;
+          var ce = cyc.end   ? new Date(cyc.end  +'T00:00:00') : null;
+          // Activo ahora → distancia 0
+          if (cs && ce && _today0 >= cs && _today0 <= ce) return 0;
+          // Próximo (aún no empieza) → distancia positiva hacia el futuro
+          if (cs && _today0 < cs) return cs - _today0;
+          // Pasado → penalizar (poner después de los futuros)
+          if (ce) return 9e14 + (_today0 - ce);
+          return 9e15;
+        }
+        function _dowSort(d) { return d === 0 ? 7 : d; } // domingo al final
+        var sortedTemplates = (DATA.templates||[]).slice().sort(function(a, b){
+          var pa = _cyclePriority(a), pb = _cyclePriority(b);
+          if (pa !== pb) return pa - pb;
+          var da = _dowSort(a.day), db = _dowSort(b.day);
+          if (da !== db) return da - db;
+          return (a.windowStart||'').localeCompare(b.windowStart||'');
+        });
+
         // Renderizar tarjetas + formulario inline donde corresponde
-        var html = (DATA.templates||[]).map(function(tmpl){
+        var html = sortedTemplates.map(function(tmpl){
           const cycleName = tmpl.scopeType === 'dateRange'
             ? (tmpl.dateFrom||'').slice(5).replace('-','/') + '–' + (tmpl.dateTo||'').slice(5).replace('-','/')
             : (tmpl.cycleId ? ((DATA.cycles||[]).find(function(c){ return String(c.id)===String(tmpl.cycleId); })||{}).name || '—' : 'Todos los ciclos');
@@ -2408,10 +2535,10 @@ function _buildSM(prefill, isEdit) {
     if (!c.start || !c.end) return false;
     return _refD >= new Date(c.start+'T00:00:00') && _refD <= new Date(c.end+'T00:00:00');
   });
-  var _smFreqSel   = _smIsNWeeks  ? 'nweeks'
+  var _smFreqSel   = _smIsOnce    ? 'once'   // slot de una sola vez: no mezclar con nweeks
+    : _smIsNWeeks  ? 'nweeks'
     : _smIsCurCyc  ? 'cur'
     : _smIsNextCyc ? 'next'
-    : _smIsOnce    ? 'nweeks'
     : (_cycleOfRef && smCurCycle  && String(_cycleOfRef.id)===String(smCurCycle.id))  ? 'cur'
     : (_cycleOfRef && smNextCycle && String(_cycleOfRef.id)===String(smNextCycle.id)) ? 'next'
     : recVal && smCurCycle  ? 'cur'
@@ -2463,9 +2590,7 @@ function _buildSM(prefill, isEdit) {
   var parOpts = Object.entries(DATA.parents)
     .sort(function(a,b){ return a[1].name.localeCompare(b[1].name); })
     .map(function(e){ return '<option value="'+e[0]+'"'+(e[0]===initPid?' selected':'')+'>'+e[1].name+'</option>'; }).join('');
-  // Reprogramación rápida: al editar un horario libre, permite elegir la clase semanal de
-  // un alumno y la intercambia con este horario libre (el alumno se muda aquí, y su horario
-  // anterior queda libre).
+  // Reprogramación rápida (horario libre → sesión): dropdown de sesiones para intercambiar.
   var swapOpts = (isEdit && smType === 'free')
     ? DATA.sessions.filter(function(s){ return s.recurring !== false; })
         .filter(function(s, _, arr) {
@@ -2491,6 +2616,22 @@ function _buildSM(prefill, isEdit) {
           var sorted = daysArr.slice().sort(function(a,b){ return (a===0?7:a)-(b===0?7:b); });
           var daysLabel = sorted.map(function(d){ return DAY_NAMES[d]; }).join(' y ');
           return '<option value="'+s.id+'">'+(st.icon||'')+' '+(st.name||('Alumno '+s.studentId))+' — '+daysLabel+' '+s.start+'</option>';
+        }).join('')
+    : '';
+  // Reprogramación rápida (sesión → horario libre): dropdown de horarios libres disponibles.
+  var swapFreeOpts = (isEdit && smType === 'session' && smEditOccDate)
+    ? (DATA.freeSlots || [])
+        .slice()
+        .sort(function(a, b) {
+          var aDow = a.recurring === false ? new Date(a.date+'T00:00:00').getDay() : Number(a.day);
+          var bDow = b.recurring === false ? new Date(b.date+'T00:00:00').getDay() : Number(b.day);
+          return (aDow===0?7:aDow)-(bDow===0?7:bDow) || (a.start||'').localeCompare(b.start||'');
+        })
+        .map(function(fs) {
+          var dayLabel = (fs.recurring === false && fs.date)
+            ? fmtDM(new Date(fs.date+'T00:00:00'))
+            : DAY_NAMES[Number(fs.day)];
+          return '<option value="'+fs.id+'">'+dayLabel+' · '+fs.start+'</option>';
         }).join('')
     : '';
   var html = '<div class="sm-overlay" onclick="if(event.target===this)closeSessionModal()">'
@@ -2540,9 +2681,12 @@ function _buildSM(prefill, isEdit) {
     +'</div></div>'
     +'<div><label class="field-label">Frecuencia</label>'
     +'<div class="sm-seg" id="sm-rec-seg" style="font-size:10px">'
-    +(smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">'+smCurCycle.name+'</button>'  : '')
-    +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">'+smNextCycle.name+'</button>' : '')
-    +'<button class="'+(_smFreqSel==='nweeks'?'on':'')+'" data-rec="nweeks" onclick="smToggleRec(this,\'nweeks\')">N sem.</button>'
+    +(_smIsOnce
+      ? '<button class="on" data-rec="false" style="pointer-events:none;opacity:0.6">Una vez</button>'
+      : (smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">'+smCurCycle.name+'</button>'  : '')
+       +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">'+smNextCycle.name+'</button>' : '')
+       +'<button class="'+(_smFreqSel==='nweeks'?'on':'')+'" data-rec="nweeks" onclick="smToggleRec(this,\'nweeks\')">N sem.</button>'
+    )
     +'</div></div>'
     +'<div><label class="field-label">Modalidad</label>'
     +'<div class="sm-seg" id="sm-mod-seg">'
@@ -2554,10 +2698,11 @@ function _buildSM(prefill, isEdit) {
     +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
     // Col 1: campo de fecha/semana/n-sem (condicional, mutuamente excluyentes)
     +'<div>'
-    +'<div id="sm-date-wrap" style="display:'+(!isEdit&&_smIsOnce?'':'none')+'">'
+    +'<div id="sm-date-wrap" style="display:'+(_smIsOnce?'':'none')+'">'
     +'<label class="field-label">Fecha específica</label>'
     +'<input class="fsm" id="sm-date" type="date" value="'+(p.date||'')+'"></div>'
-    +'<div id="sm-nweeks-wrap">'
+    +'<input type="hidden" id="sm-nw-start" value="'+_smNWStart.toISOString().slice(0,10)+'">'
+    +'<div id="sm-nweeks-wrap" style="display:'+(_smIsOnce?'none':'')+'">'
     +'<label class="field-label">N° de semanas</label>'
     +'<select class="fsm" id="sm-nweeks">'
     +Array.from({length:_smMaxWeeks},function(_,i){
@@ -2579,8 +2724,8 @@ function _buildSM(prefill, isEdit) {
         return '<button type="button" class="sm-daytog'+(sel?' on':'')+'" data-dow="'+i+'" onclick="smToggleDay(this)" style="flex:1;min-width:0">'+n.slice(0,3)+'</button>';
       }).join('')
     +'</div></div>'
-    // Col 3: Aplicar este cambio a (solo en edición)
-    +(isEdit && smEditOccDate
+    // Col 3: "Aplicar este cambio a" para horario libre / "Reprogramar a" para sesión
+    +(isEdit && smEditOccDate && smType === 'free'
       ? '<div id="sm-scope-wrap" style="display:'+(recVal||_smIsOnce?'':'none')+'">'
         +'<label class="field-label">Aplicar este cambio a</label>'
         +'<div class="sm-seg" id="sm-scope-seg">'
@@ -2588,7 +2733,21 @@ function _buildSM(prefill, isEdit) {
         +'<button class="'+(_smIsOnce?'on':'')+'" data-scope="one" onclick="smScopeClicked(this,\'one\')">'+(Array.isArray(p.days)&&p.days.length>1||_smIsOnce?'Solo esta semana':'Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00')))+'</button>'
         +'</div>'
         +'</div>'
-      : '<div></div>')
+      : (isEdit && smEditOccDate && smType === 'session' && swapFreeOpts
+          ? '<div>'
+            +'<label class="field-label">Reprogramar a</label>'
+            +'<div style="display:flex;gap:4px;align-items:center;">'
+              +'<select class="fsm" id="sm-swap-week" style="appearance:auto;flex:1 1 0;min-width:0;">'
+                +'<option value="0">Esta semana</option>'
+                +'<option value="1">Semana siguiente</option>'
+              +'</select>'
+              +'<select class="fsm" id="sm-swap-free" style="appearance:auto;flex:1 1 0;min-width:0;" onchange="_swapFreeSelected()">'
+                +'<option value="">— Elegir horario libre —</option>'
+                +swapFreeOpts
+              +'</select>'
+            +'</div>'
+            +'</div>'
+          : '<div></div>'))
     +'</div>'
     +(isEdit && smType==='free'
       ? '<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.08)">'
@@ -2603,11 +2762,12 @@ function _buildSM(prefill, isEdit) {
         +'</div>'
       : '')
     +'<button class="btn-grn" style="margin-top:4px" onclick="submitSessionModal()">'+(isEdit?'Guardar cambios':'Crear')+'</button>'
-    +(isEdit ? '<button class="sm-del-btn" onclick="deleteSessionFromModal()">⊘ Eliminar este horario</button>' : '')
+    +(isEdit ? '<div id="sm-del-wrap"><button class="sm-del-btn" onclick="deleteSessionFromModal()">⊘ Eliminar este horario</button></div>' : '')
     +'</div></div>';
   var el = document.getElementById('session-modal');
   el.innerHTML = html;
   el.style.display = '';
+  if (smType === 'session') _smUpdateGradeDisplay();
 }
 
 function openNewSession(opts) {
@@ -2659,6 +2819,7 @@ function smSetType(t) {
   smType = t;
   document.querySelectorAll('#sm-type-seg button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===t); });
   document.getElementById('sm-sess-fields').style.display = t==='session' ? 'grid' : 'none';
+  if (t === 'session') _smUpdateGradeDisplay();
 }
 
 function smToggleSeg(segId, btn) {
@@ -2938,6 +3099,164 @@ function submitSessionModal() {
 // toca las reglas semanales de ninguno de los dos — solo crea excepciones puntuales para
 // esa semana (vía skipDates + una entrada de una sola vez), igual que el resto del ciclo
 // sigue normal.
+// Al elegir un horario libre en el dropdown "Reprogramar a", muestra popup de confirmación.
+function _swapFreeSelected() {
+  var sel = document.getElementById('sm-swap-free');
+  if (!sel || !sel.value || !smEditOccDate) return;
+
+  // Calcular fecha efectiva de la ocurrencia según offset de semana
+  var weekOffset = parseInt((document.getElementById('sm-swap-week')||{value:'0'}).value, 10) || 0;
+  var d = new Date(smEditOccDate + 'T00:00:00');
+  d.setDate(d.getDate() + weekOffset * 7);
+  var label = DAY_NAMES[d.getDay()] + ' ' + fmtDM(d);
+
+  // Calcular repeticiones restantes para decidir si mostrar "en adelante"
+  var _sess = (DATA.sessions||[]).find(function(s){ return s.id == smEditId; });
+  var _remaining = null;
+  if (_sess && _sess.nWeeks && _sess.weekStart) {
+    var _occDow = d.getDay();
+    var _occMon = new Date(d); _occMon.setDate(d.getDate() - (_occDow===0?6:_occDow-1));
+    var _wsMon  = new Date(_sess.weekStart+'T00:00:00');
+    _remaining  = _sess.nWeeks - Math.round((_occMon - _wsMon)/(7*24*60*60*1000));
+  } else if (_sess && _sess.cycleId != null) {
+    var _cyc = (DATA.cycles||[]).find(function(c){ return String(c.id)===String(_sess.cycleId); });
+    if (_cyc && _cyc.end) {
+      var _occDow2 = d.getDay();
+      var _occMon2 = new Date(d); _occMon2.setDate(d.getDate() - (_occDow2===0?6:_occDow2-1));
+      _remaining = Math.ceil((new Date(_cyc.end+'T00:00:00') - _occMon2)/(7*24*60*60*1000));
+    }
+  }
+  var _showFwd = _remaining === null || _remaining > 1;
+
+  var existing = document.getElementById('sm-del-popup');
+  if (existing) existing.remove();
+  var popup = document.createElement('div');
+  popup.id = 'sm-del-popup';
+  popup.innerHTML =
+      '<div class="sm-del-popup-bg" onclick="_swapCancelPopup()"></div>'
+    + '<div class="sm-del-popup-card">'
+    + '<div class="sm-del-popup-title">¿A qué fecha reprogramar?</div>'
+    + '<button class="sm-del-popup-btn sm-reprog-btn" onclick="_swapExecOne()">Solo ' + label + '</button>'
+    + (_showFwd
+        ? '<button class="sm-del-popup-btn sm-reprog-btn" onclick="_swapExecForward()">Desde ' + label + ' en adelante</button>'
+        : '')
+    + '<button class="sm-del-popup-cancel" onclick="_swapCancelPopup()">Cancelar</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+}
+function _swapCancelPopup() {
+  _delCancelPopup();
+  var sel = document.getElementById('sm-swap-free');
+  if (sel) sel.value = '';
+}
+function _swapExecOne()     { var wo=parseInt((document.getElementById('sm-swap-week')||{value:'0'}).value,10)||0; _delCancelPopup(); swapSessionWithFreeSlot('one', wo); }
+function _swapExecForward() { var wo=parseInt((document.getElementById('sm-swap-week')||{value:'0'}).value,10)||0; _delCancelPopup(); swapSessionWithFreeSlot('all', wo); }
+
+// Reprogramación desde sesión: mueve la/s ocurrencia/s de smEditOccDate al horario libre.
+// mode='one' → solo esa fecha.  mode='all' → desde esa fecha en adelante (serie truncada).
+function swapSessionWithFreeSlot(mode, weekOffset) {
+  var sel = document.getElementById('sm-swap-free');
+  var fsId = sel ? sel.value : null;
+  if (!fsId || smEditId == null || !smEditOccDate) return;
+  var _weekOff = weekOffset || 0;
+
+  var fsIdx   = (DATA.freeSlots||[]).findIndex(function(s){ return s.id == fsId; });
+  var sessIdx = (DATA.sessions||[]).findIndex(function(s){ return s.id == smEditId; });
+  if (fsIdx < 0 || sessIdx < 0) { showToast('No se encontró el horario seleccionado.'); return; }
+
+  var fs   = DATA.freeSlots[fsIdx];
+  var sess = DATA.sessions[sessIdx];
+  // Fecha efectiva de la ocurrencia de la sesión (ajustada por offset de semana)
+  var effectiveOccDate = (function(){
+    var d = new Date(smEditOccDate+'T00:00:00');
+    d.setDate(d.getDate() + _weekOff * 7);
+    return d.toISOString().slice(0,10);
+  })();
+  // Fecha del horario libre en la misma semana que effectiveOccDate
+  var fsFreeDate = (fs.recurring === false && fs.date)
+    ? fs.date : _shiftDateToDow(effectiveOccDate, Number(fs.day));
+  var fsFreeDow = new Date(fsFreeDate+'T00:00:00').getDay();
+
+  if (mode === 'one') {
+    // ── Solo esta fecha ──
+    if (!Array.isArray(sess.skipDates)) sess.skipDates = [];
+    if (sess.skipDates.indexOf(effectiveOccDate) === -1) sess.skipDates.push(effectiveOccDate);
+    DATA.sessions.push({ id:Date.now(), studentId:sess.studentId,
+      day:fsFreeDow, start:fs.start, dur:sess.dur, modality:sess.modality, topic:sess.topic,
+      recurring:false, date:fsFreeDate });
+    if (fs.recurring === false) {
+      DATA.freeSlots.splice(DATA.freeSlots.findIndex(function(s){ return s.id==fsId; }), 1);
+    } else {
+      if (!Array.isArray(fs.skipDates)) fs.skipDates = [];
+      if (fs.skipDates.indexOf(fsFreeDate) === -1) fs.skipDates.push(fsFreeDate);
+    }
+    DATA.freeSlots.push({ id:'fs_'+(Date.now()+1), day:Number(sess.day), start:sess.start,
+      dur:fs.dur||sess.dur||60, modality:fs.modality||sess.modality, recurring:false, date:effectiveOccDate });
+
+  } else {
+    // ── Desde esta fecha en adelante: truncar ambas series y crear nuevas ──
+    var occDate  = new Date(effectiveOccDate+'T00:00:00');
+    var occDow   = occDate.getDay();
+    var occMon   = new Date(occDate); occMon.setDate(occDate.getDate()-(occDow===0?6:occDow-1));
+    var fsFreeMon= new Date(fsFreeDate+'T00:00:00'); var ffd=fsFreeMon.getDay();
+    fsFreeMon.setDate(fsFreeMon.getDate()-(ffd===0?6:ffd-1));
+
+    // Truncar sesión original antes de esta semana
+    function _truncSess(rec) {
+      var ws = rec.weekStart ? new Date(rec.weekStart+'T00:00:00')
+        : (function(){ var cyc=(DATA.cycles||[]).find(function(c){return String(c.id)===String(rec.cycleId);});
+            var cs=cyc&&cyc.start?new Date(cyc.start+'T00:00:00'):null;
+            if(cs){var d2=new Date(cs);var dow2=cs.getDay();d2.setDate(cs.getDate()-(dow2===0?6:dow2-1));return d2;}
+            return occMon; })();
+      var keep = Math.round((occMon - ws)/(7*24*60*60*1000));
+      if (keep <= 0) return false;
+      rec.weekStart = ws.toISOString().slice(0,10); rec.nWeeks = keep; return true;
+    }
+    // Truncar free slot antes de su semana correspondiente
+    function _truncFs(rec) {
+      var ws = rec.weekStart ? new Date(rec.weekStart+'T00:00:00')
+        : (function(){ var cyc=(DATA.cycles||[]).find(function(c){return String(c.id)===String(rec.cycleId);});
+            var cs=cyc&&cyc.start?new Date(cyc.start+'T00:00:00'):null;
+            if(cs){var d2=new Date(cs);var dow2=cs.getDay();d2.setDate(cs.getDate()-(dow2===0?6:dow2-1));return d2;}
+            return fsFreeMon; })();
+      var keep = Math.round((fsFreeMon - ws)/(7*24*60*60*1000));
+      if (keep <= 0) return false;
+      rec.weekStart = ws.toISOString().slice(0,10); rec.nWeeks = keep; return true;
+    }
+
+    var sessKept = _truncSess(sess);
+    if (!sessKept) DATA.sessions.splice(sessIdx, 1);
+
+    var fsKept = (fs.recurring !== false) ? _truncFs(fs) : false;
+    if (!fsKept) DATA.freeSlots.splice(DATA.freeSlots.findIndex(function(s){ return s.id==fsId; }), 1);
+
+    // Nueva sesión desde fsFreeDate con el día/hora del horario libre
+    // Calcular semanas restantes a partir de la sesión original
+    var _remCalc = null;
+    if (sess.nWeeks && sess.weekStart) {
+      var _ws2 = new Date(sess.weekStart+'T00:00:00');
+      _remCalc = sess.nWeeks - Math.round((occMon - _ws2)/(7*24*60*60*1000));
+    } else if (sess.cycleId != null) {
+      var _cyc2 = (DATA.cycles||[]).find(function(c){ return String(c.id)===String(sess.cycleId); });
+      if (_cyc2 && _cyc2.end) _remCalc = Math.ceil((new Date(_cyc2.end+'T00:00:00') - occMon)/(7*24*60*60*1000));
+    }
+    var newSessWeeks = _remCalc || 4;
+    DATA.sessions.push({ id:Date.now(), studentId:sess.studentId, day:fsFreeDow,
+      start:fs.start, dur:sess.dur, modality:sess.modality, topic:sess.topic,
+      recurring:true, weekStart:fsFreeMon.toISOString().slice(0,10), nWeeks:newSessWeeks });
+
+    // Nuevo horario libre desde effectiveOccDate con el día/hora de la sesión original
+    DATA.freeSlots.push({ id:'fs_'+(Date.now()+1), day:Number(sess.day), start:sess.start,
+      dur:fs.dur||sess.dur||60, modality:fs.modality||sess.modality,
+      recurring:true, weekStart:occMon.toISOString().slice(0,10), nWeeks:newSessWeeks });
+  }
+
+  REF.set({ freeSlots:DATA.freeSlots, sessions:DATA.sessions }, { merge:true })
+    .catch(function(e){ console.error(e); showToast('Error al guardar el cambio.'); });
+  closeSessionModal(); render();
+  showToast('Clase reprogramada al '+fmtDM(new Date(fsFreeDate+'T00:00:00'))+'.', 'success');
+}
+
 function swapFreeSlotWithSession() {
   var sel = document.getElementById('sm-swap-session');
   if (!sel || !sel.value) { showToast('Selecciona un alumno y horario para reprogramar.'); return; }
@@ -3007,44 +3326,165 @@ function swapFreeSlotWithSession() {
 }
 
 function deleteSessionFromModal() {
-  var btn = document.querySelector('.sm-del-btn');
-  if (!btn) return;
-  if (!btn.dataset.confirmed) {
-    btn.textContent = '¿Confirmar? Toca de nuevo para eliminar.';
-    btn.style.background = 'rgba(0,0,0,0.07)';
-    btn.dataset.confirmed = '1';
+  var wrap = document.getElementById('sm-del-wrap');
+  if (!wrap) return;
+
+  // Si tenemos fecha de ocurrencia, siempre mostramos el popup (incluso para puntales).
+  // Sin fecha de ocurrencia: doble-tap directo.
+  if (!smEditOccDate) {
+    var btn = wrap.querySelector('.sm-del-btn');
+    if (!btn) return;
+    if (!btn.dataset.confirmed) {
+      btn.textContent = '¿Confirmar? Toca de nuevo para eliminar.';
+      btn.style.background = 'rgba(0,0,0,0.07)';
+      btn.dataset.confirmed = '1';
+      return;
+    }
+    _execDelete('all');
     return;
   }
-  // Si la regla sigue siendo semanal y se eligió "Solo esta fecha", NO se borra toda la
-  // serie — solo se agrega smEditOccDate a skipDates[] para cancelar esa ocurrencia puntual;
-  // el resto de semanas del ciclo siguen intactas. Aplica tanto a horarios libres como a
-  // horarios ya tomados (por alumno/padre de familia).
-  var scopeBtn = document.querySelector('#sm-scope-seg .on');
-  var onlyThisDate = !!smEditOccDate && scopeBtn && scopeBtn.dataset.scope === 'one';
+
+  var d = new Date(smEditOccDate + 'T00:00:00');
+  var label = DAY_NAMES[d.getDay()] + ' ' + fmtDM(d);
+
+  // ¿Es recurrente? Determina si mostrar "Desde aquí en adelante"
+  var _rec = smEditFree
+    ? (DATA.freeSlots||[]).find(function(x){ return x.id==smEditId; })
+    : (DATA.sessions||[]).find(function(x){ return x.id==smEditId; });
+  var isRecurring = _rec && _rec.recurring !== false;
+
+  var _remainingWeeks = null;
+  if (isRecurring && _rec) {
+    if (_rec.nWeeks && _rec.weekStart) {
+      var _occDow  = d.getDay();
+      var _occMon  = new Date(d); _occMon.setDate(d.getDate() - (_occDow === 0 ? 6 : _occDow - 1));
+      var _wsMon   = new Date(_rec.weekStart + 'T00:00:00');
+      _remainingWeeks = _rec.nWeeks - Math.round((_occMon - _wsMon) / (7 * 24 * 60 * 60 * 1000));
+    } else if (_rec.cycleId != null) {
+      var _cycle = (DATA.cycles||[]).find(function(c){ return String(c.id)===String(_rec.cycleId); });
+      if (_cycle && _cycle.end) {
+        var _occDow2 = d.getDay();
+        var _occMon2 = new Date(d); _occMon2.setDate(d.getDate() - (_occDow2 === 0 ? 6 : _occDow2 - 1));
+        _remainingWeeks = Math.ceil((new Date(_cycle.end + 'T00:00:00') - _occMon2) / (7 * 24 * 60 * 60 * 1000));
+      }
+    }
+  }
+  // "Desde aquí en adelante" solo si es recurrente Y quedan más de 1 repetición
+  var _showForward = isRecurring && (_remainingWeeks === null || _remainingWeeks > 1);
+
+  var existing = document.getElementById('sm-del-popup');
+  if (existing) existing.remove();
+  var popup = document.createElement('div');
+  popup.id = 'sm-del-popup';
+  popup.innerHTML =
+      '<div class="sm-del-popup-bg" onclick="_delCancelPopup()"></div>'
+    + '<div class="sm-del-popup-card">'
+    + '<div class="sm-del-popup-title">¿Qué deseas eliminar?</div>'
+    + '<button class="sm-del-popup-btn" onclick="_delOnlyThisDate()">Solo ' + label + '</button>'
+    + (_showForward
+        ? '<button class="sm-del-popup-btn" onclick="_delFromHereForward()">Desde ' + label + ' en adelante</button>'
+        : '')
+    + '<button class="sm-del-popup-cancel" onclick="_delCancelPopup()">Cancelar</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+}
+
+function _delCancelPopup() {
+  var el = document.getElementById('sm-del-popup');
+  if (el) el.remove();
+}
+
+function _delOnlyThisDate() {
+  _delCancelPopup();
   if (smEditFree) {
-    var baseFs = (DATA.freeSlots||[]).find(function(s){ return s.id==smEditId; });
-    if (onlyThisDate && baseFs && baseFs.recurring !== false) {
-      if (!Array.isArray(baseFs.skipDates)) baseFs.skipDates = [];
-      if (baseFs.skipDates.indexOf(smEditOccDate) === -1) baseFs.skipDates.push(smEditOccDate);
-    } else {
-      onlyThisDate = false;
-      DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id!=smEditId; });
+    var fs = (DATA.freeSlots||[]).find(function(s){ return s.id==smEditId; });
+    if (fs) {
+      if (fs.recurring === false) {
+        // Slot de una sola vez: eliminar del array (skipDates no se checa para estos)
+        DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id !== smEditId; });
+      } else {
+        if (!Array.isArray(fs.skipDates)) fs.skipDates = [];
+        if (fs.skipDates.indexOf(smEditOccDate) === -1) fs.skipDates.push(smEditOccDate);
+      }
     }
     saveFreeSlots();
   } else {
-    var baseSess = (DATA.sessions||[]).find(function(s){ return s.id==smEditId; });
-    if (onlyThisDate && baseSess && baseSess.recurring !== false) {
-      if (!Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
-      if (baseSess.skipDates.indexOf(smEditOccDate) === -1) baseSess.skipDates.push(smEditOccDate);
-    } else {
-      onlyThisDate = false;
-      DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
+    var sess = (DATA.sessions||[]).find(function(s){ return s.id==smEditId; });
+    if (sess) {
+      if (sess.recurring === false) {
+        // Sesión de una sola vez: eliminar del array
+        DATA.sessions = (DATA.sessions||[]).filter(function(s){ return s.id !== smEditId; });
+      } else {
+        if (!Array.isArray(sess.skipDates)) sess.skipDates = [];
+        if (sess.skipDates.indexOf(smEditOccDate) === -1) sess.skipDates.push(smEditOccDate);
+      }
     }
     saveSessions();
   }
-  closeSessionModal();
-  render();
-  showToast(onlyThisDate ? 'Horario cancelado solo para esa fecha.' : 'Eliminado.', 'success');
+  closeSessionModal(); render();
+  showToast('Horario cancelado solo para esa fecha.', 'success');
+}
+
+function _delFromHereForward() {
+  _delCancelPopup();
+  var occDate  = new Date(smEditOccDate + 'T00:00:00');
+  var occDow   = occDate.getDay();
+  var occMonday = new Date(occDate);
+  occMonday.setDate(occDate.getDate() - (occDow === 0 ? 6 : occDow - 1));
+
+  function _truncate(rec) {
+    // Calcular weekStart si no existe
+    var ws = null;
+    if (rec.weekStart) {
+      ws = new Date(rec.weekStart + 'T00:00:00');
+    } else {
+      // Ciclo-based: usar lunes de inicio del ciclo como weekStart
+      var cycle = rec.cycleId != null ? (DATA.cycles||[]).find(function(c){ return String(c.id)===String(rec.cycleId); }) : null;
+      var csDate = (cycle && cycle.start) ? new Date(cycle.start + 'T00:00:00') : null;
+      if (csDate) {
+        ws = new Date(csDate);
+        var csDow = csDate.getDay();
+        ws.setDate(csDate.getDate() - (csDow === 0 ? 6 : csDow - 1));
+      } else {
+        ws = occMonday; // fallback: truncar desde esta semana (deja 0 semanas → eliminar)
+      }
+    }
+    var weeksToKeep = Math.round((occMonday - ws) / (7 * 24 * 60 * 60 * 1000));
+    if (weeksToKeep <= 0) return false; // eliminar toda la sesión
+    rec.weekStart = ws.toISOString().slice(0, 10);
+    rec.nWeeks = weeksToKeep;
+    return true; // sesión modificada, no eliminada
+  }
+
+  if (smEditFree) {
+    var fs = (DATA.freeSlots||[]).find(function(s){ return s.id==smEditId; });
+    if (fs) {
+      var kept = _truncate(fs);
+      if (!kept) DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id!=smEditId; });
+    }
+    saveFreeSlots();
+  } else {
+    var sess = (DATA.sessions||[]).find(function(s){ return s.id==smEditId; });
+    if (sess) {
+      var kept = _truncate(sess);
+      if (!kept) DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
+    }
+    saveSessions();
+  }
+  closeSessionModal(); render();
+  showToast('Eliminado desde esa fecha en adelante.', 'success');
+}
+
+function _execDelete(scope) {
+  if (smEditFree) {
+    DATA.freeSlots = (DATA.freeSlots||[]).filter(function(s){ return s.id!=smEditId; });
+    saveFreeSlots();
+  } else {
+    DATA.sessions = DATA.sessions.filter(function(s){ return s.id!=smEditId; });
+    saveSessions();
+  }
+  closeSessionModal(); render();
+  showToast('Eliminado.', 'success');
 }
 
 function bookFreeSlot(fsId) {

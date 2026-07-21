@@ -129,10 +129,17 @@ function calShouldShowFreeSlot(fs, d, dstr, dow, intervals) {
     if (fs.date !== dstr) return false;
   } else {
     if (Array.isArray(fs.skipDates) && fs.skipDates.indexOf(dstr) !== -1) return false;
-    var cutoff = cycleCutoffDate(fs.cycleId);
-    if (cutoff && d > cutoff) return false;
-    var fsStart = cycleStartDate(fs.cycleId);
-    if (fsStart && d < fsStart) return false;
+    // Respetar nWeeks/weekStart igual que calIsStudentActive hace con sesiones
+    if (fs.nWeeks && fs.weekStart) {
+      var ws = new Date(fs.weekStart + 'T00:00:00');
+      var we = new Date(ws.getTime() + fs.nWeeks * 7 * 24 * 60 * 60 * 1000);
+      if (d < ws || d >= we) return false;
+    } else {
+      var cutoff = cycleCutoffDate(fs.cycleId);
+      if (cutoff && d > cutoff) return false;
+      var fsStart = cycleStartDate(fs.cycleId);
+      if (fsStart && d < fsStart) return false;
+    }
     if (Number(fs.day) !== dow) return false;
   }
   // Suprimir si solapa con sesión activa
