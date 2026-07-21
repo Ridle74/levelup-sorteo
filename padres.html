@@ -971,10 +971,9 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
     cycleBtns += '</div>';
   }
   var _mob = window.innerWidth <= 768;
-  var _tbSt  = _mob ? 'gap:4px;padding:7px 10px 4px;' : '';
-  var _togBt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 7px;font-size:9px;letter-spacing:0.06em;height:26px;' : '';
-  var _todSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 7px;font-size:9px;letter-spacing:0.07em;height:26px;' : '';
-  var _cycSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 6px;font-size:9px;letter-spacing:0.06em;height:26px;border-radius:7px;' : '';
+  var _togBt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:9px;letter-spacing:0.06em;height:26px;' : '';
+  var _todSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:9px;letter-spacing:0.07em;height:26px;' : '';
+  var _cycSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:9px;letter-spacing:0.06em;height:26px;border-radius:7px;' : '';
   var _navSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;font-size:13px;border-radius:7px;' : '';
   var _cycBtnsInner = '';
   if (curCyc || nextCyc) {
@@ -982,6 +981,7 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
     if (nextCyc) _cycBtnsInner += '<button class="pcal-cycle-btn'+(calJumpMode==='next'?' on':'')+'" style="'+_cycSt+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+nextCyc.id+'\'),\'next\')">'+nextCyc.name+'</button>';
     cycleBtns = '<div class="pcal-cycle-btns" style="'+ (_mob ? 'gap:3px;' : '') +'">' + _cycBtnsInner + '</div>';
   }
+  var _tbSt = _mob ? 'gap:4px;padding:7px 10px 4px;justify-content:space-between;' : '';
   return '<div class="pcal-toolbar" style="'+_tbSt+'">'
     + '<div class="pcal-toggle">'
     + '<button class="' + m4 + '" style="'+_togBt+'" onclick="setCalMode(\'4dias\')">4 días</button>'

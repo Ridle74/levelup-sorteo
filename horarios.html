@@ -495,27 +495,32 @@ function buildNav(rs,re) {
   var activeSlug = urlParts[urlParts.length-1];
   if (activeSlug === 'horarios') activeSlug = '';
   var isHome = !activeSlug;
+  var _mob = window.innerWidth <= 768;
+  var _togBt = _mob ? 'style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:9px;letter-spacing:0.06em;height:26px;"' : '';
+  var _todSt = _mob ? 'style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:9px;letter-spacing:0.07em;height:26px;"' : '';
+  var _cycSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:9px;letter-spacing:0.06em;height:26px;border-radius:7px;' : '';
+  var _navSt = _mob ? 'style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;font-size:13px;border-radius:7px;"' : '';
   var cycleBtns = '';
   if (curCyc || nextCyc) {
-    cycleBtns = '<div class="pcal-cycle-btns">';
+    var _cyci = '';
     if (curCyc) {
       var cs = cycleSlug(curCyc.name);
-      cycleBtns += '<a class="pcal-cycle-btn'+(activeSlug===cs?' on':'')+'" href="/horarios/'+cs+'">'+curCyc.name+'</a>';
+      _cyci += '<a class="pcal-cycle-btn'+(activeSlug===cs?' on':'')+'" style="'+_cycSt+'" href="/horarios/'+cs+'">'+curCyc.name+'</a>';
     }
     if (nextCyc) {
       var ns = cycleSlug(nextCyc.name);
-      cycleBtns += '<a class="pcal-cycle-btn'+(activeSlug===ns?' on':'')+'" href="/horarios/'+ns+'">'+nextCyc.name+'</a>';
+      _cyci += '<a class="pcal-cycle-btn'+(activeSlug===ns?' on':'')+'" style="'+_cycSt+'" href="/horarios/'+ns+'">'+nextCyc.name+'</a>';
     }
-    cycleBtns += '</div>';
+    cycleBtns = '<div class="pcal-cycle-btns" style="'+(_mob?'gap:3px;':'')+'">'+_cyci+'</div>';
   }
-  return '<div class="pcal-toolbar">'
+  return '<div class="pcal-toolbar" style="'+(_mob?'gap:4px;padding:7px 10px 4px;justify-content:space-between;':'')+'flex-wrap:nowrap;">'
     +'<div class="pcal-toggle">'
-    +'<button class="'+m4+'" onclick="setCalMode(\'4dias\')">4 días</button>'
-    +'<button class="'+mw+'" onclick="setCalMode(\'week\')">Semana</button>'
+    +'<button class="'+m4+'" '+_togBt+' onclick="setCalMode(\'4dias\')">4 días</button>'
+    +'<button class="'+mw+'" '+_togBt+' onclick="setCalMode(\'week\')">Sem</button>'
     +'</div>'
-    +'<a class="pcal-today-btn'+(isHome?' on':'')+'" href="/horarios">Hoy</a>'
+    +'<a class="pcal-today-btn'+(isHome?' on':'')+'" '+_todSt+' href="/horarios">Hoy</a>'
     +cycleBtns
-    +'<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
+    +'<div class="pcal-nav" style="'+(_mob?'gap:3px;margin-left:0;':'')+'"><button '+_navSt+' onclick="calStep(-1)">‹</button><button '+_navSt+' onclick="calStep(1)">›</button></div>'
     +'</div>'
     +'<div class="pcal-range-bar">'+fmtDM(rs)+' — '+fmtDM(re)+'</div>'
     +'<div class="pcal-legend">'
