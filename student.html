@@ -6,7 +6,7 @@
 <title>MATHS LEVEL UP — Estudiante</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
-  <script src="/levelup.js"></script>
+  <script src="/levelup.js?v=20260721"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -2729,6 +2729,77 @@ const BINGO_TOPICS = {
   sf6_u5_b5:  { ico:'#', lbl:'Cantidad de divisores (fórmula CD)',        qCount:4, gen:()=>_genSF6_U5_B5() },
   sf6_u5_b6:  { ico:'?', lbl:'Dígito para divisibilidad (avanzado)',      qCount:4, gen:()=>_genSF6_U5_B6() },
   sf6_u5_bq3: { ico:'⚡', lbl:'Quiz III – Factorización avanzada',        qCount:5, gen:()=>_genSF6_U5_BQ3(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Leyes de Exponentes I ──
+  sf6_exp_b1:  { ico:'aⁿ', lbl:'Producto de potencias: aᵐ × aⁿ',         qCount:4, gen:()=>_genSF6_EXP_B1() },
+  sf6_exp_b2:  { ico:'÷',  lbl:'Cociente de potencias: aᵐ ÷ aⁿ',          qCount:4, gen:()=>_genSF6_EXP_B2() },
+  sf6_exp_bq1: { ico:'⚡', lbl:'Quiz I – Producto y cociente',             qCount:5, gen:()=>_genSF6_EXP_BQ1(), quiz:true },
+  sf6_exp_b3:  { ico:'−ⁿ', lbl:'Exponentes negativos en cociente',        qCount:4, gen:()=>_genSF6_EXP_B3() },
+  sf6_exp_b4:  { ico:'x',  lbl:'Potencias con variables',                  qCount:4, gen:()=>_genSF6_EXP_B4() },
+  sf6_exp_bq2: { ico:'⚡', lbl:'Quiz II – Exp. negativos y variables',     qCount:5, gen:()=>_genSF6_EXP_BQ2(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Leyes de Exponentes II ──
+  sf6_ppp_b1:  { ico:'⁰',  lbl:'Potencia cero: a⁰ = 1',                   qCount:4, gen:()=>_genSF6_PPP_B1() },
+  sf6_ppp_b2:  { ico:'¹',  lbl:'Potencia uno: 1ⁿ = 1 y a¹ = a',           qCount:4, gen:()=>_genSF6_PPP_B2() },
+  sf6_ppp_bq1: { ico:'⚡', lbl:'Quiz I – P⁰ y P¹',                        qCount:5, gen:()=>_genSF6_PPP_BQ1(), quiz:true },
+  sf6_ppp_b3:  { ico:'()ⁿ', lbl:'Potencia de potencia: (aᵐ)ⁿ',           qCount:4, gen:()=>_genSF6_PPP_B3() },
+  sf6_ppp_b4:  { ico:'[⁰]', lbl:'Combinada con potencia cero',             qCount:4, gen:()=>_genSF6_PPP_B4() },
+  sf6_ppp_bq2: { ico:'⚡', lbl:'Quiz II – Potencia de potencia',           qCount:5, gen:()=>_genSF6_PPP_BQ2(), quiz:true },
+  sf6_ppp_b5:  { ico:'E',  lbl:'Expresiones combinadas P⁰, P¹, (aᵐ)ⁿ',   qCount:4, gen:()=>_genSF6_PPP_B5() },
+  sf6_ppp_bq3: { ico:'⚡', lbl:'Quiz III – Expresiones avanzadas',         qCount:5, gen:()=>_genSF6_PPP_BQ3(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Radicales n-ésimos ──
+  sf6_rad_b1:  { ico:'ⁿ√', lbl:'Simplificar ⁿ√(xᵐ)',                      qCount:4, gen:()=>_genSF6_RAD_B1() },
+  sf6_rad_b2:  { ico:'√·', lbl:'Producto: √a × √b',                        qCount:4, gen:()=>_genSF6_RAD_B2() },
+  sf6_rad_bq1: { ico:'⚡', lbl:'Quiz I – Simplificación y producto √',     qCount:5, gen:()=>_genSF6_RAD_BQ1(), quiz:true },
+  sf6_rad_b3:  { ico:'³√', lbl:'Producto cúbico: ³√a × ³√b',               qCount:4, gen:()=>_genSF6_RAD_B3() },
+  sf6_rad_b4:  { ico:'√÷', lbl:'Cociente: √a ÷ √b',                        qCount:4, gen:()=>_genSF6_RAD_B4() },
+  sf6_rad_bq2: { ico:'⚡', lbl:'Quiz II – Raíz cúbica y cociente',         qCount:5, gen:()=>_genSF6_RAD_BQ2(), quiz:true },
+  sf6_rad_b5:  { ico:'√√', lbl:'Raíz de raíz: ²√(²√a)',                    qCount:4, gen:()=>_genSF6_RAD_B5() },
+  sf6_rad_bq3: { ico:'⚡', lbl:'Quiz III – Radicales avanzados',            qCount:5, gen:()=>_genSF6_RAD_BQ3(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Monomios ──
+  sf6_mon_b1:  { ico:'GR', lbl:'Grado relativo de un monomio',             qCount:4, gen:()=>_genSF6_MON_B1() },
+  sf6_mon_b2:  { ico:'GA', lbl:'Grado absoluto de un monomio',             qCount:4, gen:()=>_genSF6_MON_B2() },
+  sf6_mon_bq1: { ico:'⚡', lbl:'Quiz I – Grados del monomio',              qCount:5, gen:()=>_genSF6_MON_BQ1(), quiz:true },
+  sf6_mon_b3:  { ico:'Σ',  lbl:'GR(x) + GR(y)',                            qCount:4, gen:()=>_genSF6_MON_B3() },
+  sf6_mon_b4:  { ico:'a?', lbl:'Hallar \'a\' dado el grado absoluto',      qCount:4, gen:()=>_genSF6_MON_B4() },
+  sf6_mon_bq2: { ico:'⚡', lbl:'Quiz II – Suma de grados y hallar a',      qCount:5, gen:()=>_genSF6_MON_BQ2(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Polinomios ──
+  sf6_pol_b1:  { ico:'GA', lbl:'Grado absoluto de un polinomio',           qCount:4, gen:()=>_genSF6_POL_B1() },
+  sf6_pol_b2:  { ico:'GR', lbl:'Grado relativo GR(x) del polinomio',       qCount:4, gen:()=>_genSF6_POL_B2() },
+  sf6_pol_bq1: { ico:'⚡', lbl:'Quiz I – Grados del polinomio',            qCount:5, gen:()=>_genSF6_POL_BQ1(), quiz:true },
+  sf6_pol_b3:  { ico:'n?', lbl:'Hallar n dado GR(y)',                       qCount:4, gen:()=>_genSF6_POL_B3() },
+  sf6_pol_b4:  { ico:'xyz', lbl:'GA de monomio de 3 variables',            qCount:4, gen:()=>_genSF6_POL_B4() },
+  sf6_pol_bq2: { ico:'⚡', lbl:'Quiz II – Polinomios avanzados',           qCount:5, gen:()=>_genSF6_POL_BQ2(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Polígonos ──
+  sf6_pog_b1:  { ico:'∠Σ', lbl:'Suma de ángulos interiores',              qCount:4, gen:()=>_genSF6_POG_B1() },
+  sf6_pog_b2:  { ico:'∠r', lbl:'Ángulo interior de polígono regular',      qCount:4, gen:()=>_genSF6_POG_B2() },
+  sf6_pog_bq1: { ico:'⚡', lbl:'Quiz I – Ángulos interiores',              qCount:5, gen:()=>_genSF6_POG_BQ1(), quiz:true },
+  sf6_pog_b3:  { ico:'d',  lbl:'Número de diagonales',                     qCount:4, gen:()=>_genSF6_POG_B3() },
+  sf6_pog_b4:  { ico:'∠e', lbl:'Ángulo exterior de polígono regular',      qCount:4, gen:()=>_genSF6_POG_B4() },
+  sf6_pog_bq2: { ico:'⚡', lbl:'Quiz II – Diagonales y ángulo exterior',   qCount:5, gen:()=>_genSF6_POG_BQ2(), quiz:true },
+  sf6_pog_b5:  { ico:'x°', lbl:'Ángulo faltante en cuadrilátero',          qCount:4, gen:()=>_genSF6_POG_B5() },
+  sf6_pog_bq3: { ico:'⚡', lbl:'Quiz III – Polígonos avanzado',            qCount:5, gen:()=>_genSF6_POG_BQ3(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Cuadriláteros ──
+  sf6_cua_b1:  { ico:'□',  lbl:'Ángulos del cuadrilátero: nx = 360°',     qCount:4, gen:()=>_genSF6_CUA_B1() },
+  sf6_cua_b2:  { ico:'∥',  lbl:'Co-interiores del trapecio: suman 180°',  qCount:4, gen:()=>_genSF6_CUA_B2() },
+  sf6_cua_bq1: { ico:'⚡', lbl:'Quiz I – Ángulos del cuadrilátero',       qCount:5, gen:()=>_genSF6_CUA_BQ1(), quiz:true },
+  sf6_cua_b3:  { ico:'M',  lbl:'Mediana del trapecio: M = (B+b)/2',       qCount:4, gen:()=>_genSF6_CUA_B3() },
+  sf6_cua_b4:  { ico:'x?', lbl:'Hallar x dado la mediana del trapecio',   qCount:4, gen:()=>_genSF6_CUA_B4() },
+  sf6_cua_bq2: { ico:'⚡', lbl:'Quiz II – Trapecio y mediana',             qCount:5, gen:()=>_genSF6_CUA_BQ2(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Circunferencia ──
+  sf6_cir_b1:  { ico:'O°', lbl:'Ángulo central = arco',                   qCount:4, gen:()=>_genSF6_CIR_B1() },
+  sf6_cir_b2:  { ico:'∠i', lbl:'Ángulo inscrito = arco / 2',              qCount:4, gen:()=>_genSF6_CIR_B2() },
+  sf6_cir_bq1: { ico:'⚡', lbl:'Quiz I – Ángulo central e inscrito',      qCount:5, gen:()=>_genSF6_CIR_BQ1(), quiz:true },
+  sf6_cir_b3:  { ico:'⊥t', lbl:'Tangente ⊥ radio',                        qCount:4, gen:()=>_genSF6_CIR_B3() },
+  sf6_cir_b4:  { ico:'∥',  lbl:'Cuerdas paralelas → arcos iguales',       qCount:4, gen:()=>_genSF6_CIR_B4() },
+  sf6_cir_bq2: { ico:'⚡', lbl:'Quiz II – Tangente y cuerdas paralelas',  qCount:5, gen:()=>_genSF6_CIR_BQ2(), quiz:true },
+  sf6_cir_b5:  { ico:'∠e', lbl:'Ángulo exterior por dos secantes',        qCount:4, gen:()=>_genSF6_CIR_B5() },
+  sf6_cir_bq3: { ico:'⚡', lbl:'Quiz III – Circunferencia avanzado',      qCount:5, gen:()=>_genSF6_CIR_BQ3(), quiz:true },
+  // ── C.E.P. Asís 6° Primaria – Plano Cartesiano ──
+  sf6_car_b1:  { ico:'(x,y)', lbl:'Identificar coordenadas del punto P',  qCount:4, gen:()=>_genSF6_CAR_B1() },
+  sf6_car_b2:  { ico:'Q',    lbl:'Identificar cuadrante del punto P',      qCount:4, gen:()=>_genSF6_CAR_B2() },
+  sf6_car_bq1: { ico:'⚡',  lbl:'Quiz I – Plano cartesiano',               qCount:5, gen:()=>_genSF6_CAR_BQ1(), quiz:true },
+  sf6_car_b3:  { ico:'→',   lbl:'Traslación: P(x,y) → P\'(x+a, y+b)',     qCount:4, gen:()=>_genSF6_CAR_B3() },
+  sf6_car_b4:  { ico:'↔',   lbl:'Simetría respecto a un eje',              qCount:4, gen:()=>_genSF6_CAR_B4() },
+  sf6_car_bq2: { ico:'⚡',  lbl:'Quiz II – Traslación y simetría',         qCount:5, gen:()=>_genSF6_CAR_BQ2(), quiz:true },
   // ── Sustracción 6° Primaria – Colegio Santísima Trinidad ──
   // Sustracción 1 dígito
   t6_sust1_b1:  { ico:'−', lbl:'Sustracción 1 dígito',                     qCount:4, gen:()=>_genT6Sust1B1() },
@@ -2872,7 +2943,17 @@ const BINGO_TOPICS = {
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b9','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu',
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b9','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3',
+'sf6_exp_b1','sf6_exp_b2','sf6_exp_bq1','sf6_exp_b3','sf6_exp_b4','sf6_exp_bq2',
+'sf6_ppp_b1','sf6_ppp_b2','sf6_ppp_bq1','sf6_ppp_b3','sf6_ppp_b4','sf6_ppp_bq2','sf6_ppp_b5','sf6_ppp_bq3',
+'sf6_rad_b1','sf6_rad_b2','sf6_rad_bq1','sf6_rad_b3','sf6_rad_b4','sf6_rad_bq2','sf6_rad_b5','sf6_rad_bq3',
+'sf6_mon_b1','sf6_mon_b2','sf6_mon_bq1','sf6_mon_b3','sf6_mon_b4','sf6_mon_bq2',
+'sf6_pol_b1','sf6_pol_b2','sf6_pol_bq1','sf6_pol_b3','sf6_pol_b4','sf6_pol_bq2',
+'sf6_pog_b1','sf6_pog_b2','sf6_pog_bq1','sf6_pog_b3','sf6_pog_b4','sf6_pog_bq2','sf6_pog_b5','sf6_pog_bq3',
+'sf6_cua_b1','sf6_cua_b2','sf6_cua_bq1','sf6_cua_b3','sf6_cua_b4','sf6_cua_bq2',
+'sf6_cir_b1','sf6_cir_b2','sf6_cir_bq1','sf6_cir_b3','sf6_cir_b4','sf6_cir_bq2','sf6_cir_b5','sf6_cir_bq3',
+'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2',
+'t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu',
 'hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu',
 'hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu',
 'hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu',

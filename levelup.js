@@ -1315,6 +1315,423 @@ function _genSF6_U5_B6(){ // Suma de valores para divisibilidad (problemas avanz
 function _genSF6_U5_BQ3(){ return [_genSF6_U5_B3,_genSF6_U5_B4,_genSF6_U5_B5,_genSF6_U5_B6][_bGetRandomInt(0,3)](); }
 function _genSF6_U5_BPU(){ return [_genSF6_U5_B1,_genSF6_U5_B2,_genSF6_U5_B3,_genSF6_U5_B4,_genSF6_U5_B5,_genSF6_U5_B6][_bGetRandomInt(0,5)](); }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Asís 6° Primaria – Álgebra y Geometría (nuevas unidades)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// — Helpers exclusivos Asís 6° —
+function _a6rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _a6pick(arr){return arr[_a6rnd(0,arr.length-1)];}
+function _a6shuf(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function _a6opts(r,...ws){
+  const s=new Set([r]);const ok=[];
+  for(const v of ws){if(!s.has(v)&&v!==undefined&&v!==null){s.add(v);ok.push(v);}}
+  let d=1;while(ok.length<3){const p=r+d,q=r-d;if(!s.has(p)){s.add(p);ok.push(p);}if(ok.length<3&&!s.has(q)){s.add(q);ok.push(q);}d++;}
+  return _a6shuf([r,...ok.slice(0,3)]);
+}
+function _a6sup(n){
+  const m={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+  return String(n).split('').map(c=>m[c]||c).join('');
+}
+function _a6svg(inner,w,h){
+  w=w||220;h=h||170;
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="max-width:${w}px;width:100%;height:auto;display:block;margin:4px auto 8px"><g style="font-family:Arial,sans-serif;font-size:11px;font-weight:normal">${inner}</g></svg>`;
+}
+
+// ── UNIDAD: Leyes de Exponentes I — Producto y Cociente ─────────────────────
+function _genSF6_EXP_B1(){ // aᵐ · aⁿ = aᵐ⁺ⁿ (numérico)
+  const b=_a6rnd(2,7),e1=_a6rnd(1,5),e2=_a6rnd(1,5),r=e1+e2;
+  return {q:`${b}${_a6sup(e1)} × ${b}${_a6sup(e2)} = ${b}ⁿ → n = ?`,
+    a:r, opts:_a6opts(r,r-1,r+1,e1*e2), mc:true};
+}
+function _genSF6_EXP_B2(){ // aᵐ ÷ aⁿ = aᵐ⁻ⁿ (numérico)
+  const b=_a6rnd(2,7),e1=_a6rnd(4,8),e2=_a6rnd(1,e1-1),r=e1-e2;
+  return {q:`${b}${_a6sup(e1)} ÷ ${b}${_a6sup(e2)} = ${b}ⁿ → n = ?`,
+    a:r, opts:_a6opts(r,r-1,r+1,e1+e2), mc:true};
+}
+function _genSF6_EXP_BQ1(){return Math.random()<0.5?_genSF6_EXP_B1():_genSF6_EXP_B2();}
+function _genSF6_EXP_B3(){ // Con exp negativo: bᵃ ÷ b⁻ⁿ = bᵃ⁺ⁿ
+  const b=_a6rnd(2,7),e1=_a6rnd(2,6),neg=_a6rnd(1,3),r=e1+neg;
+  return {q:`${b}${_a6sup(e1)} ÷ ${b}${_a6sup(-neg)} = ${b}ⁿ → n = ?`,
+    a:r, opts:_a6opts(r,e1-neg<0?r+2:e1-neg,e1*neg,r-1), mc:true};
+}
+function _genSF6_EXP_B4(){ // Con variables: vᵃ · vᵇ o vᵃ ÷ vᵇ
+  const vs=['x','y','z','a','b'],v=_a6pick(vs);
+  const e1=_a6rnd(3,9),e2=_a6rnd(1,e1-1),isP=Math.random()<0.5,r=isP?e1+e2:e1-e2;
+  const op=isP?'·':'÷',ans=`${v}${_a6sup(r)}`;
+  const w1=`${v}${_a6sup(r+1)}`,w2=`${v}${_a6sup(r-1<=0?r+2:r-1)}`,w3=`${v}${_a6sup(isP?e1*e2:e1+e2)}`;
+  return {q:`${v}${_a6sup(e1)} ${op} ${v}${_a6sup(e2)} = ?`,
+    a:ans, opts:_a6shuf([ans,w1,w2,w3]), mc:true};
+}
+function _genSF6_EXP_BQ2(){return Math.random()<0.5?_genSF6_EXP_B3():_genSF6_EXP_B4();}
+function _genSF6_EXP_BPU(){return [_genSF6_EXP_B1,_genSF6_EXP_B2,_genSF6_EXP_B3,_genSF6_EXP_B4][_a6rnd(0,3)]();}
+
+// ── UNIDAD: Leyes Exp. II — P⁰=1, P¹=P, (aᵐ)ⁿ = aᵐⁿ ──────────────────────
+function _genSF6_PPP_B1(){ // a⁰ = 1
+  const [expr]=_a6pick([['27⁰'],['(−7)⁰'],['(15)⁰'],['(−100)⁰'],['100⁰'],['3⁰'],['(−5)⁰']]);
+  return {q:`${expr} = ?`, a:1, opts:_a6shuf([1,0,-1,2]), mc:true};
+}
+function _genSF6_PPP_B2(){ // 1ⁿ = 1 y a¹ = a
+  if(Math.random()<0.5){
+    const n=_a6rnd(3,50);
+    return {q:`1${_a6sup(n)} = ?`, a:1, opts:_a6shuf([1,n,0,-1]), mc:true};
+  }
+  const b=_a6pick([7,13,24,31,45,8,50,17]);
+  return {q:`${b}¹ = ?`, a:b, opts:_a6opts(b,1,b+1,b-1), mc:true};
+}
+function _genSF6_PPP_BQ1(){return Math.random()<0.5?_genSF6_PPP_B1():_genSF6_PPP_B2();}
+function _genSF6_PPP_B3(){ // (aᵐ)ⁿ = aᵐⁿ
+  const b=_a6rnd(2,5),m=_a6rnd(2,4),n=_a6rnd(2,4),r=m*n;
+  return {q:`(${b}${_a6sup(m)})${_a6sup(n)} = ${b}ⁿ → n = ?`,
+    a:r, opts:_a6opts(r,m+n,m,n), mc:true};
+}
+function _genSF6_PPP_B4(){ // [(aᵐ)ⁿ]⁰ = 1
+  const b=_a6rnd(2,9),m=_a6rnd(2,4),n=_a6rnd(2,4);
+  return {q:`[(${b}${_a6sup(m)})${_a6sup(n)}]⁰ = ?`,
+    a:1, opts:_a6shuf([1,0,b,m*n]), mc:true};
+}
+function _genSF6_PPP_BQ2(){return Math.random()<0.5?_genSF6_PPP_B3():_genSF6_PPP_B4();}
+function _genSF6_PPP_B5(){ // Expresión: a⁰+(−b)⁰+1ᵏ−c¹ = 3−c
+  const a=_a6rnd(2,25),b=_a6rnd(2,15),c=_a6rnd(2,12),k=_a6rnd(2,15),r=3-c;
+  return {q:`${a}⁰ + (−${b})⁰ + 1${_a6sup(k)} − ${c}¹ = ?`,
+    a:r, opts:_a6opts(r,r+1,r-1,1-c), mc:true};
+}
+function _genSF6_PPP_BQ3(){return [_genSF6_PPP_B3,_genSF6_PPP_B4,_genSF6_PPP_B5][_a6rnd(0,2)]();}
+function _genSF6_PPP_BPU(){return [_genSF6_PPP_B1,_genSF6_PPP_B2,_genSF6_PPP_B3,_genSF6_PPP_B4,_genSF6_PPP_B5][_a6rnd(0,4)]();}
+
+// ── UNIDAD: Radicales n-ésimos ──────────────────────────────────────────────
+function _genSF6_RAD_B1(){ // ⁿ√(xᵐ) = x^(m/n) cuando n|m
+  const cases=[[2,4,2],[2,6,3],[2,8,4],[2,10,5],[3,6,2],[3,9,3],[3,12,4],[4,8,2],[5,10,2],[6,12,2],[6,18,3],[6,30,5]];
+  const [n,m,exp]=_a6pick(cases),v=_a6pick(['x','y','z','a']);
+  const ans=`${v}${_a6sup(exp)}`;
+  return {q:`${_a6sup(n)}√(${v}${_a6sup(m)}) = ?`,
+    a:ans, opts:_a6shuf([ans,`${v}${_a6sup(exp+1)}`,`${v}${_a6sup(exp+2)}`,`${v}${_a6sup(n+m)}`]), mc:true};
+}
+function _genSF6_RAD_B2(){ // √a × √b = √(ab) con resultado entero
+  const [a,b,r]=_a6pick([[4,9,6],[4,25,10],[9,16,12],[4,16,8],[9,25,15],[16,25,20],[4,36,12],[25,4,10]]);
+  return {q:`√${a} × √${b} = ?`, a:r, opts:_a6opts(r,r-1,r+1,a+b), mc:true};
+}
+function _genSF6_RAD_BQ1(){return Math.random()<0.5?_genSF6_RAD_B1():_genSF6_RAD_B2();}
+function _genSF6_RAD_B3(){ // ³√a × ³√b = ³√(ab) con resultado entero
+  const [a,b,r]=_a6pick([[2,4,2],[3,9,3],[5,25,5],[4,16,4],[2,32,4],[8,1,2],[27,1,3]]);
+  return {q:`³√${a} × ³√${b} = ?`, a:r, opts:_a6opts(r,r+1,r-1>0?r-1:r+2,a+b), mc:true};
+}
+function _genSF6_RAD_B4(){ // √a ÷ √b = √(a/b) con resultado entero
+  const [a,b,r]=_a6pick([[144,4,6],[100,4,5],[81,9,3],[144,9,4],[64,16,2],[225,9,5],[196,4,7],[400,4,10]]);
+  return {q:`√${a} ÷ √${b} = ?`, a:r, opts:_a6opts(r,r+1,r-1>0?r-1:r+2,r+2), mc:true};
+}
+function _genSF6_RAD_BQ2(){return Math.random()<0.5?_genSF6_RAD_B3():_genSF6_RAD_B4();}
+function _genSF6_RAD_B5(){ // Raíz de raíz: ²√(²√16) = 2
+  const [expr,r]=_a6pick([['²√(²√16)',2],['²√(²√81)',3],['²√(²√256)',4],['³√(³√64)',2],['²√(⁴√256)',2],['⁴√(²√64)',2]]);
+  return {q:`${expr} = ?`, a:r, opts:_a6opts(r,r+1,r-1>0?r-1:r+2,r*2), mc:true};
+}
+function _genSF6_RAD_BQ3(){return [_genSF6_RAD_B3,_genSF6_RAD_B4,_genSF6_RAD_B5][_a6rnd(0,2)]();}
+function _genSF6_RAD_BPU(){return [_genSF6_RAD_B1,_genSF6_RAD_B2,_genSF6_RAD_B3,_genSF6_RAD_B4,_genSF6_RAD_B5][_a6rnd(0,4)]();}
+
+// ── UNIDAD: Monomios — Grado Relativo y Absoluto ────────────────────────────
+function _genSF6_MON_B1(){ // GR(x) de M(x,y) = co·xᵉˣ·yᵉʸ
+  const ex=_a6rnd(2,9),ey=_a6rnd(1,8),co=_a6rnd(2,5);
+  return {q:`En M(x,y) = ${co}x${_a6sup(ex)}y${_a6sup(ey)}, ¿GR(x) = ?`,
+    a:ex, opts:_a6opts(ex,ey,ex+ey,ex+1), mc:true};
+}
+function _genSF6_MON_B2(){ // GA de M(x,y)
+  const ex=_a6rnd(2,9),ey=_a6rnd(1,8),co=_a6rnd(2,5),r=ex+ey;
+  return {q:`En M(x,y) = ${co}x${_a6sup(ex)}y${_a6sup(ey)}, ¿Grado Absoluto = ?`,
+    a:r, opts:_a6opts(r,ex,ey,r+1), mc:true};
+}
+function _genSF6_MON_BQ1(){return Math.random()<0.5?_genSF6_MON_B1():_genSF6_MON_B2();}
+function _genSF6_MON_B3(){ // GR(x) + GR(y)
+  const ex=_a6rnd(2,7),ey=_a6rnd(2,7),co=_a6rnd(2,5),r=ex+ey;
+  return {q:`M(x,y) = ${co}x${_a6sup(ex)}y${_a6sup(ey)}\n¿GR(x) + GR(y) = ?`,
+    a:r, opts:_a6opts(r,ex,ey,r+1), mc:true};
+}
+function _genSF6_MON_B4(){ // Hallar 'a' dado GA cuando exp de x = 2a−k
+  let a,k,ey,ex,ga;
+  do{a=_a6rnd(2,5);k=_a6rnd(1,3);ey=_a6rnd(1,4);ex=2*a-k;ga=ex+ey;}while(ex<=0);
+  const expTxt=k===1?'(2a−1)':`(2a−${k})`;
+  return {q:`M(x,y) = 5x${expTxt}·y${_a6sup(ey)}, si G.A. = ${ga}, ¿a = ?`,
+    a:a, opts:_a6opts(a,a-1>0?a-1:a+2,a+1,a+2), mc:true};
+}
+function _genSF6_MON_BQ2(){return Math.random()<0.5?_genSF6_MON_B3():_genSF6_MON_B4();}
+function _genSF6_MON_BPU(){return [_genSF6_MON_B1,_genSF6_MON_B2,_genSF6_MON_B3,_genSF6_MON_B4][_a6rnd(0,3)]();}
+
+// ── UNIDAD: Polinomios — Grado Absoluto y Relativo ──────────────────────────
+function _a6mkT(n){return Array.from({length:n},()=>({x:_a6rnd(2,9),y:_a6rnd(1,8),c:_a6rnd(2,5)}));}
+function _a6tStr(t){return `${t.c}x${_a6sup(t.x)}y${_a6sup(t.y)}`;}
+function _genSF6_POL_B1(){ // GA de P(x,y) = max(xᵢ+yᵢ)
+  const ts=_a6mkT(3),r=Math.max(...ts.map(t=>t.x+t.y));
+  return {q:`P(x,y) = ${_a6tStr(ts[0])} + ${_a6tStr(ts[1])} − ${_a6tStr(ts[2])}\n¿Grado Absoluto = ?`,
+    a:r, opts:_a6opts(r,r-1,r+1,r+2), mc:true};
+}
+function _genSF6_POL_B2(){ // GR(x) de P(x,y) = max(xᵢ)
+  const ts=_a6mkT(3),r=Math.max(...ts.map(t=>t.x)),ga=Math.max(...ts.map(t=>t.x+t.y));
+  return {q:`P(x,y) = ${_a6tStr(ts[0])} + ${_a6tStr(ts[1])} + ${_a6tStr(ts[2])}\n¿GR(x) = ?`,
+    a:r, opts:_a6opts(r,r-1,r+1,ga), mc:true};
+}
+function _genSF6_POL_BQ1(){return Math.random()<0.5?_genSF6_POL_B1():_genSF6_POL_B2();}
+function _genSF6_POL_B3(){ // Hallar n dado GR(y) = f·n
+  const n=_a6rnd(2,5),f=_a6pick([2,3,4]),gy=f*n;
+  const x1=_a6rnd(4,8),x2=_a6rnd(2,5),y2=_a6rnd(1,Math.min(gy-1,4));
+  return {q:`P(x,y) = 2x${_a6sup(x1)}y^(${f}n) + 3x${_a6sup(x2)}y${_a6sup(y2)}\nSi GR(y) = ${gy}, ¿n = ?`,
+    a:n, opts:_a6opts(n,n-1>0?n-1:n+2,n+1,f), mc:true};
+}
+function _genSF6_POL_B4(){ // GA monomio de 3 variables
+  const x=_a6rnd(2,5),y=_a6rnd(2,4),z=_a6rnd(2,4),r=x+y+z;
+  return {q:`M = 2x${_a6sup(x)}y${_a6sup(y)}z${_a6sup(z)}\n¿Grado Absoluto = ?`,
+    a:r, opts:_a6opts(r,r-1,r+1,x+y), mc:true};
+}
+function _genSF6_POL_BQ2(){return Math.random()<0.5?_genSF6_POL_B3():_genSF6_POL_B4();}
+function _genSF6_POL_BPU(){return [_genSF6_POL_B1,_genSF6_POL_B2,_genSF6_POL_B3,_genSF6_POL_B4][_a6rnd(0,3)]();}
+
+// ── UNIDAD: Polígonos — Ángulos, Regulares y Diagonales ─────────────────────
+function _a6polyPath(n,cx,cy,r,rot0){
+  let d='';
+  for(let i=0;i<n;i++){const a=2*Math.PI*i/n+rot0;d+=`${i?'L':'M'}${(cx+r*Math.cos(a)).toFixed(1)} ${(cy+r*Math.sin(a)).toFixed(1)}`;}
+  return d+'Z';
+}
+function _genSF6_POG_B1(){ // Suma ángulos interiores = (n−2)×180°
+  const n=_a6pick([4,5,6,7,8]),r=(n-2)*180;
+  const svg=_a6svg(
+    `<path d="${_a6polyPath(n,110,83,62,-Math.PI/2)}" stroke="#8af" stroke-width="1.5" fill="rgba(100,140,255,0.07)"/>
+    <text x="110" y="88" text-anchor="middle" style="fill:#9af;font-size:13px;font-weight:bold">${n} lados</text>`,220,170);
+  return {q:`${svg}¿Cuánto suman los ángulos interiores de este polígono?`,
+    a:r, opts:_a6opts(r,(n-1)*180,n*180,(n-3)*180>0?(n-3)*180:r+90), mc:true};
+}
+function _genSF6_POG_B2(){ // Ángulo interior de polígono regular = 180(n−2)/n
+  const n=_a6pick([4,5,6,8,10]),r=(n-2)*180/n;
+  const svg=_a6svg(
+    `<path d="${_a6polyPath(n,110,83,62,-Math.PI/2)}" stroke="#8af" stroke-width="1.5" fill="rgba(100,140,255,0.07)"/>
+    <text x="110" y="80" text-anchor="middle" style="fill:#9af;font-size:12px;font-weight:bold">Regular</text>
+    <text x="110" y="97" text-anchor="middle" style="fill:#9af;font-size:12px">${n} lados</text>`,220,170);
+  return {q:`${svg}¿Cuánto mide cada ángulo interior?`,
+    a:r, opts:_a6opts(r,r-10,r+10,180-r), mc:true};
+}
+function _genSF6_POG_BQ1(){return Math.random()<0.5?_genSF6_POG_B1():_genSF6_POG_B2();}
+function _genSF6_POG_B3(){ // Diagonales = n(n−3)/2
+  const n=_a6pick([4,5,6,7,8]),r=n*(n-3)/2;
+  return {q:`¿Cuántas diagonales tiene un polígono de ${n} lados?`,
+    a:r, opts:_a6opts(r,r+1,r-1>0?r-1:r+2,n*(n-1)/2), mc:true};
+}
+function _genSF6_POG_B4(){ // Ángulo exterior de regular = 360°/n
+  const n=_a6pick([4,5,6,8,10]),r=360/n;
+  return {q:`¿Cuánto mide cada ángulo exterior de un polígono regular de ${n} lados?`,
+    a:r, opts:_a6opts(r,r+10,r-10>0?r-10:r+20,360-r), mc:true};
+}
+function _genSF6_POG_BQ2(){return Math.random()<0.5?_genSF6_POG_B3():_genSF6_POG_B4();}
+function _genSF6_POG_B5(){ // Ángulo faltante en cuadrilátero (suma 360°)
+  let a,b,c,r;
+  do{a=_a6rnd(55,110);b=_a6rnd(55,110);c=_a6rnd(55,110);r=360-a-b-c;}while(r<20||r>170);
+  const svg=_a6svg(
+    `<polygon points="30,145 185,145 162,52 58,52" stroke="#8af" stroke-width="1.5" fill="rgba(100,140,255,0.07)"/>
+    <text x="38" y="132" style="fill:#ffd;font-size:10px">${a}°</text>
+    <text x="162" y="132" style="fill:#ffd;font-size:10px">${b}°</text>
+    <text x="149" y="68" style="fill:#ffd;font-size:10px">${c}°</text>
+    <text x="52" y="68" style="fill:#f93;font-size:11px;font-weight:bold">x°</text>`,220,175);
+  return {q:`${svg}Suma de ángulos = 360°. ¿x = ?`,
+    a:r, opts:_a6opts(r,r+10,r-10>0?r-10:r+5,r+5), mc:true};
+}
+function _genSF6_POG_BQ3(){return [_genSF6_POG_B3,_genSF6_POG_B4,_genSF6_POG_B5][_a6rnd(0,2)]();}
+function _genSF6_POG_BPU(){return [_genSF6_POG_B1,_genSF6_POG_B2,_genSF6_POG_B3,_genSF6_POG_B4,_genSF6_POG_B5][_a6rnd(0,4)]();}
+
+// ── UNIDAD: Cuadriláteros y Trapecio ────────────────────────────────────────
+function _genSF6_CUA_B1(){ // kx+lx+mx+nx = 360° → hallar x
+  const ks=_a6pick([[3,4,5,8],[4,5,8,3],[5,8,4,3],[2,5,6,7],[3,7,6,4],[2,3,4,11],[1,2,3,14]]);
+  const s=ks.reduce((a,b)=>a+b,0);
+  if(360%s!==0)return _genSF6_CUA_B1();
+  const x=360/s;
+  const svg=_a6svg(
+    `<polygon points="30,145 185,145 162,52 58,52" stroke="#5af" stroke-width="1.5" fill="rgba(80,160,255,0.07)"/>
+    <text x="38" y="132" style="fill:#ffd;font-size:10px">${ks[0]}x</text>
+    <text x="163" y="132" style="fill:#ffd;font-size:10px">${ks[1]}x</text>
+    <text x="150" y="67" style="fill:#ffd;font-size:10px">${ks[2]}x</text>
+    <text x="52" y="67" style="fill:#ffd;font-size:10px">${ks[3]}x</text>`,220,175);
+  return {q:`${svg}Los ángulos suman 360°. ¿x = ?`,
+    a:x, opts:_a6opts(x,x+2,x-2>0?x-2:x+4,x+4), mc:true};
+}
+function _genSF6_CUA_B2(){ // Trapecio: co-interiores suman 180°
+  const ang=_a6rnd(50,130),r=180-ang;
+  const svg=_a6svg(
+    `<polygon points="40,145 180,145 155,58 65,58" stroke="#5af" stroke-width="1.5" fill="rgba(80,160,255,0.07)"/>
+    <text x="6" y="97" style="fill:#aaa;font-size:13px">∥</text><text x="184" y="97" style="fill:#aaa;font-size:13px">∥</text>
+    <text x="46" y="133" style="fill:#ffd;font-size:10px">${ang}°</text>
+    <text x="63" y="74" style="fill:#f93;font-size:11px;font-weight:bold">x°</text>`,220,175);
+  return {q:`${svg}Ángulos co-interiores del trapecio suman 180°. ¿x = ?`,
+    a:r, opts:_a6opts(r,r-10,r+10,ang), mc:true};
+}
+function _genSF6_CUA_BQ1(){return Math.random()<0.5?_genSF6_CUA_B1():_genSF6_CUA_B2();}
+function _genSF6_CUA_B3(){ // Mediana del trapecio M=(B+b)/2
+  let b1,b2,r;
+  do{b1=_a6rnd(4,12);b2=_a6rnd(b1+2,b1+12);}while((b1+b2)%2!==0);
+  r=(b1+b2)/2;
+  const svg=_a6svg(
+    `<polygon points="40,145 180,145 157,62 63,62" stroke="#5af" stroke-width="1.5" fill="rgba(80,160,255,0.07)"/>
+    <line x1="51" y1="103" x2="168" y2="103" stroke="#f93" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <circle cx="51" cy="103" r="3" fill="#f93"/><circle cx="168" cy="103" r="3" fill="#f93"/>
+    <text x="109" y="99" text-anchor="middle" style="fill:#f93;font-size:10px">M = ?</text>
+    <text x="109" y="163" text-anchor="middle" style="fill:#ffd;font-size:10px">${b2} u</text>
+    <text x="109" y="54" text-anchor="middle" style="fill:#ffd;font-size:10px">${b1} u</text>`,220,175);
+  return {q:`${svg}Mediana M = (B+b)÷2. ¿M = ?`,
+    a:r, opts:_a6opts(r,r+1,r-1>0?r-1:r+2,b1+b2), mc:true};
+}
+function _genSF6_CUA_B4(){ // Hallar x dado MN = x+k y las dos bases
+  let bc,ad,med,k,xVal;
+  do{bc=_a6rnd(4,10);ad=_a6rnd(bc+4,bc+14);med=(bc+ad)/2;k=_a6rnd(1,Math.floor(med)-1);xVal=med-k;}
+  while((bc+ad)%2!==0||xVal<=0||!Number.isInteger(xVal));
+  const svg=_a6svg(
+    `<polygon points="40,145 180,145 157,62 63,62" stroke="#5af" stroke-width="1.5" fill="rgba(80,160,255,0.07)"/>
+    <line x1="51" y1="103" x2="168" y2="103" stroke="#f93" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <circle cx="51" cy="103" r="3" fill="#f93"/><circle cx="168" cy="103" r="3" fill="#f93"/>
+    <text x="109" y="99" text-anchor="middle" style="fill:#f93;font-size:10px">MN = x+${k}</text>
+    <text x="109" y="163" text-anchor="middle" style="fill:#ffd;font-size:10px">${ad} u</text>
+    <text x="109" y="54" text-anchor="middle" style="fill:#ffd;font-size:10px">${bc} u</text>`,220,175);
+  return {q:`${svg}M = (${bc}+${ad})÷2. Si MN = x+${k}, ¿x = ?`,
+    a:xVal, opts:_a6opts(xVal,xVal+1,xVal-1>0?xVal-1:xVal+2,med), mc:true};
+}
+function _genSF6_CUA_BQ2(){return Math.random()<0.5?_genSF6_CUA_B3():_genSF6_CUA_B4();}
+function _genSF6_CUA_BPU(){return [_genSF6_CUA_B1,_genSF6_CUA_B2,_genSF6_CUA_B3,_genSF6_CUA_B4][_a6rnd(0,3)]();}
+
+// ── UNIDAD: Circunferencia — Ángulos ────────────────────────────────────────
+// SVG helper: círculo O(110,85) r=65
+function _a6circ(extra){
+  return _a6svg(
+    `<circle cx="110" cy="85" r="65" stroke="#7ce" stroke-width="1.5" fill="none"/>
+    <circle cx="110" cy="85" r="2.5" fill="#7ce"/>
+    <text x="116" y="82" style="fill:#7ce;font-size:9px">O</text>${extra}`,220,175);
+}
+// Punto en la circunferencia (cx=110,cy=85,r=65) dado ángulo en rad
+function _a6cp(a){return [(110+65*Math.cos(a)).toFixed(1),(85+65*Math.sin(a)).toFixed(1)];}
+function _genSF6_CIR_B1(){ // Ángulo central = arco
+  const ang=_a6pick([40,50,60,70,80,90,100,120]);
+  const a1=-0.4,a2=a1-ang*Math.PI/180;
+  const [Ax,Ay]=_a6cp(a1),[Bx,By]=_a6cp(a2);
+  const [lx,ly]=[(110+28*Math.cos((a1+a2)/2)).toFixed(1),(85+28*Math.sin((a1+a2)/2)).toFixed(1)];
+  const svg=_a6circ(
+    `<line x1="110" y1="85" x2="${Ax}" y2="${Ay}" stroke="#7ce" stroke-width="1.2"/>
+    <line x1="110" y1="85" x2="${Bx}" y2="${By}" stroke="#7ce" stroke-width="1.2"/>
+    <text x="${lx}" y="${ly}" text-anchor="middle" style="fill:#ffd;font-size:10px">${ang}°</text>
+    <text x="${parseFloat(Ax)+4}" y="${parseFloat(Ay)}" style="fill:#7ce;font-size:9px">A</text>
+    <text x="${parseFloat(Bx)+4}" y="${parseFloat(By)+4}" style="fill:#7ce;font-size:9px">B</text>`);
+  return {q:`${svg}O es el centro. Ángulo central AOB = ${ang}°. ¿El arco AB mide?`,
+    a:`${ang}°`, opts:_a6shuf([`${ang}°`,`${ang*2}°`,`${180-ang}°`,`${ang/2}°`]), mc:true};
+}
+function _genSF6_CIR_B2(){ // Ángulo inscrito = arco/2
+  const arc=_a6pick([60,80,96,100,120,48,130,72]),r=arc/2;
+  const a1=-0.3,a2=a1-arc*Math.PI/180,aC=-Math.PI*0.85;
+  const [Ax,Ay]=_a6cp(a1),[Bx,By]=_a6cp(a2),[Cx,Cy]=_a6cp(aC);
+  const [alx,aly]=[(110+82*Math.cos((a1+a2)/2)).toFixed(1),(85+82*Math.sin((a1+a2)/2)).toFixed(1)];
+  const svg=_a6circ(
+    `<line x1="${Cx}" y1="${Cy}" x2="${Ax}" y2="${Ay}" stroke="#f9a" stroke-width="1.2"/>
+    <line x1="${Cx}" y1="${Cy}" x2="${Bx}" y2="${By}" stroke="#f9a" stroke-width="1.2"/>
+    <text x="${alx}" y="${aly}" style="fill:#ffd;font-size:9px">${arc}°</text>
+    <text x="${parseFloat(Ax)+4}" y="${parseFloat(Ay)-2}" style="fill:#7ce;font-size:9px">A</text>
+    <text x="${parseFloat(Bx)+4}" y="${parseFloat(By)+4}" style="fill:#7ce;font-size:9px">B</text>
+    <text x="${parseFloat(Cx)-14}" y="${Cy}" style="fill:#f9a;font-size:9px">C</text>
+    <text x="${parseFloat(Cx)-2}" y="${parseFloat(Cy)+13}" style="fill:#f93;font-size:10px;font-weight:bold">x°</text>`);
+  return {q:`${svg}Arco AB = ${arc}°, C sobre la circunferencia. ¿Ángulo inscrito ACB = x = ?`,
+    a:`${r}°`, opts:_a6shuf([`${r}°`,`${arc}°`,`${arc*2>180?180:arc*2}°`,`${r+15}°`]), mc:true};
+}
+function _genSF6_CIR_BQ1(){return Math.random()<0.5?_genSF6_CIR_B1():_genSF6_CIR_B2();}
+function _genSF6_CIR_B3(){ // Tangente ⊥ radio → ángulo = 90°
+  const svg=_a6circ(
+    `<line x1="45" y1="85" x2="175" y2="85" stroke="#5d5" stroke-width="1.5"/>
+    <line x1="110" y1="85" x2="110" y2="20" stroke="#7ce" stroke-width="1.2"/>
+    <rect x="103.5" y="78.5" width="7" height="7" fill="none" stroke="#f93" stroke-width="1.2"/>
+    <text x="178" y="89" style="fill:#5d5;font-size:9px">t</text>
+    <text x="118" y="30" style="fill:#7ce;font-size:9px">r</text>
+    <text x="115" y="79" style="fill:#f93;font-size:9px">P</text>`);
+  return {q:`${svg}Recta t es tangente en P. ¿Ángulo entre radio OP y la tangente?`,
+    a:'90°', opts:_a6shuf(['90°','45°','60°','180°']), mc:true};
+}
+function _genSF6_CIR_B4(){ // Cuerdas paralelas AB∥CD → arcos iguales AC = BD
+  const arcV=_a6pick([30,35,40,45,50,55,60]);
+  const svg=_a6circ(
+    `<line x1="48" y1="60" x2="172" y2="60" stroke="#f9a" stroke-width="1.5"/>
+    <line x1="45" y1="110" x2="175" y2="110" stroke="#f9a" stroke-width="1.5"/>
+    <text x="23" y="64" style="fill:#7ce;font-size:9px">A</text><text x="173" y="64" style="fill:#7ce;font-size:9px">B</text>
+    <text x="20" y="114" style="fill:#7ce;font-size:9px">C</text><text x="176" y="114" style="fill:#7ce;font-size:9px">D</text>
+    <text x="14" y="90" style="fill:#ffd;font-size:10px">${arcV}°</text>
+    <text x="180" y="90" style="fill:#f93;font-size:10px;font-weight:bold">x°</text>
+    <text x="103" y="47" style="fill:#aaa;font-size:10px">∥</text>`);
+  return {q:`${svg}AB ∥ CD. Arco AC = ${arcV}°. ¿Arco BD = x = ?`,
+    a:`${arcV}°`, opts:_a6shuf([`${arcV}°`,`${arcV*2}°`,`${180-arcV}°`,`${arcV+15}°`]), mc:true};
+}
+function _genSF6_CIR_BQ2(){return Math.random()<0.5?_genSF6_CIR_B3():_genSF6_CIR_B4();}
+function _genSF6_CIR_B5(){ // Ángulo exterior secante = (arco mayor − arco menor)/2
+  let arc1,arc2,r;
+  do{arc1=_a6pick([80,90,100,110,120]);arc2=_a6pick([20,30,40,50]);r=(arc1-arc2)/2;}
+  while((arc1-arc2)%2!==0||r<=0);
+  return {q:`Dos secantes desde punto exterior.\nArco mayor = ${arc1}°, arco menor = ${arc2}°.\n¿Ángulo exterior x = (mayor − menor) ÷ 2 = ?`,
+    a:`${r}°`, opts:_a6shuf([`${r}°`,`${(arc1+arc2)/2}°`,`${r+10}°`,`${r-10>0?r-10:r+5}°`]), mc:true};
+}
+function _genSF6_CIR_BQ3(){return [_genSF6_CIR_B3,_genSF6_CIR_B4,_genSF6_CIR_B5][_a6rnd(0,2)]();}
+function _genSF6_CIR_BPU(){return [_genSF6_CIR_B1,_genSF6_CIR_B2,_genSF6_CIR_B3,_genSF6_CIR_B4,_genSF6_CIR_B5][_a6rnd(0,4)]();}
+
+// ── UNIDAD: Plano Cartesiano — Coordenadas, Traslación y Simetría ───────────
+function _a6grid(){
+  // Cuadrícula −5..5, celda 20px, inicio (10,10), centro (110,110)
+  let g='';
+  for(let i=0;i<=10;i++){
+    const v=10+i*20;
+    g+=`<line x1="${v}" y1="10" x2="${v}" y2="210" stroke="rgba(150,150,180,0.18)" stroke-width="0.6"/>`;
+    g+=`<line x1="10" y1="${v}" x2="210" y2="${v}" stroke="rgba(150,150,180,0.18)" stroke-width="0.6"/>`;
+  }
+  g+=`<line x1="10" y1="110" x2="210" y2="110" stroke="#999" stroke-width="1.3"/>`;
+  g+=`<line x1="110" y1="10" x2="110" y2="210" stroke="#999" stroke-width="1.3"/>`;
+  for(let i=-5;i<=5;i++){
+    if(i===0)continue;
+    g+=`<text x="${110+i*20}" y="124" text-anchor="middle" style="font-size:8px;fill:#777">${i}</text>`;
+    g+=`<text x="105" y="${110-i*20+3}" text-anchor="end" style="font-size:8px;fill:#777">${i}</text>`;
+  }
+  g+=`<text x="214" y="113" style="font-size:9px;fill:#aaa">x</text>`;
+  g+=`<text x="112" y="8" style="font-size:9px;fill:#aaa">y</text>`;
+  return g;
+}
+function _a6gridPt(px,py,lbl,col){
+  col=col||'#f93';
+  const sx=110+px*20,sy=110-py*20;
+  const ox=px>=0?6:-14,oy=py>=0?-5:12;
+  return `<circle cx="${sx}" cy="${sy}" r="4" fill="${col}" stroke="none"/>
+    <text x="${sx+ox}" y="${sy+oy}" style="font-size:10px;fill:${col}">${lbl}</text>`;
+}
+function _genSF6_CAR_B1(){ // Identificar coordenadas del punto P
+  const px=_a6rnd(-4,4),py=_a6rnd(-4,4);
+  const svg=`<svg viewBox="0 0 220 225" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;width:100%;height:auto;display:block;margin:4px auto 8px"><g style="font-family:Arial,sans-serif;font-weight:normal">${_a6grid()}${_a6gridPt(px,py,'P')}</g></svg>`;
+  const ans=`(${px}, ${py})`;
+  return {q:`${svg}¿Coordenadas del punto P?`,
+    a:ans, opts:_a6shuf([ans,`(${py}, ${px})`,`(${-px}, ${py})`,`(${px}, ${-py})`]), mc:true};
+}
+function _genSF6_CAR_B2(){ // Identificar cuadrante
+  const sx=_a6pick([-1,1]),sy=_a6pick([-1,1]);
+  const px=_a6rnd(1,4)*sx,py=_a6rnd(1,4)*sy;
+  const q=px>0&&py>0?'I':px<0&&py>0?'II':px<0&&py<0?'III':'IV';
+  const svg=`<svg viewBox="0 0 220 225" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;width:100%;height:auto;display:block;margin:4px auto 8px"><g style="font-family:Arial,sans-serif;font-weight:normal">${_a6grid()}${_a6gridPt(px,py,'P')}</g></svg>`;
+  return {q:`${svg}P(${px}, ${py}) está en el cuadrante:`,
+    a:q, opts:_a6shuf(['I','II','III','IV']), mc:true};
+}
+function _genSF6_CAR_BQ1(){return Math.random()<0.5?_genSF6_CAR_B1():_genSF6_CAR_B2();}
+function _genSF6_CAR_B3(){ // Traslación: P(x,y) → P'(x+a, y+b)
+  let px,py,dx,dy,nx,ny;
+  do{px=_a6rnd(-3,3);py=_a6rnd(-3,3);dx=_a6pick([-4,-3,-2,2,3,4]);dy=_a6pick([-3,-2,2,3]);nx=px+dx;ny=py+dy;}
+  while(Math.abs(nx)>4||Math.abs(ny)>4);
+  const dxL=dx>0?`→${dx}`:`←${Math.abs(dx)}`,dyL=dy>0?`↑${dy}`:`↓${Math.abs(dy)}`;
+  const svg=`<svg viewBox="0 0 220 225" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;width:100%;height:auto;display:block;margin:4px auto 8px"><g style="font-family:Arial,sans-serif;font-weight:normal">${_a6grid()}${_a6gridPt(px,py,'P','#8af')}${_a6gridPt(nx,ny,"P'",'#f93')}</g></svg>`;
+  const ans=`(${nx}, ${ny})`;
+  return {q:`${svg}P(${px},${py}) se traslada (${dxL}, ${dyL}). ¿Coordenadas de P'?`,
+    a:ans, opts:_a6shuf([ans,`(${px+dy},${py+dx})`,`(${px-dx},${py-dy})`,`(${nx+1},${ny})`]), mc:true};
+}
+function _genSF6_CAR_B4(){ // Simetría respecto a eje x o y
+  const axis=Math.random()<0.5?'x':'y';
+  const px=_a6rnd(-4,4),py=_a6rnd(-4,4);
+  const rnx=axis==='x'?px:-px,rny=axis==='x'?-py:py;
+  const axL=axis==='x'?'eje x (horizontal)':'eje y (vertical)';
+  const ans=`(${rnx}, ${rny})`;
+  const w1=`(${-rnx},${rny})`,w2=`(${rnx},${-rny})`,w3=`(${-rnx},${-rny})`;
+  return {q:`Punto P(${px},${py}) se refleja respecto al ${axL}.\n¿Coordenadas de la imagen?`,
+    a:ans, opts:_a6shuf([ans,w1,w2,w3]), mc:true};
+}
+function _genSF6_CAR_BQ2(){return Math.random()<0.5?_genSF6_CAR_B3():_genSF6_CAR_B4();}
+function _genSF6_CAR_BPU(){return [_genSF6_CAR_B1,_genSF6_CAR_B2,_genSF6_CAR_B3,_genSF6_CAR_B4][_a6rnd(0,3)]();}
+
 // ── Espacio Muestral 6° Primaria – Colegio Santísima Trinidad ────────────────
 const _EM_COLS = ['rojo','azul','verde','amarillo','naranja','morado','rosado','celeste'];
 const _EM_CAJAS = [
@@ -3503,7 +3920,16 @@ function _genHca5EC_BPU(){return _hca5pick([_genHca5EC_B1,_genHca5EC_B2,_genHca5
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu'] },
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu',
+      'sf6_exp_b1','sf6_exp_b2','sf6_exp_bq1','sf6_exp_b3','sf6_exp_b4','sf6_exp_bq2',
+      'sf6_ppp_b1','sf6_ppp_b2','sf6_ppp_bq1','sf6_ppp_b3','sf6_ppp_b4','sf6_ppp_bq2','sf6_ppp_b5','sf6_ppp_bq3',
+      'sf6_rad_b1','sf6_rad_b2','sf6_rad_bq1','sf6_rad_b3','sf6_rad_b4','sf6_rad_bq2','sf6_rad_b5','sf6_rad_bq3',
+      'sf6_mon_b1','sf6_mon_b2','sf6_mon_bq1','sf6_mon_b3','sf6_mon_b4','sf6_mon_bq2',
+      'sf6_pol_b1','sf6_pol_b2','sf6_pol_bq1','sf6_pol_b3','sf6_pol_b4','sf6_pol_bq2',
+      'sf6_pog_b1','sf6_pog_b2','sf6_pog_bq1','sf6_pog_b3','sf6_pog_b4','sf6_pog_bq2','sf6_pog_b5','sf6_pog_bq3',
+      'sf6_cua_b1','sf6_cua_b2','sf6_cua_bq1','sf6_cua_b3','sf6_cua_b4','sf6_cua_bq2',
+      'sf6_cir_b1','sf6_cir_b2','sf6_cir_bq1','sf6_cir_b3','sf6_cir_b4','sf6_cir_bq2','sf6_cir_b5','sf6_cir_bq3',
+      'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
@@ -3560,6 +3986,15 @@ const PREP_CURRICULUM = {
       {lbl:'Jerarquía de Operaciones',                area:'matematica', editorial:'san_francisco', skills:['sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2']},
       {lbl:'Divisibilidad y Criterios',               area:'matematica', editorial:'san_francisco', skills:['sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3']},
       {lbl:'Múltiplos, Divisores, Primos y Factorización', area:'matematica', editorial:'san_francisco', skills:['sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3']},
+      {lbl:'Leyes de Exponentes I – Producto y Cociente', area:'matematica', editorial:'san_francisco', skills:['sf6_exp_b1','sf6_exp_b2','sf6_exp_bq1','sf6_exp_b3','sf6_exp_b4','sf6_exp_bq2']},
+      {lbl:'Leyes de Exponentes II – P⁰, P¹ y Potencia de Potencia', area:'matematica', editorial:'san_francisco', skills:['sf6_ppp_b1','sf6_ppp_b2','sf6_ppp_bq1','sf6_ppp_b3','sf6_ppp_b4','sf6_ppp_bq2','sf6_ppp_b5','sf6_ppp_bq3']},
+      {lbl:'Radicales n-ésimos – Simplificación y Operaciones', area:'matematica', editorial:'san_francisco', skills:['sf6_rad_b1','sf6_rad_b2','sf6_rad_bq1','sf6_rad_b3','sf6_rad_b4','sf6_rad_bq2','sf6_rad_b5','sf6_rad_bq3']},
+      {lbl:'Monomios – Grado Relativo y Absoluto', area:'matematica', editorial:'san_francisco', skills:['sf6_mon_b1','sf6_mon_b2','sf6_mon_bq1','sf6_mon_b3','sf6_mon_b4','sf6_mon_bq2']},
+      {lbl:'Polinomios – Grado Absoluto y Relativo', area:'matematica', editorial:'san_francisco', skills:['sf6_pol_b1','sf6_pol_b2','sf6_pol_bq1','sf6_pol_b3','sf6_pol_b4','sf6_pol_bq2']},
+      {lbl:'Polígonos – Ángulos, Diagonales y Ángulo Exterior', area:'matematica', editorial:'san_francisco', skills:['sf6_pog_b1','sf6_pog_b2','sf6_pog_bq1','sf6_pog_b3','sf6_pog_b4','sf6_pog_bq2','sf6_pog_b5','sf6_pog_bq3']},
+      {lbl:'Cuadriláteros y Trapecio – Ángulos y Mediana', area:'matematica', editorial:'san_francisco', skills:['sf6_cua_b1','sf6_cua_b2','sf6_cua_bq1','sf6_cua_b3','sf6_cua_b4','sf6_cua_bq2']},
+      {lbl:'Circunferencia – Ángulos Central, Inscrito y Tangentes', area:'matematica', editorial:'san_francisco', skills:['sf6_cir_b1','sf6_cir_b2','sf6_cir_bq1','sf6_cir_b3','sf6_cir_b4','sf6_cir_bq2','sf6_cir_b5','sf6_cir_bq3']},
+      {lbl:'Plano Cartesiano – Coordenadas, Traslación y Simetría', area:'matematica', editorial:'san_francisco', skills:['sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2']},
     ],
   },
   secundaria: {
