@@ -40,7 +40,10 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .dash-hero::before { display:none; }
 .sec-lbl { font-size:9px; font-weight:900; color:rgba(0,0,0,0.35); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:8px; }
 
-.fsm { width:100%; background:#fff; border:1px solid rgba(0,0,0,0.14); border-radius:10px; padding:11px 12px; color:#111; font-family:'Barlow',sans-serif; font-size:14px; box-sizing:border-box; margin-bottom:10px; outline:none; }
+.fsm { width:100%; background:#fff; border:1px solid rgba(0,0,0,0.14); border-radius:10px; padding:0 12px; color:#111; font-family:'Barlow',sans-serif; font-size:14px; box-sizing:border-box; margin-bottom:10px; outline:none; height:40px; display:flex; align-items:center; }
+input.fsm { display:block; line-height:normal; }
+select.fsm { display:block; line-height:normal; appearance:none !important; -webkit-appearance:none !important; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23888' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M2 4l4 4 4-4'/%3E%3C/svg%3E") !important; background-repeat:no-repeat !important; background-position:right 20px center !important; padding-right:42px !important; }
+textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .fsm:focus { border-color:rgba(0,0,0,0.4); }
 .btn-grn { width:100%; border:none; border-radius:12px; padding:13px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:14px; letter-spacing:0.12em; text-transform:uppercase; background:#111; color:#fff; transition: opacity 0.15s; }
 .btn-grn:active { opacity: 0.8; }
@@ -127,11 +130,11 @@ body.hist-visible #app { padding-top: calc(50px + env(safe-area-inset-top)); }
 .sm-overlay { position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.45); display:flex; align-items:flex-end; }
 .sm-sheet { background:#fff; border-radius:20px 20px 0 0; padding:20px 20px calc(20px + env(safe-area-inset-bottom)); width:100%; max-height:88vh; overflow-y:auto; }
 .sm-title { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; color:#111; }
-.sm-seg { display:flex; border:1px solid rgba(0,0,0,0.14); border-radius:10px; overflow:hidden; margin-bottom:12px; background:#fff; }
-.sm-seg button { flex:1; border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:8px; cursor:pointer; transition:all 0.15s; }
+.sm-seg { display:flex; border:1px solid rgba(0,0,0,0.14); border-radius:10px; overflow:hidden; margin-bottom:10px; background:#fff; height:40px; box-sizing:border-box; }
+.sm-seg button { flex:1; border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:0 8px; cursor:pointer; transition:all 0.15s; height:100%; display:flex; align-items:center; justify-content:center; }
 .sm-seg button.on { background:#111; color:#fff; }
 .sm-del-btn { width:100%; border:1px solid rgba(0,0,0,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:#fff; color:rgba(0,0,0,0.45); margin-top:8px; }
-.sm-daytog { border:1px solid rgba(0,0,0,0.18); border-radius:8px; background:#fff; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:7px 4px; cursor:pointer; transition:all 0.15s; text-align:center; overflow:hidden; }
+.sm-daytog { border:1px solid rgba(0,0,0,0.18); border-radius:8px; background:#fff; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:0 4px; cursor:pointer; transition:all 0.15s; text-align:center; overflow:hidden; height:40px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
 .sm-daytog.on { background:#111; color:#fff; border-color:#111; }
 </style>
 </head>
@@ -445,7 +448,7 @@ function getCurrentCycle(list) {
   }
   return null;
 }
-// getCycleHorizon, cycleCutoffDate, cycleStartDate → calendar-utils.js
+// getCycleHorizon, cycleCutoffDate, cycleStartDate, getNextCycle, cycleSlug → calendar-utils.js
 function cycleHorizonISO(list) {
   const d = getCycleHorizon(list);
   if (!d) return null;
@@ -1059,11 +1062,14 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
         : slot.students.filter(function(st){ return calIsStudentActive(st, d, dstr); });
       if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
-      const hPx   = Math.max((slot.maxDur / 60) * ROW_H - 3, 28);
       const total = activeStudents.length;
       return activeStudents.map(function(st, idx) {
         const stData = DATA.students[st.sid] || {};
         const end    = addM(slot.start, st.dur);
+        // Cada card tiene altura según SU PROPIA duración, no la máxima del slot.
+        // Así un registro duplicado o de otro alumno con mayor duración no infla
+        // visualmente la tarjeta de este alumno.
+        const hPx   = Math.max((st.dur / 60) * ROW_H - 3, 28);
         const lPx    = 2 + Math.round((colW-4)*(idx/total));
         const wPx    = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short  = hPx < 42;
@@ -1583,6 +1589,29 @@ function saveCycleEdit(id) {
   } else {
     const c = (DATA.cycles||[]).find(c => String(c.id) === String(id));
     if (!c) return;
+    // ── Warning: fin de ciclo acortado con sesiones afectadas ──
+    if (end && c.end && end < c.end) {
+      const newEnd  = new Date(end   + 'T00:00:00');
+      const affected = (DATA.sessions || []).filter(function(s) {
+        if (String(s.cycleId) !== String(id)) return false;
+        if (!s.weekStart || !s.nWeeks) return false;
+        const sessionEnd = new Date(new Date(s.weekStart + 'T00:00:00').getTime() + (s.nWeeks * 7 - 1) * 86400000);
+        return sessionEnd > newEnd;
+      });
+      if (affected.length > 0) {
+        const names = affected.map(function(s) {
+          var st = DATA.students && s.studentId != null ? DATA.students[s.studentId] : null;
+          var label = st ? (st.name || 'Alumno') : 'Sesión';
+          return label + (s.start ? ' ' + s.start : '');
+        });
+        const unique = names.filter(function(v, i, a){ return a.indexOf(v) === i; }).slice(0, 5);
+        const extra  = names.length > 5 ? ' y ' + (names.length - 5) + ' más.' : '.';
+        const msg = 'Hay ' + affected.length + ' horario' + (affected.length > 1 ? 's' : '') +
+          ' cuyo número de semanas supera la nueva fecha de fin:\n' + unique.join('\n') + extra +
+          '\n\n¿Guardar igualmente? Los horarios seguirán repitiéndose según su N° de semanas guardado.';
+        if (!confirm(msg)) return;
+      }
+    }
     c.name = name; c.start = start; c.end = end;
   }
   saveCycles();
@@ -2308,6 +2337,16 @@ function _smStudentOpts(parentId, selId) {
   }).join('');
 }
 
+// Devuelve "lun DD de mes – dom DD de mes" para la semana ISO que contiene dateStr.
+function _smWeekRange(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr + 'T00:00:00');
+  var dow = d.getDay();
+  var lun = new Date(d); lun.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+  var dom = new Date(lun); dom.setDate(lun.getDate() + 6);
+  return fmtDM(lun) + ' – ' + fmtDM(dom);
+}
+
 function _buildSM(prefill, isEdit) {
   var p   = prefill || {};
   var dayVal = p.day !== undefined ? Number(p.day) : 1;
@@ -2328,25 +2367,61 @@ function _buildSM(prefill, isEdit) {
   var _smIsCurCyc  = isEdit && smCurCycle  && p.cycleId != null && String(p.cycleId) === String(smCurCycle.id);
   var _smIsNextCyc = isEdit && smNextCycle && p.cycleId != null && String(p.cycleId) === String(smNextCycle.id);
   var _smIsOnce    = !recVal && !_smIsNWeeks;
+  // Ciclo que contiene la fecha de referencia (para preselección por defecto)
+  var _refD = smEditOccDate ? new Date(smEditOccDate+'T00:00:00') : (p.date ? new Date(p.date+'T00:00:00') : new Date());
+  var _cycleOfRef = _smAllCycles.find(function(c){
+    if (!c.start || !c.end) return false;
+    return _refD >= new Date(c.start+'T00:00:00') && _refD <= new Date(c.end+'T00:00:00');
+  });
   var _smFreqSel   = _smIsNWeeks  ? 'nweeks'
     : _smIsCurCyc  ? 'cur'
     : _smIsNextCyc ? 'next'
-    : _smIsOnce    ? 'once'
-    : recVal && smNextCycle ? 'next'
+    : _smIsOnce    ? 'nweeks'
+    : (_cycleOfRef && smCurCycle  && String(_cycleOfRef.id)===String(smCurCycle.id))  ? 'cur'
+    : (_cycleOfRef && smNextCycle && String(_cycleOfRef.id)===String(smNextCycle.id)) ? 'next'
     : recVal && smCurCycle  ? 'cur'
+    : recVal && smNextCycle ? 'next'
     : 'nweeks';
   var _smInitCycleId = (_smIsNWeeks || _smIsOnce || _smFreqSel === 'nweeks') ? ''
     : _smFreqSel === 'cur'  ? (smCurCycle  ? smCurCycle.id  : '')
     : (smNextCycle ? smNextCycle.id : (smCurCycle ? smCurCycle.id : ''));
   // smCycle mantiene compatibilidad con código heredado
   var smCycle = (smCurCycle && _smFreqSel === 'cur') ? smCurCycle : (smNextCycle || smCurCycle);
-  // Máximo de semanas disponibles = semanas desde hoy hasta que termine el ciclo activo
-  var _smMaxWeeks = 12; // fallback si no hay ciclo activo con fecha de fin
-  if (smCurCycle && smCurCycle.end) {
-    var _smToday = new Date(); _smToday.setHours(0,0,0,0);
-    var _smEnd   = new Date(smCurCycle.end + 'T00:00:00');
-    var _smDiff  = Math.ceil((_smEnd - _smToday) / (7 * 24 * 60 * 60 * 1000));
-    _smMaxWeeks  = Math.max(1, _smDiff);
+  // ── Fecha de referencia: smEditOccDate (edición) o p.date o próxima ocurrencia del día ──
+  var _smRefDateStr = smEditOccDate || p.date || null;
+  var _smRefDate = _smRefDateStr ? new Date(_smRefDateStr + 'T00:00:00') : null;
+  if (!_smRefDate) {
+    var _rdToday = new Date(); _rdToday.setHours(0,0,0,0);
+    var _rdDiff  = (dayVal - _rdToday.getDay() + 7) % 7;
+    _smRefDate   = new Date(_rdToday.getTime() + _rdDiff * 86400000);
+  }
+  // ── _smNWStart: lunes de la semana ISO que contiene la fecha de referencia ──
+  var _nwDow     = _smRefDate.getDay();
+  var _smNWStart = new Date(_smRefDate);
+  _smNWStart.setDate(_smRefDate.getDate() - (_nwDow === 0 ? 6 : _nwDow - 1));
+  // ── Máximo de semanas: desde _smNWStart hasta el fin del ciclo seleccionado ──
+  var _smActiveCycle = _smFreqSel === 'cur'  ? smCurCycle
+                     : _smFreqSel === 'next' ? smNextCycle
+                     : _cycleOfRef || smCurCycle || smNextCycle;
+  var _smMaxWeeks = 12;
+  if (_smActiveCycle && _smActiveCycle.end) {
+    var _smEnd  = new Date(_smActiveCycle.end + 'T00:00:00');
+    var _smDiff = Math.ceil((_smEnd - _smNWStart) / (7 * 24 * 60 * 60 * 1000));
+    _smMaxWeeks = Math.max(1, _smDiff);
+  }
+  // Días hermanos: sesiones de una sola vez del mismo alumno+hora en la misma semana ISO.
+  // Permite pre-seleccionar mié+jue cuando se edita cualquiera de las dos sesiones "esta semana".
+  var _siblingDays = [];
+  if (_smIsOnce && isEdit && p.date && p.studentId != null) {
+    var _pd = new Date(p.date + 'T00:00:00'), _pdow = _pd.getDay();
+    var _pMon = new Date(_pd); _pMon.setDate(_pd.getDate() - (_pdow === 0 ? 6 : _pdow - 1));
+    var _pSun = new Date(_pMon); _pSun.setDate(_pMon.getDate() + 6);
+    (DATA.sessions || []).forEach(function(s) {
+      if (s.recurring !== false || !s.date) return;
+      if (Number(s.studentId) !== Number(p.studentId) || s.start !== p.start) return;
+      var sd = new Date(s.date + 'T00:00:00');
+      if (sd >= _pMon && sd <= _pSun) _siblingDays.push(Number(s.day));
+    });
   }
   var initPid = p.parentId || Object.keys(DATA.parents)[0] || '';
   var stuOpts = smType === 'session' ? _smStudentOpts(initPid, p.studentId) : '';
@@ -2358,11 +2433,29 @@ function _buildSM(prefill, isEdit) {
   // anterior queda libre).
   var swapOpts = (isEdit && smType === 'free')
     ? DATA.sessions.filter(function(s){ return s.recurring !== false; })
+        .filter(function(s, _, arr) {
+          // Deduplicar: si otro registro del mismo alumno+hora es un superconjunto
+          // de los días de este, este registro es redundante → ocultarlo.
+          var sDays = Array.isArray(s.days) && s.days.length ? s.days : [Number(s.day)];
+          return !arr.some(function(other) {
+            if (other === s || other.studentId !== s.studentId || other.start !== s.start) return false;
+            var oDays = Array.isArray(other.days) && other.days.length ? other.days : [Number(other.day)];
+            // Eliminar s si: other cubre TODOS los días de s (sDays ⊆ oDays)
+            // Y además other tiene más días (superconjunto) O tiene igual cantidad pero
+            // fue creado después (id mayor) → en duplicados exactos, queda el más reciente.
+            return sDays.every(function(d){ return oDays.indexOf(d) !== -1; }) &&
+                   (oDays.length > sDays.length || Number(other.id) > Number(s.id));
+          });
+        })
         .slice()
         .sort(function(a,b){ return a.day - b.day || a.start.localeCompare(b.start); })
         .map(function(s){
           var st = DATA.students[s.studentId] || {};
-          return '<option value="'+s.id+'">'+(st.icon||'')+' '+(st.name||('Alumno '+s.studentId))+' — '+DAY_NAMES[s.day]+' '+s.start+'</option>';
+          var daysArr = Array.isArray(s.days) && s.days.length ? s.days : [Number(s.day)];
+          // Ordenar días en orden lun→dom (domingo=0 va al final como 7)
+          var sorted = daysArr.slice().sort(function(a,b){ return (a===0?7:a)-(b===0?7:b); });
+          var daysLabel = sorted.map(function(d){ return DAY_NAMES[d]; }).join(' y ');
+          return '<option value="'+s.id+'">'+(st.icon||'')+' '+(st.name||('Alumno '+s.studentId))+' — '+daysLabel+' '+s.start+'</option>';
         }).join('')
     : '';
   var html = '<div class="sm-overlay" onclick="if(event.target===this)closeSessionModal()">'
@@ -2377,69 +2470,96 @@ function _buildSM(prefill, isEdit) {
         +'<button data-t="free" class="'+(smType==='free'?'on':'')+'" onclick="smSetType(\'free\')">Horario libre</button>'
         +'</div>'
       : '')
-    +'<div id="sm-sess-fields" style="display:'+(smType==='session'?'':'none')+'">'
-    +'<label class="field-label">Padre / madre</label>'
-    +'<select class="fsm" id="sm-parent" onchange="smUpdateStudents()" style="appearance:auto">'+parOpts+'</select>'
-    +'<label class="field-label">Alumno</label>'
-    +'<select class="fsm" id="sm-student" style="appearance:auto">'+stuOpts+'</select>'
+    // ── Fila 1: Padre/Madre | Alumno | Nivel/Grado ──
+    +'<div id="sm-sess-fields" style="display:'+(smType==='session'?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div><label class="field-label">Padre / madre</label>'
+    +'<select class="fsm" id="sm-parent" onchange="smUpdateStudents()" style="appearance:auto">'+parOpts+'</select></div>'
+    +'<div><label class="field-label">Alumno</label>'
+    +'<select class="fsm" id="sm-student" style="appearance:auto" onchange="_smUpdateGradeDisplay()">'+stuOpts+'</select></div>'
+    +'<div><label class="field-label">Nivel / grado</label>'
+    +'<div class="fsm" id="sm-grade-display" style="cursor:default;font-size:13px">'
+    +(function(){ var st = p.studentId != null ? DATA.students[p.studentId] : null; return st ? _smGradeLabel(st) : '—'; })()
+    +'</div></div>'
     +'</div>'
-    +'<label class="field-label">Día de la semana</label>'
+    // ── Fila 2: Día | Hora | Duración ──
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div><label class="field-label">Día de la semana</label>'
     +'<select class="fsm" id="sm-day" style="appearance:auto" onchange="smSyncDays(this.value)">'
     +DAY_NAMES.map(function(n,i){ return '<option value="'+i+'"'+(i===dayVal?' selected':'')+'>'+n+'</option>'; }).join('')
-    +'</select>'
-    +'<label class="field-label">Hora de inicio</label>'
-    +'<input class="fsm" id="sm-start" type="time" value="'+(p.start||'16:00')+'">'
-    +'<label class="field-label">Duración</label>'
+    +'</select></div>'
+    +'<div><label class="field-label">Hora de inicio</label>'
+    +'<input class="fsm" id="sm-start" type="time" value="'+(p.start||'16:00')+'"></div>'
+    +'<div><label class="field-label">Duración</label>'
     +'<select class="fsm" id="sm-dur" style="appearance:auto">'
     +[60,90,120,180].map(function(d){ return '<option value="'+d+'"'+(d===durVal?' selected':'')+'>'+d+' min</option>'; }).join('')
-    +'</select>'
-    +'<label class="field-label">Modalidad</label>'
+    +'</select></div>'
+    +'</div>'
+    // ── Fila 3: Fecha de referencia | Frecuencia | Modalidad ──
+    +'<input type="hidden" id="sm-cycle-id" value="'+_smInitCycleId+'">'
+    +'<input type="hidden" id="sm-week-start" value="'+(p.date||'')+'">'
+    +'<input type="hidden" id="sm-nw-start" value="'+_smNWStart.toISOString().slice(0,10)+'">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div><label class="field-label">Fecha de referencia</label>'
+    +'<div class="fsm" style="cursor:default;font-size:13px">'
+    +(DAY_NAMES[_smRefDate.getDay()]+' '+fmtDM(_smRefDate))
+    +'</div></div>'
+    +'<div><label class="field-label">Frecuencia</label>'
+    +'<div class="sm-seg" id="sm-rec-seg" style="font-size:10px">'
+    +(smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">'+smCurCycle.name+'</button>'  : '')
+    +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">'+smNextCycle.name+'</button>' : '')
+    +'<button class="'+(_smFreqSel==='nweeks'?'on':'')+'" data-rec="nweeks" onclick="smToggleRec(this,\'nweeks\')">N sem.</button>'
+    +'</div></div>'
+    +'<div><label class="field-label">Modalidad</label>'
     +'<div class="sm-seg" id="sm-mod-seg">'
     +'<button class="'+(modVal==='Virtual'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Virtual</button>'
     +'<button class="'+(modVal==='Domicilio'?'on':'')+'" onclick="smToggleSeg(\'sm-mod-seg\',this)">Domicilio</button>'
+    +'</div></div>'
     +'</div>'
-    +'<input type="hidden" id="sm-cycle-id" value="'+_smInitCycleId+'">'
-    +'<input type="hidden" id="sm-week-start" value="'+(p.date||'')+'">'
-    +'<label class="field-label">Frecuencia</label>'
-    +'<div class="sm-seg" id="sm-rec-seg">'
-    +(smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">Semanal – Ciclo '+smCurCycle.name+'</button>'  : '')
-    +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">Semanal – Ciclo '+smNextCycle.name+'</button>' : '')
-    +'<button class="'+(_smFreqSel==='nweeks'?'on':'')+'" data-rec="nweeks" onclick="smToggleRec(this,\'nweeks\')">N semanas</button>'
-    +(_smIsOnce ? '<button style="display:none" class="on" data-rec="false"></button>' : '')
-    +'</div>'
-    +'<div id="sm-date-wrap" style="display:'+(_smIsOnce?'':'none')+'">'
+    // ── Fila 4: Semana / Fecha / N-sem | Días | Aplicar este cambio a ──
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    // Col 1: campo de fecha/semana/n-sem (condicional, mutuamente excluyentes)
+    +'<div>'
+    +'<div id="sm-date-wrap" style="display:'+(!isEdit&&_smIsOnce?'':'none')+'">'
     +'<label class="field-label">Fecha específica</label>'
-    +'<input class="fsm" id="sm-date" type="date" value="'+(p.date||'')+'">'
+    +'<input class="fsm" id="sm-date" type="date" value="'+(p.date||'')+'"></div>'
+    +'<div id="sm-nweeks-wrap">'
+    +'<label class="field-label">N° de semanas</label>'
+    +'<select class="fsm" id="sm-nweeks">'
+    +Array.from({length:_smMaxWeeks},function(_,i){
+        var n=i+1;
+        var _nwDef = p.nWeeks || _smMaxWeeks;
+        var endDate=new Date(_smNWStart.getTime()+(n*7-1)*86400000);
+        return '<option value="'+n+'"'+(n===_nwDef?' selected':'')+'>'+n+' sem. · '+fmtDM(_smNWStart)+' – '+fmtDM(endDate)+'</option>';
+      }).join('')
+    +'</select></div>'
     +'</div>'
-    +'<div id="sm-nweeks-wrap" style="display:'+(_smIsNWeeks?'':'none')+'">'
-    +'<label class="field-label">Número de semanas</label>'
-    +'<select class="fsm" id="sm-nweeks" style="appearance:auto">'
-+Array.from({length:_smMaxWeeks},function(_,i){var n=i+1;return '<option value="'+n+'"'+(n===(p.nWeeks||1)?' selected':'')+'>'+n+' semana'+(n===1?'':'s')+'</option>';}).join('')
-    +'</select>'
-    +'</div>'
-    +'<div id="sm-days-wrap" style="display:'+(_smFreqSel==='cur'||_smFreqSel==='next'?'':'none')+'">'
+    // Col 2: Días multi-selección
+    +'<div id="sm-days-wrap" style="display:'+(_smFreqSel==='cur'||_smFreqSel==='next'||_smIsNWeeks||(_smIsOnce&&isEdit)?'':'none')+'">'
     +'<label class="field-label">Días</label>'
     +'<div id="sm-days-seg" style="display:flex;gap:4px">'
     +[1,2,3,4,5,6,0].map(function(i){
         var n = DAY_NAMES[i];
-        var sel = Array.isArray(p.days) ? p.days.indexOf(i)!==-1 : i===dayVal;
+        var sel = _siblingDays.length > 0 ? _siblingDays.indexOf(i)!==-1
+          : (Array.isArray(p.days) && p.days.length) ? p.days.indexOf(i)!==-1 : i===dayVal;
         return '<button type="button" class="sm-daytog'+(sel?' on':'')+'" data-dow="'+i+'" onclick="smToggleDay(this)" style="flex:1;min-width:0">'+n.slice(0,3)+'</button>';
       }).join('')
-    +'</div>'
-    +'</div>'
+    +'</div></div>'
+    // Col 3: Aplicar este cambio a (solo en edición)
     +(isEdit && smEditOccDate
-      ? '<div id="sm-scope-wrap" style="display:'+(recVal?'':'none')+'">'
+      ? '<div id="sm-scope-wrap" style="display:'+(recVal||_smIsOnce?'':'none')+'">'
         +'<label class="field-label">Aplicar este cambio a</label>'
         +'<div class="sm-seg" id="sm-scope-seg">'
-        +'<button class="on" data-scope="all" onclick="smToggleSeg(\'sm-scope-seg\',this)">Todas las semanas</button>'
-        +'<button data-scope="one" onclick="smToggleSeg(\'sm-scope-seg\',this)">Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00'))+'</button>'
+        +'<button class="'+(!_smIsOnce?'on':'')+'" data-scope="all" onclick="smScopeClicked(this,\'all\')">Todas las semanas</button>'
+        +'<button class="'+(_smIsOnce?'on':'')+'" data-scope="one" onclick="smScopeClicked(this,\'one\')">'+(Array.isArray(p.days)&&p.days.length>1||_smIsOnce?'Solo esta semana':'Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00')))+'</button>'
         +'</div>'
         +'</div>'
-      : '')
+      : '<div></div>')
+    +'</div>'
     +(isEdit && smType==='free'
       ? '<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.08)">'
+        +'<button class="btn-grn" style="margin-bottom:14px;background:#1a6f3c" onclick="convertFreeSlotToSession()">＋ Crear clase en este horario</button>'
         +'<label class="field-label">🔄 Reprogramar un alumno a este horario</label>'
-        +'<select class="fsm" id="sm-swap-session" style="appearance:auto">'
+        +'<select class="fsm" id="sm-swap-session" style="appearance:auto" onchange="smSyncSwapModality(this.value)">'
           +'<option value="">— Elegir alumno y horario actual —</option>'
           +swapOpts
         +'</select>'
@@ -2483,15 +2603,59 @@ function closeSessionModal() {
   smEditId = null; smEditFree = false; smEditOccDate = null;
 }
 
+function convertFreeSlotToSession() {
+  var fs = (DATA.freeSlots||[]).find(function(s){ return s.id==smEditId; });
+  if (!fs) return;
+  var occDate = smEditOccDate || fs.date || null;
+  closeSessionModal();
+  openNewSession({
+    type: 'session',
+    prefill: {
+      day:      fs.day,
+      start:    fs.start,
+      dur:      fs.dur,
+      modality: fs.modality || 'Virtual',
+      date:     occDate
+    }
+  });
+}
+
 function smSetType(t) {
   smType = t;
   document.querySelectorAll('#sm-type-seg button').forEach(function(b){ b.classList.toggle('on', b.dataset.t===t); });
-  document.getElementById('sm-sess-fields').style.display = t==='session' ? '' : 'none';
+  document.getElementById('sm-sess-fields').style.display = t==='session' ? 'grid' : 'none';
 }
 
 function smToggleSeg(segId, btn) {
   document.querySelectorAll('#'+segId+' button').forEach(function(b){ b.classList.remove('on'); });
   btn.classList.add('on');
+}
+
+// Al elegir un alumno en el dropdown de reprogramación, sincroniza la modalidad del modal
+// con la modalidad de la sesión seleccionada (Virtual / Domicilio).
+function smSyncSwapModality(sessionId) {
+  if (!sessionId) return;
+  var sess = (DATA.sessions||[]).find(function(s){ return s.id == sessionId; });
+  if (!sess || !sess.modality) return;
+  var modBtns = document.querySelectorAll('#sm-mod-seg button');
+  modBtns.forEach(function(b) {
+    b.classList.toggle('on', b.textContent.trim() === sess.modality);
+  });
+}
+
+function _smRebuildNWeeks(cycleEnd) {
+  var nwEl     = document.getElementById('sm-nweeks');
+  var nwStartEl = document.getElementById('sm-nw-start');
+  if (!nwEl || !nwStartEl || !nwStartEl.value) return;
+  var nwStart  = new Date(nwStartEl.value + 'T00:00:00');
+  var endDate  = new Date(cycleEnd + 'T00:00:00');
+  var maxW     = Math.max(1, Math.ceil((endDate - nwStart) / (7 * 24 * 60 * 60 * 1000)));
+  var curVal   = Math.min(parseInt(nwEl.value) || 1, maxW);
+  nwEl.innerHTML = Array.from({length: maxW}, function(_, i) {
+    var n = i + 1;
+    var ed = new Date(nwStart.getTime() + (n * 7 - 1) * 86400000);
+    return '<option value="'+n+'"'+(n === curVal ? ' selected' : '')+'>'+n+' sem. · '+fmtDM(nwStart)+' – '+fmtDM(ed)+'</option>';
+  }).join('');
 }
 
 function smToggleRec(btn, rec, cycleId) {
@@ -2503,22 +2667,49 @@ function smToggleRec(btn, rec, cycleId) {
   // Actualizar campo cycleId oculto
   var cycEl = document.getElementById('sm-cycle-id');
   if (cycEl) cycEl.value = (isRec && cycleId !== undefined && cycleId !== null) ? cycleId : '';
+  // Reconstruir opciones de N° de semanas según el ciclo seleccionado
+  if (isRec && cycleId != null) {
+    var cycle = (DATA.cycles || []).find(function(c){ return String(c.id) === String(cycleId); });
+    if (cycle && cycle.end) _smRebuildNWeeks(cycle.end);
+  }
   // Visibilidad de sub-campos
   var dateWrap = document.getElementById('sm-date-wrap');
   if (dateWrap) dateWrap.style.display = isOnce ? '' : 'none';
-  var nweeksWrap = document.getElementById('sm-nweeks-wrap');
-  if (nweeksWrap) nweeksWrap.style.display = isNWeeks ? '' : 'none';
+  // N° de semanas siempre visible
   // Días multi-selección: solo para sesiones semanales de ciclo
   var daysWrap = document.getElementById('sm-days-wrap');
-  if (daysWrap) daysWrap.style.display = isRec ? '' : 'none';
+  if (daysWrap) daysWrap.style.display = (isRec || isNWeeks) ? '' : 'none';
   // "Aplicar a" solo tiene sentido en modo semanal
   var scopeWrap = document.getElementById('sm-scope-wrap');
   if (scopeWrap) scopeWrap.style.display = (isRec || isNWeeks) ? '' : 'none';
 }
 
+function _smGradeLabel(st) {
+  if (!st) return '—';
+  var nivel = st.nivel || '';
+  var grado = st.grado || '';
+  if (!nivel && !grado) return '—';
+  var n = nivel === 'primaria' ? 'Primaria' : nivel === 'secundaria' ? 'Secundaria' : nivel === 'preuni' ? 'Pre-uni' : nivel;
+  return grado ? grado + '° ' + n : n;
+}
+function _smUpdateModalityName() {
+  var btn  = document.querySelector('#sm-mod-seg .on');
+  var disp = document.getElementById('sm-modality-name');
+  if (!disp) return;
+  var mod = btn ? btn.textContent.trim() : 'Virtual';
+  disp.textContent = mod === 'Domicilio' ? 'One to Family' : 'One to One';
+}
+function _smUpdateGradeDisplay() {
+  var stuEl = document.getElementById('sm-student');
+  var disp  = document.getElementById('sm-grade-display');
+  if (!disp || !stuEl) return;
+  var st = stuEl.value ? DATA.students[stuEl.value] : null;
+  disp.textContent = st ? _smGradeLabel(st) : '—';
+}
 function smUpdateStudents() {
   var pid = document.getElementById('sm-parent').value;
   document.getElementById('sm-student').innerHTML = _smStudentOpts(pid, null);
+  _smUpdateGradeDisplay();
 }
 
 // Toggle individual día en la sección multi-días (siempre debe haber al menos 1 activo)
@@ -2526,6 +2717,35 @@ function smToggleDay(btn) {
   var onCount = document.querySelectorAll('#sm-days-seg button.on').length;
   if (btn.classList.contains('on') && onCount <= 1) return;
   btn.classList.toggle('on');
+  // Actualizar label del scope: si hay 2+ días → "Solo esta semana", si 1 → "Solo {fecha}"
+  _smSyncScopeLabel();
+}
+
+// Maneja el clic en los botones de scope ("Todas las semanas" / "Solo esta semana").
+// Cuando se selecciona "Todas las semanas" y la sesión es de una sola vez, auto-cambia
+// la frecuencia al primer ciclo disponible para poder convertirla en recurrente.
+function smScopeClicked(btn, scope) {
+  smToggleSeg('sm-scope-seg', btn);
+  if (scope === 'all') {
+    // Si la frecuencia activa es el botón oculto "data-rec=false" (una sola vez),
+    // auto-clic en el primer botón de ciclo para cambiar a recurrente.
+    var onBtn = document.querySelector('#sm-rec-seg .on');
+    if (onBtn && onBtn.dataset.rec === 'false') {
+      var firstCycleBtn = document.querySelector('#sm-rec-seg button[data-rec="true"]');
+      if (firstCycleBtn) firstCycleBtn.click();
+    }
+  }
+  _smSyncScopeLabel();
+}
+
+// Actualiza el label del botón "Solo …" según la cantidad de días seleccionados.
+function _smSyncScopeLabel() {
+  var scopeOneBtn = document.querySelector('#sm-scope-seg button[data-scope="one"]');
+  if (!scopeOneBtn || !smEditOccDate) return;
+  var onCount = document.querySelectorAll('#sm-days-seg button.on').length;
+  scopeOneBtn.textContent = onCount > 1
+    ? 'Solo esta semana'
+    : 'Solo ' + fmtDM(new Date(smEditOccDate + 'T00:00:00'));
 }
 
 // Sincroniza la sección "Días" cuando el usuario cambia el dropdown principal
@@ -2567,30 +2787,29 @@ function submitSessionModal() {
   var isNWeeks = freqType === 'nweeks';
   var recurring = freqType !== 'false';
   var cycleIdEl  = document.getElementById('sm-cycle-id');
-  var cycleIdVal = (!isNWeeks && cycleIdEl && cycleIdEl.value !== '') ? cycleIdEl.value : null;
+  var cycleIdVal = (cycleIdEl && cycleIdEl.value !== '') ? cycleIdEl.value : null;
   var dateEl   = document.getElementById('sm-date');
   var date     = recurring ? null : (dateEl ? dateEl.value || null : null);
   if (!recurring && !date) { showToast('Indica la fecha específica.'); return; }
-  // Datos de "N semanas"
-  var nWeeksVal   = 0;
-  var weekStartVal = null;
-  if (isNWeeks) {
-    var nwEl = document.getElementById('sm-nweeks');
-    nWeeksVal = nwEl ? (parseInt(nwEl.value) || 1) : 1;
-    var wsEl  = document.getElementById('sm-week-start');
-    weekStartVal = wsEl && wsEl.value ? wsEl.value : null;
-    if (!weekStartVal) {
-      // Calcular próxima ocurrencia del día seleccionado desde hoy
-      var _td = new Date(); _td.setHours(0,0,0,0);
-      var _diff = (day - _td.getDay() + 7) % 7;
-      var _ws = new Date(_td.getTime() + _diff * 86400000);
-      weekStartVal = _ws.toISOString().slice(0, 10);
-    }
+  // N° de semanas siempre limita la duración (el selector siempre está visible)
+  var nwEl = document.getElementById('sm-nweeks');
+  var nWeeksVal = nwEl ? (parseInt(nwEl.value) || 1) : 1;
+  var nwStartEl = document.getElementById('sm-nw-start');
+  var weekStartVal = (nwStartEl && nwStartEl.value) ? nwStartEl.value : null;
+  if (!weekStartVal) {
+    var _td = new Date(); _td.setHours(0,0,0,0);
+    var _diff = (day - _td.getDay() + 7) % 7;
+    var _ws = new Date(_td.getTime() + _diff * 86400000);
+    var _wsDow = _ws.getDay();
+    _ws.setDate(_ws.getDate() - (_wsDow === 0 ? 6 : _wsDow - 1));
+    weekStartVal = _ws.toISOString().slice(0, 10);
   }
+  // Forzar nWeeks para que el campo siempre controle la duración
+  isNWeeks = recurring;
   // Días seleccionados en la sección multi-días (solo para sesiones de ciclo)
   var selectedDays;
   var daysWrapEl = document.getElementById('sm-days-wrap');
-  if (!isNWeeks && recurring && daysWrapEl && daysWrapEl.style.display !== 'none') {
+  if (recurring && daysWrapEl && daysWrapEl.style.display !== 'none') {
     var onDayBtns = document.querySelectorAll('#sm-days-seg button.on');
     selectedDays = Array.from(onDayBtns).map(function(b){ return parseInt(b.dataset.dow); });
     if (!selectedDays.length) selectedDays = [day];
@@ -2633,18 +2852,34 @@ function submitSessionModal() {
     var stuEl = document.getElementById('sm-student');
     if (!parEl || !stuEl || !stuEl.value) { showToast('Selecciona padre y alumno.'); return; }
     var studentId = parseInt(stuEl.value);
-    var topic = modality === 'Virtual' ? 'One to One' : 'One to Family';
+    var topicEl = document.getElementById('sm-topic');
+    var topic = (topicEl && topicEl.value.trim()) || (modality === 'Virtual' ? 'One to One' : 'One to Family');
     if (onlyThisDate) {
       var baseSess = DATA.sessions.find(function(s){ return s.id==curEditId; });
-      if (baseSess) {
-        if (!Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
-        if (baseSess.skipDates.indexOf(smEditOccDate) === -1) baseSess.skipDates.push(smEditOccDate);
+      if (selectedDays.length > 1) {
+        // "Solo esta semana" con múltiples días: crear una sesión de una sola vez por cada
+        // día seleccionado en la misma semana ISO que smEditOccDate, y agregar cada fecha
+        // a skipDates de la regla base para que esa semana no use los valores antiguos.
+        if (baseSess && !Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
+        selectedDays.forEach(function(dow, i) {
+          var occDate = _shiftDateToDow(smEditOccDate, dow);
+          if (baseSess && baseSess.skipDates.indexOf(occDate) === -1) baseSess.skipDates.push(occDate);
+          DATA.sessions.push({ id: Date.now() + i + 1, studentId:studentId, day:dow, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:occDate });
+        });
+      } else {
+        // "Solo esta fecha": comportamiento original (un solo día)
+        if (baseSess) {
+          if (!Array.isArray(baseSess.skipDates)) baseSess.skipDates = [];
+          if (baseSess.skipDates.indexOf(smEditOccDate) === -1) baseSess.skipDates.push(smEditOccDate);
+        }
+        DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:_shiftDateToDow(smEditOccDate, day) });
       }
-      DATA.sessions.push({ id:Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:false, date:_shiftDateToDow(smEditOccDate, day) });
     } else {
       var sess = { id: curEditId !== null ? curEditId : Date.now(), studentId:studentId, day:day, start:start, dur:dur, modality:modality, topic:topic, recurring:recurring, date:date };
-      if (recurring && !isNWeeks) { sess.cycleId = cycleIdVal; sess.days = selectedDays; }
-      if (isNWeeks) { sess.nWeeks = nWeeksVal; sess.weekStart = weekStartVal; }
+      if (recurring) {
+        sess.nWeeks = nWeeksVal; sess.weekStart = weekStartVal; sess.days = selectedDays;
+        if (cycleIdVal) sess.cycleId = cycleIdVal;
+      }
       if (curEditId !== null) {
         var idx2 = DATA.sessions.findIndex(function(s){ return s.id==curEditId; });
         if (idx2>=0) DATA.sessions[idx2]=sess; else DATA.sessions.push(sess);
@@ -2654,7 +2889,9 @@ function submitSessionModal() {
   }
   closeSessionModal();
   render();
-  showToast(onlyThisDate ? 'Cambios guardados solo para esa fecha.' : (curEditId !== null ? 'Cambios guardados.' : 'Creado correctamente.'), 'success');
+  showToast(onlyThisDate
+    ? (selectedDays.length > 1 ? 'Cambios guardados solo para esta semana.' : 'Cambios guardados solo para esa fecha.')
+    : (curEditId !== null ? 'Cambios guardados.' : 'Creado correctamente.'), 'success');
 }
 
 // Reprogramación rápida: intercambia el horario libre que se está editando con la clase
@@ -2670,9 +2907,8 @@ function swapFreeSlotWithSession() {
   var sel = document.getElementById('sm-swap-session');
   if (!sel || !sel.value) { showToast('Selecciona un alumno y horario para reprogramar.'); return; }
   if (smEditId == null) return;
-  var sessionId = parseInt(sel.value);
   var fsIdx   = (DATA.freeSlots||[]).findIndex(function(s){ return s.id == smEditId; });
-  var sessIdx = (DATA.sessions||[]).findIndex(function(s){ return s.id === sessionId; });
+  var sessIdx = (DATA.sessions||[]).findIndex(function(s){ return s.id == sel.value; });
   if (fsIdx < 0 || sessIdx < 0) { showToast('No se encontró el horario seleccionado.'); return; }
   var fs   = DATA.freeSlots[fsIdx];
   var sess = DATA.sessions[sessIdx];
@@ -2696,11 +2932,29 @@ function swapFreeSlotWithSession() {
     DATA.sessions.push({ id:Date.now(), studentId:sess.studentId, day:fs.day, start:fs.start, dur:sess.dur, modality:sess.modality, topic:sess.topic, recurring:false, date:smEditOccDate });
   } else {
     var newFreeDay = sess.day, newFreeStart = sess.start, newFreeDur = sess.dur, newFreeMod = sess.modality;
-    var newSessDay = fs.day, newSessStart = fs.start;
+    // Leer día/hora/días del FORMULARIO (no del dato guardado), porque el usuario
+    // puede haber modificado los días en el modal antes de hacer clic en Intercambiar.
+    var _formDay   = parseInt((document.getElementById('sm-day')||{}).value) || fs.day;
+    var _formStart = (document.getElementById('sm-start')||{}).value || fs.start;
+    var _daysWrap  = document.getElementById('sm-days-wrap');
+    var _formDays;
+    if (_daysWrap && _daysWrap.style.display !== 'none') {
+      var _onBtns = document.querySelectorAll('#sm-days-seg button.on');
+      _formDays = Array.from(_onBtns).map(function(b){ return parseInt(b.dataset.dow); });
+      if (!_formDays.length) _formDays = [_formDay];
+    } else {
+      _formDays = [_formDay];
+    }
+    _formDay = _formDays.indexOf(_formDay) !== -1 ? _formDay : _formDays[0];
+    var newSessDay = _formDay, newSessStart = _formStart;
+    var newSessDays = _formDays.length > 1 ? _formDays : [];
     var newFs = { id: fs.id, day: newFreeDay, start: newFreeStart, dur: newFreeDur, modality: newFreeMod, recurring: true, date: null, bookedBy: null };
     if (fs.cycleId != null) newFs.cycleId = fs.cycleId;
     DATA.freeSlots[fsIdx] = newFs;
-    DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
+    // days: newSessDays copia los días del horario libre (vacío=un solo día).
+    // Sin esto, si la sesión tenía days:[0,6] (sáb+dom), Object.assign lo copiaría
+    // y el alumno seguiría apareciendo en sus días originales.
+    DATA.sessions[sessIdx] = Object.assign({}, sess, { day: newSessDay, days: newSessDays, start: newSessStart, recurring: true, date: null, skipDates: Array.isArray(sess.skipDates) ? sess.skipDates : [] });
   }
   // Importante: freeSlots y sessions se guardan en UNA sola escritura (no dos llamadas
   // separadas a saveFreeSlots()/saveSessions()). Si se guardan por separado, el snapshot

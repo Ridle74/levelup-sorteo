@@ -9,6 +9,7 @@
 /cotiza-virtual    /cotiza-virtual.html    200
 /cotiza-domicilio  /cotiza-domicilio.html  200
 /horarios          /horarios.html          200
+/horarios/*        /horarios.html          200
 /catalogo-2026     /catalogo-2026.html     200
 /cotiza            /cotiza.html            200
 /*         /index.html        200

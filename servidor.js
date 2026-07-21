@@ -18,8 +18,38 @@ const MIME = {
   '.woff2':'font/woff2',
 };
 
+// Rutas SPA: igual que _redirects
+const SPA_ROUTES = [
+  { prefix: '/student', file: 'student.html' },
+  { prefix: '/padres',  file: 'padres.html'  },
+  { prefix: '/horarios',file: 'horarios.html' },
+];
+
 http.createServer((req, res) => {
-  let filePath = path.join(ROOT, req.url === '/' ? '/student.html' : req.url);
+  // Quitar query string para comparar rutas
+  const urlPath = req.url.split('?')[0];
+
+  // Ruta raíz
+  if (urlPath === '/') {
+    return fs.readFile(path.join(ROOT, 'student.html'), (err, data) => {
+      if (err) { res.writeHead(404); res.end('No encontrado'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  }
+
+  // Rutas SPA: si la ruta empieza con alguno de los prefijos, sirve su HTML
+  const spa = SPA_ROUTES.find(r => urlPath === r.prefix || urlPath.startsWith(r.prefix + '/'));
+  if (spa && path.extname(urlPath) === '') {
+    return fs.readFile(path.join(ROOT, spa.file), (err, data) => {
+      if (err) { res.writeHead(404); res.end('No encontrado'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  }
+
+  // Archivo estático normal
+  const filePath = path.join(ROOT, urlPath);
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME[ext] || 'text/plain';
 

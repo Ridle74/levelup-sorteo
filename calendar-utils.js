@@ -49,6 +49,33 @@ function cycleStartDate(cycleId) {
   return null;
 }
 
+function getCurrentCycle(list) {
+  list = list || DATA.cycles || [];
+  var t = new Date(); t.setHours(0,0,0,0);
+  for (var i = 0; i < list.length; i++) {
+    var c = list[i];
+    var s = c.start ? new Date(c.start + 'T00:00:00') : null;
+    var e = c.end   ? new Date(c.end   + 'T00:00:00') : null;
+    if ((!s || t >= s) && (!e || t <= e)) return c;
+  }
+  return null;
+}
+
+function getNextCycle(list) {
+  list = list || DATA.cycles || [];
+  var cur = getCurrentCycle(list);
+  if (!cur) return null;
+  var idx = list.findIndex(function(c){ return String(c.id) === String(cur.id); });
+  return (idx !== -1 && idx < list.length - 1) ? list[idx + 1] : null;
+}
+
+function cycleSlug(name) {
+  if (!name) return '';
+  return name.toLowerCase()
+    .replace(/\s+(\d)/g, '-$1')  // espacio antes de dígito → guión
+    .replace(/\s+/g, '');         // quitar espacios restantes
+}
+
 /* ── Filtro de alumno activo ────────────────────────── */
 // st: { skipDates, nWeeks, weekStart, cycleId }
 // d: objeto Date de la fecha a verificar

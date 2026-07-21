@@ -51,6 +51,15 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
   font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
   padding:7px 12px; border-radius:8px; cursor:pointer;
 }
+.pcal-cycle-btns { display:flex; gap:6px; }
+.pcal-cycle-btn {
+  border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.55);
+  font-family:'Barlow Condensed',sans-serif; font-weight:900;
+  font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
+  padding:7px 11px; border-radius:8px; cursor:pointer; white-space:nowrap;
+  transition:background 0.15s,color 0.15s;
+}
+.pcal-cycle-btn:hover { background:#111; color:#fff; }
 .pcal-nav { margin-left:auto; display:flex; gap:6px; }
 .pcal-nav button {
   border:1px solid rgba(0,0,0,0.14); background:#fff; color:#111;
@@ -475,12 +484,22 @@ function calGoToday() {
 /* ── Build nav ──────────────────────────────────────── */
 function buildNav(rs,re) {
   var m4=calMode==='4dias'?' on':'', mw=calMode==='week'?' on':'';
+  var curCyc  = getCurrentCycle(DATA.cycles);
+  var nextCyc = getNextCycle(DATA.cycles);
+  var cycleBtns = '';
+  if (curCyc || nextCyc) {
+    cycleBtns = '<div class="pcal-cycle-btns">';
+    if (curCyc)  cycleBtns += '<a class="pcal-cycle-btn" href="/horarios/'+cycleSlug(curCyc.name)+'">'+curCyc.name+'</a>';
+    if (nextCyc) cycleBtns += '<a class="pcal-cycle-btn" href="/horarios/'+cycleSlug(nextCyc.name)+'">'+nextCyc.name+'</a>';
+    cycleBtns += '</div>';
+  }
   return '<div class="pcal-toolbar">'
     +'<div class="pcal-toggle">'
     +'<button class="'+m4+'" onclick="setCalMode(\'4dias\')">4 días</button>'
     +'<button class="'+mw+'" onclick="setCalMode(\'week\')">Semana</button>'
     +'</div>'
     +'<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
+    +cycleBtns
     +'<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
     +'</div>'
     +'<div class="pcal-range-bar">'+fmtDM(rs)+' — '+fmtDM(re)+'</div>'
@@ -662,6 +681,38 @@ function render() {
   },60);
 }
 
+/* ── Ciclo: navegar al ancla correcta ───────────────── */
+function calGoToCycle(cycle) {
+  if (!cycle) return;
+  var today = todayMidnight();
+  var start = cycle.start ? new Date(cycle.start + 'T00:00:00') : null;
+  var end   = cycle.end   ? new Date(cycle.end   + 'T00:00:00') : null;
+  var anchor;
+  if (start && today < start) {
+    // Ciclo futuro: primera semana del ciclo
+    anchor = startOfWeek(start);
+  } else if (end && today > end) {
+    // Ciclo pasado: última semana del ciclo
+    anchor = startOfWeek(end);
+  } else {
+    // Ciclo actual: semana de hoy
+    anchor = startOfWeek(today);
+  }
+  calAnchor = anchor;
+  // Forzar modo semana para la vista compartida
+  calMode = 'week';
+}
+
+/* ── Detectar slug de ciclo en la URL ──────────────── */
+function _applyUrlCycle() {
+  var parts = window.location.pathname.replace(/\/+$/, '').split('/');
+  var slug  = parts[parts.length - 1]; // último segmento: "ciclo-3", "preciclo-3", etc.
+  if (!slug || slug === 'horarios') return;
+  var cycles = DATA.cycles || [];
+  var match  = cycles.find(function(c){ return cycleSlug(c.name) === slug; });
+  if (match) calGoToCycle(match);
+}
+
 /* ── Load ───────────────────────────────────────────── */
 db.collection('padres').doc('main').get().then(function(doc){
   if(doc.exists){
@@ -672,6 +723,7 @@ db.collection('padres').doc('main').get().then(function(doc){
     DATA.cycles   =d.cycles  ||[];
     DATA.students =d.students ||{};
   }
+  _applyUrlCycle(); // ← anclar al ciclo indicado en la URL, si hay
   render();
 }).catch(function(){ render(); });
 </script>
