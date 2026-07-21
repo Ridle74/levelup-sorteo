@@ -58,7 +58,7 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .pcal-outer { display:flex; flex-direction:column; height:calc(100dvh - 64px - env(safe-area-inset-bottom)); overflow:hidden; background:transparent; }
 .pcal-toolbar { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:10px 14px 6px; }
 .pcal-toggle { display:flex; border:1px solid rgba(0,0,0,0.14); border-radius:10px; overflow:hidden; background:#fff; }
-.pcal-toggle button { border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s; }
+.pcal-toggle button { border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s; white-space:nowrap; }
 .pcal-toggle button.on { background:#111; color:#fff; }
 .pcal-today-btn { border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.6); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 12px; border-radius:8px; cursor:pointer; transition:background 0.15s,color 0.15s; }
 .pcal-today-btn.on { background:#111; color:#fff; }
@@ -150,15 +150,15 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .sm-daytog { border:1px solid rgba(0,0,0,0.18); border-radius:8px; background:#fff; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:0 4px; cursor:pointer; transition:all 0.15s; text-align:center; overflow:hidden; height:40px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
 .sm-daytog.on { background:#111; color:#fff; border-color:#111; }
 /* ── Toolbar compacta en móvil ────────────────────────── */
-@media (max-width:600px) {
-  .pcal-toolbar { gap:4px; padding:7px 10px 4px; flex-wrap:nowrap; }
-  .pcal-toggle button { padding:0 7px; font-size:9px; letter-spacing:0.06em; height:26px; line-height:26px; white-space:nowrap; }
+@media (max-width:768px) {
+  .pcal-toolbar { gap:4px; padding:7px 10px 4px; flex-wrap:nowrap; align-items:center; }
   .pcal-toggle { border-radius:8px; }
-  .pcal-today-btn { padding:0 7px; font-size:9px; letter-spacing:0.07em; height:26px; line-height:24px; }
+  .pcal-toggle button { display:inline-flex; align-items:center; justify-content:center; padding:0 7px; font-size:9px; letter-spacing:0.06em; height:26px; white-space:nowrap; }
+  .pcal-today-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 7px; font-size:9px; letter-spacing:0.07em; height:26px; }
   .pcal-cycle-btns { gap:3px; }
-  .pcal-cycle-btn { padding:0 6px; font-size:9px; letter-spacing:0.06em; height:26px; line-height:24px; border-radius:7px; }
+  .pcal-cycle-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 6px; font-size:9px; letter-spacing:0.06em; height:26px; border-radius:7px; white-space:nowrap; }
   .pcal-nav { gap:3px; }
-  .pcal-nav button { width:26px; height:26px; font-size:13px; border-radius:7px; }
+  .pcal-nav button { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; font-size:13px; border-radius:7px; }
 }
 </style>
 </head>
@@ -970,15 +970,27 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
     if (nextCyc) cycleBtns += '<button class="pcal-cycle-btn'+(calJumpMode==='next'?' on':'')+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+nextCyc.id+'\'),\'next\')">'+nextCyc.name+'</button>';
     cycleBtns += '</div>';
   }
-  return '<div class="pcal-toolbar">'
+  var _mob = window.innerWidth <= 768;
+  var _tbSt  = _mob ? 'gap:4px;padding:7px 10px 4px;' : '';
+  var _togBt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 7px;font-size:9px;letter-spacing:0.06em;height:26px;' : '';
+  var _todSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 7px;font-size:9px;letter-spacing:0.07em;height:26px;' : '';
+  var _cycSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 6px;font-size:9px;letter-spacing:0.06em;height:26px;border-radius:7px;' : '';
+  var _navSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;font-size:13px;border-radius:7px;' : '';
+  var _cycBtnsInner = '';
+  if (curCyc || nextCyc) {
+    if (curCyc)  _cycBtnsInner += '<button class="pcal-cycle-btn'+(calJumpMode==='cur'?' on':'')+'" style="'+_cycSt+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+curCyc.id+'\'),\'cur\')">'+curCyc.name+'</button>';
+    if (nextCyc) _cycBtnsInner += '<button class="pcal-cycle-btn'+(calJumpMode==='next'?' on':'')+'" style="'+_cycSt+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+nextCyc.id+'\'),\'next\')">'+nextCyc.name+'</button>';
+    cycleBtns = '<div class="pcal-cycle-btns" style="'+ (_mob ? 'gap:3px;' : '') +'">' + _cycBtnsInner + '</div>';
+  }
+  return '<div class="pcal-toolbar" style="'+_tbSt+'">'
     + '<div class="pcal-toggle">'
-    + '<button class="' + m4 + '" onclick="setCalMode(\'4dias\')">4 días</button>'
-    + '<button class="' + mw + '" onclick="setCalMode(\'week\')">Semana</button>'
+    + '<button class="' + m4 + '" style="'+_togBt+'" onclick="setCalMode(\'4dias\')">4 días</button>'
+    + '<button class="' + mw + '" style="'+_togBt+'" onclick="setCalMode(\'week\')">Semana</button>'
     + '</div>'
-    + '<button class="pcal-today-btn'+(calJumpMode==='today'?' on':'')+'" onclick="calGoToday()">Hoy</button>'
+    + '<button class="pcal-today-btn'+(calJumpMode==='today'?' on':'')+'" style="'+_todSt+'" onclick="calGoToday()">Hoy</button>'
     + cycleBtns
     + (isAdmin ? '<button class="pcal-edit-btn'+eCls+'" onclick="toggleCalEdit()">✏️ Editar</button>' : '')
-    + '<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
+    + '<div class="pcal-nav" style="'+(_mob?'gap:3px;':'')+'"><button style="'+_navSt+'" onclick="calStep(-1)">‹</button><button style="'+_navSt+'" onclick="calStep(1)">›</button></div>'
     + '</div>'
     + '<div class="pcal-range-bar">' + fmtDM(rangeStart) + ' — ' + fmtDM(rangeEnd) + '</div>';
 }
