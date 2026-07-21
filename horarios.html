@@ -50,16 +50,20 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
   font-family:'Barlow Condensed',sans-serif; font-weight:900;
   font-size:10px; letter-spacing:0.12em; text-transform:uppercase;
   padding:7px 12px; border-radius:8px; cursor:pointer;
+  text-decoration:none; display:inline-block;
+  transition:background 0.15s,color 0.15s;
 }
+.pcal-today-btn.on { background:#111; color:#fff; }
 .pcal-cycle-btns { display:flex; gap:6px; }
 .pcal-cycle-btn {
   border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.55);
   font-family:'Barlow Condensed',sans-serif; font-weight:900;
   font-size:10px; letter-spacing:0.1em; text-transform:uppercase;
   padding:7px 11px; border-radius:8px; cursor:pointer; white-space:nowrap;
+  text-decoration:none; display:inline-block;
   transition:background 0.15s,color 0.15s;
 }
-.pcal-cycle-btn:hover { background:#111; color:#fff; }
+.pcal-cycle-btn:hover, .pcal-cycle-btn.on { background:#111; color:#fff; }
 .pcal-nav { margin-left:auto; display:flex; gap:6px; }
 .pcal-nav button {
   border:1px solid rgba(0,0,0,0.14); background:#fff; color:#111;
@@ -486,11 +490,22 @@ function buildNav(rs,re) {
   var m4=calMode==='4dias'?' on':'', mw=calMode==='week'?' on':'';
   var curCyc  = getCurrentCycle(DATA.cycles);
   var nextCyc = getNextCycle(DATA.cycles);
+  // Detectar slug activo desde la URL
+  var urlParts = window.location.pathname.replace(/\/+$/,'').split('/');
+  var activeSlug = urlParts[urlParts.length-1];
+  if (activeSlug === 'horarios') activeSlug = '';
+  var isHome = !activeSlug;
   var cycleBtns = '';
   if (curCyc || nextCyc) {
     cycleBtns = '<div class="pcal-cycle-btns">';
-    if (curCyc)  cycleBtns += '<a class="pcal-cycle-btn" href="/horarios/'+cycleSlug(curCyc.name)+'">'+curCyc.name+'</a>';
-    if (nextCyc) cycleBtns += '<a class="pcal-cycle-btn" href="/horarios/'+cycleSlug(nextCyc.name)+'">'+nextCyc.name+'</a>';
+    if (curCyc) {
+      var cs = cycleSlug(curCyc.name);
+      cycleBtns += '<a class="pcal-cycle-btn'+(activeSlug===cs?' on':'')+'" href="/horarios/'+cs+'">'+curCyc.name+'</a>';
+    }
+    if (nextCyc) {
+      var ns = cycleSlug(nextCyc.name);
+      cycleBtns += '<a class="pcal-cycle-btn'+(activeSlug===ns?' on':'')+'" href="/horarios/'+ns+'">'+nextCyc.name+'</a>';
+    }
     cycleBtns += '</div>';
   }
   return '<div class="pcal-toolbar">'
@@ -498,7 +513,7 @@ function buildNav(rs,re) {
     +'<button class="'+m4+'" onclick="setCalMode(\'4dias\')">4 días</button>'
     +'<button class="'+mw+'" onclick="setCalMode(\'week\')">Semana</button>'
     +'</div>'
-    +'<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
+    +'<a class="pcal-today-btn'+(isHome?' on':'')+'" href="/horarios">Hoy</a>'
     +cycleBtns
     +'<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
     +'</div>'
@@ -521,12 +536,10 @@ function buildGrid(dayList) {
     var daysArr=(!isOne && Array.isArray(s.days) && s.days.length) ? s.days : [Number(s.day)];
     daysArr.forEach(function(dow){
       var key=isOne?(s.date+'|'+s.start):('d'+dow+'|'+s.start);
-      if(!slotMap[key]) slotMap[key]={day:dow,oneTimeDate:isOne?s.date:null,start:s.start,dur:s.dur||60,modality:s.modality||'Virtual',studentIds:[],students:[]};
-      if((s.dur||60)>slotMap[key].dur) slotMap[key].dur=s.dur||60;
-      if((s.modality||'').toLowerCase().includes('dom')) slotMap[key].modality='Domicilio';
+      if(!slotMap[key]) slotMap[key]={day:dow,oneTimeDate:isOne?s.date:null,start:s.start,studentIds:[],students:[]};
       if(s.studentId!==undefined && s.studentId!==null){
         if(slotMap[key].studentIds.indexOf(s.studentId)===-1) slotMap[key].studentIds.push(s.studentId);
-        slotMap[key].students.push({ sid:s.studentId, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId, nWeeks:s.nWeeks||0, weekStart:s.weekStart||null });
+        slotMap[key].students.push({ sid:s.studentId, skipDates:Array.isArray(s.skipDates)?s.skipDates:[], cycleId:s.cycleId, nWeeks:s.nWeeks||0, weekStart:s.weekStart||null, dur:s.dur||60, modality:s.modality||'Virtual' });
       }
     });
   });
@@ -600,18 +613,17 @@ function buildGrid(dayList) {
       if(sl.oneTimeDate) return sl.oneTimeDate===ds;
       return sl.day===dow;
     }).map(function(slot){
-      // Si la sesión es recurrente, se excluye en esta fecha a los alumnos cuya sesión
-      // tiene este día puntual en skipDates (porque ese alumno tiene una excepción —
-      // se editó solo para esta fecha y ya aparece como tarjeta de una sola vez aparte),
-      // o cuyo propio ciclo (cycleId) ya terminó antes de esta fecha.
-      var activeIds = slot.oneTimeDate ? slot.studentIds
-        : slot.students.filter(function(st){ return calIsStudentActive(st, d, ds); })
-            .map(function(st){ return st.sid; });
-      if(!activeIds.length) return '';
+      // Filtrar alumnos activos para esta fecha (respeta skipDates, nWeeks, cycleId)
+      var activeSts = slot.oneTimeDate ? slot.students
+        : slot.students.filter(function(st){ return calIsStudentActive(st, d, ds); });
+      if(!activeSts.length) return '';
+      var activeIds = activeSts.map(function(st){ return st.sid; });
+      // dur y modality calculados solo desde los alumnos activos
+      var activeDur = activeSts.reduce(function(mx,st){ return Math.max(mx, st.dur||60); }, 0);
+      var isDom = activeSts.some(function(st){ return (st.modality||'').toLowerCase().includes('dom'); });
       var topPx=(toH(slot.start)-MIN_H)*ROW_H;
-      var hPx=Math.max((slot.dur/60)*ROW_H-3,28);
-      var end=addM(slot.start,slot.dur);
-      var isDom=slot.modality.toLowerCase().includes('dom');
+      var hPx=Math.max((activeDur/60)*ROW_H-3,28);
+      var end=addM(slot.start,activeDur);
       var short=hPx<42;
       var bg  =isDom?'rgba(239,68,68,0.10)':'rgba(79,182,255,0.10)';
       var brd =isDom?'rgba(239,68,68,0.45)':'rgba(79,182,255,0.45)';

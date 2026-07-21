@@ -102,17 +102,20 @@ function calIsStudentActive(st, d, dstr) {
 function calActiveSessIntervals(slots, d, dstr) {
   var intervals = [];
   slots.forEach(function(slot) {
-    var hasActive;
+    var activeSts;
     if (slot.oneTimeDate) {
-      hasActive = (slot.students||slot.studentIds||[]).length > 0;
+      activeSts = slot.students || [];
     } else {
-      hasActive = (slot.students||[]).some(function(st) {
+      activeSts = (slot.students||[]).filter(function(st) {
         return calIsStudentActive(st, d, dstr);
       });
     }
-    if (hasActive) {
+    if (activeSts.length > 0) {
       var sm = calToMin(slot.start);
-      intervals.push([sm, sm + (slot.maxDur || slot.dur || 60)]);
+      // Usar el dur máximo de los alumnos activos; si no está disponible, caer en slot.maxDur/slot.dur/60
+      var maxD = activeSts.reduce(function(mx, st) { return Math.max(mx, st.dur || 0); }, 0)
+                 || slot.maxDur || slot.dur || 60;
+      intervals.push([sm, sm + maxD]);
     }
   });
   return intervals;

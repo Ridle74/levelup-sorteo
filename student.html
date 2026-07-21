@@ -10234,10 +10234,10 @@ function renderHorariosCalendar() {
         : slot.students.filter(function(st){ return _pCalIsStudentActive(st, date, dstr); });
       if (!activeStudents.length) return [];
       const topPx = (toH(slot.start) - MIN_H) * ROW_H;
-      const hPx   = (slot.maxDur / 60) * ROW_H - 3;
       const total = activeStudents.length;
       return activeStudents.map(function(st, idx) {
         const end  = addM(slot.start, st.dur);
+        const hPx  = Math.max((st.dur / 60) * ROW_H - 3, 20);
         const lPx  = 2 + Math.round((colW-4) * (idx/total));
         const wPx  = Math.round((colW-4)/total) - (idx<total-1?2:0);
         const short = hPx < 44;

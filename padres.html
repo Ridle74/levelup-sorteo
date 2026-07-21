@@ -60,7 +60,11 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .pcal-toggle { display:flex; border:1px solid rgba(0,0,0,0.14); border-radius:10px; overflow:hidden; background:#fff; }
 .pcal-toggle button { border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 14px; cursor:pointer; transition:background 0.15s,color 0.15s; }
 .pcal-toggle button.on { background:#111; color:#fff; }
-.pcal-today-btn { border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.6); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 12px; border-radius:8px; cursor:pointer; }
+.pcal-today-btn { border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.6); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; padding:7px 12px; border-radius:8px; cursor:pointer; transition:background 0.15s,color 0.15s; }
+.pcal-today-btn.on { background:#111; color:#fff; }
+.pcal-cycle-btns { display:flex; gap:6px; }
+.pcal-cycle-btn { border:1px solid rgba(0,0,0,0.2); background:#fff; color:rgba(0,0,0,0.55); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 11px; border-radius:8px; cursor:pointer; white-space:nowrap; transition:background 0.15s,color 0.15s; }
+.pcal-cycle-btn:hover, .pcal-cycle-btn.on { background:#111; color:#fff; }
 .pcal-nav { margin-left:auto; display:flex; gap:6px; }
 .pcal-nav button { border:1px solid rgba(0,0,0,0.14); background:#fff; color:#111; border-radius:8px; width:32px; height:32px; font-size:15px; cursor:pointer; }
 .pcal-range-bar { flex-shrink:0; padding:0 14px 8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:rgba(0,0,0,0.4); letter-spacing:0.08em; text-transform:uppercase; }
@@ -385,6 +389,7 @@ const SEED_VERSION = 6;
 let appReady = false;
 let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
+let calJumpMode = 'today';     // 'today' | 'cur' | 'next'
 let selectedChild = null;      // studentId actualmente mostrado en calendario
 let currentView = 'login';
 let navHistory = [];   // pila de vistas visitadas, para los botones atrás/adelante
@@ -821,6 +826,7 @@ function setCalMode(m) { calMode = m; render(); }
 function calStep(dir) {
   const span = calMode === 'week' ? 7 : 4;
   calAnchor = addDays(calAnchor, dir * span);
+  calJumpMode = '';
   render();
 }
 
@@ -932,15 +938,25 @@ function vInicio() {
 
 // ── Shared calendar helpers ──────────────────────────────────────
 function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
-  const m4  = calMode === '4dias' ? ' on' : '';
-  const mw  = calMode === 'week'  ? ' on' : '';
+  const m4   = calMode === '4dias' ? ' on' : '';
+  const mw   = calMode === 'week'  ? ' on' : '';
   const eCls = calEditMode ? ' on' : '';
+  const curCyc  = getCurrentCycle(DATA.cycles);
+  const nextCyc = getNextCycle(DATA.cycles);
+  let cycleBtns = '';
+  if (curCyc || nextCyc) {
+    cycleBtns = '<div class="pcal-cycle-btns">';
+    if (curCyc)  cycleBtns += '<button class="pcal-cycle-btn'+(calJumpMode==='cur'?' on':'')+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+curCyc.id+'\'),\'cur\')">'+curCyc.name+'</button>';
+    if (nextCyc) cycleBtns += '<button class="pcal-cycle-btn'+(calJumpMode==='next'?' on':'')+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+nextCyc.id+'\'),\'next\')">'+nextCyc.name+'</button>';
+    cycleBtns += '</div>';
+  }
   return '<div class="pcal-toolbar">'
     + '<div class="pcal-toggle">'
     + '<button class="' + m4 + '" onclick="setCalMode(\'4dias\')">4 días</button>'
     + '<button class="' + mw + '" onclick="setCalMode(\'week\')">Semana</button>'
     + '</div>'
-    + '<button class="pcal-today-btn" onclick="calGoToday()">Hoy</button>'
+    + '<button class="pcal-today-btn'+(calJumpMode==='today'?' on':'')+'" onclick="calGoToday()">Hoy</button>'
+    + cycleBtns
     + (isAdmin ? '<button class="pcal-edit-btn'+eCls+'" onclick="toggleCalEdit()">✏️ Editar</button>' : '')
     + '<div class="pcal-nav"><button onclick="calStep(-1)">‹</button><button onclick="calStep(1)">›</button></div>'
     + '</div>'
@@ -1137,11 +1153,30 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
 
 function calGoToday() {
   calAnchor = startOfWeek(new Date());
+  calJumpMode = 'today';
   render();
   setTimeout(function(){
     var sc = document.getElementById('pcal-scroll');
     if (sc) { var h = new Date().getHours(); sc.scrollTop = Math.max(0,(Math.max(8,h-1)-8)*56); }
   }, 80);
+}
+function calGoToCycle(cycle, mode) {
+  if (!cycle) return;
+  var today = new Date(); today.setHours(0,0,0,0);
+  var start = cycle.start ? new Date(cycle.start + 'T00:00:00') : null;
+  var end   = cycle.end   ? new Date(cycle.end   + 'T00:00:00') : null;
+  var anchor;
+  if (start && today < start) {
+    anchor = startOfWeek(start);
+  } else if (end && today > end) {
+    anchor = startOfWeek(end);
+  } else {
+    anchor = startOfWeek(today);
+  }
+  calAnchor = anchor;
+  calJumpMode = mode;
+  calMode = 'week';
+  render();
 }
 
 function vPerfil() {
