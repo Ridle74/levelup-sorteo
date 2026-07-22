@@ -12,8 +12,8 @@ const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',u:'preuniversitario'};
 const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',preuniversitario:'u'};
 const _PREP_URL_AREA    = {m:'matematica',rm:'razonamiento',al:'algebra',ar:'aritmetica',tr:'trigonometria',ge:'geometria'};
 const _PREP_URL_AREA_R  = {matematica:'m',razonamiento:'rm',algebra:'al',aritmetica:'ar',trigonometria:'tr',geometria:'ge'};
-const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen',agustin:'san_agustin'};
-const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen',san_agustin:'agustin'};
+const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen',agustin:'san_agustin',norberto:'san_norberto'};
+const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen',san_agustin:'agustin',san_norberto:'norberto'};
 
 function _prepApplyUrlSlug() {
   // Usa la URL actual; si ya fue cambiada por go(), usa el path guardado al inicio de página
@@ -3915,6 +3915,563 @@ function _genHca5EC_BQ2(){return _hca5pick([_genHca5EC_B3,_genHca5EC_B4])();}
 // bpu: BPU
 function _genHca5EC_BPU(){return _hca5pick([_genHca5EC_B1,_genHca5EC_B2,_genHca5EC_B3,_genHca5EC_B4])();}
 
+
+// ── Colegio Parroquial San Norberto – 5° Secundaria Matemática ─────────────────
+// Helpers
+function _snb5rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _snb5pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function _snb5shuf(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function _snb5gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
+function _snb5frac(n,d){const g=_snb5gcd(Math.abs(n),Math.abs(d));return d/g===1?`${n/g}`:`${n/g}/${d/g}`;}
+
+// SVG – triángulo rectángulo con altura sobre la hipotenusa (A izq., B der., C arriba)
+function _snb5trSvg(m,n,h,lab){
+  const c=m+n,sc=Math.min(5,110/c,65/h),W=Math.round(10+c*sc+30),H2=Math.round(h*sc+50);
+  const ax=10,ay=H2-15,bx=ax+c*sc,hx=ax+m*sc,cy=ay-h*sc;
+  const L=lab||{};
+  return `<svg viewBox="0 0 ${W} ${H2}" xmlns="http://www.w3.org/2000/svg" style="width:${W}px;max-width:100%;display:block;stroke:#333;fill:none;font-size:11px;font-family:sans-serif;margin:4px 0">
+<polygon points="${ax},${ay} ${bx.toFixed(1)},${ay} ${hx.toFixed(1)},${cy.toFixed(1)}" stroke="#336" stroke-width="1.5" fill="rgba(80,80,200,0.07)"/>
+<line x1="${hx.toFixed(1)}" y1="${ay}" x2="${hx.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="#999" stroke-dasharray="4,2"/>
+<rect x="${(hx-4).toFixed(1)}" y="${(ay-4)}" width="4" height="4" stroke="#999" fill="none"/>
+<text x="${(ax-5)}" y="${(ay+3)}" text-anchor="end" fill="#222">${L.A||'A'}</text>
+<text x="${hx.toFixed(1)}" y="${(ay+13)}" text-anchor="middle" fill="#777">${L.H||'H'}</text>
+<text x="${(bx+4).toFixed(1)}" y="${(ay+3)}" fill="#222">${L.B||'B'}</text>
+<text x="${(hx-5).toFixed(1)}" y="${(cy-4).toFixed(1)}" text-anchor="end" fill="#222">${L.C||'C'}</text>
+<text x="${((ax+hx)/2).toFixed(1)}" y="${(ay-5)}" text-anchor="middle" fill="#555">${L.m!=null?L.m:m}</text>
+<text x="${((hx+bx)/2).toFixed(1)}" y="${(ay-5)}" text-anchor="middle" fill="#555">${L.n!=null?L.n:n}</text>
+<text x="${(hx+5).toFixed(1)}" y="${((ay+cy)/2).toFixed(1)}" fill="#555">${L.h!=null?L.h:h}</text>
+</svg>`;
+}
+
+// ── U1: Números Reales ─────────────────────────────────────────────────────────
+function _genSnb5NR_B1(){
+  const item=_snb5pick([
+    {n:'√2',    cls:'irracional',  w:['racional','entero','natural']},
+    {n:'−7',    cls:'entero',      w:['irracional','natural','racional no entero']},
+    {n:'3/4',   cls:'racional',    w:['irracional','entero','irracional positivo']},
+    {n:'0',     cls:'entero',      w:['irracional','natural positivo','racional no entero']},
+    {n:'√9',    cls:'natural',     w:['irracional','fracción','número negativo']},
+    {n:'π',     cls:'irracional',  w:['racional','entero','natural']},
+    {n:'−√4',   cls:'entero',      w:['irracional','natural','racional positivo']},
+    {n:'0,333…',cls:'racional',    w:['irracional','entero','natural']},
+    {n:'√5',    cls:'irracional',  w:['racional','entero','fraccional']},
+    {n:'−2/3',  cls:'racional',    w:['irracional','entero','natural']},
+  ]);
+  return{q:`¿A qué subconjunto de ℝ pertenece el número ${item.n}?`,a:item.cls,
+    opts:_snb5shuf([item.cls,...item.w.slice(0,3)]),mc:true,
+    ste:`ℝ se divide en racionales (ℚ) e irracionales (𝕀). El número ${item.n} es ${item.cls}.`};
+}
+
+function _genSnb5NR_B2(){
+  const cases=[
+    ()=>{
+      const primes=[2,3,5,7,11];
+      const k=_snb5pick([2,3,4,5]);const rad=_snb5pick(primes);
+      const inside=k*k*rad;
+      return{q:`Simplifica: √${inside}`,a:`${k}√${rad}`,
+        opts:_snb5shuf([`${k}√${rad}`,`${k+1}√${rad}`,`${k}√${rad+1}`,`${k*rad}`]),mc:true,
+        ste:`√${inside}=√(${k}²·${rad})=${k}√${rad}`};
+    },
+    ()=>{
+      const a=_snb5pick([4,9,16,25,36]);const b=_snb5pick([4,9,16,25]);
+      const ra=Math.sqrt(a),rb=Math.sqrt(b);const ans=String(ra*rb);
+      return{q:`Calcula: √${a}·√${b}`,a:ans,
+        opts:_snb5shuf([ans,String(a*b),String(ra+rb),String(ra*rb+2)]),mc:true,
+        ste:`√${a}·√${b}=${ra}·${rb}=${ans}`};
+    },
+    ()=>{
+      const k=_snb5pick([2,3,5]);const n=_snb5pick([2,3,5,7]);
+      const sum=(k+1);const ans=`${sum}√${n}`;
+      return{q:`Suma: ${k}√${n} + √${n}`,a:ans,
+        opts:_snb5shuf([ans,`${k}√${2*n}`,`${k+1}√${2*n}`,`${k}√${n}`]),mc:true,
+        ste:`${k}√${n}+√${n}=(${k}+1)√${n}=${sum}√${n}`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5NR_B3(){
+  const cases=[
+    ()=>{const x=_snb5pick([-9,-7,-5,-4,-3,2,4,6,8]);
+      const abs=Math.abs(x);
+      return{q:`Calcula: |${x}|`,a:`${abs}`,
+        opts:_snb5shuf([`${abs}`,`${-abs}`,`${x*x}`,`${abs+1}`]),mc:true,
+        ste:`|${x}|=${abs} (distancia al cero, siempre positiva)`};
+    },
+    ()=>{const a=_snb5pick([2,3,4,5]);const b=_snb5pick([7,8,9,10,11]);
+      const ans=b-a;
+      return{q:`Calcula: |${a}−${b}|`,a:`${ans}`,
+        opts:_snb5shuf([`${ans}`,`${a+b}`,`${ans+2}`,`${ans-1}`]),mc:true,
+        ste:`|${a}−${b}|=|${a-b}|=${ans}`};
+    },
+    ()=>{const x=_snb5pick([-4,-3,-2,-1,1,2,3,4]);const ans=2*Math.abs(x)+1;
+      return{q:`Si x=${x}, calcula 2|x|+1`,a:`${ans}`,
+        opts:_snb5shuf([`${ans}`,`${2*x+1}`,`${ans-2}`,`${ans+2}`]),mc:true,
+        ste:`2|${x}|+1=2·${Math.abs(x)}+1=${ans}`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5NR_BQ1(){return _snb5pick([_genSnb5NR_B1,_genSnb5NR_B2,_genSnb5NR_B3])();}
+
+function _genSnb5NR_B4(){
+  const num=_snb5pick([1,2,3,4,5]);const rad=_snb5pick([2,3,5,6,7]);
+  const g=_snb5gcd(num,rad);const na=num/g,da=rad/g;
+  const ans=(na===1&&da!==1)?`√${rad}/${da}`:(da===1)?`${na}√${rad}`:`${na}√${rad}/${da}`;
+  return{q:`Racionaliza el denominador: ${num}/√${rad}`,a:ans,
+    opts:_snb5shuf([ans,`${num}/√${rad}`,`√${num*rad}/${rad}`,`${num}√${rad}`]),mc:true,
+    ste:`${num}/√${rad}=(${num}·√${rad})/(√${rad}·√${rad})=${num}√${rad}/${rad}${g>1?' = '+ans:''}`};
+}
+
+function _genSnb5NR_B5(){
+  const cases=[
+    ()=>{const a=_snb5pick([2,3,5]);const e=_snb5pick([2,3,4]);
+      const ans=String(Math.pow(a,e));
+      return{q:`Simplifica: (√${a})^${2*e}`,a:ans,
+        opts:_snb5shuf([ans,String(a*e),`√${a*e}`,String(Math.pow(a,e)+1)]),mc:true,
+        ste:`(√${a})^${2*e}=(${a}^½)^${2*e}=${a}^${e}=${ans}`};
+    },
+    ()=>{const b=_snb5pick([2,3,4,5]);const r=_snb5pick([2,3,5,7]);
+      const ans=`${b}√${r}`;
+      return{q:`Simplifica: √(${b*b}·${r})`,a:ans,
+        opts:_snb5shuf([ans,`${r}√${b}`,`${b*r}`,`√${b+r}`]),mc:true,
+        ste:`√(${b*b}·${r})=√${b*b}·√${r}=${b}√${r}`};
+    },
+    ()=>{const k=_snb5pick([2,3,4,5]);const r=_snb5pick([2,3,5]);
+      const a1=k,b1=k+2;const ans=`${a1+b1}√${r}`;
+      return{q:`Suma: ${a1}√${r} + ${b1}√${r}`,a:ans,
+        opts:_snb5shuf([ans,`${a1}√${r+1}`,`${a1*b1}√${r}`,`${a1+b1}√${r+1}`]),mc:true,
+        ste:`${a1}√${r}+${b1}√${r}=(${a1}+${b1})√${r}=${a1+b1}√${r}`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5NR_BQ2(){return _snb5pick([_genSnb5NR_B4,_genSnb5NR_B5])();}
+function _genSnb5NR_EX(){return _snb5pick([_genSnb5NR_B1,_genSnb5NR_B2,_genSnb5NR_B3,_genSnb5NR_B4,_genSnb5NR_B5])();}
+
+// ── U2: Inecuaciones Lineales ──────────────────────────────────────────────────
+function _genSnb5IL_B1(){
+  const a=_snb5pick([2,3,4,5]);const b=_snb5pick([4,6,8,10,12,15]);
+  const op=_snb5pick(['>','<','≥','≤']);
+  const g=_snb5gcd(b,a);const ans=_snb5frac(b/g,a/g);
+  const ansStr=`x ${op} ${ans}`;
+  const flop={'>':`x < ${ans}`,'<':`x > ${ans}`,'≥':`x ≤ ${ans}`,'≤':`x ≥ ${ans}`}[op];
+  return{q:`Resuelve: ${a}x ${op} ${b}`,a:ansStr,
+    opts:_snb5shuf([ansStr,flop,`x ${op} ${b}`,`x ${op} ${a}`]),mc:true,
+    ste:`${a}x ${op} ${b} → x ${op} ${b}/${a} → ${ansStr}`};
+}
+
+function _genSnb5IL_B2(){
+  const a=_snb5pick([3,4,5,6]);const c=_snb5pick([1,2]);
+  const b=_snb5pick([1,2,3]);const d=_snb5pick([7,8,9,10,12]);
+  const coef=a-c;const rhs=d-b;
+  const ans=`x ≤ ${_snb5frac(rhs,coef)}`;
+  const w1=`x ≥ ${_snb5frac(rhs,coef)}`;
+  return{q:`Resuelve: ${a}x + ${b} ≤ ${c}x + ${d}`,a:ans,
+    opts:_snb5shuf([ans,w1,`x ≤ ${d}`,`x ≤ ${coef}`]),mc:true,
+    ste:`(${a}−${c})x ≤ ${d}−${b} → ${coef}x ≤ ${rhs} → ${ans}`};
+}
+
+function _genSnb5IL_BQ1(){return _snb5pick([_genSnb5IL_B1,_genSnb5IL_B2])();}
+
+function _genSnb5IL_B3(){
+  const m=_snb5pick([2,3,4]);const b=_snb5pick([1,2,3,4]);
+  const lo=_snb5pick([0,1,2,3]);const gap=_snb5pick([4,6,8,10,12]);const hi=lo+gap;
+  const loX=lo-b,hiX=hi-b;
+  const ans=`${_snb5frac(loX,m)} < x < ${_snb5frac(hiX,m)}`;
+  return{q:`Resuelve: ${lo} < ${m}x + ${b} < ${hi}`,a:ans,
+    opts:_snb5shuf([ans,`${_snb5frac(loX-1,m)} < x < ${_snb5frac(hiX,m)}`,`${_snb5frac(loX,m)} < x < ${_snb5frac(hiX+m,m)}`,`x > ${_snb5frac(loX,m)}`]),mc:true,
+    ste:`${lo}−${b} < ${m}x < ${hi}−${b} → ${loX} < ${m}x < ${hiX} → ${ans}`};
+}
+
+function _genSnb5IL_B4(){
+  const cases=[
+    ()=>{const n=_snb5pick([3,6,9,12]);const thr=_snb5pick([6,9,12,15,18,21]);
+      const rhs=thr+n;const ans=`x > ${_snb5frac(rhs,3)}`;
+      return{q:`El triple de un número menos ${n} es mayor que ${thr}. ¿Qué valores puede tomar el número?`,
+        a:ans,opts:_snb5shuf([ans,`x < ${_snb5frac(rhs,3)}`,`x > ${thr}`,`x < ${n}`]),mc:true,
+        ste:`3x − ${n} > ${thr} → 3x > ${rhs} → ${ans}`};
+    },
+    ()=>{const d=_snb5pick([4,6,8,10]);const lim=_snb5pick([50,60,80,100]);
+      const ans=`x ≤ ${(lim-d)/2}`;
+      return{q:`El doble de un número más ${d} no supera ${lim}. ¿Qué valores puede tomar el número?`,
+        a:ans,opts:_snb5shuf([ans,`x ≥ ${(lim-d)/2}`,`x ≤ ${lim/2}`,`x < ${d}`]),mc:true,
+        ste:`2x + ${d} ≤ ${lim} → 2x ≤ ${lim-d} → ${ans}`};
+    },
+    ()=>{const p=_snb5pick([140,150,160]);const k=3;const s=_snb5pick([50,55,60]);
+      const need=s*k-p;
+      return{q:`Un alumno tiene ${p} puntos en 2 exámenes. Para un promedio de al menos ${s} en 3 exámenes, ¿qué nota mínima necesita en el tercero?`,
+        a:`n ≥ ${need}`,opts:_snb5shuf([`n ≥ ${need}`,`n ≥ ${need-10}`,`n > ${need}`,`n ≥ ${need+10}`]),mc:true,
+        ste:`(${p}+n)/3 ≥ ${s} → ${p}+n ≥ ${s*k} → n ≥ ${need}`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5IL_BQ2(){return _snb5pick([_genSnb5IL_B3,_genSnb5IL_B4])();}
+function _genSnb5IL_EX(){return _snb5pick([_genSnb5IL_B1,_genSnb5IL_B2,_genSnb5IL_B3,_genSnb5IL_B4])();}
+
+// ── U3: Inecuaciones Cuadráticas ───────────────────────────────────────────────
+function _genSnb5IC_B1(){
+  const r1=_snb5pick([-5,-4,-3,-2,-1,1,2,3]);const r2=_snb5pick([1,2,3,4,5]);
+  const B=-(r1+r2),C=r1*r2;
+  const bStr=B>0?`+${B}`:B<0?`${B}`:'';const cStr=C>0?`+${C}`:C<0?`${C}`:'';
+  const f=r=>r<0?`(x+${-r})`:`(x−${r})`;
+  const ans=`${f(r1)}${f(r2)}`;
+  return{q:`Factoriza: x²${bStr}x${cStr}`,a:ans,
+    opts:_snb5shuf([ans,`${f(r1+1)}${f(r2)}`,`${f(r1)}${f(r2+1)}`,`(x+${Math.abs(r1)})(x+${r2})`]),mc:true,
+    ste:`Raíces: x=${r1} y x=${r2} → ${ans}`};
+}
+
+function _genSnb5IC_B2(){
+  const r1=_snb5pick([-4,-3,-2,-1]);const r2=_snb5pick([1,2,3,4]);
+  const B=-(r1+r2),C=r1*r2;
+  const bStr=B>0?`+${B}`:B<0?`${B}`:'';const cStr=C>0?`+${C}`:C<0?`${C}`:'';
+  const op=_snb5pick(['>','<']);
+  const ans=op==='>'?`x < ${r1} o x > ${r2}`:`${r1} < x < ${r2}`;
+  const w1=op==='>'?`${r1} < x < ${r2}`:`x < ${r1} o x > ${r2}`;
+  return{q:`Resuelve: x²${bStr}x${cStr} ${op} 0`,a:ans,
+    opts:_snb5shuf([ans,w1,`x > ${r2}`,`x = ${r1} o x = ${r2}`]),mc:true,
+    ste:`Raíces: ${r1} y ${r2}. Parábola abre ↑. ${op==='>'?'Positivo fuera':'Negativo entre'} las raíces: ${ans}`};
+}
+
+function _genSnb5IC_BQ1(){return _snb5pick([_genSnb5IC_B1,_genSnb5IC_B2])();}
+
+function _genSnb5IC_B3(){
+  const r1=_snb5pick([-4,-3,-2,-1]);const r2=_snb5pick([1,2,3,4]);
+  const B=-(r1+r2),C=r1*r2;
+  const bStr=B>0?`+${B}`:B<0?`${B}`:'';const cStr=C>0?`+${C}`:C<0?`${C}`:'';
+  const op=_snb5pick(['≥','≤']);
+  const ans=op==='≥'?`x ≤ ${r1} o x ≥ ${r2}`:`${r1} ≤ x ≤ ${r2}`;
+  const w1=op==='≥'?`${r1} ≤ x ≤ ${r2}`:`x ≤ ${r1} o x ≥ ${r2}`;
+  return{q:`Resuelve: x²${bStr}x${cStr} ${op} 0`,a:ans,
+    opts:_snb5shuf([ans,w1,`x ≥ ${r2}`,`x ≤ ${r1}`]),mc:true,
+    ste:`Raíces: ${r1}, ${r2}. Con "${op}": ${ans}`};
+}
+
+function _genSnb5IC_B4(){
+  // ax²+bx+c con a=-1 (parábola abre ↓)
+  const r1=_snb5pick([-3,-2,-1]);const r2=_snb5pick([1,2,3]);
+  // -1*(x-r1)*(x-r2) = -(x²-(r1+r2)x+r1*r2) = -x²+(r1+r2)x-r1*r2
+  const B2=(r1+r2);const C2=-r1*r2;
+  const bStr=B2>0?`+${B2}`:B2<0?`${B2}`:'';const cStr=C2>0?`+${C2}`:C2<0?`${C2}`:'';
+  const op=_snb5pick(['>','<']);
+  // -x²+bx+c > 0 ↔ (x-r1)(x-r2) < 0 ↔ r1 < x < r2
+  const ans=op==='>'?`${r1} < x < ${r2}`:`x < ${r1} o x > ${r2}`;
+  const w1=op==='>'?`x < ${r1} o x > ${r2}`:`${r1} < x < ${r2}`;
+  return{q:`Resuelve: −x²${bStr}x${cStr} ${op} 0`,a:ans,
+    opts:_snb5shuf([ans,w1,`x > ${r2}`,`x < ${r1}`]),mc:true,
+    ste:`La parábola abre ↓ (coef. negativo). Raíces: ${r1}, ${r2}. ${op==='>'?'Positivo entre':'Negativo fuera de'} las raíces: ${ans}`};
+}
+
+function _genSnb5IC_BQ2(){return _snb5pick([_genSnb5IC_B3,_genSnb5IC_B4])();}
+function _genSnb5IC_EX(){return _snb5pick([_genSnb5IC_B1,_genSnb5IC_B2,_genSnb5IC_B3,_genSnb5IC_B4])();}
+
+// ── U4: Relaciones Métricas – Triángulo Rectángulo ─────────────────────────────
+const _snb5PYTH=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[12,16,20],[15,20,25]];
+
+function _genSnb5TR_B1(){
+  const t=_snb5pick(_snb5PYTH);const[a,b,c]=t;
+  const ci=_snb5pick([
+    {q:`Catetos ${a} y ${b}. Calcula la hipotenusa.`,an:`${c}`,st:`c=√(${a}²+${b}²)=√${a*a+b*b}=${c}`},
+    {q:`Hipotenusa ${c}, cateto ${a}. Calcula el otro cateto.`,an:`${b}`,st:`b=√(${c}²−${a}²)=√${c*c-a*a}=${b}`},
+    {q:`Hipotenusa ${c}, cateto ${b}. Calcula el otro cateto.`,an:`${a}`,st:`a=√(${c}²−${b}²)=√${c*c-b*b}=${a}`},
+  ]);
+  const v=parseInt(ci.an);const ws=[v+1,v+3,v-1,v+5].filter(x=>x>0&&x!==v).slice(0,3).map(String);
+  return{q:`Triángulo rectángulo. ${ci.q}`,a:ci.an,
+    opts:_snb5shuf([ci.an,...ws]),mc:true,ste:ci.st};
+}
+
+function _genSnb5TR_B2(){
+  // Pairs [m, n, h] with h²=m*n (all integers)
+  const pairs=[[4,9,6],[1,9,3],[4,25,10],[9,16,12],[1,4,2],[4,16,8],[9,25,15]];
+  const[m,n,h]=_snb5pick(pairs);
+  const svg=_snb5trSvg(m,n,h,{m:`m=${m}`,n:`n=${n}`,h:'h=?'});
+  const ws=[h+1,h+2,h-1,Math.round(Math.sqrt((m+n)/2))].filter(v=>v>0&&v!==h).slice(0,3).map(String);
+  return{q:`${svg}En el triángulo rectángulo, AH=${m} y HB=${n}. Calcula CH (altura sobre la hipotenusa).`,
+    a:`${h}`,opts:_snb5shuf([`${h}`,...ws]),mc:true,
+    ste:`h²=m·n=${m}·${n}=${m*n} → h=√${m*n}=${h}`};
+}
+
+function _genSnb5TR_BQ1(){return _snb5pick([_genSnb5TR_B1,_genSnb5TR_B2])();}
+
+function _genSnb5TR_B3(){
+  // b²=m·c, a²=n·c using (9,16,25,12,15,20) family
+  const sets=[[9,16,25,12,15,20],[4,9,13,6,2*Math.sqrt(13),3*Math.sqrt(13)]];
+  // Use only the clean integer set
+  const[m,n,c,h,b_leg,a_leg]=[9,16,25,12,15,20];
+  const ci=_snb5pick([
+    {q:`Triángulo rectángulo: hipotenusa c=${c}, proyección m=AH=${m}. Calcula el cateto b=AC.`,
+      an:`${b_leg}`,st:`b²=m·c=${m}·${c}=${m*c} → b=√${m*c}=${b_leg}`},
+    {q:`Triángulo rectángulo: hipotenusa c=${c}, proyección n=HB=${n}. Calcula el cateto a=BC.`,
+      an:`${a_leg}`,st:`a²=n·c=${n}·${c}=${n*c} → a=√${n*c}=${a_leg}`},
+  ]);
+  const v=parseInt(ci.an);
+  const ws=[v+3,v-3,v+5,c].filter(x=>x>0&&x!==v).slice(0,3).map(String);
+  return{q:ci.q,a:ci.an,opts:_snb5shuf([ci.an,...ws]),mc:true,ste:ci.st};
+}
+
+function _genSnb5TR_B4(){
+  // Given h and m, find n and c; or given h and n, find m
+  const combos=[[12,9,16,25],[6,4,9,13],[10,4,25,29],[3,1,9,10],[2,1,4,5]];
+  const[h,m,n,c]=_snb5pick(combos);
+  const ci=_snb5pick([
+    {q:`Triángulo rectángulo: altura sobre hipotenusa h=${h}, una proyección m=${m}. Calcula la hipotenusa c.`,
+      an:`${c}`,st:`n=h²/m=${h*h}/${m}=${n}. c=m+n=${m}+${n}=${c}`},
+    {q:`Triángulo rectángulo: altura sobre hipotenusa h=${h}, una proyección n=${n}. Calcula la otra proyección m.`,
+      an:`${m}`,st:`m=h²/n=${h*h}/${n}=${m}`},
+  ]);
+  const v=parseInt(ci.an);
+  const ws=[v+2,v+4,v-2,h+n].filter(x=>x>0&&x!==v&&x!==h).slice(0,3).map(String);
+  return{q:ci.q,a:ci.an,opts:_snb5shuf([ci.an,...ws]),mc:true,ste:ci.st};
+}
+
+function _genSnb5TR_BQ2(){return _snb5pick([_genSnb5TR_B3,_genSnb5TR_B4])();}
+function _genSnb5TR_EX(){return _snb5pick([_genSnb5TR_B1,_genSnb5TR_B2,_genSnb5TR_B3,_genSnb5TR_B4])();}
+
+// ── U5: Triángulo Oblicuángulo ─────────────────────────────────────────────────
+function _genSnb5TO_B1(){
+  const cases=[
+    ()=>{const k=_snb5pick([2,3,4,5,6,8,10]);
+      return{q:`En un triángulo, A=30°, B=60°, C=90°, c=${2*k}. Calcula a (lado opuesto a A).`,
+        a:`${k}`,opts:_snb5shuf([`${k}`,`${k*2}`,`${k}√3`,`${k}/2`]),mc:true,
+        ste:`a/sin30°=c/sin90° → a=c·½=${2*k}·½=${k}`};
+    },
+    ()=>{const k=_snb5pick([2,3,4,5,6]);
+      return{q:`Triángulo isósceles rectángulo (A=B=45°), hipotenusa c=${k}√2. Calcula el cateto a.`,
+        a:`${k}`,opts:_snb5shuf([`${k}`,`${k*2}`,`${k}√2`,`${k}/√2`]),mc:true,
+        ste:`a/sin45°=c/sin90° → a=c·sin45°=${k}√2·(√2/2)=${k}`};
+    },
+    ()=>{const k=_snb5pick([1,2,3,4,5]);
+      return{q:`Triángulo con A=B=30°, C=120°. Si a=${k}, calcula el lado c.`,
+        a:`${k}√3`,opts:_snb5shuf([`${k}√3`,`${k}√2`,`${2*k}`,`${k}`]),mc:true,
+        ste:`c/sin120°=a/sin30° → c=a·sin120°/sin30°=${k}·(√3/2)/(½)=${k}√3`};
+    },
+    ()=>{const k=_snb5pick([2,4,6,8,10]);
+      return{q:`En triángulo ABC, B=90°, C=30°, b=${k}. Calcula c (lado opuesto a C=30°).`,
+        a:`${k/2}`,opts:_snb5shuf([`${k/2}`,`${k}`,`${k}√3/2`,`${k*2}`]),mc:true,
+        ste:`c/sin30°=b/sin90° → c=b·sin30°=${k}·½=${k/2}`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5TO_B2(){
+  const cases=[
+    // c²=a²+b²-2ab·cos(C) con C=60°: c²=a²+b²-ab
+    ()=>{const [a,b,c]=_snb5pick([[5,8,7],[3,8,7]]);
+      return{q:`Triángulo con a=${a}, b=${b}, C=60°. Calcula c.`,a:`${c}`,
+        opts:_snb5shuf([`${c}`,`${c+1}`,`${c+2}`,`${a+b}`]),mc:true,
+        ste:`c²=${a}²+${b}²−2·${a}·${b}·cos60°=${a*a+b*b}−${a*b}=${c*c} → c=${c}`};
+    },
+    // C=120°: (3,5,7)
+    ()=>{return{q:`Triángulo con a=3, b=5, C=120°. Calcula c.`,a:'7',
+      opts:_snb5shuf(['7','8','6','√58']),mc:true,
+      ste:`c²=3²+5²−2·3·5·cos120°=9+25+15=49 → c=7`};
+    },
+    // Dado a,b,c, hallar ángulo
+    ()=>{const [a,b,c,C]=_snb5pick([[5,8,7,60],[7,8,13,120],[1,1,1,60]]);
+      return{q:`Triángulo con a=${a}, b=${b}, c=${c}. Calcula el ángulo C.`,a:`${C}°`,
+        opts:_snb5shuf([`${C}°`,`${C===60?90:60}°`,`${C===120?90:120}°`,'45°']),mc:true,
+        ste:`cos C=(${a}²+${b}²−${c}²)/(2·${a}·${b})=${a*a+b*b-c*c}/${2*a*b} → C=${C}°`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5TO_BQ1(){return _snb5pick([_genSnb5TO_B1,_genSnb5TO_B2])();}
+
+function _genSnb5TO_B3(){
+  const cases=[
+    ()=>{return{q:`En triángulo ABC, A=30°, B=45°, a=5. Calcula b.\n(Ley de senos: a/sin A = b/sin B)`,
+      a:'5√2',opts:_snb5shuf(['5√2','5','5√3','10']),mc:true,
+      ste:`b=a·sinB/sinA=5·sin45°/sin30°=5·(√2/2)/(½)=5√2`};
+    },
+    ()=>{return{q:`Un triángulo tiene lados a=7, b=8, ángulo C=60°. ¿Cuánto mide c?`,
+      a:'√57',opts:_snb5shuf(['√57','√113','7','8']),mc:true,
+      ste:`c²=49+64−2·7·8·½=113−56=57 → c=√57`};
+    },
+    ()=>{const k=_snb5pick([2,3,4,5]);
+      return{q:`En triángulo equilátero, todos los ángulos miden 60° y todos los lados miden ${k}. Calcula la altura h del triángulo.`,
+        a:`${k}√3/2`,opts:_snb5shuf([`${k}√3/2`,`${k}/2`,`${k}√2/2`,`${k}√3`]),mc:true,
+        ste:`h=${k}·sin60°=${k}·(√3/2)=${k}√3/2`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5TO_BQ2(){return _snb5pick([_genSnb5TO_B2,_genSnb5TO_B3])();}
+function _genSnb5TO_EX(){return _snb5pick([_genSnb5TO_B1,_genSnb5TO_B2,_genSnb5TO_B3])();}
+
+// ── U6: Circunferencia ─────────────────────────────────────────────────────────
+function _genSnb5CIRC_B1(){
+  const arc=_snb5pick([40,50,60,70,80,90,100,120,140,150,160,180]);
+  const cases=[
+    {q:`Un ángulo central intercepta un arco de ${arc}°. ¿Cuánto mide el ángulo central?`,
+      an:`${arc}°`,st:`Ángulo central = arco interceptado = ${arc}°`},
+    {q:`Un ángulo inscrito intercepta un arco de ${arc}°. ¿Cuánto mide el ángulo inscrito?`,
+      an:`${arc/2}°`,st:`Ángulo inscrito = arco/2 = ${arc/2}°`},
+    {q:`Un ángulo inscrito mide ${arc/2}°. ¿Cuánto mide el arco que intercepta?`,
+      an:`${arc}°`,st:`Arco = 2·(ángulo inscrito) = 2·${arc/2} = ${arc}°`},
+  ];
+  const ci=_snb5pick(cases);
+  const v=parseFloat(ci.an);
+  const ws=[v+10,v-10,v+20,v*2].filter(x=>x>0&&x!==v&&x<=360).slice(0,3).map(x=>`${x}°`);
+  return{q:ci.q,a:ci.an,opts:_snb5shuf([ci.an,...ws]),mc:true,ste:ci.st};
+}
+
+function _genSnb5CIRC_B2(){
+  const cases=[
+    // Dos cuerdas se cruzan: ángulo = (arco1+arco2)/2
+    ()=>{const a1=_snb5pick([40,50,60,70,80]);const a2=_snb5pick([30,40,50,60,70]);
+      const ans=(a1+a2)/2;
+      return{q:`Dos cuerdas se cruzan dentro de una circunferencia. Los arcos interceptados miden ${a1}° y ${a2}°. ¿Cuánto mide el ángulo formado?`,
+        a:`${ans}°`,opts:_snb5shuf([`${ans}°`,`${a1+a2}°`,`${(a1+a2)/4}°`,`${Math.abs(a1-a2)/2}°`]),mc:true,
+        ste:`Ángulo=(arco₁+arco₂)/2=(${a1}+${a2})/2=${ans}°`};
+    },
+    // Dos secantes desde exterior: ángulo = (arco mayor − arco menor)/2
+    ()=>{const a1=_snb5pick([100,110,120,130,140]);const a2=_snb5pick([20,30,40,50,60]);
+      const ans=(a1-a2)/2;
+      return{q:`Dos secantes parten de un punto exterior. Los arcos interceptados miden ${a1}° y ${a2}°. ¿Cuánto mide el ángulo exterior?`,
+        a:`${ans}°`,opts:_snb5shuf([`${ans}°`,`${(a1+a2)/2}°`,`${a1-a2}°`,`${a2}°`]),mc:true,
+        ste:`Ángulo=(arco mayor−arco menor)/2=(${a1}−${a2})/2=${ans}°`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5CIRC_BQ1(){return _snb5pick([_genSnb5CIRC_B1,_genSnb5CIRC_B2])();}
+
+function _genSnb5CIRC_B3(){
+  const cases=[
+    // Dos cuerdas se cruzan: PA·PB = PC·PD
+    ()=>{const[PA,PB,PC,PD]=_snb5pick([[2,6,3,4],[3,4,6,2],[4,6,8,3],[2,8,4,4],[3,8,4,6]]);
+      return{q:`Dos cuerdas se cruzan en P. PA=${PA}, PB=${PB}, PC=${PC}. Calcula PD.`,
+        a:`${PD}`,opts:_snb5shuf([`${PD}`,`${PD+2}`,`${PA*PB}`,`${PC+2}`]),mc:true,
+        ste:`PA·PB=PC·PD → ${PA}·${PB}=${PC}·PD → PD=${PA*PB}/${PC}=${PD}`};
+    },
+    // Tangente desde exterior: t²=PA·PB
+    ()=>{const[PA,PB,t]=_snb5pick([[2,8,4],[3,12,6],[2,18,6],[5,5,5],[1,9,3],[4,9,6]]);
+      return{q:`Desde un punto externo P, una secante corta la circunferencia en A y B con PA=${PA} y PB=${PB}. ¿Cuánto mide la tangente PT?`,
+        a:`${t}`,opts:_snb5shuf([`${t}`,`${t+2}`,`${PA+PB}`,`${PA*PB}`]),mc:true,
+        ste:`PT²=PA·PB=${PA}·${PB}=${PA*PB} → PT=√${PA*PB}=${t}`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5CIRC_B4(){
+  const cases=[
+    // Dos tangentes desde punto exterior son iguales
+    ()=>{const t=_snb5pick([5,6,8,10,12,15]);
+      return{q:`Desde un punto externo P se trazan dos tangentes a una circunferencia que tocan en A y B. Si PA=${t}, ¿cuánto mide PB?`,
+        a:`${t}`,opts:_snb5shuf([`${t}`,`${t*2}`,`${t+5}`,`${t-2}`]),mc:true,
+        ste:`Las tangentes desde un punto exterior son iguales: PA=PB=${t}`};
+    },
+    // Ángulo tangente-cuerda = arco/2
+    ()=>{const arc=_snb5pick([60,80,100,120,140,160]);
+      return{q:`Si el arco interceptado por el ángulo tangente-cuerda mide ${arc}°, ¿cuánto mide el ángulo?`,
+        a:`${arc/2}°`,opts:_snb5shuf([`${arc/2}°`,`${arc}°`,`${arc/4}°`,`${arc/2+10}°`]),mc:true,
+        ste:`Ángulo tangente-cuerda = arco/2 = ${arc}/2 = ${arc/2}°`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5CIRC_BQ2(){return _snb5pick([_genSnb5CIRC_B3,_genSnb5CIRC_B4])();}
+function _genSnb5CIRC_EX(){return _snb5pick([_genSnb5CIRC_B1,_genSnb5CIRC_B2,_genSnb5CIRC_B3,_genSnb5CIRC_B4])();}
+
+// ── U7: Ángulos de Elevación y Depresión ───────────────────────────────────────
+function _genSnb5TRIG_B1(){
+  const item=_snb5pick([
+    {q:'Al mirar hacia arriba hacia la cima de un edificio, el ángulo con la horizontal se llama:',
+      a:'ángulo de elevación',w:['ángulo de depresión','ángulo inscrito','ángulo recto']},
+    {q:'Al mirar hacia abajo desde un acantilado hacia un barco, el ángulo con la horizontal se llama:',
+      a:'ángulo de depresión',w:['ángulo de elevación','ángulo de inclinación','ángulo obtuso']},
+    {q:'El ángulo de elevación y el de depresión entre dos puntos mutuamente visibles son:',
+      a:'iguales (ángulos alternos)',w:['complementarios','suplementarios','opuestos por el vértice']},
+    {q:'Si el ángulo de elevación desde A hacia B es 30°, ¿cuánto mide el ángulo de depresión desde B hacia A?',
+      a:'30°',w:['60°','150°','45°']},
+  ]);
+  return{q:item.q,a:item.a,opts:_snb5shuf([item.a,...item.w]),mc:true,ste:item.a};
+}
+
+function _genSnb5TRIG_B2(){
+  const cases=[
+    // tan45°=1: h=d
+    ()=>{const d=_snb5pick([10,15,20,25,30,40,50]);
+      return{q:`Un observador está a ${d} m de la base de un edificio y ve la cúspide con ángulo de elevación 45°. ¿Cuánto mide el edificio?`,
+        a:`${d} m`,opts:_snb5shuf([`${d} m`,`${d*2} m`,`${d/2} m`,`${d}√2 m`]),mc:true,
+        ste:`tan(45°)=h/d=1 → h=d=${d} m`};
+    },
+    // tan60°=√3: h=d√3
+    ()=>{const d=_snb5pick([5,10,15,20,25]);
+      return{q:`Desde un punto a ${d} m de la base de una torre, el ángulo de elevación es 60°. ¿Cuál es la altura?`,
+        a:`${d}√3 m`,opts:_snb5shuf([`${d}√3 m`,`${d} m`,`${d*2} m`,`${d}/√3 m`]),mc:true,
+        ste:`tan(60°)=√3 → h=d·√3=${d}√3 m`};
+    },
+    // tan30°=1/√3: d=h√3
+    ()=>{const h=_snb5pick([5,10,15,20,30]);
+      return{q:`Una antena de ${h} m de altura. Desde un punto al mismo nivel, el ángulo de elevación a la punta es 30°. ¿A qué distancia está el punto?`,
+        a:`${h}√3 m`,opts:_snb5shuf([`${h}√3 m`,`${h} m`,`${h}/√3 m`,`${h*2} m`]),mc:true,
+        ste:`tan(30°)=h/d=1/√3 → d=h√3=${h}√3 m`};
+    },
+    // Depresión 45°: igual al de elevación pero desde arriba
+    ()=>{const h=_snb5pick([10,15,20,30,40]);
+      return{q:`Desde la cima de un acantilado de ${h} m de altura, se observa un barco con ángulo de depresión 45°. ¿A qué distancia horizontal está el barco?`,
+        a:`${h} m`,opts:_snb5shuf([`${h} m`,`${h*2} m`,`${h}√3 m`,`${h}/2 m`]),mc:true,
+        ste:`tan(45°)=${h}/d=1 → d=${h} m`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5TRIG_BQ1(){return _snb5pick([_genSnb5TRIG_B1,_genSnb5TRIG_B2])();}
+
+function _genSnb5TRIG_B3(){
+  const cases=[
+    // Desde dos puntos alineados, ángulos de elevación 30° y 60° a misma torre
+    ()=>{const h=_snb5pick([30,60,90]);
+      // d1=h·cot30°=h√3, d2=h·cot60°=h/√3=h√3/3, dist=d1-d2=2h√3/3
+      return{q:`Desde dos puntos sobre el mismo suelo, alineados con la base de una torre de ${h} m, los ángulos de elevación son 30° y 60°. ¿Cuál es la distancia entre los dos puntos?`,
+        a:`${2*h}√3/3 m`,opts:_snb5shuf([`${2*h}√3/3 m`,`${h}√3 m`,`${h}√3/3 m`,`${h} m`]),mc:true,
+        ste:`d₁=${h}·cot30°=${h}√3; d₂=${h}·cot60°=${h}√3/3. Dist=d₁−d₂=${2*h}√3/3 m`};
+    },
+    // Observador entre dos edificios: ángulos 45° y 60°
+    ()=>{const d=_snb5pick([10,15,20]);
+      return{q:`Un observador equidistante (a ${d} m de cada uno) entre dos edificios ve el primero con ángulo de elevación 45° y el segundo con 60°. ¿Cuál es la diferencia de alturas?`,
+        a:`${d}(√3−1) m`,opts:_snb5shuf([`${d}(√3−1) m`,`${d}√3 m`,`${d} m`,`${d}(√3+1) m`]),mc:true,
+        ste:`h₁=${d}·tan60°=${d}√3; h₂=${d}·tan45°=${d}. Diferencia=${d}√3−${d}=${d}(√3−1) m`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5TRIG_B4(){
+  const cases=[
+    // Desde punto en tierra, elevación 30°; desde tope del edificio, depresión a mismo punto
+    ()=>{const h=_snb5pick([20,30,40,50]);
+      return{q:`Desde lo alto de un acantilado de ${h} m, se observa un barco con ángulo de depresión 30°. ¿A qué distancia horizontal está el barco del pie del acantilado?`,
+        a:`${h}√3 m`,opts:_snb5shuf([`${h}√3 m`,`${h} m`,`${h}/√3 m`,`${h*2} m`]),mc:true,
+        ste:`tan(30°)=${h}/d → d=${h}/tan30°=${h}·√3=${h}√3 m`};
+    },
+    // Piloto ve ciudad delante (depresión 60°) y aeropuerto detrás (depresión 30°)
+    ()=>{const alt=_snb5pick([3,4,6]);
+      return{q:`Un avión vuela a ${alt} km de altura. El piloto ve la ciudad con ángulo de depresión 60° (al frente) y el aeropuerto con ángulo de depresión 30° (detrás). ¿Cuál es la distancia horizontal entre la ciudad y el aeropuerto?`,
+        a:`${alt}(√3−1/√3) km = ${alt}·2√3/3·2 = ${2*alt}√3/3·2... ver paso`,
+        opts:_snb5shuf([`${alt}√3+${alt}/√3 = ${4*alt}√3/3 km`,`${alt}√3 km`,`${alt*2} km`,`${alt}(√3+1/√3) km`]),mc:true,
+        ste:`d_ciudad=${alt}/tan60°=${alt}/√3=${alt}√3/3. d_aeropuerto=${alt}/tan30°=${alt}√3. Total=d_ciudad+d_aeropuerto=${alt}√3/3+${alt}√3=${4*alt}√3/3 km`};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5TRIG_BQ2(){return _snb5pick([_genSnb5TRIG_B3,_genSnb5TRIG_B4])();}
+function _genSnb5TRIG_EX(){return _snb5pick([_genSnb5TRIG_B1,_genSnb5TRIG_B2,_genSnb5TRIG_B3,_genSnb5TRIG_B4])();}
+
+
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
 // ── Datos curriculares ──────────────────────────────────────────────────────────
 
@@ -3934,7 +4491,7 @@ const PREP_LEVELS = {
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
-      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2'] },
+      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_ex'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
       {key:'algebra',      lbl:'Álgebra',           ico:'α'},
@@ -4012,6 +4569,15 @@ const PREP_CURRICULUM = {
       {lbl:'Examen General – Geometría',area:'geometria',  editorial:'san_agustin', skills:['sa2_geom_ex']},
     ], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
+    '5':[
+      {lbl:'Números Reales',                              area:'matematica', editorial:'san_norberto', skills:['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex']},
+      {lbl:'Inecuaciones Lineales',                       area:'algebra',    editorial:'san_norberto', skills:['snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex']},
+      {lbl:'Inecuaciones Cuadráticas',                    area:'algebra',    editorial:'san_norberto', skills:['snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex']},
+      {lbl:'Relaciones Métricas – Triángulo Rectángulo',  area:'geometria',  editorial:'san_norberto', skills:['snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex']},
+      {lbl:'Relaciones Métricas – Triángulo Oblicuángulo',area:'geometria',  editorial:'san_norberto', skills:['snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex']},
+      {lbl:'Circunferencia',                              area:'geometria',  editorial:'san_norberto', skills:['snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex']},
+      {lbl:'Ángulos de Elevación y Depresión',            area:'trigonometria',editorial:'san_norberto', skills:['snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_ex']},
+    ],
   },
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
@@ -4024,6 +4590,7 @@ const PREP_EDITORIALS = {
   san_francisco:         { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís',   grades:{ primaria:['6'] } },
   hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ primaria:['5'], secundaria:['2'] } },
   san_agustin:             { lbl:'San Agustín',                    ico:'📗', abbr:'San Agustín',   grades:{ secundaria:['2'] } },
+  san_norberto:            { lbl:'San Norberto',                   ico:'📔', abbr:'S. Norberto',   grades:{ secundaria:['5'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
