@@ -4023,7 +4023,7 @@ const PREP_EDITORIALS = {
   san_ignacio:    { lbl:'San Ignacio de Recalde',         ico:'📕', abbr:'S.I. Recalde' },
   san_francisco:         { lbl:'San Francisco de Asís',          ico:'📓', abbr:'S.F. Asís',   grades:{ primaria:['6'] } },
   hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ primaria:['5'], secundaria:['2'] } },
-  san_agustin:             { lbl:'Colegio San Agustín',            ico:'📗', abbr:'San Agustín',   grades:{ secundaria:['2'] } },
+  san_agustin:             { lbl:'San Agustín',                    ico:'📗', abbr:'San Agustín',   grades:{ secundaria:['2'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
@@ -4218,7 +4218,37 @@ function _prepConfigHtml() {
   // Unidades con cuadros de habilidad + botón examen de unidad (★)
   let unitsHtml = '';
   if (!_prep.editorialChosen) {
-    unitsHtml = '';
+    // Catálogo de cursos disponibles
+    const _seen = new Set();
+    const _catCards = [];
+    Object.entries(PREP_CURRICULUM).forEach(([lvlKey, gradeMap]) => {
+      const _lv2 = PREP_LEVELS[lvlKey] || {};
+      Object.entries(gradeMap).forEach(([g, uList]) => {
+        const _byEd = {};
+        uList.forEach(u => { if (u.editorial) (_byEd[u.editorial]=_byEd[u.editorial]||[]).push(u); });
+        Object.entries(_byEd).forEach(([ek, eu]) => {
+          const _ck = `${ek}|${lvlKey}|${g}`;
+          if (_seen.has(_ck)) return;
+          _seen.add(_ck);
+          const _ed2 = PREP_EDITORIALS[ek] || {};
+          const _sc = eu.flatMap(u=>u.skills||[]).filter(k=>!/_bq\d/.test(k)&&!k.includes('_bpu')).length;
+          const _pct = masLoading ? 0 : _prepCourseScore(eu.flatMap(u=>u.skills||[]));
+          const _onclick = `_snd.click();_prep.level='${lvlKey}';_prep.grade='${g}';_prep.editorial='${ek}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()`;
+          _catCards.push(`<div onclick="${_onclick}" style="background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.28);border-radius:12px;padding:9px 10px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:2px" onmouseover="this.style.background='rgba(124,58,237,0.22)'" onmouseout="this.style.background='rgba(124,58,237,0.10)'">
+            <div style="font-size:18px;line-height:1;margin-bottom:1px">${_ed2.ico||'📚'}</div>
+            <div style="font-size:12px;font-weight:700;color:#fff;line-height:1.2">${_ed2.lbl||ek}</div>
+            <div style="font-size:9.5px;color:#fff">${_lv2.ico||''} ${_lv2.lbl||lvlKey} · ${_lv2.gradeIco||'🎒'} ${g}°</div>
+            <div style="font-size:9.5px;color:#fff">${eu.length} unidades · ${_sc} habilidades</div>
+            <div style="margin-top:4px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden"><div style="height:100%;border-radius:3px;background:#7c3aed;width:${_pct}%"></div></div>
+            <div style="font-size:8.5px;color:#fff;text-align:right">${_pct}% dominado</div>
+          </div>`);
+        });
+      });
+    });
+    unitsHtml = `<div style="padding:4px 0">
+      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">Catálogo de cursos</div>
+      <div style="display:grid;grid-template-columns:repeat(${Math.ceil(_catCards.length/2)},1fr);gap:6px">${_catCards.join('')}</div>
+    </div>`;
   } else if (!allTopicKeys.length) {
     const _emptyMsg = _prep.editorial
       ? `🏫 Aún no hay ejercicios de <b>${PREP_EDITORIALS[_prep.editorial]?.lbl||_prep.editorial}</b> para este grado.`
