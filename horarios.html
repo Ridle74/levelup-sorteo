@@ -112,7 +112,7 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
 
 /* EVENTS */
 .pcal-ev { position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden; }
-.pcal-ev-name  { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pcal-ev-name  { font-family:'Barlow',sans-serif; font-size:11px; font-weight:900; line-height:1.1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .pcal-ev-time  { font-size:8px; font-weight:700; color:rgba(0,0,0,0.55); margin-top:1px; white-space:nowrap; }
 .pcal-ev-badge { font-size:7px; font-weight:900; letter-spacing:0.06em; text-transform:uppercase; color:rgba(0,0,0,0.35); margin-top:1px; }
 
@@ -121,8 +121,13 @@ body { margin:0; min-height:100dvh; background:#f5f5f3; color:#111; font-family:
   position:absolute; border-radius:8px; padding:4px 6px 3px; overflow:hidden;
   background:rgba(133,200,0,0.07); border:1.5px dashed rgba(133,200,0,0.55);
 }
-.pcal-free-lbl  { font-size:8px; font-weight:900; letter-spacing:0.12em; color:rgba(80,140,0,0.7); text-transform:uppercase; }
+.pcal-free-lbl  { font-family:'Barlow',sans-serif; font-size:8px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase; }
 .pcal-free-time { font-size:8px; font-weight:700; color:rgba(0,0,0,0.45); margin-top:1px; }
+.pcal-free-slot .pcal-ev-badge { font-weight:900; }
+.pcal-free-dom  { background:rgba(239,68,68,0.03); border-color:rgba(239,68,68,0.55); }
+.pcal-free-virt { background:rgba(79,182,255,0.03); border-color:rgba(79,182,255,0.55); }
+.pcal-free-dom .pcal-free-lbl, .pcal-free-dom .pcal-ev-badge   { color:#b91c1c; }
+.pcal-free-virt .pcal-free-lbl, .pcal-free-virt .pcal-ev-badge { color:#1d6fa4; }
 
 /* NOW LINE */
 .pcal-now { position:absolute; z-index:10; pointer-events:none; display:flex; align-items:center; }
@@ -526,7 +531,8 @@ function buildNav(rs,re) {
     +'<div class="pcal-legend">'
     +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(239,68,68,0.55)"></span>A domicilio</div>'
     +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(79,182,255,0.55)"></span>Virtual</div>'
-    +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(133,200,0,0.4);border:1.5px dashed rgba(133,200,0,0.7)"></span>Disponible</div>'
+    +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(239,68,68,0.06);border:1.5px dashed rgba(239,68,68,0.55)"></span>Disponible a domicilio</div>'
+    +'<div class="pcal-leg-item"><span class="pcal-leg-dot" style="background:rgba(79,182,255,0.06);border:1.5px dashed rgba(79,182,255,0.55)"></span>Disponible virtual</div>'
     +'</div>';
 }
 
@@ -674,7 +680,7 @@ function buildGrid(dayList) {
       return '<div class="pcal-ev" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px;background:'+bg+';border:1px solid '+brd+'">'
         +'<div class="pcal-ev-name" style="color:'+nameC+'">'+slotNames(activeIds)+'</div>'
         +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
-        +(short?'':'<div class="pcal-ev-badge">'+(isDom?'Domicilio':'Virtual')+'</div>')
+        +(short?'':'<div class="pcal-ev-badge" style="color:'+nameC+'">'+(isDom?'Domicilio':'Virtual')+'</div>')
         +'</div>';
     }).join('');
 
@@ -692,9 +698,12 @@ function buildGrid(dayList) {
       var hPx=Math.max(((fs.dur||60)/60)*ROW_H-3,28);
       var end=addM(fs.start,fs.dur||60);
       var short=hPx<42;
-      return '<div class="pcal-free-slot" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px">'
+      var isDom=(fs.modality||'').toLowerCase().includes('dom');
+      var clsFree='pcal-free-slot '+(isDom?'pcal-free-dom':'pcal-free-virt');
+      return '<div class="'+clsFree+'" style="top:'+topPx+'px;height:'+hPx+'px;left:2px;width:'+(colW-4)+'px">'
         +'<div class="pcal-free-lbl">Disponible</div>'
         +(short?'':'<div class="pcal-free-time">'+fs.start+'–'+end+'</div>')
+        +(short?'':'<div class="pcal-ev-badge">'+(isDom?'Domicilio':'Virtual')+'</div>')
         +'</div>';
     }).join('');
 
