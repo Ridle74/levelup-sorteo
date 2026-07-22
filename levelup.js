@@ -4,7 +4,7 @@
 
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
-let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:300, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[] };
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:600, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[], showConfig:false };
 let _prepActiveUserId = undefined; // detecta cambio de cuenta
 
 // ── URL Routing ─────────────────────────────────────────────────────────────────
@@ -5041,40 +5041,47 @@ function _prepConfigHtml() {
   // ── Selector desplegable: Nivel · Grado · Área · Colegio ────────────────────
   const openSel = _prep.openSelector;
   const areaOpts = lvDef.areas || [];
-  // Nivel
   const _gradeIco = lvDef.gradeIco || '📅';
-  const nivelSel = openSel === 'level'
-    ? Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${lv.ico} ${lv.lbl}</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')">${_prep.level ? lvDef.ico+' '+lvDef.lbl : 'Nivel'} ▾</button>`;
-  // Grado
-  const gradeSel = openSel === 'grade' && gradeKeys.length
-    ? gradeKeys.map(g=>`<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" title="${g}° grado">${_gradeIco} ${g}°</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" ${!gradeKeys.length?'style="opacity:.35;cursor:default"':''}>${_prep.grade ? _gradeIco+' '+_prep.grade+'° ▾' : 'Grado ▾'}</button>`;
-  // Área
-  const areaSel = areaOpts.length
-    ? (openSel === 'area'
-      ? areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')
-        + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-      : `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="_prepOpen('area')">${(()=>{const a=areaOpts.find(x=>x.key===_prep.area);return _prep.area?((a?.ico||'')+' '+(a?.lbl||'Área')):'Área'})()} ▾</button>`)
-    : '';
-  // Colegio (siempre visible)
-  const colegioSel = openSel === 'editorial'
-    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
-      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
-      + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
-    : `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:(_prep.editorialChosen?'Todos los colegios':'')}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
-  const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
-  // Botones de acción en la misma fila que los 4 selectores, alineados a la derecha
-  const _challengeBtn = shown
-    ? `<button class="prep-kh-btn-challenge" style="margin-left:auto" onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])">Comenzar desafío de dominio</button>`
-    : `<span style="margin-left:auto"></span>`;
+  const _rowStyle = `display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch`;
+  const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px;flex-shrink:0">·</span>`;
+
+  // ── Fila 1: botones siempre fijos (nunca se expanden) ──────────────────────
+  const nivelSel   = `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')" style="flex-shrink:0">${_prep.level ? lvDef.ico+' '+lvDef.lbl : 'Nivel'} ▾</button>`;
+  const gradeSel   = `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" style="flex-shrink:0${!gradeKeys.length?';opacity:.35;cursor:default':''}">${_prep.grade ? _gradeIco+' '+_prep.grade+'° ▾' : 'Grado ▾'}</button>`;
+  const colegioSel = `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" style="flex-shrink:0" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:''}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
+  const areaSel    = areaOpts.length ? `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="_prepOpen('area')" style="flex-shrink:0">${(()=>{const a=areaOpts.find(x=>x.key===_prep.area);return _prep.area?((a?.ico||'')+' '+(a?.lbl||'Área')):'Área'})()} ▾</button>` : '';
+
   const _hasTopic = !!(_prep.topic && allTopicKeys.includes(_prep.topic));
-  const _startInRow = _hasTopic
-    ? `<button class="prep-start-btn" style="margin-top:0;width:auto;padding:6px 18px;font-size:13px;letter-spacing:0.03em${shown?'':';margin-left:auto'}" onclick="_prepStart()">▶ Practicar ahora</button>`
+  const _anyFilter = _prep.level || _prep.grade || _prep.editorial || _prep.area;
+  const _resetBtn = _anyFilter
+    ? `${dot}<button class="prep-sel-btn" onclick="_prep.level='';_prep.grade='';_prep.editorial='';_prep.area='';_prep.editorialChosen=false;_renderPreparatePane()" title="Limpiar filtros" style="opacity:.7;min-width:0;padding:0 10px;flex-shrink:0">✕</button>`
     : '';
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${areaSel?dot+areaSel:''}${_challengeBtn}${_startInRow}</div>`;
+
+  // ── Fila 2: opciones del selector abierto ──────────────────────────────────
+  let _openOpts = null;
+  if (openSel === 'level')
+    _openOpts = Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" style="flex-shrink:0">${lv.ico} ${lv.lbl}</button>`).join('');
+  else if (openSel === 'grade' && gradeKeys.length)
+    _openOpts = gradeKeys.map(g=>`<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" style="flex-shrink:0">${_gradeIco} ${g}°</button>`).join('');
+  else if (openSel === 'area' && areaOpts.length)
+    _openOpts = areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')" style="flex-shrink:0">${a.ico||''} ${a.lbl}</button>`).join('');
+  else if (openSel === 'editorial')
+    _openOpts = `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">✦ Todos</button>`
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`).join('');
+
+  const _optsRow = _openOpts != null
+    ? `<div style="${_rowStyle};margin:0 0 6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)">
+        ${_openOpts}
+        <button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45;flex-shrink:0;margin-left:4px">✕</button>
+      </div>`
+    : '';
+
+  const selectorRow = `<div style="${_rowStyle};margin:0 0 4px">${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${areaSel?dot+areaSel:''}${_resetBtn}</div>${_optsRow}`;
+  // Botón desafío de dominio (fila propia, solo cuando hay curso seleccionado)
+  const _challengeRow = shown
+    ? `<div style="margin:0 0 8px"><button class="prep-kh-btn-challenge" onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])">Comenzar desafío de dominio</button></div>`
+    : '';
+
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
     <div class="prep-kh-course-name">${lvDef.lbl||'¿?'}${_prep.grade?' · '+_prep.grade+'° Grado':' · ¿? Grado'}</div>
@@ -5168,9 +5175,9 @@ function _prepConfigHtml() {
           const _sc = _euShow.flatMap(u=>u.skills||[]).filter(k=>!/_bq\d/.test(k)&&!k.includes('_bpu')).length;
           const _pct = masLoading ? 0 : _prepCourseScore(_euShow.flatMap(u=>u.skills||[]));
           const _onclick = `_snd.click();_prep.level='${lvlKey}';_prep.grade='${g}';_prep.editorial='${ek}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()`;
-          _catCards.push(`<div onclick="${_onclick}" style="background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.28);border-radius:12px;padding:9px 10px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:2px" onmouseover="this.style.background='rgba(124,58,237,0.22)'" onmouseout="this.style.background='rgba(124,58,237,0.10)'">
+          _catCards.push(`<div onclick="${_onclick}" style="background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.28);border-radius:12px;padding:7px 8px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:2px;width:130px;min-width:0;flex-shrink:0" onmouseover="this.style.background='rgba(124,58,237,0.22)'" onmouseout="this.style.background='rgba(124,58,237,0.10)'">
             <div style="font-size:18px;line-height:1;margin-bottom:1px">${_ed2.ico||'📚'}</div>
-            <div style="font-size:12px;font-weight:700;color:#fff;line-height:1.2">${_ed2.lbl||ek}</div>
+            <div style="font-size:11px;font-weight:700;color:#fff;line-height:1.2">${_ed2.lbl||ek}</div>
             <div style="font-size:9.5px;color:#fff">${_lv2.ico||''} ${_lv2.lbl||lvlKey} · ${_lv2.gradeIco||'🎒'} ${g}°</div>
             <div style="font-size:9.5px;color:#fff">${_euShow.length} unidades · ${_sc} habilidades</div>
             <div style="margin-top:4px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden"><div style="height:100%;border-radius:3px;background:#7c3aed;width:${_pct}%"></div></div>
@@ -5180,10 +5187,15 @@ function _prepConfigHtml() {
       });
     });
     const _emptyCatMsg = `📭 No hay cursos disponibles${_prep.level?' para este nivel':''}${_prep.grade?' en este grado':''}${_prep.editorial?' de este colegio':''}${_prep.area?' en esta área':''}.`;
+    const _scrollBtn = (dir) => `<button class="prep-sel-btn" onclick="var c=document.getElementById('_csc');c.scrollBy({left:${dir*180},behavior:'smooth'})" style="min-width:0;padding:0 9px;flex-shrink:0">${dir<0?'◀':'▶'}</button>`;
     unitsHtml = _catCards.length
       ? `<div style="padding:4px 0">
           <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">Catálogo de cursos</div>
-          <div style="display:grid;grid-template-columns:repeat(${Math.max(2,Math.ceil(_catCards.length/2))},1fr);gap:6px">${_catCards.join('')}</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            ${_scrollBtn(-1)}
+            <div id="_csc" style="display:flex;gap:6px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;flex:1;-webkit-overflow-scrolling:touch;padding:2px 0">${_catCards.join('')}</div>
+            ${_scrollBtn(1)}
+          </div>
         </div>`
       : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">${_emptyCatMsg}</div>`;
   } else if (!allTopicKeys.length) {
@@ -5324,9 +5336,7 @@ function _prepConfigHtml() {
     const _isQT=!!def.quiz, _qnLbl=_isQT&&_prep.quizNum?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
     const qOpts=[5,10,15,20];
     const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
-    startPanel = `<div class="prep-kh-panel">
-      <div class="prep-kh-panel-topic">${def.ico||''} ${_qnLbl}</div>
-      <div class="prep-kh-panel-opts">
+    const _cfgPanel = _prep.showConfig ? `<div class="prep-kh-panel-opts">
         <div>
           <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
           <div class="prep-option-row">${qOpts.map(n=>`<button class="prep-opt-sq ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()" title="${n} preguntas">${n}</button>`).join('')}</div>
@@ -5342,12 +5352,27 @@ function _prepConfigHtml() {
             <button class="prep-opt-sq ${_prep.ansMode==='text'?'active':''}" onclick="_prep.ansMode='text';_renderPreparatePane()" title="Escribir respuesta">✏️</button>
           </div>
         </div>
+      </div>` : '';
+    const _gearBtn = `<button class="prep-opt-sq" onclick="_prep.showConfig=!_prep.showConfig;_renderPreparatePane()" title="${_prep.showConfig?'Cerrar configuración':'Configurar sesión'}" style="flex-shrink:0;font-size:15px;width:36px;height:36px">${_prep.showConfig?'✕':'⚙'}</button>`;
+    startPanel = `<div class="prep-kh-panel">
+      <div class="prep-kh-panel-topic">${def.ico||''} ${_qnLbl}</div>
+      ${_cfgPanel}
+      <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+        <button class="prep-start-btn" style="margin-top:0;flex:1;padding:11px 18px;font-size:14px" onclick="_prepStart()">▶ Practicar ahora</button>
+        ${_gearBtn}
       </div>
     </div>`;
   }
 
+  const _mobileBar = `<div class="prep-kh-mobile-bar">
+    ${_inicioBtn}
+    ${shown ? `<div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:right">${units.length} unidades · ${totalSkillCount} habilidades</div>` : ''}
+  </div>`;
+
   const contentArea = `<div class="prep-kh-content">
+    ${_mobileBar}
     ${selectorRow}
+    ${_challengeRow}
     ${courseHeader}
     ${legend}
     ${unitsHtml}
@@ -5356,7 +5381,7 @@ function _prepConfigHtml() {
   </div>`;
 
   return `<div class="prep-wrap" style="padding-bottom:8px">
-    <div style="margin-left:259px">${topbar}</div>
+    <div class="prep-kh-topbar-wrap">${topbar}</div>
     <div class="prep-kh-layout">${sidebar}${contentArea}</div>
   </div>`;
 }
