@@ -149,16 +149,58 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .sm-del-popup-cancel { display:block; width:100%; border:none; border-radius:10px; padding:9px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; background:rgba(0,0,0,0.06); color:rgba(0,0,0,0.38); margin-top:4px; }
 .sm-daytog { border:1px solid rgba(0,0,0,0.18); border-radius:8px; background:#fff; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; padding:0 4px; cursor:pointer; transition:all 0.15s; text-align:center; overflow:hidden; height:40px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; }
 .sm-daytog.on { background:#111; color:#fff; border-color:#111; }
+/* ── Formulario Nueva Clase compacto en móvil ────────── */
+@media (max-width:768px) {
+  .sm-sheet { padding:14px 12px calc(14px + env(safe-area-inset-bottom)); }
+
+  /* Todas las etiquetas: mismo estilo */
+  .sm-sheet .field-label {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:8px; font-weight:900;
+    letter-spacing:0.12em; color:rgba(0,0,0,0.4);
+    text-transform:uppercase; margin-bottom:3px; display:block;
+  }
+
+  /* Todos los controles de entrada: mismo alto y tipografía */
+  .sm-sheet .fsm {
+    height:32px; font-size:11px; padding:0 6px;
+    margin-bottom:7px; border-radius:8px;
+  }
+  .sm-sheet select.fsm {
+    background-position:right 6px center !important;
+    padding-right:22px !important;
+  }
+
+  /* Segmented controls (Frecuencia, Modalidad): misma tipografía que días */
+  .sm-sheet .sm-seg { height:32px; border-radius:8px; margin-bottom:7px; }
+  .sm-sheet .sm-seg button {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:8.5px; font-weight:900;
+    letter-spacing:0.05em; text-transform:uppercase;
+    padding:0 4px; white-space:nowrap;
+  }
+
+  /* Botones de días: mismo estilo que sm-seg button */
+  .sm-sheet .sm-daytog {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:8.5px; font-weight:900;
+    letter-spacing:0.05em; text-transform:uppercase;
+    height:32px; border-radius:7px;
+  }
+
+  /* DÍAS ocupa solo la columna 2, igual que ALUMNO */
+  #sm-days-wrap { grid-column: auto; }
+}
 /* ── Toolbar compacta en móvil ────────────────────────── */
 @media (max-width:768px) {
-  .pcal-toolbar { gap:4px; padding:7px 10px 4px; flex-wrap:nowrap; align-items:center; }
-  .pcal-toggle { border-radius:8px; }
-  .pcal-toggle button { display:inline-flex; align-items:center; justify-content:center; padding:0 7px; font-size:9px; letter-spacing:0.06em; height:26px; white-space:nowrap; }
-  .pcal-today-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 7px; font-size:9px; letter-spacing:0.07em; height:26px; }
+  .pcal-toolbar { padding:7px 8px 5px; flex-wrap:nowrap; align-items:center; justify-content:space-evenly; }
+  .pcal-toggle { border-radius:7px; }
+  .pcal-toggle button { display:inline-flex; align-items:center; justify-content:center; padding:0 8px; font-size:10px; letter-spacing:0.02em; height:28px; white-space:nowrap; }
+  .pcal-today-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 8px; font-size:10px; letter-spacing:0.02em; height:28px; }
   .pcal-cycle-btns { gap:3px; }
-  .pcal-cycle-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 6px; font-size:9px; letter-spacing:0.06em; height:26px; border-radius:7px; white-space:nowrap; }
-  .pcal-nav { gap:3px; }
-  .pcal-nav button { display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; font-size:13px; border-radius:7px; }
+  .pcal-cycle-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 8px; font-size:10px; letter-spacing:0.02em; height:28px; border-radius:7px; white-space:nowrap; }
+  .pcal-edit-btn { display:inline-flex; align-items:center; justify-content:center; padding:0 8px; font-size:10px; letter-spacing:0.02em; height:28px; }
+  .pcal-nav button { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; font-size:14px; border-radius:7px; }
 }
 </style>
 </head>
@@ -971,26 +1013,28 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
     cycleBtns += '</div>';
   }
   var _mob = window.innerWidth <= 768;
-  var _togBt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 10px;font-size:11px;letter-spacing:0.04em;height:30px;' : '';
-  var _todSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 10px;font-size:11px;letter-spacing:0.04em;height:30px;' : '';
-  var _cycSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 10px;font-size:11px;letter-spacing:0.04em;height:30px;border-radius:8px;' : '';
-  var _navSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;font-size:15px;border-radius:8px;' : '';
+  var _togBt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:10px;letter-spacing:0.02em;height:28px;' : '';
+  var _todSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:10px;letter-spacing:0.02em;height:28px;' : '';
+  var _cycSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:10px;letter-spacing:0.02em;height:28px;border-radius:7px;' : '';
+  var _navSt = _mob ? 'display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;font-size:14px;border-radius:7px;' : '';
+  var _edSt  = _mob ? 'display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 8px;font-size:10px;letter-spacing:0.02em;height:28px;' : '';
   var _cycBtnsInner = '';
   if (curCyc || nextCyc) {
     if (curCyc)  _cycBtnsInner += '<button class="pcal-cycle-btn'+(calJumpMode==='cur'?' on':'')+'" style="'+_cycSt+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+curCyc.id+'\'),\'cur\')">'+curCyc.name+'</button>';
     if (nextCyc) _cycBtnsInner += '<button class="pcal-cycle-btn'+(calJumpMode==='next'?' on':'')+'" style="'+_cycSt+'" onclick="calGoToCycle(DATA.cycles.find(c=>String(c.id)===\''+nextCyc.id+'\'),\'next\')">'+nextCyc.name+'</button>';
-    cycleBtns = '<div class="pcal-cycle-btns" style="'+ (_mob ? 'gap:3px;' : '') +'">' + _cycBtnsInner + '</div>';
+    cycleBtns = '<div class="pcal-cycle-btns" style="'+ (_mob ? 'display:contents;' : 'gap:3px;') +'">' + _cycBtnsInner + '</div>';
   }
-  var _tbSt = _mob ? 'justify-content:space-evenly;padding:8px 0 5px;flex-wrap:nowrap;' : '';
+  var _semLbl = _mob ? 'Sem' : 'Semana';
+  var _tbSt = _mob ? 'justify-content:space-evenly;padding:7px 8px 5px;flex-wrap:nowrap;' : '';
   return '<div class="pcal-toolbar" style="'+_tbSt+'">'
     + '<div class="pcal-toggle">'
     + '<button class="' + m4 + '" style="'+_togBt+'" onclick="setCalMode(\'4dias\')">4 días</button>'
-    + '<button class="' + mw + '" style="'+_togBt+'" onclick="setCalMode(\'week\')">Semana</button>'
+    + '<button class="' + mw + '" style="'+_togBt+'" onclick="setCalMode(\'week\')">'+_semLbl+'</button>'
     + '</div>'
     + '<button class="pcal-today-btn'+(calJumpMode==='today'?' on':'')+'" style="'+_todSt+'" onclick="calGoToday()">Hoy</button>'
     + cycleBtns
-    + (isAdmin ? '<button class="pcal-edit-btn'+eCls+'" onclick="toggleCalEdit()">✏️ Editar</button>' : '')
-    + '<div class="pcal-nav" style="'+(_mob?'gap:3px;':'')+'"><button style="'+_navSt+'" onclick="calStep(-1)">‹</button><button style="'+_navSt+'" onclick="calStep(1)">›</button></div>'
+    + (isAdmin ? '<button class="pcal-edit-btn'+eCls+'" style="'+_edSt+'" onclick="toggleCalEdit()">Editar</button>' : '')
+    + '<div class="pcal-nav" style="'+(_mob?'display:contents;':'gap:3px;')+'"><button style="'+_navSt+'" onclick="calStep(-1)">‹</button><button style="'+_navSt+'" onclick="calStep(1)">›</button></div>'
     + '</div>'
     + '<div class="pcal-range-bar">' + fmtDM(rangeStart) + ' — ' + fmtDM(rangeEnd) + '</div>';
 }
@@ -2518,7 +2562,9 @@ function _smStudentOpts(parentId, selId) {
   var par = DATA.parents[parentId] || {};
   return (par.children||[]).map(function(id){
     var st = DATA.students[id] || {};
-    return '<option value="'+id+'"'+(String(id)===String(selId)?' selected':'')+'>'+( st.icon||'')+' '+(st.name||id)+'</option>';
+    var _stFullName = (st.name||String(id));
+    var _mob768 = window.innerWidth <= 768;
+    return '<option value="'+id+'"'+(String(id)===String(selId)?' selected':'')+'>'+(_mob768 ? '' : (st.icon||'')+' ')+_stFullName+'</option>';
   }).join('');
 }
 
@@ -2533,6 +2579,8 @@ function _smWeekRange(dateStr) {
 }
 
 function _buildSM(prefill, isEdit) {
+  var _smMob = window.innerWidth <= 768;
+  var _smGap = _smMob ? '0 4px' : '0 10px';
   var p   = prefill || {};
   var dayVal = p.day !== undefined ? Number(p.day) : 1;
   var durVal = p.dur || 60;
@@ -2643,19 +2691,28 @@ function _buildSM(prefill, isEdit) {
     : '';
   // Reprogramación rápida (sesión → horario libre): dropdown de horarios libres disponibles.
   var swapFreeOpts = (isEdit && smType === 'session' && smEditOccDate)
-    ? (DATA.freeSlots || [])
-        .slice()
-        .sort(function(a, b) {
-          var aDow = a.recurring === false ? new Date(a.date+'T00:00:00').getDay() : Number(a.day);
-          var bDow = b.recurring === false ? new Date(b.date+'T00:00:00').getDay() : Number(b.day);
-          return (aDow===0?7:aDow)-(bDow===0?7:bDow) || (a.start||'').localeCompare(b.start||'');
-        })
-        .map(function(fs) {
-          var dayLabel = (fs.recurring === false && fs.date)
-            ? fmtDM(new Date(fs.date+'T00:00:00'))
-            : DAY_NAMES[Number(fs.day)];
-          return '<option value="'+fs.id+'">'+dayLabel+' · '+fs.start+'</option>';
-        }).join('')
+    ? (function(){
+        var _seen = {};
+        return (DATA.freeSlots || [])
+          .slice()
+          .sort(function(a, b) {
+            var aDow = a.recurring === false ? new Date(a.date+'T00:00:00').getDay() : Number(a.day);
+            var bDow = b.recurring === false ? new Date(b.date+'T00:00:00').getDay() : Number(b.day);
+            return (aDow===0?7:aDow)-(bDow===0?7:bDow) || (a.start||'').localeCompare(b.start||'');
+          })
+          .filter(function(fs) {
+            var key = (fs.recurring === false ? (fs.date||'') : String(fs.day)) + '|' + (fs.start||'');
+            if (_seen[key]) return false;
+            _seen[key] = true;
+            return true;
+          })
+          .map(function(fs) {
+            var dayLabel = (fs.recurring === false && fs.date)
+              ? fmtDM(new Date(fs.date+'T00:00:00'))
+              : DAY_NAMES[Number(fs.day)];
+            return '<option value="'+fs.id+'">'+dayLabel+' · '+fs.start+'</option>';
+          }).join('');
+      })()
     : '';
   var html = '<div class="sm-overlay" onclick="if(event.target===this)closeSessionModal()">'
     +'<div class="sm-sheet">'
@@ -2670,18 +2727,18 @@ function _buildSM(prefill, isEdit) {
         +'</div>'
       : '')
     // ── Fila 1: Padre/Madre | Alumno | Nivel/Grado ──
-    +'<div id="sm-sess-fields" style="display:'+(smType==='session'?'grid':'none')+';grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div id="sm-sess-fields" style="display:'+(smType==='session'?'grid':'none')+';grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:'+_smGap+'">'
     +'<div><label class="field-label">Padre / madre</label>'
     +'<select class="fsm" id="sm-parent" onchange="smUpdateStudents()" style="appearance:auto">'+parOpts+'</select></div>'
     +'<div><label class="field-label">Alumno</label>'
     +'<select class="fsm" id="sm-student" style="appearance:auto" onchange="_smUpdateGradeDisplay()">'+stuOpts+'</select></div>'
     +'<div><label class="field-label">Nivel / grado</label>'
-    +'<div class="fsm" id="sm-grade-display" style="cursor:default;font-size:13px">'
+    +'<div class="fsm" id="sm-grade-display" style="cursor:default">'
     +(function(){ var st = p.studentId != null ? DATA.students[p.studentId] : null; return st ? _smGradeLabel(st) : '—'; })()
     +'</div></div>'
     +'</div>'
     // ── Fila 2: Día | Hora | Duración ──
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:'+_smGap+'">'
     +'<div><label class="field-label">Día de la semana</label>'
     +'<select class="fsm" id="sm-day" style="appearance:auto" onchange="smSyncDays(this.value)">'
     +DAY_NAMES.map(function(n,i){ return '<option value="'+i+'"'+(i===dayVal?' selected':'')+'>'+n+'</option>'; }).join('')
@@ -2697,17 +2754,17 @@ function _buildSM(prefill, isEdit) {
     +'<input type="hidden" id="sm-cycle-id" value="'+_smInitCycleId+'">'
     +'<input type="hidden" id="sm-week-start" value="'+(p.date||'')+'">'
     +'<input type="hidden" id="sm-nw-start" value="'+_smNWStart.toISOString().slice(0,10)+'">'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:'+_smGap+'">'
     +'<div><label class="field-label">Fecha de referencia</label>'
-    +'<div class="fsm" style="cursor:default;font-size:13px">'
+    +'<div class="fsm" style="cursor:default">'
     +(DAY_NAMES[_smRefDate.getDay()]+' '+fmtDM(_smRefDate))
     +'</div></div>'
     +'<div><label class="field-label">Frecuencia</label>'
     +'<div class="sm-seg" id="sm-rec-seg" style="font-size:10px">'
     +(_smIsOnce
       ? '<button class="on" data-rec="false" style="pointer-events:none;opacity:0.6">Una vez</button>'
-      : (smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">'+smCurCycle.name+'</button>'  : '')
-       +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">'+smNextCycle.name+'</button>' : '')
+      : (smCurCycle  ? '<button class="'+(_smFreqSel==='cur' ?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smCurCycle.id+'\')">'  +(_smMob ? 'Actual' : smCurCycle.name)+'</button>'  : '')
+       +(smNextCycle ? '<button class="'+(_smFreqSel==='next'?'on':'')+'" data-rec="true"   onclick="smToggleRec(this,true,\''+smNextCycle.id+'\')">' +(_smMob ? 'Sig.'   : smNextCycle.name)+'</button>' : '')
        +'<button class="'+(_smFreqSel==='nweeks'?'on':'')+'" data-rec="nweeks" onclick="smToggleRec(this,\'nweeks\')">N sem.</button>'
     )
     +'</div></div>'
@@ -2718,7 +2775,7 @@ function _buildSM(prefill, isEdit) {
     +'</div></div>'
     +'</div>'
     // ── Fila 4: Semana / Fecha / N-sem | Días | Aplicar este cambio a ──
-    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 10px">'
+    +'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:'+_smGap+'">'
     // Col 1: campo de fecha/semana/n-sem (condicional, mutuamente excluyentes)
     +'<div>'
     +'<div id="sm-date-wrap" style="display:'+(_smIsOnce?'':'none')+'">'
@@ -2732,28 +2789,37 @@ function _buildSM(prefill, isEdit) {
         var n=i+1;
         var _nwDef = p.nWeeks || _smMaxWeeks;
         var endDate=new Date(_smNWStart.getTime()+(n*7-1)*86400000);
-        return '<option value="'+n+'"'+(n===_nwDef?' selected':'')+'>'+n+' sem. · '+fmtDM(_smNWStart)+' – '+fmtDM(endDate)+'</option>';
+        return '<option value="'+n+'"'+(n===_nwDef?' selected':'')+'>'+n+' s. · '+fmtDM(_smNWStart)+' – '+fmtDM(endDate)+'</option>';
       }).join('')
     +'</select></div>'
     +'</div>'
     // Col 2: Días multi-selección
     +'<div id="sm-days-wrap" style="display:'+(_smFreqSel==='cur'||_smFreqSel==='next'||_smIsNWeeks||(_smIsOnce&&isEdit)?'':'none')+'">'
     +'<label class="field-label">Días</label>'
-    +'<div id="sm-days-seg" style="display:flex;gap:4px">'
-    +[1,2,3,4,5,6,0].map(function(i){
-        var n = DAY_NAMES[i];
-        var sel = _siblingDays.length > 0 ? _siblingDays.indexOf(i)!==-1
-          : (Array.isArray(p.days) && p.days.length) ? p.days.indexOf(i)!==-1 : i===dayVal;
-        return '<button type="button" class="sm-daytog'+(sel?' on':'')+'" data-dow="'+i+'" onclick="smToggleDay(this)" style="flex:1;min-width:0">'+n.slice(0,3)+'</button>';
-      }).join('')
-    +'</div></div>'
+    +(_smMob
+      ? (function(){
+          var _selDay = _siblingDays.length > 0 ? _siblingDays[0]
+            : (Array.isArray(p.days)&&p.days.length) ? p.days[0] : dayVal;
+          return '<select class="fsm" id="sm-days-sel" style="appearance:auto">'
+            +[1,2,3,4,5,6,0].map(function(i){
+              return '<option value="'+i+'"'+(i===_selDay?' selected':'')+'>'+DAY_NAMES[i]+'</option>';
+            }).join('')+'</select>';
+        })()
+      : '<div id="sm-days-seg" style="display:flex;gap:4px">'
+        +[1,2,3,4,5,6,0].map(function(i){
+            var n = DAY_NAMES[i];
+            var sel = _siblingDays.length > 0 ? _siblingDays.indexOf(i)!==-1
+              : (Array.isArray(p.days) && p.days.length) ? p.days.indexOf(i)!==-1 : i===dayVal;
+            return '<button type="button" class="sm-daytog'+(sel?' on':'')+'" data-dow="'+i+'" onclick="smToggleDay(this)" style="flex:1;min-width:0">'+n.slice(0,3)+'</button>';
+          }).join('')+'</div>'
+    )+'</div>'
     // Col 3: "Aplicar este cambio a" para horario libre / "Reprogramar a" para sesión
     +(isEdit && smEditOccDate && smType === 'free'
       ? '<div id="sm-scope-wrap" style="display:'+(recVal||_smIsOnce?'':'none')+'">'
         +'<label class="field-label">Aplicar este cambio a</label>'
         +'<div class="sm-seg" id="sm-scope-seg">'
-        +'<button class="'+(!_smIsOnce?'on':'')+'" data-scope="all" onclick="smScopeClicked(this,\'all\')">Todas las semanas</button>'
-        +'<button class="'+(_smIsOnce?'on':'')+'" data-scope="one" onclick="smScopeClicked(this,\'one\')">'+(Array.isArray(p.days)&&p.days.length>1||_smIsOnce?'Solo esta semana':'Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00')))+'</button>'
+        +'<button class="'+(!_smIsOnce?'on':'')+'" data-scope="all" onclick="smScopeClicked(this,\'all\')">'+(_smMob?'Todas':'Todas las semanas')+'</button>'
+        +'<button class="'+(_smIsOnce?'on':'')+'" data-scope="one" onclick="smScopeClicked(this,\'one\')">'+(Array.isArray(p.days)&&p.days.length>1||_smIsOnce?(_smMob?'Esta sem.':'Solo esta semana'):(_smMob?fmtDM(new Date(smEditOccDate+'T00:00:00')):'Solo '+fmtDM(new Date(smEditOccDate+'T00:00:00'))))+'</button>'
         +'</div>'
         +'</div>'
       : (isEdit && smEditOccDate && smType === 'session' && swapFreeOpts
@@ -2761,11 +2827,12 @@ function _buildSM(prefill, isEdit) {
             +'<label class="field-label">Reprogramar a</label>'
             +'<div style="display:flex;gap:4px;align-items:center;">'
               +'<select class="fsm" id="sm-swap-week" style="appearance:auto;flex:1 1 0;min-width:0;">'
+                +'<option value="" disabled selected>Sem.</option>'
                 +'<option value="0">Esta semana</option>'
                 +'<option value="1">Semana siguiente</option>'
               +'</select>'
               +'<select class="fsm" id="sm-swap-free" style="appearance:auto;flex:1 1 0;min-width:0;" onchange="_swapFreeSelected()">'
-                +'<option value="">— Elegir horario libre —</option>'
+                +'<option value="">Fecha</option>'
                 +swapFreeOpts
               +'</select>'
             +'</div>'
@@ -2773,15 +2840,15 @@ function _buildSM(prefill, isEdit) {
           : '<div></div>'))
     +'</div>'
     +(isEdit && smType==='free'
-      ? '<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,0,0,0.08)">'
-        +'<button class="btn-grn" style="margin-bottom:14px;background:#1a6f3c" onclick="convertFreeSlotToSession()">＋ Crear clase en este horario</button>'
-        +'<label class="field-label">🔄 Reprogramar un alumno a este horario</label>'
+      ? '<div style="margin-top:'+(_smMob?'8':'14')+'px;padding-top:'+(_smMob?'8':'14')+'px;border-top:1px solid rgba(0,0,0,0.08)">'
+        +'<button class="btn-grn" style="margin-bottom:'+(_smMob?'7':'14')+'px;background:#1a6f3c" onclick="convertFreeSlotToSession()">＋ Crear clase en este horario</button>'
+        +'<label class="field-label">Reprogramar un alumno a este horario</label>'
         +'<select class="fsm" id="sm-swap-session" style="appearance:auto" onchange="smSyncSwapModality(this.value)">'
-          +'<option value="">— Elegir alumno y horario actual —</option>'
+          +'<option value="">Alumno y horario</option>'
           +swapOpts
         +'</select>'
-        +'<button class="btn-grn" style="margin-top:8px;background:rgba(0,0,0,0.85)" onclick="swapFreeSlotWithSession()">Intercambiar horarios</button>'
-        +'<div style="font-size:11px;color:rgba(0,0,0,0.45);margin-top:6px;line-height:1.4">El horario actual del alumno seleccionado quedará libre, y este horario libre pasará a ser su nueva clase. Útil para reprogramaciones.</div>'
+        +'<button class="btn-grn" style="margin-top:'+(_smMob?'6':'8')+'px;background:rgba(0,0,0,0.85)" onclick="swapFreeSlotWithSession()">Intercambiar horarios</button>'
+        +(_smMob ? '' : '<div style="font-size:11px;color:rgba(0,0,0,0.45);margin-top:6px;line-height:1.4">El horario actual del alumno seleccionado quedará libre, y este horario libre pasará a ser su nueva clase. Útil para reprogramaciones.</div>')
         +'</div>'
       : '')
     +'<button class="btn-grn" style="margin-top:4px" onclick="submitSessionModal()">'+(isEdit?'Guardar cambios':'Crear')+'</button>'
@@ -2972,6 +3039,8 @@ function _smSyncScopeLabel() {
 function smSyncDays(dowStr) {
   var daysWrap = document.getElementById('sm-days-wrap');
   if (!daysWrap || daysWrap.style.display === 'none') return;
+  var sel = document.getElementById('sm-days-sel');
+  if (sel) { sel.value = parseInt(dowStr); return; }
   var onBtns = document.querySelectorAll('#sm-days-seg button.on');
   if (onBtns.length !== 1) return; // ya tiene varios días → no sobreescribir
   onBtns.forEach(function(b){ b.classList.remove('on'); });
@@ -3029,9 +3098,14 @@ function submitSessionModal() {
   var selectedDays;
   var daysWrapEl = document.getElementById('sm-days-wrap');
   if (recurring && daysWrapEl && daysWrapEl.style.display !== 'none') {
-    var onDayBtns = document.querySelectorAll('#sm-days-seg button.on');
-    selectedDays = Array.from(onDayBtns).map(function(b){ return parseInt(b.dataset.dow); });
-    if (!selectedDays.length) selectedDays = [day];
+    var _daysSel = document.getElementById('sm-days-sel');
+    if (_daysSel) {
+      selectedDays = [parseInt(_daysSel.value)];
+    } else {
+      var onDayBtns = document.querySelectorAll('#sm-days-seg button.on');
+      selectedDays = Array.from(onDayBtns).map(function(b){ return parseInt(b.dataset.dow); });
+      if (!selectedDays.length) selectedDays = [day];
+    }
   } else {
     selectedDays = [day];
   }
@@ -3316,9 +3390,14 @@ function swapFreeSlotWithSession() {
     var _daysWrap  = document.getElementById('sm-days-wrap');
     var _formDays;
     if (_daysWrap && _daysWrap.style.display !== 'none') {
-      var _onBtns = document.querySelectorAll('#sm-days-seg button.on');
-      _formDays = Array.from(_onBtns).map(function(b){ return parseInt(b.dataset.dow); });
-      if (!_formDays.length) _formDays = [_formDay];
+      var _daysSel2 = document.getElementById('sm-days-sel');
+      if (_daysSel2) {
+        _formDays = [parseInt(_daysSel2.value)];
+      } else {
+        var _onBtns = document.querySelectorAll('#sm-days-seg button.on');
+        _formDays = Array.from(_onBtns).map(function(b){ return parseInt(b.dataset.dow); });
+        if (!_formDays.length) _formDays = [_formDay];
+      }
     } else {
       _formDays = [_formDay];
     }
