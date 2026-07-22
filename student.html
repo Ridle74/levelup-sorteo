@@ -1451,6 +1451,7 @@ let clockTimer  = null;
 function viewFromLocation() {
   var m = location.pathname.match(/^\/student\/([^\/?#]+)/);
   if (m && m[1]) return decodeURIComponent(m[1]);
+  if (/^\/levelup(\/|$)/.test(location.pathname)) return 'levelup';
   var qp = new URLSearchParams(location.search).get('view');
   return qp || 'login';
 }
@@ -2009,7 +2010,7 @@ const IMMERSIVE_ROUTES = new Set(['bingo','levelup']);
 
 function go(view) {
   currentView = view;
-  var path = view === 'dashboard' ? '/student' : '/student/' + view;
+  var path = view === 'dashboard' ? '/student' : view === 'levelup' ? '/levelup' : '/student/' + view;
   if (location.pathname !== path) history.pushState({ view: view }, '', path);
   router();
 }
@@ -2070,7 +2071,7 @@ function router() {
 
   // Mantiene la URL sincronizada con la vista resuelta (p.ej. si el guard
   // de autenticación cambió la vista a 'login'), sin crear historial extra.
-  var syncedPath = hash === 'dashboard' ? '/student' : '/student/' + hash;
+  var syncedPath = hash === 'dashboard' ? '/student' : hash === 'levelup' ? '/levelup' : '/student/' + hash;
   if (location.pathname !== syncedPath && !location.pathname.startsWith(syncedPath + '/')) {
     history.replaceState({ view: hash }, '', syncedPath);
   }
@@ -2997,6 +2998,17 @@ const BINGO_TOPICS = {
   snb5_trig_b4: { ico:'∠',  lbl:'Combinación Elevación y Depresión',           qCount:4,  gen:()=>_genSnb5TRIG_B4() },
   snb5_trig_bq2:{ ico:'⚡', lbl:'Quiz II – Problemas Complejos',              qCount:5,  gen:()=>_genSnb5TRIG_BQ2(), quiz:true },
   snb5_trig_ex: { ico:'📝', lbl:'Examen – Ángulos de Elevación y Depresión',  qCount:10, gen:()=>_genSnb5TRIG_EX(), quiz:true },
+  // U7 extras
+  snb5_trig_b5: { ico:'✈',  lbl:'Dos Observaciones',                  qCount:4,  gen:()=>_genSnb5TRIG_B5() },
+  snb5_trig_b6: { ico:'🧭', lbl:'Direcciones y Puntos Cardinales',     qCount:4,  gen:()=>_genSnb5TRIG_B6() },
+  // U8: Estadística y Probabilidad
+  snb5_est_b1:  { ico:'📊', lbl:'Gráficos de Barras',                  qCount:4,  gen:()=>_genSnb5EST_B1() },
+  snb5_est_b2:  { ico:'📈', lbl:'Gráficos Lineales y Poligonales',     qCount:4,  gen:()=>_genSnb5EST_B2() },
+  snb5_est_bq1: { ico:'⚡', lbl:'Quiz I – Estadística Básica',         qCount:5,  gen:()=>_genSnb5EST_BQ1(), quiz:true },
+  snb5_est_b3:  { ico:'📊', lbl:'Histogramas de Frecuencias',          qCount:4,  gen:()=>_genSnb5EST_B3() },
+  snb5_est_b4:  { ico:'🥧', lbl:'Gráficos Circulares',                 qCount:4,  gen:()=>_genSnb5EST_B4() },
+  snb5_est_bq2: { ico:'⚡', lbl:'Quiz II – Histogramas y Circulares',  qCount:5,  gen:()=>_genSnb5EST_BQ2(), quiz:true },
+  snb5_est_ex:  { ico:'📝', lbl:'Examen – Estadística',                qCount:10, gen:()=>_genSnb5EST_EX(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
@@ -3022,7 +3034,7 @@ const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','
 'hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2',
 'hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2',
 'hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2',
-'hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_ex'];
+'hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_ex','snb5_trig_b5','snb5_trig_b6','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'];
 // [PREP_LEVELS / PREP_CURRICULUM / PREP_EDITORIALS — see levelup.js]
 
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'

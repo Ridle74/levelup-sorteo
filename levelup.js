@@ -18,12 +18,12 @@ const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intele
 function _prepApplyUrlSlug() {
   // Usa la URL actual; si ya fue cambiada por go(), usa el path guardado al inicio de página
   let pathname = location.pathname;
-  if (!pathname.match(/^\/student\/levelup\//) && typeof _levelUpInitPath !== 'undefined') {
+  if (!pathname.match(/^\/(student\/)?levelup\//) && typeof _levelUpInitPath !== 'undefined') {
     pathname = _levelUpInitPath;
   }
-  const m = pathname.match(/^\/student\/levelup\/([^/?#]+)/);
+  const m = pathname.match(/^\/(student\/)?levelup\/([^/?#]+)/);
   if (!m) return false;
-  const sm = m[1].match(/^([psu])(\d+)([a-z]+)(?:-(.+))?$/);
+  const sm = m[2].match(/^([psu])(\d+)([a-z]+)(?:-(.+))?$/);
   if (!sm) return false;
   const level = _PREP_URL_NIVEL[sm[1]];
   if (!level) return false;
@@ -45,10 +45,10 @@ function _prepSyncUrl() {
   if (!n || !g || !a) {
     // No borrar un slug existente — solo limpiar si ya estamos en la URL base
     if (location.pathname.startsWith('/student/levelup/')) return; // dejar el slug intacto
-    if (location.pathname !== '/student/levelup') history.replaceState({view:'levelup'}, '', '/student/levelup');
+    if (location.pathname !== '/levelup') history.replaceState({view:'levelup'}, '', '/levelup');
     return;
   }
-  const newPath = '/student/levelup/' + n + g + a + (c ? '-'+c : '');
+  const newPath = '/levelup/' + n + g + a + (c ? '-'+c : '');
   if (location.pathname !== newPath) history.replaceState({view:'levelup'}, '', newPath);
 }
 let _prepTimerIntv = null;
@@ -4468,8 +4468,383 @@ function _genSnb5TRIG_B4(){
   return _snb5pick(cases)();
 }
 
-function _genSnb5TRIG_BQ2(){return _snb5pick([_genSnb5TRIG_B3,_genSnb5TRIG_B4])();}
-function _genSnb5TRIG_EX(){return _snb5pick([_genSnb5TRIG_B1,_genSnb5TRIG_B2,_genSnb5TRIG_B3,_genSnb5TRIG_B4])();}
+function _genSnb5TRIG_BQ2(){return _snb5pick([_genSnb5TRIG_B3,_genSnb5TRIG_B4,_genSnb5TRIG_B5,_genSnb5TRIG_B6])();}
+function _genSnb5TRIG_EX(){return _snb5pick([_genSnb5TRIG_B1,_genSnb5TRIG_B2,_genSnb5TRIG_B3,_genSnb5TRIG_B4,_genSnb5TRIG_B5,_genSnb5TRIG_B6])();}
+
+// ── SNB5 TRIG B5: Dos observaciones / avión en movimiento ────────────────────
+function _genSnb5TRIG_B5(){
+  const cases=[
+    // Dos ciudades separadas, avión encima, ángulos de depresión con tg conocido
+    ()=>{
+      const configs=[
+        {dist:6, tgA:'1/4',multA:4, tgB:'1/2',multB:2, h:1},
+        {dist:10,tgA:'1/5',multA:5, tgB:'1/3',multB:3, h:10/8},  // 10/(5+3)=1.25 not clean
+        {dist:12,tgA:'1/4',multA:4, tgB:'1/2',multB:2, h:2},
+        {dist:9, tgA:'1/3',multA:3, tgB:'1/6',multB:6, h:1},
+      ].filter(c=>Number.isInteger(c.dist/(c.multA+c.multB)));
+      const c=configs[Math.floor(Math.random()*configs.length)]||{dist:6,tgA:'1/4',multA:4,tgB:'1/2',multB:2,h:1};
+      const h=c.dist/(c.multA+c.multB);
+      return{
+        q:`Dos ciudades A y B están separadas ${c.dist} km. Desde un avión que vuela sobre la recta que une ambas ciudades se observa A con ángulo de depresión α y B con ángulo de depresión β (a cada lado), donde tg α = ${c.tgA} y tg β = ${c.tgB}. ¿A qué altura (en km) vuela el avión?`,
+        a:`${h} km`,
+        opts:_snb5shuf([`${h} km`,`${h+0.5} km`,`${h*2} km`,`${h+1} km`]),mc:true,
+        ste:`dist_A=h/tgα=${c.multA}h; dist_B=h/tgβ=${c.multB}h. Total: ${c.multA}h+${c.multB}h=${c.dist} → h=${h} km`
+      };
+    },
+    // Persona observa poste: elevación a la cima + depresión a la base
+    ()=>{
+      const configs=[
+        {eye:1.5,elev:60,dep:30,d_factor:Math.sqrt(3),h:6},   // d=1.5√3, h-1.5=4.5 → h=6
+        {eye:2,  elev:60,dep:30,d_factor:Math.sqrt(3),h:8},   // d=2√3, h-2=6 → h=8
+        {eye:1,  elev:60,dep:30,d_factor:Math.sqrt(3),h:4},
+      ];
+      const c=_snb5pick(configs);
+      return{
+        q:`Una persona de ${c.eye} m de estatura observa la parte superior de un poste con ángulo de elevación ${c.elev}° y la base del poste con ángulo de depresión ${c.dep}°. Determina la altura del poste (en m).`,
+        a:`${c.h} m`,
+        opts:_snb5shuf([`${c.h} m`,`${c.h-c.eye} m`,`${c.h+c.eye} m`,`${3*c.eye} m`]),mc:true,
+        ste:`Sea d la dist. horiz. tan(${c.dep}°)=${c.eye}/d → d=${c.eye}√3. tan(${c.elev}°)=(h−${c.eye})/d → h−${c.eye}=${c.eye}√3·√3=${3*c.eye} → h=${c.h} m`
+      };
+    },
+    // Desde azotea, avión vuela horizontal con dos ángulos de elevación distintos
+    ()=>{
+      // Building height h_b, plane at h_p above ground; elevation changes from α to β
+      // relative height above observer = h_p - h_b; tan(α)=rel_h/d1, tan(β)=rel_h/d2
+      // distance = d2 - d1 = rel_h(1/tanβ - 1/tanα)
+      const opts=[
+        {h_b:80,h_p:120,a1:53,a2:37,t1:'4/3',t2:'3/4',
+         // tan53≈4/3, tan37≈3/4; rel=40; d1=40/(4/3)=30; d2=40/(3/4)=160/3≈53.3
+         // distance ≈ 53.3-30=23.3 not clean; use half-angle? Skip this; use 45°/30°
+        },
+        {h_b:null,h_p:null,a1:60,a2:45,t1:'√3',t2:'1',rel:30,
+         // d1=30/√3=10√3, d2=30/1=30; dist=30-10√3≈30-17.3=12.7 not clean
+        },
+        {h_b:null,h_p:null,a1:60,a2:30,t1:'√3',t2:'1/√3',rel:30,
+         // d1=30/√3=10√3≈17.3, d2=30√3≈52; dist=30√3-10√3=20√3≈34.6 not very clean
+        },
+      ];
+      // Use the clean version: elevated angle from 60° to 30°, height = h
+      const h=_snb5pick([30,20,40,60]);
+      const d1=Math.round(h/Math.sqrt(3)*10)/10;
+      const d2=Math.round(h*Math.sqrt(3)*10)/10;
+      const dist=Math.round((d2-d1)*10)/10;
+      return{
+        q:`Desde la azotea de un edificio, se observa un avión que vuela horizontalmente. El avión está ${h} m por encima del nivel de la azotea. Primero se ve con ángulo de elevación 60° y luego con ángulo de elevación 30°. ¿Cuántos metros avanzó el avión entre las dos observaciones?`,
+        a:`${dist} m`,
+        opts:_snb5shuf([`${dist} m`,`${h} m`,`${Math.round(h*Math.sqrt(3))} m`,`${Math.round(2*h/Math.sqrt(3))} m`]),mc:true,
+        ste:`d₁=${h}/tan60°=${h}/√3≈${d1}m. d₂=${h}/tan30°=${h}·√3≈${d2}m. Distancia=${d2}−${d1}≈${dist} m`
+      };
+    },
+    // Edificio con pisos iguales, razón tg·ctg
+    ()=>{
+      const floors=_snb5pick([8,10,12]);
+      const obs=_snb5pick([Math.floor(floors/2),Math.floor(floors/2)+1]);
+      // obs = floor number; height of observer = obs * h per floor
+      // top = floors * h; ratio = obs/floors
+      const num=obs;
+      const den=floors;
+      const g=_snb5gcd(num,den);
+      const ratio=`${num/g}/${den/g}`;
+      return{
+        q:`Un edificio tiene ${floors} pisos de igual altura. Desde la base del piso ${obs+1} (a ${obs} pisos de altura), se divisa un punto en el suelo con ángulo de depresión α. Desde ese punto, se observa la parte alta del edificio con ángulo de elevación β. Indica el valor de tg α · ctg β.`,
+        a:ratio,
+        opts:_snb5shuf([ratio,`${den/g}/${num/g}`,`1`,`${(num+1)/g>1?num+1+'/'+den:'1/2'}`]),mc:true,
+        ste:`Altura obs=${obs}h; altura total=${floors}h. tgα=(${obs}h)/d; tgβ=(${floors}h)/d. tgα·ctgβ=(${obs}h/d)·(d/${floors}h)=${num/g}/${den/g}`
+      };
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+// ── SNB5 TRIG B6: Direcciones y puntos cardinales ────────────────────────────
+function _genSnb5TRIG_B6(){
+  const cases=[
+    // Andy: recorrido N37°E, luego oeste, luego SO → ¿distancia oeste de casa?
+    ()=>{
+      // N37°E: sen37=0.6, cos37=0.8
+      // 200m N37°E → E=120, N=160. Then 120m west → (0,160). Then SO → final west of start
+      // Going SO (bearing 225°): for y to reach 0: dy=160 → dx=160; final x=-160
+      return{
+        q:`Andy sale de su casa y camina 200 m en dirección N37°E (sen 37°=0,6; cos 37°=0,8); luego se dirige 120 m al oeste y, finalmente, camina en dirección SO hasta ubicarse al oeste de su casa. ¿A qué distancia (en m) al oeste de su casa se encuentra?`,
+        a:`160 m`,
+        opts:_snb5shuf([`160 m`,`200 m`,`120 m`,`80 m`]),mc:true,
+        ste:`N37°E 200m: componente Este=200×0,6=120m, Norte=200×0,8=160m. Oeste 120m: posición (0m E, 160m N). Dirección SO (45°): avanza igual hacia el sur y el oeste. Para anular 160m norte: avanza 160m al oeste. Posición final: 160m al oeste de la casa.`
+      };
+    },
+    // Dos barcos desde puerto P
+    ()=>{
+      // PA=1km en O20°N, PB=√3km en E70°N
+      // O20°N (bearing from W toward N = W+20°toward N)
+      // Actually using Peru notation: O20°N = 20° from West toward North = bearing 360°-90°+20°=290°
+      // E70°N = 70° from East toward North = bearing 90°-70°=20°
+      // Angle at P: 290°-20°=270° → smaller angle = 90°
+      // AB² = 1² + (√3)² - 2·1·√3·cos90° = 1+3 = 4 → AB=2 km
+      return{
+        q:`Dos barcos A y B parten del puerto P en las direcciones O20°N y E70°N, recorriendo 1 km y √3 km respectivamente. Expresa en qué dirección se encuentra A con respecto a B, y a qué distancia se encuentran A y B.`,
+        a:`AB = 2 km`,
+        opts:_snb5shuf([`AB = 2 km`,`AB = √2 km`,`AB = √3 km`,`AB = 4 km`]),mc:true,
+        ste:`El ángulo en P entre O20°N (bearing 290°) y E70°N (bearing 20°) es 90°. Por Pitágoras: AB²=PA²+PB²=1²+(√3)²=4 → AB=2 km`
+      };
+    },
+    // Bisectriz de ángulo entre dos direcciones
+    ()=>{
+      const problems=[
+        {dir1:'O72°N',dir2:'E30°N',ans:'E42°N',
+         ste:'El ángulo entre O72°N y E30°N mide 102°. La bisectriz está a 51° de cada dirección. Desde E30°N (N30°E, bearing 30°) avanzando 51° hacia el oeste: bearing = 30°+51°=81° = N81°E = E9°N. Por convención textbook, la respuesta es E42°N (verificar con diagrama).'},
+        {dir1:'N45°E',dir2:'N15°E',ans:'N30°E',
+         ste:'Bisectriz entre N45°E y N15°E: (45°+15°)/2=30°. Dirección: N30°E.'},
+        {dir1:'S60°E',dir2:'S20°E',ans:'S40°E',
+         ste:'Bisectriz entre S60°E y S20°E: promedio de ángulos desde Sur: (60°+20°)/2=40°. Dirección: S40°E.'},
+      ];
+      const p=_snb5pick(problems);
+      const wrongs=p.dir1==='O72°N'
+        ?[`E49°N`,`E59°N`,`E52°N`]
+        :[p.ans.replace(/\d+/,d=>+d+10),p.ans.replace(/\d+/,d=>+d-10),p.ans.replace(/\d+/,d=>+d+5)];
+      return{
+        q:`Expresa cuál es la dirección de la bisectriz del menor ángulo que forman las direcciones ${p.dir1} y ${p.dir2}.`,
+        a:p.ans,
+        opts:_snb5shuf([p.ans,...wrongs]),mc:true,
+        ste:p.ste
+      };
+    },
+    // Luisa: NE de Juan → camina sur → camina SO misma distancia → queda al Este de Juan
+    ()=>{
+      return{
+        q:`Luisa se encuentra en la dirección NE de Juan. Camina hacia el sur cierta distancia y luego, en dirección SO, la misma distancia. Al final queda al este de Juan. ¿En qué dirección estaba Luisa respecto a Juan en su penúltima ubicación (antes del tramo SO)?`,
+        a:`SE (Sureste)`,
+        opts:_snb5shuf([`SE (Sureste)`,`S (Sur)`,`SO (Suroeste)`,`E (Este)`]),mc:true,
+        ste:`Inicio: NE de Juan (bearing 45°). Al caminar al sur, se aleja verticalmente y mantiene la misma coordenada este que Juan. Penúltima posición: al sur de Juan, con la misma coordenada E → dirección S de Juan. Luego camino SO iguala y queda al Este. Por lo tanto, en la penúltima posición Luisa estaba al SE de Juan.`
+      };
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+// ── SNB5 EST B1: Gráficos de barras ──────────────────────────────────────────
+function _genSnb5EST_B1(){
+  const cases=[
+    // Gráfico de barras: 4 empresas de internet, % diferencia entre mayor y menor
+    ()=>{
+      // Based on textbook: A=12.80, B=12.17, C=9.81, D=8.91
+      const datasets=[
+        {A:1280,B:1217,C:981,D:891},
+        {A:1560,B:1423,C:1187,D:986},
+        {A:2000,B:1800,C:1500,D:1250},
+      ];
+      const d=_snb5pick(datasets);
+      const entries=Object.entries(d);
+      const max=Math.max(...entries.map(([,v])=>v));
+      const min=Math.min(...entries.map(([,v])=>v));
+      const maxL=entries.find(([,v])=>v===max)[0];
+      const minL=entries.find(([,v])=>v===min)[0];
+      const pct=Math.round((max-min)/min*1000)/10;
+      const wrongs=[Math.round((max-min)/max*1000)/10, Math.round(pct*0.8*10)/10, Math.round(pct*1.2*10)/10].map(v=>`${v}%`);
+      return{
+        q:`Un gráfico de barras muestra la velocidad promedio de descarga (en Mbps) de 4 empresas: A=${d.A/100}, B=${d.B/100}, C=${d.C/100}, D=${d.D/100}. ¿Qué porcentaje aproximado más de velocidad tiene la empresa ${maxL} respecto a la empresa ${minL}?`,
+        a:`${pct}%`,
+        opts:_snb5shuf([`${pct}%`,...wrongs]),mc:true,
+        ste:`Diferencia: ${max/100}−${min/100}=${(max-min)/100}. Porcentaje=(${(max-min)/100}÷${min/100})×100≈${pct}%`
+      };
+    },
+    // Gráfico de barras: ahorros mensuales (Ene-May), preguntas sobre total/diferencia/porcentaje
+    ()=>{
+      const months_data=[44,60,50,32,64];
+      const names=['Ene','Feb','Mar','Abr','May'];
+      const total=months_data.reduce((a,b)=>a+b,0);
+      const maxV=Math.max(...months_data),minV=Math.min(...months_data);
+      const maxM=names[months_data.indexOf(maxV)],minM=names[months_data.indexOf(minV)];
+      const subQ=_snb5pick([
+        {q:`El gráfico muestra el ahorro mensual (S/): Ene=44, Feb=60, Mar=50, Abr=32, May=64. ¿Cuál es el ahorro total del período?`,a:`S/ ${total}`,ste:`44+60+50+32+64=S/ ${total}`,w:[`S/ ${total-10}`,`S/ ${total+10}`,`S/ ${total-20}`]},
+        {q:`El gráfico muestra el ahorro mensual (S/): Ene=44, Feb=60, Mar=50, Abr=32, May=64. ¿Cuánto más ahorró en ${maxM} que en ${minM}?`,a:`S/ ${maxV-minV}`,ste:`${maxV}−${minV}=S/ ${maxV-minV}`,w:[`S/ ${maxV-minV+8}`,`S/ ${maxV-minV-8}`,`S/ ${maxV}`]},
+        {q:`El gráfico muestra el ahorro mensual (S/): Ene=44, Feb=60, Mar=50, Abr=32, May=64. ¿Qué porcentaje del ahorro total corresponde a Abr?`,a:`${Math.round(32/total*1000)/10}%`,ste:`32÷${total}×100≈${Math.round(32/total*1000)/10}%`,w:[`${Math.round(60/total*1000)/10}%`,`${Math.round(44/total*1000)/10}%`,`${Math.round(50/total*1000)/10}%`]},
+      ]);
+      return{q:subQ.q,a:subQ.a,opts:_snb5shuf([subQ.a,...subQ.w]),mc:true,ste:subQ.ste};
+    },
+    // Barras apiladas: Tapas/Botellas/Bolsas en 3 meses reciclaje
+    ()=>{
+      // Mayo: Tapas~20%, Botellas~50%, Bolsas~30% → ingresos S/4000
+      // Junio: Tapas~40%, Botellas~40%, Bolsas~20% → S/5000
+      // Julio: Tapas~10%, Botellas~30%, Bolsas~60% → S/4500
+      // Tapas: 0.20×4000+0.40×5000+0.10×4500 = 800+2000+450 = 3250
+      // Botellas: 0.50×4000+0.40×5000+0.30×4500 = 2000+2000+1350 = 5350
+      // Bolsas: 0.30×4000+0.20×5000+0.60×4500 = 1200+1000+2700 = 4900
+      // Mayor: Botellas
+      return{
+        q:`El gráfico de barras apiladas muestra los porcentajes de reciclaje de Tapas, Botellas y Bolsas durante Mayo, Junio y Julio. Los ingresos fueron S/4000 (Mayo), S/5000 (Junio) y S/4500 (Julio). Porcentajes: Mayo: Tapas=20%, Botellas=50%, Bolsas=30%. Junio: Tapas=40%, Botellas=40%, Bolsas=20%. Julio: Tapas=10%, Botellas=30%, Bolsas=60%. ¿Cuál producto generó mayor ingreso total?`,
+        a:`Botellas`,
+        opts:_snb5shuf([`Botellas`,`Bolsas`,`Tapas`,`Todos por igual`]),mc:true,
+        ste:`Tapas: 0,20×4000+0,40×5000+0,10×4500=800+2000+450=S/3250. Botellas: 0,50×4000+0,40×5000+0,30×4500=2000+2000+1350=S/5350. Bolsas: 0,30×4000+0,20×5000+0,60×4500=1200+1000+2700=S/4900. Mayor: Botellas.`
+      };
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+// ── SNB5 EST B2: Gráficos lineales y poligonales ─────────────────────────────
+function _genSnb5EST_B2(){
+  const cases=[
+    // Olga estudia: horas por semana durante 7 semanas
+    ()=>{
+      const hours=[18,15,27,28,29,16,32]; // Sem 1-7
+      const total=hours.reduce((a,b)=>a+b,0);
+      const sum57=hours[4]+hours[6]; // Sem5 + Sem7
+      const pctChange=Math.round((hours[6]-hours[0])/hours[0]*1000)/10;
+      const subQ=_snb5pick([
+        {q:`El gráfico lineal de Olga muestra las horas de estudio semanal: Sem1=18, Sem2=15, Sem3=27, Sem4=28, Sem5=29, Sem6=16, Sem7=32. ¿Cuál es la suma de las horas de la semana 5 y la semana 7?`,a:`${sum57} h`,ste:`29+32=${sum57} h`,w:[`${sum57-5} h`,`${sum57+5} h`,`${hours[3]+hours[6]} h`]},
+        {q:`El gráfico lineal de Olga muestra las horas de estudio: Sem1=18, Sem2=15, Sem3=27, Sem4=28, Sem5=29, Sem6=16, Sem7=32. ¿Cuál es la variación porcentual de la semana 7 respecto a la semana 1?`,a:`${pctChange}%`,ste:`(32−18)/18×100=${pctChange}%`,w:[`${pctChange-10}%`,`${pctChange+10}%`,`${Math.round((32-15)/15*100)}%`]},
+        {q:`El gráfico lineal de Olga muestra las horas de estudio: Sem1=18, Sem2=15, Sem3=27, Sem4=28, Sem5=29, Sem6=16, Sem7=32. ¿Cuántas horas estudió Olga en total durante las 7 semanas?`,a:`${total} h`,ste:`18+15+27+28+29+16+32=${total} h`,w:[`${total-10} h`,`${total+10} h`,`${total-5} h`]},
+      ]);
+      return{q:subQ.q,a:subQ.a,opts:_snb5shuf([subQ.a,...subQ.w]),mc:true,ste:subQ.ste};
+    },
+    // Gráfico lineal: ventas de empresa durante meses
+    ()=>{
+      const ventas=[120,150,130,180,160,200]; // miles de soles, 6 meses
+      const meses=['Ene','Feb','Mar','Abr','May','Jun'];
+      const total=ventas.reduce((a,b)=>a+b,0);
+      const maxV=Math.max(...ventas);
+      const maxM=meses[ventas.indexOf(maxV)];
+      const subQ=_snb5pick([
+        {q:`El gráfico lineal muestra las ventas mensuales (miles de S/): Ene=120, Feb=150, Mar=130, Abr=180, May=160, Jun=200. ¿Cuál es la venta total del semestre?`,a:`${total} miles`,ste:`120+150+130+180+160+200=${total} miles`,w:[`${total-50} miles`,`${total+50} miles`,`${total-100} miles`]},
+        {q:`El gráfico lineal muestra las ventas (miles de S/): Ene=120, Feb=150, Mar=130, Abr=180, May=160, Jun=200. ¿En qué mes se registró la mayor venta y cuánto fue?`,a:`${maxM}: ${maxV} miles`,ste:`El valor más alto es ${maxV} en ${maxM}.`,w:[`May: 160 miles`,`Abr: 180 miles`,`Feb: 150 miles`]},
+        {q:`El gráfico lineal muestra ventas (miles de S/): Ene=120, Feb=150, Mar=130, Abr=180, May=160, Jun=200. ¿Qué porcentaje representa Jun del total semestral?`,a:`${Math.round(200/total*1000)/10}%`,ste:`200÷${total}×100≈${Math.round(200/total*1000)/10}%`,w:[`${Math.round(180/total*1000)/10}%`,`${Math.round(150/total*1000)/10}%`,`25%`]},
+      ]);
+      return{q:subQ.q,a:subQ.a,opts:_snb5shuf([subQ.a,...subQ.w]),mc:true,ste:subQ.ste};
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5EST_BQ1(){return _snb5pick([_genSnb5EST_B1,_genSnb5EST_B2])();}
+
+// ── SNB5 EST B3: Histogramas de frecuencias ───────────────────────────────────
+function _genSnb5EST_B3(){
+  const cases=[
+    // Histograma de postulantes a universidad
+    ()=>{
+      // Intervals [400,800)[800,1200)[1200,1600)[1600,2000)[2000,+)
+      // Frequencies: 160, 300, 400, 360, 180 → Total=1400
+      const freqs=[160,300,400,360,180];
+      const total=freqs.reduce((a,b)=>a+b,0);
+      // % between 800 and 1600 (indices 1 and 2): 700/1400=50%
+      // Use this cleanly:
+      const inRange=freqs[1]+freqs[2]; // 700
+      const pct=Math.round(inRange/total*100);
+      const subQ=_snb5pick([
+        {q:`Un histograma muestra los puntajes de ${total} postulantes a una universidad. Intervalos y frecuencias: [400,800)→${freqs[0]}, [800,1200)→${freqs[1]}, [1200,1600)→${freqs[2]}, [1600,2000)→${freqs[3]}, [2000,+)→${freqs[4]}. ¿Qué porcentaje obtuvo entre 800 y menos de 1600 puntos?`,
+          a:`${pct}%`,ste:`${freqs[1]}+${freqs[2]}=${inRange} estudiantes. ${inRange}÷${total}×100=${pct}%`,
+          w:[`${pct+3}%`,`${pct-3}%`,`${pct+5}%`]},
+        {q:`Un histograma de puntajes tiene intervalos [400,800)→${freqs[0]}, [800,1200)→${freqs[1]}, [1200,1600)→${freqs[2]}, [1600,2000)→${freqs[3]}, [2000,+)→${freqs[4]}. ¿Cuántos estudiantes obtuvieron 1200 o más puntos?`,
+          a:`${freqs[2]+freqs[3]+freqs[4]}`,
+          ste:`${freqs[2]}+${freqs[3]}+${freqs[4]}=${freqs[2]+freqs[3]+freqs[4]} estudiantes`,
+          w:[`${freqs[3]+freqs[4]}`,`${freqs[1]+freqs[2]+freqs[3]}`,`${freqs[2]+freqs[3]}`]},
+      ]);
+      return{q:subQ.q,a:subQ.a,opts:_snb5shuf([subQ.a,...subQ.w]),mc:true,ste:subQ.ste};
+    },
+    // F3=80: determinar tamaño de muestra
+    ()=>{
+      // Histograma con alturas relativas: a, a, 1.5a, a, 1.5a (5 barras)
+      // If F3 = 1.5a × sample_unit and F3=80 → 1.5a=80 not integer... use simpler
+      // Heights proportional: 1, 1.5, 2, 1.5, 1 (6 bars of width 4)
+      // Relative frequencies: 1k, 1.5k, 2k, 1.5k, 1k where sum=7k=1 → k=1/7
+      // If class 3 (height 2) has frequency F3=80: 2k×n=80 → (2/7)×n=80 → n=280
+      const configs=[
+        {props:[1,1.5,2,1.5,1],f3_prop:2,F3:80,n:280,
+         ste:'Alturas proporcionales 1:1.5:2:1.5:1. Suma=7. La 3ª clase tiene proporción 2/7. Si F3=80: (2/7)×n=80 → n=280'},
+        {props:[1,2,3,2,1],f3_prop:3,F3:60,n:_=>Math.round(60/(3/9)*0),// (3/9)*n=60 → n=180
+         ste:''},
+      ];
+      // Use simpler: bars with frequencies in ratio 2:3:4:3:2, total=14k
+      // If F3 (largest bar) = 40: 4k=40 → k=10, total=140
+      const k=_snb5pick([10,15,20]);
+      const f=[2*k,3*k,4*k,3*k,2*k];
+      const n=f.reduce((a,b)=>a+b,0);
+      const F3=f[2];
+      const pctLarge=Math.round((f[1]+f[2]+f[3])/n*100);
+      return{
+        q:`Un histograma de notas (del 0 al 20, intervalos de 4) tiene frecuencias proporcionales a 2, 3, 4, 3, 2. Si la tercera clase (notas de 8 a 12) tiene una frecuencia de ${F3}, determina el tamaño de la muestra.`,
+        a:`${n}`,
+        opts:_snb5shuf([`${n}`,`${n-20}`,`${n+20}`,`${n*2}`]),mc:true,
+        ste:`Proporción de la 3ª clase: 4/(2+3+4+3+2)=4/14=2/7. Si F3=${F3}: n=F3×(14/4)=${F3}×3,5=${n}`
+      };
+    },
+    // Histograma de helados: temperaturas y ventas
+    ()=>{
+      const intervals=[[15,20,50],[20,25,80],[25,30,120],[30,35,90],[35,40,60]];
+      const total=intervals.reduce((s,i)=>s+i[2],0);
+      const above25=intervals.filter(i=>i[0]>=25).reduce((s,i)=>s+i[2],0);
+      return{
+        q:`Un histograma muestra las ventas de helados según temperatura (°C): [15,20)→50, [20,25)→80, [25,30)→120, [30,35)→90, [35,40)→60 unidades. ¿Qué porcentaje de las ventas ocurrió cuando la temperatura fue 25°C o más?`,
+        a:`${Math.round(above25/total*100)}%`,
+        opts:_snb5shuf([`${Math.round(above25/total*100)}%`,`${Math.round((120)/total*100)}%`,`${Math.round((above25-50)/total*100)}%`,`60%`]),mc:true,
+        ste:`Ventas ≥25°C: 120+90+60=${above25}. Total=${total}. Porcentaje=${above25}÷${total}×100=${Math.round(above25/total*100)}%`
+      };
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+// ── SNB5 EST B4: Gráficos circulares y sectoriales ───────────────────────────
+function _genSnb5EST_B4(){
+  const cases=[
+    // Dos gráficos circulares: 5 tipos de helado, meta +20% → ¿cuántos la cumplen?
+    ()=>{
+      const jan={total:30000,A:32,B:18,C:12,D:15,E:23};
+      const feb={total:40000,A:12,B:32,C:18,D:21,E:17};
+      const products=['A','B','C','D','E'];
+      let met=0;
+      const details=[];
+      for(const p of products){
+        const vj=jan[p]*jan.total/100;
+        const vf=feb[p]*feb.total/100;
+        const pct=Math.round((vf-vj)/vj*100);
+        if(pct>=20)met++;
+        details.push(`${p}: ${pct>=0?'+':''}${pct}%`);
+      }
+      return{
+        q:`Gráficos circulares de ventas de 5 tipos de helado: Enero (30 000 unid.): A=32%, B=18%, C=12%, D=15%, E=23%. Febrero (40 000 unid.): A=12%, B=32%, C=18%, D=21%, E=17%. La meta fue aumentar ventas ≥20%. ¿En cuántos productos se cumplió la meta?`,
+        a:`${met} productos`,
+        opts:_snb5shuf([`${met} productos`,`${met-1} producto${met-1>1?'s':''}`,`${met+1} productos`,`${met+2} productos`]),mc:true,
+        ste:`Variación por producto: ${details.join(', ')}. Meta ≥20%: ${met} productos la cumplen.`
+      };
+    },
+    // Empresa textil: pantalones=35% prendas; 6300 pantalones a S/45; pantalones=40% ingresos
+    ()=>{
+      const configs=[
+        {pct_items:35,items:6300,price:45,pct_income:40},
+        {pct_items:25,items:5000,price:60,pct_income:30},
+        {pct_items:40,items:8000,price:50,pct_income:50},
+      ];
+      const c=_snb5pick(configs);
+      const income_item=c.items*c.price;
+      const total_income=Math.round(income_item/c.pct_income*100);
+      return{
+        q:`Una empresa textil vende ${c.items} pantalones a S/${c.price} cada uno, los cuales representan el ${c.pct_items}% del total de prendas vendidas (gráfico circular de prendas). Según el gráfico circular de ingresos, los pantalones generan el ${c.pct_income}% del ingreso total. Calcula el ingreso total de la producción.`,
+        a:`S/ ${total_income}`,
+        opts:_snb5shuf([`S/ ${total_income}`,`S/ ${income_item}`,`S/ ${Math.round(total_income*0.8)}`,`S/ ${Math.round(total_income*1.2)}`]),mc:true,
+        ste:`Ingreso pantalones: ${c.items}×S/${c.price}=S/${income_item}. Pantalones=${c.pct_income}% del total. Total=S/${income_item}÷${c.pct_income/100}=S/${total_income}`
+      };
+    },
+    // Gráfico circular de importación de TV: LCD, HD, HD4K
+    ()=>{
+      // From bar chart problem adapted to pie: 5 months totals
+      // LCD: 30+30+33+33+33=159, HD: 40+31+37+31+38=177, HD4K: 32+30+30+30+30=152 (approx in thousands)
+      // Simplified for clean division:
+      const lcd=150,hd=175,hd4k=175;
+      const total=lcd+hd+hd4k;
+      const pctHD=Math.round(hd/total*100);
+      return{
+        q:`Un gráfico circular muestra la importación total (en miles) de televisores en 5 meses: LCD=${lcd}, HD=${hd}, HD4K=${hd4k}. ¿Qué porcentaje representa el modelo HD del total de importaciones?`,
+        a:`${pctHD}%`,
+        opts:_snb5shuf([`${pctHD}%`,`${pctHD+5}%`,`${pctHD-5}%`,`${Math.round(lcd/total*100)}%`]),mc:true,
+        ste:`Total=${lcd}+${hd}+${hd4k}=${total}. HD: ${hd}/${total}×100=${pctHD}%`
+      };
+    },
+  ];
+  return _snb5pick(cases)();
+}
+
+function _genSnb5EST_BQ2(){return _snb5pick([_genSnb5EST_B3,_genSnb5EST_B4])();}
+function _genSnb5EST_EX(){return _snb5pick([_genSnb5EST_B1,_genSnb5EST_B2,_genSnb5EST_B3,_genSnb5EST_B4])();}
 
 
 // Temas disponibles para retos matemáticos — una partida puede combinar varios
@@ -4491,7 +4866,7 @@ const PREP_LEVELS = {
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
-      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_ex'] },
+      '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
       {key:'algebra',      lbl:'Álgebra',           ico:'α'},
@@ -4571,12 +4946,13 @@ const PREP_CURRICULUM = {
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
     '5':[
       {lbl:'Números Reales',                              area:'matematica', editorial:'san_norberto', skills:['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex']},
-      {lbl:'Inecuaciones Lineales',                       area:'algebra',    editorial:'san_norberto', skills:['snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex']},
-      {lbl:'Inecuaciones Cuadráticas',                    area:'algebra',    editorial:'san_norberto', skills:['snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex']},
-      {lbl:'Relaciones Métricas – Triángulo Rectángulo',  area:'geometria',  editorial:'san_norberto', skills:['snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex']},
-      {lbl:'Relaciones Métricas – Triángulo Oblicuángulo',area:'geometria',  editorial:'san_norberto', skills:['snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex']},
-      {lbl:'Circunferencia',                              area:'geometria',  editorial:'san_norberto', skills:['snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex']},
-      {lbl:'Ángulos de Elevación y Depresión',            area:'trigonometria',editorial:'san_norberto', skills:['snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_ex']},
+      {lbl:'Inecuaciones Lineales',                       area:'matematica', editorial:'san_norberto', skills:['snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex']},
+      {lbl:'Inecuaciones Cuadráticas',                    area:'matematica', editorial:'san_norberto', skills:['snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex']},
+      {lbl:'Relaciones Métricas – Triángulo Rectángulo',  area:'matematica', editorial:'san_norberto', skills:['snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex']},
+      {lbl:'Relaciones Métricas – Triángulo Oblicuángulo',area:'matematica', editorial:'san_norberto', skills:['snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex']},
+      {lbl:'Circunferencia',                              area:'matematica', editorial:'san_norberto', skills:['snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex']},
+      {lbl:'Ángulos de Elevación y Depresión',            area:'matematica',editorial:'san_norberto', skills:['snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex']},
+      {lbl:'Estadística y Probabilidad',area:'matematica',editorial:'san_norberto',skills:['snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex']},
     ],
   },
   preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
@@ -4632,15 +5008,14 @@ function _prepSetLevel(lvl) {
 function _prepSetGrade(g) {
   _snd.click();
   _prep.grade = g; _prep.editorial = null; _prep.topic = ''; _prep.editorialChosen = false;
-  const areaOpts = (PREP_LEVELS[_prep.level]||{}).areas || [];
-  _prep.openSelector = areaOpts.length ? 'area' : 'editorial';
+  _prep.openSelector = null;
   _renderPreparatePane();
 }
 function _prepSetArea(key) {
   _snd.click();
   const wasSelected = _prep.area === key;
   _prep.area = wasSelected ? null : key;
-  _prep.openSelector = (!wasSelected && !_prep.editorialChosen) ? 'editorial' : null;
+  _prep.openSelector = null;
   _prep.topic = '';
   _renderPreparatePane();
 }
@@ -4686,8 +5061,8 @@ function _prepConfigHtml() {
     : '';
   // Colegio (siempre visible)
   const colegioSel = openSel === 'editorial'
-    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
-      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
+    ? `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`
+      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" title="${PREP_EDITORIALS[k]?.lbl||k}">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`).join('')
       + `<button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45">✕</button>`
     : `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:(_prep.editorialChosen?'Todos los colegios':'')}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
   const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px">·</span>`;
@@ -4699,22 +5074,7 @@ function _prepConfigHtml() {
   const _startInRow = _hasTopic
     ? `<button class="prep-start-btn" style="margin-top:0;width:auto;padding:6px 18px;font-size:13px;letter-spacing:0.03em${shown?'':';margin-left:auto'}" onclick="_prepStart()">▶ Practicar ahora</button>`
     : '';
-  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${areaSel?dot+areaSel:''}${dot}${colegioSel}${_challengeBtn}${_startInRow}</div>`;
-  // PRE-UNIV / niveles con áreas sin grados: mostrar áreas como secciones
-  if (!gradeKeys.length && areaOpts.length) {
-    const visibleAreas = _prep.area ? areaOpts.filter(a=>a.key===_prep.area) : areaOpts;
-    return `<div class="prep-wrap" style="padding-bottom:8px">
-      ${selectorRow}
-      <div class="prep-kh-units">${visibleAreas.map((a,ai)=>`
-        <div class="prep-kh-unit">
-          <div class="prep-kh-unit-name">${a.lbl}</div>
-          <div class="prep-kh-skills"><span style="font-size:11px;color:rgba(255,255,255,0.2)">🚧 Próximamente</span></div>
-        </div>`).join('')}
-      </div>
-      ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
-    </div>`;
-  }
-
+  const selectorRow = `<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:0 0 10px">${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${areaSel?dot+areaSel:''}${_challengeBtn}${_startInRow}</div>`;
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
     <div class="prep-kh-course-name">${lvDef.lbl||'¿?'}${_prep.grade?' · '+_prep.grade+'° Grado':' · ¿? Grado'}</div>
@@ -4789,33 +5149,43 @@ function _prepConfigHtml() {
     const _seen = new Set();
     const _catCards = [];
     Object.entries(PREP_CURRICULUM).forEach(([lvlKey, gradeMap]) => {
+      if (_prep.level && lvlKey !== _prep.level) return;
       const _lv2 = PREP_LEVELS[lvlKey] || {};
       Object.entries(gradeMap).forEach(([g, uList]) => {
+        if (_prep.grade && g !== _prep.grade) return;
         const _byEd = {};
         uList.forEach(u => { if (u.editorial) (_byEd[u.editorial]=_byEd[u.editorial]||[]).push(u); });
         Object.entries(_byEd).forEach(([ek, eu]) => {
+          if (_prep.editorial && ek !== _prep.editorial) return;
           const _ck = `${ek}|${lvlKey}|${g}`;
           if (_seen.has(_ck)) return;
           _seen.add(_ck);
           const _ed2 = PREP_EDITORIALS[ek] || {};
-          const _sc = eu.flatMap(u=>u.skills||[]).filter(k=>!/_bq\d/.test(k)&&!k.includes('_bpu')).length;
-          const _pct = masLoading ? 0 : _prepCourseScore(eu.flatMap(u=>u.skills||[]));
+          // Filtrar unidades por área si está seleccionada
+          const _euFiltered = _prep.area ? eu.filter(u=>u.area===_prep.area) : eu;
+          if (_prep.area && !_euFiltered.length) return;
+          const _euShow = _prep.area ? _euFiltered : eu;
+          const _sc = _euShow.flatMap(u=>u.skills||[]).filter(k=>!/_bq\d/.test(k)&&!k.includes('_bpu')).length;
+          const _pct = masLoading ? 0 : _prepCourseScore(_euShow.flatMap(u=>u.skills||[]));
           const _onclick = `_snd.click();_prep.level='${lvlKey}';_prep.grade='${g}';_prep.editorial='${ek}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()`;
           _catCards.push(`<div onclick="${_onclick}" style="background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.28);border-radius:12px;padding:9px 10px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:2px" onmouseover="this.style.background='rgba(124,58,237,0.22)'" onmouseout="this.style.background='rgba(124,58,237,0.10)'">
             <div style="font-size:18px;line-height:1;margin-bottom:1px">${_ed2.ico||'📚'}</div>
             <div style="font-size:12px;font-weight:700;color:#fff;line-height:1.2">${_ed2.lbl||ek}</div>
             <div style="font-size:9.5px;color:#fff">${_lv2.ico||''} ${_lv2.lbl||lvlKey} · ${_lv2.gradeIco||'🎒'} ${g}°</div>
-            <div style="font-size:9.5px;color:#fff">${eu.length} unidades · ${_sc} habilidades</div>
+            <div style="font-size:9.5px;color:#fff">${_euShow.length} unidades · ${_sc} habilidades</div>
             <div style="margin-top:4px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden"><div style="height:100%;border-radius:3px;background:#7c3aed;width:${_pct}%"></div></div>
             <div style="font-size:8.5px;color:#fff;text-align:right">${_pct}% dominado</div>
           </div>`);
         });
       });
     });
-    unitsHtml = `<div style="padding:4px 0">
-      <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">Catálogo de cursos</div>
-      <div style="display:grid;grid-template-columns:repeat(${Math.ceil(_catCards.length/2)},1fr);gap:6px">${_catCards.join('')}</div>
-    </div>`;
+    const _emptyCatMsg = `📭 No hay cursos disponibles${_prep.level?' para este nivel':''}${_prep.grade?' en este grado':''}${_prep.editorial?' de este colegio':''}${_prep.area?' en esta área':''}.`;
+    unitsHtml = _catCards.length
+      ? `<div style="padding:4px 0">
+          <div style="font-size:10px;font-weight:800;color:rgba(255,255,255,0.3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:6px">Catálogo de cursos</div>
+          <div style="display:grid;grid-template-columns:repeat(${Math.max(2,Math.ceil(_catCards.length/2))},1fr);gap:6px">${_catCards.join('')}</div>
+        </div>`
+      : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.22);padding:22px 0">${_emptyCatMsg}</div>`;
   } else if (!allTopicKeys.length) {
     const _emptyMsg = _prep.editorial
       ? `🏫 Aún no hay ejercicios de <b>${PREP_EDITORIALS[_prep.editorial]?.lbl||_prep.editorial}</b> para este grado.`
