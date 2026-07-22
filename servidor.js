@@ -20,6 +20,7 @@ const MIME = {
 
 // Rutas SPA: igual que _redirects
 const SPA_ROUTES = [
+  { prefix: '/levelup', file: 'student.html' },
   { prefix: '/student', file: 'student.html' },
   { prefix: '/padres',  file: 'padres.html'  },
   { prefix: '/horarios',file: 'horarios.html' },
