@@ -893,6 +893,395 @@ function _genReg_BPU(){
   return{q:a+' + '+b+' = ?',a:String(N),opts:opts,mc:true,ste:a+' + '+b+' = '+N+'.'};
 }
 
+// ── Números y Operaciones 1° Primaria – Colegio Belén ────────────────────────
+function _b1rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _b1shuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+function _b1wrs(ans,min,max){return _b1shuf([ans-2,ans-1,ans+1,ans+2,ans+3].filter(v=>v>=min&&v<=max&&v!==ans)).slice(0,3).map(String);}
+function _genBel1NUM_B1(){
+  var t=_b1rnd(0,1),n=_b1rnd(2,19),a=t===0?n-1:n+1;
+  var ws=_b1wrs(a,1,20);
+  return{q:t===0?('¿Qué número va <b>antes</b> del '+n+'?'):('¿Qué número va <b>después</b> del '+n+'?'),a:String(a),opts:_b1shuf([String(a),...ws]),mc:true,ste:'La respuesta es '+a+'.'};
+}
+function _genBel1NUM_B2(){
+  var a=_b1rnd(1,20),b=_b1rnd(1,20),ans=a>b?'>':a<b?'<':'=';
+  return{q:'Completa: '+a+' ___ '+b,a:ans,opts:_b1shuf(['>','<','=']),mc:true,ste:a+(a>b?' es mayor que ':a<b?' es menor que ':' es igual a ')+b+'. Se escribe "'+ans+'".'};
+}
+function _genBel1NUM_BQ1(){return [_genBel1NUM_B1,_genBel1NUM_B2][_b1rnd(0,1)]();}
+function _genBel1SUM_B1(){
+  var b=_b1rnd(1,5),a=_b1rnd(1,10-b),ans=a+b,ws=_b1wrs(ans,1,15);
+  return{q:a+' + '+b+' = ?',a:String(ans),opts:_b1shuf([String(ans),...ws]),mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genBel1SUM_B2(){
+  var tot=_b1rnd(11,20),a=_b1rnd(1,tot-1),b=tot-a,ws=_b1wrs(tot,5,25);
+  return{q:a+' + '+b+' = ?',a:String(tot),opts:_b1shuf([String(tot),...ws]),mc:true,ste:a+' + '+b+' = '+tot+'.'};
+}
+function _genBel1SUM_BQ1(){return [_genBel1SUM_B1,_genBel1SUM_B2][_b1rnd(0,1)]();}
+function _genBel1RES_B1(){
+  var a=_b1rnd(2,10),b=_b1rnd(1,a),ans=a-b,ws=_b1wrs(ans,0,10);
+  return{q:a+' − '+b+' = ?',a:String(ans),opts:_b1shuf([String(ans),...ws]),mc:true,ste:a+' − '+b+' = '+ans+'.'};
+}
+function _genBel1RES_B2(){
+  var a=_b1rnd(11,20),b=_b1rnd(1,a-1),ans=a-b,ws=_b1wrs(ans,0,20);
+  return{q:a+' − '+b+' = ?',a:String(ans),opts:_b1shuf([String(ans),...ws]),mc:true,ste:a+' − '+b+' = '+ans+'.'};
+}
+function _genBel1RES_BQ1(){return [_genBel1RES_B1,_genBel1RES_B2][_b1rnd(0,1)]();}
+
+// ── Geometría 4° Primaria – Intelectum ───────────────────────────────────────
+function _i4grnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _i4gshuf(arr){return arr.slice().sort(()=>Math.random()-.5);}
+function _i4gpick(arr){return arr[_i4grnd(0,arr.length-1)];}
+// U1: Puntos, Rectas y Segmentos
+function _genInt4G_PRS_B1(){
+  return _i4gpick([
+    {q:'¿Cuántas dimensiones tiene un <b>punto</b> geométrico?',a:'Ninguna (cero dimensiones)',opts:_i4gshuf(['Ninguna (cero dimensiones)','Una dimensión','Dos dimensiones','Tres dimensiones']),mc:true,ste:'El punto es un elemento geométrico sin dimensiones.'},
+    {q:'Una <b>recta</b> se extiende:',a:'Infinitamente en ambas direcciones',opts:_i4gshuf(['Infinitamente en ambas direcciones','De un extremo a otro','Solo hacia adelante','Hasta donde mide']),mc:true,ste:'La recta no tiene extremos; se prolonga infinitamente.'},
+    {q:'Un <b>segmento</b> es una parte de la recta que:',a:'Tiene dos extremos definidos',opts:_i4gshuf(['Tiene dos extremos definidos','No tiene extremos','Tiene solo un extremo','Es curvo']),mc:true,ste:'El segmento tiene exactamente dos extremos o puntos límite.'},
+    {q:'Una <b>semirrecta</b> tiene:',a:'Un punto de inicio y se extiende infinitamente en un sentido',opts:_i4gshuf(['Un punto de inicio y se extiende infinitamente en un sentido','Dos extremos','Longitud finita','Forma circular']),mc:true,ste:'La semirrecta parte de un punto y avanza en una sola dirección infinitamente.'},
+  ]);
+}
+function _genInt4G_PRS_B2(){
+  return _i4gpick([
+    {q:'Dos rectas que <b>nunca se cruzan</b> y están en el mismo plano son:',a:'Paralelas',opts:_i4gshuf(['Paralelas','Perpendiculares','Oblicuas','Secantes']),mc:true,ste:'Las rectas paralelas nunca se intersectan y están siempre a la misma distancia.'},
+    {q:'Dos rectas que forman un ángulo de <b>90°</b> al cruzarse son:',a:'Perpendiculares',opts:_i4gshuf(['Perpendiculares','Paralelas','Oblicuas','Divergentes']),mc:true,ste:'Las rectas perpendiculares se cruzan formando exactamente 4 ángulos rectos de 90°.'},
+    {q:'Dos rectas que se cruzan formando ángulos <b>distintos de 90°</b> son:',a:'Oblicuas (secantes)',opts:_i4gshuf(['Oblicuas (secantes)','Paralelas','Perpendiculares','Simétricas']),mc:true,ste:'Las rectas oblicuas o secantes se cortan en un punto formando ángulos que no son rectos.'},
+    {q:'¿Cómo se llama el punto donde dos rectas se cortan?',a:'Punto de intersección',opts:_i4gshuf(['Punto de intersección','Vértice','Nodo','Centro']),mc:true,ste:'El punto de intersección es donde dos rectas se encuentran.'},
+  ]);
+}
+function _genInt4G_PRS_BQ1(){return _i4gpick([_genInt4G_PRS_B1,_genInt4G_PRS_B2])();}
+// U2: Ángulos
+function _genInt4G_ANG_B1(){
+  var casos=[['agudo',1,89,'Agudo'],['recto',90,90,'Recto'],['obtuso',91,179,'Obtuso'],['llano',180,180,'Llano']];
+  var c=_i4gpick(casos),g=c[1]===c[2]?c[1]:_i4grnd(c[1],c[2]),ans=c[3];
+  return{q:'Un ángulo que mide <b>'+g+'°</b> se clasifica como:',a:ans,opts:_i4gshuf(['Agudo','Recto','Obtuso','Llano']),mc:true,ste:'Agudo <90° | Recto =90° | Obtuso 91°–179° | Llano =180°. '+g+'° es '+ans.toLowerCase()+'.'};
+}
+function _genInt4G_ANG_B2(){
+  if(_i4grnd(0,1)===0){
+    var a=_i4grnd(15,75),b=90-a;
+    return{q:'Dos ángulos suman 90° (son <b>complementarios</b>). Uno mide <b>'+a+'°</b>. ¿Cuánto mide el otro?',a:b+'°',opts:_i4gshuf([b+'°',(b+10)+'°',(b-5>0?b-5:b+5)+'°',(180-a)+'°']),mc:true,ste:'Complementarios suman 90°: '+a+'° + ? = 90°, por eso ? = '+b+'°.'};
+  } else {
+    var a2=_i4grnd(20,160),b2=180-a2;
+    return{q:'Dos ángulos suman 180° (son <b>suplementarios</b>). Uno mide <b>'+a2+'°</b>. ¿Cuánto mide el otro?',a:b2+'°',opts:_i4gshuf([b2+'°',(b2+10)+'°',(b2-10>0?b2-10:b2+5)+'°',(90-a2>0?90-a2:a2+10)+'°']),mc:true,ste:'Suplementarios suman 180°: '+a2+'° + ? = 180°, por eso ? = '+b2+'°.'};
+  }
+}
+function _genInt4G_ANG_BQ1(){return _i4gpick([_genInt4G_ANG_B1,_genInt4G_ANG_B2])();}
+// U3: Polígonos
+var _i4gPolNom={3:'Triángulo',4:'Cuadrilátero',5:'Pentágono',6:'Hexágono',7:'Heptágono',8:'Octógono',9:'Eneágono',10:'Decágono'};
+function _genInt4G_POL_B1(){
+  var lados=_i4gpick([3,4,5,6,7,8]),nom=_i4gPolNom[lados];
+  var otros=_i4gshuf(Object.entries(_i4gPolNom).filter(([k])=>+k!==lados).map(([,v])=>v)).slice(0,3);
+  return{q:'Un polígono de <b>'+lados+' lados</b> se llama:',a:nom,opts:_i4gshuf([nom,...otros]),mc:true,ste:'Polígono de '+lados+' lados = '+nom+'.'};
+}
+function _genInt4G_POL_B2(){
+  var n=_i4grnd(3,8),diag=n*(n-3)/2;
+  return _i4gpick([
+    {q:'Un polígono de <b>'+n+' lados</b> tiene exactamente <b>'+n+'</b> ___.',a:'Vértices',opts:_i4gshuf(['Vértices','Diagonales','Ángulos exteriores','Planos']),mc:true,ste:'Un polígono de '+n+' lados tiene '+n+' vértices, '+n+' lados y '+n+' ángulos interiores.'},
+    {q:'¿Cuántas diagonales tiene un polígono de <b>'+n+' lados</b>? (D = n(n−3)/2)',a:diag+'',opts:_i4gshuf([diag+'',(diag+1)+'',(diag+2)+'',Math.max(0,diag-1)+'']),mc:true,ste:'D = '+n+'('+n+'−3)/2 = '+diag+' diagonal'+(diag===1?'':'s')+'.'},
+  ]);
+}
+function _genInt4G_POL_BQ1(){return _i4gpick([_genInt4G_POL_B1,_genInt4G_POL_B2])();}
+// U4: Triángulos
+function _genInt4G_TRI_B1(){
+  return _i4gpick([
+    {q:'Un triángulo con <b>tres lados iguales</b> se llama:',a:'Equilátero',opts:_i4gshuf(['Equilátero','Isósceles','Escaleno','Rectángulo']),mc:true,ste:'El triángulo equilátero tiene sus tres lados y tres ángulos iguales (60° cada uno).'},
+    {q:'Un triángulo con <b>dos lados iguales</b> se llama:',a:'Isósceles',opts:_i4gshuf(['Isósceles','Equilátero','Escaleno','Obtusángulo']),mc:true,ste:'El triángulo isósceles tiene exactamente dos lados iguales.'},
+    {q:'Un triángulo con <b>los tres lados diferentes</b> se llama:',a:'Escaleno',opts:_i4gshuf(['Escaleno','Equilátero','Isósceles','Acutángulo']),mc:true,ste:'El triángulo escaleno tiene los tres lados de diferente medida.'},
+  ]);
+}
+function _genInt4G_TRI_B2(){
+  return _i4gpick([
+    {q:'Un triángulo con <b>un ángulo de 90°</b> se llama:',a:'Rectángulo',opts:_i4gshuf(['Rectángulo','Acutángulo','Obtusángulo','Equilátero']),mc:true,ste:'El triángulo rectángulo tiene exactamente un ángulo de 90° (ángulo recto).'},
+    {q:'Un triángulo con <b>un ángulo mayor de 90°</b> se llama:',a:'Obtusángulo',opts:_i4gshuf(['Obtusángulo','Rectángulo','Acutángulo','Isósceles']),mc:true,ste:'El triángulo obtusángulo tiene un ángulo obtuso (mayor de 90°).'},
+    {q:'Un triángulo donde <b>los tres ángulos son menores de 90°</b> se llama:',a:'Acutángulo',opts:_i4gshuf(['Acutángulo','Rectángulo','Obtusángulo','Escaleno']),mc:true,ste:'El triángulo acutángulo tiene sus tres ángulos agudos (menores de 90°).'},
+  ]);
+}
+function _genInt4G_TRI_B3(){
+  var a=_i4grnd(35,95),b=_i4grnd(25,180-a-10),c=180-a-b;
+  if(c<5||c>170){a=60;b=60;c=60;}
+  if(_i4grnd(0,1)===0){
+    return{q:'En un triángulo, dos ángulos miden <b>'+a+'°</b> y <b>'+b+'°</b>. ¿Cuánto mide el tercer ángulo?',a:c+'°',opts:_i4gshuf([c+'°',(c+5)+'°',(c-5>0?c-5:c+10)+'°',(c+10)+'°']),mc:true,ste:'La suma de ángulos del triángulo = 180°. El tercer ángulo = 180° − '+a+'° − '+b+'° = '+c+'°.'};
+  }
+  return{q:'¿Cuánto suman los <b>tres ángulos interiores</b> de cualquier triángulo?',a:'180°',opts:_i4gshuf(['180°','90°','360°','270°']),mc:true,ste:'Es una propiedad fundamental: la suma de los ángulos interiores de todo triángulo siempre es 180°.'};
+}
+function _genInt4G_TRI_BQ1(){return _i4gpick([_genInt4G_TRI_B1,_genInt4G_TRI_B2,_genInt4G_TRI_B3])();}
+// U5: Cuadriláteros
+function _genInt4G_CUA_B1(){
+  var tipos=[
+    ['Cuadrado','cuatro lados iguales y cuatro ángulos de 90°'],
+    ['Rectángulo','lados opuestos iguales y cuatro ángulos de 90°'],
+    ['Rombo','cuatro lados iguales pero ángulos que no son todos rectos'],
+    ['Trapecio','solo un par de lados paralelos'],
+    ['Paralelogramo','dos pares de lados paralelos e iguales, sin ángulos rectos'],
+  ];
+  var t=_i4gpick(tipos),otros=_i4gshuf(tipos.filter(x=>x[0]!==t[0]).map(x=>x[0])).slice(0,3);
+  return{q:'El cuadrilátero con <b>'+t[1]+'</b> se llama:',a:t[0],opts:_i4gshuf([t[0],...otros]),mc:true,ste:'El '+t[0].toLowerCase()+' tiene '+t[1]+'.'};
+}
+function _genInt4G_CUA_B2(){
+  return _i4gpick([
+    {q:'¿Cuánto suman los <b>4 ángulos interiores</b> de cualquier cuadrilátero?',a:'360°',opts:_i4gshuf(['360°','180°','270°','90°']),mc:true,ste:'La suma de los ángulos interiores de todo cuadrilátero es siempre 360°.'},
+    {q:'¿Cuántos ejes de simetría tiene un <b>cuadrado</b>?',a:'4',opts:_i4gshuf(['4','2','1','8']),mc:true,ste:'El cuadrado tiene 4 ejes: 2 que unen lados opuestos y 2 diagonales.'},
+    {q:'¿Cuál cuadrilátero tiene <b>4 lados iguales</b> Y <b>4 ángulos rectos</b>?',a:'Cuadrado',opts:_i4gshuf(['Cuadrado','Rombo','Rectángulo','Trapecio']),mc:true,ste:'El rombo tiene 4 lados iguales pero sin ángulos rectos. Solo el cuadrado cumple ambas condiciones.'},
+    {q:'En un <b>rectángulo</b>, los lados opuestos son:',a:'Iguales y paralelos',opts:_i4gshuf(['Iguales y paralelos','Todos iguales','Perpendiculares entre sí','Desiguales']),mc:true,ste:'En el rectángulo los lados opuestos son iguales (y paralelos), pero los lados adyacentes no necesariamente.'},
+  ]);
+}
+function _genInt4G_CUA_BQ1(){return _i4gpick([_genInt4G_CUA_B1,_genInt4G_CUA_B2])();}
+// U6: Circunferencia
+function _genInt4G_CIR_B1(){
+  return _i4gpick([
+    {q:'¿Cómo se llama la distancia del <b>centro</b> a cualquier punto de la circunferencia?',a:'Radio',opts:_i4gshuf(['Radio','Diámetro','Cuerda','Arco']),mc:true,ste:'El radio es el segmento que va del centro a la circunferencia.'},
+    {q:'¿Cómo se llama la cuerda que <b>pasa por el centro</b> de la circunferencia?',a:'Diámetro',opts:_i4gshuf(['Diámetro','Radio','Arco','Tangente']),mc:true,ste:'El diámetro es la cuerda máxima y siempre pasa por el centro.'},
+    {q:'¿Cómo se llama el segmento que une <b>dos puntos</b> de la circunferencia?',a:'Cuerda',opts:_i4gshuf(['Cuerda','Radio','Diámetro','Arco']),mc:true,ste:'La cuerda une dos puntos cualesquiera de la circunferencia. El diámetro es la cuerda más larga.'},
+    {q:'¿Cómo se llama la parte <b>curva</b> de la circunferencia entre dos puntos?',a:'Arco',opts:_i4gshuf(['Arco','Cuerda','Radio','Sector']),mc:true,ste:'El arco es la porción de la circunferencia comprendida entre dos puntos.'},
+  ]);
+}
+function _genInt4G_CIR_B2(){
+  if(_i4grnd(0,1)===0){
+    var r=_i4grnd(2,15),d=2*r;
+    return{q:'Una circunferencia tiene radio de <b>'+r+' cm</b>. ¿Cuánto mide su diámetro?',a:d+' cm',opts:_i4gshuf([d+' cm',(d+2)+' cm',(d-2)+' cm',r+' cm']),mc:true,ste:'Diámetro = 2 × radio = 2 × '+r+' = '+d+' cm.'};
+  } else {
+    var d2=_i4grnd(2,10)*2,r2=d2/2;
+    return{q:'Una circunferencia tiene diámetro de <b>'+d2+' cm</b>. ¿Cuánto mide su radio?',a:r2+' cm',opts:_i4gshuf([r2+' cm',(r2+2)+' cm',(r2-1>0?r2-1:r2+3)+' cm',d2+' cm']),mc:true,ste:'Radio = diámetro ÷ 2 = '+d2+' ÷ 2 = '+r2+' cm.'};
+  }
+}
+function _genInt4G_CIR_BQ1(){return _i4gpick([_genInt4G_CIR_B1,_genInt4G_CIR_B2])();}
+// U7: Perímetros
+function _genInt4G_PER_B1(){
+  if(_i4grnd(0,1)===0){
+    var l=_i4grnd(3,20),p=4*l;
+    return{q:'Un <b>cuadrado</b> con lados de <b>'+l+' cm</b> tiene un perímetro de:',a:p+' cm',opts:_i4gshuf([p+' cm',(p+4)+' cm',(p-4)+' cm',(l*l)+' cm']),mc:true,ste:'P = 4 × lado = 4 × '+l+' = '+p+' cm.'};
+  } else {
+    var b=_i4grnd(3,14),h=_i4grnd(3,14),p2=2*(b+h);
+    return{q:'Un <b>rectángulo</b> de base <b>'+b+' cm</b> y altura <b>'+h+' cm</b> tiene un perímetro de:',a:p2+' cm',opts:_i4gshuf([p2+' cm',(b*h)+' cm',(p2+2)+' cm',(p2-2)+' cm']),mc:true,ste:'P = 2×(b+h) = 2×('+b+'+'+h+') = 2×'+(b+h)+' = '+p2+' cm.'};
+  }
+}
+function _genInt4G_PER_B2(){
+  if(_i4grnd(0,1)===0){
+    var l=_i4grnd(3,15),p=3*l;
+    return{q:'Un <b>triángulo equilátero</b> con lados de <b>'+l+' cm</b> tiene un perímetro de:',a:p+' cm',opts:_i4gshuf([p+' cm',(p+3)+' cm',(p-3>0?p-3:p+6)+' cm',(l*l)+' cm']),mc:true,ste:'P = 3 × lado = 3 × '+l+' = '+p+' cm.'};
+  } else {
+    var a=_i4grnd(3,10),b=_i4grnd(3,10),c=_i4grnd(3,10),p2=a+b+c;
+    return{q:'Un triángulo con lados <b>'+a+' cm</b>, <b>'+b+' cm</b> y <b>'+c+' cm</b> tiene un perímetro de:',a:p2+' cm',opts:_i4gshuf([p2+' cm',(p2+2)+' cm',(p2-1)+' cm',(a*b)+' cm']),mc:true,ste:'P = '+a+' + '+b+' + '+c+' = '+p2+' cm.'};
+  }
+}
+function _genInt4G_PER_BQ1(){return _i4gpick([_genInt4G_PER_B1,_genInt4G_PER_B2])();}
+// U8: Áreas
+function _genInt4G_ARE_B1(){
+  if(_i4grnd(0,1)===0){
+    var l=_i4grnd(3,12),a=l*l;
+    return{q:'Un <b>cuadrado</b> con lados de <b>'+l+' cm</b> tiene un área de:',a:a+' cm²',opts:_i4gshuf([a+' cm²',(4*l)+' cm²',(a+l)+' cm²',(a-l>0?a-l:a+2*l)+' cm²']),mc:true,ste:'Área del cuadrado = lado² = '+l+'² = '+a+' cm².'};
+  } else {
+    var b=_i4grnd(3,12),h=_i4grnd(3,12),ar=b*h;
+    return{q:'Un <b>rectángulo</b> de base <b>'+b+' cm</b> y altura <b>'+h+' cm</b> tiene un área de:',a:ar+' cm²',opts:_i4gshuf([ar+' cm²',(2*(b+h))+' cm²',(ar+b)+' cm²',(ar-h>0?ar-h:ar+h)+' cm²']),mc:true,ste:'Área = base × altura = '+b+' × '+h+' = '+ar+' cm².'};
+  }
+}
+function _genInt4G_ARE_B2(){
+  var b2=(_i4grnd(2,8))*2,h=_i4grnd(3,10),ar=b2*h/2;
+  return{q:'Un <b>triángulo</b> con base <b>'+b2+' cm</b> y altura <b>'+h+' cm</b> tiene un área de:',a:ar+' cm²',opts:_i4gshuf([ar+' cm²',(ar*2)+' cm²',(ar+h)+' cm²',(ar-1>0?ar-1:ar+2)+' cm²']),mc:true,ste:'Área del triángulo = (base × altura) ÷ 2 = ('+b2+' × '+h+') ÷ 2 = '+ar+' cm².'};
+}
+function _genInt4G_ARE_BQ1(){return _i4gpick([_genInt4G_ARE_B1,_genInt4G_ARE_B2])();}
+// U9: Sólidos Geométricos
+function _genInt4G_SOL_B1(){
+  var solidos=[
+    ['Cubo','6 caras cuadradas iguales'],
+    ['Prisma rectangular','6 caras rectangulares'],
+    ['Pirámide cuadrangular','5 caras: 1 base cuadrada y 4 triangulares'],
+    ['Cilindro','2 bases circulares y 1 superficie lateral curva'],
+    ['Cono','1 base circular y un ápice (vértice superior)'],
+    ['Esfera','superficie curva perfectamente redonda, sin caras planas'],
+  ];
+  var s=_i4gpick(solidos),otros=_i4gshuf(solidos.filter(x=>x[0]!==s[0]).map(x=>x[0])).slice(0,3);
+  return{q:'El sólido con <b>'+s[1]+'</b> se llama:',a:s[0],opts:_i4gshuf([s[0],...otros]),mc:true,ste:'El '+s[0].toLowerCase()+' tiene '+s[1]+'.'};
+}
+function _genInt4G_SOL_B2(){
+  return _i4gpick([
+    {q:'¿Cuántas <b>caras</b> tiene un cubo?',a:'6',opts:_i4gshuf(['6','4','8','12']),mc:true,ste:'El cubo tiene 6 caras cuadradas iguales.'},
+    {q:'¿Cuántas <b>aristas</b> tiene un cubo?',a:'12',opts:_i4gshuf(['12','6','8','4']),mc:true,ste:'El cubo tiene 12 aristas iguales.'},
+    {q:'¿Cuántos <b>vértices</b> tiene un cubo?',a:'8',opts:_i4gshuf(['8','6','12','4']),mc:true,ste:'El cubo tiene 8 vértices.'},
+    {q:'¿Cuántas caras tiene una <b>pirámide cuadrangular</b>?',a:'5',opts:_i4gshuf(['5','4','6','8']),mc:true,ste:'Pirámide cuadrangular: 1 base + 4 caras triangulares = 5 caras en total.'},
+    {q:'¿Cuál sólido NO tiene aristas ni vértices?',a:'Esfera',opts:_i4gshuf(['Esfera','Cubo','Pirámide cuadrangular','Cilindro']),mc:true,ste:'La esfera es completamente curva; no tiene aristas ni vértices.'},
+    {q:'¿Cuántas bases tiene un <b>cilindro</b>?',a:'2',opts:_i4gshuf(['2','1','0','3']),mc:true,ste:'El cilindro tiene 2 bases circulares (superior e inferior) y una superficie lateral curva.'},
+  ]);
+}
+function _genInt4G_SOL_BQ1(){return _i4gpick([_genInt4G_SOL_B1,_genInt4G_SOL_B2])();}
+
+// ── Geometría 4° Primaria – Intelectum – Skills adicionales ──────────────────
+// U1 extra: Puntos, Rectas y Segmentos
+function _genInt4G_PRS_B3(){
+  return _i4gpick([
+    {q:'Una recta paralela al horizonte (de izquierda a derecha) se llama:',a:'Horizontal',opts:_i4gshuf(['Horizontal','Vertical','Oblicua','Perpendicular']),mc:true,ste:'La recta horizontal es paralela al horizonte.'},
+    {q:'Una recta que va de arriba hacia abajo (como un poste) se llama:',a:'Vertical',opts:_i4gshuf(['Vertical','Horizontal','Oblicua','Paralela']),mc:true,ste:'La recta vertical es perpendicular al horizonte.'},
+    {q:'Una recta inclinada, que no es ni horizontal ni vertical, se llama:',a:'Oblicua',opts:_i4gshuf(['Oblicua','Horizontal','Vertical','Curva']),mc:true,ste:'La recta oblicua forma un ángulo distinto de 0°, 90° y 180° con el horizonte.'},
+    {q:'El punto que divide a un segmento en <b>dos partes iguales</b> se llama:',a:'Punto medio',opts:_i4gshuf(['Punto medio','Vértice','Centro','Extremo']),mc:true,ste:'El punto medio divide el segmento en dos partes exactamente iguales.'},
+  ]);
+}
+function _genInt4G_PRS_B4(){
+  var n=_i4grnd(2,8)*2,m=n/2;
+  return _i4gpick([
+    {q:'Si el segmento AB mide <b>'+n+' cm</b>, ¿cuánto mide la mitad del segmento?',a:m+' cm',opts:_i4gshuf([m+' cm',(m+2)+' cm',(m-1>0?m-1:m+1)+' cm',(n+2)+' cm']),mc:true,ste:'Mitad = '+n+' ÷ 2 = '+m+' cm.'},
+    {q:'¿Cuántas rectas distintas pasan por <b>un solo punto</b>?',a:'Infinitas',opts:_i4gshuf(['Infinitas','Solo una','Exactamente dos','Ninguna']),mc:true,ste:'Por un punto pueden pasar infinitas rectas en distintas direcciones.'},
+    {q:'¿Cuántas rectas distintas pasan por <b>dos puntos</b> diferentes?',a:'Solo una',opts:_i4gshuf(['Solo una','Dos','Infinitas','Ninguna']),mc:true,ste:'Por dos puntos distintos pasa una sola recta determinada.'},
+    {q:'¿Cuál es la diferencia entre un <b>segmento</b> y una <b>recta</b>?',a:'El segmento tiene longitud finita; la recta es infinita',opts:_i4gshuf(['El segmento tiene longitud finita; la recta es infinita','Son exactamente iguales','La recta tiene extremos; el segmento no','El segmento es curvo']),mc:true,ste:'El segmento tiene dos extremos y longitud medible; la recta se prolonga infinitamente.'},
+  ]);
+}
+function _genInt4G_PRS_BQ2(){return _i4gpick([_genInt4G_PRS_B1,_genInt4G_PRS_B2,_genInt4G_PRS_B3,_genInt4G_PRS_B4])();}
+// U2 extra: Ángulos
+function _genInt4G_ANG_B3(){
+  return _i4gpick([
+    {q:'Una vuelta completa alrededor de un punto equivale a:',a:'360°',opts:_i4gshuf(['360°','180°','270°','90°']),mc:true,ste:'Una rotación completa mide 360°.'},
+    {q:'Dos ángulos son <b>opuestos por el vértice</b> cuando se forman al cruzarse dos rectas. Son siempre:',a:'Iguales',opts:_i4gshuf(['Iguales','Complementarios','Suplementarios','Adyacentes']),mc:true,ste:'Propiedad clave: los ángulos opuestos por el vértice tienen exactamente la misma medida.'},
+    {q:'Dos ángulos <b>adyacentes</b> comparten:',a:'Un vértice y un lado en común',opts:_i4gshuf(['Un vértice y un lado en común','Solo el vértice','Solo un lado','Ningún elemento']),mc:true,ste:'Los ángulos adyacentes tienen el mismo vértice y comparten un lado, sin superponerse.'},
+    {q:'Un ángulo de <b>270°</b> se clasifica como ángulo:',a:'Reflejo',opts:_i4gshuf(['Reflejo','Llano','Obtuso','Completo']),mc:true,ste:'Ángulo reflejo: entre 180° y 360°. 270° está en ese rango.'},
+  ]);
+}
+function _genInt4G_ANG_B4(){
+  return _i4gpick([
+    {q:'Si un ángulo y su <b>suplementario</b> son iguales, ¿cuánto mide cada uno?',a:'90°',opts:_i4gshuf(['90°','45°','180°','60°']),mc:true,ste:'A + A = 180° → A = 90°. Dos ángulos iguales y suplementarios son rectos.'},
+    {q:'Si un ángulo y su <b>complementario</b> son iguales, ¿cuánto mide cada uno?',a:'45°',opts:_i4gshuf(['45°','30°','60°','90°']),mc:true,ste:'A + A = 90° → A = 45°.'},
+    {q:'¿Cuántos ángulos rectos forman dos rectas <b>perpendiculares</b> al cruzarse?',a:'4 ángulos rectos',opts:_i4gshuf(['4 ángulos rectos','2 ángulos rectos','1 ángulo recto','3 ángulos rectos']),mc:true,ste:'Dos rectas perpendiculares se cruzan formando exactamente 4 ángulos de 90°.'},
+    {q:'La <b>bisectriz</b> de un ángulo es la semirrecta que:',a:'Lo divide en dos ángulos iguales',opts:_i4gshuf(['Lo divide en dos ángulos iguales','Pasa por el vértice sin dividirlo','Es paralela a los lados del ángulo','Lo duplica']),mc:true,ste:'La bisectriz divide el ángulo exactamente en dos partes iguales.'},
+  ]);
+}
+function _genInt4G_ANG_BQ2(){return _i4gpick([_genInt4G_ANG_B1,_genInt4G_ANG_B2,_genInt4G_ANG_B3,_genInt4G_ANG_B4])();}
+// U3 extra: Polígonos
+function _genInt4G_POL_B3(){
+  var n=_i4grnd(3,8),sum=(n-2)*180;
+  return _i4gpick([
+    {q:'¿Cuánto suman los ángulos interiores de un polígono de <b>'+n+' lados</b>? (S=(n−2)×180°)',a:sum+'°',opts:_i4gshuf([sum+'°',(sum+180)+'°',(sum-180>0?sum-180:sum+90)+'°',(n*90)+'°']),mc:true,ste:'S = ('+n+'−2) × 180° = '+(n-2)+' × 180° = '+sum+'°.'},
+    {q:'Un polígono con todos sus lados y ángulos iguales se llama:',a:'Regular',opts:_i4gshuf(['Regular','Irregular','Cóncavo','Convexo']),mc:true,ste:'El polígono regular tiene todos sus lados iguales Y todos sus ángulos iguales.'},
+    {q:'Un polígono donde todos los ángulos interiores miden menos de 180° se llama:',a:'Convexo',opts:_i4gshuf(['Convexo','Cóncavo','Irregular','Reflejo']),mc:true,ste:'En el polígono convexo ningún ángulo interior supera los 180°.'},
+    {q:'Un polígono donde algún ángulo interior supera 180° se llama:',a:'Cóncavo',opts:_i4gshuf(['Cóncavo','Convexo','Regular','Equilátero']),mc:true,ste:'En un polígono cóncavo al menos un vértice "se mete hacia adentro" y su ángulo interior supera 180°.'},
+  ]);
+}
+function _genInt4G_POL_B4(){
+  var n=_i4gpick([5,6,8]);
+  var noms={5:'pentágono',6:'hexágono',8:'octógono'};
+  var angs={5:'108°',6:'120°',8:'135°'};
+  var sums={5:'540°',6:'720°',8:'1080°'};
+  return _i4gpick([
+    {q:'¿Cuánto mide cada ángulo interior de un <b>hexágono regular</b>?',a:'120°',opts:_i4gshuf(['120°','108°','135°','90°']),mc:true,ste:'S=(6−2)×180°=720°. Cada ángulo = 720°÷6 = 120°.'},
+    {q:'¿Cuánto mide cada ángulo interior de un <b>pentágono regular</b>?',a:'108°',opts:_i4gshuf(['108°','120°','90°','135°']),mc:true,ste:'S=(5−2)×180°=540°. Cada ángulo = 540°÷5 = 108°.'},
+    {q:'La suma de los ángulos <b>exteriores</b> de cualquier polígono convexo es siempre:',a:'360°',opts:_i4gshuf(['360°','180°','540°','720°']),mc:true,ste:'La suma de ángulos exteriores de todo polígono convexo es siempre 360°, sin importar el número de lados.'},
+    {q:'¿Cuánto mide cada ángulo interior de un <b>'+noms[n]+' regular</b>?',a:angs[n],opts:_i4gshuf([angs[n],'90°','60°','180°']),mc:true,ste:'S='+sums[n]+'. Cada ángulo = '+sums[n]+' ÷ '+n+' = '+angs[n]+'.'},
+  ]);
+}
+function _genInt4G_POL_BQ2(){return _i4gpick([_genInt4G_POL_B1,_genInt4G_POL_B2,_genInt4G_POL_B3,_genInt4G_POL_B4])();}
+// U4 extra: Triángulos
+function _genInt4G_TRI_B4(){
+  return _i4gpick([
+    {q:'¿El triángulo con lados <b>3 cm, 4 cm y 8 cm</b> puede existir?',a:'No: 3 + 4 = 7 < 8 (no se cumple la desigualdad triangular)',opts:_i4gshuf(['No: 3 + 4 = 7 < 8 (no se cumple la desigualdad triangular)','Sí, es escaleno','Sí, es obtusángulo','No, porque tiene tres lados']),mc:true,ste:'Desigualdad triangular: la suma de dos lados siempre debe ser mayor al tercero. 3+4=7 < 8, por eso no existe.'},
+    {q:'¿Cuántos ángulos <b>obtusos</b> puede tener un triángulo como máximo?',a:'Solo uno',opts:_i4gshuf(['Solo uno','Dos','Tres','Ninguno']),mc:true,ste:'Si un ángulo supera 90°, los otros dos suman menos de 90°. No puede haber dos ángulos obtusos.'},
+    {q:'En un triángulo rectángulo con catetos <b>3 cm</b> y <b>4 cm</b>, la hipotenusa mide:',a:'5 cm',opts:_i4gshuf(['5 cm','6 cm','7 cm','4.5 cm']),mc:true,ste:'Pitágoras: h² = 3² + 4² = 9 + 16 = 25. Hipotenusa = √25 = 5 cm.'},
+    {q:'¿Cuál es la hipotenusa en un triángulo rectángulo?',a:'El lado opuesto al ángulo recto (el más largo)',opts:_i4gshuf(['El lado opuesto al ángulo recto (el más largo)','El lado más corto','Un cateto','El lado adyacente al ángulo recto']),mc:true,ste:'La hipotenusa se opone al ángulo de 90° y siempre es el lado más largo.'},
+  ]);
+}
+function _genInt4G_TRI_B5(){
+  return _i4gpick([
+    {q:'La <b>mediana</b> de un triángulo es el segmento que une un vértice con:',a:'El punto medio del lado opuesto',opts:_i4gshuf(['El punto medio del lado opuesto','El pie de la altura','La mitad del ángulo opuesto','Otro vértice']),mc:true,ste:'La mediana une un vértice con el punto medio del lado opuesto.'},
+    {q:'La <b>altura</b> de un triángulo es el segmento que cae <b>perpendicularmente</b> desde un vértice hacia:',a:'El lado opuesto (o su prolongación)',opts:_i4gshuf(['El lado opuesto (o su prolongación)','El punto medio del lado opuesto','Otro vértice','La bisectriz']),mc:true,ste:'La altura es perpendicular al lado opuesto y puede caer fuera del triángulo si este es obtusángulo.'},
+    {q:'El triángulo equilátero tiene exactamente:',a:'3 ejes de simetría',opts:_i4gshuf(['3 ejes de simetría','1 eje de simetría','0 ejes de simetría','6 ejes de simetría']),mc:true,ste:'El triángulo equilátero tiene 3 ejes de simetría (cada uno pasa por un vértice y el punto medio del lado opuesto).'},
+    {q:'¿Cómo se llama el punto donde se cruzan las tres <b>medianas</b> de un triángulo?',a:'Baricentro',opts:_i4gshuf(['Baricentro','Ortocentro','Incentro','Circuncentro']),mc:true,ste:'El baricentro (o centroide) es el centro de gravedad del triángulo.'},
+  ]);
+}
+function _genInt4G_TRI_BQ2(){return _i4gpick([_genInt4G_TRI_B1,_genInt4G_TRI_B2,_genInt4G_TRI_B3,_genInt4G_TRI_B4,_genInt4G_TRI_B5])();}
+// U5 extra: Cuadriláteros
+function _genInt4G_CUA_B3(){
+  return _i4gpick([
+    {q:'En un <b>trapecio</b>, los dos lados paralelos se llaman:',a:'Bases',opts:_i4gshuf(['Bases','Lados oblicuos','Diagonales','Alturas']),mc:true,ste:'Las dos bases del trapecio son los únicos lados paralelos entre sí.'},
+    {q:'¿Cuántas diagonales tiene cualquier cuadrilátero?',a:'2',opts:_i4gshuf(['2','4','1','3']),mc:true,ste:'Todo cuadrilátero tiene exactamente 2 diagonales.'},
+    {q:'En un <b>rombo</b>, las diagonales se cortan:',a:'Perpendicularmente en su punto medio',opts:_i4gshuf(['Perpendicularmente en su punto medio','En ángulo de 45°','Sin cruzarse','Paralelas entre sí']),mc:true,ste:'Las diagonales del rombo se intersectan en ángulo de 90° y cada una bisecta a la otra.'},
+    {q:'Un cuadrilátero con <b>exactamente un par</b> de lados paralelos es un:',a:'Trapecio',opts:_i4gshuf(['Trapecio','Paralelogramo','Cuadrado','Rombo']),mc:true,ste:'El trapecio tiene un solo par de lados paralelos (las bases). El paralelogramo tiene dos pares.'},
+  ]);
+}
+function _genInt4G_CUA_B4(){
+  var b=_i4grnd(4,12),h=_i4grnd(4,12),ar=b*h;
+  return _i4gpick([
+    {q:'¿Cuántos ejes de simetría tiene un <b>rectángulo</b> (que no sea cuadrado)?',a:'2',opts:_i4gshuf(['2','4','0','1']),mc:true,ste:'El rectángulo tiene 2 ejes: uno horizontal y uno vertical, cada uno uniendo puntos medios de lados opuestos.'},
+    {q:'¿Cuántos ejes de simetría tiene un <b>rombo</b>?',a:'2',opts:_i4gshuf(['2','4','1','0']),mc:true,ste:'El rombo tiene 2 ejes de simetría: sus dos diagonales.'},
+    {q:'Un paralelogramo de base <b>'+b+' cm</b> y altura <b>'+h+' cm</b> tiene un área de:',a:ar+' cm²',opts:_i4gshuf([ar+' cm²',(2*(b+h))+' cm²',(ar+h)+' cm²',(ar+b)+' cm²']),mc:true,ste:'Área del paralelogramo = base × altura = '+b+' × '+h+' = '+ar+' cm².'},
+    {q:'¿Cuál es la diferencia principal entre un <b>cuadrado</b> y un <b>rombo</b>?',a:'El cuadrado tiene 4 ángulos de 90°; el rombo no necesariamente',opts:_i4gshuf(['El cuadrado tiene 4 ángulos de 90°; el rombo no necesariamente','El rombo tiene más lados','Son exactamente iguales','El cuadrado tiene lados desiguales']),mc:true,ste:'Ambos tienen 4 lados iguales, pero el cuadrado exige 4 ángulos rectos mientras el rombo no.'},
+  ]);
+}
+function _genInt4G_CUA_BQ2(){return _i4gpick([_genInt4G_CUA_B1,_genInt4G_CUA_B2,_genInt4G_CUA_B3,_genInt4G_CUA_B4])();}
+// U6 extra: Circunferencia
+function _genInt4G_CIR_B3(){
+  return _i4gpick([
+    {q:'¿Cuál es la diferencia entre <b>circunferencia</b> y <b>círculo</b>?',a:'La circunferencia es solo la línea curva; el círculo incluye el interior',opts:_i4gshuf(['La circunferencia es solo la línea curva; el círculo incluye el interior','Son exactamente lo mismo','El círculo es solo la línea; la circunferencia tiene interior','La circunferencia es mayor']),mc:true,ste:'Circunferencia = línea curva cerrada. Círculo = circunferencia + superficie interior.'},
+    {q:'Una recta que toca la circunferencia en <b>un solo punto</b> se llama:',a:'Tangente',opts:_i4gshuf(['Tangente','Secante','Cuerda','Diámetro']),mc:true,ste:'La recta tangente toca la circunferencia en exactamente un punto y es perpendicular al radio en ese punto.'},
+    {q:'Una recta que corta la circunferencia en <b>dos puntos</b> se llama:',a:'Secante',opts:_i4gshuf(['Secante','Tangente','Exterior','Cuerda']),mc:true,ste:'La recta secante atraviesa la circunferencia y la toca en dos puntos diferentes.'},
+    {q:'El área delimitada por dos radios y un arco se llama:',a:'Sector circular',opts:_i4gshuf(['Sector circular','Segmento circular','Corona circular','Arco']),mc:true,ste:'El sector circular tiene forma de "trozo de pizza": dos radios y el arco que los une.'},
+  ]);
+}
+function _genInt4G_CIR_B4(){
+  return _i4gpick([
+    {q:'La longitud de la circunferencia se calcula con la fórmula:',a:'C = 2 × π × r',opts:_i4gshuf(['C = 2 × π × r','C = π × r²','C = 4 × r','C = π ÷ r']),mc:true,ste:'La longitud (perímetro) de la circunferencia = 2πr, donde r es el radio.'},
+    {q:'El área del círculo se calcula con la fórmula:',a:'A = π × r²',opts:_i4gshuf(['A = π × r²','A = 2 × π × r','A = 4 × r²','A = π × d']),mc:true,ste:'El área del círculo = πr², donde r es el radio y π ≈ 3.14.'},
+    {q:'¿Cuántos radios caben en el diámetro?',a:'2',opts:_i4gshuf(['2','4','1','3']),mc:true,ste:'Diámetro = 2 × radio, por eso caben exactamente 2 radios.'},
+    {q:'Si el radio de un círculo se duplica, el área:',a:'Se multiplica por 4',opts:_i4gshuf(['Se multiplica por 4','Se duplica','Se triplica','Se multiplica por 8']),mc:true,ste:'A = πr². Si r→2r, entonces A = π(2r)² = 4πr². El área se cuadruplica.'},
+  ]);
+}
+function _genInt4G_CIR_BQ2(){return _i4gpick([_genInt4G_CIR_B1,_genInt4G_CIR_B2,_genInt4G_CIR_B3,_genInt4G_CIR_B4])();}
+// U7 extra: Perímetros
+function _genInt4G_PER_B3(){
+  var n=_i4gpick([5,6,8]),l=_i4grnd(3,10),p=n*l;
+  var noms={5:'pentágono',6:'hexágono',8:'octógono'};
+  return _i4gpick([
+    {q:'Un <b>'+noms[n]+' regular</b> con lados de <b>'+l+' cm</b> tiene un perímetro de:',a:p+' cm',opts:_i4gshuf([p+' cm',(p+l)+' cm',(p-l>0?p-l:p+l)+' cm',(l*l)+' cm']),mc:true,ste:'Polígono regular: P = nº de lados × longitud del lado = '+n+' × '+l+' = '+p+' cm.'},
+    {q:'Un <b>rombo</b> con lados de <b>'+l+' cm</b> tiene un perímetro de:',a:(4*l)+' cm',opts:_i4gshuf([(4*l)+' cm',(2*l)+' cm',(l*l)+' cm',(3*l)+' cm']),mc:true,ste:'El rombo tiene 4 lados iguales: P = 4 × '+l+' = '+(4*l)+' cm.'},
+    {q:'Si el perímetro de un cuadrado es <b>'+p+' cm</b>, ¿cuánto mide cada lado?',a:(p/4)+' cm',opts:_i4gshuf([(p/4)+' cm',(p/4+2)+' cm',(p/2)+' cm',(p/4-1>0?p/4-1:p/4+1)+' cm']),mc:true,ste:'Lado = P ÷ 4 = '+p+' ÷ 4 = '+(p/4)+' cm.'},
+  ]);
+}
+function _genInt4G_PER_B4(){
+  var b=_i4grnd(4,15),h=_i4grnd(4,12),p=2*(b+h);
+  return _i4gpick([
+    {q:'Una piscina rectangular mide <b>'+b+' m</b> de largo y <b>'+h+' m</b> de ancho. ¿Cuánto mide su perímetro para poner una reja alrededor?',a:p+' m',opts:_i4gshuf([p+' m',(b*h)+' m²',(p+2)+' m',(p-2>0?p-2:p+4)+' m']),mc:true,ste:'Perímetro = 2×('+b+'+'+h+') = 2×'+(b+h)+' = '+p+' m.'},
+    {q:'¿Qué figura tiene mayor perímetro: un cuadrado de lado <b>'+b+' cm</b> o un triángulo equilátero de lado <b>'+(b+2)+' cm</b>?',a:'El triángulo ('+(3*(b+2))+' cm) vs el cuadrado ('+(4*b)+' cm) → '+(3*(b+2)>4*b?'triángulo':'cuadrado'),opts:_i4gshuf(['El triángulo ('+(3*(b+2))+' cm) vs el cuadrado ('+(4*b)+' cm) → '+(3*(b+2)>4*b?'triángulo':'cuadrado'),'Siempre el cuadrado','Son siempre iguales','No se puede calcular']),mc:true,ste:'Cuadrado: 4×'+b+'='+(4*b)+' cm. Triángulo: 3×'+(b+2)+'='+(3*(b+2))+' cm. Mayor perímetro: '+(3*(b+2)>4*b?'triángulo equilátero.':'cuadrado.')},
+    {q:'Si se duplica el lado de un cuadrado, su perímetro:',a:'También se duplica',opts:_i4gshuf(['También se duplica','Se cuadruplica','Se mantiene igual','Se triplica']),mc:true,ste:'P = 4×lado. Si lado→2×lado, entonces P→4×(2×lado) = 2×(4×lado). El perímetro se duplica.'},
+  ]);
+}
+function _genInt4G_PER_BQ2(){return _i4gpick([_genInt4G_PER_B1,_genInt4G_PER_B2,_genInt4G_PER_B3,_genInt4G_PER_B4])();}
+// U8 extra: Áreas
+function _genInt4G_ARE_B3(){
+  var d1=(_i4grnd(2,8))*2,d2=(_i4grnd(2,8))*2,ar=d1*d2/2;
+  return _i4gpick([
+    {q:'El área del <b>rombo</b> se calcula como:',a:'(diagonal mayor × diagonal menor) ÷ 2',opts:_i4gshuf(['(diagonal mayor × diagonal menor) ÷ 2','base × altura','lado²','(base + altura) × 2']),mc:true,ste:'Área del rombo = (D × d) ÷ 2, donde D y d son las dos diagonales.'},
+    {q:'Un rombo con diagonales de <b>'+d1+' cm</b> y <b>'+d2+' cm</b> tiene un área de:',a:ar+' cm²',opts:_i4gshuf([ar+' cm²',(ar*2)+' cm²',(d1+d2)+' cm²',(ar+d1)+' cm²']),mc:true,ste:'Área = ('+d1+' × '+d2+') ÷ 2 = '+(d1*d2)+' ÷ 2 = '+ar+' cm².'},
+    {q:'Si se duplica la base de un rectángulo y la altura se mantiene, el área:',a:'Se duplica',opts:_i4gshuf(['Se duplica','Se cuadruplica','Se mantiene igual','Se triplica']),mc:true,ste:'A = base × altura. Si base→2×base y altura igual, A→2×(base×altura) = 2A.'},
+    {q:'¿Qué unidad se usa para medir áreas?',a:'Unidades cuadradas (cm², m², etc.)',opts:_i4gshuf(['Unidades cuadradas (cm², m², etc.)','Unidades lineales (cm, m)','Unidades cúbicas (cm³, m³)','Grados (°)']),mc:true,ste:'Las áreas se miden en unidades cuadradas porque representan superficie en dos dimensiones.'},
+  ]);
+}
+function _genInt4G_ARE_B4(){
+  var b=_i4grnd(3,12),h=_i4grnd(3,12),ar=b*h;
+  return _i4gpick([
+    {q:'Una habitación mide <b>'+b+' m</b> de largo y <b>'+h+' m</b> de ancho. ¿Cuántos m² de piso hay que cubrir con alfombra?',a:ar+' m²',opts:_i4gshuf([ar+' m²',(2*(b+h))+' m',(ar+b)+' m²',(ar-h>0?ar-h:ar+h)+' m²']),mc:true,ste:'Área = '+b+' × '+h+' = '+ar+' m².'},
+    {q:'Si el área de un cuadrado es <b>'+(b*b)+' cm²</b>, ¿cuánto mide su lado?',a:b+' cm',opts:_i4gshuf([b+' cm',(b+2)+' cm',(b*b)+' cm',(b*2)+' cm']),mc:true,ste:'Área = lado². Lado = √'+(b*b)+' = '+b+' cm.'},
+    {q:'¿Cuál figura tiene <b>mayor área</b>: un cuadrado de lado <b>'+b+' cm</b> o un rectángulo de base <b>'+(b+2)+' cm</b> y altura <b>'+(b-1)+' cm</b>?',(()=>{var ac=b*b,ar=(b+2)*(b-1);return{a:(ac>ar?'El cuadrado ('+ac+' cm²)':'El rectángulo ('+(ar)+' cm²)'),opts:_i4gshuf([(ac>ar?'El cuadrado ('+ac+' cm²)':'El rectángulo ('+ar+' cm²)'),(ac>ar?'El rectángulo ('+(ar)+' cm²)':'El cuadrado ('+ac+' cm²)'),'Son iguales','No se puede saber']),mc:true,ste:'Cuadrado: '+b+'²='+ac+' cm². Rectángulo: '+(b+2)+'×'+(b-1)+'='+(ar)+' cm². Mayor: '+(ac>ar?'cuadrado.':'rectángulo.')}})()},
+  ]);
+}
+function _genInt4G_ARE_BQ2(){return _i4gpick([_genInt4G_ARE_B1,_genInt4G_ARE_B2,_genInt4G_ARE_B3,_genInt4G_ARE_B4])();}
+// U9 extra: Sólidos Geométricos
+function _genInt4G_SOL_B3(){
+  var solidos=[
+    {n:'Cubo',v:8,a:12,c:6},{n:'Prisma triangular',v:6,a:9,c:5},
+    {n:'Pirámide cuadrangular',v:5,a:8,c:5},{n:'Tetraedro',v:4,a:6,c:4},
+  ];
+  var s=_i4gpick(solidos);
+  return _i4gpick([
+    {q:'La fórmula de Euler (V − A + C = 2) dice: para un '+s.n+' con V='+s.v+' y A='+s.a+' aristas, ¿cuántas caras tiene?',a:s.c+'',opts:_i4gshuf([s.c+'',(s.c+1)+'',(s.c-1>0?s.c-1:s.c+2)+'',(s.c+2)+'']),mc:true,ste:'C = 2 − V + A = 2 − '+s.v+' + '+s.a+' = '+s.c+'.'},
+    {q:'¿A qué tipo de figuras 3D se aplica la fórmula de Euler (V − A + C = 2)?',a:'Poliedros convexos',opts:_i4gshuf(['Poliedros convexos','Cualquier figura 3D','Solo esferas','Solo pirámides']),mc:true,ste:'Euler demostró que en todo poliedro convexo: vértices − aristas + caras = 2.'},
+    {q:'¿Cuántas caras tiene un <b>prisma triangular</b>?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Prisma triangular: 2 bases triangulares + 3 caras laterales rectangulares = 5 caras.'},
+    {q:'¿Cuántas caras tiene un <b>prisma pentagonal</b>?',a:'7',opts:_i4gshuf(['7','5','10','6']),mc:true,ste:'Prisma pentagonal: 2 bases pentagonales + 5 caras laterales = 7 caras.'},
+  ]);
+}
+function _genInt4G_SOL_B4(){
+  return _i4gpick([
+    {q:'El desarrollo plano (net) de un <b>cubo</b> está formado por:',a:'6 cuadrados',opts:_i4gshuf(['6 cuadrados','4 triángulos','6 rectángulos','8 cuadrados']),mc:true,ste:'Al desplegar un cubo obtenemos exactamente 6 cuadrados iguales.'},
+    {q:'¿Cuál sólido se forma al rotar un <b>rectángulo</b> alrededor de uno de sus lados?',a:'Cilindro',opts:_i4gshuf(['Cilindro','Cono','Esfera','Prisma']),mc:true,ste:'Al girar el rectángulo, sus extremos forman las bases circulares → cilindro.'},
+    {q:'¿Cuál sólido se forma al rotar un <b>triángulo rectángulo</b> alrededor de un cateto?',a:'Cono',opts:_i4gshuf(['Cono','Cilindro','Pirámide','Esfera']),mc:true,ste:'Al girar el triángulo, la hipotenusa forma la superficie lateral → cono.'},
+    {q:'¿Cuál es la diferencia principal entre <b>prisma</b> y <b>pirámide</b>?',a:'El prisma tiene 2 bases paralelas iguales; la pirámide tiene 1 base y un vértice en el tope',opts:_i4gshuf(['El prisma tiene 2 bases paralelas iguales; la pirámide tiene 1 base y un vértice en el tope','Son exactamente iguales','La pirámide siempre tiene más caras','El prisma solo puede ser rectangular']),mc:true,ste:'Prisma: 2 bases + caras laterales rectangulares. Pirámide: 1 base + caras laterales triangulares.'},
+    {q:'Un <b>cubo</b> tiene V=8, A=12, C=6. ¿Cumple la fórmula de Euler (V − A + C = 2)?',a:'Sí: 8 − 12 + 6 = 2',opts:_i4gshuf(['Sí: 8 − 12 + 6 = 2','No: 8 + 12 − 6 = 14','No: no es poliedro','Sí: 6 + 12 − 8 = 10']),mc:true,ste:'8 − 12 + 6 = 2. ✓ El cubo cumple perfectamente la fórmula de Euler.'},
+  ]);
+}
+function _genInt4G_SOL_BQ2(){return _i4gpick([_genInt4G_SOL_B1,_genInt4G_SOL_B2,_genInt4G_SOL_B3,_genInt4G_SOL_B4])();}
+
 // ── Sumas de 3 Cifras 4° Primaria – Colegio Belén ────────────────────────────
 function _s3rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function _s3wrs(ans){
@@ -4852,7 +5241,7 @@ function _genSnb5EST_EX(){return _snb5pick([_genSnb5EST_B1,_genSnb5EST_B2,_genSn
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu',
+    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','int4g_prs_b1','int4g_prs_b2','int4g_prs_bq1','int4g_ang_b1','int4g_ang_b2','int4g_ang_bq1','int4g_pol_b1','int4g_pol_b2','int4g_pol_bq1','int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_bq1','int4g_cua_b1','int4g_cua_b2','int4g_cua_bq1','int4g_cir_b1','int4g_cir_b2','int4g_cir_bq1','int4g_per_b1','int4g_per_b2','int4g_per_bq1','int4g_are_b1','int4g_are_b2','int4g_are_bq1','int4g_sol_b1','int4g_sol_b2','int4g_sol_bq1'], '5':[], '6':['div5x2','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','neg','ecuacion','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3','t6_sust1_b1','t6_sust1_b2','t6_sust1_bq1','t6_sust2_b1','t6_sust2_b2','t6_sust2_bq1','t6_sust3_b1','t6_sust3_b2','t6_sust3_bq1','t6_sust_bpu','t6_va_b1','t6_va_b2','t6_va_b3','t6_va_bq1','t6_va_b4','t6_va_b5','t6_va_b6','t6_va_bq2','t6_va_bpu','t6_ec_b1','t6_ec_b2','t6_ec_bq1','t6_ec_b3','t6_ec_b4','t6_ec_bq2','t6_ec_b5','t6_ec_b6','t6_ec_bq3','t6_ec_bpu',
       'sf6_exp_b1','sf6_exp_b2','sf6_exp_bq1','sf6_exp_b3','sf6_exp_b4','sf6_exp_bq2',
       'sf6_ppp_b1','sf6_ppp_b2','sf6_ppp_bq1','sf6_ppp_b3','sf6_ppp_b4','sf6_ppp_bq2','sf6_ppp_b5','sf6_ppp_bq3',
       'sf6_rad_b1','sf6_rad_b2','sf6_rad_bq1','sf6_rad_b3','sf6_rad_b4','sf6_rad_bq2','sf6_rad_b5','sf6_rad_bq3',
@@ -4862,7 +5251,7 @@ const PREP_LEVELS = {
       'sf6_cua_b1','sf6_cua_b2','sf6_cua_bq1','sf6_cua_b3','sf6_cua_b4','sf6_cua_bq2',
       'sf6_cir_b1','sf6_cir_b2','sf6_cir_bq1','sf6_cir_b3','sf6_cir_b4','sf6_cir_bq2','sf6_cir_b5','sf6_cir_bq3',
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2'] },
-    areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'}] },
+    areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','exp1_b1','exp1_b2','exp1_b3','exp1_bq1','exp1_b4','exp1_b5','exp1_b6','exp1_bq2','exp1_b7','exp1_b8','exp1_bq3','exp1_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
@@ -4888,6 +5277,9 @@ const PREP_CURRICULUM = {
     '1':[
       {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
       {lbl:'Descomposemos del 11 al 19 – Regletas',              area:'matematica', editorial:'belen', skills:['reg_b11','reg_b12','reg_b13','reg_bq1','reg_b14','reg_b15','reg_b16','reg_bq2','reg_b17','reg_b18','reg_b19']},
+      {lbl:'Números del 1 al 20',                                area:'matematica', editorial:'belen', skills:['bel1_num_b1','bel1_num_b2','bel1_num_bq1']},
+      {lbl:'Sumas hasta 20',                                     area:'matematica', editorial:'belen', skills:['bel1_sum_b1','bel1_sum_b2','bel1_sum_bq1']},
+      {lbl:'Restas hasta 20',                                    area:'matematica', editorial:'belen', skills:['bel1_res_b1','bel1_res_b2','bel1_res_bq1']},
     ],
     '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
@@ -4897,6 +5289,15 @@ const PREP_CURRICULUM = {
       {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
+      {lbl:'Puntos, Rectas y Segmentos',  area:'geometria', editorial:'intelectum', skills:['int4g_prs_b1','int4g_prs_b2','int4g_prs_bq1']},
+      {lbl:'Ángulos',                     area:'geometria', editorial:'intelectum', skills:['int4g_ang_b1','int4g_ang_b2','int4g_ang_bq1']},
+      {lbl:'Polígonos',                   area:'geometria', editorial:'intelectum', skills:['int4g_pol_b1','int4g_pol_b2','int4g_pol_bq1']},
+      {lbl:'Triángulos',                  area:'geometria', editorial:'intelectum', skills:['int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_bq1']},
+      {lbl:'Cuadriláteros',               area:'geometria', editorial:'intelectum', skills:['int4g_cua_b1','int4g_cua_b2','int4g_cua_bq1']},
+      {lbl:'Circunferencia',              area:'geometria', editorial:'intelectum', skills:['int4g_cir_b1','int4g_cir_b2','int4g_cir_bq1']},
+      {lbl:'Perímetros',                  area:'geometria', editorial:'intelectum', skills:['int4g_per_b1','int4g_per_b2','int4g_per_bq1']},
+      {lbl:'Áreas',                       area:'geometria', editorial:'intelectum', skills:['int4g_are_b1','int4g_are_b2','int4g_are_bq1']},
+      {lbl:'Sólidos Geométricos',         area:'geometria', editorial:'intelectum', skills:['int4g_sol_b1','int4g_sol_b2','int4g_sol_bq1']},
     ],
     '5':[
       {lbl:'Potenciación',                    area:'matematica', editorial:'hans_christian_andersen', skills:['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2']},
@@ -5174,7 +5575,9 @@ function _prepConfigHtml() {
           const _euShow = _prep.area ? _euFiltered : eu;
           const _sc = _euShow.flatMap(u=>u.skills||[]).filter(k=>!/_bq\d/.test(k)&&!k.includes('_bpu')).length;
           const _pct = masLoading ? 0 : _prepCourseScore(_euShow.flatMap(u=>u.skills||[]));
-          const _onclick = `_snd.click();_prep.level='${lvlKey}';_prep.grade='${g}';_prep.editorial='${ek}';_prep.editorialChosen=true;_prep.openSelector=null;_renderPreparatePane()`;
+          const _cardAreas = [...new Set(eu.map(u=>u.area).filter(Boolean))];
+          const _cardArea  = _cardAreas.length === 1 ? _cardAreas[0] : '';
+          const _onclick = `_snd.click();_prep.level='${lvlKey}';_prep.grade='${g}';_prep.editorial='${ek}';_prep.editorialChosen=true;_prep.area='${_cardArea}';_prep.openSelector=null;_renderPreparatePane()`;
           _catCards.push(`<div onclick="${_onclick}" style="background:rgba(124,58,237,0.10);border:1px solid rgba(124,58,237,0.28);border-radius:12px;padding:7px 8px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:2px;width:130px;min-width:0;flex-shrink:0" onmouseover="this.style.background='rgba(124,58,237,0.22)'" onmouseout="this.style.background='rgba(124,58,237,0.10)'">
             <div style="font-size:18px;line-height:1;margin-bottom:1px">${_ed2.ico||'📚'}</div>
             <div style="font-size:11px;font-weight:700;color:#fff;line-height:1.2">${_ed2.lbl||ek}</div>

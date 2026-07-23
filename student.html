@@ -651,7 +651,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .prep-kh-mobile-bar{display:none;align-items:center;gap:8px;padding:0 0 10px;justify-content:space-between}
 .prep-kh-topbar-wrap{margin-left:259px}
-@media(max-width:680px){.prep-kh-sidebar{display:none}.prep-kh-content{padding:0}.prep-kh-units{flex-direction:column}.prep-kh-col{width:100%}.prep-kh-mobile-bar{display:flex}.prep-kh-topbar-wrap{margin-left:0}}
+@media(max-width:680px){.prep-kh-sidebar{display:none}.prep-kh-content{padding:0}.prep-kh-units{flex-direction:column}.prep-kh-col{width:100%}.prep-kh-mobile-bar{display:flex}.prep-kh-topbar-wrap{margin-left:0}.prep-sel-btn{height:26px;min-width:0;padding:0 6px;font-size:10.5px;border-radius:6px}}
 .prep-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .prep-prog-label{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
 .prep-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden}
@@ -2638,6 +2638,45 @@ const BINGO_TOPICS = {
   reg_bq1: { ico:'⚡', lbl:'Quiz I – Descomposición 1 al 10',    qCount:5, gen:()=>_genReg_BQ1(), quiz:true },
   reg_bq2: { ico:'⚡', lbl:'Quiz II – Descomposición 11 al 20',  qCount:5, gen:()=>_genReg_BQ2(), quiz:true },
   reg_bpu: { ico:'⚡', lbl:'Prueba de Unidad – Sumas del 1 al 20', qCount:8, gen:()=>_genReg_BPU(), quiz:true },
+  // ── Números y Operaciones 1° Primaria – Colegio Belén ──
+  bel1_num_b1:  { ico:'🔢', lbl:'Antes y después (1–20)',         qCount:4, gen:()=>_genBel1NUM_B1() },
+  bel1_num_b2:  { ico:'⚖',  lbl:'Mayor, menor e igual',           qCount:4, gen:()=>_genBel1NUM_B2() },
+  bel1_num_bq1: { ico:'⚡', lbl:'Quiz I – Números del 1 al 20',   qCount:5, gen:()=>_genBel1NUM_BQ1(), quiz:true },
+  bel1_sum_b1:  { ico:'＋', lbl:'Sumas hasta 10',                  qCount:4, gen:()=>_genBel1SUM_B1() },
+  bel1_sum_b2:  { ico:'＋', lbl:'Sumas del 11 al 20',              qCount:4, gen:()=>_genBel1SUM_B2() },
+  bel1_sum_bq1: { ico:'⚡', lbl:'Quiz II – Sumas hasta 20',        qCount:5, gen:()=>_genBel1SUM_BQ1(), quiz:true },
+  bel1_res_b1:  { ico:'−',  lbl:'Restas hasta 10',                 qCount:4, gen:()=>_genBel1RES_B1() },
+  bel1_res_b2:  { ico:'−',  lbl:'Restas del 11 al 20',             qCount:4, gen:()=>_genBel1RES_B2() },
+  bel1_res_bq1: { ico:'⚡', lbl:'Quiz III – Restas hasta 20',      qCount:5, gen:()=>_genBel1RES_BQ1(), quiz:true },
+  // ── Geometría 4° Primaria – Intelectum ──
+  int4g_prs_b1:  { ico:'📐', lbl:'Puntos, Rectas y Segmentos I',    qCount:4, gen:()=>_genInt4G_PRS_B1() },
+  int4g_prs_b2:  { ico:'📐', lbl:'Puntos, Rectas y Segmentos II',   qCount:4, gen:()=>_genInt4G_PRS_B2() },
+  int4g_prs_bq1: { ico:'⚡', lbl:'Quiz I – Rectas y Segmentos',     qCount:5, gen:()=>_genInt4G_PRS_BQ1(), quiz:true },
+  int4g_ang_b1:  { ico:'📐', lbl:'Ángulos: tipos y clasificación',  qCount:4, gen:()=>_genInt4G_ANG_B1() },
+  int4g_ang_b2:  { ico:'📐', lbl:'Ángulos complementarios y suplementarios', qCount:4, gen:()=>_genInt4G_ANG_B2() },
+  int4g_ang_bq1: { ico:'⚡', lbl:'Quiz II – Ángulos',               qCount:5, gen:()=>_genInt4G_ANG_BQ1(), quiz:true },
+  int4g_pol_b1:  { ico:'🔷', lbl:'Polígonos: nombres y lados',      qCount:4, gen:()=>_genInt4G_POL_B1() },
+  int4g_pol_b2:  { ico:'🔷', lbl:'Polígonos: vértices y diagonales', qCount:4, gen:()=>_genInt4G_POL_B2() },
+  int4g_pol_bq1: { ico:'⚡', lbl:'Quiz III – Polígonos',            qCount:5, gen:()=>_genInt4G_POL_BQ1(), quiz:true },
+  int4g_tri_b1:  { ico:'🔺', lbl:'Triángulos por sus lados',        qCount:4, gen:()=>_genInt4G_TRI_B1() },
+  int4g_tri_b2:  { ico:'🔺', lbl:'Triángulos por sus ángulos',      qCount:4, gen:()=>_genInt4G_TRI_B2() },
+  int4g_tri_b3:  { ico:'🔺', lbl:'Suma de ángulos del triángulo',   qCount:4, gen:()=>_genInt4G_TRI_B3() },
+  int4g_tri_bq1: { ico:'⚡', lbl:'Quiz IV – Triángulos',            qCount:5, gen:()=>_genInt4G_TRI_BQ1(), quiz:true },
+  int4g_cua_b1:  { ico:'🔶', lbl:'Cuadriláteros: tipos',            qCount:4, gen:()=>_genInt4G_CUA_B1() },
+  int4g_cua_b2:  { ico:'🔶', lbl:'Cuadriláteros: propiedades',      qCount:4, gen:()=>_genInt4G_CUA_B2() },
+  int4g_cua_bq1: { ico:'⚡', lbl:'Quiz V – Cuadriláteros',          qCount:5, gen:()=>_genInt4G_CUA_BQ1(), quiz:true },
+  int4g_cir_b1:  { ico:'⭕', lbl:'Circunferencia: partes',          qCount:4, gen:()=>_genInt4G_CIR_B1() },
+  int4g_cir_b2:  { ico:'⭕', lbl:'Radio y diámetro',                qCount:4, gen:()=>_genInt4G_CIR_B2() },
+  int4g_cir_bq1: { ico:'⚡', lbl:'Quiz VI – Circunferencia',        qCount:5, gen:()=>_genInt4G_CIR_BQ1(), quiz:true },
+  int4g_per_b1:  { ico:'📏', lbl:'Perímetro del cuadrado y rectángulo', qCount:4, gen:()=>_genInt4G_PER_B1() },
+  int4g_per_b2:  { ico:'📏', lbl:'Perímetro del triángulo',         qCount:4, gen:()=>_genInt4G_PER_B2() },
+  int4g_per_bq1: { ico:'⚡', lbl:'Quiz VII – Perímetros',           qCount:5, gen:()=>_genInt4G_PER_BQ1(), quiz:true },
+  int4g_are_b1:  { ico:'📦', lbl:'Área del cuadrado y rectángulo',  qCount:4, gen:()=>_genInt4G_ARE_B1() },
+  int4g_are_b2:  { ico:'📦', lbl:'Área del triángulo',              qCount:4, gen:()=>_genInt4G_ARE_B2() },
+  int4g_are_bq1: { ico:'⚡', lbl:'Quiz VIII – Áreas',               qCount:5, gen:()=>_genInt4G_ARE_BQ1(), quiz:true },
+  int4g_sol_b1:  { ico:'🧊', lbl:'Sólidos geométricos: tipos',      qCount:4, gen:()=>_genInt4G_SOL_B1() },
+  int4g_sol_b2:  { ico:'🧊', lbl:'Caras, aristas y vértices',       qCount:4, gen:()=>_genInt4G_SOL_B2() },
+  int4g_sol_bq1: { ico:'⚡', lbl:'Quiz IX – Sólidos geométricos',   qCount:5, gen:()=>_genInt4G_SOL_BQ1(), quiz:true },
   // ── Sumas de 3 Cifras 4° Primaria – Colegio Belén ──
   sum3_b1:  { ico:'➕', lbl:'Suma 3 cifras: sin reagrupación',    qCount:4, gen:()=>_genSum3B1() },
   sum3_b2:  { ico:'➕', lbl:'Suma 3 cifras: reagrupa unidades',   qCount:4, gen:()=>_genSum3B2() },
@@ -3015,7 +3054,10 @@ const BINGO_TOPICS = {
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
-const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b9','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3',
+const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b9','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu',
+'bel1_num_b1','bel1_num_b2','bel1_num_bq1','bel1_sum_b1','bel1_sum_b2','bel1_sum_bq1','bel1_res_b1','bel1_res_b2','bel1_res_bq1',
+'int4g_prs_b1','int4g_prs_b2','int4g_prs_bq1','int4g_ang_b1','int4g_ang_b2','int4g_ang_bq1','int4g_pol_b1','int4g_pol_b2','int4g_pol_bq1','int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_bq1','int4g_cua_b1','int4g_cua_b2','int4g_cua_bq1','int4g_cir_b1','int4g_cir_b2','int4g_cir_bq1','int4g_per_b1','int4g_per_b2','int4g_per_bq1','int4g_are_b1','int4g_are_b2','int4g_are_bq1','int4g_sol_b1','int4g_sol_b2','int4g_sol_bq1',
+'sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3','sf6_u1_b1','sf6_u1_b2','sf6_u1_b3','sf6_u1_bq1','sf6_u1_b4','sf6_u1_b5','sf6_u1_b6','sf6_u1_bq2','sf6_u2_b1','sf6_u2_b2','sf6_u2_bq1','sf6_u2_b3','sf6_u2_b4','sf6_u2_bq2','sf6_u3_b1','sf6_u3_b2','sf6_u3_bq1','sf6_u3_b3','sf6_u3_b4','sf6_u3_bq2','sf6_u4_b1','sf6_u4_b2','sf6_u4_b3','sf6_u4_bq1','sf6_u4_b4','sf6_u4_b5','sf6_u4_b6','sf6_u4_bq2','sf6_u4_b7','sf6_u4_b8','sf6_u4_bq3','sf6_u5_b1','sf6_u5_b2','sf6_u5_bq1','sf6_u5_b3','sf6_u5_b4','sf6_u5_bq2','sf6_u5_b5','sf6_u5_b6','sf6_u5_bq3',
 'sf6_exp_b1','sf6_exp_b2','sf6_exp_bq1','sf6_exp_b3','sf6_exp_b4','sf6_exp_bq2',
 'sf6_ppp_b1','sf6_ppp_b2','sf6_ppp_bq1','sf6_ppp_b3','sf6_ppp_b4','sf6_ppp_bq2','sf6_ppp_b5','sf6_ppp_bq3',
 'sf6_rad_b1','sf6_rad_b2','sf6_rad_bq1','sf6_rad_b3','sf6_rad_b4','sf6_rad_bq2','sf6_rad_b5','sf6_rad_bq3',
