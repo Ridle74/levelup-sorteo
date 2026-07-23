@@ -536,6 +536,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-start-btn:hover{transform:scale(1.04);box-shadow:0 6px 28px -5px rgba(124,58,237,0.75)}
 .prep-start-btn:active{transform:scale(0.96);transition-duration:.08s}
 .prep-start-btn:hover{opacity:.88}
+.prep-kh-start-bar .prep-start-btn{width:auto;flex-shrink:0;padding:7px 18px;font-size:13px;margin-top:0;border-radius:8px;letter-spacing:0.02em}
 .prep-exam-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .prep-topic-badge-sm{display:inline-flex;align-items:center;gap:5px;background:rgba(168,85,247,0.18);border:1px solid rgba(168,85,247,0.4);border-radius:16px;padding:4px 12px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.07em;color:#e0aaff}
 .prep-timer{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:#39ff7a}
@@ -578,6 +579,8 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-panel{margin-top:12px;background:rgba(250,204,21,0.05);border:1px solid rgba(250,204,21,0.16);border-radius:12px;padding:12px 14px}
 .prep-kh-panel-topic{font-size:16px;font-weight:900;color:#facc15;margin-bottom:9px;letter-spacing:.03em}
 .prep-kh-panel-opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.prep-kh-start-bar{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:8px 12px;margin-top:8px}
+.prep-kh-start-bar-row{display:flex;align-items:center;gap:8px;min-width:0}
 @keyframes prep-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes prepPaneIn{from{opacity:0}to{opacity:1}}
 .prep-pane-in{animation:prepPaneIn .18s ease-out}
@@ -645,7 +648,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-topbar-level{font-size:13px;font-weight:700;color:#a855f7;padding:4px 10px;background:rgba(168,85,247,0.09);border-radius:8px}
 .prep-kh-topbar-skills{font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);display:flex;align-items:center;gap:4px}
 .prep-kh-topbar-right{margin-left:auto}
-.prep-kh-btn-challenge{background:rgba(109,40,217,0.85);border:none;border-radius:10px;padding:8px 16px;color:#fff;font-family:'Lato',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.01em;white-space:nowrap;transition:background .15s}
+.prep-kh-btn-challenge{background:rgba(109,40,217,0.85);border:none;border-radius:10px;height:32px;display:inline-flex;align-items:center;padding:0 16px;color:#fff;font-family:'Lato',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.01em;white-space:nowrap;transition:background .15s}
 .prep-kh-btn-challenge:hover{background:#7c3aed}
 .prep-filter-bar{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
 @media(min-width:681px){.prep-filter-bar{flex-direction:row;align-items:center;gap:10px}.prep-filter-bar>.prep-kh-btn-challenge{flex-shrink:0}}
@@ -653,7 +656,30 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .prep-kh-mobile-bar{display:none;align-items:center;gap:8px;padding:0 0 10px;justify-content:space-between}
 .prep-kh-topbar-wrap{margin-left:259px}
-@media(max-width:680px){.prep-kh-sidebar{display:none}.prep-kh-content{padding:0}.prep-kh-units{flex-direction:column}.prep-kh-col{width:100%}.prep-kh-mobile-bar{display:flex}.prep-kh-topbar-wrap{margin-left:0}.prep-sel-btn{height:26px;min-width:0;padding:0 6px;font-size:10.5px;border-radius:6px}}
+.prep-kh-mob-badge{height:26px;border-radius:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.55);font-family:'Lato',sans-serif;font-size:9px;font-weight:700;display:none;align-items:center;padding:0 5px;white-space:nowrap;letter-spacing:.01em}
+.prep-mob-opts-row{display:none}
+.prep-mob-opt-grp{display:flex;flex-direction:column;gap:3px}
+@media(max-width:680px){
+  .prep-kh-sidebar{display:none}
+  .prep-kh-content{padding:0}
+  .prep-kh-units{flex-direction:column}
+  .prep-kh-col{width:100%}
+  .prep-kh-topbar-wrap{margin-left:0}
+  .prep-filter-bar>.prep-kh-btn-challenge{display:none}
+  .prep-sel-btn{height:26px;min-width:0;padding:0 4px;font-size:9px;border-radius:6px;box-sizing:border-box;justify-content:center}
+  .prep-mob-filter-row>.prep-sel-btn,.prep-kh-mobile-bar>.prep-sel-btn{width:100%}
+  .prep-kh-mobile-bar{display:grid !important;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 0 6px;justify-content:unset;align-items:stretch}
+  .prep-kh-mobile-bar>.prep-kh-btn-challenge{height:26px;font-size:9px;padding:0 4px;border-radius:6px;width:100%;box-sizing:border-box;justify-content:center}
+  .prep-mob-filter-row{display:grid !important;grid-template-columns:repeat(5,1fr) !important;gap:4px !important;overflow-x:visible !important;flex-wrap:unset !important;align-items:stretch}
+  .prep-mob-filter-row>.prep-sel-btn{flex-shrink:unset !important}
+  .prep-mob-dot{display:none !important}
+  .prep-mob-ico{display:none !important}
+  .prep-mob-opts-hide{display:none !important}
+  .prep-mob-opts-row{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:0 0 6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)}
+  .prep-mob-opts-row>.prep-sel-btn,.prep-mob-opts-row>.prep-mob-opt-grp{width:100%;box-sizing:border-box}
+  .prep-mob-opt-grp>.prep-sel-btn{width:100%}
+  .prep-kh-mob-badge{display:inline-flex;width:100%;box-sizing:border-box;justify-content:center}
+}
 .prep-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .prep-prog-label{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
 .prep-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden}
@@ -1318,7 +1344,7 @@ const DEFAULT_STUDENTS = [
   { id:9,  name:"Mateo Ríos",        max:6,  color:"#fb7185", icon:"🐧",  pin:"26173" },
   { id:10, name:"Rafaela Villena",   max:6,  color:"#34d399", icon:"🐨",  pin:"91536" }
 ];
-const ADMIN = { id:0, name:"Profesor (Admin)", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
+const ADMIN = { id:0, name:"Profesor", max:0, color:"#1f2937", icon:"👨🏻‍🏫", pin:"80808", role:"admin" };
 const COLOR_PALETTE = [
   "#FF0055","#FF3300","#FF6600","#FF9900","#FFEE00","#CCFF00",
   "#39FF14","#00FF44","#00FFAA","#00FFFF","#00CCFF","#0088FF",
@@ -2650,6 +2676,137 @@ const BINGO_TOPICS = {
   bel1_res_b1:  { ico:'−',  lbl:'Restas hasta 10',                 qCount:4, gen:()=>_genBel1RES_B1() },
   bel1_res_b2:  { ico:'−',  lbl:'Restas del 11 al 20',             qCount:4, gen:()=>_genBel1RES_B2() },
   bel1_res_bq1: { ico:'⚡', lbl:'Quiz III – Restas hasta 20',      qCount:5, gen:()=>_genBel1RES_BQ1(), quiz:true },
+  // ── Matemática 1° Primaria – Colegio Belén (curso completo) ──
+  // U1 Conjuntos
+  bel1_cj_b1:  { ico:'🖼', lbl:'Visual I – Conjuntos',               qCount:3, gen:()=>_genBel1CJ_B1() },
+  bel1_cj_b2:  { ico:'📐', lbl:'Verbal I – Conjuntos',               qCount:3, gen:()=>_genBel1CJ_B2() },
+  bel1_cj_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Conjuntos',         qCount:5, gen:()=>_genBel1CJ_BQ1(), quiz:true },
+  bel1_cj_b3:  { ico:'🖼', lbl:'Visual II – Correspondencia',        qCount:3, gen:()=>_genBel1CJ_B3() },
+  bel1_cj_b4:  { ico:'📐', lbl:'Verbal II – Correspondencia',        qCount:3, gen:()=>_genBel1CJ_B4() },
+  bel1_cj_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Conjuntos',         qCount:5, gen:()=>_genBel1CJ_BQ2(), quiz:true },
+  bel1_cj_b5:  { ico:'🖼', lbl:'Visual III – Pertenencia',           qCount:3, gen:()=>_genBel1CJ_B5() },
+  bel1_cj_b6:  { ico:'📐', lbl:'Verbal III – Pertenencia',           qCount:3, gen:()=>_genBel1CJ_B6() },
+  bel1_cj_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Conjuntos',         qCount:5, gen:()=>_genBel1CJ_BQ3(), quiz:true },
+  // U2 Numeración 0-100
+  bel1_n1_b1:  { ico:'🖼', lbl:'Visual I – Numeración 0 al 100',     qCount:3, gen:()=>_genBel1N1_B1() },
+  bel1_n1_b2:  { ico:'📐', lbl:'Verbal I – Numeración 0 al 100',     qCount:3, gen:()=>_genBel1N1_B2() },
+  bel1_n1_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Numeración 0-100',  qCount:5, gen:()=>_genBel1N1_BQ1(), quiz:true },
+  bel1_n1_b3:  { ico:'🖼', lbl:'Visual II – Numeración 0 al 100',    qCount:3, gen:()=>_genBel1N1_B3() },
+  bel1_n1_b4:  { ico:'📐', lbl:'Verbal II – Numeración 0 al 100',    qCount:3, gen:()=>_genBel1N1_B4() },
+  bel1_n1_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Numeración 0-100',  qCount:5, gen:()=>_genBel1N1_BQ2(), quiz:true },
+  // U3 La Decena
+  bel1_dec_b1:  { ico:'🖼', lbl:'Visual I – La Decena',              qCount:3, gen:()=>_genBel1DEC_B1() },
+  bel1_dec_b2:  { ico:'📐', lbl:'Verbal I – La Decena',              qCount:3, gen:()=>_genBel1DEC_B2() },
+  bel1_dec_bq1: { ico:'⚡', lbl:'Cuestionario 1 – La Decena',        qCount:5, gen:()=>_genBel1DEC_BQ1(), quiz:true },
+  bel1_dec_b3:  { ico:'🖼', lbl:'Visual II – La Decena',             qCount:3, gen:()=>_genBel1DEC_B3() },
+  bel1_dec_b4:  { ico:'📐', lbl:'Verbal II – La Decena',             qCount:3, gen:()=>_genBel1DEC_B4() },
+  bel1_dec_bq2: { ico:'⚡', lbl:'Cuestionario 2 – La Decena',        qCount:5, gen:()=>_genBel1DEC_BQ2(), quiz:true },
+  // U4 La Centena y C-D-U
+  bel1_cdu_b1:  { ico:'🖼', lbl:'Visual I – La Centena',             qCount:3, gen:()=>_genBel1CDU_B1() },
+  bel1_cdu_b2:  { ico:'📐', lbl:'Verbal I – La Centena',             qCount:3, gen:()=>_genBel1CDU_B2() },
+  bel1_cdu_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Valor Posicional', qCount:5, gen:()=>_genBel1CDU_BQ1(), quiz:true },
+  bel1_cdu_b3:  { ico:'🖼', lbl:'Visual II – Tablero C-D-U',         qCount:3, gen:()=>_genBel1CDU_B3() },
+  bel1_cdu_b4:  { ico:'📐', lbl:'Verbal II – Tablero C-D-U',         qCount:3, gen:()=>_genBel1CDU_B4() },
+  bel1_cdu_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Valor Posicional', qCount:5, gen:()=>_genBel1CDU_BQ2(), quiz:true },
+  bel1_cdu_b5:  { ico:'🖼', lbl:'Visual III – Descomposición',       qCount:3, gen:()=>_genBel1CDU_B5() },
+  bel1_cdu_b6:  { ico:'📐', lbl:'Verbal III – Descomposición',       qCount:3, gen:()=>_genBel1CDU_B6() },
+  bel1_cdu_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Valor Posicional', qCount:5, gen:()=>_genBel1CDU_BQ3(), quiz:true },
+  // U5 Numeración 100-999
+  bel1_n9_b1:  { ico:'🖼', lbl:'Visual I – Numeración 100 al 999',   qCount:3, gen:()=>_genBel1N9_B1() },
+  bel1_n9_b2:  { ico:'📐', lbl:'Verbal I – Numeración 100 al 999',   qCount:3, gen:()=>_genBel1N9_B2() },
+  bel1_n9_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Numeración 100-999',qCount:5, gen:()=>_genBel1N9_BQ1(), quiz:true },
+  bel1_n9_b3:  { ico:'🖼', lbl:'Visual II – Numeración 100 al 999',  qCount:3, gen:()=>_genBel1N9_B3() },
+  bel1_n9_b4:  { ico:'📐', lbl:'Verbal II – Numeración 100 al 999',  qCount:3, gen:()=>_genBel1N9_B4() },
+  bel1_n9_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Numeración 100-999',qCount:5, gen:()=>_genBel1N9_BQ2(), quiz:true },
+  bel1_n9_b5:  { ico:'🖼', lbl:'Visual III – Numeración 100 al 999', qCount:3, gen:()=>_genBel1N9_B5() },
+  bel1_n9_b6:  { ico:'📐', lbl:'Verbal III – Numeración 100 al 999', qCount:3, gen:()=>_genBel1N9_B6() },
+  bel1_n9_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Numeración 100-999',qCount:5, gen:()=>_genBel1N9_BQ3(), quiz:true },
+  // U6 Mayor, Menor e Igual
+  bel1_cmp_b1:  { ico:'🖼', lbl:'Visual I – Mayor, Menor e Igual',   qCount:3, gen:()=>_genBel1CMP_B1() },
+  bel1_cmp_b2:  { ico:'📐', lbl:'Verbal I – Mayor, Menor e Igual',   qCount:3, gen:()=>_genBel1CMP_B2() },
+  bel1_cmp_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Comparación',      qCount:5, gen:()=>_genBel1CMP_BQ1(), quiz:true },
+  bel1_cmp_b3:  { ico:'🖼', lbl:'Visual II – Mayor, Menor e Igual',  qCount:3, gen:()=>_genBel1CMP_B3() },
+  bel1_cmp_b4:  { ico:'📐', lbl:'Verbal II – Mayor, Menor e Igual',  qCount:3, gen:()=>_genBel1CMP_B4() },
+  bel1_cmp_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Comparación',      qCount:5, gen:()=>_genBel1CMP_BQ2(), quiz:true },
+  // U7 Adición
+  bel1_adi_b1:  { ico:'🖼', lbl:'Visual I – Adición',                qCount:3, gen:()=>_genBel1ADI_B1() },
+  bel1_adi_b2:  { ico:'📐', lbl:'Verbal I – Adición',                qCount:3, gen:()=>_genBel1ADI_B2() },
+  bel1_adi_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Adición',          qCount:5, gen:()=>_genBel1ADI_BQ1(), quiz:true },
+  bel1_adi_b3:  { ico:'🖼', lbl:'Visual II – Adición',               qCount:4, gen:()=>_genBel1ADI_B3() },
+  bel1_adi_b4:  { ico:'📐', lbl:'Verbal II – Adición',               qCount:4, gen:()=>_genBel1ADI_B4() },
+  bel1_adi_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Adición',          qCount:5, gen:()=>_genBel1ADI_BQ2(), quiz:true },
+  bel1_adi_b5:  { ico:'🖼', lbl:'Visual III – Adición',              qCount:4, gen:()=>_genBel1ADI_B5() },
+  bel1_adi_b6:  { ico:'📐', lbl:'Verbal III – Adición',              qCount:4, gen:()=>_genBel1ADI_B6() },
+  bel1_adi_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Adición',          qCount:5, gen:()=>_genBel1ADI_BQ3(), quiz:true },
+  // U8 Sustracción
+  bel1_sus_b1:  { ico:'🖼', lbl:'Visual I – Sustracción',            qCount:3, gen:()=>_genBel1SUS_B1() },
+  bel1_sus_b2:  { ico:'📐', lbl:'Verbal I – Sustracción',            qCount:3, gen:()=>_genBel1SUS_B2() },
+  bel1_sus_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Sustracción',      qCount:5, gen:()=>_genBel1SUS_BQ1(), quiz:true },
+  bel1_sus_b3:  { ico:'🖼', lbl:'Visual II – Sustracción',           qCount:4, gen:()=>_genBel1SUS_B3() },
+  bel1_sus_b4:  { ico:'📐', lbl:'Verbal II – Sustracción',           qCount:4, gen:()=>_genBel1SUS_B4() },
+  bel1_sus_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Sustracción',      qCount:5, gen:()=>_genBel1SUS_BQ2(), quiz:true },
+  bel1_sus_b5:  { ico:'🖼', lbl:'Visual III – Pirámides de Resta',   qCount:3, gen:()=>_genBel1SUS_B5() },
+  bel1_sus_b6:  { ico:'📐', lbl:'Verbal III – Pirámides de Resta',   qCount:3, gen:()=>_genBel1SUS_B6() },
+  bel1_sus_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Sustracción',      qCount:5, gen:()=>_genBel1SUS_BQ3(), quiz:true },
+  // U9 Operaciones Combinadas
+  bel1_opc_b1:  { ico:'🖼', lbl:'Visual I – Operaciones Combinadas', qCount:3, gen:()=>_genBel1OPC_B1() },
+  bel1_opc_b2:  { ico:'📐', lbl:'Verbal I – Operaciones Combinadas', qCount:3, gen:()=>_genBel1OPC_B2() },
+  bel1_opc_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Op. Combinadas',   qCount:5, gen:()=>_genBel1OPC_BQ1(), quiz:true },
+  bel1_opc_b3:  { ico:'🖼', lbl:'Visual II – Operaciones Combinadas',qCount:3, gen:()=>_genBel1OPC_B3() },
+  bel1_opc_b4:  { ico:'📐', lbl:'Verbal II – Operaciones Combinadas',qCount:3, gen:()=>_genBel1OPC_B4() },
+  bel1_opc_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Op. Combinadas',   qCount:5, gen:()=>_genBel1OPC_BQ2(), quiz:true },
+  // U10 Doble, Mitad y Triple
+  bel1_dmt_b1:  { ico:'🖼', lbl:'Visual I – El Doble',               qCount:3, gen:()=>_genBel1DMT_B1() },
+  bel1_dmt_b2:  { ico:'📐', lbl:'Verbal I – El Doble',               qCount:3, gen:()=>_genBel1DMT_B2() },
+  bel1_dmt_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Doble/Mitad/Triple',qCount:5, gen:()=>_genBel1DMT_BQ1(), quiz:true },
+  bel1_dmt_b3:  { ico:'🖼', lbl:'Visual II – La Mitad',              qCount:3, gen:()=>_genBel1DMT_B3() },
+  bel1_dmt_b4:  { ico:'📐', lbl:'Verbal II – La Mitad',              qCount:3, gen:()=>_genBel1DMT_B4() },
+  bel1_dmt_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Doble/Mitad/Triple',qCount:5, gen:()=>_genBel1DMT_BQ2(), quiz:true },
+  bel1_dmt_b5:  { ico:'🖼', lbl:'Visual III – El Triple',            qCount:3, gen:()=>_genBel1DMT_B5() },
+  bel1_dmt_b6:  { ico:'📐', lbl:'Verbal III – El Triple',            qCount:3, gen:()=>_genBel1DMT_B6() },
+  bel1_dmt_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Doble/Mitad/Triple',qCount:5, gen:()=>_genBel1DMT_BQ3(), quiz:true },
+  // U11 Pares e Impares
+  bel1_pi_b1:   { ico:'🖼', lbl:'Visual I – Pares e Impares',        qCount:3, gen:()=>_genBel1PI_B1() },
+  bel1_pi_b2:   { ico:'📐', lbl:'Verbal I – Pares e Impares',        qCount:3, gen:()=>_genBel1PI_B2() },
+  bel1_pi_bq1:  { ico:'⚡', lbl:'Cuestionario 1 – Pares e Impares',  qCount:5, gen:()=>_genBel1PI_BQ1(), quiz:true },
+  bel1_pi_b3:   { ico:'🖼', lbl:'Visual II – Pares e Impares',       qCount:3, gen:()=>_genBel1PI_B3() },
+  bel1_pi_b4:   { ico:'📐', lbl:'Verbal II – Pares e Impares',       qCount:3, gen:()=>_genBel1PI_B4() },
+  bel1_pi_bq2:  { ico:'⚡', lbl:'Cuestionario 2 – Pares e Impares',  qCount:5, gen:()=>_genBel1PI_BQ2(), quiz:true },
+  // U12 Figuras Geométricas
+  bel1_fig_b1:  { ico:'🖼', lbl:'Visual I – Figuras Geométricas',    qCount:3, gen:()=>_genBel1FIG_B1() },
+  bel1_fig_b2:  { ico:'📐', lbl:'Verbal I – Figuras Geométricas',    qCount:3, gen:()=>_genBel1FIG_B2() },
+  bel1_fig_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Figuras',          qCount:5, gen:()=>_genBel1FIG_BQ1(), quiz:true },
+  bel1_fig_b3:  { ico:'🖼', lbl:'Visual II – Figuras Geométricas',   qCount:3, gen:()=>_genBel1FIG_B3() },
+  bel1_fig_b4:  { ico:'📐', lbl:'Verbal II – Figuras Geométricas',   qCount:3, gen:()=>_genBel1FIG_B4() },
+  bel1_fig_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Figuras',          qCount:5, gen:()=>_genBel1FIG_BQ2(), quiz:true },
+  // U13 Sólidos Geométricos
+  bel1_sol_b1:  { ico:'🖼', lbl:'Visual I – Sólidos Geométricos',    qCount:3, gen:()=>_genBel1SOL_B1() },
+  bel1_sol_b2:  { ico:'📐', lbl:'Verbal I – Sólidos Geométricos',    qCount:3, gen:()=>_genBel1SOL_B2() },
+  bel1_sol_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Sólidos',          qCount:5, gen:()=>_genBel1SOL_BQ1(), quiz:true },
+  bel1_sol_b3:  { ico:'🖼', lbl:'Visual II – Sólidos Geométricos',   qCount:3, gen:()=>_genBel1SOL_B3() },
+  bel1_sol_b4:  { ico:'📐', lbl:'Verbal II – Sólidos Geométricos',   qCount:3, gen:()=>_genBel1SOL_B4() },
+  bel1_sol_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Sólidos',          qCount:5, gen:()=>_genBel1SOL_BQ2(), quiz:true },
+  // U14 Monedas y Billetes
+  bel1_mon_b1:  { ico:'🖼', lbl:'Visual I – Monedas y Billetes',     qCount:3, gen:()=>_genBel1MON_B1() },
+  bel1_mon_b2:  { ico:'📐', lbl:'Verbal I – Monedas y Billetes',     qCount:3, gen:()=>_genBel1MON_B2() },
+  bel1_mon_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Monedas',          qCount:5, gen:()=>_genBel1MON_BQ1(), quiz:true },
+  bel1_mon_b3:  { ico:'🖼', lbl:'Visual II – Monedas y Billetes',    qCount:3, gen:()=>_genBel1MON_B3() },
+  bel1_mon_b4:  { ico:'📐', lbl:'Verbal II – Monedas y Billetes',    qCount:3, gen:()=>_genBel1MON_B4() },
+  bel1_mon_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Monedas',          qCount:5, gen:()=>_genBel1MON_BQ2(), quiz:true },
+  // U15 Nociones Espaciales
+  bel1_esp_b1:  { ico:'🖼', lbl:'Visual I – Nociones Espaciales',    qCount:3, gen:()=>_genBel1ESP_B1() },
+  bel1_esp_b2:  { ico:'📐', lbl:'Verbal I – Nociones Espaciales',    qCount:3, gen:()=>_genBel1ESP_B2() },
+  bel1_esp_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Espacio',          qCount:5, gen:()=>_genBel1ESP_BQ1(), quiz:true },
+  bel1_esp_b3:  { ico:'🖼', lbl:'Visual II – Nociones Espaciales',   qCount:3, gen:()=>_genBel1ESP_B3() },
+  bel1_esp_b4:  { ico:'📐', lbl:'Verbal II – Nociones Espaciales',   qCount:3, gen:()=>_genBel1ESP_B4() },
+  bel1_esp_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Espacio',          qCount:5, gen:()=>_genBel1ESP_BQ2(), quiz:true },
+  // U16 Unidades de Medida
+  bel1_med_b1:  { ico:'🖼', lbl:'Visual I – Unidades de Medida',     qCount:3, gen:()=>_genBel1MED_B1() },
+  bel1_med_b2:  { ico:'📐', lbl:'Verbal I – Unidades de Medida',     qCount:3, gen:()=>_genBel1MED_B2() },
+  bel1_med_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Medida',           qCount:5, gen:()=>_genBel1MED_BQ1(), quiz:true },
+  bel1_med_b3:  { ico:'🖼', lbl:'Visual II – Unidades de Medida',    qCount:3, gen:()=>_genBel1MED_B3() },
+  bel1_med_b4:  { ico:'📐', lbl:'Verbal II – Unidades de Medida',    qCount:3, gen:()=>_genBel1MED_B4() },
+  bel1_med_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Medida',           qCount:5, gen:()=>_genBel1MED_BQ2(), quiz:true },
   // ── Geometría 4° Primaria – Intelectum ──
   int4g_ele_b1:  { ico:'🖼', lbl:'Visual I – Elementos Geométricos',     qCount:3, gen:()=>_genInt4G_ELE_B1() },
   int4g_ele_b2:  { ico:'📐', lbl:'Verbal I – Elementos Geométricos',     qCount:3, gen:()=>_genInt4G_ELE_B2() },
@@ -3141,6 +3298,22 @@ const BINGO_TOPICS = {
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
 const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','ecuacion','trigo','trigvf','conjuntos','trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','em_b0','em_b1','em_b2','em_b3','em_bq1','em_b4','em_b5','em_bq2','incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b9','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu',
 'bel1_num_b1','bel1_num_b2','bel1_num_bq1','bel1_sum_b1','bel1_sum_b2','bel1_sum_bq1','bel1_res_b1','bel1_res_b2','bel1_res_bq1',
+'bel1_cj_b1','bel1_cj_b2','bel1_cj_bq1','bel1_cj_b3','bel1_cj_b4','bel1_cj_bq2','bel1_cj_b5','bel1_cj_b6','bel1_cj_bq3',
+'bel1_n1_b1','bel1_n1_b2','bel1_n1_bq1','bel1_n1_b3','bel1_n1_b4','bel1_n1_bq2',
+'bel1_dec_b1','bel1_dec_b2','bel1_dec_bq1','bel1_dec_b3','bel1_dec_b4','bel1_dec_bq2',
+'bel1_cdu_b1','bel1_cdu_b2','bel1_cdu_bq1','bel1_cdu_b3','bel1_cdu_b4','bel1_cdu_bq2','bel1_cdu_b5','bel1_cdu_b6','bel1_cdu_bq3',
+'bel1_n9_b1','bel1_n9_b2','bel1_n9_bq1','bel1_n9_b3','bel1_n9_b4','bel1_n9_bq2','bel1_n9_b5','bel1_n9_b6','bel1_n9_bq3',
+'bel1_cmp_b1','bel1_cmp_b2','bel1_cmp_bq1','bel1_cmp_b3','bel1_cmp_b4','bel1_cmp_bq2',
+'bel1_adi_b1','bel1_adi_b2','bel1_adi_bq1','bel1_adi_b3','bel1_adi_b4','bel1_adi_bq2','bel1_adi_b5','bel1_adi_b6','bel1_adi_bq3',
+'bel1_sus_b1','bel1_sus_b2','bel1_sus_bq1','bel1_sus_b3','bel1_sus_b4','bel1_sus_bq2','bel1_sus_b5','bel1_sus_b6','bel1_sus_bq3',
+'bel1_opc_b1','bel1_opc_b2','bel1_opc_bq1','bel1_opc_b3','bel1_opc_b4','bel1_opc_bq2',
+'bel1_dmt_b1','bel1_dmt_b2','bel1_dmt_bq1','bel1_dmt_b3','bel1_dmt_b4','bel1_dmt_bq2','bel1_dmt_b5','bel1_dmt_b6','bel1_dmt_bq3',
+'bel1_pi_b1','bel1_pi_b2','bel1_pi_bq1','bel1_pi_b3','bel1_pi_b4','bel1_pi_bq2',
+'bel1_fig_b1','bel1_fig_b2','bel1_fig_bq1','bel1_fig_b3','bel1_fig_b4','bel1_fig_bq2',
+'bel1_sol_b1','bel1_sol_b2','bel1_sol_bq1','bel1_sol_b3','bel1_sol_b4','bel1_sol_bq2',
+'bel1_mon_b1','bel1_mon_b2','bel1_mon_bq1','bel1_mon_b3','bel1_mon_b4','bel1_mon_bq2',
+'bel1_esp_b1','bel1_esp_b2','bel1_esp_bq1','bel1_esp_b3','bel1_esp_b4','bel1_esp_bq2',
+'bel1_med_b1','bel1_med_b2','bel1_med_bq1','bel1_med_b3','bel1_med_b4','bel1_med_bq2',
 'int4g_ele_b1','int4g_ele_b2','int4g_ele_bq1','int4g_ele_b3','int4g_ele_b4','int4g_ele_bq2',
 'int4g_rec_b1','int4g_rec_b2','int4g_rec_bq1','int4g_rec_b3','int4g_rec_b4','int4g_rec_bq2',
 'int4g_seg_b1','int4g_seg_b2','int4g_seg_bq1','int4g_seg_b3','int4g_seg_b4','int4g_seg_bq2','int4g_seg_b5','int4g_seg_b6','int4g_seg_bq3',

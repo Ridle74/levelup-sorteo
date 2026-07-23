@@ -4,7 +4,7 @@
 
 // ── Estado ─────────────────────────────────────────────────────────────────────
 
-let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:600, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[], showConfig:false };
+let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeSec:600, ansMode:'mc', editorial:null, area:null, openSelector:null, editorialChosen:false, selectedUnit:null, quizNum:0, questions:[], answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:null, endTime:null, timeLeft:0, showReview:false, unitSkillList:[], unitDone:[], showConfig:false, selectedExamSkills:null, selectedExamUnitIdx:-1, selectedExamLbl:'' };
 let _prepActiveUserId = undefined; // detecta cambio de cuenta
 
 // ── URL Routing ─────────────────────────────────────────────────────────────────
@@ -928,6 +928,708 @@ function _genBel1RES_B2(){
 }
 function _genBel1RES_BQ1(){return _bqSrcPick(['bel1_res_b1','bel1_res_b2'],[_genBel1RES_B1,_genBel1RES_B2]);}
 
+
+// ── Matemática 1° Primaria – Colegio Belén (curso completo) ──────────────────
+function _b1r(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function _b1s(a){return a.slice().sort(()=>Math.random()-.5);}
+function _b1w(ans,lo,hi,n){n=n||3;var pool=[];for(var d=-3;d<=3;d++){var v=ans+d;if(d!==0&&v>=lo&&v<=hi)pool.push(v);}pool=_b1s(pool).slice(0,n);while(pool.length<n){var v2=_b1r(lo,hi);if(v2!==ans&&pool.indexOf(v2)<0)pool.push(v2);}return pool.slice(0,n).map(String);}
+function _b1pick(a){return a[_b1r(0,a.length-1)];}
+function _b1svgDot(n,color){color=color||'#60a5fa';var s='<svg viewBox="0 0 '+(Math.max(n,1)*28+8)+' 36" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;margin:4px auto;display:block">';for(var i=0;i<n;i++)s+='<circle cx="'+(i*28+18)+'" cy="18" r="11" fill="'+color+'" stroke="#93c5fd" stroke-width="1.5"/>';s+='</svg>';return s;}
+function _b1q(svg,txt){return '<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">'+txt+'</div></div>';}
+
+// U1 – Conjuntos (bel1_cj) ────────────────────────────────────────────────────
+var _CJ_TIPOS=[
+  {n:0,nom:'vacío',def:'Un conjunto sin ningún elemento se llama conjunto'},
+  {n:1,nom:'unitario',def:'Un conjunto con un solo elemento se llama conjunto'},
+];
+function _genBel1CJ_B1(){
+  var n=_b1r(0,5);
+  var tipo=n===0?'vacío':n===1?'unitario':'múltiple';
+  var dots=_b1svgDot(n,'#a78bfa');
+  var q=_b1q(dots,'¿Cuántos elementos tiene este conjunto?');
+  var ws=_b1w(n,0,8);
+  return{q:q,a:String(n),opts:_b1s([String(n),...ws]),mc:true,ste:'Se cuentan los elementos: hay '+n+'.'};
+}
+function _genBel1CJ_B2(){
+  var t=_b1r(0,2);
+  if(t===0){return{q:'Un conjunto con <b>un solo</b> elemento se llama conjunto…',a:'unitario',opts:_b1s(['unitario','vacío','universo','múltiple']),mc:true,ste:'Un conjunto con un solo elemento es unitario.'};}
+  if(t===1){return{q:'Un conjunto <b>sin ningún</b> elemento se llama conjunto…',a:'vacío',opts:_b1s(['vacío','unitario','universo','múltiple']),mc:true,ste:'El conjunto sin elementos es el conjunto vacío.'};}
+  return{q:'El conjunto que contiene a <b>todos</b> los elementos en estudio se llama conjunto…',a:'universo',opts:_b1s(['universo','vacío','unitario','múltiple']),mc:true,ste:'El conjunto que agrupa a todos los elementos es el conjunto universo.'};
+}
+function _genBel1CJ_BQ1(){return _bqSrcPick(['bel1_cj_b1','bel1_cj_b2'],[_genBel1CJ_B1,_genBel1CJ_B2]);}
+function _genBel1CJ_B3(){
+  var a=_b1r(1,6),b=_b1r(1,6);
+  var eq=(a===b);
+  var dotsA=_b1svgDot(a,'#34d399');
+  var dotsB=_b1svgDot(b,'#fb923c');
+  var svg='<div style="text-align:center"><div style="font-size:12px;color:#86efac">Conjunto A ('+a+' elementos)</div>'+dotsA+'<div style="font-size:12px;color:#fdba74;margin-top:4px">Conjunto B ('+b+' elementos)</div>'+dotsB+'</div>';
+  var ans=eq?'Sí, biunívoca':'No hay correspondencia';
+  var op=['Sí, biunívoca','No hay correspondencia'];
+  return{q:svg+'<div style="font-size:14px;text-align:center;margin-top:4px">¿Hay correspondencia 1 a 1 entre A y B?</div>',a:ans,opts:_b1s(op),mc:true,ste:'A tiene '+a+' y B tiene '+b+' elementos. '+(eq?'Son iguales → hay correspondencia biunívoca.':'Son diferentes → no hay correspondencia 1 a 1.')};
+}
+function _genBel1CJ_B4(){
+  var C=_b1r(1,9),D=_b1r(1,9);
+  var t=_b1r(0,1);
+  if(t===0){
+    var tot=C+D;var ws=_b1w(tot,1,20);
+    return{q:'El conjunto A tiene <b>'+C+'</b> frutas y el conjunto B tiene <b>'+D+'</b> frutas. ¿Cuántos elementos hay en total en A∪B?',a:String(tot),opts:_b1s([String(tot),...ws]),mc:true,ste:C+' + '+D+' = '+tot+' elementos en total.'};
+  }
+  return{q:'Un conjunto tiene <b>'+C+'</b> elementos y se le agregan <b>'+D+'</b> más. ¿Cuántos tiene ahora?',a:String(C+D),opts:_b1s([String(C+D),..._b1w(C+D,1,20)]),mc:true,ste:C+' + '+D+' = '+(C+D)+' elementos.'};
+}
+function _genBel1CJ_BQ2(){return _bqSrcPick(['bel1_cj_b3','bel1_cj_b4'],[_genBel1CJ_B3,_genBel1CJ_B4]);}
+function _genBel1CJ_B5(){
+  var conj=[2,4,6,8,10];var extra=[1,3,5,7,9];
+  var elem=_b1pick(conj);var alien=_b1pick(extra);
+  var t=_b1r(0,1);
+  var tested=t===0?elem:alien;
+  var ans=t===0?'Sí pertenece (∈)':'No pertenece (∉)';
+  var dots=conj.map(e=>'<tspan>'+e+'</tspan>').join(', ');
+  var svg='<svg viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg" style="max-width:260px;margin:4px auto;display:block"><ellipse cx="130" cy="44" rx="110" ry="30" fill="rgba(99,102,241,.18)" stroke="#818cf8" stroke-width="2"/><text x="130" y="36" text-anchor="middle" font-size="11" fill="#c7d2fe">A = { 2, 4, 6, 8, 10 }</text><text x="130" y="54" text-anchor="middle" font-size="11" fill="#a5b4fc">(números pares del 2 al 10)</text><text x="130" y="18" text-anchor="middle" font-size="12" fill="#e2e8f0" font-weight="700">Conjunto A</text></svg>';
+  return{q:_b1q(svg,'¿El número <b>'+tested+'</b> pertenece al Conjunto A?'),a:ans,opts:_b1s(['Sí pertenece (∈)','No pertenece (∉)']),mc:true,ste:tested+(t===0?' está en A = {2,4,6,8,10} → pertenece (∈).':" no está en A → no pertenece (∉).")};
+}
+function _genBel1CJ_B6(){
+  var pares=[2,4,6,8,10,12];var impares=[1,3,5,7,9,11];
+  var t=_b1r(0,3);
+  var cases=[
+    {st:'5 ∈ {2, 4, 6, 8}',ans:'F',ste:'5 no está en {2,4,6,8} → Falso.'},
+    {st:'3 ∉ {2, 4, 6, 8}',ans:'V',ste:'3 no está en {2,4,6,8} → Verdadero.'},
+    {st:'6 ∈ {1, 3, 5, 7}',ans:'F',ste:'6 no está en {1,3,5,7} → Falso.'},
+    {st:'9 ∉ {2, 4, 6, 8}',ans:'V',ste:'9 no está en {2,4,6,8} → Verdadero.'},
+  ];
+  var c=cases[t];
+  return{q:'¿La afirmación <b>'+c.st+'</b> es Verdadera (V) o Falsa (F)?',a:c.ans,opts:['V','F'],mc:true,ste:c.ste};
+}
+function _genBel1CJ_BQ3(){return _bqSrcPick(['bel1_cj_b5','bel1_cj_b6'],[_genBel1CJ_B5,_genBel1CJ_B6]);}
+function _genBel1CJ_BPU(){return _bqSrcPick(['bel1_cj_b1','bel1_cj_b2','bel1_cj_b3','bel1_cj_b4','bel1_cj_b5','bel1_cj_b6'],[_genBel1CJ_B1,_genBel1CJ_B2,_genBel1CJ_B3,_genBel1CJ_B4,_genBel1CJ_B5,_genBel1CJ_B6]);}
+
+// U2 – Numeración 0 al 100 (bel1_n1) ──────────────────────────────────────────
+var _NUM_WORDS=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve','treinta','treinta y uno','treinta y dos','treinta y tres','treinta y cuatro','treinta y cinco','treinta y seis','treinta y siete','treinta y ocho','treinta y nueve','cuarenta','cuarenta y uno','cuarenta y dos','cuarenta y tres','cuarenta y cuatro','cuarenta y cinco','cuarenta y seis','cuarenta y siete','cuarenta y ocho','cuarenta y nueve','cincuenta','cincuenta y uno','cincuenta y dos','cincuenta y tres','cincuenta y cuatro','cincuenta y cinco','cincuenta y seis','cincuenta y siete','cincuenta y ocho','cincuenta y nueve','sesenta','sesenta y uno','sesenta y dos','sesenta y tres','sesenta y cuatro','sesenta y cinco','sesenta y seis','sesenta y siete','sesenta y ocho','sesenta y nueve','setenta','setenta y uno','setenta y dos','setenta y tres','setenta y cuatro','setenta y cinco','setenta y seis','setenta y siete','setenta y ocho','setenta y nueve','ochenta','ochenta y uno','ochenta y dos','ochenta y tres','ochenta y cuatro','ochenta y cinco','ochenta y seis','ochenta y siete','ochenta y ocho','ochenta y nueve','noventa','noventa y uno','noventa y dos','noventa y tres','noventa y cuatro','noventa y cinco','noventa y seis','noventa y siete','noventa y ocho','noventa y nueve','cien'];
+function _genBel1N1_B1(){
+  // Secuencia: mostrar 3 números consecutivos con un hueco
+  var n=_b1r(1,48);var pos=_b1r(0,2);
+  var seq=[n,n+1,n+2];var ans=seq[pos];seq[pos]='___';
+  return{q:'¿Qué número falta? <b>'+seq.join(' – ')+'</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,100)]),mc:true,ste:'La secuencia es '+n+', '+(n+1)+', '+(n+2)+'. Falta el '+ans+'.'};
+}
+function _genBel1N1_B2(){
+  var n=_b1r(0,100);
+  var t=_b1r(0,1);
+  if(t===0){
+    var ws=[_b1r(0,100),_b1r(0,100),_b1r(0,100)].filter(v=>v!==n);while(ws.length<3)ws.push(_b1r(0,100));ws=ws.slice(0,3);
+    return{q:'¿Cuál es el número en cifras de <b>"'+_NUM_WORDS[n]+'"</b>?',a:String(n),opts:_b1s([String(n),...ws.map(String)]),mc:true,ste:'"'+_NUM_WORDS[n]+'" en cifras es '+n+'.'};
+  }
+  var opts=_b1s([_NUM_WORDS[n],...[_b1r(0,100),_b1r(0,100),_b1r(0,100)].filter(v=>v!==n).slice(0,3).map(v=>_NUM_WORDS[v])]);
+  return{q:'¿Cómo se escribe en palabras el número <b>'+n+'</b>?',a:_NUM_WORDS[n],opts:opts,mc:true,ste:n+' en palabras es "'+_NUM_WORDS[n]+'".'};
+}
+function _genBel1N1_BQ1(){return _bqSrcPick(['bel1_n1_b1','bel1_n1_b2'],[_genBel1N1_B1,_genBel1N1_B2]);}
+function _genBel1N1_B3(){
+  // secuencia de 10 en 10
+  var base=_b1r(0,8)*10;var pos=_b1r(0,3);
+  var seq=[base,base+10,base+20,base+30];var ans=seq[pos];seq[pos]='___';
+  return{q:'¿Qué número falta? <b>'+seq.join(' – ')+'</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,100)]),mc:true,ste:'Contando de 10 en 10: '+base+', '+(base+10)+', '+(base+20)+', '+(base+30)+'. Falta el '+ans+'.'};
+}
+function _genBel1N1_B4(){
+  var n=_b1r(1,99);var t=_b1r(0,1);
+  var ans=t===0?n-1:n+1;
+  return{q:'¿Qué número va '+(t===0?'<b>antes</b>':'<b>después</b>')+' del <b>'+n+'</b>?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,100)]),mc:true,ste:'El número que va '+(t===0?'antes':'después')+' de '+n+' es '+ans+'.'};
+}
+function _genBel1N1_BQ2(){return _bqSrcPick(['bel1_n1_b3','bel1_n1_b4'],[_genBel1N1_B3,_genBel1N1_B4]);}
+function _genBel1N1_BPU(){return _bqSrcPick(['bel1_n1_b1','bel1_n1_b2','bel1_n1_b3','bel1_n1_b4'],[_genBel1N1_B1,_genBel1N1_B2,_genBel1N1_B3,_genBel1N1_B4]);}
+
+// U3 – La Decena (bel1_dec) ────────────────────────────────────────────────────
+function _b1decSvg(d,u){
+  var s='<svg viewBox="0 0 '+(d*30+u*16+20)+' 60" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;margin:4px auto;display:block">';
+  for(var i=0;i<d;i++)s+='<rect x="'+(i*30+4)+'" y="10" width="20" height="40" rx="3" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/>';
+  for(var j=0;j<u;j++)s+='<rect x="'+(d*30+j*15+6)+'" y="22" width="10" height="18" rx="2" fill="#60a5fa" stroke="#3b82f6" stroke-width="1"/>';
+  s+='</svg>';
+  if(d>0)s+='<div style="font-size:11px;color:#fcd34d;text-align:center">□=decena &nbsp; ▪=unidad</div>';
+  return s;
+}
+function _genBel1DEC_B1(){
+  var d=_b1r(1,9),u=_b1r(0,9);var ans=d*10+u;
+  var svg=_b1decSvg(d,u);
+  return{q:_b1q(svg,'¿Qué número representan <b>'+d+' decena(s)</b> y <b>'+u+' unidad(es)</b>?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,99)]),mc:true,ste:d+' decenas × 10 + '+u+' unidades = '+ans+'.'};
+}
+function _genBel1DEC_B2(){
+  var d=_b1r(1,9),u=_b1r(0,9);var ans=d*10+u;
+  return{q:'<b>'+d+'</b> decenas y <b>'+u+'</b> unidades = ?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,99)]),mc:true,ste:d+'×10 + '+u+' = '+ans+'.'};
+}
+function _genBel1DEC_BQ1(){return _bqSrcPick(['bel1_dec_b1','bel1_dec_b2'],[_genBel1DEC_B1,_genBel1DEC_B2]);}
+function _genBel1DEC_B3(){
+  var n=_b1r(10,99);var d=Math.floor(n/10),u=n%10;
+  var svg=_b1decSvg(d,u);
+  return{q:_b1q(svg,'¿Qué número representan estas barras?'),a:String(n),opts:_b1s([String(n),..._b1w(n,10,99)]),mc:true,ste:d+' decenas y '+u+' unidades = '+n+'.'};
+}
+function _genBel1DEC_B4(){
+  var n=_b1r(10,99);var d=Math.floor(n/10),u=n%10;
+  var t=_b1r(0,1);
+  var ans=t===0?String(d):String(u);
+  return{q:'El número <b>'+n+'</b> tiene… ¿cuántas <b>'+(t===0?'decenas':'unidades')+'</b>?',a:ans,opts:_b1s([ans,..._b1w(Number(ans),0,9)]),mc:true,ste:n+' = '+d+' decena(s) y '+u+' unidad(es). La respuesta es '+ans+'.'};
+}
+function _genBel1DEC_BQ2(){return _bqSrcPick(['bel1_dec_b3','bel1_dec_b4'],[_genBel1DEC_B3,_genBel1DEC_B4]);}
+function _genBel1DEC_BPU(){return _bqSrcPick(['bel1_dec_b1','bel1_dec_b2','bel1_dec_b3','bel1_dec_b4'],[_genBel1DEC_B1,_genBel1DEC_B2,_genBel1DEC_B3,_genBel1DEC_B4]);}
+
+// U4 – La Centena y Valor Posicional C-D-U (bel1_cdu) ─────────────────────────
+function _b1cduSvg(c,d,u){
+  var s='<svg viewBox="0 0 '+(c*36+d*22+u*14+20)+' 70" xmlns="http://www.w3.org/2000/svg" style="max-width:320px;margin:4px auto;display:block">';
+  for(var i=0;i<c;i++)s+='<rect x="'+(i*36+4)+'" y="8" width="30" height="50" rx="4" fill="#f43f5e" stroke="#e11d48" stroke-width="1.5"/>';
+  for(var j=0;j<d;j++)s+='<rect x="'+(c*36+j*22+4)+'" y="16" width="16" height="38" rx="3" fill="#fbbf24" stroke="#f59e0b" stroke-width="1.5"/>';
+  for(var k=0;k<u;k++)s+='<rect x="'+(c*36+d*22+k*13+6)+'" y="26" width="9" height="18" rx="2" fill="#60a5fa" stroke="#3b82f6" stroke-width="1"/>';
+  s+='</svg><div style="font-size:10px;color:#fda4af;text-align:center">■=centena &nbsp; □=decena &nbsp; ▪=unidad</div>';
+  return s;
+}
+function _genBel1CDU_B1(){
+  var c=_b1r(1,3);
+  var svg=_b1cduSvg(c,0,0);
+  var ans=c*100;
+  return{q:_b1q(svg,'¿Cuánto representan estos bloques?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,100,999)]),mc:true,ste:c+' centena(s) = '+ans+'.'};
+}
+function _genBel1CDU_B2(){
+  var t=_b1r(0,2);
+  var cases=[
+    {q:'1 centena tiene… ¿cuántas <b>unidades</b>?',a:'100',opts:_b1s(['100','10','1000','50']),ste:'1 centena = 100 unidades.'},
+    {q:'1 centena tiene… ¿cuántas <b>decenas</b>?',a:'10',opts:_b1s(['10','100','1','20']),ste:'1 centena = 10 decenas.'},
+    {q:'10 decenas forman… ¿cuántas centenas?',a:'1',opts:_b1s(['1','10','100','2']),ste:'10 decenas = 1 centena.'},
+  ];
+  return cases[t];
+}
+function _genBel1CDU_BQ1(){return _bqSrcPick(['bel1_cdu_b1','bel1_cdu_b2'],[_genBel1CDU_B1,_genBel1CDU_B2]);}
+function _genBel1CDU_B3(){
+  var c=_b1r(1,9),d=_b1r(0,9),u=_b1r(0,9);var ans=c*100+d*10+u;
+  var svg=_b1cduSvg(Math.min(c,3),Math.min(d,5),Math.min(u,5));
+  return{q:_b1q(svg,'Tablero C-D-U: C=<b>'+c+'</b>, D=<b>'+d+'</b>, U=<b>'+u+'</b>. ¿Qué número es?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,100,999)]),mc:true,ste:c+'×100 + '+d+'×10 + '+u+' = '+ans+'.'};
+}
+function _genBel1CDU_B4(){
+  var n=_b1r(100,999);var c=Math.floor(n/100),d=Math.floor((n%100)/10),u=n%10;
+  var t=_b1r(0,2);var lbls=['centenas','decenas','unidades'];var vals=[c,d,u];
+  return{q:'El número <b>'+n+'</b> tiene… ¿cuántas <b>'+lbls[t]+'</b>?',a:String(vals[t]),opts:_b1s([String(vals[t]),..._b1w(vals[t],0,9)]),mc:true,ste:n+' = '+c+' C, '+d+' D, '+u+' U. La respuesta es '+vals[t]+'.'};
+}
+function _genBel1CDU_BQ2(){return _bqSrcPick(['bel1_cdu_b3','bel1_cdu_b4'],[_genBel1CDU_B3,_genBel1CDU_B4]);}
+function _genBel1CDU_B5(){
+  var c=_b1r(1,9),d=_b1r(0,9),u=_b1r(0,9);var n=c*100+d*10+u;
+  var cW=c*100,dW=d*10;
+  var ans=cW+' + '+dW+' + '+u;
+  var ws=[c*100+d*10+'+ '+u, (c*100+d)+' + '+u, String(n)];
+  return{q:'¿Cómo se descompone el número <b>'+n+'</b>?',a:ans,opts:_b1s([ans,...ws.slice(0,3)]),mc:true,ste:n+' = '+cW+' + '+dW+' + '+u+'.'};
+}
+function _genBel1CDU_B6(){
+  var c=_b1r(1,9),d=_b1r(0,9),u=_b1r(0,9);var ans=c*100+d*10+u;
+  return{q:'<b>'+c+'</b> centenas, <b>'+d+'</b> decenas y <b>'+u+'</b> unidades = ?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,100,999)]),mc:true,ste:c+'×100 + '+d+'×10 + '+u+' = '+ans+'.'};
+}
+function _genBel1CDU_BQ3(){return _bqSrcPick(['bel1_cdu_b5','bel1_cdu_b6'],[_genBel1CDU_B5,_genBel1CDU_B6]);}
+function _genBel1CDU_BPU(){return _bqSrcPick(['bel1_cdu_b1','bel1_cdu_b2','bel1_cdu_b3','bel1_cdu_b4','bel1_cdu_b5','bel1_cdu_b6'],[_genBel1CDU_B1,_genBel1CDU_B2,_genBel1CDU_B3,_genBel1CDU_B4,_genBel1CDU_B5,_genBel1CDU_B6]);}
+
+// U5 – Numeración 100 al 999 (bel1_n9) ────────────────────────────────────────
+function _b1numWord3(n){
+  var cents=['','cien','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
+  var c=Math.floor(n/100),r=n%100;
+  var cs=c===1&&r===0?'cien':c===1?'ciento':cents[c];
+  return cs+(r>0?' '+_NUM_WORDS[r]:'');
+}
+function _genBel1N9_B1(){
+  // secuencia en rango 100-399
+  var base=_b1r(10,38)*10;var step=_b1pick([1,2,5,10]);
+  var seq=[base,base+step,base+step*2,base+step*3];var pos=_b1r(0,3);
+  var ans=seq[pos];seq[pos]='___';
+  return{q:'¿Qué número falta? <b>'+seq.join(' – ')+'</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,100,400)]),mc:true,ste:'La serie avanza de '+step+' en '+step+'. Falta el '+ans+'.'};
+}
+function _genBel1N9_B2(){
+  var n=_b1r(100,399);
+  var t=_b1r(0,1);
+  var w=_b1numWord3(n);
+  if(t===0)return{q:'¿Cómo se escribe en palabras el número <b>'+n+'</b>?',a:w,opts:_b1s([w,_b1numWord3(_b1r(100,399)),_b1numWord3(_b1r(100,399)),_b1numWord3(_b1r(100,399))]),mc:true,ste:n+' en palabras es "'+w+'".'};
+  return{q:'¿Cuál es el número de <b>"'+w+'"</b>?',a:String(n),opts:_b1s([String(n),..._b1w(n,100,399)]),mc:true,ste:'"'+w+'" en cifras es '+n+'.'};
+}
+function _genBel1N9_BQ1(){return _bqSrcPick(['bel1_n9_b1','bel1_n9_b2'],[_genBel1N9_B1,_genBel1N9_B2]);}
+function _genBel1N9_B3(){
+  var base=_b1r(40,68)*10;var step=_b1pick([1,2,5,10]);
+  var seq=[base,base+step,base+step*2,base+step*3];var pos=_b1r(0,3);
+  var ans=seq[pos];seq[pos]='___';
+  return{q:'¿Qué número falta? <b>'+seq.join(' – ')+'</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,400,700)]),mc:true,ste:'La serie avanza de '+step+' en '+step+'. Falta el '+ans+'.'};
+}
+function _genBel1N9_B4(){
+  var n=_b1r(400,699);var t=_b1r(0,1);
+  var ans=t===0?n-1:n+1;
+  return{q:'¿Qué número va '+(t===0?'<b>antes</b>':'<b>después</b>')+' del <b>'+n+'</b>?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,400,700)]),mc:true,ste:'El número '+(t===0?'anterior':'siguiente')+' al '+n+' es '+ans+'.'};
+}
+function _genBel1N9_BQ2(){return _bqSrcPick(['bel1_n9_b3','bel1_n9_b4'],[_genBel1N9_B3,_genBel1N9_B4]);}
+function _genBel1N9_B5(){
+  var base=_b1r(70,98)*10;var step=_b1pick([1,2,5,10]);
+  var seq=[base,base+step,base+step*2,base+step*3];var pos=_b1r(0,3);
+  var ans=seq[pos];seq[pos]='___';
+  return{q:'¿Qué número falta? <b>'+seq.join(' – ')+'</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,700,999)]),mc:true,ste:'La serie avanza de '+step+' en '+step+'. Falta el '+ans+'.'};
+}
+function _genBel1N9_B6(){
+  var a=_b1r(100,997),b=_b1r(100,997),c=_b1r(100,997);
+  while(b===a||b===c)b=_b1r(100,997);while(c===a||c===b)c=_b1r(100,997);
+  var sorted=[a,b,c].sort((x,y)=>y-x);
+  var ans=sorted.join(' – ');
+  var opts=_b1s([ans,sorted[0]+' – '+sorted[2]+' – '+sorted[1],[c,a,b].join(' – '),[b,c,a].join(' – ')]);
+  return{q:'Ordena de <b>mayor a menor</b>: '+a+', '+b+', '+c,a:ans,opts:opts,mc:true,ste:'Mayor a menor: '+ans+'.'};
+}
+function _genBel1N9_BQ3(){return _bqSrcPick(['bel1_n9_b5','bel1_n9_b6'],[_genBel1N9_B5,_genBel1N9_B6]);}
+function _genBel1N9_BPU(){return _bqSrcPick(['bel1_n9_b1','bel1_n9_b2','bel1_n9_b3','bel1_n9_b4','bel1_n9_b5','bel1_n9_b6'],[_genBel1N9_B1,_genBel1N9_B2,_genBel1N9_B3,_genBel1N9_B4,_genBel1N9_B5,_genBel1N9_B6]);}
+
+// U6 – Mayor, Menor e Igual (bel1_cmp) ────────────────────────────────────────
+function _b1cmpSvg(a,b){
+  var wa=a*14+8,wb=b*14+8;
+  return '<svg viewBox="0 0 '+(wa+wb+60)+' 44" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;margin:4px auto;display:block">'
+    +'<rect x="2" y="8" width="'+wa+'" height="28" rx="4" fill="#34d399" stroke="#10b981" stroke-width="1.5"/>'
+    +'<text x="'+(wa/2+2)+'" y="26" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">'+a+'</text>'
+    +'<text x="'+(wa+30)+'" y="26" text-anchor="middle" font-size="20" fill="#e2e8f0">___</text>'
+    +'<rect x="'+(wa+56)+'" y="8" width="'+wb+'" height="28" rx="4" fill="#fb923c" stroke="#ea580c" stroke-width="1.5"/>'
+    +'<text x="'+(wa+56+wb/2)+'" y="26" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">'+b+'</text>'
+    +'</svg>';
+}
+function _genBel1CMP_B1(){
+  var a=_b1r(1,9),b=_b1r(1,9);
+  var ans=a>b?'>':a<b?'<':'=';
+  var svg=_b1cmpSvg(a,b);
+  return{q:_b1q(svg,'¿Qué símbolo va entre las barras? &nbsp; '+a+' ___ '+b),a:ans,opts:_b1s(['>','<','=']),mc:true,ste:a+(a>b?' es mayor que ':a<b?' es menor que ':' es igual a ')+b+'. Se escribe "'+ans+'".'};
+}
+function _genBel1CMP_B2(){
+  var a=_b1r(1,99),b=_b1r(1,99);
+  var ans=a>b?'>':a<b?'<':'=';
+  return{q:'Coloca >, < o =: &nbsp; <b>'+a+'</b> ___ <b>'+b+'</b>',a:ans,opts:_b1s(['>','<','=']),mc:true,ste:a+' '+ans+' '+b+'.'};
+}
+function _genBel1CMP_BQ1(){return _bqSrcPick(['bel1_cmp_b1','bel1_cmp_b2'],[_genBel1CMP_B1,_genBel1CMP_B2]);}
+function _genBel1CMP_B3(){
+  var nums=[_b1r(100,999),_b1r(100,999),_b1r(100,999)];
+  var t=_b1r(0,1);
+  var ans=t===0?Math.max(...nums):Math.min(...nums);
+  return{q:'De los números <b>'+nums.join(', ')+'</b>, ¿cuál es el <b>'+(t===0?'mayor':'menor')+'</b>?',a:String(ans),opts:_b1s(nums.map(String)),mc:true,ste:'El '+(t===0?'mayor':'menor')+' es '+ans+'.'};
+}
+function _genBel1CMP_B4(){
+  var a=_b1r(100,999),b=_b1r(100,999);
+  var ans=a>b?'>':a<b?'<':'=';
+  return{q:'Coloca >, < o =: &nbsp; <b>'+a+'</b> ___ <b>'+b+'</b>',a:ans,opts:_b1s(['>','<','=']),mc:true,ste:a+' '+ans+' '+b+'.'};
+}
+function _genBel1CMP_BQ2(){return _bqSrcPick(['bel1_cmp_b3','bel1_cmp_b4'],[_genBel1CMP_B3,_genBel1CMP_B4]);}
+function _genBel1CMP_BPU(){return _bqSrcPick(['bel1_cmp_b1','bel1_cmp_b2','bel1_cmp_b3','bel1_cmp_b4'],[_genBel1CMP_B1,_genBel1CMP_B2,_genBel1CMP_B3,_genBel1CMP_B4]);}
+
+// U7 – Adición (bel1_adi) ──────────────────────────────────────────────────────
+function _b1addSvg(a,b){
+  var s='<svg viewBox="0 0 '+(Math.max(a+b,1)*22+30)+' 52" xmlns="http://www.w3.org/2000/svg" style="max-width:320px;margin:4px auto;display:block">';
+  for(var i=0;i<a;i++)s+='<circle cx="'+(i*22+14)+'" cy="20" r="9" fill="#34d399" stroke="#10b981" stroke-width="1.5"/>';
+  s+='<text x="'+(a*22+6)+'" y="24" font-size="18" fill="#e2e8f0">+</text>';
+  for(var j=0;j<b;j++)s+='<circle cx="'+(a*22+26+j*22)+'" cy="20" r="9" fill="#a78bfa" stroke="#7c3aed" stroke-width="1.5"/>';
+  s+='<text x="6" y="46" font-size="11" fill="#6ee7b7">← '+a+'</text>';
+  s+='<text x="'+(a*22+24)+'" y="46" font-size="11" fill="#c4b5fd">← '+b+'</text>';
+  s+='</svg>';
+  return s;
+}
+function _genBel1ADI_B1(){
+  var a=_b1r(1,6),b=_b1r(1,6);var ans=a+b;
+  var svg=_b1addSvg(a,b);
+  return{q:_b1q(svg,'¿Cuántas fichas hay en total?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,15)]),mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genBel1ADI_B2(){
+  var a=_b1r(1,9),b=_b1r(1,9);var ans=a+b;
+  return{q:'<b>'+a+' + '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,20)]),mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genBel1ADI_BQ1(){return _bqSrcPick(['bel1_adi_b1','bel1_adi_b2'],[_genBel1ADI_B1,_genBel1ADI_B2]);}
+function _genBel1ADI_B3(){
+  // 2 dígitos sin llevar
+  var a1=_b1r(1,8),a0=_b1r(0,9);
+  var b1=_b1r(0,9-a1),b0=_b1r(0,9-a0);
+  var a=a1*10+a0,b=b1*10+b0,ans=a+b;
+  return{q:'Resuelve la suma: <b>'+a+' + '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,10,99)]),mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genBel1ADI_B4(){
+  // 2 dígitos con posible llevar
+  var a=_b1r(10,89),b=_b1r(10,99-a);var ans=a+b;
+  return{q:'Resuelve: <b>'+a+' + '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,10,180)]),mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genBel1ADI_BQ2(){return _bqSrcPick(['bel1_adi_b3','bel1_adi_b4'],[_genBel1ADI_B3,_genBel1ADI_B4]);}
+function _genBel1ADI_B5(){
+  var a=_b1r(100,799),b=_b1r(100,999-a);var ans=a+b;
+  return{q:'Suma de 3 dígitos: <b>'+a+' + '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,200,999)]),mc:true,ste:a+' + '+b+' = '+ans+'.'};
+}
+function _genBel1ADI_B6(){
+  var items=[['lápices','cuadernos','colores','plátanos','naranjas','pelotas'],['libros','flores','globos']];
+  var obj=_b1pick(items[0]);var a=_b1r(5,50),b=_b1r(1,30);var ans=a+b;
+  return{q:'Tenía <b>'+a+'</b> '+obj+' y me regalaron <b>'+b+'</b> más. ¿Cuántos tengo ahora?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,5,90)]),mc:true,ste:a+' + '+b+' = '+ans+' '+obj+'.'};
+}
+function _genBel1ADI_BQ3(){return _bqSrcPick(['bel1_adi_b5','bel1_adi_b6'],[_genBel1ADI_B5,_genBel1ADI_B6]);}
+function _genBel1ADI_BPU(){return _bqSrcPick(['bel1_adi_b1','bel1_adi_b2','bel1_adi_b3','bel1_adi_b4','bel1_adi_b5','bel1_adi_b6'],[_genBel1ADI_B1,_genBel1ADI_B2,_genBel1ADI_B3,_genBel1ADI_B4,_genBel1ADI_B5,_genBel1ADI_B6]);}
+
+// U8 – Sustracción (bel1_sus) ──────────────────────────────────────────────────
+function _b1subSvg(total,quitar){
+  var s='<svg viewBox="0 0 '+(total*22+10)+' 52" xmlns="http://www.w3.org/2000/svg" style="max-width:320px;margin:4px auto;display:block">';
+  for(var i=0;i<total;i++){
+    if(i<quitar){
+      s+='<circle cx="'+(i*22+14)+'" cy="20" r="9" fill="rgba(248,113,113,0.3)" stroke="#ef4444" stroke-width="1.5"/>';
+      s+='<line x1="'+(i*22+6)+'" y1="12" x2="'+(i*22+22)+'" y2="28" stroke="#ef4444" stroke-width="2"/>';
+    } else {
+      s+='<circle cx="'+(i*22+14)+'" cy="20" r="9" fill="#34d399" stroke="#10b981" stroke-width="1.5"/>';
+    }
+  }
+  s+='</svg>';
+  return s;
+}
+function _genBel1SUS_B1(){
+  var a=_b1r(2,8),b=_b1r(1,a);var ans=a-b;
+  var svg=_b1subSvg(a,b);
+  return{q:_b1q(svg,'Se tachan <b>'+b+'</b> fichas. ¿Cuántas quedan?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,10)]),mc:true,ste:a+' − '+b+' = '+ans+'.'};
+}
+function _genBel1SUS_B2(){
+  var a=_b1r(2,18),b=_b1r(1,a);var ans=a-b;
+  return{q:'<b>'+a+' − '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,18)]),mc:true,ste:a+' − '+b+' = '+ans+'.'};
+}
+function _genBel1SUS_BQ1(){return _bqSrcPick(['bel1_sus_b1','bel1_sus_b2'],[_genBel1SUS_B1,_genBel1SUS_B2]);}
+function _genBel1SUS_B3(){
+  // sin préstamo
+  var a1=_b1r(2,9),a0=_b1r(0,9),b1=_b1r(1,a1),b0=_b1r(0,a0);
+  var a=a1*10+a0,b=b1*10+b0,ans=a-b;
+  return{q:'Resuelve: <b>'+a+' − '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,90)]),mc:true,ste:a+' − '+b+' = '+ans+'.'};
+}
+function _genBel1SUS_B4(){
+  var a=_b1r(20,99),b=_b1r(1,a-1);var ans=a-b;
+  return{q:'Resuelve: <b>'+a+' − '+b+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,99)]),mc:true,ste:a+' − '+b+' = '+ans+'.'};
+}
+function _genBel1SUS_BQ2(){return _bqSrcPick(['bel1_sus_b3','bel1_sus_b4'],[_genBel1SUS_B3,_genBel1SUS_B4]);}
+function _genBel1SUS_B5(){
+  // Pirámide de resta 2 pisos: base tiene 3 casillas, piso 2 tiene 2, cima 1
+  // Regla: cada casilla = casilla_izq − casilla_der del nivel inferior
+  var c=_b1r(5,30),b=_b1r(1,c-1),a=_b1r(1,b);
+  // base: a, b, c → piso2: b-a, c-b → cima: (c-b)-(b-a)
+  var p1=b-a,p2=c-b,top=p2-p1;
+  if(top<0){var tmp=a;a=c;c=tmp;p1=b-a;p2=c-b;top=p2-p1;}
+  var svg='<svg viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;margin:4px auto;display:block">'
+    +'<rect x="10" y="80" width="44" height="30" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1.5"/><text x="32" y="100" text-anchor="middle" font-size="15" fill="#fff">'+a+'</text>'
+    +'<rect x="88" y="80" width="44" height="30" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1.5"/><text x="110" y="100" text-anchor="middle" font-size="15" fill="#fff">'+b+'</text>'
+    +'<rect x="166" y="80" width="44" height="30" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1.5"/><text x="188" y="100" text-anchor="middle" font-size="15" fill="#fff">'+c+'</text>'
+    +'<rect x="49" y="44" width="44" height="30" rx="4" fill="#374151" stroke="#fbbf24" stroke-width="1.5"/><text x="71" y="64" text-anchor="middle" font-size="15" fill="#fbbf24">'+p1+'</text>'
+    +'<rect x="127" y="44" width="44" height="30" rx="4" fill="#374151" stroke="#fbbf24" stroke-width="1.5"/><text x="149" y="64" text-anchor="middle" font-size="15" fill="#fbbf24">'+p2+'</text>'
+    +'<rect x="88" y="8" width="44" height="30" rx="4" fill="#374151" stroke="#f87171" stroke-width="2"/><text x="110" y="28" text-anchor="middle" font-size="15" fill="#f87171">?</text>'
+    +'</svg>';
+  return{q:_b1q(svg,'En la pirámide: piso 2 = diferencia de base. ¿Cuál es el valor de la cima?'),a:String(top),opts:_b1s([String(top),..._b1w(top,0,30)]),mc:true,ste:'P2_izq='+p1+', P2_der='+p2+'. Cima = '+p2+' − '+p1+' = '+top+'.'};
+}
+function _genBel1SUS_B6(){
+  var a=_b1r(5,25),b=_b1r(1,a-1),c=b+_b1r(1,15);
+  var p1=b-a<0?a-b:b-a;var p2=Math.abs(c-b);var top=Math.abs(p2-p1);
+  return{q:'Pirámide de resta. Base: <b>'+a+'</b>, <b>'+b+'</b>, <b>'+c+'</b>. Piso 2: <b>'+p1+'</b>, <b>'+p2+'</b>. ¿Cuál es la cima?',a:String(top),opts:_b1s([String(top),..._b1w(top,0,25)]),mc:true,ste:'Cima = '+p2+' − '+p1+' = '+top+'.'};
+}
+function _genBel1SUS_BQ3(){return _bqSrcPick(['bel1_sus_b5','bel1_sus_b6'],[_genBel1SUS_B5,_genBel1SUS_B6]);}
+function _genBel1SUS_BPU(){return _bqSrcPick(['bel1_sus_b1','bel1_sus_b2','bel1_sus_b3','bel1_sus_b4','bel1_sus_b5','bel1_sus_b6'],[_genBel1SUS_B1,_genBel1SUS_B2,_genBel1SUS_B3,_genBel1SUS_B4,_genBel1SUS_B5,_genBel1SUS_B6]);}
+
+// U9 – Operaciones Combinadas (bel1_opc) ──────────────────────────────────────
+function _genBel1OPC_B1(){
+  var a=_b1r(1,5),b=_b1r(1,5),c=_b1r(1,Math.min(a+b,6));
+  var ans=a+b-c;
+  var svg='<svg viewBox="0 0 '+(Math.max(a+b,1)*24+30)+' 60" xmlns="http://www.w3.org/2000/svg" style="max-width:340px;margin:4px auto;display:block">';
+  for(var i=0;i<a;i++)svg+='<circle cx="'+(i*24+14)+'" cy="22" r="9" fill="#34d399" stroke="#10b981" stroke-width="1.5"/>';
+  svg+='<text x="'+(a*24+4)+'" y="26" font-size="16" fill="#e2e8f0">+</text>';
+  for(var j=0;j<b;j++)svg+='<circle cx="'+(a*24+24+j*24)+'" cy="22" r="9" fill="#a78bfa" stroke="#7c3aed" stroke-width="1.5"/>';
+  svg+='<text x="'+(a*24+b*24+18)+'" y="26" font-size="16" fill="#e2e8f0">−</text>';
+  for(var k=0;k<c;k++){svg+='<circle cx="'+(a*24+b*24+38+k*24)+'" cy="22" r="9" fill="rgba(248,113,113,0.4)" stroke="#ef4444" stroke-width="1.5"/>';svg+='<line x1="'+(a*24+b*24+30+k*24)+'" y1="14" x2="'+(a*24+b*24+46+k*24)+'" y2="30" stroke="#ef4444" stroke-width="2"/>';}
+  svg+='</svg>';
+  return{q:_b1q(svg,'¿Cuántas fichas quedan? ('+a+' + '+b+' − '+c+')'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,0,15)]),mc:true,ste:a+' + '+b+' − '+c+' = '+ans+'.'};
+}
+function _genBel1OPC_B2(){
+  var a=_b1r(10,50),b=_b1r(1,30),c=_b1r(1,a+b-1);var ans=a+b-c;
+  return{q:'Resuelve: <b>'+a+' + '+b+' − '+c+' = ?</b>',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,80)]),mc:true,ste:a+' + '+b+' = '+(a+b)+'. Luego '+(a+b)+' − '+c+' = '+ans+'.'};
+}
+function _genBel1OPC_BQ1(){return _bqSrcPick(['bel1_opc_b1','bel1_opc_b2'],[_genBel1OPC_B1,_genBel1OPC_B2]);}
+function _genBel1OPC_B3(){
+  var precio=_b1r(10,80),pago=precio+_b1r(1,20);var vuelto=pago-precio;
+  return{q:'Un cuaderno cuesta S/ <b>'+precio+'</b>. Pagué con S/ <b>'+pago+'</b>. ¿Cuánto es el vuelto?',a:String(vuelto),opts:_b1s([String(vuelto),..._b1w(vuelto,1,30)]),mc:true,ste:'Vuelto = '+pago+' − '+precio+' = '+vuelto+' soles.'};
+}
+function _genBel1OPC_B4(){
+  var a=_b1r(10,60),b=_b1r(5,40),c=_b1r(1,Math.min(a+b-1,50));var ans=a+b-c;
+  var objs=[['lápices','borradores'],['globos','pelotas'],['libros','cuadernos']];
+  var p=_b1pick(objs);
+  return{q:'Había <b>'+a+'</b> '+p[0]+'. Llegaron <b>'+b+'</b> más y luego se fueron <b>'+c+'</b>. ¿Cuántos quedan?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,100)]),mc:true,ste:a+' + '+b+' − '+c+' = '+ans+'.'};
+}
+function _genBel1OPC_BQ2(){return _bqSrcPick(['bel1_opc_b3','bel1_opc_b4'],[_genBel1OPC_B3,_genBel1OPC_B4]);}
+function _genBel1OPC_BPU(){return _bqSrcPick(['bel1_opc_b1','bel1_opc_b2','bel1_opc_b3','bel1_opc_b4'],[_genBel1OPC_B1,_genBel1OPC_B2,_genBel1OPC_B3,_genBel1OPC_B4]);}
+
+// U10 – Doble, Mitad y Triple (bel1_dmt) ──────────────────────────────────────
+function _b1dblSvg(n,groups,color){
+  var w=groups*n*18+groups*10+10;
+  var s='<svg viewBox="0 0 '+w+' 44" xmlns="http://www.w3.org/2000/svg" style="max-width:320px;margin:4px auto;display:block">';
+  for(var g=0;g<groups;g++){for(var i=0;i<n;i++)s+='<circle cx="'+(g*(n*18+10)+i*18+12)+'" cy="22" r="7" fill="'+color+'" stroke="#fff" stroke-width="1"/>';}
+  s+='</svg>';return s;
+}
+function _genBel1DMT_B1(){
+  var n=_b1r(1,15);var ans=n*2;
+  var svg=_b1dblSvg(n,2,'#60a5fa');
+  return{q:_b1q(svg,'Hay <b>2 grupos</b> de <b>'+n+'</b> fichas. ¿El doble de '+n+' es…?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,50)]),mc:true,ste:'El doble de '+n+' = '+n+' × 2 = '+ans+'.'};
+}
+function _genBel1DMT_B2(){
+  var n=_b1r(1,50);var ans=n*2;
+  return{q:'¿Cuál es el <b>doble</b> de <b>'+n+'</b>?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,100)]),mc:true,ste:'Doble de '+n+' = '+n+' + '+n+' = '+ans+'.'};
+}
+function _genBel1DMT_BQ1(){return _bqSrcPick(['bel1_dmt_b1','bel1_dmt_b2'],[_genBel1DMT_B1,_genBel1DMT_B2]);}
+function _genBel1DMT_B3(){
+  var ans=_b1r(1,20)*2;var n=ans;
+  var mitad=n/2;
+  var w=n*16+10;
+  var svg='<svg viewBox="0 0 '+w+' 56" xmlns="http://www.w3.org/2000/svg" style="max-width:340px;margin:4px auto;display:block">'
+    +'<rect x="4" y="10" width="'+(n*8)+'" height="30" rx="4" fill="#34d399" stroke="#10b981" stroke-width="1.5"/>'
+    +'<line x1="'+(n*8/2+4)+'" y1="6" x2="'+(n*8/2+4)+'" y2="44" stroke="#fff" stroke-width="2" stroke-dasharray="4,2"/>'
+    +'<text x="'+(n*8/4+4)+'" y="30" text-anchor="middle" font-size="12" fill="#fff">'+mitad+'</text>'
+    +'<text x="'+(n*8*3/4+4)+'" y="30" text-anchor="middle" font-size="12" fill="#fff">'+mitad+'</text>'
+    +'</svg>';
+  return{q:_b1q(svg,'La barra representa <b>'+n+'</b>. ¿Cuál es la mitad?'),a:String(mitad),opts:_b1s([String(mitad),..._b1w(mitad,1,30)]),mc:true,ste:'La mitad de '+n+' = '+n+' ÷ 2 = '+mitad+'.'};
+}
+function _genBel1DMT_B4(){
+  var mitad=_b1r(1,50);var n=mitad*2;
+  return{q:'¿Cuál es la <b>mitad</b> de <b>'+n+'</b>?',a:String(mitad),opts:_b1s([String(mitad),..._b1w(mitad,1,60)]),mc:true,ste:'La mitad de '+n+' = '+n+' ÷ 2 = '+mitad+'.'};
+}
+function _genBel1DMT_BQ2(){return _bqSrcPick(['bel1_dmt_b3','bel1_dmt_b4'],[_genBel1DMT_B3,_genBel1DMT_B4]);}
+function _genBel1DMT_B5(){
+  var n=_b1r(1,10);var ans=n*3;
+  var svg=_b1dblSvg(n,3,'#f472b6');
+  return{q:_b1q(svg,'Hay <b>3 grupos</b> de <b>'+n+'</b> fichas. ¿El triple de '+n+' es…?'),a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,40)]),mc:true,ste:'El triple de '+n+' = '+n+' × 3 = '+ans+'.'};
+}
+function _genBel1DMT_B6(){
+  var n=_b1r(1,33);var ans=n*3;
+  return{q:'¿Cuál es el <b>triple</b> de <b>'+n+'</b>?',a:String(ans),opts:_b1s([String(ans),..._b1w(ans,1,99)]),mc:true,ste:'Triple de '+n+' = '+n+' × 3 = '+ans+'.'};
+}
+function _genBel1DMT_BQ3(){return _bqSrcPick(['bel1_dmt_b5','bel1_dmt_b6'],[_genBel1DMT_B5,_genBel1DMT_B6]);}
+function _genBel1DMT_BPU(){return _bqSrcPick(['bel1_dmt_b1','bel1_dmt_b2','bel1_dmt_b3','bel1_dmt_b4','bel1_dmt_b5','bel1_dmt_b6'],[_genBel1DMT_B1,_genBel1DMT_B2,_genBel1DMT_B3,_genBel1DMT_B4,_genBel1DMT_B5,_genBel1DMT_B6]);}
+
+// U11 – Números Pares e Impares (bel1_pi) ─────────────────────────────────────
+function _b1piSvg(n){
+  var s='<svg viewBox="0 0 '+(n*22+10)+' 52" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;margin:4px auto;display:block">';
+  for(var i=0;i<Math.floor(n/2);i++){s+='<circle cx="'+(i*44+14)+'" cy="16" r="8" fill="#60a5fa" stroke="#3b82f6" stroke-width="1.5"/>';s+='<circle cx="'+(i*44+28)+'" cy="16" r="8" fill="#60a5fa" stroke="#3b82f6" stroke-width="1.5"/>';}
+  if(n%2===1)s+='<circle cx="'+(Math.floor(n/2)*44+14)+'" cy="16" r="8" fill="#f87171" stroke="#ef4444" stroke-width="1.5"/>';
+  s+='</svg>';return s;
+}
+function _genBel1PI_B1(){
+  var n=_b1r(1,10);var ans=n%2===0?'Par':'Impar';
+  var svg=_b1piSvg(n);
+  return{q:_b1q(svg,'¿El número <b>'+n+'</b> es par o impar?'),a:ans,opts:['Par','Impar'],mc:true,ste:n+(n%2===0?' termina en dígito par → es Par.':' no se puede agrupar en pares exactos → es Impar.')};
+}
+function _genBel1PI_B2(){
+  var n=_b1r(1,20);var ans=n%2===0?'Par':'Impar';
+  return{q:'¿El número <b>'+n+'</b> es par o impar?',a:ans,opts:['Par','Impar'],mc:true,ste:'Los números pares terminan en 0,2,4,6,8. '+n+' termina en '+(n%10)+' → es '+ans+'.'};
+}
+function _genBel1PI_BQ1(){return _bqSrcPick(['bel1_pi_b1','bel1_pi_b2'],[_genBel1PI_B1,_genBel1PI_B2]);}
+function _genBel1PI_B3(){
+  var nums=[];for(var i=0;i<6;i++)nums.push(_b1r(1,30));
+  var t=_b1r(0,1);var ans=t===0?nums.filter(n=>n%2===0):nums.filter(n=>n%2===1);
+  ans=ans.length?ans[0]:nums[0];
+  return{q:'De la lista: <b>'+nums.join(', ')+'</b>. ¿Cuál es '+(t===0?'par':'impar')+'?',a:String(ans),opts:_b1s(nums.map(String)).slice(0,4),mc:true,ste:ans+' termina en '+(ans%10)+' → es '+(t===0?'par':'impar')+'.'};
+}
+function _genBel1PI_B4(){
+  var n=_b1r(10,999);var ans=n%2===0?'Par':'Impar';
+  return{q:'¿El número <b>'+n+'</b> es par o impar?',a:ans,opts:['Par','Impar'],mc:true,ste:'Miro el dígito de las unidades: '+(n%10)+'. '+ans+'.'};
+}
+function _genBel1PI_BQ2(){return _bqSrcPick(['bel1_pi_b3','bel1_pi_b4'],[_genBel1PI_B3,_genBel1PI_B4]);}
+function _genBel1PI_BPU(){return _bqSrcPick(['bel1_pi_b1','bel1_pi_b2','bel1_pi_b3','bel1_pi_b4'],[_genBel1PI_B1,_genBel1PI_B2,_genBel1PI_B3,_genBel1PI_B4]);}
+
+// U12 – Figuras Geométricas (bel1_fig) ────────────────────────────────────────
+var _FIGS=[
+  {nom:'círculo',   lados:0,vert:0,svg:'<circle cx="70" cy="60" r="45" fill="none" stroke="#60a5fa" stroke-width="3"/>'},
+  {nom:'triángulo', lados:3,vert:3,svg:'<polygon points="70,18 118,100 22,100" fill="none" stroke="#34d399" stroke-width="3"/>'},
+  {nom:'cuadrado',  lados:4,vert:4,svg:'<rect x="25" y="20" width="90" height="90" fill="none" stroke="#fbbf24" stroke-width="3"/>'},
+  {nom:'rectángulo',lados:4,vert:4,svg:'<rect x="10" y="30" width="120" height="60" fill="none" stroke="#f472b6" stroke-width="3"/>'},
+];
+function _b1figSvg(f){return '<svg viewBox="0 0 140 120" xmlns="http://www.w3.org/2000/svg" style="max-width:140px;margin:4px auto;display:block">'+f.svg+'</svg>';}
+function _genBel1FIG_B1(){
+  var f=_b1pick(_FIGS);var others=_FIGS.filter(x=>x.nom!==f.nom).map(x=>x.nom);
+  return{q:_b1q(_b1figSvg(f),'¿Cómo se llama esta figura?'),a:f.nom,opts:_b1s([f.nom,..._b1s(others).slice(0,3)]),mc:true,ste:'Esta figura es un '+f.nom+'.'};
+}
+function _genBel1FIG_B2(){
+  var t=_b1r(0,3);
+  var cases=[
+    {q:'¿Qué figura tiene <b>3 lados</b> y <b>3 vértices</b>?',a:'triángulo',opts:_b1s(['triángulo','cuadrado','círculo','rectángulo'])},
+    {q:'¿Qué figura <b>no tiene lados ni vértices</b>?',a:'círculo',opts:_b1s(['círculo','triángulo','cuadrado','rectángulo'])},
+    {q:'¿Qué figura tiene <b>4 lados iguales</b>?',a:'cuadrado',opts:_b1s(['cuadrado','rectángulo','triángulo','círculo'])},
+    {q:'¿Qué figura tiene <b>4 lados</b> pero no todos iguales?',a:'rectángulo',opts:_b1s(['rectángulo','cuadrado','triángulo','círculo'])},
+  ];
+  var c=cases[t];
+  return{q:c.q,a:c.a,opts:c.opts,mc:true,ste:'La respuesta es '+c.a+'.'};
+}
+function _genBel1FIG_BQ1(){return _bqSrcPick(['bel1_fig_b1','bel1_fig_b2'],[_genBel1FIG_B1,_genBel1FIG_B2]);}
+function _genBel1FIG_B3(){
+  var f=_b1pick(_FIGS.filter(x=>x.lados>0));
+  return{q:_b1q(_b1figSvg(f),'¿Cuántos lados tiene esta figura?'),a:String(f.lados),opts:_b1s(['0','3','4'].map(String).concat(['5'])).slice(0,4),mc:true,ste:'El '+f.nom+' tiene '+f.lados+' lados.'};
+}
+function _genBel1FIG_B4(){
+  var t=_b1r(0,1);
+  if(t===0)return{q:'¿Cuál de estas figuras <b>NO</b> tiene esquinas (vértices)?',a:'círculo',opts:_b1s(['círculo','triángulo','cuadrado','rectángulo']),mc:true,ste:'El círculo no tiene vértices ni lados rectos.'};
+  return{q:'¿Cuántos vértices tiene un <b>cuadrado</b>?',a:'4',opts:_b1s(['3','4','5','6']),mc:true,ste:'El cuadrado tiene 4 vértices.'};
+}
+function _genBel1FIG_BQ2(){return _bqSrcPick(['bel1_fig_b3','bel1_fig_b4'],[_genBel1FIG_B3,_genBel1FIG_B4]);}
+function _genBel1FIG_BPU(){return _bqSrcPick(['bel1_fig_b1','bel1_fig_b2','bel1_fig_b3','bel1_fig_b4'],[_genBel1FIG_B1,_genBel1FIG_B2,_genBel1FIG_B3,_genBel1FIG_B4]);}
+
+// U13 – Sólidos Geométricos (bel1_sol) ────────────────────────────────────────
+var _SOLS=[
+  {nom:'cubo',     caras:'6 caras cuadradas',  rueda:false, punta:false,
+   svg:'<rect x="30" y="30" width="60" height="60" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="30,30 52,10 112,10 90,30" fill="none" stroke="#60a5fa" stroke-width="2.5"/><line x1="90" y1="30" x2="90" y2="90" stroke="#60a5fa" stroke-width="2.5"/><line x1="112" y1="10" x2="112" y2="70" stroke="#60a5fa" stroke-width="2.5"/><line x1="90" y1="90" x2="112" y2="70" stroke="#60a5fa" stroke-width="2.5"/>'},
+  {nom:'esfera',   caras:'superficie curva',   rueda:true,  punta:false,
+   svg:'<circle cx="70" cy="60" r="48" fill="none" stroke="#34d399" stroke-width="2.5"/><ellipse cx="70" cy="60" rx="48" ry="15" fill="none" stroke="#34d399" stroke-width="1" stroke-dasharray="4,3"/>'},
+  {nom:'cono',     caras:'1 cara circular y 1 punta', rueda:false, punta:true,
+   svg:'<polygon points="70,12 118,100 22,100" fill="none" stroke="#fbbf24" stroke-width="2.5"/><ellipse cx="70" cy="100" rx="48" ry="12" fill="none" stroke="#fbbf24" stroke-width="2.5"/>'},
+  {nom:'cilindro', caras:'2 caras circulares',rueda:true,  punta:false,
+   svg:'<ellipse cx="70" cy="25" rx="48" ry="13" fill="none" stroke="#f472b6" stroke-width="2.5"/><ellipse cx="70" cy="95" rx="48" ry="13" fill="none" stroke="#f472b6" stroke-width="2.5"/><line x1="22" y1="25" x2="22" y2="95" stroke="#f472b6" stroke-width="2.5"/><line x1="118" y1="25" x2="118" y2="95" stroke="#f472b6" stroke-width="2.5"/>'},
+];
+function _b1solSvg(s){return '<svg viewBox="0 0 140 115" xmlns="http://www.w3.org/2000/svg" style="max-width:140px;margin:4px auto;display:block">'+s.svg+'</svg>';}
+function _genBel1SOL_B1(){
+  var s=_b1pick(_SOLS);var others=_SOLS.filter(x=>x.nom!==s.nom).map(x=>x.nom);
+  return{q:_b1q(_b1solSvg(s),'¿Cómo se llama este sólido geométrico?'),a:s.nom,opts:_b1s([s.nom,..._b1s(others).slice(0,3)]),mc:true,ste:'Este sólido es un '+s.nom+'.'};
+}
+function _genBel1SOL_B2(){
+  var s=_b1pick(_SOLS);
+  return{q:'¿Qué sólido tiene <b>'+s.caras+'</b>?',a:s.nom,opts:_b1s(_SOLS.map(x=>x.nom)),mc:true,ste:'El '+s.nom+' tiene '+s.caras+'.'};
+}
+function _genBel1SOL_BQ1(){return _bqSrcPick(['bel1_sol_b1','bel1_sol_b2'],[_genBel1SOL_B1,_genBel1SOL_B2]);}
+var _SOL_OBJS=[
+  {obj:'una pelota',sol:'esfera'},{obj:'una lata de refresco',sol:'cilindro'},
+  {obj:'un dado',sol:'cubo'},{obj:'un helado de cucurucho',sol:'cono'},
+  {obj:'una caja cuadrada',sol:'cubo'},{obj:'un tubo de cartón',sol:'cilindro'},
+  {obj:'una naranja',sol:'esfera'},{obj:'un sombrero de bruja',sol:'cono'},
+];
+function _genBel1SOL_B3(){
+  var o=_b1pick(_SOL_OBJS);
+  return{q:'¿A qué sólido se parece <b>'+o.obj+'</b>?',a:o.sol,opts:_b1s(_SOLS.map(x=>x.nom)),mc:true,ste:o.obj+' tiene la forma de un '+o.sol+'.'};
+}
+function _genBel1SOL_B4(){
+  var t=_b1r(0,1);
+  if(t===0)return{q:'¿Cuál sólido puede <b>rodar en todas direcciones</b>?',a:'esfera',opts:_b1s(['esfera','cubo','cono','cilindro']),mc:true,ste:'La esfera puede rodar en todas direcciones por su superficie completamente curva.'};
+  return{q:'¿Cuál sólido tiene <b>caras planas</b> y <b>aristas</b>?',a:'cubo',opts:_b1s(['cubo','esfera','cono','cilindro']),mc:true,ste:'El cubo tiene 6 caras planas y 12 aristas.'};
+}
+function _genBel1SOL_BQ2(){return _bqSrcPick(['bel1_sol_b3','bel1_sol_b4'],[_genBel1SOL_B3,_genBel1SOL_B4]);}
+function _genBel1SOL_BPU(){return _bqSrcPick(['bel1_sol_b1','bel1_sol_b2','bel1_sol_b3','bel1_sol_b4'],[_genBel1SOL_B1,_genBel1SOL_B2,_genBel1SOL_B3,_genBel1SOL_B4]);}
+
+// U14 – Monedas y Billetes (bel1_mon) ─────────────────────────────────────────
+var _MON_VALS=[
+  {val:0.01,lbl:'1 céntimo'},{val:0.05,lbl:'5 céntimos'},{val:0.10,lbl:'10 céntimos'},
+  {val:0.20,lbl:'20 céntimos'},{val:0.50,lbl:'50 céntimos'},{val:1,lbl:'1 sol'},
+  {val:2,lbl:'2 soles'},{val:5,lbl:'5 soles'},
+];
+function _b1monSvg(val,lbl){
+  var r=val>=1?36:28;
+  var color=val>=1?'#fbbf24':'#94a3b8';
+  return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="max-width:100px;margin:4px auto;display:block">'
+    +'<circle cx="50" cy="50" r="'+r+'" fill="'+color+'" stroke="#fff" stroke-width="2.5"/>'
+    +'<text x="50" y="46" text-anchor="middle" font-size="12" fill="#1e293b" font-weight="700">S/.</text>'
+    +'<text x="50" y="62" text-anchor="middle" font-size="13" fill="#1e293b" font-weight="700">'+lbl.replace(' soles','').replace(' sol','').replace(' céntimos','¢').replace(' céntimo','¢')+'</text>'
+    +'</svg>';
+}
+function _genBel1MON_B1(){
+  var m=_b1pick(_MON_VALS.slice(0,6));
+  var others=_MON_VALS.filter(x=>x.lbl!==m.lbl).map(x=>x.lbl);
+  return{q:_b1q(_b1monSvg(m.val,m.lbl),'¿Cuánto vale esta moneda?'),a:m.lbl,opts:_b1s([m.lbl,..._b1s(others).slice(0,3)]),mc:true,ste:'Esta moneda vale '+m.lbl+'.'};
+}
+function _genBel1MON_B2(){
+  var n=_b1r(1,5);var m=_b1pick(_MON_VALS.slice(2,6));
+  var tot=Math.round(n*m.val*100)/100;
+  var totS=tot===Math.floor(tot)?String(Math.floor(tot))+' sol'+(tot!==1?'es':''):tot.toFixed(2)+' soles';
+  var ws=[String(n-1)+' soles',String(n+1)+' soles',String(n*2)+' soles'];
+  return{q:'Tengo <b>'+n+'</b> monedas de <b>'+m.lbl+'</b>. ¿Cuánto tengo en total?',a:totS,opts:_b1s([totS,...ws.slice(0,3)]),mc:true,ste:n+' × '+m.lbl+' = '+totS+'.'};
+}
+function _genBel1MON_BQ1(){return _bqSrcPick(['bel1_mon_b1','bel1_mon_b2'],[_genBel1MON_B1,_genBel1MON_B2]);}
+function _genBel1MON_B3(){
+  var a=_b1r(1,5),b=_b1r(1,5);var ans=a+b;
+  return{q:'Tengo <b>'+a+'</b> sol(es) y <b>'+b+'</b> sol(es) más. ¿Cuánto tengo en total?',a:'S/ '+ans,opts:_b1s(['S/ '+ans,'S/ '+(ans+1),'S/ '+(ans-1),'S/ '+(ans+2)]),mc:true,ste:a+' + '+b+' = '+ans+' soles.'};
+}
+function _genBel1MON_B4(){
+  var precio=_b1r(2,15);var tengo=precio+_b1r(1,10);var vuelto=tengo-precio;
+  return{q:'Un juguete cuesta <b>S/ '+precio+'</b>. Pago con <b>S/ '+tengo+'</b>. ¿Cuánto me dan de vuelto?',a:'S/ '+vuelto,opts:_b1s(['S/ '+vuelto,'S/ '+(vuelto+1),'S/ '+(vuelto-1),'S/ '+precio]),mc:true,ste:'Vuelto = S/ '+tengo+' − S/ '+precio+' = S/ '+vuelto+'.'};
+}
+function _genBel1MON_BQ2(){return _bqSrcPick(['bel1_mon_b3','bel1_mon_b4'],[_genBel1MON_B3,_genBel1MON_B4]);}
+function _genBel1MON_BPU(){return _bqSrcPick(['bel1_mon_b1','bel1_mon_b2','bel1_mon_b3','bel1_mon_b4'],[_genBel1MON_B1,_genBel1MON_B2,_genBel1MON_B3,_genBel1MON_B4]);}
+
+// U15 – Nociones Espaciales (bel1_esp) ────────────────────────────────────────
+function _genBel1ESP_B1(){
+  var t=_b1r(0,1);
+  if(t===0){
+    var who=_b1pick(['el gato','el perro','el pájaro','la mariposa']);
+    var pos=_b1r(0,1);var ans=pos===0?'arriba':'abajo';
+    var yWho=pos===0?25:85;var yOther=pos===0?85:25;
+    var svg='<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="max-width:120px;margin:4px auto;display:block">'
+      +'<rect x="10" y="55" width="100" height="3" fill="#64748b" rx="1"/>'
+      +'<text x="60" y="'+yWho+'" text-anchor="middle" font-size="26">🐦</text>'
+      +'<text x="60" y="'+yOther+'" text-anchor="middle" font-size="26">🐱</text>'
+      +'</svg>';
+    return{q:_b1q(svg,'¿El pájaro está <b>arriba</b> o <b>abajo</b> del gato?'),a:pos===0?'arriba':'abajo',opts:['arriba','abajo'],mc:true,ste:'El pájaro está '+ans+'.'};
+  }
+  var ans2=_b1r(0,1)===0?'dentro':'fuera';
+  var svg2='<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="max-width:120px;margin:4px auto;display:block">'
+    +'<rect x="20" y="30" width="80" height="70" fill="none" stroke="#60a5fa" stroke-width="3" rx="4"/>'
+    +'<text x="60" y="'+(ans2==='dentro'?72:22)+'" text-anchor="middle" font-size="28">⚽</text>'
+    +'</svg>';
+  return{q:_b1q(svg2,'¿La pelota está <b>dentro</b> o <b>fuera</b> de la caja?'),a:ans2,opts:['dentro','fuera'],mc:true,ste:'La pelota está '+ans2+' de la caja.'};
+}
+function _genBel1ESP_B2(){
+  var scenarios=[
+    {q:'El gato está ___ de la caja.',a:'dentro',opts:_b1s(['dentro','fuera','arriba','abajo']),ste:'El gato está dentro de la caja.'},
+    {q:'El pájaro vuela ___ del árbol.',a:'encima',opts:_b1s(['encima','debajo','dentro','fuera']),ste:'El pájaro está encima del árbol.'},
+    {q:'El perro está ___ de la silla.',a:'debajo',opts:_b1s(['debajo','encima','dentro','fuera']),ste:'El perro está debajo de la silla.'},
+    {q:'La pelota está ___ del arco.',a:'fuera',opts:_b1s(['fuera','dentro','encima','debajo']),ste:'La pelota está fuera del arco.'},
+  ];
+  var c=_b1pick(scenarios);
+  return{q:c.q,a:c.a,opts:c.opts,mc:true,ste:c.ste};
+}
+function _genBel1ESP_BQ1(){return _bqSrcPick(['bel1_esp_b1','bel1_esp_b2'],[_genBel1ESP_B1,_genBel1ESP_B2]);}
+function _genBel1ESP_B3(){
+  var pos=_b1r(0,1);var ans=pos===0?'cerca':'lejos';
+  var xA=pos===0?30:90,xB=pos===0?90:30;
+  var svg='<svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" style="max-width:160px;margin:4px auto;display:block">'
+    +'<text x="80" y="55" text-anchor="middle" font-size="28">🏫</text>'
+    +'<text x="'+xA+'" y="55" text-anchor="middle" font-size="22">🌳</text>'
+    +'<text x="'+xB+'" y="55" text-anchor="middle" font-size="16">🌳</text>'
+    +'</svg>';
+  return{q:_b1q(svg,'El árbol más grande está… ¿<b>cerca</b> o <b>lejos</b> de la escuela?'),a:pos===0?'lejos':'cerca',opts:['cerca','lejos'],mc:true,ste:'El árbol más grande está '+(pos===0?'lejos':'cerca')+' de la escuela.'};
+}
+function _genBel1ESP_B4(){
+  var scenarios=[
+    {q:'El pingüino está ___ del árbol.',a:'delante',opts:_b1s(['delante','detrás','cerca','lejos']),ste:'El pingüino está delante del árbol.'},
+    {q:'El niño está ___ de la fila.',a:'detrás',opts:_b1s(['detrás','delante','cerca','lejos']),ste:'El niño está detrás de la fila.'},
+    {q:'La tienda está ___ de mi casa (a 5 metros).',a:'cerca',opts:_b1s(['cerca','lejos','delante','detrás']),ste:'A 5 metros está cerca.'},
+    {q:'El parque está ___ de mi casa (a 2 km).',a:'lejos',opts:_b1s(['lejos','cerca','delante','detrás']),ste:'A 2 km está lejos.'},
+  ];
+  var c=_b1pick(scenarios);
+  return{q:c.q,a:c.a,opts:c.opts,mc:true,ste:c.ste};
+}
+function _genBel1ESP_BQ2(){return _bqSrcPick(['bel1_esp_b3','bel1_esp_b4'],[_genBel1ESP_B3,_genBel1ESP_B4]);}
+function _genBel1ESP_BPU(){return _bqSrcPick(['bel1_esp_b1','bel1_esp_b2','bel1_esp_b3','bel1_esp_b4'],[_genBel1ESP_B1,_genBel1ESP_B2,_genBel1ESP_B3,_genBel1ESP_B4]);}
+
+// U16 – Unidades de Medida (bel1_med) ─────────────────────────────────────────
+function _b1medSvg(cm){
+  var px=Math.min(cm*4,280);
+  var marks='';
+  for(var i=0;i<15;i++){
+    marks+='<line x1="'+(i*20+4)+'" y1="22" x2="'+(i*20+4)+'" y2="'+(i%5===0?16:19)+'" stroke="#9ca3af" stroke-width="1"/>';
+    if(i%5===0)marks+='<text x="'+(i*20+6)+'" y="15" font-size="8" fill="#9ca3af">'+i+'</text>';
+  }
+  return '<svg viewBox="0 0 290 60" xmlns="http://www.w3.org/2000/svg" style="max-width:290px;margin:4px auto;display:block">'
+    +'<rect x="4" y="22" width="282" height="16" rx="3" fill="#374151" stroke="#6b7280" stroke-width="1"/>'
+    +marks
+    +'<rect x="4" y="20" width="'+px+'" height="20" rx="2" fill="rgba(96,165,250,0.4)" stroke="#60a5fa" stroke-width="1.5"/>'
+    +'<text x="'+(px/2+4)+'" y="34" text-anchor="middle" font-size="10" fill="#fff" font-weight="700">'+cm+' cm</text>'
+    +'</svg>';
+}
+function _genBel1MED_B1(){
+  var cm=_b1r(1,14);
+  var svg=_b1medSvg(cm);
+  return{q:_b1q(svg,'¿Cuántos centímetros mide la barra azul?'),a:cm+' cm',opts:_b1s([cm+' cm',..._b1w(cm,1,15).map(v=>v+' cm')]),mc:true,ste:'La barra mide '+cm+' cm.'};
+}
+function _genBel1MED_B2(){
+  var t=_b1r(0,2);
+  var cases=[
+    {q:'1 metro = ___ centímetros',a:'100',opts:_b1s(['100','10','1000','50']),ste:'1 metro = 100 centímetros.'},
+    {q:'200 cm = ___ metros',a:'2',opts:_b1s(['2','20','200','1']),ste:'200 cm ÷ 100 = 2 metros.'},
+    {q:'3 metros = ___ centímetros',a:'300',opts:_b1s(['300','30','3000','30']),ste:'3 × 100 cm = 300 cm.'},
+  ];
+  return Object.assign({mc:true},cases[t]);
+}
+function _genBel1MED_BQ1(){return _bqSrcPick(['bel1_med_b1','bel1_med_b2'],[_genBel1MED_B1,_genBel1MED_B2]);}
+function _genBel1MED_B3(){
+  var a=_b1r(5,60),b=_b1r(5,60);while(b===a)b=_b1r(5,60);
+  var mayor=Math.max(a,b),menor=Math.min(a,b),dif=mayor-menor;
+  return{q:'Un objeto mide <b>'+a+' cm</b> y otro mide <b>'+b+' cm</b>. ¿Cuánto más mide el mayor?',a:dif+' cm',opts:_b1s([dif+' cm',..._b1w(dif,1,50).map(v=>v+' cm')]),mc:true,ste:'El mayor mide '+mayor+' cm. Diferencia = '+mayor+' − '+menor+' = '+dif+' cm.'};
+}
+function _genBel1MED_B4(){
+  var mesas=_b1r(1,5),sillas=_b1r(1,5);
+  var mesamCm=mesas*100,sillaCm=sillas*100;var dif=Math.abs(mesamCm-sillaCm);
+  return{q:'Una mesa mide <b>'+mesas+' m</b> y una silla <b>'+sillas+' m</b>. ¿Cuánto más mide el más alto? (en cm)',a:dif+' cm',opts:_b1s([dif+' cm',..._b1w(dif,0,400).map(v=>v+' cm')]),mc:true,ste:''+mesas+'m='+mesamCm+'cm, '+sillas+'m='+sillaCm+'cm. Diferencia='+dif+'cm.'};
+}
+function _genBel1MED_BQ2(){return _bqSrcPick(['bel1_med_b3','bel1_med_b4'],[_genBel1MED_B3,_genBel1MED_B4]);}
+function _genBel1MED_BPU(){return _bqSrcPick(['bel1_med_b1','bel1_med_b2','bel1_med_b3','bel1_med_b4'],[_genBel1MED_B1,_genBel1MED_B2,_genBel1MED_B3,_genBel1MED_B4]);}
 
 // ── Geometría 4° Primaria – Intelectum ───────────────────────────────────────
 function _i4grnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
@@ -6138,10 +6840,26 @@ const PREP_CURRICULUM = {
   primaria: {
     '1':[
       {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
-      {lbl:'Descomposemos del 11 al 19 – Regletas',              area:'matematica', editorial:'belen', skills:['reg_b11','reg_b12','reg_b13','reg_bq1','reg_b14','reg_b15','reg_b16','reg_bq2','reg_b17','reg_b18','reg_b19']},
+      {lbl:'Descomponemos del 11 al 19',              area:'matematica', editorial:'belen', skills:['reg_b11','reg_b12','reg_b13','reg_bq1','reg_b14','reg_b15','reg_b16','reg_bq2','reg_b17','reg_b18','reg_b19']},
       {lbl:'Números del 1 al 20',                                area:'matematica', editorial:'belen', skills:['bel1_num_b1','bel1_num_b2','bel1_num_bq1']},
       {lbl:'Sumas hasta 20',                                     area:'matematica', editorial:'belen', skills:['bel1_sum_b1','bel1_sum_b2','bel1_sum_bq1']},
       {lbl:'Restas hasta 20',                                    area:'matematica', editorial:'belen', skills:['bel1_res_b1','bel1_res_b2','bel1_res_bq1']},
+      {lbl:'Conjuntos',                         area:'matematica', editorial:'intelectum', skills:['bel1_cj_b1','bel1_cj_b2','bel1_cj_bq1','bel1_cj_b3','bel1_cj_b4','bel1_cj_bq2','bel1_cj_b5','bel1_cj_b6','bel1_cj_bq3']},
+      {lbl:'Numeración 0 al 100',               area:'matematica', editorial:'intelectum', skills:['bel1_n1_b1','bel1_n1_b2','bel1_n1_bq1','bel1_n1_b3','bel1_n1_b4','bel1_n1_bq2']},
+      {lbl:'La Decena',                         area:'matematica', editorial:'intelectum', skills:['bel1_dec_b1','bel1_dec_b2','bel1_dec_bq1','bel1_dec_b3','bel1_dec_b4','bel1_dec_bq2']},
+      {lbl:'La Centena y Valor Posicional',     area:'matematica', editorial:'intelectum', skills:['bel1_cdu_b1','bel1_cdu_b2','bel1_cdu_bq1','bel1_cdu_b3','bel1_cdu_b4','bel1_cdu_bq2','bel1_cdu_b5','bel1_cdu_b6','bel1_cdu_bq3']},
+      {lbl:'Numeración 100 al 999',             area:'matematica', editorial:'intelectum', skills:['bel1_n9_b1','bel1_n9_b2','bel1_n9_bq1','bel1_n9_b3','bel1_n9_b4','bel1_n9_bq2','bel1_n9_b5','bel1_n9_b6','bel1_n9_bq3']},
+      {lbl:'Mayor, Menor e Igual',              area:'matematica', editorial:'intelectum', skills:['bel1_cmp_b1','bel1_cmp_b2','bel1_cmp_bq1','bel1_cmp_b3','bel1_cmp_b4','bel1_cmp_bq2']},
+      {lbl:'Adición',                           area:'matematica', editorial:'intelectum', skills:['bel1_adi_b1','bel1_adi_b2','bel1_adi_bq1','bel1_adi_b3','bel1_adi_b4','bel1_adi_bq2','bel1_adi_b5','bel1_adi_b6','bel1_adi_bq3']},
+      {lbl:'Sustracción',                       area:'matematica', editorial:'intelectum', skills:['bel1_sus_b1','bel1_sus_b2','bel1_sus_bq1','bel1_sus_b3','bel1_sus_b4','bel1_sus_bq2','bel1_sus_b5','bel1_sus_b6','bel1_sus_bq3']},
+      {lbl:'Operaciones Combinadas',            area:'matematica', editorial:'intelectum', skills:['bel1_opc_b1','bel1_opc_b2','bel1_opc_bq1','bel1_opc_b3','bel1_opc_b4','bel1_opc_bq2']},
+      {lbl:'El Doble, la Mitad y el Triple',    area:'matematica', editorial:'intelectum', skills:['bel1_dmt_b1','bel1_dmt_b2','bel1_dmt_bq1','bel1_dmt_b3','bel1_dmt_b4','bel1_dmt_bq2','bel1_dmt_b5','bel1_dmt_b6','bel1_dmt_bq3']},
+      {lbl:'Números Pares e Impares',           area:'matematica', editorial:'intelectum', skills:['bel1_pi_b1','bel1_pi_b2','bel1_pi_bq1','bel1_pi_b3','bel1_pi_b4','bel1_pi_bq2']},
+      {lbl:'Figuras Geométricas',               area:'matematica', editorial:'intelectum', skills:['bel1_fig_b1','bel1_fig_b2','bel1_fig_bq1','bel1_fig_b3','bel1_fig_b4','bel1_fig_bq2']},
+      {lbl:'Sólidos Geométricos',               area:'matematica', editorial:'intelectum', skills:['bel1_sol_b1','bel1_sol_b2','bel1_sol_bq1','bel1_sol_b3','bel1_sol_b4','bel1_sol_bq2']},
+      {lbl:'Monedas y Billetes',                area:'matematica', editorial:'intelectum', skills:['bel1_mon_b1','bel1_mon_b2','bel1_mon_bq1','bel1_mon_b3','bel1_mon_b4','bel1_mon_bq2']},
+      {lbl:'Nociones Espaciales',               area:'matematica', editorial:'intelectum', skills:['bel1_esp_b1','bel1_esp_b2','bel1_esp_bq1','bel1_esp_b3','bel1_esp_b4','bel1_esp_bq2']},
+      {lbl:'Unidades de Medida',                area:'matematica', editorial:'intelectum', skills:['bel1_med_b1','bel1_med_b2','bel1_med_bq1','bel1_med_b3','bel1_med_b4','bel1_med_bq2']},
     ],
     '2':[{lbl:'Multiplicación y División', area:'matematica', skills:['mult','div']}],
     '3':[{lbl:'Conjuntos',                area:'matematica', skills:['conjuntos']}],
@@ -6320,44 +7038,74 @@ function _prepConfigHtml() {
   const areaOpts = lvDef.areas || [];
   const _gradeIco = lvDef.gradeIco || '📅';
   const _rowStyle = `display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch`;
-  const dot = `<span style="color:rgba(255,255,255,0.18);padding:0 1px;flex-shrink:0">·</span>`;
+  const dot = `<span class="prep-mob-dot" style="color:rgba(255,255,255,0.18);padding:0 1px;flex-shrink:0">·</span>`;
 
   // ── Fila 1: botones siempre fijos (nunca se expanden) ──────────────────────
-  const nivelSel   = `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')" style="flex-shrink:0">${_prep.level ? lvDef.ico+' '+lvDef.lbl : 'Nivel'} ▾</button>`;
-  const gradeSel   = `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" style="flex-shrink:0${!gradeKeys.length?';opacity:.35;cursor:default':''}">${_prep.grade ? _gradeIco+' '+_prep.grade+'° ▾' : 'Grado ▾'}</button>`;
-  const colegioSel = `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" style="flex-shrink:0" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:''}">${_prep.editorial?(PREP_EDITORIALS[_prep.editorial]?.ico+' '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
-  const areaSel    = areaOpts.length ? `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="_prepOpen('area')" style="flex-shrink:0">${(()=>{const a=areaOpts.find(x=>x.key===_prep.area);return _prep.area?((a?.ico||'')+' '+(a?.lbl||'Área')):'Área'})()} ▾</button>` : '';
+  const nivelSel   = `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')" style="flex-shrink:0">${_prep.level ? '<span class="prep-mob-ico">'+lvDef.ico+' </span>'+lvDef.lbl : 'Nivel'} ▾</button>`;
+  const gradeSel   = `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" style="flex-shrink:0${!gradeKeys.length?';opacity:.35;cursor:default':''}">${_prep.grade ? '<span class="prep-mob-ico">'+_gradeIco+' </span>'+_prep.grade+'° ▾' : 'Grado ▾'}</button>`;
+  const colegioSel = `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" style="flex-shrink:0" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:''}">${_prep.editorial?('<span class="prep-mob-ico">'+(PREP_EDITORIALS[_prep.editorial]?.ico||'')+'</span> '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
+  const _hasAreas = areaOpts.length > 0;
+  const areaSel    = `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="${_hasAreas?`_prepOpen('area')`:''}" style="flex-shrink:0${!_hasAreas?';opacity:.35;cursor:default':''}">${(()=>{const a=areaOpts.find(x=>x.key===_prep.area);return _prep.area?('<span class="prep-mob-ico">'+(a?.ico||'')+' </span>'+(a?.lbl||'Área')):'Área'})()} ▾</button>`;
 
   const _hasTopic = !!(_prep.topic && allTopicKeys.includes(_prep.topic));
   const _anyFilter = _prep.level || _prep.grade || _prep.editorial || _prep.area;
-  const _resetBtn = _anyFilter
-    ? `${dot}<button class="prep-sel-btn" onclick="_prep.level='';_prep.grade='';_prep.editorial='';_prep.area='';_prep.editorialChosen=false;_renderPreparatePane()" title="Limpiar filtros" style="opacity:.7;min-width:0;padding:0 10px;flex-shrink:0">✕</button>`
-    : '';
+  const _resetBtn = `${dot}<button class="prep-sel-btn" onclick="${_anyFilter?`_prep.level='';_prep.grade='';_prep.editorial='';_prep.area='';_prep.editorialChosen=false;_renderPreparatePane()`:''}" title="Limpiar filtros" style="opacity:${_anyFilter?'.7':'.25'};min-width:0;padding:0 10px;flex-shrink:0;cursor:${_anyFilter?'pointer':'default'}">✕</button>`;
 
   // ── Fila 2: opciones del selector abierto ──────────────────────────────────
+  // Helper móvil: agrupa botones en grid de 5 col (pares cuando n > 4)
+  const _mobOptsGrid = (btns) => {
+    const _cx = `_snd.click();_prep.openSelector=null;_renderPreparatePane()`;
+    const _closeB = `<button class="prep-sel-btn" onclick="${_cx}" style="opacity:.65">✕</button>`;
+    const n = btns.length;
+    if (n <= 4) return btns.join('') + _closeB;
+    const perCol = Math.ceil(n / 4);
+    let h = '';
+    for (let c = 0; c < 4; c++) {
+      const batch = btns.slice(c * perCol, (c + 1) * perCol);
+      if (!batch.length) continue;
+      h += batch.length === 1 ? batch[0] : `<div class="prep-mob-opt-grp">${batch.join('')}</div>`;
+    }
+    return h + _closeB;
+  };
+
   let _openOpts = null;
-  if (openSel === 'level')
-    _openOpts = Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" style="flex-shrink:0">${lv.ico} ${lv.lbl}</button>`).join('');
-  else if (openSel === 'grade' && gradeKeys.length)
-    _openOpts = gradeKeys.map(g=>`<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" style="flex-shrink:0">${_gradeIco} ${g}°</button>`).join('');
-  else if (openSel === 'area' && areaOpts.length)
-    _openOpts = areaOpts.map(a=>`<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')" style="flex-shrink:0">${a.ico||''} ${a.lbl}</button>`).join('');
-  else if (openSel === 'editorial')
-    _openOpts = `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">✦ Todos</button>`
-      + edKeys.map(k=>`<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">${PREP_EDITORIALS[k]?.ico||'🏫'} ${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`).join('');
+  let _openOptsMob = null;
+
+  if (openSel === 'level') {
+    const _b = Object.entries(PREP_LEVELS).map(([key,lv]) =>
+      `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" style="flex-shrink:0"><span class="prep-mob-ico">${lv.ico} </span>${lv.lbl}</button>`);
+    _openOpts = _b.join('');
+    _openOptsMob = _mobOptsGrid(_b);
+  } else if (openSel === 'grade' && gradeKeys.length) {
+    const _b = gradeKeys.map(g =>
+      `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" style="flex-shrink:0"><span class="prep-mob-ico">${_gradeIco} </span>${g}°</button>`);
+    _openOpts = _b.join('');
+    _openOptsMob = _mobOptsGrid(_b);
+  } else if (openSel === 'area' && areaOpts.length) {
+    const _b = areaOpts.map(a =>
+      `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')" style="flex-shrink:0"><span class="prep-mob-ico">${a.ico||''} </span>${a.lbl}</button>`);
+    _openOpts = _b.join('');
+    _openOptsMob = _mobOptsGrid(_b);
+  } else if (openSel === 'editorial') {
+    const _b = [
+      `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">✦ Todos</button>`,
+      ...edKeys.map(k => `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0"><span class="prep-mob-ico">${PREP_EDITORIALS[k]?.ico||'🏫'} </span>${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`)
+    ];
+    _openOpts = _b.join('');
+    _openOptsMob = _mobOptsGrid(_b);
+  }
 
   const _optsRow = _openOpts != null
-    ? `<div style="${_rowStyle};margin:0 0 6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)">
+    ? `<div class="prep-mob-opts-hide" style="${_rowStyle};margin:0 0 6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)">
         ${_openOpts}
         <button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45;flex-shrink:0;margin-left:4px">✕</button>
-      </div>`
+      </div>
+      <div class="prep-mob-opts-row">${_openOptsMob||''}</div>`
     : '';
 
-  const selectorRow = `<div style="${_rowStyle};margin:0 0 4px">${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${areaSel?dot+areaSel:''}${_resetBtn}</div>${_optsRow}`;
-  // Botón desafío de dominio (inline en desktop, fila propia en móvil)
-  const _challengeBtn = shown
-    ? `<button class="prep-kh-btn-challenge" onclick="_prepUnitExam(['${allTopicKeys.join("','")}'])">Comenzar desafío de dominio</button>`
-    : '';
+  const selectorRow = `<div class="prep-mob-filter-row" style="${_rowStyle};margin:0 0 4px">${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${dot}${areaSel}${_resetBtn}</div>${_optsRow}`;
+  // Botón desafío de dominio: siempre visible, deshabilitado si no hay curso seleccionado
+  const _challengeBtn = `<button class="prep-kh-btn-challenge" onclick="${shown?`_prepUnitExam(['${allTopicKeys.join("','")}'])`:''}" style="opacity:${shown?'1':'.3'};cursor:${shown?'pointer':'default'}" ${shown?'':'disabled'}>🎯 Desafío</button>`;
 
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
@@ -6405,7 +7153,7 @@ function _prepConfigHtml() {
   const _btnArrow  = `<img src="/flecha-back.svg" style="height:11px;width:auto;display:block;transform:scaleX(-1);filter:brightness(0) invert(1)">`;
   const _btnEMlogo = `<img src="/emaths-logo.svg" style="height:13px;width:auto;display:block">`;
   const _inicioBtn = _isLogged
-    ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="navHome()">${_btnArrow}<span style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentFullName||'Inicio'}</button>`
+    ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="navHome()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Inicio'}</button>`
     : `<button class="prep-sel-btn" style="${_btnStyle}" onclick="window.location.href='/'">${_btnArrow}${_btnEMlogo} ¡Inscríbete Ya!</button>`;
   const sidebar = `<div class="prep-kh-sidebar">
     <div class="prep-kh-sidebar-inicio">
@@ -6499,20 +7247,67 @@ function _prepConfigHtml() {
           const qPct=_prepLastPct(sk);
           const qTip=`Cuestionario ${_qn2}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn2};_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.quizNum=_prep.topic==='${sk}'?${_qn2}:0;_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
         <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
           ${skillsHtml}
-          ${(()=>{const sc=_prepLastUnitExamPct(unit.skills[0]);const el=unitDone2?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc!==null&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" title="${et}" style="cursor:pointer">${_starSvg}</div>`;})()}
+          ${(()=>{const sc=_prepLastUnitExamPct(unit.skills[0]);const el=unitDone2?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc!==null&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" title="${et}" style="cursor:pointer">${_starSvg}</div>`;})()}
         </div>
       </div>`;
     };
+  // Panel de inicio para la habilidad seleccionada (se inyecta inline en el grid)
+  let startPanel = '';
+  if (_prep.topic && allTopicKeys.includes(_prep.topic)) {
+    const def=BINGO_TOPICS[_prep.topic]||{};
+    const _isQT=!!def.quiz, _qnLbl=_prep.isUnitExam?`Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}`:_isQT&&_prep.quizNum?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
+    const qOpts=[5,10,15,20];
+    const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
+    const _cfgPanel = _prep.showConfig ? `<div class="prep-kh-panel-opts">
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
+          <div class="prep-option-row">${qOpts.map(n=>`<button class="prep-opt-sq ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()" title="${n} preguntas">${n}</button>`).join('')}</div>
+        </div>
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Tiempo</div>
+          <div class="prep-option-row">${tOpts.map(([s,l])=>`<button class="prep-opt-sq ${_prep.timeSec===s?'active':''}" onclick="_prep.timeSec=${s};_renderPreparatePane()" title="${s===0?'Sin límite':l}">${s===0?'∞':(s/60)+"'"}</button>`).join('')}</div>
+        </div>
+        <div>
+          <div class="prep-section-label" style="margin:0 0 4px">Modo</div>
+          <div class="prep-option-row">
+            <button class="prep-opt-sq ${_prep.ansMode==='mc'?'active':''}" onclick="_prep.ansMode='mc';_renderPreparatePane()" title="Opción múltiple">☰</button>
+            <button class="prep-opt-sq ${_prep.ansMode==='text'?'active':''}" onclick="_prep.ansMode='text';_renderPreparatePane()" title="Escribir respuesta">✏️</button>
+          </div>
+        </div>
+      </div>` : '';
+    const _gearBtn = `<button class="prep-opt-sq" onclick="_prep.showConfig=!_prep.showConfig;_renderPreparatePane()" title="${_prep.showConfig?'Cerrar configuración':'Configurar sesión'}" style="flex-shrink:0;font-size:15px;width:36px;height:36px">${_prep.showConfig?'✕':'⚙'}</button>`;
+    startPanel = `<div class="prep-kh-start-bar">
+      <div class="prep-kh-start-bar-row">
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${def.ico||''} ${_qnLbl}</span>
+        <button class="prep-start-btn" style="flex-shrink:0;padding:7px 16px;font-size:13px;margin-top:0;white-space:nowrap" onclick="_prepStart()">▶ Practicar ahora</button>
+        ${_gearBtn}
+      </div>
+      ${_cfgPanel}
+    </div>`;
+  } else if (_prep.selectedExamSkills && _prep.selectedExamSkills.length) {
+    const _examLblFull = 'Examen: ' + _prep.selectedExamLbl;
+    const _gearBtnEx = `<button class="prep-opt-sq" disabled title="El examen usa configuración fija" style="flex-shrink:0;font-size:15px;width:36px;height:36px;opacity:.3;cursor:default">⚙</button>`;
+    const _examSkillsArg = _prep.selectedExamSkills.map(s=>`'${s}'`).join(',');
+    startPanel = `<div class="prep-kh-start-bar">
+      <div class="prep-kh-start-bar-row">
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:#fbbf24">★</span>&nbsp; ${_examLblFull}</span>
+        <button class="prep-start-btn" style="flex-shrink:0;padding:7px 16px;font-size:13px;margin-top:0;white-space:nowrap" onclick="_prepUnitExam([${_examSkillsArg}],${_prep.selectedExamUnitIdx})">▶ Practicar ahora</button>
+        ${_gearBtnEx}
+      </div>
+    </div>`;
+  }
+
+
     if (_prep.selectedUnit !== null && units[_prep.selectedUnit]) {
       const unit = units[_prep.selectedUnit];
       const ui = _prep.selectedUnit;
@@ -6581,14 +7376,14 @@ function _prepConfigHtml() {
           const qPct=_prepLastPct(sk);
           const qTip=`Cuestionario ${_qn3}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       const _starSvgExp=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
-      const expExamSq=`<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}" onclick="_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
+      const expExamSq=`<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
       unitsHtml = `<div class="prep-kh-unit-exp">
         <div class="prep-kh-unit-exp-hdr">
           <span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>
@@ -6598,52 +7393,30 @@ function _prepConfigHtml() {
         ${rowsHtml}
         ${examCard}
       </div>`;
+
     } else {
     const half = Math.ceil(units.length/2);
-    const leftCol = units.slice(0,half).map((u,i)=>_renderUnit(u,i)).join('');
-    const rightCol = units.slice(half).map((u,i)=>_renderUnit(u,half+i)).join('');
+    const _selUnitIdx = _prep.topic ? units.findIndex(u=>(u.skills||[]).includes(_prep.topic)) : (_prep.selectedExamSkills?.length && _prep.selectedExamUnitIdx >= 0 ? _prep.selectedExamUnitIdx : -1);
+    const _renderUnitWithPanel = (u,i) => _renderUnit(u,i) + (_selUnitIdx===i ? startPanel : '');
+    const leftCol = units.slice(0,half).map((u,i)=>_renderUnitWithPanel(u,i)).join('');
+    const rightCol = units.slice(half).map((u,i)=>_renderUnitWithPanel(u,half+i)).join('');
     unitsHtml = `<div class="prep-kh-units"><div class="prep-kh-col">${leftCol}</div><div class="prep-kh-col">${rightCol}</div></div>`;
     }
   }
 
-  // Panel de inicio para la habilidad seleccionada
-  let startPanel = '';
-  if (_prep.topic && allTopicKeys.includes(_prep.topic)) {
-    const def=BINGO_TOPICS[_prep.topic]||{};
-    const _isQT=!!def.quiz, _qnLbl=_prep.isUnitExam?`Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}`:_isQT&&_prep.quizNum?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
-    const qOpts=[5,10,15,20];
-    const tOpts=[[180,'3 min'],[300,'5 min'],[600,'10 min'],[0,'∞']];
-    const _cfgPanel = _prep.showConfig ? `<div class="prep-kh-panel-opts">
-        <div>
-          <div class="prep-section-label" style="margin:0 0 4px">Preguntas</div>
-          <div class="prep-option-row">${qOpts.map(n=>`<button class="prep-opt-sq ${_prep.qCount===n?'active':''}" onclick="_prep.qCount=${n};_renderPreparatePane()" title="${n} preguntas">${n}</button>`).join('')}</div>
-        </div>
-        <div>
-          <div class="prep-section-label" style="margin:0 0 4px">Tiempo</div>
-          <div class="prep-option-row">${tOpts.map(([s,l])=>`<button class="prep-opt-sq ${_prep.timeSec===s?'active':''}" onclick="_prep.timeSec=${s};_renderPreparatePane()" title="${s===0?'Sin límite':l}">${s===0?'∞':(s/60)+"'"}</button>`).join('')}</div>
-        </div>
-        <div>
-          <div class="prep-section-label" style="margin:0 0 4px">Modo</div>
-          <div class="prep-option-row">
-            <button class="prep-opt-sq ${_prep.ansMode==='mc'?'active':''}" onclick="_prep.ansMode='mc';_renderPreparatePane()" title="Opción múltiple">☰</button>
-            <button class="prep-opt-sq ${_prep.ansMode==='text'?'active':''}" onclick="_prep.ansMode='text';_renderPreparatePane()" title="Escribir respuesta">✏️</button>
-          </div>
-        </div>
-      </div>` : '';
-    const _gearBtn = `<button class="prep-opt-sq" onclick="_prep.showConfig=!_prep.showConfig;_renderPreparatePane()" title="${_prep.showConfig?'Cerrar configuración':'Configurar sesión'}" style="flex-shrink:0;font-size:15px;width:36px;height:36px">${_prep.showConfig?'✕':'⚙'}</button>`;
-    startPanel = `<div class="prep-kh-panel">
-      <div class="prep-kh-panel-topic">${def.ico||''} ${_qnLbl}</div>
-      ${_cfgPanel}
-      <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
-        <button class="prep-start-btn" style="margin-top:0;flex:1;padding:11px 18px;font-size:14px" onclick="_prepStart()">▶ Practicar ahora</button>
-        ${_gearBtn}
-      </div>
-    </div>`;
-  }
-
+  const _unitsBadge  = shown
+    ? `<span class="prep-kh-mob-badge">${units.length} Unidades</span>`
+    : `<span class="prep-kh-mob-badge" style="opacity:.3">— Unidades</span>`;
+  const _skillsBadge = shown
+    ? `<span class="prep-kh-mob-badge">${totalSkillCount} Habilidades</span>`
+    : `<span class="prep-kh-mob-badge" style="opacity:.3">— Habilidades</span>`;
+  const _indiceBtn = `<button class="prep-sel-btn" disabled style="opacity:.35;cursor:default">Índice</button>`;
   const _mobileBar = `<div class="prep-kh-mobile-bar">
     ${_inicioBtn}
-    ${shown ? `<div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:right">${units.length} unidades · ${totalSkillCount} habilidades</div>` : ''}
+    ${_unitsBadge}
+    ${_indiceBtn}
+    ${_skillsBadge}
+    ${_challengeBtn}
   </div>`;
 
   const contentArea = `<div class="prep-kh-content">
@@ -6655,7 +7428,6 @@ function _prepConfigHtml() {
     ${courseHeader}
     ${legend}
     ${unitsHtml}
-    ${startPanel}
     ${isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()}
   </div>`;
 
@@ -6957,6 +7729,20 @@ function _prepUnitPaneHtml() {
   </div>`;
 }
 // Examen de unidad (★): más preguntas, mezcla todos los temas de la unidad en orden aleatorio
+function _prepSelectExam(skills, unitIdx) {
+  if (_prep.selectedExamUnitIdx === unitIdx) {
+    _prep.selectedExamSkills = null; _prep.selectedExamUnitIdx = -1; _prep.selectedExamLbl = '';
+  } else {
+    _prep.selectedExamSkills = skills; _prep.selectedExamUnitIdx = unitIdx;
+    _prep.topic = ''; _prep.quizNum = 0;
+    const levelData = PREP_CURRICULUM[_prep.level] || {};
+    const allUnits = Object.values(levelData).flat();
+    const u = allUnits.find(u => Array.isArray(u.skills) && u.skills.includes(skills[0]));
+    _prep.selectedExamLbl = u ? u.lbl : '';
+  }
+  _renderPreparatePane();
+}
+
 function _prepUnitExam(skills, unitIdx) {
   const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
   if (!valid.length) return;
