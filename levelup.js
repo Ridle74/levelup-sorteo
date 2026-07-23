@@ -7052,47 +7052,57 @@ function _prepConfigHtml() {
   const _resetBtn = `${dot}<button class="prep-sel-btn" onclick="${_anyFilter?`_prep.level='';_prep.grade='';_prep.editorial='';_prep.area='';_prep.editorialChosen=false;_renderPreparatePane()`:''}" title="Limpiar filtros" style="opacity:${_anyFilter?'.7':'.25'};min-width:0;padding:0 10px;flex-shrink:0;cursor:${_anyFilter?'pointer':'default'}">✕</button>`;
 
   // ── Fila 2: opciones del selector abierto ──────────────────────────────────
-  // Helper móvil: agrupa botones en grid de 5 col (pares cuando n > 4)
+  // Truncar etiquetas largas en móvil (>10 chars)
+  const _mobLbl = s => {
+    if (!s || s.length <= 10) return s;
+    const sp = s.indexOf(' ');
+    if (sp > 0) return s[0].toUpperCase() + '. ' + s.slice(sp + 1);
+    return s[0].toUpperCase() + '. ' + s[3].toUpperCase() + s.slice(4);
+  };
+  // Grid móvil: ✕ siempre en col5 de fila 1; opciones extra fluyen a fila 2
   const _mobOptsGrid = (btns) => {
     const _cx = `_snd.click();_prep.openSelector=null;_renderPreparatePane()`;
     const _closeB = `<button class="prep-sel-btn" onclick="${_cx}" style="opacity:.65">✕</button>`;
     const n = btns.length;
-    if (n <= 4) return btns.join('') + _closeB;
-    const perCol = Math.ceil(n / 4);
-    let h = '';
-    for (let c = 0; c < 4; c++) {
-      const batch = btns.slice(c * perCol, (c + 1) * perCol);
-      if (!batch.length) continue;
-      h += batch.length === 1 ? batch[0] : `<div class="prep-mob-opt-grp">${batch.join('')}</div>`;
+    if (n <= 4) {
+      let h = btns.join('');
+      for (let i = n; i < 4; i++) h += '<span></span>';
+      return h + _closeB;
     }
-    return h + _closeB;
+    return btns.slice(0, 4).join('') + _closeB + btns.slice(4).join('');
   };
 
   let _openOpts = null;
   let _openOptsMob = null;
 
   if (openSel === 'level') {
-    const _b = Object.entries(PREP_LEVELS).map(([key,lv]) =>
+    const _b  = Object.entries(PREP_LEVELS).map(([key,lv]) =>
       `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" style="flex-shrink:0"><span class="prep-mob-ico">${lv.ico} </span>${lv.lbl}</button>`);
-    _openOpts = _b.join('');
-    _openOptsMob = _mobOptsGrid(_b);
+    const _bm = Object.entries(PREP_LEVELS).map(([key,lv]) =>
+      `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${_mobLbl(lv.lbl)}</button>`);
+    _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   } else if (openSel === 'grade' && gradeKeys.length) {
-    const _b = gradeKeys.map(g =>
+    const _b  = gradeKeys.map(g =>
       `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" style="flex-shrink:0"><span class="prep-mob-ico">${_gradeIco} </span>${g}°</button>`);
-    _openOpts = _b.join('');
-    _openOptsMob = _mobOptsGrid(_b);
+    const _bm = gradeKeys.map(g =>
+      `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')">${g}°</button>`);
+    _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   } else if (openSel === 'area' && areaOpts.length) {
-    const _b = areaOpts.map(a =>
+    const _b  = areaOpts.map(a =>
       `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')" style="flex-shrink:0"><span class="prep-mob-ico">${a.ico||''} </span>${a.lbl}</button>`);
-    _openOpts = _b.join('');
-    _openOptsMob = _mobOptsGrid(_b);
+    const _bm = areaOpts.map(a =>
+      `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${_mobLbl(a.lbl)}</button>`);
+    _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   } else if (openSel === 'editorial') {
-    const _b = [
+    const _b  = [
       `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">✦ Todos</button>`,
       ...edKeys.map(k => `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0"><span class="prep-mob-ico">${PREP_EDITORIALS[k]?.ico||'🏫'} </span>${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`)
     ];
-    _openOpts = _b.join('');
-    _openOptsMob = _mobOptsGrid(_b);
+    const _bm = [
+      `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`,
+      ...edKeys.map(k => `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${_mobLbl(PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k)}</button>`)
+    ];
+    _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   }
 
   const _optsRow = _openOpts != null
@@ -7584,11 +7594,9 @@ function _prepMasteryLevel(topicKey) {
     if (pct>=25)  return 'intentado';
     return 'intentado';
   }
-  // Habilidades normales: sesiones directas tienen prioridad;
-  // si nunca se practicó directo, usar el mejor score propagado como fallback.
-  const pct = directSessions.length
-    ? _prepReEvalPct(directSessions[0])
-    : Math.max(...sessions.map(h=>_prepReEvalPct(h)));
+  // Habilidades normales: usar la sesión más reciente (directa o propagada).
+  // El nivel puede subir o bajar según el último resultado del cuestionario.
+  const pct = _prepReEvalPct(sessions[0]);
   if (pct>=100) return 'dominado';
   if (pct>=75)  return 'competente';
   if (pct>=50)  return 'familiar';
