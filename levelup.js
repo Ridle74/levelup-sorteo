@@ -8,8 +8,8 @@ let _prep = { state:'config', level:null, grade:null, topic:'', qCount:10, timeS
 let _prepActiveUserId = undefined; // detecta cambio de cuenta
 
 // ── URL Routing ─────────────────────────────────────────────────────────────────
-const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',u:'preuniversitario'};
-const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',preuniversitario:'u'};
+const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',pr:'pre',u:'universitario'};
+const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',pre:'pr',universitario:'u'};
 const _PREP_URL_AREA    = {m:'matematica',rm:'razonamiento',al:'algebra',ar:'aritmetica',tr:'trigonometria',ge:'geometria'};
 const _PREP_URL_AREA_R  = {matematica:'m',razonamiento:'rm',algebra:'al',aritmetica:'ar',trigonometria:'tr',geometria:'ge'};
 const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen',agustin:'san_agustin',norberto:'san_norberto'};
@@ -6827,7 +6827,14 @@ const PREP_LEVELS = {
       {key:'trigonometria',lbl:'Trigonometría',     ico:'∠'},
       {key:'geometria',    lbl:'Geometría',         ico:'◻'},
     ] },
-  preuniversitario:{ lbl:'Preuniversitario', ico:'🎓', gradeIco:'🏛️', grades:{},
+  pre:{ lbl:'Pre', ico:'🎓', gradeIco:'🏛️', grades:{},
+    areas:[
+      {key:'algebra',      lbl:'Álgebra',      ico:'α'},
+      {key:'aritmetica',   lbl:'Aritmética',   ico:'🔢'},
+      {key:'trigonometria',lbl:'Trigonometría',ico:'∠'},
+      {key:'geometria',    lbl:'Geometría',    ico:'◻'},
+    ] },
+  universitario:{ lbl:'Universitario', ico:'🏛️', gradeIco:'🎓', grades:{},
     areas:[
       {key:'algebra',      lbl:'Álgebra',      ico:'α'},
       {key:'aritmetica',   lbl:'Aritmética',   ico:'🔢'},
@@ -6941,7 +6948,8 @@ const PREP_CURRICULUM = {
       {lbl:'Estadística y Probabilidad',area:'matematica',editorial:'san_norberto',skills:['snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex']},
     ],
   },
-  preuniversitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
+  pre:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
+  universitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
 };
 const PREP_EDITORIALS = {
   intelectum:     { lbl:'Intelectum',                    ico:'📘', abbr:'Intelectum' },
@@ -6981,7 +6989,7 @@ function _preparatePaneHtml() {
   if (_prep.state === 'result') return _prepResultHtml();
   return '';
 }
-function _prepOpen(sel) { _snd.click(); _prep.openSelector=sel; _renderPreparatePane(); }
+function _prepOpen(sel) { _snd.click(); _prep.openSelector = _prep.openSelector===sel ? null : sel; _renderPreparatePane(); }
 function _prepGoToTopic(topic, level, grade) {
   _snd.click();
   const meta = _prepTopicMeta(topic, level);
@@ -7043,13 +7051,13 @@ function _prepConfigHtml() {
   // ── Fila 1: botones siempre fijos (nunca se expanden) ──────────────────────
   const nivelSel   = `<button class="prep-sel-btn${_prep.level?' sel':''}" onclick="_prepOpen('level')" style="flex-shrink:0">${_prep.level ? '<span class="prep-mob-ico">'+lvDef.ico+' </span>'+lvDef.lbl : 'Nivel'} ▾</button>`;
   const gradeSel   = `<button class="prep-sel-btn${_prep.grade?' sel':''}" onclick="${gradeKeys.length?`_prepOpen('grade')`:''}" style="flex-shrink:0${!gradeKeys.length?';opacity:.35;cursor:default':''}">${_prep.grade ? '<span class="prep-mob-ico">'+_gradeIco+' </span>'+_prep.grade+'° ▾' : 'Grado ▾'}</button>`;
-  const colegioSel = `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" style="flex-shrink:0" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:''}">${_prep.editorial?('<span class="prep-mob-ico">'+(PREP_EDITORIALS[_prep.editorial]?.ico||'')+'</span> '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegios')} ▾</button>`;
+  const colegioSel = `<button class="prep-sel-btn${(_prep.editorial||_prep.editorialChosen)?' sel':''}" onclick="_prepOpen('editorial')" style="flex-shrink:0" title="${_prep.editorial?PREP_EDITORIALS[_prep.editorial]?.lbl:''}">${_prep.editorial?('<span class="prep-mob-ico">'+(PREP_EDITORIALS[_prep.editorial]?.ico||'')+'</span> '+(PREP_EDITORIALS[_prep.editorial]?.abbr||PREP_EDITORIALS[_prep.editorial]?.lbl)):(_prep.editorialChosen?'✦ Todos':'🏫 Colegio')} ▾</button>`;
   const _hasAreas = areaOpts.length > 0;
   const areaSel    = `<button class="prep-sel-btn${_prep.area?' sel':''}" onclick="${_hasAreas?`_prepOpen('area')`:''}" style="flex-shrink:0${!_hasAreas?';opacity:.35;cursor:default':''}">${(()=>{const a=areaOpts.find(x=>x.key===_prep.area);return _prep.area?('<span class="prep-mob-ico">'+(a?.ico||'')+' </span>'+(a?.lbl||'Área')):'Área'})()} ▾</button>`;
 
   const _hasTopic = !!(_prep.topic && allTopicKeys.includes(_prep.topic));
   const _anyFilter = _prep.level || _prep.grade || _prep.editorial || _prep.area;
-  const _resetBtn = `${dot}<button class="prep-sel-btn" onclick="${_anyFilter?`_prep.level='';_prep.grade='';_prep.editorial='';_prep.area='';_prep.editorialChosen=false;_renderPreparatePane()`:''}" title="Limpiar filtros" style="opacity:${_anyFilter?'.7':'.25'};min-width:0;padding:0 10px;flex-shrink:0;cursor:${_anyFilter?'pointer':'default'}">✕</button>`;
+  const _resetBtn = `${dot}<button class="prep-sel-btn${_anyFilter?' sel':''}" onclick="${_anyFilter?`_prep.level='';_prep.grade='';_prep.editorial='';_prep.area='';_prep.editorialChosen=false;_renderPreparatePane()`:''}" title="Limpiar filtros" style="opacity:${_anyFilter?'1':'.25'};min-width:0;padding:0 10px;flex-shrink:0;cursor:${_anyFilter?'pointer':'default'}">✕</button>`;
 
   // ── Fila 2: opciones del selector abierto ──────────────────────────────────
   // Truncar etiquetas largas en móvil (>10 chars)
@@ -7057,7 +7065,7 @@ function _prepConfigHtml() {
     if (!s || s.length <= 10) return s;
     const sp = s.indexOf(' ');
     if (sp > 0) return s[0].toUpperCase() + '. ' + s.slice(sp + 1);
-    return s[0].toUpperCase() + '. ' + s[3].toUpperCase() + s.slice(4);
+    return s.slice(0, 8) + '.';
   };
   // Grid móvil: ✕ siempre en col5 de fila 1; opciones extra fluyen a fila 2
   const _mobOptsGrid = (btns) => {
@@ -7115,7 +7123,7 @@ function _prepConfigHtml() {
 
   const selectorRow = `<div class="prep-mob-filter-row" style="${_rowStyle};margin:0 0 4px">${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${dot}${areaSel}${_resetBtn}</div>${_optsRow}`;
   // Botón desafío de dominio: siempre visible, deshabilitado si no hay curso seleccionado
-  const _challengeBtn = `<button class="prep-kh-btn-challenge" onclick="${shown?`_prepUnitExam(['${allTopicKeys.join("','")}'])`:''}" style="opacity:${shown?'1':'.3'};cursor:${shown?'pointer':'default'}" ${shown?'':'disabled'}>🎯 Desafío</button>`;
+  const _challengeBtn = `<button class="prep-kh-btn-challenge" onclick="${shown?`_prepUnitExam(['${allTopicKeys.join("','")}'])`:''}" style="opacity:${shown?'1':'.3'};cursor:${shown?'pointer':'default'}" ${shown?'':'disabled'}>🎯 Desafío de Dominio</button>`;
 
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
@@ -7177,8 +7185,9 @@ function _prepConfigHtml() {
   </div>`;
 
   // Topbar: racha, nivel, habilidades (el botón de acción está ahora en el selectorRow)
+  const _streak = masLoading ? 0 : _prepCalcStreak();
   const topbar = `<div class="prep-kh-topbar">
-    <div class="prep-kh-topbar-streak">🔥 <span>0</span></div>
+    <div class="prep-kh-topbar-streak">🔥 <span>${_streak}</span></div>
     <span class="prep-kh-topbar-arr">→</span>
     <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel ¿?'}</div>
     <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '¿? habilidades'}</div>
@@ -7264,7 +7273,7 @@ function _prepConfigHtml() {
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
-        <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
+        <span class="prep-kh-unit-num" title="${unit.lbl}" onclick="_snd.click();_prep.selectedUnit=${ui};_renderPreparatePane()">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
           ${skillsHtml}
           ${(()=>{const sc=_prepLastUnitExamPct(unit.skills[0]);const el=unitDone2?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc!==null&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" title="${et}" style="cursor:pointer">${_starSvg}</div>`;})()}
@@ -7396,9 +7405,7 @@ function _prepConfigHtml() {
       const expExamSq=`<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
       unitsHtml = `<div class="prep-kh-unit-exp">
         <div class="prep-kh-unit-exp-hdr">
-          <span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>
-          <div class="prep-kh-skills" style="flex:1">${expSquaresHtml}${expExamSq}</div>
-          <button class="prep-kh-unit-exp-back" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()">← Todas las unidades</button>
+          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Todas las unidades" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1)"></button></div>
         </div>
         ${rowsHtml}
         ${examCard}
@@ -7414,27 +7421,32 @@ function _prepConfigHtml() {
     }
   }
 
-  const _unitsBadge  = shown
-    ? `<span class="prep-kh-mob-badge">${units.length} Unidades</span>`
-    : `<span class="prep-kh-mob-badge" style="opacity:.3">— Unidades</span>`;
-  const _skillsBadge = shown
-    ? `<span class="prep-kh-mob-badge">${totalSkillCount} Habilidades</span>`
-    : `<span class="prep-kh-mob-badge" style="opacity:.3">— Habilidades</span>`;
-  const _indiceBtn = `<button class="prep-sel-btn" disabled style="opacity:.35;cursor:default">Índice</button>`;
+  const _msi = (_prep.showIndex||0) % 3;
+  const _msiLbl = _msi===0 ? 'Curso' : _msi===1 ? 'Índice' : 'Ocultar';
+  const _indiceBtn = `<button class="prep-sel-btn${_msi>0?' sel':''}" onclick="_snd.click();_prep.showIndex=((_prep.showIndex||0)+1)%3;_renderPreparatePane()"${!shown?' disabled style="opacity:.35;cursor:default"':''}>${_msiLbl}</button>`;
   const _mobileBar = `<div class="prep-kh-mobile-bar">
     ${_inicioBtn}
-    ${_unitsBadge}
     ${_indiceBtn}
-    ${_skillsBadge}
     ${_challengeBtn}
   </div>`;
 
+  const _mobIndexPanel = (_msi===2 && shown)
+    ? `<div class="prep-mob-index">
+        <div class="prep-kh-sidebar-hdr">
+          <div class="prep-kh-sidebar-sub">${units.length} Unidades</div>
+          <div class="prep-kh-sidebar-sub2">${totalSkillCount} Habilidades</div>
+        </div>
+        ${sidebarItems}
+      </div>`
+    : '';
+
   const contentArea = `<div class="prep-kh-content">
     ${_mobileBar}
-    <div class="prep-filter-bar">
+    <div class="prep-filter-bar${_msi===0?' prep-mob-filters-off':''}">
       <div style="flex:1;min-width:0">${selectorRow}</div>
       ${_challengeBtn}
     </div>
+    ${_mobIndexPanel}
     ${courseHeader}
     ${legend}
     ${unitsHtml}
@@ -7636,6 +7648,21 @@ function _prepLastUnitExamPct(firstSkill) {
   const entries = _prepHistoryData.filter(h => h.isUnitExam && h.topic === firstSkill && !h.autoFromExam && !h.autoFromQuiz);
   if (!entries.length) return null;
   return _prepReEvalPct(entries[0]);
+}
+function _prepCalcStreak() {
+  if (!Array.isArray(_prepHistoryData) || !_prepHistoryData.length) return 0;
+  const DAY = 86400000;
+  const tod = new Date(); tod.setHours(0,0,0,0);
+  const todMs = tod.getTime();
+  // Conjunto de días (ms medianoche) con al menos una sesión
+  const days = new Set(_prepHistoryData.map(h => {
+    const d = new Date((h.completedAt?.seconds||0)*1000); d.setHours(0,0,0,0); return d.getTime();
+  }));
+  // Empezar desde hoy; si hoy no tiene sesión, empezar desde ayer
+  let cur = days.has(todMs) ? todMs : todMs - DAY;
+  let streak = 0;
+  while (days.has(cur)) { streak++; cur -= DAY; }
+  return streak;
 }
 function _prepCourseScore(topicKeys) {
   const W={dominado:100,competente:75,familiar:50,intentado:25,pendiente:0,unknown:0};
