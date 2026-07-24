@@ -7435,7 +7435,7 @@ function _prepConfigHtml() {
 
   const _msi = (_prep.showIndex||0) % 3;
   const _msiLbl = _msi===0 ? 'Curso' : _msi===1 ? 'Índice' : 'Ocultar';
-  const _indiceBtn = `<button class="prep-sel-btn${_msi>0?' sel':''}" onclick="_snd.click();_prep.showIndex=((_prep.showIndex||0)+1)%3;_renderPreparatePane()"${!shown?' disabled style="opacity:.35;cursor:default"':''}>${_msiLbl}</button>`;
+  const _indiceBtn = `<button class="prep-sel-btn${_msi>0?' sel':''}" onclick="_snd.click();_prep.showIndex=((_prep.showIndex||0)+1)%3;_renderPreparatePane()">${_msiLbl}</button>`;
   const _mobileBar = `<div class="prep-kh-mobile-bar">
     ${_inicioBtn}
     ${_indiceBtn}
