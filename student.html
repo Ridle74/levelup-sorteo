@@ -11976,9 +11976,11 @@ function _prepModalLogin() {
     <div style="font-size:32px;margin-bottom:10px">👋</div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#fff;margin-bottom:6px">¿Cerrar sesión?</div>
     <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:24px">Tu progreso guardado no se perderá.</div>
-    <div style="display:flex;gap:10px">
-      <button onclick="_prepCloseLogoutModal()" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:.05em;cursor:pointer">Cancelar</button>
-      <button onclick="_prepDoLogout()" style="flex:1;background:#ef4444;border:none;color:#fff;border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:.05em;cursor:pointer">Cerrar sesión</button>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button onclick="window.location.href='https://emaths.me'" style="width:100%;background:rgba(79,182,255,0.15);border:1px solid rgba(79,182,255,0.35);color:#4fb6ff;border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:.05em;cursor:pointer">🏠 Ir a easyMaths</button>
+      <button onclick="navHome();_prepCloseLogoutModal()" style="width:100%;background:rgba(149,193,31,0.15);border:1px solid rgba(149,193,31,0.35);color:#95C11F;border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:.05em;cursor:pointer">🎒 Portal Estudiante</button>
+      <button onclick="_prepDoLogout()" style="width:100%;background:#ef4444;border:none;color:#fff;border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:.05em;cursor:pointer">Cerrar sesión</button>
+      <button onclick="_prepCloseLogoutModal()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);border-radius:12px;padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;letter-spacing:.05em;cursor:pointer">Cancelar</button>
     </div>
   </div>
 </div>
