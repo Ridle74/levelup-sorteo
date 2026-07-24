@@ -7176,7 +7176,7 @@ function _prepConfigHtml() {
   const _btnEMlogo = `<img src="/emaths-logo.svg" style="height:13px;width:auto;display:block">`;
   const _inicioBtn = _isLogged
     ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="navHome()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Inicio'}</button>`
-    : `<button class="prep-sel-btn" style="${_btnStyle}" onclick="_prepOpenLoginModal()">👤 Inicia sesión</button>`;
+    : `<button class="prep-sel-btn" style="background:#fff;border-color:#ddd;color:#111;font-weight:600;gap:5px" onclick="_prepOpenLoginModal()">👤 Inicia sesión</button>`;
   const sidebar = `<div class="prep-kh-sidebar">
     <div class="prep-kh-sidebar-inicio">
       ${_inicioBtn}
