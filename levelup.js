@@ -7305,23 +7305,28 @@ function _prepConfigHtml() {
           </div>
         </div>
       </div>` : '';
-    const _gearBtn = `<button class="prep-opt-sq" onclick="_prep.showConfig=!_prep.showConfig;_renderPreparatePane()" title="${_prep.showConfig?'Cerrar configuración':'Configurar sesión'}" style="flex-shrink:0;font-size:15px;width:36px;height:36px">${_prep.showConfig?'✕':'⚙'}</button>`;
-    startPanel = `<div class="prep-kh-start-bar">
+    const _gearStyle = _isQT ? 'flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(255,255,255,0.25);color:#fff;border-color:rgba(255,255,255,0.25)' : 'flex-shrink:0;font-size:15px;width:36px;height:36px';
+    const _gearBtn = `<button class="prep-opt-sq" onclick="_prep.showConfig=!_prep.showConfig;_renderPreparatePane()" title="${_prep.showConfig?'Cerrar configuración':'Configurar sesión'}" style="${_gearStyle}">${_prep.showConfig?'✕':'⚙'}</button>`;
+    const _barStyle = _isQT ? 'border-color:rgba(200,200,220,0.45);background:rgba(200,200,220,0.50)' : '';
+    const _btnStyle = _isQT ? 'background:rgba(255,255,255,0.25);border:none' : '';
+    const _boltIco = `<svg width="11" height="13" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="#fff"/></svg>`;
+    const _ico = _isQT ? _boltIco : (def.ico||'');
+    startPanel = `<div class="prep-kh-start-bar" style="${_barStyle}">
       <div class="prep-kh-start-bar-row">
-        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${def.ico||''} ${_qnLbl}</span>
-        <button class="prep-start-btn" style="flex-shrink:0;padding:7px 16px;font-size:13px;margin-top:0;white-space:nowrap" onclick="_prepStart()">▶ Practicar ahora</button>
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px">${_ico} ${_qnLbl}</span>
+        <button class="prep-start-btn" style="${_btnStyle}" onclick="_prepStart()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 386.11 481.84" width="14" height="17"><path fill="#fff" d="M1211.86,759.88,973,927.35c-48.77,34.2-116-.56-116-60V532.48c0-59.43,67.2-94.18,116-60L1211.86,640C1253.52,669.17,1253.52,730.67,1211.86,759.88Z" transform="translate(-857 -459)"/></svg></button>
         ${_gearBtn}
       </div>
       ${_cfgPanel}
     </div>`;
   } else if (_prep.selectedExamSkills && _prep.selectedExamSkills.length) {
     const _examLblFull = 'Examen: ' + _prep.selectedExamLbl;
-    const _gearBtnEx = `<button class="prep-opt-sq" disabled title="El examen usa configuración fija" style="flex-shrink:0;font-size:15px;width:36px;height:36px;opacity:.3;cursor:default">⚙</button>`;
+    const _gearBtnEx = `<button class="prep-opt-sq" disabled title="El examen usa configuración fija" style="flex-shrink:0;font-size:15px;width:36px;height:36px;cursor:default;background:rgba(255,255,255,0.25);color:#fff;border-color:rgba(255,255,255,0.25)">⚙</button>`;
     const _examSkillsArg = _prep.selectedExamSkills.map(s=>`'${s}'`).join(',');
-    startPanel = `<div class="prep-kh-start-bar">
+    startPanel = `<div class="prep-kh-start-bar" style="border-color:rgba(250,204,21,0.45);background:rgba(250,204,21,0.50)">
       <div class="prep-kh-start-bar-row">
-        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;color:rgba(255,255,255,0.88);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="color:#fbbf24">★</span>&nbsp; ${_examLblFull}</span>
-        <button class="prep-start-btn" style="flex-shrink:0;padding:7px 16px;font-size:13px;margin-top:0;white-space:nowrap" onclick="_prepUnitExam([${_examSkillsArg}],${_prep.selectedExamUnitIdx})">▶ Practicar ahora</button>
+        <span style="flex:1;min-width:0;font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span>★</span>&nbsp; ${_examLblFull}</span>
+        <button class="prep-start-btn" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);border:none" onclick="_prepUnitExam([${_examSkillsArg}],${_prep.selectedExamUnitIdx})"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 386.11 481.84" width="14" height="17"><path fill="#fff" d="M1211.86,759.88,973,927.35c-48.77,34.2-116-.56-116-60V532.48c0-59.43,67.2-94.18,116-60L1211.86,640C1253.52,669.17,1253.52,730.67,1211.86,759.88Z" transform="translate(-857 -459)"/></svg></button>
         ${_gearBtnEx}
       </div>
     </div>`;
@@ -7353,33 +7358,33 @@ function _prepConfigHtml() {
           quizCount++;
           const qDone=lvl==='dominado';
           const qPct=pct!==null?` · Último: ${pct}%`:'';
-          return `<div class="prep-kh-quiz-card${qDone?' done':''}">
+          return `<div id="prep-row-${sk}" class="prep-kh-quiz-card${qDone?' done':''}${isSel?' selected':''}">
             <div class="prep-kh-quiz-info">
               <div class="prep-kh-quiz-tag">Cuestionario ${quizCount}</div>
               <div class="prep-kh-quiz-desc">${_cleanLbl(def.lbl,sk)}${qPct}${qDone?' · ✓ Completado':''}</div>
               <button class="prep-kh-quiz-btn" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${quizCount};_renderPreparatePane()">${qDone?'↺ Repetir':'Iniciar cuestionario'}</button>
             </div>
             <div class="prep-kh-quiz-ico">${_boltSvg2}</div>
-          </div>`;
+          </div>${isSel ? startPanel : ''}`;
         }
         const cta = lvl==='competente'?'¡Bien! Estás listo para avanzar':lvl==='pendiente'||lvl==='unknown'?'Practica para subir de nivel':null;
-        return `<div class="prep-kh-sk-row${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">
+        return `<div id="prep-row-${sk}" class="prep-kh-sk-row${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">
           <div class="prep-kh-sk-info">
             <div class="prep-kh-sk-name">${_cleanLbl(def.lbl,sk)}</div>
             <div class="prep-kh-sk-lvl ${lvl==='unknown'?'pendiente':lvl}">${lvlText}</div>
             ${cta?`<div class="prep-kh-sk-cta">${cta}</div>`:''}
           </div>
           ${_badge(lvl==='unknown'?'pendiente':lvl)}
-        </div>`;
+        </div>${isSel ? startPanel : ''}`;
       }).join('');
       const sc=_prepLastUnitExamPct(unit.skills[0]);
       const examLvl=unitDone2?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;
       const examDesc=examLvl?`Nivel: ${examLvl}${!unitDone2&&sc!==null&&sc>0?' · Último: '+sc+'%':''}`:'Sube de nivel en todas las habilidades de esta unidad.';
-      const examCard=`<div class="prep-kh-quiz-card exam-card${unitDone2?' done':''}">
+      const _examSelInExp = _prep.selectedExamUnitIdx===ui;
+      const examCard=`<div id="prep-exam-${ui}" class="prep-kh-quiz-card exam-card${unitDone2?' done':''}${_examSelInExp?' selected':''}" style="cursor:pointer" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})">
         <div class="prep-kh-quiz-info">
           <div class="prep-kh-quiz-tag exam-tag">Examen</div>
           <div class="prep-kh-quiz-desc">${examDesc}${unitDone2?' · ✓ ¡Completado!':''}</div>
-          <button class="prep-kh-quiz-btn exam-btn" onclick="_snd.start();_prepUnitExam(['${unit.skills.join("','")}'],'${ui}')">${unitDone2?'↺ Repetir':'Empezar examen'}</button>
         </div>
         <div class="prep-kh-quiz-ico"><svg width="22" height="21" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg></div>
       </div>`;
@@ -7396,14 +7401,14 @@ function _prepConfigHtml() {
           const qPct=_prepLastPct(sk);
           const qTip=`Cuestionario ${_qn3}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane();setTimeout(()=>document.getElementById('prep-row-${sk}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane();setTimeout(()=>document.getElementById('prep-row-${sk}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       const _starSvgExp=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
-      const expExamSq=`<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
+      const expExamSq=`<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui});setTimeout(()=>document.getElementById('prep-exam-${ui}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
       unitsHtml = `<div class="prep-kh-unit-exp">
         <div class="prep-kh-unit-exp-hdr">
           <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Salir" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1);transform:scaleX(-1)"></button></div>
@@ -7411,6 +7416,7 @@ function _prepConfigHtml() {
         <div class="prep-kh-unit-title"><span class="prep-kh-unit-title-num">U${String(ui+1).padStart(2,'0')}</span>${unit.lbl}</div>
         ${rowsHtml}
         ${examCard}
+        ${_prep.selectedExamSkills?.length && _prep.selectedExamUnitIdx===ui ? startPanel : ''}
       </div>`;
 
     } else {
