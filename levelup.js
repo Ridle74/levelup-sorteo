@@ -7137,7 +7137,7 @@ function _prepConfigHtml() {
 
   // Leyenda de dominio
   const _legBorder = 'border:1px solid rgba(255,255,255,0.12)';
-  const _crownSvg = `<svg width="10" height="7" viewBox="0 0 20 13" fill="white"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
+  const _crownSvg = `<svg width="6" height="4" viewBox="0 0 20 13" fill="white"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
   const legend = `<div class="prep-kh-legend">
     <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);${_legBorder};display:flex;align-items:center;justify-content:center">${_crownSvg}</div>Dominado</div>
     <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(146,94,227,0.91);${_legBorder}"></div>Competente</div>
@@ -7273,10 +7273,11 @@ function _prepConfigHtml() {
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:(def.ico||'')}</div>`;
       }).join('');
       return `<div class="prep-kh-unit" id="prep-unit-${ui}">
-        <span class="prep-kh-unit-num" title="${unit.lbl}" onclick="_snd.click();_prep.selectedUnit=${ui};_renderPreparatePane()">U${String(ui+1).padStart(2,'0')}</span>
         <div class="prep-kh-skills">
+          <span class="prep-kh-unit-num" title="${unit.lbl}">U${String(ui+1).padStart(2,'0')}</span>
           ${skillsHtml}
           ${(()=>{const sc=_prepLastUnitExamPct(unit.skills[0]);const el=unitDone2?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!unitDone2&&sc!==null&&sc>0?` · Último: ${sc}%`:'')+( unitDone2?' · ¡Completado!':'');const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" title="${et}" style="cursor:pointer">${_starSvg}</div>`;})()}
+          <button class="prep-kh-unit-enter" title="Entrar" onclick="_snd.click();_prep.selectedUnit=${ui};_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1)"></button>
         </div>
       </div>`;
     };
@@ -7405,8 +7406,9 @@ function _prepConfigHtml() {
       const expExamSq=`<div class="prep-kh-sq exam-sq${unitDone2?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
       unitsHtml = `<div class="prep-kh-unit-exp">
         <div class="prep-kh-unit-exp-hdr">
-          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Todas las unidades" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1)"></button></div>
+          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Salir" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1);transform:scaleX(-1)"></button></div>
         </div>
+        <div class="prep-kh-unit-title"><span class="prep-kh-unit-title-num">U${String(ui+1).padStart(2,'0')}</span>${unit.lbl}</div>
         ${rowsHtml}
         ${examCard}
       </div>`;
@@ -7442,7 +7444,7 @@ function _prepConfigHtml() {
 
   const contentArea = `<div class="prep-kh-content">
     ${_mobileBar}
-    <div class="prep-filter-bar${_msi===0?' prep-mob-filters-off':''}">
+    <div class="prep-filter-bar${_msi!==1?' prep-mob-filters-off':''}">
       <div style="flex:1;min-width:0">${selectorRow}</div>
       ${_challengeBtn}
     </div>
