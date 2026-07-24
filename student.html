@@ -548,7 +548,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-mastery-lbl{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
 .prep-kh-bar{flex:1;height:7px;border-radius:4px;background:rgba(255,255,255,0.08)}
 .prep-kh-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#7c3aed,#a855f7);transition:width .4s}
-.prep-kh-legend{display:flex;flex-wrap:nowrap;justify-content:space-between;margin:8px 0 12px;padding:5px 13px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
+.prep-kh-legend{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:16px;margin:8px 0 12px;padding:5px 13px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px solid rgba(255,255,255,0.06)}
 .prep-kh-leg-item{display:flex;align-items:center;gap:3px;font-size:9px;color:rgba(255,255,255,0.42);white-space:nowrap}
 .prep-kh-leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 
@@ -561,7 +561,9 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-sq.quiz-sq{background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);color:#a0a0a0}
 .prep-kh-sq.quiz-sq.dominado{background:linear-gradient(135deg,#ffffff 0%,#c0c0c8 45%,#808090 100%);border:2px solid #a0a0b0;color:#444}
 .prep-kh-sq.quiz-sq.dominado:hover{background:rgb(109,40,217);border-color:rgb(168,85,247);color:#fff}
-.prep-kh-sq.quiz-sq.selected,.prep-kh-sq.quiz-sq:hover{background:rgba(168,85,247,0.26);border-style:solid}
+.prep-kh-sq.quiz-sq:hover{background:rgba(168,85,247,0.26);border-style:solid}
+.prep-kh-sq.quiz-sq.selected{background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);outline:2px solid #facc15;outline-offset:2px}
+.prep-kh-sq.quiz-sq.dominado.selected{background:linear-gradient(135deg,#ffffff 0%,#c0c0c8 45%,#808090 100%);border:2px solid #a0a0b0;color:#444;outline:2px solid #facc15;outline-offset:2px}
 .prep-kh-sq.exam-sq{background:rgba(250,204,21,0.07);border:2px dashed rgba(250,204,21,0.5);color:#facc15}
 .prep-kh-sq.exam-sq:hover{background:rgba(250,204,21,0.18)}
 .prep-kh-sq.exam-sq.dominado{background:rgba(202,138,4,0.9);border:2px solid #fbbf24;color:#fff}
@@ -654,7 +656,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-btn-challenge{background:rgba(109,40,217,0.85);border:none;border-radius:10px;height:32px;display:inline-flex;align-items:center;padding:0 16px;color:#fff;font-family:'Lato',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.01em;white-space:nowrap;transition:background .15s}
 .prep-kh-btn-challenge:hover{background:#7c3aed}
 .prep-filter-bar{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
-@media(min-width:681px){.prep-filter-bar{flex-direction:row;align-items:center;gap:10px}.prep-filter-bar>.prep-kh-btn-challenge{flex-shrink:0}}
+@media(min-width:681px){.prep-filter-bar{flex-direction:row;align-items:flex-start;flex-wrap:nowrap;gap:10px}.prep-filter-bar>.prep-kh-btn-challenge{flex-shrink:0;margin-top:2px}}
 .prep-kh-units{display:flex;gap:8px;align-items:flex-start}
 .prep-kh-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .prep-kh-mobile-bar{display:none;align-items:center;gap:8px;padding:0 0 10px;justify-content:space-between}
@@ -11913,6 +11915,69 @@ function closeImgViewer(){
  if (m) m.style.display = 'none';
   document.body.style.overflow = '';
 }
+
+function _prepOpenLoginModal() {
+  const modal = document.getElementById('prep-login-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  const sel = document.getElementById('prep-modal-sel');
+  sel.innerHTML = '<option value="" disabled selected>— Selecciona tu nombre —</option>';
+  getFullList().forEach(s => {
+    const o = document.createElement('option');
+    o.value = String(s.id);
+    o.textContent = s.icon + ' ' + s.name;
+    sel.appendChild(o);
+  });
+  const pin = document.getElementById('prep-modal-pin');
+  if (pin) { pin.value = ''; pin.onkeydown = e => { if (e.key === 'Enter') _prepModalLogin(); }; }
+  const err = document.getElementById('prep-modal-err');
+  if (err) err.style.display = 'none';
+}
+function _prepCloseLoginModal() {
+  const modal = document.getElementById('prep-login-modal');
+  if (modal) modal.style.display = 'none';
+}
+function _prepModalLogin() {
+  const selId = document.getElementById('prep-modal-sel').value;
+  const pin   = document.getElementById('prep-modal-pin').value;
+  const err   = document.getElementById('prep-modal-err');
+  const s     = getFullList().find(x => String(x.id) === selId);
+  if (!s || String(s.pin) !== pin) {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display='none', 2500);
+    return;
+  }
+  setLoggedId(s.id);
+  _prepCloseLoginModal();
+  // Recargar historial con el uid del nuevo usuario
+  if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
+  if (typeof loadPrepHistory === 'function') loadPrepHistory();
+  else _renderPreparatePane();
+}
 </script>
+
+<!-- PREP LOGIN MODAL -->
+<div id="prep-login-modal" onclick="if(event.target===this)_prepCloseLoginModal()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,11,22,0.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
+  <div class="login-card" style="width:100%;max-width:340px;background:#111827;border-radius:20px;padding:28px;position:relative;box-sizing:border-box">
+    <button onclick="_prepCloseLoginModal()" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.6);width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="login-title" style="font-size:34px">LEVEL UP</div>
+      <div class="login-sub" style="margin-top:6px;letter-spacing:.15em">Inicia sesión para guardar tu progreso</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <label class="field-label">Alumno</label>
+        <select id="prep-modal-sel" class="field-input" style="cursor:pointer"></select>
+      </div>
+      <div>
+        <label class="field-label">PIN de acceso</label>
+        <input type="password" id="prep-modal-pin" class="field-input" placeholder="••••" autocomplete="off">
+      </div>
+      <div id="prep-modal-err" style="color:#ff5c7a;font-size:11px;font-weight:700;text-align:center;display:none">PIN incorrecto</div>
+      <button class="btn-login" onclick="_prepModalLogin()">INGRESAR</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

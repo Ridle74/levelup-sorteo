@@ -7028,8 +7028,13 @@ function _prepConfigHtml() {
   const allUnits = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
   const edKeys = Object.keys(PREP_EDITORIALS).filter(k=>{
     const g = PREP_EDITORIALS[k].grades;
-    if (!g) return true; // sin restricción → siempre visible
-    return !!(g[_prep.level]?.includes(_prep.grade));
+    if (g && !g[_prep.level]?.includes(_prep.grade)) return false;
+    // Si hay nivel y grado seleccionados, verificar que haya cursos reales
+    if (_prep.level && _prep.grade) {
+      const _allU = (PREP_CURRICULUM[_prep.level]||{})[_prep.grade] || [];
+      return _allU.some(u => u.editorial === k && (u.skills||[]).filter(sk=>sk in BINGO_TOPICS).length >= 3);
+    }
+    return true;
   });
   const units = allUnits.filter(u=>{
     if (_prep.editorial && u.editorial !== _prep.editorial) return false;
@@ -7046,6 +7051,7 @@ function _prepConfigHtml() {
   const areaOpts = lvDef.areas || [];
   const _gradeIco = lvDef.gradeIco || '📅';
   const _rowStyle = `display:flex;gap:5px;align-items:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch`;
+  const _optsStyle = `display:flex;gap:5px;align-items:center;flex-wrap:wrap`;
   const dot = `<span class="prep-mob-dot" style="color:rgba(255,255,255,0.18);padding:0 1px;flex-shrink:0">·</span>`;
 
   // ── Fila 1: botones siempre fijos (nunca se expanden) ──────────────────────
@@ -7084,39 +7090,37 @@ function _prepConfigHtml() {
   let _openOptsMob = null;
 
   if (openSel === 'level') {
-    const _b  = Object.entries(PREP_LEVELS).map(([key,lv]) =>
-      `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')" style="flex-shrink:0"><span class="prep-mob-ico">${lv.ico} </span>${lv.lbl}</button>`);
-    const _bm = Object.entries(PREP_LEVELS).map(([key,lv]) =>
-      `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="_prepSetLevel('${key}')">${_mobLbl(lv.lbl)}</button>`);
+    const _levelAvail = key => { const c=PREP_CURRICULUM[key]||{}; return Object.values(c).some(arr=>arr.some(u=>(u.skills||[]).filter(sk=>sk in BINGO_TOPICS).length>=3)); };
+    const _b  = Object.entries(PREP_LEVELS).map(([key,lv]) => { const ok=_levelAvail(key); return `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="${ok?`_prepSetLevel('${key}')`:''}" style="flex-shrink:0${!ok?';opacity:.35;cursor:default':''}"><span class="prep-mob-ico">${lv.ico} </span>${lv.lbl}</button>`; });
+    const _bm = Object.entries(PREP_LEVELS).map(([key,lv]) => { const ok=_levelAvail(key); return `<button class="prep-sel-btn ${_prep.level===key?'active':''}" onclick="${ok?`_prepSetLevel('${key}')`:''}" style="${!ok?'opacity:.35;cursor:default':''}">${_mobLbl(lv.lbl)}</button>`; });
     _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   } else if (openSel === 'grade' && gradeKeys.length) {
-    const _b  = gradeKeys.map(g =>
-      `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')" style="flex-shrink:0"><span class="prep-mob-ico">${_gradeIco} </span>${g}°</button>`);
-    const _bm = gradeKeys.map(g =>
-      `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="_prepSetGrade('${g}')">${g}°</button>`);
+    const _gradeAvail = g => ((PREP_CURRICULUM[_prep.level]||{})[g]||[]).filter(u=>!_prep.editorial||u.editorial===_prep.editorial).some(u=>(u.skills||[]).filter(sk=>sk in BINGO_TOPICS).length>=3);
+    const _b  = gradeKeys.map(g => { const ok=_gradeAvail(g); return `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="${ok?`_prepSetGrade('${g}')`:''}" style="flex-shrink:0${!ok?';opacity:.35;cursor:default':''}"><span class="prep-mob-ico">${_gradeIco} </span>${g}°</button>`; });
+    const _bm = gradeKeys.map(g => { const ok=_gradeAvail(g); return `<button class="prep-sel-btn ${_prep.grade===g?'active':''}" onclick="${ok?`_prepSetGrade('${g}')`:''}" style="${!ok?'opacity:.35;cursor:default':''}">${g}°</button>`; });
     _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   } else if (openSel === 'area' && areaOpts.length) {
-    const _b  = areaOpts.map(a =>
-      `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')" style="flex-shrink:0"><span class="prep-mob-ico">${a.ico||''} </span>${a.lbl}</button>`);
-    const _bm = areaOpts.map(a =>
-      `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="_prepSetArea('${a.key}')">${_mobLbl(a.lbl)}</button>`);
+    const _unitsNoArea = ((PREP_CURRICULUM[_prep.level]||{})[_prep.grade]||[]).filter(u=>!_prep.editorial||u.editorial===_prep.editorial);
+    const _b  = areaOpts.map(a => { const ok=_unitsNoArea.some(u=>u.area===a.key); return `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="${ok?`_prepSetArea('${a.key}')`:''}" style="flex-shrink:0${!ok?';opacity:.35;cursor:default':''}"><span class="prep-mob-ico">${a.ico||''} </span>${a.lbl}</button>`; });
+    const _bm = areaOpts.map(a => { const ok=_unitsNoArea.some(u=>u.area===a.key); return `<button class="prep-sel-btn ${_prep.area===a.key?'active':''}" onclick="${ok?`_prepSetArea('${a.key}')`:''}" style="${!ok?'opacity:.35;cursor:default':''}">${_mobLbl(a.lbl)}</button>`; });
     _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   } else if (openSel === 'editorial') {
+    const _allEdKeys = Object.keys(PREP_EDITORIALS);
     const _b  = [
       `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0">✦ Todos</button>`,
-      ...edKeys.map(k => `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()" style="flex-shrink:0"><span class="prep-mob-ico">${PREP_EDITORIALS[k]?.ico||'🏫'} </span>${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`)
+      ..._allEdKeys.map(k => { const ok=edKeys.includes(k); return `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="${ok?`_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()`:''}" style="flex-shrink:0${!ok?';opacity:.35;cursor:default':''}"><span class="prep-mob-ico">${PREP_EDITORIALS[k]?.ico||'🏫'} </span>${PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k}</button>`; })
     ];
     const _bm = [
       `<button class="prep-sel-btn ${!_prep.editorial?'active':''}" onclick="_snd.click();_prep.editorial=null;_prep.openSelector=null;_renderPreparatePane()">✦ Todos</button>`,
-      ...edKeys.map(k => `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()">${_mobLbl(PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k)}</button>`)
+      ..._allEdKeys.map(k => { const ok=edKeys.includes(k); return `<button class="prep-sel-btn ${_prep.editorial===k?'active':''}" onclick="${ok?`_snd.click();_prep.editorial='${k}';_prep.openSelector=null;_renderPreparatePane()`:''}" style="${!ok?'opacity:.35;cursor:default':''}">${_mobLbl(PREP_EDITORIALS[k]?.abbr||PREP_EDITORIALS[k]?.lbl||k)}</button>`; })
     ];
     _openOpts = _b.join(''); _openOptsMob = _mobOptsGrid(_bm);
   }
 
   const _optsRow = _openOpts != null
-    ? `<div class="prep-mob-opts-hide" style="${_rowStyle};margin:0 0 6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)">
+    ? `<div class="prep-mob-opts-hide" style="${_optsStyle};margin:0 0 6px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.08)">
         ${_openOpts}
-        <button class="prep-opt-sq" onclick="_prepClose()" title="Cerrar" style="font-size:10px;opacity:.45;flex-shrink:0;margin-left:4px">✕</button>
+        <button class="prep-sel-btn" onclick="_prepClose()" title="Cerrar" style="opacity:.45;flex-shrink:0;min-width:0;padding:0 10px">✕</button>
       </div>
       <div class="prep-mob-opts-row">${_openOptsMob||''}</div>`
     : '';
@@ -7172,7 +7176,7 @@ function _prepConfigHtml() {
   const _btnEMlogo = `<img src="/emaths-logo.svg" style="height:13px;width:auto;display:block">`;
   const _inicioBtn = _isLogged
     ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="navHome()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Inicio'}</button>`
-    : `<button class="prep-sel-btn" style="${_btnStyle}" onclick="window.location.href='/'">${_btnArrow}${_btnEMlogo} ¡Inscríbete Ya!</button>`;
+    : `<button class="prep-sel-btn" style="${_btnStyle}" onclick="_prepOpenLoginModal()">👤 Inicia sesión</button>`;
   const sidebar = `<div class="prep-kh-sidebar">
     <div class="prep-kh-sidebar-inicio">
       ${_inicioBtn}
@@ -8078,13 +8082,14 @@ async function _prepSaveHistory() {
 async function loadPrepHistory() {
   _prepHistoryLoading = true;
   try {
-    const uid = isAdmin() ? 'teacher' : String(getLoggedId());
-    const snap = await db.collection('prepHistory').where('uid','==',uid).limit(50).get();
+    // uid: admin → 'teacher', loggeado → String(id), invitado → _bingoGuestUid
+    const uid = isAdmin() ? 'teacher' : (getLoggedId() !== null ? String(getLoggedId()) : (_bingoGuestUid || null));
+    if (!uid) { _prepHistoryData = []; _prepHistoryLoading = false; if (dashGamingMode==='preparate'||document.getElementById('preparate-pane')) _renderPreparatePane(); return; }
+    const snap = await db.collection('prepHistory').where('uid','==',uid).limit(200).get();
     _prepHistoryData = [];
     snap.forEach(doc => _prepHistoryData.push({ id:doc.id, ...doc.data() }));
     // Ordenar por fecha desc en cliente (evita índice compuesto)
     _prepHistoryData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
-    _prepHistoryData = _prepHistoryData.slice(0,30);
   } catch(e) { _prepHistoryData = []; console.error('prep history load', e); }
   _prepHistoryLoading = false;
   if (dashGamingMode==='preparate' || document.getElementById('preparate-pane')) _renderPreparatePane();
