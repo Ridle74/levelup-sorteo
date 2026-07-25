@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1366">
-<title>easyMaths - Michel H'R</title>
+<title>EMATHS</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <!-- Preconnect para Google Fonts (evita latencia DNS en primera carga) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -605,8 +605,8 @@ body {
         <svg class="btn-leaf bl" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <svg class="btn-leaf br" viewBox="0 0 22 22"><use href="#leaf-tip"/></svg>
         <span class="btn-icon"><svg viewBox="0 0 24 24"><path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5a2 2 0 0 0 0 4h.5"/><path d="M16 5h3a2 2 0 0 1 0 4h-.5"/><path d="M12 12v3"/><path d="M9 20h6"/><path d="M9 20c0-2 1-3 3-3s3 1 3 3"/></svg></span>
-        <span class="btn-text">Ganadores</span>
-        <span class="btn-sub">Maths Level Up</span>
+        <span class="btn-text">Next Up</span>
+        <span class="btn-sub">Ganadores Mensuales</span>
       </button>
     </div>
   </div>
@@ -710,15 +710,15 @@ function ripple(e, btn) {
       }
       if (label.textContent.trim() === 'Padres') {
         var btnP = label.closest('button');
-        if (btnP) btnP.addEventListener('click', function () { location.href = '/padres'; });
+        if (btnP) btnP.addEventListener('click', function () { location.href = '/parents'; });
       }
       if (label.textContent.trim() === 'Cotiza') {
         var btnCZ = label.closest('button');
         if (btnCZ) btnCZ.addEventListener('click', function () { location.href = '/cotiza'; });
       }
-      if (label.textContent.trim() === 'Ganadores') {
+      if (label.textContent.trim() === 'Next Up') {
         var btnG = label.closest('button');
-        if (btnG) btnG.addEventListener('click', function () { location.href = '/ganadores'; });
+        if (btnG) btnG.addEventListener('click', function () { location.href = '/winners'; });
       }
       if (label.textContent.trim() === 'Horarios') {
         var btnH = label.closest('button');

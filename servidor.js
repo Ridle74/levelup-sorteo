@@ -22,13 +22,31 @@ const MIME = {
 const SPA_ROUTES = [
   { prefix: '/levelup', file: 'student.html' },
   { prefix: '/student', file: 'student.html' },
-  { prefix: '/padres',  file: 'padres.html'  },
+  { prefix: '/winners', file: 'student.html' },
+  { prefix: '/parents', file: 'padres.html'  },
   { prefix: '/horarios',file: 'horarios.html' },
 ];
+
+// Enlaces cortos: igual que _redirects (Cloudflare Pages solo aplica ese archivo
+// en producción, así que aquí lo replicamos para que también funcionen en local).
+const SHORT_REDIRECTS = {
+  '/tablero': '/student/tablero',
+  '/ranking': '/student/ranking',
+  '/numeros': '/student/numeros',
+  '/ganadores': '/winners',
+  '/student/ganadores': '/winners',
+  '/padres': '/parents',
+};
 
 http.createServer((req, res) => {
   // Quitar query string para comparar rutas
   const urlPath = req.url.split('?')[0];
+
+  // Enlaces cortos
+  if (SHORT_REDIRECTS[urlPath]) {
+    res.writeHead(302, { Location: SHORT_REDIRECTS[urlPath] });
+    return res.end();
+  }
 
   // Ruta raíz
   if (urlPath === '/') {

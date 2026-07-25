@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>MATHS LEVEL UP — Estudiante</title>
+<title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
   <script src="/levelup.js?v=20260721"></script>
@@ -1505,6 +1505,7 @@ function viewFromLocation() {
   var m = location.pathname.match(/^\/student\/([^\/?#]+)/);
   if (m && m[1]) return decodeURIComponent(m[1]);
   if (/^\/levelup(\/|$)/.test(location.pathname)) return 'levelup';
+  if (/^\/winners(\/|$)/.test(location.pathname)) return 'winners';
   var qp = new URLSearchParams(location.search).get('view');
   return qp || 'login';
 }
@@ -2055,7 +2056,7 @@ function descargarImagen(canvas, nombre='imagen.png') {
 // ════════════════════════════════════════════════════════
 // ROUTER
 // ════════════════════════════════════════════════════════
-const PUBLIC_ROUTES = new Set(['login','ranking','numeros','ganadores','bingo','levelup']);
+const PUBLIC_ROUTES = new Set(['login','ranking','numeros','winners','bingo','levelup']);
 const ADMIN_ROUTES  = new Set([]);
 // Rutas "inmersivas": pantalla completa sin nav inferior ni barra atrás/inicio/adelante
 // (pedido explícito: que /student/bingo "solo se vea el sorteo").
@@ -2063,7 +2064,7 @@ const IMMERSIVE_ROUTES = new Set(['bingo','levelup']);
 
 function go(view) {
   currentView = view;
-  var path = view === 'dashboard' ? '/student' : view === 'levelup' ? '/levelup' : '/student/' + view;
+  var path = view === 'dashboard' ? '/student' : view === 'levelup' ? '/levelup' : view === 'winners' ? '/winners' : '/student/' + view;
   if (location.pathname !== path) history.pushState({ view: view }, '', path);
   router();
 }
@@ -2090,7 +2091,7 @@ function router() {
 
   const views = {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
-    ranking: vRankingPage, numeros: vNumerosPage, ganadores: vGanadoresPage,
+    ranking: vRankingPage, numeros: vNumerosPage, winners: vGanadoresPage,
     tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil,
     bingo: vBingoFull, levelup: vLevelUpFull
   };
@@ -2116,7 +2117,7 @@ function router() {
 
   const setup = {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
-    ranking:vRankingSetup, numeros:vNumerosSetup, ganadores:vGanadoresSetup,
+    ranking:vRankingSetup, numeros:vNumerosSetup, winners:vGanadoresSetup,
     tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{},
     bingo: vBingoFullSetup, levelup: vLevelUpFullSetup
   };
@@ -2124,7 +2125,7 @@ function router() {
 
   // Mantiene la URL sincronizada con la vista resuelta (p.ej. si el guard
   // de autenticación cambió la vista a 'login'), sin crear historial extra.
-  var syncedPath = hash === 'dashboard' ? '/student' : hash === 'levelup' ? '/levelup' : '/student/' + hash;
+  var syncedPath = hash === 'dashboard' ? '/student' : hash === 'levelup' ? '/levelup' : hash === 'winners' ? '/winners' : '/student/' + hash;
   if (location.pathname !== syncedPath && !location.pathname.startsWith(syncedPath + '/')) {
     history.replaceState({ view: hash }, '', syncedPath);
   }
@@ -2171,8 +2172,8 @@ function vLogin() {
   <div style="min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px">
     <div class="login-card fade-in" style="width:100%;max-width:360px">
       <div style="text-align:center;margin-bottom:32px">
-        <div class="login-title">LEVEL UP</div>
-        <div class="login-sub" id="login-sub">Sorteo</div>
+        <div class="login-title">LEVEL ZONE</div>
+        <div class="login-sub" id="login-sub">Next Up</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px">
         <div>
@@ -2191,7 +2192,7 @@ function vLogin() {
           👑 VER TABLA DE POSICIONES
         </button>
         <button onclick="go('numeros')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--muted);border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
-          🎲 VER NÚMEROS DEL SORTEO
+          🎲 VER NÚMEROS DE NEXT UP
         </button>
         <button onclick="go('bingo')" style="background:linear-gradient(135deg,rgba(124,58,237,0.25),rgba(219,39,119,0.25));border:1px solid rgba(168,85,247,0.4);color:#c084fc;border-radius:14px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;width:100%">
           🎱 JUGAR NEON BINGO
@@ -2202,7 +2203,7 @@ function vLogin() {
 }
 function vLoginSetup() {
   const sub = document.getElementById('login-sub');
-  if (sub) sub.textContent = 'Sorteo de ' + getSorteoMonth();
+  if (sub) sub.textContent = 'Next Up · ' + getSorteoMonth();
   const sel = document.getElementById('sel-student');
   if (!sel) return;
   getFullList().forEach(s => {
@@ -2256,7 +2257,7 @@ function vDashboard() {
         <div>
           <div style="font-size:10px;color:rgba(220,200,255,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:4px">BIENVENIDO</div>
           <div style="display:flex;align-items:center;gap:8px"><div style="flex-shrink:0">${_av(student,44)}</div><span style="font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;line-height:1;letter-spacing:-0.02em">${firstName.toUpperCase()}</span></div>
-          <div style="font-size:11px;color:rgba(220,200,255,0.8);font-weight:600;margin-top:4px">MATHS LEVEL UP</div>
+          <div style="font-size:11px;color:rgba(220,200,255,0.8);font-weight:600;margin-top:4px">LEVEL ZONE</div>
         </div>
         <button onclick="doLogout()" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:8px 12px;color:#fff;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;flex-shrink:0">SALIR</button>
       </div>
@@ -2336,17 +2337,17 @@ function vDashboard() {
     </div>` : ''}
     <div class="dash-link" onclick="go('tablero')">
       <span class="dl-ico">🎮</span>
-      <div><div>Tablero del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Elige tus números</div></div>
+      <div><div>Tablero de Next Up</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Elige tus números</div></div>
       <span class="dl-arr">›</span>
     </div>
     <div class="dash-link" onclick="go('ranking')">
       <span class="dl-ico">👑</span>
-      <div><div>Tabla de Posiciones</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ranking del sorteo</div></div>
+      <div><div>Tabla de Posiciones</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ranking de Next Up</div></div>
       <span class="dl-arr">›</span>
     </div>
     <div class="dash-link" onclick="go('numeros')">
       <span class="dl-ico">🎲</span>
-      <div><div>Números del Sorteo</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ver todos los números</div></div>
+      <div><div>Números de Next Up</div><div style="font-size:10px;color:rgba(255,255,255,0.4);font-weight:400;margin-top:2px">Ver todos los números</div></div>
       <span class="dl-arr">›</span>
     </div>
     </div>
@@ -7240,7 +7241,7 @@ function vTablero() {
   <header id="header">
     <div class="header-row">
       <div style="display:flex;align-items:center;gap:10px">
-        <div class="header-title">LEVEL UP</div>
+        <div class="header-title">LEVEL ZONE</div>
         <div id="status-badge" class="status-badge status-open">● Activo</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -7636,11 +7637,11 @@ function renderStudentCronograma() {
       +'</div>';
   };
   el.innerHTML = '<div class="card" style="padding:11px 13px;margin-bottom:10px">'
-    +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:9px">📅 CRONOGRAMA DEL SORTEO</div>'
+    +'<div style="font-size:7px;font-weight:900;color:#6b7280;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:9px">📅 CRONOGRAMA DE NEXT UP</div>'
     +'<div style="display:flex;gap:7px;flex-wrap:wrap">'
     +pill('🔓','Apertura',sch.start)
     +pill('🔒','Cierre',sch.end)
-    +pill('🎉','Sorteo',sch.draw)
+    +pill('🎉','Next Up',sch.draw)
     +(ps ? pill('⏱️','Mi turno',ps) : '')
     +'</div></div>';
 }
@@ -7666,7 +7667,7 @@ function renderCronograma() {
       grid.appendChild(drawWrap);
     }
   }
-  if (drawWrap) drawWrap.innerHTML = box('🎉','Sorteo en Vivo', sch.draw, '#ffd23f');
+  if (drawWrap) drawWrap.innerHTML = box('🎉','Next Up en Vivo', sch.draw, '#ffd23f');
 }
 function renderStudentList() {
   const list=document.getElementById('student-list'); if (!list) return;
@@ -7677,15 +7678,15 @@ function renderStudentList() {
     row.className='student-row';
     const linkedOk = s.padresId !== undefined && s.padresId !== null && !s.linkBroken;
     const nameTitle = linkedOk
-      ? 'El nombre se edita desde emaths.me/padres'
-      : (s.linkBroken ? 'Vínculo roto: este alumno fue eliminado de /padres. La cuenta sigue activa — vuelve a vincularla abajo.' : 'Alumno sin vínculo a /padres.');
+      ? 'El nombre se edita desde emaths.me/parents'
+      : (s.linkBroken ? 'Vínculo roto: este alumno fue eliminado de /parents. La cuenta sigue activa — vuelve a vincularla abajo.' : 'Alumno sin vínculo a /parents.');
     row.innerHTML=`
       <div class="student-row-top">
         <div style="display:flex;align-items:center;gap:6px">
           <span class="pos-label">POS. ${idx+1}</span>
           <button class="msg-btn" title="Inicio de selección" onclick="copyMsg(${s.id},1)">📩</button>
           <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">📢</button>
-          <button class="msg-btn" title="Detalles del sorteo" onclick="copyMsg(${s.id},3)">🔴</button>
+          <button class="msg-btn" title="Detalles de Next Up" onclick="copyMsg(${s.id},3)">🔴</button>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <div class="color-wrap">
@@ -7704,7 +7705,7 @@ function renderStudentList() {
         <div style="flex:1;display:flex;flex-direction:column;gap:4px">
           <div class="mini-input" title="${nameTitle}" style="padding:6px 10px;font-size:12px;text-transform:uppercase;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.18);color:rgba(255,255,255,0.78);cursor:default">${s.name||''}${linkedOk?' 🔒':' ⚠️'}</div>
           ${!linkedOk ? `<select onchange="relinkToPadres(${s.id},this.value)" style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,193,7,0.4);border-radius:8px;color:#ffc107;font-size:10px;padding:5px 6px;font-weight:700">
-            <option value="">🔗 ${s.linkBroken ? 'volver a vincular con /padres…' : 'vincular con /padres…'}</option>
+            <option value="">🔗 ${s.linkBroken ? 'volver a vincular con /parents…' : 'vincular con /parents…'}</option>
             ${unlinkedOptions.map(r=>`<option value="${r.pid}">${r.name}</option>`).join('')}
           </select>` : ''}
         </div>
@@ -7793,7 +7794,7 @@ function getPendingPadresRequests() {
 function relinkToPadres(studentId, pid) {
   if (!pid) return;
   const ps = (padresRaw.students || {})[String(pid)];
-  if (!ps) { showToast('Ese alumno ya no existe en /padres.'); renderStudentList(); return; }
+  if (!ps) { showToast('Ese alumno ya no existe en /parents.'); renderStudentList(); return; }
   const k = String(studentId);
   if (!overrides[k]) overrides[k] = {};
   overrides[k].padresId = String(pid);
@@ -7838,7 +7839,7 @@ function renderPadresRequests() {
 }
 function acceptPadresStudent(pid) {
   const ps = (padresRaw.students || {})[String(pid)];
-  if (!ps || !ps.name) { showToast('Ese alumno ya no existe en /padres.'); renderPadresRequests(); return; }
+  if (!ps || !ps.name) { showToast('Ese alumno ya no existe en /parents.'); renderPadresRequests(); return; }
   const newId = nextLocalStudentId();
   overrides[String(newId)] = { name:ps.name, icon:"👤", max:0, pin:"1234", color:pickUniqueColor(), deleted:false, padresId:String(pid) };
   saveMeta(); renderPadresRequests(); renderStudentList(); renderAll(getLoggedId());
@@ -7884,11 +7885,11 @@ function copyMsg(studentId,type) {
     let recon='';
     if (rank===1) recon=`🏆 *¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *PRIMER PUESTO* en MATHS LEVEL UP del mes de ${getSorteoMonth()}. ¡Eres el mejor! Por ello, has ganado un premio de *S/. 50* que enviaremos vía Yape al apoderado. 🎉\n\n`;
     else if (rank===2) recon=`🥈 *¡FELICITACIONES, ${UPPER}!*\nQueremos reconocer que llegaste al *SEGUNDO PUESTO* en MATHS LEVEL UP del mes de ${getSorteoMonth()}. ¡Excelente trabajo! Por ello, has ganado un premio de *S/. 25* que enviaremos vía Yape al apoderado. 🎉\n\n`;
-    text=`${recon}*¡BUENAS NOCHES, ${UPPER}!*\nYa puedes participar en el sorteo de MATHS LEVEL UP que realizaremos mañana al mediodía. Sigue estos pasos para elegir tus números:\n\nEntra aquí: https://dazzling-platypus-6cdce9.netlify.app/\nSelecciona tu nombre en la lista.\nIngresa tu contraseña de acceso: ${s.pin}\n\n*¡Mucho éxito en el sorteo!*`;
+    text=`${recon}*¡BUENAS NOCHES, ${UPPER}!*\nYa puedes participar en Next Up, que realizaremos mañana al mediodía. Sigue estos pasos para elegir tus números:\n\nEntra aquí: https://dazzling-platypus-6cdce9.netlify.app/\nSelecciona tu nombre en la lista.\nIngresa tu contraseña de acceso: ${s.pin}\n\n*¡Mucho éxito en Next Up!*`;
   } else if (type===2) {
-    text=`Estimados padres de familia, muy buenos días.\nLes recuerdo que mañana al mediodía realizaremos el sorteo de MATHS LEVEL UP: MES ${getSorteoMonth().toUpperCase()} para premiar el esfuerzo de los chicos.\n\n🎁 EL PREMIO: El ganador se llevará S/. 100 en experiencias. Queremos que sea un momento divertido, por lo que sería preferible que el alumno pueda canjearlo por entradas al cine, saldo para sus videojuegos, o una comida para celebrar en casa (como pizza, chifa o pollo a la brasa). Nota: El premio se enviará vía Yape al apoderado.\n\n⚠️ RECORDATORIO URGENTE:\nTienen plazo solo hasta hoy para que sus hijos ingresen al enlace enviado con su cuenta y contraseña para elegir sus números. Quienes no los elijan a tiempo, no podrán participar en el sorteo.`;
+    text=`Estimados padres de familia, muy buenos días.\nLes recuerdo que mañana al mediodía realizaremos Next Up: MES ${getSorteoMonth().toUpperCase()} para premiar el esfuerzo de los chicos.\n\n🎁 EL PREMIO: El ganador se llevará S/. 100 en experiencias. Queremos que sea un momento divertido, por lo que sería preferible que el alumno pueda canjearlo por entradas al cine, saldo para sus videojuegos, o una comida para celebrar en casa (como pizza, chifa o pollo a la brasa). Nota: El premio se enviará vía Yape al apoderado.\n\n⚠️ RECORDATORIO URGENTE:\nTienen plazo solo hasta hoy para que sus hijos ingresen al enlace enviado con su cuenta y contraseña para elegir sus números. Quienes no los elijan a tiempo, no podrán participar en Next Up.`;
   } else if (type===3) {
-    text=`🔴 DETALLES DEL SORTEO EN VIVO\n🏆 Dinámica: El ganador será el primer alumno que logre completar los 5 números que sacaremos al azar durante la transmisión.\n📅 Fecha: Hoy, domingo ${new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long'})}\n⏰ Hora del sorteo: 12:00 pm – 12:30 pm\n📍 Link de Google Meet: meet.google.com/pyi-pazk-jtp\n¡Los esperamos al mediodía para celebrar juntos!`;
+    text=`🔴 DETALLES DE NEXT UP EN VIVO\n🏆 Dinámica: El ganador será el primer alumno que logre completar los 5 números que sacaremos al azar durante la transmisión.\n📅 Fecha: Hoy, domingo ${new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long'})}\n⏰ Hora de Next Up: 12:00 pm – 12:30 pm\n📍 Link de Google Meet: meet.google.com/pyi-pazk-jtp\n¡Los esperamos al mediodía para celebrar juntos!`;
   }
   navigator.clipboard.writeText(text).then(()=>showToast(`¡Mensaje copiado para ${firstName}!`,'success')).catch(()=>{
     const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
@@ -7910,7 +7911,7 @@ function doReset() {
 }
 function exportTxt() {
   const students=getStudents();
-  let c='REPORTE DE SORTEO - '+getSorteoMonth().toUpperCase()+'\n\n';
+  let c='REPORTE DE NEXT UP - '+getSorteoMonth().toUpperCase()+'\n\n';
   students.forEach((s,i)=>{
     const nums=Object.entries(allocations).filter(([,id])=>String(id)===String(s.id)).map(([n])=>n).sort((a,b)=>a-b);
     c+=`${i+1}. ${s.name} | Cupo: ${s.max} | Elegidos: ${nums.length}\nNúmeros: ${nums.join(', ')||'-'}\n\n`;
@@ -8008,7 +8009,7 @@ function vRankingPage() {
           <div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#ffd23f">👑</span> <span style="color:#fff">TABLA DE</span></div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">POSICIONES</div>
-            <div id="rank-subtitle" style="font-size:9px;color:rgba(132,204,22,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+            <div id="rank-subtitle" style="font-size:9px;color:rgba(132,204,22,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">NEXT UP</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
             ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
@@ -8027,7 +8028,7 @@ function vRankingPage() {
 function vRankingSetup() {
   const offset = getPubMonthOffset();
   const sub=document.getElementById('rank-subtitle');
-  if (sub) sub.textContent='MATHS LEVEL UP · '+(isTraslape()&&pubMonthChoice==='actual'?fmtPtsMonth(0):getSorteoMonth()).toUpperCase();
+  if (sub) sub.textContent='NEXT UP · '+(isTraslape()&&pubMonthChoice==='actual'?fmtPtsMonth(0):getSorteoMonth()).toUpperCase();
   const list=document.getElementById('ranking-page-list'); if (!list) return;
   const students=getStudentsForView(offset); const counts=getPickCounts();
   const medals=['🥇','🥈','🥉'];
@@ -8081,8 +8082,8 @@ function vNumerosPage() {
         <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#ffd23f">🎲</span> <span style="color:#fff">NÚMEROS</span></div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DEL SORTEO</div>
-            <div id="num-subtitle" style="font-size:9px;color:rgba(220,200,255,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DE NEXT UP</div>
+            <div id="num-subtitle" style="font-size:9px;color:rgba(220,200,255,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">NEXT UP</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
             ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
@@ -8096,7 +8097,7 @@ function vNumerosPage() {
 }
 function vNumerosSetup() {
   const sub=document.getElementById('num-subtitle');
-  if (sub) sub.textContent='MATHS LEVEL UP · '+getSorteoMonth().toUpperCase();
+  if (sub) sub.textContent='NEXT UP · '+getSorteoMonth().toUpperCase();
   const list=document.getElementById('numeros-page-list'); if (!list) return;
   const students=getStudents();
   // Si la apertura del sorteo aún no ha comenzado, ignorar allocations del sorteo anterior
@@ -8146,8 +8147,8 @@ function vGanadoresPage() {
         <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-start">
           <div>
             <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;letter-spacing:-0.03em;line-height:1"><span style="color:#fff">🏆</span> <span style="color:#fff">GANADORES</span></div>
-            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DEL SORTEO</div>
-            <div style="font-size:9px;color:rgba(255,255,255,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">MATHS LEVEL UP</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1">DE NEXT UP</div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.8);font-weight:700;letter-spacing:0.35em;text-transform:uppercase;margin-top:6px">NEXT UP</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
             ${loggedId!==null?`<button onclick="go('dashboard')" style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 10px;color:#fff;cursor:pointer;font-size:16px;line-height:1">✕</button>`:''}
@@ -8174,17 +8175,28 @@ function vGanadoresSetup() {
     months.push(cur.getFullYear()+'-'+String(cur.getMonth()+1).padStart(2,'0'));
     cur = new Date(cur.getFullYear(),cur.getMonth()+1,1);
   }
+  const medals = ['🥇','🥈','🥉'];
   list.innerHTML = months.slice().reverse().map(key=>{
     const winner = SORTEO_WINNERS[key];
+    const podio = pointsHistory[key] || HISTORIAL_SEED[key] || null;
     const [y,m] = key.split('-');
     const mesLabel = MESES_ES[parseInt(m,10)-1];
     const isPending = !winner;
-    return `<div style="background:${isPending?'rgba(255,255,255,0.03)':'linear-gradient(135deg,rgba(255,210,63,0.16),rgba(255,210,63,0.04))'};border:1px solid ${isPending?'rgba(255,255,255,0.08)':'rgba(255,210,63,0.3)'};border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px">
-      <div style="width:40px;height:40px;border-radius:10px;background:${isPending?'rgba(255,255,255,0.06)':'#ffd23f'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;${isPending?'':'box-shadow:0 4px 12px rgba(255,210,63,0.45)'}">${isPending?'⏳':'🏆'}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:9px;color:rgba(255,255,255,0.45);font-weight:700;letter-spacing:0.15em;text-transform:uppercase">${mesLabel} ${y}</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isPending?'rgba(255,255,255,0.4)':'#fff'}">${winner||'Sorteo en curso'}</div>
+    return `<div style="background:${isPending?'rgba(255,255,255,0.03)':'linear-gradient(135deg,rgba(255,210,63,0.16),rgba(255,210,63,0.04))'};border:1px solid ${isPending?'rgba(255,255,255,0.08)':'rgba(255,210,63,0.3)'};border-radius:16px;padding:12px 14px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:10px;background:${isPending?'rgba(255,255,255,0.06)':'#ffd23f'};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;${isPending?'':'box-shadow:0 4px 12px rgba(255,210,63,0.45)'}">${isPending?'⏳':'🏆'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:9px;color:rgba(255,255,255,0.45);font-weight:700;letter-spacing:0.15em;text-transform:uppercase">${mesLabel} ${y}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:400;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${isPending?'rgba(255,255,255,0.4)':'#fff'}">${winner||'Next Up en curso'}</div>
+        </div>
       </div>
+      ${podio && podio.length ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;gap:6px">
+        ${podio.slice(0,3).map((p,idx)=>`<div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:14px;flex-shrink:0">${medals[idx]||''}</span>
+          <div style="flex:1;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:400;text-transform:uppercase;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.nombre}</div>
+          ${p.pts!=null?`<div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:400;color:#fff;flex-shrink:0">${p.pts} pts</div>`:''}
+        </div>`).join('')}
+      </div>` : ''}
     </div>`;
   }).join('');
 }
@@ -8340,7 +8352,7 @@ function vTareas() {
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,0.8)">📋 ACTIVIDAD</div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.75);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,0.7)">MATHS LEVEL UP</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.75);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,0.7)">LEVEL ZONE</div>
         </div>
         <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:8px 16px;text-align:center">
           <div style="font-size:8px;font-weight:900;letter-spacing:0.16em;color:rgba(255,255,255,0.65);text-transform:uppercase">Hechas</div>
@@ -10284,7 +10296,7 @@ function vPuntosHistorial() {
       <div style="margin-top:12px;display:flex;align-items:center;gap:10px;background:rgba(255,210,63,0.08);border:1px solid rgba(255,210,63,0.25);border-radius:12px;padding:10px 12px">
         <span style="font-size:20px">🎉</span>
         <div>
-          <div style="font-size:8px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,210,63,0.7)">GANADOR DEL SORTEO</div>
+          <div style="font-size:8px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,210,63,0.7)">GANADOR DE NEXT UP</div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;color:#ffd23f">${m.sorteo || 'Pendiente de registrar'}</div>
         </div>
       </div>
@@ -10359,7 +10371,7 @@ function vPtsDateChecklist(s) {
   if (!dates.length) {
     return `
     <div style="margin-top:8px;padding:14px;background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);border-radius:10px;text-align:center;font-size:11px;color:rgba(255,255,255,0.4)">
-      No se encontró un horario sincronizado para <strong>${s.name}</strong> en /padres. Verifica que el nombre coincida exactamente.
+      No se encontró un horario sincronizado para <strong>${s.name}</strong> en /parents. Verifica que el nombre coincida exactamente.
     </div>`;
   }
   const dayShort = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
