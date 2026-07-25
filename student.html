@@ -2097,6 +2097,11 @@ function router() {
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
+  // Título de la pestaña: LEVEL UP dentro del módulo de ejercicios, NEXT UP en
+  // la página del sorteo, LEVEL ZONE en el resto de la plataforma.
+  const TAB_TITLES = { levelup: 'LEVEL UP', winners: 'NEXT UP' };
+  document.title = TAB_TITLES[hash] || 'LEVEL ZONE';
+
   const showNav = loggedId !== null && !IMMERSIVE_ROUTES.has(hash);
   if (showNav) {
     buildNav(hash);
