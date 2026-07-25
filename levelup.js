@@ -7905,13 +7905,17 @@ const _snd = (() => {
 })();
 
 function _prepKeyHandler(e) {
+  const focused = document.activeElement;
+  if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA')) return;
+  if (e.key === 'Enter') {
+    if (_prep.answered && typeof _prepNextQ === 'function') { _prepNextQ(); return; }
+    return;
+  }
   const idx = parseInt(e.key) - 1;
   if (isNaN(idx) || idx < 0 || idx > 3) return;
   if (_prep.answered) return;
   const q = _prep.questions && _prep.questions[_prep.currentIdx];
   if (!q || !q.mc || !q.opts || !q.opts[idx]) return;
-  const focused = document.activeElement;
-  if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA')) return;
   _prepSelectOpt(q.opts[idx]);
 }
 if (!window._prepKbBound) {
@@ -8221,6 +8225,7 @@ function _prepExamHtml() {
   const _examLbl = _prep.isUnitExam ? `Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}` : (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
   const total = _prep.questions.length, idx = _prep.currentIdx;
   const pct = Math.round((idx/total)*100);
+  const _fmtOpt = s => String(s).replace(/√(\d+)/g, '√<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">$1</span>');
   const isMC = !!q.mc && _prep.ansMode !== 'text', isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
   const timerHtml = _prep.timeSec > 0 ? `<div id="prep-timer" class="prep-timer${_prep.timeLeft<=30?' urgent':''}">${_prepFmtTime(_prep.timeLeft)}</div>` : '';
   let ansHtml = '';
@@ -8234,7 +8239,7 @@ function _prepExamHtml() {
     ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
       let cls='prep-mc-btn';
       if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1})&nbsp;&nbsp;${opt}</button>`;
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1})&nbsp;&nbsp;${_fmtOpt(opt)}</button>`;
     }).join('')}</div>`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
