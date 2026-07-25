@@ -5879,20 +5879,27 @@ function _snb5frac(n,d){const g=_snb5gcd(Math.abs(n),Math.abs(d));return d/g===1
 
 // SVG – triángulo rectángulo con altura sobre la hipotenusa (A izq., B der., C arriba)
 function _snb5trSvg(m,n,h,lab){
-  const c=m+n,sc=Math.min(5,110/c,65/h),W=Math.round(10+c*sc+30),H2=Math.round(h*sc+50);
-  const ax=10,ay=H2-15,bx=ax+c*sc,hx=ax+m*sc,cy=ay-h*sc;
+  // Canvas fijo — todos los triángulos al mismo tamaño visual
+  const W=320,H2=190,fs=12;
+  const ml=36,mr=24,mt=24,mb=32; // márgenes: left,right,top,bottom
+  const aw=W-ml-mr,ah=H2-mt-mb;  // área disponible
+  const c=m+n,sc=Math.min(aw/c,ah/h);
+  // centrar horizontalmente
+  const ox=ml+(aw-c*sc)/2;
+  const ax=ox,ay=H2-mb,bx=ox+c*sc,hx=ox+m*sc,cy=ay-h*sc;
+  const sq=5;
   const L=lab||{};
-  return `<svg viewBox="0 0 ${W} ${H2}" xmlns="http://www.w3.org/2000/svg" style="width:${W}px;max-width:100%;display:block;stroke:#333;fill:none;font-size:11px;font-family:sans-serif;margin:4px 0">
-<polygon points="${ax},${ay} ${bx.toFixed(1)},${ay} ${hx.toFixed(1)},${cy.toFixed(1)}" stroke="#336" stroke-width="1.5" fill="rgba(80,80,200,0.07)"/>
-<line x1="${hx.toFixed(1)}" y1="${ay}" x2="${hx.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="#999" stroke-dasharray="4,2"/>
-<rect x="${(hx-4).toFixed(1)}" y="${(ay-4)}" width="4" height="4" stroke="#999" fill="none"/>
-<text x="${(ax-5)}" y="${(ay+3)}" text-anchor="end" fill="#222">${L.A||'A'}</text>
-<text x="${hx.toFixed(1)}" y="${(ay+13)}" text-anchor="middle" fill="#777">${L.H||'H'}</text>
-<text x="${(bx+4).toFixed(1)}" y="${(ay+3)}" fill="#222">${L.B||'B'}</text>
-<text x="${(hx-5).toFixed(1)}" y="${(cy-4).toFixed(1)}" text-anchor="end" fill="#222">${L.C||'C'}</text>
-<text x="${((ax+hx)/2).toFixed(1)}" y="${(ay-5)}" text-anchor="middle" fill="#555">${L.m!=null?L.m:m}</text>
-<text x="${((hx+bx)/2).toFixed(1)}" y="${(ay-5)}" text-anchor="middle" fill="#555">${L.n!=null?L.n:n}</text>
-<text x="${(hx+5).toFixed(1)}" y="${((ay+cy)/2).toFixed(1)}" fill="#555">${L.h!=null?L.h:h}</text>
+  return `<svg viewBox="0 0 ${W} ${H2}" xmlns="http://www.w3.org/2000/svg" style="width:${W}px;max-width:100%;display:block;fill:none;font-size:${fs}px;font-family:sans-serif;margin:4px auto">
+<polygon points="${ax},${ay} ${bx.toFixed(1)},${ay} ${hx.toFixed(1)},${cy.toFixed(1)}" stroke="#7c6aed" stroke-width="1.5" fill="rgba(100,80,220,0.10)"/>
+<line x1="${hx.toFixed(1)}" y1="${ay}" x2="${hx.toFixed(1)}" y2="${cy.toFixed(1)}" stroke="#888" stroke-width="1.5" stroke-dasharray="4,2"/>
+<rect x="${(hx-sq)}" y="${(ay-sq)}" width="${sq}" height="${sq}" stroke="#888" stroke-width="1" fill="none"/>
+<text x="${ax}" y="${(ay+fs*1.1).toFixed(1)}" text-anchor="middle" fill="#c4b5fd">${L.A||'A'}</text>
+<text x="${hx.toFixed(1)}" y="${(ay+fs*1.3).toFixed(1)}" text-anchor="middle" fill="#a0a0a0">${L.H||'H'}</text>
+<text x="${bx.toFixed(1)}" y="${(ay+fs*1.1).toFixed(1)}" text-anchor="middle" fill="#c4b5fd">${L.B||'B'}</text>
+<text x="${hx.toFixed(1)}" y="${(cy-fs*0.4).toFixed(1)}" text-anchor="middle" fill="#c4b5fd">${L.C||'C'}</text>
+<text x="${((ax+hx)/2).toFixed(1)}" y="${(ay-fs*0.3).toFixed(1)}" text-anchor="middle" fill="#e2e8f0">${L.m!=null?L.m:m}</text>
+<text x="${((hx+bx)/2).toFixed(1)}" y="${(ay-fs*0.3).toFixed(1)}" text-anchor="middle" fill="#e2e8f0">${L.n!=null?L.n:n}</text>
+<text x="${(hx+fs*0.5).toFixed(1)}" y="${((ay+cy)/2).toFixed(1)}" text-anchor="start" fill="#e2e8f0">${L.h!=null?L.h:h}</text>
 </svg>`;
 }
 
@@ -5926,8 +5933,9 @@ function _genSnb5NR_B2(){
         ste:`√${inside}=√(${k}²·${rad})=${k}√${rad}`};
     },
     ()=>{
-      const a=_snb5pick([4,9,16,25,36]);const b=_snb5pick([4,9,16,25]);
-      const ra=Math.sqrt(a),rb=Math.sqrt(b);const ans=String(ra*rb);
+      let a,b,ra,rb;
+      do{a=_snb5pick([4,9,16,25,36]);b=_snb5pick([4,9,16,25]);ra=Math.sqrt(a);rb=Math.sqrt(b);}while(ra+rb===ra*rb);
+      const ans=String(ra*rb);
       return{q:`Calcula: √${a}·√${b}`,a:ans,
         opts:_snb5shuf([ans,String(a*b),String(ra+rb),String(ra*rb+2)]),mc:true,
         ste:`√${a}·√${b}=${ra}·${rb}=${ans}`};
@@ -5957,7 +5965,7 @@ function _genSnb5NR_B3(){
         opts:_snb5shuf([`${ans}`,`${a+b}`,`${ans+2}`,`${ans-1}`]),mc:true,
         ste:`|${a}−${b}|=|${a-b}|=${ans}`};
     },
-    ()=>{const x=_snb5pick([-4,-3,-2,-1,1,2,3,4]);const ans=2*Math.abs(x)+1;
+    ()=>{const x=_snb5pick([-4,-3,-2,-1]);const ans=2*Math.abs(x)+1;
       return{q:`Si x=${x}, calcula 2|x|+1`,a:`${ans}`,
         opts:_snb5shuf([`${ans}`,`${2*x+1}`,`${ans-2}`,`${ans+2}`]),mc:true,
         ste:`2|${x}|+1=2·${Math.abs(x)}+1=${ans}`};
@@ -5969,23 +5977,23 @@ function _genSnb5NR_B3(){
 function _genSnb5NR_BQ1(){return _bqSrcPick(['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3'],[_genSnb5NR_B1,_genSnb5NR_B2,_genSnb5NR_B3]);}
 
 function _genSnb5NR_B4(){
-  const num=_snb5pick([1,2,3,4,5]);const rad=_snb5pick([2,3,5,6,7]);
+  const num=_snb5pick([2,3,4,5]);const rad=_snb5pick([2,3,5,6,7]);// num≥2 evita que ans===√rad/rad
   const g=_snb5gcd(num,rad);const na=num/g,da=rad/g;
   const ans=(na===1&&da!==1)?`√${rad}/${da}`:(da===1)?`${na}√${rad}`:`${na}√${rad}/${da}`;
   return{q:`Racionaliza el denominador: ${num}/√${rad}`,a:ans,
-    opts:_snb5shuf([ans,`${num}/√${rad}`,`√${num*rad}/${rad}`,`${num}√${rad}`]),mc:true,
+    opts:_snb5shuf([ans,`${num}/√${rad}`,`${num+1}√${rad}/${rad}`,`${num}√${rad}`]),mc:true,
     ste:`${num}/√${rad}=(${num}·√${rad})/(√${rad}·√${rad})=${num}√${rad}/${rad}${g>1?' = '+ans:''}`};
 }
 
 function _genSnb5NR_B5(){
   const cases=[
-    ()=>{const a=_snb5pick([2,3,5]);const e=_snb5pick([2,3,4]);
+    ()=>{let a,e;do{a=_snb5pick([2,3,5]);e=_snb5pick([2,3,4]);}while(Math.pow(a,e)===a*e);
       const ans=String(Math.pow(a,e));
       return{q:`Simplifica: (√${a})^${2*e}`,a:ans,
         opts:_snb5shuf([ans,String(a*e),`√${a*e}`,String(Math.pow(a,e)+1)]),mc:true,
         ste:`(√${a})^${2*e}=(${a}^½)^${2*e}=${a}^${e}=${ans}`};
     },
-    ()=>{const b=_snb5pick([2,3,4,5]);const r=_snb5pick([2,3,5,7]);
+    ()=>{let b,r;do{b=_snb5pick([2,3,4,5]);r=_snb5pick([2,3,5,7]);}while(b===r);
       const ans=`${b}√${r}`;
       return{q:`Simplifica: √(${b*b}·${r})`,a:ans,
         opts:_snb5shuf([ans,`${r}√${b}`,`${b*r}`,`√${b+r}`]),mc:true,
@@ -6006,7 +6014,7 @@ function _genSnb5NR_EX(){return _bqSrcPick(['snb5_nr_b1','snb5_nr_b2','snb5_nr_b
 
 // ── U2: Inecuaciones Lineales ──────────────────────────────────────────────────
 function _genSnb5IL_B1(){
-  const a=_snb5pick([2,3,4,5]);const b=_snb5pick([4,6,8,10,12,15]);
+  let a,b;do{a=_snb5pick([2,3,4,5]);b=_snb5pick([4,6,8,10,12,15]);}while(a===b);
   const op=_snb5pick(['>','<','≥','≤']);
   const g=_snb5gcd(b,a);const ans=_snb5frac(b/g,a/g);
   const ansStr=`x ${op} ${ans}`;
@@ -6017,9 +6025,9 @@ function _genSnb5IL_B1(){
 }
 
 function _genSnb5IL_B2(){
-  const a=_snb5pick([3,4,5,6]);const c=_snb5pick([1,2]);
-  const b=_snb5pick([1,2,3]);const d=_snb5pick([7,8,9,10,12]);
-  const coef=a-c;const rhs=d-b;
+  let a,c,b,d,coef,rhs;
+  do{a=_snb5pick([3,4,5,6]);c=_snb5pick([1,2]);b=_snb5pick([1,2,3]);d=_snb5pick([7,8,9,10,12]);
+    coef=a-c;rhs=d-b;}while(rhs===coef*coef);// evita ans===x≤coef
   const ans=`x ≤ ${_snb5frac(rhs,coef)}`;
   const w1=`x ≥ ${_snb5frac(rhs,coef)}`;
   return{q:`Resuelve: ${a}x + ${b} ≤ ${c}x + ${d}`,a:ans,
@@ -6318,7 +6326,7 @@ function _genSnb5CIRC_B3(){
 function _genSnb5CIRC_B4(){
   const cases=[
     // Dos tangentes desde punto exterior son iguales
-    ()=>{const t=_snb5pick([5,6,8,10,12,15]);
+    ()=>{const t=_snb5pick([6,8,10,12,15]);// 5 eliminado: t*2===t+5 cuando t=5
       return{q:`Desde un punto externo P se trazan dos tangentes a una circunferencia que tocan en A y B. Si PA=${t}, ¿cuánto mide PB?`,
         a:`${t}`,opts:_snb5shuf([`${t}`,`${t*2}`,`${t+5}`,`${t-2}`]),mc:true,
         ste:`Las tangentes desde un punto exterior son iguales: PA=PB=${t}`};
@@ -6938,14 +6946,14 @@ const PREP_CURRICULUM = {
     ], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']}],
     '5':[
-      {lbl:'Números Reales',                              area:'matematica', editorial:'san_norberto', skills:['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex']},
-      {lbl:'Inecuaciones Lineales',                       area:'matematica', editorial:'san_norberto', skills:['snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex']},
-      {lbl:'Inecuaciones Cuadráticas',                    area:'matematica', editorial:'san_norberto', skills:['snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex']},
-      {lbl:'Relaciones Métricas – Triángulo Rectángulo',  area:'matematica', editorial:'san_norberto', skills:['snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex']},
-      {lbl:'Relaciones Métricas – Triángulo Oblicuángulo',area:'matematica', editorial:'san_norberto', skills:['snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex']},
-      {lbl:'Circunferencia',                              area:'matematica', editorial:'san_norberto', skills:['snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex']},
-      {lbl:'Ángulos de Elevación y Depresión',            area:'matematica',editorial:'san_norberto', skills:['snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex']},
-      {lbl:'Estadística y Probabilidad',area:'matematica',editorial:'san_norberto',skills:['snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex']},
+      {lbl:'Números Reales',                              area:'matematica', editorial:'san_norberto', skills:['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2']},
+      {lbl:'Inecuaciones Lineales',                       area:'matematica', editorial:'san_norberto', skills:['snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2']},
+      {lbl:'Inecuaciones Cuadráticas',                    area:'matematica', editorial:'san_norberto', skills:['snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2']},
+      {lbl:'Relaciones Métricas – Triángulo Rectángulo',  area:'matematica', editorial:'san_norberto', skills:['snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2']},
+      {lbl:'Relaciones Métricas – Triángulo Oblicuángulo',area:'matematica', editorial:'san_norberto', skills:['snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2']},
+      {lbl:'Circunferencia',                              area:'matematica', editorial:'san_norberto', skills:['snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2']},
+      {lbl:'Ángulos de Elevación y Depresión',            area:'matematica',editorial:'san_norberto', skills:['snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2']},
+      {lbl:'Estadística y Probabilidad',area:'matematica',editorial:'san_norberto',skills:['snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2']},
     ],
   },
   pre:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
@@ -8209,7 +8217,7 @@ function _prepExamHtml() {
     ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
       let cls='prep-mc-btn';
       if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1}. ${opt}</button>`;
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1})&nbsp;&nbsp;${opt}</button>`;
     }).join('')}</div>`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
