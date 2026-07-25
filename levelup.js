@@ -5876,6 +5876,8 @@ function _snb5pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
 function _snb5shuf(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function _snb5gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
 function _snb5frac(n,d){const g=_snb5gcd(Math.abs(n),Math.abs(d));return d/g===1?`${n/g}`:`${n/g}/${d/g}`;}
+// Raíz cuadrada con vinculum (línea horizontal sobre el radicando)
+function _snb5rt(c){return `√<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">${c}</span>`;}
 
 // SVG – triángulo rectángulo con altura sobre la hipotenusa (A izq., B der., C arriba)
 function _snb5trSvg(m,n,h,lab){
@@ -5928,7 +5930,7 @@ function _genSnb5NR_B2(){
       const primes=[2,3,5,7,11];
       const k=_snb5pick([2,3,4,5]);const rad=_snb5pick(primes);
       const inside=k*k*rad;
-      return{q:`Simplifica: √${inside}`,a:`${k}√${rad}`,
+      return{q:`Simplifica: ${_snb5rt(inside)}`,a:`${k}√${rad}`,
         opts:_snb5shuf([`${k}√${rad}`,`${k+1}√${rad}`,`${k}√${rad+1}`,`${k*rad}`]),mc:true,
         ste:`√${inside}=√(${k}²·${rad})=${k}√${rad}`};
     },
@@ -5936,14 +5938,14 @@ function _genSnb5NR_B2(){
       let a,b,ra,rb;
       do{a=_snb5pick([4,9,16,25,36]);b=_snb5pick([4,9,16,25]);ra=Math.sqrt(a);rb=Math.sqrt(b);}while(ra+rb===ra*rb);
       const ans=String(ra*rb);
-      return{q:`Calcula: √${a}·√${b}`,a:ans,
+      return{q:`Calcula: ${_snb5rt(a)}·${_snb5rt(b)}`,a:ans,
         opts:_snb5shuf([ans,String(a*b),String(ra+rb),String(ra*rb+2)]),mc:true,
         ste:`√${a}·√${b}=${ra}·${rb}=${ans}`};
     },
     ()=>{
       const k=_snb5pick([2,3,5]);const n=_snb5pick([2,3,5,7]);
       const sum=(k+1);const ans=`${sum}√${n}`;
-      return{q:`Suma: ${k}√${n} + √${n}`,a:ans,
+      return{q:`Suma: ${k}${_snb5rt(n)} + ${_snb5rt(n)}`,a:ans,
         opts:_snb5shuf([ans,`${k}√${2*n}`,`${k+1}√${2*n}`,`${k}√${n}`]),mc:true,
         ste:`${k}√${n}+√${n}=(${k}+1)√${n}=${sum}√${n}`};
     },
@@ -5980,7 +5982,7 @@ function _genSnb5NR_B4(){
   const num=_snb5pick([2,3,4,5]);const rad=_snb5pick([2,3,5,6,7]);// num≥2 evita que ans===√rad/rad
   const g=_snb5gcd(num,rad);const na=num/g,da=rad/g;
   const ans=(na===1&&da!==1)?`√${rad}/${da}`:(da===1)?`${na}√${rad}`:`${na}√${rad}/${da}`;
-  return{q:`Racionaliza el denominador: ${num}/√${rad}`,a:ans,
+  return{q:`Racionaliza el denominador: ${num}/${_snb5rt(rad)}`,a:ans,
     opts:_snb5shuf([ans,`${num}/√${rad}`,`${num+1}√${rad}/${rad}`,`${num}√${rad}`]),mc:true,
     ste:`${num}/√${rad}=(${num}·√${rad})/(√${rad}·√${rad})=${num}√${rad}/${rad}${g>1?' = '+ans:''}`};
 }
@@ -5989,19 +5991,19 @@ function _genSnb5NR_B5(){
   const cases=[
     ()=>{let a,e;do{a=_snb5pick([2,3,5]);e=_snb5pick([2,3,4]);}while(Math.pow(a,e)===a*e);
       const ans=String(Math.pow(a,e));
-      return{q:`Simplifica: (√${a})^${2*e}`,a:ans,
+      return{q:`Simplifica: (${_snb5rt(a)})<sup>${2*e}</sup>`,a:ans,
         opts:_snb5shuf([ans,String(a*e),`√${a*e}`,String(Math.pow(a,e)+1)]),mc:true,
-        ste:`(√${a})^${2*e}=(${a}^½)^${2*e}=${a}^${e}=${ans}`};
+        ste:`(√${a})<sup>${2*e}</sup> = (${a}<sup>½</sup>)<sup>${2*e}</sup> = ${a}<sup>${e}</sup> = ${ans}`};
     },
     ()=>{let b,r;do{b=_snb5pick([2,3,4,5]);r=_snb5pick([2,3,5,7]);}while(b===r);
       const ans=`${b}√${r}`;
-      return{q:`Simplifica: √(${b*b}·${r})`,a:ans,
+      return{q:`Simplifica: ${_snb5rt(`${b*b}·${r}`)}`,a:ans,
         opts:_snb5shuf([ans,`${r}√${b}`,`${b*r}`,`√${b+r}`]),mc:true,
         ste:`√(${b*b}·${r})=√${b*b}·√${r}=${b}√${r}`};
     },
     ()=>{const k=_snb5pick([2,3,4,5]);const r=_snb5pick([2,3,5]);
       const a1=k,b1=k+2;const ans=`${a1+b1}√${r}`;
-      return{q:`Suma: ${a1}√${r} + ${b1}√${r}`,a:ans,
+      return{q:`Suma: ${a1}${_snb5rt(r)} + ${b1}${_snb5rt(r)}`,a:ans,
         opts:_snb5shuf([ans,`${a1}√${r+1}`,`${a1*b1}√${r}`,`${a1+b1}√${r+1}`]),mc:true,
         ste:`${a1}√${r}+${b1}√${r}=(${a1}+${b1})√${r}=${a1+b1}√${r}`};
     },
@@ -7901,6 +7903,21 @@ const _snd = (() => {
     tick()     { const c=ac(),t=c.currentTime; tone(c,1100,'square',0.035,t,0.04); },
   };
 })();
+
+function _prepKeyHandler(e) {
+  const idx = parseInt(e.key) - 1;
+  if (isNaN(idx) || idx < 0 || idx > 3) return;
+  if (_prep.answered) return;
+  const q = _prep.questions && _prep.questions[_prep.currentIdx];
+  if (!q || !q.mc || !q.opts || !q.opts[idx]) return;
+  const focused = document.activeElement;
+  if (focused && (focused.tagName === 'INPUT' || focused.tagName === 'TEXTAREA')) return;
+  _prepSelectOpt(q.opts[idx]);
+}
+if (!window._prepKbBound) {
+  document.addEventListener('keydown', _prepKeyHandler);
+  window._prepKbBound = true;
+}
 
 function _prepSelectOpt(opt) {
   if (_prep.answered) return;
