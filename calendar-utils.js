@@ -125,8 +125,10 @@ function calActiveSessIntervals(slots, d, dstr) {
 // Devuelve true si el free slot debe mostrarse en la columna con dow y fecha dstr/d.
 // intervals: resultado de calActiveSessIntervals para esta columna.
 function calShouldShowFreeSlot(fs, d, dstr, dow, intervals) {
-  if (fs.recurring === false && fs.date) {
-    if (fs.date !== dstr) return false;
+  // Slots de una sola vez: identificados por fs.date O fs.oneTimeDate (ambas convenciones en uso)
+  var _fsDateKey = fs.date || fs.oneTimeDate;
+  if (fs.recurring === false && _fsDateKey) {
+    if (_fsDateKey !== dstr) return false;
   } else {
     if (Array.isArray(fs.skipDates) && fs.skipDates.indexOf(dstr) !== -1) return false;
     // Respetar nWeeks/weekStart igual que calIsStudentActive hace con sesiones

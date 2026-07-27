@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   <script src="/levelup.js?v=20260721"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -553,28 +553,34 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-leg-sq{width:9px;height:9px;border-radius:2px;flex-shrink:0}
 
 .prep-kh-unit{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:8px 12px;display:flex;align-items:flex-start;gap:8px}
-.prep-kh-unit-enter{display:flex;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.06);border:none;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),background .2s;flex-shrink:0}
-.prep-kh-unit-num{width:38px;height:38px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:rgba(255,255,255,0.06);border-radius:8px;padding:0;display:flex;align-items:center;justify-content:center;box-sizing:border-box;flex-shrink:0}
+.prep-kh-unit-enter{display:flex;width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.06);border:none;color:#fff;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;align-items:center;justify-content:center;cursor:pointer;box-sizing:border-box;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),background .2s,box-shadow .25s;flex-shrink:0}
+.prep-kh-unit-enter:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(255,255,255,0.35),0 4px 18px rgba(0,0,0,0.4)}
+.prep-kh-unit-num{width:38px;height:38px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#fff;background:rgba(255,255,255,0.06);border-radius:8px;padding:0;display:flex;align-items:center;justify-content:center;box-sizing:border-box;flex-shrink:0;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),box-shadow .25s,color .2s,text-shadow .2s}
+.prep-kh-unit-num:hover{transform:scale(1.13)}
 .prep-kh-skills{flex:1;display:grid;grid-template-columns:repeat(auto-fill,38px);gap:8px}
 .prep-wrap{padding:12px 16px 24px}
 .prep-kh-sep{width:1px;height:36px;background:rgba(255,255,255,0.13);margin:0 5px;flex-shrink:0}
 .prep-kh-sq.quiz-sq{background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);color:#a0a0a0}
 .prep-kh-sq.quiz-sq.dominado{background:linear-gradient(135deg,#ffffff 0%,#c0c0c8 45%,#808090 100%);border:2px solid #a0a0b0;color:#444}
-.prep-kh-sq.quiz-sq.dominado:hover{background:rgb(109,40,217);border-color:rgb(168,85,247);color:#fff}
-.prep-kh-sq.quiz-sq:hover{background:rgba(168,85,247,0.26);border-style:solid}
+.prep-kh-sq.quiz-sq.dominado:hover{background:linear-gradient(135deg,#ffffff 0%,#c0c0c8 45%,#808090 100%);border:2px solid #ffffff;color:#fff;text-shadow:0 0 8px rgba(255,255,255,0.9);box-shadow:0 0 14px rgba(255,255,255,0.5),0 4px 18px rgba(0,0,0,0.4)}
+.prep-kh-sq.quiz-sq:hover{transform:scale(1.13);background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);box-shadow:0 0 14px rgba(160,160,160,0.55),0 4px 18px rgba(0,0,0,0.4);color:#e8e8e8;text-shadow:0 0 8px rgba(200,200,200,0.9)}
 .prep-kh-sq.quiz-sq.selected{background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);outline:2px solid #facc15;outline-offset:2px}
 .prep-kh-sq.quiz-sq.dominado.selected{background:linear-gradient(135deg,#ffffff 0%,#c0c0c8 45%,#808090 100%);border:2px solid #a0a0b0;color:#444;outline:2px solid #facc15;outline-offset:2px}
 .prep-kh-sq.exam-sq{background:rgba(250,204,21,0.07);border:2px dashed rgba(250,204,21,0.5);color:#facc15}
-.prep-kh-sq.exam-sq:hover{background:rgba(250,204,21,0.18)}
+.prep-kh-sq.exam-sq:hover{background:rgba(250,204,21,0.18);box-shadow:0 0 14px rgba(250,204,21,0.55),0 4px 18px rgba(0,0,0,0.4)}
 .prep-kh-sq.exam-sq.dominado{background:rgba(202,138,4,0.9);border:2px solid #fbbf24;color:#fff}
 .prep-kh-sq.exam-sq.dominado:hover{background:rgba(202,138,4,1)}
 .prep-kh-sq{width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.88);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),box-shadow .25s cubic-bezier(0.25,0.46,0.45,0.94),background .2s cubic-bezier(0.25,0.46,0.45,0.94);color:rgba(0,0,0,0.25);flex-shrink:0;user-select:none}
-.prep-kh-sq:hover{transform:scale(1.13);box-shadow:0 4px 18px rgba(0,0,0,0.5)}
+.prep-kh-sq:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(255,255,255,0.55),0 4px 18px rgba(0,0,0,0.4)}
 .prep-kh-sq:active{transform:scale(0.92);transition-duration:.1s,.1s,.1s}
 .prep-kh-sq.dominado{background:rgba(109,40,217,0.92);border-color:rgba(168,85,247,1);color:#fff}
+.prep-kh-sq.dominado:hover{box-shadow:0 0 14px rgba(168,85,247,0.7),0 4px 18px rgba(0,0,0,0.4)}
 .prep-kh-sq.competente{background:rgba(146,94,227,0.91);border-color:rgba(190,128,249,0.88);color:#fff}
+.prep-kh-sq.competente:hover{box-shadow:0 0 14px rgba(190,128,249,0.6),0 4px 18px rgba(0,0,0,0.4)}
 .prep-kh-sq.familiar{background:rgba(182,148,236,0.90);border-color:rgba(212,170,251,0.75);color:#fff}
+.prep-kh-sq.familiar:hover{box-shadow:0 0 14px rgba(212,170,251,0.5),0 4px 18px rgba(0,0,0,0.4)}
 .prep-kh-sq.intentado{background:rgba(219,201,246,0.89);border-color:rgba(233,213,253,0.63);color:rgba(109,40,217,0.6)}
+.prep-kh-sq.intentado:hover{box-shadow:0 0 14px rgba(233,213,253,0.4),0 4px 18px rgba(0,0,0,0.4)}
 .prep-kh-sq.selected{outline:2px solid #facc15;outline-offset:2px}
 .prep-kh-quiz{background:rgba(168,85,247,0.09);border:1.5px dashed rgba(168,85,247,0.38);border-radius:8px;color:#a855f7;padding:5px 11px;font-size:11px;font-family:'Lato',sans-serif;font-weight:700;cursor:pointer;letter-spacing:.01em;transition:background .18s;flex-shrink:0}
 .prep-kh-quiz:hover{background:rgba(168,85,247,0.2)}
@@ -627,6 +633,23 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-quiz-desc{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px}
 .prep-kh-quiz-btn{font-size:12px;font-weight:700;color:#7c3aed;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:7px;padding:5px 12px;cursor:pointer;transition:background .15s}
 .prep-kh-quiz-btn:hover{background:rgba(124,58,237,0.22)}
+/* ── Neon per-unit palette ─────────────────────────────── */
+[data-nc="c"] .prep-kh-unit-num,[data-nc="c"] .prep-kh-unit-exp-num{color:#fff!important;text-shadow:none;border:1px solid rgba(34,211,238,0.4)!important;background:rgba(34,211,238,0.08)!important;transition:box-shadow .2s,color .2s,text-shadow .2s}
+[data-nc="c"] .prep-kh-unit-num:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(34,211,238,0.6)!important;color:#22d3ee!important;text-shadow:0 0 8px rgba(34,211,238,0.8)!important}
+[data-nc="p"] .prep-kh-unit-num,[data-nc="p"] .prep-kh-unit-exp-num{color:#fff!important;text-shadow:none;border:1px solid rgba(236,72,153,0.4)!important;background:rgba(236,72,153,0.08)!important;transition:box-shadow .2s,color .2s,text-shadow .2s}
+[data-nc="p"] .prep-kh-unit-num:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(236,72,153,0.6)!important;color:#ec4899!important;text-shadow:0 0 8px rgba(236,72,153,0.8)!important}
+[data-nc="y"] .prep-kh-unit-num,[data-nc="y"] .prep-kh-unit-exp-num{color:#fff!important;text-shadow:none;border:1px solid rgba(251,191,36,0.4)!important;background:rgba(251,191,36,0.08)!important;transition:box-shadow .2s,color .2s,text-shadow .2s}
+[data-nc="y"] .prep-kh-unit-num:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(251,191,36,0.6)!important;color:#fbbf24!important;text-shadow:0 0 8px rgba(251,191,36,0.8)!important}
+[data-nc="v"] .prep-kh-unit-num,[data-nc="v"] .prep-kh-unit-exp-num{color:#fff!important;text-shadow:none;border:1px solid rgba(168,85,247,0.4)!important;background:rgba(168,85,247,0.08)!important;transition:box-shadow .2s,color .2s,text-shadow .2s}
+[data-nc="v"] .prep-kh-unit-num:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(168,85,247,0.6)!important;color:#a855f7!important;text-shadow:0 0 8px rgba(168,85,247,0.8)!important}
+[data-nc="c"] .prep-kh-unit-enter,[data-nc="c"] .prep-kh-unit-exp-back{border:1px solid rgba(34,211,238,0.5)!important;background:rgba(34,211,238,0.08)!important}
+[data-nc="c"] .prep-kh-unit-enter:hover,[data-nc="c"] .prep-kh-unit-exp-back:hover{transform:scale(1.13);background:rgba(34,211,238,0.2)!important;box-shadow:0 0 14px rgba(34,211,238,0.5)!important}
+[data-nc="p"] .prep-kh-unit-enter,[data-nc="p"] .prep-kh-unit-exp-back{border:1px solid rgba(236,72,153,0.5)!important;background:rgba(236,72,153,0.08)!important}
+[data-nc="p"] .prep-kh-unit-enter:hover,[data-nc="p"] .prep-kh-unit-exp-back:hover{transform:scale(1.13);background:rgba(236,72,153,0.2)!important;box-shadow:0 0 14px rgba(236,72,153,0.5)!important}
+[data-nc="y"] .prep-kh-unit-enter,[data-nc="y"] .prep-kh-unit-exp-back{border:1px solid rgba(251,191,36,0.5)!important;background:rgba(251,191,36,0.08)!important}
+[data-nc="y"] .prep-kh-unit-enter:hover,[data-nc="y"] .prep-kh-unit-exp-back:hover{transform:scale(1.13);background:rgba(251,191,36,0.2)!important;box-shadow:0 0 14px rgba(251,191,36,0.5)!important}
+[data-nc="v"] .prep-kh-unit-enter,[data-nc="v"] .prep-kh-unit-exp-back{border:1px solid rgba(168,85,247,0.5)!important;background:rgba(168,85,247,0.08)!important}
+[data-nc="v"] .prep-kh-unit-enter:hover,[data-nc="v"] .prep-kh-unit-exp-back:hover{transform:scale(1.13);background:rgba(168,85,247,0.2)!important;box-shadow:0 0 14px rgba(168,85,247,0.5)!important}
 .prep-kh-quiz-btn.exam-btn{color:#ca8a04;background:rgba(202,138,4,0.1);border-color:rgba(202,138,4,0.3)}
 .prep-kh-quiz-btn.exam-btn:hover{background:rgba(202,138,4,0.2)}
 .prep-kh-quiz-ico{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(160,160,160,0.1);border:2px dashed rgba(160,160,160,0.55);color:#a0a0a0;cursor:pointer;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),box-shadow .25s}
@@ -725,8 +748,50 @@ textarea.fsm { resize:none; height:64px; }
 .prep-text-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:12px 14px;color:#fff;font-family:'Lato',sans-serif;font-size:16px;font-weight:700;text-align:center;outline:none}
 .prep-text-input:focus{border-color:rgba(168,85,247,0.6);box-shadow:0 0 0 2px rgba(168,85,247,0.15)}
 .prep-text-input:disabled{opacity:.5}
-.prep-submit-btn{padding:12px 18px;border-radius:10px;border:none;background:rgba(124,58,237,0.5);color:#e0aaff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .15s}
-.prep-submit-btn:hover:not(:disabled){opacity:.85}
+.prep-submit-btn{padding:14px 18px;border-radius:10px;border:2px solid rgba(6,182,212,0.7);background:linear-gradient(135deg,rgba(6,182,212,0.15),rgba(34,211,238,0.06));color:#67e8f9;font-family:'Orbitron','Lato',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;cursor:pointer;white-space:nowrap;transition:border-color .2s,box-shadow .2s,background .2s,color .2s;box-shadow:0 0 8px rgba(6,182,212,0.25)}
+/* ── Algo vertical renderer ── */
+@keyframes algo-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-8px)}}
+@keyframes algo-correct{0%{box-shadow:none;border-radius:12px}50%{box-shadow:0 0 0 3px #0ff,0 0 30px rgba(0,255,255,0.4);border-radius:12px}100%{box-shadow:none}}
+.algo-shake{animation:algo-shake 0.4s ease-in-out}
+.algo-correct{animation:algo-correct 0.45s ease-out}
+.algo-vert-wrap{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px;margin:16px auto;font-family:'Orbitron','Courier New',monospace}
+.algo-row{display:flex;align-items:center;gap:4px}
+.algo-row-num{gap:2px}
+.algo-digit{width:38px;height:42px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;font-family:'Orbitron',monospace}
+.algo-op{width:32px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#22d3ee;text-shadow:0 0 8px #22d3ee;padding-right:4px}
+.algo-filler{width:32px}
+.algo-line{height:3px;background:rgba(255,255,255,0.8);border-radius:2px;width:100%;margin:4px 0;box-shadow:0 0 6px rgba(255,255,255,0.5)}
+.algo-row-ans{gap:2px}
+.algo-dbox{width:38px;height:38px;border:2px solid rgba(6,182,212,0.8);border-radius:8px;background:transparent;color:#67e8f9;font-size:22px;font-weight:700;font-family:'Orbitron',monospace;text-align:center;outline:none;transition:border-color .15s,box-shadow .15s;padding:0;box-shadow:0 0 5px rgba(6,182,212,0.25)}
+.algo-dbox:focus{border-color:#ec4899;box-shadow:0 0 14px #ec4899,inset 0 0 6px rgba(236,72,153,0.25)}
+.algo-dbox-q:focus{border-color:#22d3ee!important;box-shadow:0 0 14px #22d3ee,inset 0 0 6px rgba(34,211,238,0.25)!important}
+.algo-cbox{border-color:rgba(234,179,8,0.85);background:transparent;color:#fbbf24;box-shadow:0 0 5px rgba(234,179,8,0.25)}
+.algo-cbox:focus{border-color:#facc15;box-shadow:0 0 14px #facc15,inset 0 0 5px rgba(250,204,21,0.25)}
+.algo-dbox-dis{opacity:.6;cursor:default}
+.algo-dbox-wrong{border-color:#ef4444!important;color:#f87171!important;box-shadow:0 0 8px rgba(239,68,68,0.6)!important}
+.algo-dbox-correct{border-color:#22c55e!important;color:#86efac!important;box-shadow:0 0 10px rgba(34,197,94,0.55)!important}
+.prep-game-hud{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,0,0,0.28);border-radius:10px;margin-bottom:10px;font-family:'Orbitron',monospace;font-weight:700;font-size:14px;letter-spacing:0.04em;border:1px solid rgba(255,255,255,0.07)}
+.prep-hud-lives{color:#f43f5e;letter-spacing:3px;font-size:16px}
+.prep-hud-streak{color:#22d3ee}
+.prep-hud-timer{color:#fbbf24}
+.algo-dbox-sub{border-color:rgba(236,72,153,0.8)!important;color:#f9a8d4!important;box-shadow:0 0 5px rgba(236,72,153,0.25)}
+.algo-dbox-sub:focus{border-color:#ec4899!important;box-shadow:0 0 14px #ec4899,inset 0 0 6px rgba(236,72,153,0.25)!important}
+.algo-dbox-bd{border-color:rgba(234,179,8,0.8)!important;color:#fbbf24!important;box-shadow:0 0 5px rgba(234,179,8,0.25)}
+.algo-dbox-bd:focus{border-color:#facc15!important;box-shadow:0 0 14px #facc15,inset 0 0 6px rgba(250,204,21,0.25)!important}
+.algo-dbox-rem{border-color:rgba(168,85,247,0.8)!important;color:#c4b5fd!important;box-shadow:0 0 5px rgba(168,85,247,0.25)}
+.algo-dbox-rem:focus{border-color:#a855f7!important;box-shadow:0 0 14px #a855f7,inset 0 0 6px rgba(168,85,247,0.25)!important}
+/* División horizontal */
+.algo-div-wrap{display:flex;flex-direction:column;align-items:center;margin:20px auto;gap:8px}
+.algo-div-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.algo-num{font-size:28px;font-weight:700;color:#fff;font-family:'Orbitron',monospace;letter-spacing:2px}
+.algo-divisor{color:rgba(168,85,247,0.9)}
+.algo-sym{font-size:24px;font-weight:700;color:rgba(255,255,255,0.5)}
+.algo-sym-div{color:rgba(168,85,247,0.7)}
+.algo-inputs-inline{display:flex;align-items:center;gap:4px}
+.algo-sep{font-size:18px;font-weight:700;color:rgba(255,255,255,0.4);padding:0 4px}
+.prep-submit-btn:hover:not(:disabled){border-color:#22d3ee;background:linear-gradient(135deg,rgba(6,182,212,0.28),rgba(34,211,238,0.14));box-shadow:0 0 22px rgba(6,182,212,0.55),inset 0 0 10px rgba(6,182,212,0.1);color:#0ff}
+.prep-submit-btn:focus:not(:disabled){outline:none;border-color:#22d3ee;box-shadow:0 0 22px rgba(6,182,212,0.55),inset 0 0 10px rgba(6,182,212,0.1);color:#0ff}
+.prep-submit-btn:active:not(:disabled){transform:scale(0.97);transition-duration:.05s}
 .prep-submit-btn:disabled{opacity:.3;cursor:default}
 .prep-next-btn{width:100%;padding:13px;border-radius:11px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),opacity .15s;margin-top:4px}
 .prep-next-btn:hover{transform:scale(1.03)}
@@ -3313,6 +3378,88 @@ const BINGO_TOPICS = {
   snb5_est_b3:  { ico:'📊', lbl:'Histogramas de Frecuencias',          qCount:4,  gen:()=>_genSnb5EST_B3() },
   snb5_est_b4:  { ico:'🥧', lbl:'Gráficos Circulares',                 qCount:4,  gen:()=>_genSnb5EST_B4() },
   snb5_est_bq2: { ico:'⚡', lbl:'Quiz II – Histogramas y Circulares',  qCount:5,  gen:()=>_genSnb5EST_BQ2(), quiz:true },
+  // ── Álgebra 4° Primaria – Intelectum (int4a) ──────────────────────────────
+  // U1: Operaciones con Números Naturales
+  int4a_nat_b1:  { ico:'🖼', lbl:'Visual I – Dígitos en Adición/Sustracción', qCount:3, gen:()=>_genInt4A_NAT_B1() },
+  int4a_nat_b2:  { ico:'🖼', lbl:'Visual II – Tablas y Árbol Numérico',       qCount:3, gen:()=>_genInt4A_NAT_B2() },
+  int4a_nat_b3:  { ico:'📐', lbl:'Propiedades de la Adición',                 qCount:4, gen:()=>_genInt4A_NAT_B3() },
+  int4a_nat_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Números Naturales',         qCount:5, gen:()=>_genInt4A_NAT_BQ1(), quiz:true },
+  int4a_nat_b4:  { ico:'📐', lbl:'Multiplicación',                             qCount:4, gen:()=>_genInt4A_NAT_B4() },
+  int4a_nat_b5:  { ico:'📐', lbl:'División',                                   qCount:4, gen:()=>_genInt4A_NAT_B5() },
+  int4a_nat_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Multiplicación y División', qCount:5, gen:()=>_genInt4A_NAT_BQ2(), quiz:true },
+  // U2: Potenciación
+  int4a_pot_b1:  { ico:'🖼', lbl:'Visual – Potencias Cuadradas y Cúbicas',    qCount:3, gen:()=>_genInt4A_POT_B1() },
+  int4a_pot_b2:  { ico:'📐', lbl:'Calcular Potencias',                         qCount:4, gen:()=>_genInt4A_POT_B2() },
+  int4a_pot_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Potenciación Básica',       qCount:5, gen:()=>_genInt4A_POT_BQ1(), quiz:true },
+  int4a_pot_b3:  { ico:'📐', lbl:'Exponentes 0 y 1',                           qCount:4, gen:()=>_genInt4A_POT_B3() },
+  int4a_pot_b4:  { ico:'📐', lbl:'Operaciones Combinadas con Potencias',       qCount:4, gen:()=>_genInt4A_POT_B4() },
+  int4a_pot_b5:  { ico:'🖼', lbl:'Visual – Emparejar Potencia con Resultado',  qCount:3, gen:()=>_genInt4A_POT_B5() },
+  int4a_pot_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Potenciación Avanzada',     qCount:5, gen:()=>_genInt4A_POT_BQ2(), quiz:true },
+  // U3: Radicación
+  int4a_rad_b1:  { ico:'📐', lbl:'Raíz Cuadrada',                              qCount:4, gen:()=>_genInt4A_RAD_B1() },
+  int4a_rad_b2:  { ico:'📐', lbl:'Operaciones con Raíces Cuadradas',           qCount:4, gen:()=>_genInt4A_RAD_B2() },
+  int4a_rad_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Raíz Cuadrada',             qCount:5, gen:()=>_genInt4A_RAD_BQ1(), quiz:true },
+  int4a_rad_b3:  { ico:'📐', lbl:'Raíz Cúbica',                                qCount:4, gen:()=>_genInt4A_RAD_B3() },
+  int4a_rad_b4:  { ico:'📐', lbl:'Operaciones Combinadas con Raíces',          qCount:4, gen:()=>_genInt4A_RAD_B4() },
+  int4a_rad_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Raíz Cúbica y Combinadas', qCount:5, gen:()=>_genInt4A_RAD_BQ2(), quiz:true },
+  // U4: Teoría de Exponentes
+  int4a_texp_b1:  { ico:'📐', lbl:'Potencia de un Monomio I',                  qCount:4, gen:()=>_genInt4A_TEXP_B1() },
+  int4a_texp_b2:  { ico:'📐', lbl:'Potencia de un Monomio II',                 qCount:4, gen:()=>_genInt4A_TEXP_B2() },
+  int4a_texp_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Potencia de Monomio',      qCount:5, gen:()=>_genInt4A_TEXP_BQ1(), quiz:true },
+  int4a_texp_b3:  { ico:'📐', lbl:'Producto de Potencias de Igual Base',       qCount:4, gen:()=>_genInt4A_TEXP_B3() },
+  int4a_texp_b4:  { ico:'📐', lbl:'Potencia de Potencia',                      qCount:4, gen:()=>_genInt4A_TEXP_B4() },
+  int4a_texp_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Producto y Potencia²',     qCount:5, gen:()=>_genInt4A_TEXP_BQ2(), quiz:true },
+  int4a_texp_b5:  { ico:'📐', lbl:'Cociente de Potencias de Igual Base',       qCount:4, gen:()=>_genInt4A_TEXP_B5() },
+  int4a_texp_b6:  { ico:'📐', lbl:'Operaciones Combinadas con Exponentes',     qCount:4, gen:()=>_genInt4A_TEXP_B6() },
+  int4a_texp_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Cociente y Combinadas',    qCount:5, gen:()=>_genInt4A_TEXP_BQ3(), quiz:true },
+  // U5: Grado de Polinomios
+  int4a_pol_b1:  { ico:'🖼', lbl:'Visual – Tabla G.R. y G.A.',                 qCount:3, gen:()=>_genInt4A_POL_B1() },
+  int4a_pol_b2:  { ico:'📐', lbl:'Grado Absoluto de Polinomios',               qCount:4, gen:()=>_genInt4A_POL_B2() },
+  int4a_pol_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Grado Absoluto',            qCount:5, gen:()=>_genInt4A_POL_BQ1(), quiz:true },
+  int4a_pol_b3:  { ico:'📐', lbl:'Grado Relativo de Polinomios',               qCount:4, gen:()=>_genInt4A_POL_B3() },
+  int4a_pol_b4:  { ico:'📐', lbl:'Suma G.R. + G.A.',                           qCount:4, gen:()=>_genInt4A_POL_B4() },
+  int4a_pol_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Grado Relativo',            qCount:5, gen:()=>_genInt4A_POL_BQ2(), quiz:true },
+  // U6: Operaciones con Monomios
+  int4a_mon_b1:  { ico:'📐', lbl:'Multiplicación de Monomios I',               qCount:4, gen:()=>_genInt4A_MON_B1() },
+  int4a_mon_b2:  { ico:'📐', lbl:'Multiplicación de Monomios II',              qCount:4, gen:()=>_genInt4A_MON_B2() },
+  int4a_mon_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Multiplicación de Monomios',qCount:5, gen:()=>_genInt4A_MON_BQ1(), quiz:true },
+  int4a_mon_b3:  { ico:'📐', lbl:'División de Monomios',                        qCount:4, gen:()=>_genInt4A_MON_B3() },
+  int4a_mon_b4:  { ico:'📐', lbl:'División con Fracciones Algebraicas',         qCount:4, gen:()=>_genInt4A_MON_B4() },
+  int4a_mon_bq2: { ico:'⚡', lbl:'Cuestionario 2 – División de Monomios',      qCount:5, gen:()=>_genInt4A_MON_BQ2(), quiz:true },
+  // U7: Productos Notables
+  int4a_pno_b1:  { ico:'📐', lbl:'(a+b)² Casos Simples',                       qCount:4, gen:()=>_genInt4A_PNO_B1() },
+  int4a_pno_b2:  { ico:'📐', lbl:'(a+b)² Coeficientes y Exponentes',           qCount:4, gen:()=>_genInt4A_PNO_B2() },
+  int4a_pno_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Cuadrado de Suma',          qCount:5, gen:()=>_genInt4A_PNO_BQ1(), quiz:true },
+  int4a_pno_b3:  { ico:'📐', lbl:'(a−b)² Casos Simples',                       qCount:4, gen:()=>_genInt4A_PNO_B3() },
+  int4a_pno_b4:  { ico:'📐', lbl:'Casos Mixtos y Monomios',                    qCount:4, gen:()=>_genInt4A_PNO_B4() },
+  int4a_pno_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Cuadrado de Diferencia',    qCount:5, gen:()=>_genInt4A_PNO_BQ2(), quiz:true },
+  // U8: Factorización
+  int4a_fac_b1:  { ico:'📐', lbl:'Factor Común Simple (2 términos)',            qCount:4, gen:()=>_genInt4A_FAC_B1() },
+  int4a_fac_b2:  { ico:'📐', lbl:'Factor Común Simple (3+ términos)',           qCount:4, gen:()=>_genInt4A_FAC_B2() },
+  int4a_fac_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Factor Común Simple',       qCount:5, gen:()=>_genInt4A_FAC_BQ1(), quiz:true },
+  int4a_fac_b3:  { ico:'📐', lbl:'Factor Común Polinómico',                    qCount:4, gen:()=>_genInt4A_FAC_B3() },
+  int4a_fac_b4:  { ico:'📐', lbl:'Factor Común Polinómico (3 factores)',        qCount:4, gen:()=>_genInt4A_FAC_B4() },
+  int4a_fac_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Factor Común Polinómico',   qCount:5, gen:()=>_genInt4A_FAC_BQ2(), quiz:true },
+  int4a_fac_b5:  { ico:'📐', lbl:'Diferencia de Cuadrados Simple',             qCount:4, gen:()=>_genInt4A_FAC_B5() },
+  int4a_fac_b6:  { ico:'📐', lbl:'Diferencia de Cuadrados con Coeficientes',   qCount:4, gen:()=>_genInt4A_FAC_B6() },
+  int4a_fac_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Diferencia de Cuadrados',   qCount:5, gen:()=>_genInt4A_FAC_BQ3(), quiz:true },
+  // U9: Ecuaciones de Primer Grado
+  int4a_ecu_b1:  { ico:'🖼', lbl:'Visual – Hallar la Incógnita',               qCount:3, gen:()=>_genInt4A_ECU_B1() },
+  int4a_ecu_b2:  { ico:'📐', lbl:'Ecuaciones Simples (x±a=b)',                  qCount:4, gen:()=>_genInt4A_ECU_B2() },
+  int4a_ecu_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Ecuaciones Básicas',         qCount:5, gen:()=>_genInt4A_ECU_BQ1(), quiz:true },
+  int4a_ecu_b3:  { ico:'📐', lbl:'Ecuaciones con Coeficiente (ax±b=c)',         qCount:4, gen:()=>_genInt4A_ECU_B3() },
+  int4a_ecu_b4:  { ico:'📐', lbl:'Problemas Verbales con Ecuaciones',           qCount:4, gen:()=>_genInt4A_ECU_B4() },
+  int4a_ecu_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Ecuaciones Avanzadas',       qCount:5, gen:()=>_genInt4A_ECU_BQ2(), quiz:true },
+  // U10: Inecuaciones
+  int4a_ine_b1:  { ico:'📐', lbl:'Inecuaciones Aditivas (x±a ><= b)',           qCount:4, gen:()=>_genInt4A_INE_B1() },
+  int4a_ine_b2:  { ico:'📐', lbl:'Inecuaciones Multiplicativas (ax ><= b)',     qCount:4, gen:()=>_genInt4A_INE_B2() },
+  int4a_ine_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Inecuaciones Básicas',       qCount:5, gen:()=>_genInt4A_INE_BQ1(), quiz:true },
+  int4a_ine_b3:  { ico:'📐', lbl:'Inecuaciones (ax±b ><= c)',                   qCount:4, gen:()=>_genInt4A_INE_B3() },
+  int4a_ine_b4:  { ico:'📐', lbl:'Inecuaciones Fraccionarias (x/a ><= b)',      qCount:4, gen:()=>_genInt4A_INE_B4() },
+  int4a_ine_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Inecuaciones Intermedias',   qCount:5, gen:()=>_genInt4A_INE_BQ2(), quiz:true },
+  int4a_ine_b5:  { ico:'📐', lbl:'Inecuaciones (x/a±b ><= c)',                  qCount:4, gen:()=>_genInt4A_INE_B5() },
+  int4a_ine_b6:  { ico:'📐', lbl:'Problemas Aplicados de Inecuaciones',         qCount:4, gen:()=>_genInt4A_INE_B6() },
+  int4a_ine_bq3: { ico:'⚡', lbl:'Cuestionario 3 – Inecuaciones Avanzadas',     qCount:5, gen:()=>_genInt4A_INE_BQ3(), quiz:true },
 };
 // Ícono unificado para habilidades (no quiz)
 Object.values(BINGO_TOPICS).forEach(t => { if (!t.quiz) t.ico = ''; });
@@ -3370,7 +3517,33 @@ const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','
 'hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2',
 'hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2',
 'hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2',
-'hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_b5','snb5_trig_b6','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2'];
+'hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_bq2','snb5_trig_b5','snb5_trig_b6','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2',
+'int4a_nat_b1','int4a_nat_b2','int4a_nat_b3','int4a_nat_bq1','int4a_nat_b4','int4a_nat_b5','int4a_nat_bq2',
+'int4a_pot_b1','int4a_pot_b2','int4a_pot_bq1','int4a_pot_b3','int4a_pot_b4','int4a_pot_b5','int4a_pot_bq2',
+'int4a_rad_b1','int4a_rad_b2','int4a_rad_bq1','int4a_rad_b3','int4a_rad_b4','int4a_rad_bq2',
+'int4a_texp_b1','int4a_texp_b2','int4a_texp_bq1','int4a_texp_b3','int4a_texp_b4','int4a_texp_bq2','int4a_texp_b5','int4a_texp_b6','int4a_texp_bq3',
+'int4a_pol_b1','int4a_pol_b2','int4a_pol_bq1','int4a_pol_b3','int4a_pol_b4','int4a_pol_bq2',
+'int4a_mon_b1','int4a_mon_b2','int4a_mon_bq1','int4a_mon_b3','int4a_mon_b4','int4a_mon_bq2',
+'int4a_pno_b1','int4a_pno_b2','int4a_pno_bq1','int4a_pno_b3','int4a_pno_b4','int4a_pno_bq2',
+'int4a_fac_b1','int4a_fac_b2','int4a_fac_bq1','int4a_fac_b3','int4a_fac_b4','int4a_fac_bq2','int4a_fac_b5','int4a_fac_b6','int4a_fac_bq3',
+'int4a_ecu_b1','int4a_ecu_b2','int4a_ecu_bq1','int4a_ecu_b3','int4a_ecu_b4','int4a_ecu_bq2',
+'int4a_ine_b1','int4a_ine_b2','int4a_ine_bq1','int4a_ine_b3','int4a_ine_b4','int4a_ine_bq2','int4a_ine_b5','int4a_ine_b6','int4a_ine_bq3'];
+// ── Auto-merge _SKILL_META (levelup.js) → BINGO_TOPICS + BINGO_TOPIC_ORDER ───
+// Los cursos nuevos registran sus habilidades en _SKILL_META (levelup.js) y
+// este bloque las inyecta aquí automáticamente al cargar la página.
+(function(){
+  if(typeof _SKILL_META==='undefined') return;
+  var seen=new Set(BINGO_TOPIC_ORDER);
+  Object.keys(_SKILL_META).forEach(function(k){
+    var m=_SKILL_META[k];
+    if(!BINGO_TOPICS[k]){
+      var entry={ico:m.ico||'📐', lbl:m.lbl||k, qCount:m.qCount||3, gen:m.gen||function(){}};
+      if(m.quiz) entry.quiz=true;
+      BINGO_TOPICS[k]=entry;
+    }
+    if(!seen.has(k)){ BINGO_TOPIC_ORDER.push(k); seen.add(k); }
+  });
+})();
 // [PREP_LEVELS / PREP_CURRICULUM / PREP_EDITORIALS — see levelup.js]
 
 // Genera etiqueta legible para un array de temas, e.g. ['suma','trigo'] → 'Suma · Trigo'
@@ -11937,7 +12110,7 @@ function _prepDoLogout() {
   setLoggedId(null);
   _prepCloseLogoutModal();
   if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
-  _renderPreparatePane();
+  window.location.reload();
 }
 function _prepOpenLoginModal() {
   const modal = document.getElementById('prep-login-modal');

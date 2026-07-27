@@ -470,8 +470,13 @@ function _evSave() {
 
 /* ── Controls ───────────────────────────────────────── */
 function setCalMode(m) {
-  // Si se cambia a "Semana" desde "4 días", hay que realinear el ancla al lunes de esa
-  // semana (calAnchor pudo haber quedado en cualquier día por la navegación en modo "4 días").
+  // Semana → 4 días: si el ancla es el lunes de la semana actual (estado inicial o tras
+  // presionar "Hoy"), re-anclar al día exacto de hoy para que sea la primera columna.
+  if (m === '4dias' && calMode !== '4dias') {
+    var _td = todayMidnight();
+    if (calAnchor && calAnchor.getTime() === startOfWeek(_td).getTime()) calAnchor = _td;
+  }
+  // 4 días → Semana: realinear el ancla al lunes de esa semana.
   if (m === 'week' && calMode !== 'week') calAnchor = startOfWeek(calAnchor);
   calMode = m;
   render();
@@ -498,7 +503,7 @@ function buildNav(rs,re) {
   // Detectar slug activo desde la URL
   var urlParts = window.location.pathname.replace(/\/+$/,'').split('/');
   var activeSlug = urlParts[urlParts.length-1];
-  if (activeSlug === 'horarios') activeSlug = '';
+  if (activeSlug === 'horario') activeSlug = '';
   var isHome = !activeSlug;
   var _mob = window.innerWidth <= 768;
   var _togBt = _mob ? 'style="display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;padding:0 10px;font-size:11px;letter-spacing:0.04em;height:30px;"' : '';
@@ -510,11 +515,11 @@ function buildNav(rs,re) {
     var _cyci = '';
     if (curCyc) {
       var cs = cycleSlug(curCyc.name);
-      _cyci += '<a class="pcal-cycle-btn'+(activeSlug===cs?' on':'')+'" style="'+_cycSt+'" href="/horarios/'+cs+'">'+curCyc.name+'</a>';
+      _cyci += '<a class="pcal-cycle-btn'+(activeSlug===cs?' on':'')+'" style="'+_cycSt+'" href="/horario/'+cs+'">'+curCyc.name+'</a>';
     }
     if (nextCyc) {
       var ns = cycleSlug(nextCyc.name);
-      _cyci += '<a class="pcal-cycle-btn'+(activeSlug===ns?' on':'')+'" style="'+_cycSt+'" href="/horarios/'+ns+'">'+nextCyc.name+'</a>';
+      _cyci += '<a class="pcal-cycle-btn'+(activeSlug===ns?' on':'')+'" style="'+_cycSt+'" href="/horario/'+ns+'">'+nextCyc.name+'</a>';
     }
     cycleBtns = '<div class="pcal-cycle-btns" style="'+(_mob?'gap:3px;':'')+'">'+_cyci+'</div>';
   }
@@ -523,7 +528,7 @@ function buildNav(rs,re) {
     +'<button class="'+m4+'" '+_togBt+' onclick="setCalMode(\'4dias\')">4 días</button>'
     +'<button class="'+mw+'" '+_togBt+' onclick="setCalMode(\'week\')">Semana</button>'
     +'</div>'
-    +'<a class="pcal-today-btn'+(isHome?' on':'')+'" '+_todSt+' href="/horarios">Hoy</a>'
+    +'<a class="pcal-today-btn'+(isHome?' on':'')+'" '+_todSt+' href="/horario">Hoy</a>'
     +cycleBtns
     +'<div class="pcal-nav" style="'+(_mob?'gap:3px;margin-left:0;':'')+'"><button '+_navSt+' onclick="calStep(-1)">‹</button><button '+_navSt+' onclick="calStep(1)">›</button></div>'
     +'</div>'
@@ -771,7 +776,7 @@ function calGoToCycle(cycle) {
 function _applyUrlCycle() {
   var parts = window.location.pathname.replace(/\/+$/, '').split('/');
   var slug  = parts[parts.length - 1]; // último segmento: "ciclo-3", "preciclo-3", etc.
-  if (!slug || slug === 'horarios') return;
+  if (!slug || slug === 'horario') return;
   var cycles = DATA.cycles || [];
   var match  = cycles.find(function(c){ return cycleSlug(c.name) === slug; });
   if (match) calGoToCycle(match);

@@ -16,50 +16,82 @@ El proyecto vive en `C:\Users\ridle\Documents\GitHub\levelup-sorteo`. Los dos ar
 
 ### Estructura de habilidades por unidad
 
-Cada unidad sigue el patrón repetible: `B1 · B2 · BQ1 · B3 · B4 · BQ2 · B5 · B6 · BQ3 · …`
+Cada unidad se organiza en **grupos de habilidades**, cada uno seguido de un cuestionario (BQ):
 
-- **B(impar): Visual** → `ico:'🖼'`, preguntas con SVG o diagramas, 100% visual, sin texto explicativo, `qCount:3` ó `4`
-- **B(par): Verbal** → `ico:'📐'`, definiciones, propiedades, clasificación por texto, sin SVG, `qCount:3` ó `4`
-- **BQ por nivel** → `ico:'⚡'`, `quiz:true`, `qCount:5`, mezcla el par Visual+Verbal del mismo nivel usando `_bqSrcPick([claves],[gens])`
-- El **examen de unidad** (estrella ★) lo maneja `_prepUnitExam` automáticamente — **no va** en el array `skills[]`
+```
+[Grupo 1: B1 · B2 · … · Bn] · BQ1 · [Grupo 2: Bn+1 · … · Bm] · BQ2 · … · Examen
+```
 
-### Número de niveles por unidad (flexible)
+**Reglas de los grupos:**
+- Cada grupo tiene **mínimo 2 habilidades**, sin máximo fijo. Pueden ser 2, 3, 4 o más.
+- El número de habilidades por grupo lo determina el contenido del PDF, no una fórmula fija.
+- Si al analizar el PDF una habilidad quedaría sola en su grupo, se fusiona con el grupo que guarde más relación temática con ella.
+- **No se fuerza que los grupos sean de tamaño par** ni que alternen visual/verbal.
+- **Los grupos se ordenan de menor a mayor dificultad**: el primer grupo contiene los ejercicios más básicos y el último los más complejos. Dentro de cada grupo, las habilidades también siguen esta progresión.
 
-Depende de cuántas variantes distintas de ejercicio se pueden extraer del PDF para ese tema:
+**Tipo de cada habilidad (determinado por el contenido, no por la posición):**
+- **Visual** → `ico:'🖼'`, ejercicios con SVG o diagramas. Se usa cuando el ejercicio se entiende mejor de forma gráfica. `qCount:3` ó `4`
+- **Verbal** → `ico:'📐'`, ejercicios netamente escritos: definiciones, propiedades, problemas de texto. Se usa cuando el ejercicio se entiende mejor de forma escrita. `qCount:3` ó `4`
+- Una habilidad es visual o verbal según cómo se presenta mejor en el PDF — no por ser impar o par en la secuencia.
 
-| Niveles | Skills | BQs | Cuándo usarlo |
-|---------|--------|-----|---------------|
-| 2 | B1–B4 | BQ1, BQ2 | Temas simples, pocas variantes |
-| 3 | B1–B6 | BQ1–BQ3 | Variedad moderada |
-| 4 | B1–B8 | BQ1–BQ4 | Temas ricos |
-| 5+ | B1–B10+ | BQ1–BQ5+ | Si el PDF justifica aún más variedad |
+**Cuestionario (BQ):**
+- `ico:'⚡'`, `quiz:true`, `qCount:5`
+- Cubre **todas las habilidades del grupo** al que pertenece usando `_bqSrcPick([claves],[gens])`
+- Siempre hay exactamente un BQ después de cada grupo.
 
-Regla: si el tema da para N tipos de ejercicio visual distintos, tiene N niveles. Cada nivel = 1 Visual + 1 Verbal + 1 BQ.
+**Examen de unidad (★):**
+- Lo maneja `_prepUnitExam` automáticamente — **no va** en el array `skills[]`
+- Cubre todas las habilidades de la unidad.
+
+**El examen de unidad BPU:**
+- Mezcla todas las habilidades de la unidad: `_bqSrcPick(['clave_b1','clave_b2',...],[_genXxx_B1,_genXxx_B2,...])`
+
+### Número de grupos por unidad (flexible)
+
+Depende de cuántos tipos de ejercicio distintos se pueden extraer del PDF:
+
+| Grupos | Skills aprox. | BQs | Cuándo usarlo |
+|--------|--------------|-----|---------------|
+| 2 | 4–6 | BQ1, BQ2 | Temas simples, pocas variantes |
+| 3 | 6–9 | BQ1–BQ3 | Variedad moderada |
+| 4 | 8–12 | BQ1–BQ4 | Temas ricos |
+| 5+ | 10+ | BQ1–BQ5+ | Si el PDF justifica aún más variedad |
+
+**Regla de uso del PDF:** Se usan todos los ejercicios del PDF como referencia. Los ejercicios similares se agrupan bajo una misma habilidad en lugar de crear una habilidad por cada ejercicio individual.
+
+**Orden de las unidades dentro del curso:** Las unidades se ordenan de menor a mayor dificultad — primero los temas más sencillos y al final los más complejos, siguiendo la progresión natural del contenido del PDF.
 
 ### Orden en `skills[]` del currículo
 
 ```
-B1, B2, BQ1, B3, B4, BQ2, B5, B6, BQ3, …
+B1, B2, …, Bn, BQ1, Bn+1, …, Bm, BQ2, …
 ```
+(tantas habilidades por grupo como dicte el contenido)
 
 ### Registro en `BINGO_TOPICS` (student.html)
 
+Ejemplo con un grupo de 3 habilidades y otro de 2 (los tipos visual/verbal se asignan según contenido):
+
 ```js
-clave_b1:  { ico:'🖼', lbl:'Visual I – Nombre del tema',   qCount:3, gen:()=>_genXxx_B1() },
-clave_b2:  { ico:'📐', lbl:'Verbal I – Nombre del tema',   qCount:3, gen:()=>_genXxx_B2() },
-clave_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Tema',        qCount:5, gen:()=>_genXxx_BQ1(), quiz:true },
-clave_b3:  { ico:'🖼', lbl:'Visual II – Nombre del tema',  qCount:4, gen:()=>_genXxx_B3() },
-clave_b4:  { ico:'📐', lbl:'Verbal II – Nombre del tema',  qCount:4, gen:()=>_genXxx_B4() },
-clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema',        qCount:5, gen:()=>_genXxx_BQ2(), quiz:true },
-// … continúa según el número de niveles
+clave_b1:  { ico:'🖼', lbl:'Nombre habilidad 1',   qCount:3, gen:()=>_genXxx_B1() },
+clave_b2:  { ico:'📐', lbl:'Nombre habilidad 2',   qCount:4, gen:()=>_genXxx_B2() },
+clave_b3:  { ico:'🖼', lbl:'Nombre habilidad 3',   qCount:3, gen:()=>_genXxx_B3() },
+clave_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:5, gen:()=>_genXxx_BQ1(), quiz:true },
+clave_b4:  { ico:'📐', lbl:'Nombre habilidad 4',   qCount:4, gen:()=>_genXxx_B4() },
+clave_b5:  { ico:'🖼', lbl:'Nombre habilidad 5',   qCount:3, gen:()=>_genXxx_B5() },
+clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:5, gen:()=>_genXxx_BQ2(), quiz:true },
+// … continúa según el número de grupos
 ```
 
 ### Helpers de cuestionario en `levelup.js`
 
 ```js
-function _genXxx_BQ1(){ return _bqSrcPick(['clave_b1','clave_b2'],[_genXxx_B1,_genXxx_B2]); }
-function _genXxx_BQ2(){ return _bqSrcPick(['clave_b3','clave_b4'],[_genXxx_B3,_genXxx_B4]); }
-function _genXxx_BPU(){ return _bqSrcPick(['clave_b1','clave_b2','clave_b3','clave_b4',...],[_genXxx_B1,_genXxx_B2,...]); }
+// BQ1 cubre todas las habilidades del grupo 1 (pueden ser 2, 3 o más)
+function _genXxx_BQ1(){ return _bqSrcPick(['clave_b1','clave_b2','clave_b3'],[_genXxx_B1,_genXxx_B2,_genXxx_B3]); }
+// BQ2 cubre todas las habilidades del grupo 2
+function _genXxx_BQ2(){ return _bqSrcPick(['clave_b4','clave_b5'],[_genXxx_B4,_genXxx_B5]); }
+// BPU (examen) cubre todas las habilidades de la unidad
+function _genXxx_BPU(){ return _bqSrcPick(['clave_b1','clave_b2','clave_b3','clave_b4','clave_b5',...],[_genXxx_B1,_genXxx_B2,...]); }
 ```
 
 ### Registro en `PREP_CURRICULUM` (levelup.js)
@@ -70,7 +102,21 @@ function _genXxx_BPU(){ return _bqSrcPick(['clave_b1','clave_b2','clave_b3','cla
 
 ### Nota sobre etiquetas
 
-La función `_cleanLbl` elimina automáticamente los prefijos `"Visual I –"` / `"Verbal I –"` en la UI. El alumno ve solo el nombre del tema.
+La función `_cleanLbl` limpia automáticamente los labels en la UI. El alumno ve solo el nombre del tema, sin prefijos técnicos.
+
+---
+
+## Paso 0 – Verificar que el curso es registrable (OBLIGATORIO antes de todo)
+
+Con los cuatro datos del curso (nivel, grado, área, editorial), verifica en `PREP_LEVELS` de `levelup.js` que la combinación existe. Los menús de la app filtran en cascada: nivel → grado → área → editorial; si cualquiera de esas opciones no existe, el curso no aparecerá aunque esté correctamente implementado.
+
+**Qué verificar:**
+1. **Área** — busca en `PREP_LEVELS[nivel].areas` que exista un objeto con `key` igual al área del curso. Si no existe, agrégalo antes de continuar.
+2. **Editorial** — el filtro de editorial se construye dinámicamente desde las unidades del `PREP_CURRICULUM`, así que basta con poner `editorial:'xxx'` en las entradas del currículo para que aparezca automáticamente.
+
+**Ejemplo:** si el curso es `primaria · 4° · algebra · intelectum`, comprueba que en `PREP_LEVELS.primaria.areas` exista `{key:'algebra', lbl:'Álgebra', ico:'α'}`. Si no está, agrégalo.
+
+Si el área falta, agrégala al array antes de avanzar al Paso 1. No asumas que ya existe.
 
 ---
 
@@ -78,9 +124,21 @@ La función `_cleanLbl` elimina automáticamente los prefijos `"Visual I –"` /
 
 Te adjunto PDFs con los temas del libro. A partir de ellos necesito que:
 
-1. Propongas la lista de unidades con su nombre y número de niveles
-2. Para cada unidad: describas qué tipo de ejercicios irían en cada B-skill (qué hace el visual, qué hace el verbal en cada nivel)
+1. Propongas la lista de unidades con su nombre y número de grupos
+2. Para cada unidad: describas qué habilidades irían en cada grupo, indicando si cada una es visual o verbal y por qué, y cuántas habilidades tiene cada grupo
 3. Confirmes la clave prefijo que usarás para cada unidad (ej. `xxx_ele`, `xxx_tri`…)
+
+Al final de la propuesta, incluye una tabla por unidad con el orden exacto de cada elemento, usando este formato:
+
+| # | Clave | Tipo |
+|---|-------|------|
+| 1 | prefijo_b1 | 🖼 Habilidad |
+| 2 | prefijo_b2 | 📐 Habilidad |
+| 3 | prefijo_bq1 | ⚡ Cuestionario 1 |
+| … | … | … |
+| n | ★ Examen | automático |
+
+Esta tabla es obligatoria — permite validar que la estructura es correcta antes de implementar.
 
 **No escribas código todavía.** Primero validamos la estructura juntos y yo apruebo o corrijo.
 
@@ -89,9 +147,20 @@ Te adjunto PDFs con los temas del libro. A partir de ellos necesito que:
 ## Paso 2 – Implementación
 
 Una vez aprobada la estructura, implementas todo en este orden:
-1. Generadores en `levelup.js`, verificando sintaxis con `node --check` al terminar
-2. `BINGO_TOPICS` + `BINGO_TOPIC_ORDER` en `student.html`
-3. Entrada en `PREP_CURRICULUM` en `levelup.js`
+
+1. **Generadores + `_SKILL_META` en `levelup.js`** — por cada función generadora, agrega inmediatamente después su entrada en `_SKILL_META`:
+   ```js
+   function _genXxx_YYY_B1(){ ... }
+   _SKILL_META['xxx_yyy_b1'] = {ico:'🖼', lbl:'Nombre habilidad', qCount:3, gen:_genXxx_YYY_B1};
+
+   function _genXxx_YYY_BQ1(){ ... }
+   _SKILL_META['xxx_yyy_bq1'] = {ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:5, gen:_genXxx_YYY_BQ1, quiz:true};
+   ```
+   `student.html` absorbe estas entradas automáticamente al cargar — **no editar `student.html`**.
+
+2. **Entrada en `PREP_CURRICULUM` en `levelup.js`**
+
+3. **Verificar sintaxis** con `node --check levelup.js`
 
 ---
 

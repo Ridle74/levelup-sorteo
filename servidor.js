@@ -24,7 +24,7 @@ const SPA_ROUTES = [
   { prefix: '/student', file: 'student.html' },
   { prefix: '/winners', file: 'student.html' },
   { prefix: '/parents', file: 'padres.html'  },
-  { prefix: '/horarios',file: 'horarios.html' },
+  { prefix: '/horario', file: 'horarios.html' },
 ];
 
 // Enlaces cortos: igual que _redirects (Cloudflare Pages solo aplica ese archivo
@@ -36,20 +36,43 @@ const SHORT_REDIRECTS = {
   '/ganadores': '/winners',
   '/student/ganadores': '/winners',
   '/padres': '/parents',
+  '/horario.html':  '/horario',
+  '/horarios':      '/horario',
+  '/horarios.html': '/horario',
 };
+
+// Redirects que preservan lo que venga después del prefijo (p.ej. /students/tablero
+// → /student/tablero, /horarios/ciclo-3 → /horario/ciclo-3).
+const PREFIX_REDIRECTS = [
+  { prefix: '/students', to: '/student' },
+  { prefix: '/horarios', to: '/horario' },
+];
 
 http.createServer((req, res) => {
   // Quitar query string para comparar rutas
   const urlPath = req.url.split('?')[0];
+  // Comparación de rutas sin distinguir mayúsculas/minúsculas (así /PARENTS,
+  // /Parents y /parents funcionan igual), pero solo para el matching de rutas —
+  // los archivos estáticos de abajo se siguen leyendo con el path original.
+  const routePath = urlPath.toLowerCase();
 
   // Enlaces cortos
-  if (SHORT_REDIRECTS[urlPath]) {
-    res.writeHead(302, { Location: SHORT_REDIRECTS[urlPath] });
+  const shortKey = Object.keys(SHORT_REDIRECTS).find(k => k.toLowerCase() === routePath);
+  if (shortKey) {
+    res.writeHead(302, { Location: SHORT_REDIRECTS[shortKey] });
+    return res.end();
+  }
+
+  // Redirects con prefijo (preservan el resto de la ruta)
+  const prefixR = PREFIX_REDIRECTS.find(r => routePath === r.prefix || routePath.startsWith(r.prefix + '/'));
+  if (prefixR) {
+    const rest = urlPath.slice(prefixR.prefix.length); // '' o '/algo' (conserva may/min del resto)
+    res.writeHead(302, { Location: prefixR.to + rest });
     return res.end();
   }
 
   // Ruta raíz
-  if (urlPath === '/') {
+  if (routePath === '/') {
     return fs.readFile(path.join(ROOT, 'student.html'), (err, data) => {
       if (err) { res.writeHead(404); res.end('No encontrado'); return; }
       res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -57,10 +80,13 @@ http.createServer((req, res) => {
     });
   }
 
-  // Rutas SPA: si la ruta empieza con alguno de los prefijos, sirve su HTML
-  const spa = SPA_ROUTES.find(r => urlPath === r.prefix || urlPath.startsWith(r.prefix + '/'));
-  if (spa && path.extname(urlPath) === '') {
-    return fs.readFile(path.join(ROOT, spa.file), (err, data) => {
+  // Rutas SPA: si la ruta empieza con alguno de los prefijos, sirve su HTML.
+  // También aplica si la URL tiene extensión .html pero coincide exactamente con el prefijo.
+  const spa = SPA_ROUTES.find(r => routePath === r.prefix || routePath.startsWith(r.prefix + '/'));
+  const spaByHtml = !spa && SPA_ROUTES.find(r => routePath === r.prefix + '.html');
+  if ((spa && path.extname(urlPath) === '') || spaByHtml) {
+    const spaFile = (spa || spaByHtml).file;
+    return fs.readFile(path.join(ROOT, spaFile), (err, data) => {
       if (err) { res.writeHead(404); res.end('No encontrado'); return; }
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(data);
