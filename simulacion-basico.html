@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Op. Combinada — Nivel Básico</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:#0d1117;
+  color:#fff;
+  font-family:'Orbitron',monospace;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:28px 16px 32px;
+  gap:18px;
+  user-select:none;
+}
+
+/* ─── Header ─────────────────────────────────────────── */
+.header{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.title{font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:3px;text-transform:uppercase;}
+.counter{font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:1px;}
+
+/* ─── Progress bar ───────────────────────────────────── */
+.progress-bar{width:100%;max-width:640px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:#f97316;border-radius:2px;transition:width .4s ease;}
+
+/* ─── Pattern label ──────────────────────────────────── */
+.pattern-lbl{font-size:10px;color:rgba(255,255,255,0.22);letter-spacing:2px;text-transform:uppercase;}
+
+/* ─── Answer zone (slots) ────────────────────────────── */
+.zone-wrap{width:100%;max-width:680px;display:flex;flex-direction:column;gap:8px;}
+.zone-label{font-size:10px;color:rgba(255,255,255,0.28);letter-spacing:2px;text-transform:uppercase;}
+#answer-zone{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  padding:14px 12px;
+  border:2px dashed rgba(255,255,255,0.12);
+  border-radius:14px;
+  min-height:80px;
+  transition:border-color .2s;
+}
+#answer-zone.drag-active{border-color:rgba(249,115,22,0.35);}
+
+/* ─── Separator ──────────────────────────────────────── */
+.sep{width:100%;max-width:640px;height:1px;background:rgba(255,255,255,0.08);}
+
+/* ─── Bank zone ──────────────────────────────────────── */
+#bank-zone{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+  padding:14px 12px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:14px;
+  min-height:80px;
+}
+
+/* ─── Slot ───────────────────────────────────────────── */
+.slot{
+  min-width:52px;height:52px;
+  border-radius:10px;
+  border:2px dashed rgba(255,255,255,0.18);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:border-color .15s,background .15s,box-shadow .15s;
+  position:relative;
+}
+.slot:empty::after{
+  content:'';
+  display:block;width:18px;height:2px;
+  background:rgba(255,255,255,0.12);border-radius:1px;
+}
+.slot.over{border-color:#f97316;background:rgba(249,115,22,0.09);border-style:solid;}
+.slot.correct-flash{border-color:#22c55e;box-shadow:0 0 14px rgba(34,197,94,0.3);}
+.slot.wrong-flash{border-color:#ef4444;box-shadow:0 0 14px rgba(239,68,68,0.3);}
+
+/* ─── Token ──────────────────────────────────────────── */
+.token{
+  height:52px;min-width:52px;padding:0 12px;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;
+  cursor:pointer;
+  touch-action:none;
+  transition:box-shadow .15s,transform .1s,opacity .15s;
+  position:relative;
+  white-space:nowrap;
+}
+.token.num{
+  background:#1a2232;
+  border:2px solid rgba(255,255,255,0.16);
+  color:#fff;
+  font-size:15px;
+}
+.token.op-add{
+  background:rgba(120,53,15,0.55);
+  border:2px solid #f97316;
+  color:#f97316;
+  font-size:22px;
+  min-width:52px;padding:0;
+}
+.token.op-sub{
+  background:rgba(28,33,48,0.9);
+  border:2px solid rgba(148,163,184,0.4);
+  color:#94a3b8;
+  font-size:22px;
+  min-width:52px;padding:0;
+}
+.token.op-mul{
+  background:rgba(120,40,15,0.55);
+  border:2px solid #f97316;
+  color:#f97316;
+  font-size:20px;
+  min-width:52px;padding:0;
+}
+.token.op-div{
+  background:rgba(20,83,45,0.55);
+  border:2px solid #22c55e;
+  color:#22c55e;
+  font-size:20px;
+  min-width:52px;padding:0;
+}
+.token.selected{
+  box-shadow:0 0 0 3px #f97316, 0 0 18px rgba(249,115,22,0.4);
+  transform:scale(1.06);
+}
+.token.dragging-ghost{
+  opacity:0.22;
+  pointer-events:none;
+}
+
+/* ─── Floating drag clone ────────────────────────────── */
+#drag-clone{
+  position:fixed;pointer-events:none;z-index:9999;
+  display:none;
+  transform:scale(1.1);
+  box-shadow:0 12px 32px rgba(0,0,0,0.55);
+  transition:none;
+}
+
+/* ─── Feedback ───────────────────────────────────────── */
+#feedback{
+  font-size:13px;letter-spacing:1px;
+  min-height:22px;text-align:center;
+  transition:opacity .3s;
+}
+#feedback.ok{color:#22c55e;}
+#feedback.err{color:#ef4444;}
+#feedback.warn{color:#f97316;}
+
+/* ─── Buttons ────────────────────────────────────────── */
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.btn{
+  padding:11px 20px;border-radius:10px;border:none;
+  font-family:'Orbitron',monospace;font-size:11px;font-weight:700;
+  cursor:pointer;letter-spacing:1px;text-transform:uppercase;
+  transition:opacity .2s,transform .1s;
+}
+.btn:hover{opacity:.82;}
+.btn:active{transform:scale(.97);}
+#btn-check{background:#f97316;color:#fff;}
+#btn-reset{background:#1a2232;border:2px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.5);}
+#btn-next{background:#1a2232;border:2px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.72);}
+
+/* ─── Pattern dots ───────────────────────────────────── */
+.dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:640px;}
+.dot{
+  width:10px;height:10px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;transition:background .2s;
+}
+.dot.active{background:#f97316;border-color:#f97316;}
+.dot.done{background:rgba(34,197,94,0.5);border-color:#22c55e;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="title">Op. Combinada — Nivel Básico</div>
+  <div class="counter" id="counter">Patrón 1 / 18</div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+<div class="dots" id="dots"></div>
+
+<div class="zone-wrap">
+  <div class="zone-label">↑ Ordena aquí de izquierda a derecha</div>
+  <div id="answer-zone"></div>
+</div>
+
+<div class="sep"></div>
+
+<div class="zone-wrap">
+  <div class="zone-label">Fichas disponibles</div>
+  <div id="bank-zone"></div>
+</div>
+
+<div id="feedback"></div>
+
+<div class="btn-row">
+  <button class="btn" id="btn-check" onclick="checkAnswer()">Verificar</button>
+  <button class="btn" id="btn-reset" onclick="resetExercise()">Reiniciar</button>
+  <button class="btn" id="btn-next" onclick="nextExercise()">Siguiente →</button>
+</div>
+
+<div id="drag-clone"></div>
+
+<script>
+// ─── Random helper ────────────────────────────────────────────────────────────
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+// ─── Operand helpers ──────────────────────────────────────────────────────────
+function cdDiv(){const s=R(2,9),mn=Math.ceil(100/s),mx=Math.floor(999/s),k=R(mn,mx);return[s*k,s,k];}
+function cdMul(){const p=R(2,9),q=R(10,99);return[p,q,p*q];}
+function cdMD(){let p,q,pq,dv;do{p=R(2,9);q=R(10,99);pq=p*q;dv=[2,3,4,5,6,7,8,9].filter(d=>pq%d===0&&pq>=100);}while(!dv.length);const s=dv[R(0,dv.length-1)];return[p,q,s,pq/s];}
+
+// ─── 18 Básico generators ─────────────────────────────────────────────────────
+const GENS=[
+  // B1: a + b − p×q÷s
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,50);b=R(1,50);v=a+b-xy;}while(v<=0);return{t:[a,'+',b,'−',p,'×',q,'÷',s],v,lbl:'a + b − p×q÷s'};},
+  // B2: a + p×q − r÷s
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=a+pq-k;}while(v<=0);return{t:[a,'+',p,'×',q,'−',r,'÷',s],v,lbl:'a + p×q − r÷s'};},
+  // B3: a + p×q÷s − b
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,30);b=R(1,a+xy-1);v=a+xy-b;}while(v<=0);return{t:[a,'+',p,'×',q,'÷',s,'−',b],v,lbl:'a + p×q÷s − b'};},
+  // B4: a + r÷s − p×q
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=a+k-pq;}while(v<=0);return{t:[a,'+',r,'÷',s,'−',p,'×',q],v,lbl:'a + r÷s − p×q'};},
+  // B5: a − b + p×q÷s
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,50);b=R(1,a);v=a-b+xy;}while(v<=0);return{t:[a,'−',b,'+',p,'×',q,'÷',s],v,lbl:'a − b + p×q÷s'};},
+  // B6: a − p×q + r÷s
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,pq-k+1),pq+30);v=a-pq+k;}while(v<=0);return{t:[a,'−',p,'×',q,'+',r,'÷',s],v,lbl:'a − p×q + r÷s'};},
+  // B7: a − p×q÷s + b
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,30);b=R(Math.max(1,xy-a+1),50);v=a-xy+b;}while(v<=0);return{t:[a,'−',p,'×',q,'÷',s,'+',b],v,lbl:'a − p×q÷s + b'};},
+  // B8: a − r÷s + p×q
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=a-k+pq;}while(v<=0);return{t:[a,'−',r,'÷',s,'+',p,'×',q],v,lbl:'a − r÷s + p×q'};},
+  // B9: p×q + a − r÷s
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,k-pq+1),50);v=pq+a-k;}while(v<=0);return{t:[p,'×',q,'+',a,'−',r,'÷',s],v,lbl:'p×q + a − r÷s'};},
+  // B10: p×q + r÷s − a
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,pq+k-1);v=pq+k-a;}while(v<=0);return{t:[p,'×',q,'+',r,'÷',s,'−',a],v,lbl:'p×q + r÷s − a'};},
+  // B11: p×q − a + r÷s
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,pq);v=pq-a+k;}while(v<=0);return{t:[p,'×',q,'−',a,'+',r,'÷',s],v,lbl:'p×q − a + r÷s'};},
+  // B12: p×q − r÷s + a
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,k-pq+1),50);v=pq-k+a;}while(v<=0);return{t:[p,'×',q,'−',r,'÷',s,'+',a],v,lbl:'p×q − r÷s + a'};},
+  // B13: p×q÷s + a − b
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,30);b=R(1,xy+a-1);v=xy+a-b;}while(v<=0);return{t:[p,'×',q,'÷',s,'+',a,'−',b],v,lbl:'p×q÷s + a − b'};},
+  // B14: p×q÷s − a + b
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,xy);b=R(1,50);v=xy-a+b;}while(v<=0);return{t:[p,'×',q,'÷',s,'−',a,'+',b],v,lbl:'p×q÷s − a + b'};},
+  // B15: r÷s + a − p×q
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,pq-k+1),50);v=k+a-pq;}while(v<=0);return{t:[r,'÷',s,'+',a,'−',p,'×',q],v,lbl:'r÷s + a − p×q'};},
+  // B16: r÷s + p×q − a
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,k+pq-1);v=k+pq-a;}while(v<=0);return{t:[r,'÷',s,'+',p,'×',q,'−',a],v,lbl:'r÷s + p×q − a'};},
+  // B17: r÷s − a + p×q
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,k+pq-1);v=k-a+pq;}while(v<=0);return{t:[r,'÷',s,'−',a,'+',p,'×',q],v,lbl:'r÷s − a + p×q'};},
+  // B18: r÷s − p×q + a
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,pq-k+1),50);v=k-pq+a;}while(v<=0);return{t:[r,'÷',s,'−',p,'×',q,'+',a],v,lbl:'r÷s − p×q + a'};}
+];
+
+// ─── State ────────────────────────────────────────────────────────────────────
+let patternIdx = 0;        // 0..17
+let correct = [];          // correct token values in order
+let answer = 0;
+let patternLbl = '';
+let pool = [];             // [{id,val}]  — one per token
+let bankOrder = [];        // id[] — shuffled order for bank display
+let placed = [];           // placed[slotIdx] = id | null
+let doneMask = new Array(18).fill(false);
+let selected = null;       // {id, fromSlot} or null  (fromSlot = index or -1 if bank)
+
+// Token CSS class
+function tokClass(val){
+  if(typeof val==='number') return 'num';
+  if(val==='+') return 'op-add';
+  if(val==='−'||val==='-') return 'op-sub';
+  if(val==='×') return 'op-mul';
+  if(val==='÷') return 'op-div';
+  return 'num';
+}
+
+// ─── Load exercise ────────────────────────────────────────────────────────────
+function loadExercise(idx){
+  patternIdx = idx;
+  const res = GENS[idx]();
+  correct = res.t;
+  answer = res.v;
+  patternLbl = res.lbl;
+  pool = correct.map((val,i)=>({id:i,val}));
+  bankOrder = shuffle(pool.map(t=>t.id));
+  placed = new Array(correct.length).fill(null);
+  selected = null;
+  setFeedback('','');
+  render();
+}
+
+function resetExercise(){
+  placed = new Array(correct.length).fill(null);
+  bankOrder = shuffle(pool.map(t=>t.id));
+  selected = null;
+  setFeedback('','');
+  render();
+}
+
+function nextExercise(){
+  doneMask[patternIdx] = true;
+  patternIdx = (patternIdx+1) % 18;
+  loadExercise(patternIdx);
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function render(){
+  // Counter
+  document.getElementById('counter').textContent =
+    `Patrón ${patternIdx+1} / 18  —  ${patternLbl}`;
+  // Progress
+  const done = doneMask.filter(Boolean).length;
+  document.getElementById('progress-fill').style.width = (done/18*100)+'%';
+
+  renderDots();
+  renderAnswer();
+  renderBank();
+}
+
+function renderDots(){
+  const cont = document.getElementById('dots');
+  cont.innerHTML='';
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===patternIdx?' active':doneMask[i]?' done':'');
+    d.title=`Patrón ${i+1}`;
+    d.onclick=(()=>{const ii=i;return()=>loadExercise(ii);})();
+    cont.appendChild(d);
+  }
+}
+
+function renderAnswer(){
+  const zone = document.getElementById('answer-zone');
+  zone.innerHTML='';
+  for(let i=0;i<correct.length;i++){
+    const slot=document.createElement('div');
+    slot.className='slot';
+    slot.dataset.slot=i;
+    const id=placed[i];
+    if(id!=null){
+      const tok=pool[id];
+      slot.appendChild(makeTokenEl(tok,true,i));
+    }
+    slot.addEventListener('click',()=>handleSlotClick(i));
+    zone.appendChild(slot);
+  }
+}
+
+function renderBank(){
+  const zone=document.getElementById('bank-zone');
+  zone.innerHTML='';
+  const placedSet=new Set(placed.filter(x=>x!=null));
+  bankOrder.forEach(id=>{
+    if(!placedSet.has(id)){
+      const tok=pool[id];
+      const el=makeTokenEl(tok,false,-1);
+      zone.appendChild(el);
+    }
+  });
+}
+
+function makeTokenEl(tok, inSlot, slotIdx){
+  const el=document.createElement('div');
+  el.className='token '+tokClass(tok.val);
+  el.textContent=String(tok.val);
+  el.dataset.id=tok.id;
+
+  // Selected highlight
+  if(selected && selected.id===tok.id){
+    el.classList.add('selected');
+  }
+
+  el.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(inSlot) handleSlotClick(slotIdx);
+    else handleBankClick(tok.id);
+  });
+
+  // Pointer drag
+  el.addEventListener('pointerdown',(e)=>onPointerDown(e,tok.id,inSlot,slotIdx));
+
+  return el;
+}
+
+// ─── Click interaction ────────────────────────────────────────────────────────
+function handleBankClick(id){
+  if(selected && selected.id===id){selected=null;render();return;}
+  if(selected){
+    // Move selected to first empty slot, or swap if selected is in a slot
+    const emptySlot=placed.indexOf(null);
+    if(selected.fromSlot>=0){
+      // selected was in a slot — return it to bank, place bank token in that slot
+      placed[selected.fromSlot]=id;
+    } else {
+      // selected was also in bank — just switch selection
+      selected={id,fromSlot:-1};render();return;
+    }
+    selected=null;render();
+  } else {
+    selected={id,fromSlot:-1};render();
+  }
+}
+
+function handleSlotClick(slotIdx){
+  const existingId=placed[slotIdx];
+  if(selected){
+    const selId=selected.id;
+    const selFromSlot=selected.fromSlot;
+    if(selFromSlot>=0){
+      // Swap two slots
+      placed[selFromSlot]=existingId; // may be null
+      placed[slotIdx]=selId;
+    } else {
+      // From bank → place in slot
+      if(existingId!=null){
+        // Slot occupied: just swap the placed token back to bank (it'll show in bank)
+        placed[slotIdx]=selId;
+      } else {
+        placed[slotIdx]=selId;
+      }
+    }
+    selected=null;
+    setFeedback('','');
+    render();
+  } else {
+    if(existingId!=null){
+      selected={id:existingId,fromSlot:slotIdx};
+      render();
+    }
+  }
+}
+
+// Click on body to deselect
+document.body.addEventListener('click',()=>{
+  if(selected){selected=null;render();}
+});
+
+// ─── Pointer drag ─────────────────────────────────────────────────────────────
+let drag=null;
+
+function onPointerDown(e,id,inSlot,slotIdx){
+  // Only initiate drag on primary pointer (left click / first touch)
+  if(e.button!==undefined&&e.button!==0) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  const el=e.currentTarget;
+  const rect=el.getBoundingClientRect();
+
+  // Build ghost
+  const ghost=document.getElementById('drag-clone');
+  ghost.className='token '+tokClass(pool[id].val);
+  ghost.textContent=String(pool[id].val);
+  ghost.style.display='flex';
+  ghost.style.alignItems='center';
+  ghost.style.justifyContent='center';
+  ghost.style.fontFamily="'Orbitron',monospace";
+  ghost.style.fontWeight='900';
+  ghost.style.fontSize=window.getComputedStyle(el).fontSize;
+  ghost.style.minWidth=rect.width+'px';
+  ghost.style.height=rect.height+'px';
+  ghost.style.padding='0 12px';
+  ghost.style.borderRadius='10px';
+  ghost.style.left=(e.clientX-(e.clientX-rect.left))+'px';
+  ghost.style.top=(e.clientY-(e.clientY-rect.top))+'px';
+
+  el.classList.add('dragging-ghost');
+  el.setPointerCapture(e.pointerId);
+
+  drag={id, inSlot, slotIdx, el, ox:e.clientX-rect.left, oy:e.clientY-rect.top};
+  selected=null;
+
+  document.getElementById('answer-zone').classList.add('drag-active');
+
+  el.addEventListener('pointermove',onPointerMove,{passive:false});
+  el.addEventListener('pointerup',onPointerUp);
+  el.addEventListener('pointercancel',onPointerUp);
+}
+
+function onPointerMove(e){
+  if(!drag)return;
+  e.preventDefault();
+  const ghost=document.getElementById('drag-clone');
+  ghost.style.left=(e.clientX-drag.ox)+'px';
+  ghost.style.top=(e.clientY-drag.oy)+'px';
+
+  // Highlight target slot
+  ghost.style.display='none';
+  const target=document.elementFromPoint(e.clientX,e.clientY);
+  ghost.style.display='flex';
+
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('over'));
+  if(target){
+    const sl=target.closest('.slot');
+    if(sl) sl.classList.add('over');
+  }
+}
+
+function onPointerUp(e){
+  if(!drag)return;
+  const ghost=document.getElementById('drag-clone');
+  ghost.style.display='none';
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('over'));
+  document.getElementById('answer-zone').classList.remove('drag-active');
+
+  // Find target slot
+  ghost.style.display='none';
+  const target=document.elementFromPoint(e.clientX,e.clientY);
+  const sl=target&&target.closest('.slot');
+
+  if(sl){
+    const targetSlot=parseInt(sl.dataset.slot);
+    const existingId=placed[targetSlot];
+    if(drag.inSlot){
+      // From slot → slot swap
+      placed[drag.slotIdx]=existingId; // null or existing
+      placed[targetSlot]=drag.id;
+    } else {
+      // From bank → slot
+      placed[targetSlot]=drag.id;
+      // if existingId was already there, it goes back to bank (just falls off placed)
+      if(existingId!=null && existingId!==drag.id){
+        // Remove old occupant from placed so it returns to bank
+        // Already done since we just overwrote placed[targetSlot]
+      }
+    }
+    setFeedback('','');
+  }
+
+  drag.el.classList.remove('dragging-ghost');
+  drag.el.removeEventListener('pointermove',onPointerMove);
+  drag.el.removeEventListener('pointerup',onPointerUp);
+  drag.el.removeEventListener('pointercancel',onPointerUp);
+  drag=null;
+  render();
+}
+
+// ─── Check answer ─────────────────────────────────────────────────────────────
+function checkAnswer(){
+  if(placed.some(x=>x==null)){
+    setFeedback('Coloca todas las fichas primero','warn');return;
+  }
+  const ok=placed.every((id,i)=>String(pool[id].val)===String(correct[i]));
+  if(ok){
+    setFeedback('✓  ¡Correcto!  Resultado = '+answer,'ok');
+    doneMask[patternIdx]=true;
+    // Flash green
+    document.querySelectorAll('.slot').forEach(s=>{
+      s.classList.add('correct-flash');
+      setTimeout(()=>s.classList.remove('correct-flash'),800);
+    });
+    renderDots();
+    document.getElementById('progress-fill').style.width=
+      (doneMask.filter(Boolean).length/18*100)+'%';
+  } else {
+    setFeedback('✗  Orden incorrecto — sigue intentando','err');
+    document.querySelectorAll('.slot').forEach(s=>{
+      s.classList.add('wrong-flash');
+      setTimeout(()=>s.classList.remove('wrong-flash'),600);
+    });
+  }
+}
+
+function setFeedback(msg,cls){
+  const el=document.getElementById('feedback');
+  el.textContent=msg;
+  el.className=cls;
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+loadExercise(0);
+</script>
+</body>
+</html>

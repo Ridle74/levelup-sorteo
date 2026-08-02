@@ -989,7 +989,7 @@ function _genBel1CJ_B5(){
   var tested=t===0?elem:alien;
   var ans=t===0?'Sí pertenece (∈)':'No pertenece (∉)';
   var dots=conj.map(e=>'<tspan>'+e+'</tspan>').join(', ');
-  var svg='<svg viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg" style="max-width:260px;margin:4px auto;display:block"><ellipse cx="130" cy="44" rx="110" ry="30" fill="rgba(99,102,241,.18)" stroke="#818cf8" stroke-width="2"/><text x="130" y="36" text-anchor="middle" font-size="11" fill="#c7d2fe">A = { 2, 4, 6, 8, 10 }</text><text x="130" y="54" text-anchor="middle" font-size="11" fill="#a5b4fc">(números pares del 2 al 10)</text><text x="130" y="18" text-anchor="middle" font-size="12" fill="#e2e8f0" font-weight="700">Conjunto A</text></svg>';
+  var svg='<svg viewBox="0 0 260 100" xmlns="http://www.w3.org/2000/svg" style="max-width:260px;margin:4px auto;display:block"><ellipse cx="130" cy="58" rx="110" ry="38" fill="rgba(99,102,241,.18)" stroke="#818cf8" stroke-width="2"/><text x="130" y="34" text-anchor="middle" font-size="12" fill="#e2e8f0" font-weight="700">Conjunto A</text><text x="130" y="52" text-anchor="middle" font-size="11" fill="#c7d2fe">A = { 2, 4, 6, 8, 10 }</text><text x="130" y="70" text-anchor="middle" font-size="11" fill="#a5b4fc">(números pares del 2 al 10)</text></svg>';
   return{q:_b1q(svg,'¿El número <b>'+tested+'</b> pertenece al Conjunto A?'),a:ans,opts:_b1s(['Sí pertenece (∈)','No pertenece (∉)']),mc:true,ste:tested+(t===0?' está en A = {2,4,6,8,10} → pertenece (∈).':" no está en A → no pertenece (∉).")};
 }
 function _genBel1CJ_B6(){
@@ -1652,7 +1652,7 @@ function _genInt4G_ELE_B1(){
     {q:_i4gv('● ─────────────────── →<br>A')+'¿Qué elemento geométrico muestra el dibujo?',a:'Semirrecta (rayo)',opts:_i4gshuf(['Semirrecta (rayo)','Recta','Segmento','Eje']),mc:true,ste:'Un origen fijo (●) y una flecha (→) en un solo sentido = Semirrecta o Rayo.'},
     {q:_i4gv('↑<br>│<br>│<br>│<br>↓')+'Esta figura es una recta:',a:'Vertical',opts:_i4gshuf(['Vertical','Horizontal','Oblicua','Curva']),mc:true,ste:'Corre de arriba hacia abajo (↑↓) = Recta vertical.'},
     {q:_i4gv('←─────────────────────→')+'Esta figura es una recta:',a:'Horizontal',opts:_i4gshuf(['Horizontal','Vertical','Oblicua','Diagonal']),mc:true,ste:'Corre de izquierda a derecha (←→) = Recta horizontal.'},
-    {q:_i4gv('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↗<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╱<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╱<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;╱<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↙')+'Esta figura es una recta:',a:'Oblicua',opts:_i4gshuf(['Oblicua','Horizontal','Vertical','Paralela']),mc:true,ste:'Ni horizontal ni vertical; está inclinada = Recta oblicua.'},
+    {q:'<div style="background:rgba(255,255,255,0.08);border-radius:8px;padding:12px 16px;margin:0 0 10px;text-align:center"><svg viewBox="0 0 200 70" width="200" height="70" xmlns="http://www.w3.org/2000/svg"><defs><marker id="obl_e" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L9,5 L0,9" fill="none" stroke="#c7d2fe" stroke-width="1.5"/></marker><marker id="obl_s" markerWidth="10" markerHeight="10" refX="1" refY="5" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9" fill="none" stroke="#c7d2fe" stroke-width="1.5"/></marker></defs><line x1="20" y1="58" x2="180" y2="12" stroke="#c7d2fe" stroke-width="2.5" marker-start="url(#obl_s)" marker-end="url(#obl_e)"/></svg></div>Esta figura es una recta:',a:'Oblicua',opts:_i4gshuf(['Oblicua','Horizontal','Vertical','Paralela']),mc:true,ste:'La línea no es horizontal ni vertical — está inclinada en diagonal = Recta oblicua.'},
     {q:_i4gv('● ─── ● ─── ●<br>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C')+'¿Cuántos segmentos distintos ves entre A, B y C?',a:'3 segmentos (AB, BC, AC)',opts:_i4gshuf(['3 segmentos (AB, BC, AC)','2 segmentos','4 segmentos','1 segmento']),mc:true,ste:'AB, BC y AC son 3 segmentos distintos entre 3 puntos colineales.'},
     {q:_i4gv('●──── 5 ────●──── 5 ────●<br>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;M&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B')+'¿Cómo se llama M si AM = MB = 5?',a:'Punto medio de AB',opts:_i4gshuf(['Punto medio de AB','Extremo de AB','Centro del segmento AM','Vértice']),mc:true,ste:'M divide AB en dos partes iguales (AM = MB) = Punto medio de AB.'},
     {q:_i4gv('•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•<br>A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C')+'¿Cómo se llaman A, B y C si están sobre la misma recta?',a:'Puntos colineales',opts:_i4gshuf(['Puntos colineales','Puntos paralelos','Vértices','Extremos']),mc:true,ste:'Puntos que pertenecen a la misma recta se llaman colineales.'},
@@ -6853,7 +6853,7 @@ const PREP_LEVELS = {
       {key:'geometria',    lbl:'Geometría',         ico:'◻'},
     ] },
   especial:{ lbl:'Desafío de Dominio', ico:'🎯', gradeIco:'⚡', _hidden:true,
-    grades:{ '1':['dd_sum_b1','dd_sum_b2','dd_sum_bq1','dd_res_b1','dd_res_b2','dd_res_bq1','dd_mul_b1','dd_mul_b2','dd_mul_bq1','dd_div_b1','dd_div_b2','dd_div_bq1'] },
+    grades:{ '1':['dd_sum_b1','dd_sum_b2','dd_sum_bq1','dd_res_b1','dd_res_b2','dd_res_bq1','dd_mul_b1','dd_mul_b2','dd_mul_bq1','dd_div_b1','dd_div_b2','dd_div_bq1','dd_comb_b1','dd_comb_b2','dd_eq_b1','dd_eq_b2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'}] },
   pre:{ lbl:'Pre', ico:'🎓', gradeIco:'🏛️', grades:{},
     areas:[
@@ -7540,8 +7540,8 @@ function _genI1A_EX1_B1(){
   var a=_i4grnd(2,8),b=_i4grnd(2,6),c=_i4grnd(1,4);
   var r1=1,r2=a*a*a,r3=b*b;
   return _i4gpick([
-    {q:'Calcula: A = (−5)⁰ + 9⁰ + 8⁰ + 5² − 6⁰',a:'25',opts:_i4gshuf(['25','27','23','21']),mc:true,ste:'Cualquier base⁰ = 1. −1+1+1+25−1 = 25.'},
-    {q:'Efectúa: S = −5⁰ + 8¹ + 7² − 16⁰⁄²',a:'43',opts:_i4gshuf(['43','40','41','45']),mc:true,ste:'−1+8+49−16/2 = −1+8+49−8 = wait. 7²=49, 16^(0/2)=1. S=−1+8+49−1=55... Let me use simpler: S=−50+81+72−16^(1/2). Clave: 43'},
+    {q:'Calcula: A = (−5)⁰ + 9⁰ + 8⁰ + 5² − 6⁰',a:'27',opts:_i4gshuf(['27','25','28','26']),mc:true,ste:'(−5)⁰=1, 9⁰=1, 8⁰=1, 5²=25, 6⁰=1. 1+1+1+25−1 = 27.'},
+    {q:'Calcula: S = 5² + 2⁴ + 4⁰ + 1⁰',a:'43',opts:_i4gshuf(['43','44','42','41']),mc:true,ste:'5²=25, 2⁴=16, 4⁰=1, 1⁰=1. 25+16+1+1 = 43.'},
     {q:'Calcula: A = 7³',a:'343',opts:_i4gshuf(['343','49','247','81']),mc:true,ste:'7³ = 7×7×7 = 343.'},
     {q:'Efectúa: E = 5²',a:'25',opts:_i4gshuf(['25','10','15','30']),mc:true,ste:'5² = 5×5 = 25.'},
     {q:'Calcula: M = 2⁴ + 3² − 4⁰',a:'24',opts:_i4gshuf(['24','25','23','26']),mc:true,ste:'16 + 9 − 1 = 24.'},
@@ -7557,11 +7557,11 @@ _SKILL_META['i1a_ex1_b1']={ico:'📐',lbl:'Potencias con exp 0 y bases numérica
 function _genI1A_EX1_B2(){
   return _i4gpick([
     {q:'Calcula: A = x³·x⁵',a:'x⁸',opts:_i4gshuf(['x⁸','x¹⁵','x²','2x⁸']),mc:true,ste:'Misma base: se suman exponentes. 3+5=8.'},
-    {q:'Efectúa: −(−2x⁶)·(−3x⁴)·(−2x²)',a:'−12x¹²',opts:_i4gshuf(['−12x¹²','12x¹²','-6x¹²','6x¹²']),mc:true,ste:'Signos: (−)(−3)(−2)=−12. Exp: 6+4+2=12. R=−12x¹².'},
+    {q:'Efectúa: −(−2x⁶)·(−3x⁴)·(−2x²)',a:'12x¹²',opts:_i4gshuf(['12x¹²','−12x¹²','-6x¹²','6x¹²']),mc:true,ste:'Hay 4 signos negativos (−)(−2)(−3)(−2): número par → resultado positivo. 2·3·2=12. 6+4+2=12. R=12x¹².'},
     {q:'Simplifica: (a⁵)·(a³)',a:'a⁸',opts:_i4gshuf(['a⁸','a¹⁵','2a⁸','a²']),mc:true,ste:'a⁵·a³ = a^(5+3) = a⁸.'},
     {q:'Calcula: (2x³)·(3x⁴)',a:'6x⁷',opts:_i4gshuf(['6x⁷','6x¹²','5x⁷','6x']),mc:true,ste:'2·3=6, x^(3+4)=x⁷. R=6x⁷.'},
     {q:'Efectúa: (−2x³)·(−3x⁴)·(−2x⁵)',a:'−12x¹²',opts:_i4gshuf(['−12x¹²','12x¹²','−12x⁶⁰','12x⁶⁰']),mc:true,ste:'Tres negativos → negativo. 2·3·2=12. 3+4+5=12. R=−12x¹².'},
-    {q:'Halla: x^(n+3)·x^(n−1)',a:'x^(2n+2)',opts:_i4gshuf(['x^(2n+2)','x^(n²+2)','x^(2n-3)','2x^n']),mc:true,ste:'(n+3)+(n−1) = 2n+2.'},
+    {q:'Halla: xⁿ⁺³·xⁿ⁻¹',a:'x²ⁿ⁺²',opts:_i4gshuf(['x²ⁿ⁺²','xⁿ²⁺²','x²ⁿ⁻³','2xⁿ']),mc:true,ste:'Suma de exponentes: (n+3)+(n−1) = 2n+2. Resultado: x²ⁿ⁺².'},
     {q:'Calcula: 2x³·x⁴·x⁵ + 7x⁶·x⁶ + 6x¹⁰·x²',a:'15x¹²',opts:_i4gshuf(['15x¹²','13x¹⁰','9x⁸','21x¹²']),mc:true,ste:'2x¹²+7x¹²+6x¹² = 15x¹².'},
     {q:'Efectúa: (3x²)·(−2x)·(x³)',a:'−6x⁶',opts:_i4gshuf(['−6x⁶','6x⁶','−6x⁵','6x⁵']),mc:true,ste:'3·(−2)·1=−6. 2+1+3=6. R=−6x⁶.'},
   ]);
@@ -7576,25 +7576,25 @@ function _genI1A_EX1_B3(){
     {q:'Simplifica: x¹⁰ ÷ x³',a:'x⁷',opts:_i4gshuf(['x⁷','x¹³','x³⁰','x']),mc:true,ste:'Misma base: se restan exponentes. 10−3=7.'},
     {q:'Efectúa: (x³)⁴',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','4x³','x⁸¹']),mc:true,ste:'Potencia de potencia: se multiplican. 3×4=12.'},
     {q:'Calcula: (a²b³)³',a:'a⁶b⁹',opts:_i4gshuf(['a⁶b⁹','a⁵b⁶','a⁸b¹²','3a²b³']),mc:true,ste:'a^(2·3)·b^(3·3) = a⁶b⁹.'},
-    {q:'Halla: a⁵+2a¹⁰+3a¹⁵ si a³=a³, a⁸=a⁸, a¹³=a¹³ → [suma] cuando a³/a³+2a¹⁰/a⁸+3a¹⁵/a¹³',a:'6a²',opts:_i4gshuf(['6a²','5a²','8a²','4a²']),mc:true,ste:'a²+2a²+3a² = 6a².'},
+    {q:'Simplifica: a⁵÷a³ + 2a¹⁰÷a⁸ + 3a¹⁵÷a¹³',a:'6a²',opts:_i4gshuf(['6a²','5a²','8a²','4a²']),mc:true,ste:'a⁵÷a³=a², 2a¹⁰÷a⁸=2a², 3a¹⁵÷a¹³=3a². Entonces a²+2a²+3a² = 6a².'},
     {q:'Simplifica: (2x)³',a:'8x³',opts:_i4gshuf(['8x³','6x³','2x³','8x']),mc:true,ste:'2³·x³ = 8x³.'},
     {q:'Calcula: a⁸ · a⁻³ (misma base)',a:'a⁵',opts:_i4gshuf(['a⁵','a¹¹','a⁻²⁴','a']),mc:true,ste:'8+(−3) = 5.'},
     {q:'Efectúa: (x²)⁵ ÷ x³',a:'x⁷',opts:_i4gshuf(['x⁷','x¹⁰','x¹³','x³']),mc:true,ste:'x¹⁰÷x³ = x⁷.'},
-    {q:'Halla: (ab²)(a³b⁴)(a⁵b⁶)(a⁷b⁸) si ab=1',a:'1',opts:_i4gshuf(['1','ab','0','a²b']),mc:true,ste:'= a^(1+3+5+7)·b^(2+4+6+8) = a¹⁶b²⁰. Si ab=1 → a^16·b^20=(ab)^? Reducir: a¹⁶b²⁰. ab=1 no simplifica directamente. Clave: 1 (del PDF).'},
+    {q:'Halla: (ab²)(a³b⁴)(a⁵b⁶)(a⁷b⁸) si ab=1',a:'b⁴',opts:_i4gshuf(['b⁴','1','a⁴','ab']),mc:true,ste:'= a^(1+3+5+7)·b^(2+4+6+8) = a¹⁶b²⁰. Como ab=1 → a=b⁻¹, entonces a¹⁶b²⁰ = b⁻¹⁶·b²⁰ = b⁴.'},
   ]);
 }
 _SKILL_META['i1a_ex1_b3']={ico:'📐',lbl:'Cocientes y potencia de potencia con variables',qCount:4,gen:_genI1A_EX1_B3};
 
 function _genI1A_EX1_B4(){
   return _i4gpick([
-    {q:'Reduce: 7⁹−⁵⁷·7⁷ ÷ (7·7⁷)',a:'7',opts:_i4gshuf(['7','49','1','7²']),mc:true,ste:'Simplificar exponentes cuidadosamente con leyes.'},
+    {q:'Simplifica: 7ⁿ⁺² ÷ 7ⁿ⁺¹',a:'7',opts:_i4gshuf(['7','49','1','7²']),mc:true,ste:'Misma base: se restan exponentes. (n+2)−(n+1) = 1. Resultado: 7¹ = 7.'},
     {q:'Si xⁿ=3, reduce: x^(3n)−100',a:'−73',opts:_i4gshuf(['−73','−72','−74','−75']),mc:true,ste:'x^(3n) = (xⁿ)³ = 27. 27−100 = −73.'},
-    {q:'Calcula: N = 4⁸·2¹⁴·3¹⁵⁴ ÷ (3⁰·3⁵·6)',a:'2',opts:_i4gshuf(['2','4','6','8']),mc:true,ste:'Simplificar usando propiedades de la base.'},
-    {q:'Efectúa: P = 2³·2^(n+1) ÷ 2^(n−1) − 3·(3^n) ÷ 3^(n−1) = 24',a:'4',opts:_i4gshuf(['4','2','8','1']),mc:true,ste:'2^(n+4)÷2^(n-1) = 2⁵=32. 3^(n+1)÷3^(n-1)=9. Pero clave: 4 (del PDF).'},
+    {q:'Calcula: N = 2¹⁰·3⁸ ÷ (3⁸·2⁹)',a:'2',opts:_i4gshuf(['2','4','6','8']),mc:true,ste:'2¹⁰·3⁸ ÷ (3⁸·2⁹) = 2^(10−9)·3^(8−8) = 2¹·3⁰ = 2·1 = 2.'},
+    {q:'Efectúa: P = 2ⁿ⁺¹ ÷ 2ⁿ⁻¹',a:'4',opts:_i4gshuf(['4','2','8','1']),mc:true,ste:'Misma base: (n+1)−(n−1) = 2. Resultado: 2² = 4.'},
     {q:'Simplifica: 5^(n(n+3)) ÷ 5^(3n); n∈ℕ → exponente final de 5',a:'n²',opts:_i4gshuf(['n²','5n','4n','2n']),mc:true,ste:'n(n+3)−3n = n²+3n−3n = n².'},
     {q:'Calcula: M = 2⁸·2¹⁰·2⁷ ÷ (2¹²)³',a:'1/2',opts:_i4gshuf(['1/2','2','4','1']),mc:true,ste:'2^(8+10+7) ÷ 2^36 = 2^25÷2^36 = 2^(-11). Clave del PDF: 1/2.'},
     {q:'Halla: A = [(6¹)³]⁰ + [(5³)⁰]⁵',a:'2',opts:_i4gshuf(['2','11','125','1']),mc:true,ste:'[6³]⁰=1. [(1)]⁵=1. 1+1=2.'},
-    {q:'Si m=3, calcula: 2^(m·2^m)',a:'512',opts:_i4gshuf(['512','64','256','128']),mc:true,ste:'m·2^m=3·8=24. Pero clave: 512=2^9. Clave del PDF.'},
+    {q:'Si m=3, calcula: (2ᵐ)ᵐ',a:'512',opts:_i4gshuf(['512','64','256','128']),mc:true,ste:'(2ᵐ)ᵐ = (2³)³ = 8³ = 512.'},
   ]);
 }
 _SKILL_META['i1a_ex1_b4']={ico:'📐',lbl:'Expresiones combinadas con múltiples leyes',qCount:4,gen:_genI1A_EX1_B4};
@@ -8735,6 +8735,24 @@ function _genDD_DIV_B2(){
 _SKILL_META['dd_div_b2']={ico:'➗',lbl:'Division con residuo',qCount:3,gen:_genDD_DIV_B2};
 function _genDD_DIV_BQ1(){return _bqSrcPick(['dd_div_b1','dd_div_b2'],[_genDD_DIV_B1,_genDD_DIV_B2]);}
 _SKILL_META['dd_div_bq1']={ico:'⚡',lbl:'Cuestionario - Division',qCount:5,gen:_genDD_DIV_BQ1,quiz:true};
+
+function _genDD_COMB_B1(){
+  const picks=[_genCombB1,_genCombB2,_genCombB3,_genCombB4,_genCombB5,_genCombB6,_genCombB7,_genCombB8,_genCombB9,_genCombB10,_genCombB11,_genCombB12,_genCombB13,_genCombB14,_genCombB15,_genCombB16,_genCombB17,_genCombB18];
+  return picks[_dsRi(0,picks.length-1)]();
+}
+_SKILL_META['dd_comb_b1']={ico:'🔢',lbl:'Op. Combinada básica',qCount:3,gen:_genDD_COMB_B1};
+
+function _genDD_COMB_B2(){
+  const picks=[_genCombI1,_genCombI2,_genCombI3,_genCombI4,_genCombI5,_genCombI6,_genCombI7,_genCombI8,_genCombI9,_genCombI10,_genCombI11,_genCombI12];
+  return picks[_dsRi(0,picks.length-1)]();
+}
+_SKILL_META['dd_comb_b2']={ico:'🔢',lbl:'Op. Combinada intermedia',qCount:3,gen:_genDD_COMB_B2};
+
+function _genDD_COMB_B3(){
+  const picks=[_genCombA1,_genCombA2,_genCombA3,_genCombA4,_genCombA5,_genCombA6,_genCombA7,_genCombA8,_genCombA9,_genCombA10];
+  return picks[_dsRi(0,picks.length-1)]();
+}
+_SKILL_META['dd_comb_b3']={ico:'🔢',lbl:'Op. Combinada avanzada',qCount:3,gen:_genDD_COMB_B3};
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
@@ -8872,10 +8890,12 @@ const PREP_CURRICULUM = {
   universitario:{ algebra:[], aritmetica:[], trigonometria:[], geometria:[] },
   especial:{
     '1':[
-      {lbl:'Suma',           area:'matematica', skills:['dd_sum_b1','dd_sum_b2']},
-      {lbl:'Resta',          area:'matematica', skills:['dd_res_b1','dd_res_b2']},
-      {lbl:'Multiplicación', area:'matematica', skills:['dd_mul_b1','dd_mul_b2']},
-      {lbl:'División',       area:'matematica', skills:['dd_div_b1','dd_div_b2']},
+      {lbl:'Suma',             area:'matematica', skills:['dd_sum_b1','dd_sum_b2']},
+      {lbl:'Resta',            area:'matematica', skills:['dd_res_b1','dd_res_b2']},
+      {lbl:'Multiplicación',   area:'matematica', skills:['dd_mul_b1','dd_mul_b2']},
+      {lbl:'División',         area:'matematica', skills:['dd_div_b1','dd_div_b2']},
+      {lbl:'Op. Combinada',    area:'matematica', skills:['dd_comb_b1','dd_comb_b2']},
+      {lbl:'Ecuación',         area:'matematica', skills:['dd_eq_b1','dd_eq_b2']},
     ]
   },
 };
@@ -9146,8 +9166,9 @@ function _prepConfigHtml() {
   let unitsHtml = '';
   if (isHiddenLevel) {
     // Mini-catálogo de retos: cards directas por unidad, sin editorial
-    const _retoChar  = {Suma:'+',Resta:'−',Multiplicacion:'×',Multiplicación:'×',Division:'÷',División:'÷'};
-    const _retoColor = {Suma:'#22d3ee',Resta:'#ec4899',Multiplicacion:'#fbbf24',Multiplicación:'#fbbf24',Division:'#a855f7',División:'#a855f7'};
+    const _retoChar  = {Suma:'+',Resta:'−',Multiplicacion:'×',Multiplicación:'×',Division:'÷',División:'÷','Op. Combinada':'±',Ecuación:'='};
+    const _retoColor = {Suma:'#22d3ee',Resta:'#ec4899',Multiplicacion:'#fbbf24',Multiplicación:'#fbbf24',Division:'#a855f7',División:'#a855f7','Op. Combinada':'#f97316',Ecuación:'#10b981'};
+    const _retoRgbAll = {'#22d3ee':'34,211,238','#ec4899':'236,72,153','#fbbf24':'251,191,36','#a855f7':'168,85,247','#f97316':'249,115,22','#10b981':'16,185,129'};
     const retoCards = allUnits.map((u, uIdx) => {
       const _sc = (u.skills||[]).length;
       const _pct = masLoading ? 0 : _prepCourseScore(u.skills||[]);
@@ -9155,7 +9176,7 @@ function _prepConfigHtml() {
       const _onclick = `_snd.click();_prep.selectedExamSkills=[${_skillsArg}];_prep.selectedExamUnitIdx=${uIdx};_prep.selectedExamLbl='${u.lbl}';_renderPreparatePane()`;
       const ch = _retoChar[u.lbl] || '?';
       const cl = _retoColor[u.lbl] || '#a855f7';
-      const clRgb = cl==='#22d3ee'?'34,211,238':cl==='#ec4899'?'236,72,153':cl==='#fbbf24'?'251,191,36':'168,85,247';
+      const clRgb = _retoRgbAll[cl] || '168,85,247';
       return `<div onclick="${_onclick}" style="background:rgba(${clRgb},0.08);border:1px solid rgba(${clRgb},0.35);border-radius:14px;padding:14px 10px;cursor:pointer;transition:background .18s,box-shadow .18s;display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;min-width:90px" onmouseover="this.style.background='rgba(${clRgb},0.18)';this.style.boxShadow='0 0 18px rgba(${clRgb},0.3)'" onmouseout="this.style.background='rgba(${clRgb},0.08)';this.style.boxShadow='none'">
         <div style="font-size:38px;line-height:1;font-family:'Orbitron',monospace;font-weight:900;color:${cl};text-shadow:0 0 10px ${cl},0 0 24px ${cl},0 0 40px rgba(${clRgb},0.5)">${ch}</div>
         <div style="font-size:13px;font-weight:700;color:#fff;text-align:center;font-family:'Orbitron',monospace">${u.lbl}</div>
@@ -9167,8 +9188,8 @@ function _prepConfigHtml() {
     const _selRetoSkills = _prep.selectedExamSkills;
     const _selRetoLbl = _prep.selectedExamLbl || '';
     const _selRetoIdx = _prep.selectedExamUnitIdx;
-    const _retoColorMap={Suma:'#22d3ee',Resta:'#ec4899','Multiplicación':'#fbbf24','División':'#a855f7',Multiplicacion:'#fbbf24',Division:'#a855f7'};
-    const _retoRgbMap={Suma:'34,211,238',Resta:'236,72,153','Multiplicación':'251,191,36','División':'168,85,247',Multiplicacion:'251,191,36',Division:'168,85,247'};
+    const _retoColorMap={Suma:'#22d3ee',Resta:'#ec4899','Multiplicación':'#fbbf24','División':'#a855f7',Multiplicacion:'#fbbf24',Division:'#a855f7','Op. Combinada':'#f97316',Ecuación:'#10b981'};
+    const _retoRgbMap={Suma:'34,211,238',Resta:'236,72,153','Multiplicación':'251,191,36','División':'168,85,247',Multiplicacion:'251,191,36',Division:'168,85,247','Op. Combinada':'249,115,22',Ecuación:'16,185,129'};
     const _selRetoCl=_retoColorMap[_selRetoLbl]||'#a855f7';
     const _selRetoRgb=_retoRgbMap[_selRetoLbl]||'168,85,247';
     const _curNivel = _prep.desafioNivel||1;
@@ -9926,8 +9947,8 @@ function _algoGetRel(elId,delta){
 function _algoKey(e,el){
   const isBx=n=>n&&n.classList&&n.classList.contains('algo-dbox');
   if(e.key==='Backspace'&&el.value===''){const p=_algoGetRel(el.id,-1)||el.previousElementSibling;if(isBx(p)){p.focus();p.value='';e.preventDefault();}}
-  if(e.key==='ArrowLeft'){const p=_algoGetRel(el.id,-1)||el.previousElementSibling;if(isBx(p))p.focus();}
-  if(e.key==='ArrowRight'){const n=_algoGetRel(el.id,1)||el.nextElementSibling;if(isBx(n))n.focus();}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();const p=_algoGetRel(el.id,-1)||el.previousElementSibling;if(isBx(p))p.focus();}
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){e.preventDefault();const n=_algoGetRel(el.id,1)||el.nextElementSibling;if(isBx(n))n.focus();}
 }
 function _algoAutoFocus(el){
   const ml=el.maxLength>0?el.maxLength:1;
@@ -9951,6 +9972,27 @@ function _algoBoxes(id_prefix, count, disabled){
 function _fmtN(n){ return String(n).split('').join(''); }
 
 function _renderAlgo(q, disabled){
+  // ── Ecuación ─────────────────────────────────────────────
+  if(q.algo==='eq'){
+    const ans=String(q.a);
+    const G=2;
+    const gBx=(id,dis)=>`<input id="${id}" class="algo-dbox${dis?' algo-dbox-dis':''}" type="text" inputmode="numeric" maxlength="1" ${dis?'disabled':''} autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');_algoAutoFocus(this)" onkeydown="_algoKey(event,this)">`;
+    const focSeq=ans.split('').map((_,i)=>`algo_a_${i}`);
+    const inner=`<div class="algo-vert-wrap" style="gap:18px">
+      <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff;text-align:center;text-shadow:0 0 14px rgba(16,185,129,0.7);letter-spacing:0.04em">${q.expr}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+        <span style="font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:rgba(16,185,129,0.9);text-shadow:0 0 8px rgba(16,185,129,0.5)">x =</span>
+        <div style="display:flex;gap:${G}px">${ans.split('').map((_,i)=>gBx(`algo_a_${i}`,disabled)).join('')}</div>
+      </div>
+    </div>`;
+    return `<div style="display:flex;justify-content:center;padding:16px 8px"><div id="_algo_order" data-ids="${focSeq.join(',')}" style="display:none"></div>${inner}</div>`;
+  }
+  // ── Operación Combinada (interactive) ────────────────────
+  if(q.algo==='comb'){
+    if(!_combSt||_combSt.q!==q) setTimeout(()=>_combInit(q),0);
+    else setTimeout(()=>_combRender(),0);
+    return `<div style="display:flex;justify-content:center;padding:16px 8px"><div id="_algo_order" data-ids="" style="display:none"></div><div id="_comb_container" class="algo-vert-wrap" style="min-height:140px;align-items:center;justify-content:center;width:100%"><div style="color:rgba(249,115,22,0.3);font-size:12px;font-family:'Barlow Condensed',sans-serif">Cargando...</div></div></div>`;
+  }
   const s1=String(q.n1), s2=String(q.n2), ans=String(q.algo==='div'?q.cociente:Math.abs(q.n1-(q.algo==='res'?q.n2:0)+(q.algo==='sum'?q.n2:0)+(q.algo==='mul'?q.n1*q.n2-q.n1:0)));
   const ansStr = q.algo==='mul'?String(q.n1*q.n2): q.algo==='sum'?String(q.n1+q.n2): q.algo==='res'?String(q.n1-q.n2): String(q.cociente);
   const w = Math.max(s1.length, s2.length, ansStr.length)+1;
@@ -10174,6 +10216,10 @@ function _algoMarkPerBox(q){
     n2dRev.forEach((d,pi)=>{const exp=String(q.n1*d);document.querySelectorAll('[id^="algo_p'+pi+'_"]').forEach(el=>{const i=parseInt(el.id.split('_').pop());if(i<exp.length)mark(el,exp[i]);});});
     const finalS=String(q.n1*q.n2);
     document.querySelectorAll('[id^="algo_a_"]').forEach(el=>{const i=parseInt(el.id.split('_').pop());if(i<finalS.length)mark(el,finalS[i]);});
+  } else if(q.algo==='comb'){
+    _combMarkAllBoxes();
+  } else if(q.algo==='eq'){
+    document.querySelectorAll('[id^="algo_a_"]').forEach(el=>{const i=parseInt(el.id.split('_').pop());if(i<q.a.length)mark(el,q.a[i]);});
   } else {
     const ansStr=q.algo==='mul'?String(q.n1*q.n2):q.algo==='sum'?String(q.n1+q.n2):String(q.n1-q.n2);
     document.querySelectorAll('[id^="algo_a_"]').forEach(el=>{const i=parseInt(el.id.split('_').pop());if(i<ansStr.length)mark(el,ansStr[i]);});
@@ -10197,6 +10243,2148 @@ async function _prepDeleteLeaderboardEntry(id){
   _prepDesafioLb=(_prepDesafioLb||[]).filter(e=>e.id!==id);
   _renderPreparatePane();
 }
+// ══════════════════════════════════════════════════════════════════════════════
+// OPERACIÓN COMBINADA — Interactive step-by-step component
+// ══════════════════════════════════════════════════════════════════════════════
+let _combSt = null;
+let _combNoAutoFocus = false;
+let _combAutoFocusTimer = null;
+function _combAutoFocus(id,ms){
+  clearTimeout(_combAutoFocusTimer);
+  _combAutoFocusTimer=setTimeout(()=>{_combAutoFocusTimer=null;document.getElementById(id)?.focus();},ms);
+}
+function _combCancelAutoFocus(){clearTimeout(_combAutoFocusTimer);_combAutoFocusTimer=null;}
+
+// Each rich token: {v: value, cs: colStart (1-indexed), ce: colEnd (1-indexed)}
+function _combInit(q){
+  const rToks=q.tokens.map((v,i)=>({v,cs:i+1,ce:i+1}));
+  // sel: sorted array of currently-selected (pending) operator indices — any number of them, as long as
+  // every pair is independent (see _combOpsIndependent). chainPicks: opIdx -> '+'/'-' the student has picked
+  // so far for a chain-fold sign, keyed per operator so several chainable operators can be mid-pick at once.
+  _combSt={q, N:q.tokens.length, toks:rToks, sel:[], chainPicks:{}, chainPickSide:{}, signOpen:{}, done:[]};
+  _combRender();
+}
+
+function _combCalc(l,op,r){
+  if(op==='+') return l+r;
+  if(op==='-'||op==='−') return l-r;
+  if(op==='×') return l*r;
+  if(op==='÷') return Math.floor(l/r);
+  if(op==='^') return Math.round(Math.pow(l,r));
+  if(op==='√') return Math.round(Math.sqrt(r));
+  return NaN;
+}
+// + and − share precedence, so a chain like "16-49+42" can be solved in any order — but solving a
+// non-leftmost pair correctly requires folding in the sign of whichever +/- sits just before the left
+// operand (its "carried" sign), and once that's done, that preceding operator must display as "+" from
+// then on since its sign has already been absorbed into the new result (e.g. solving "49+42" inside
+// "16-49+42" really means "-49+42"=-7, and "16-49+42" becomes "16+(-7)", so the "-" flips to "+").
+// × ÷ ^ √ never chain this way, so folding only applies when both the operator being solved and the one
+// immediately before its left operand are themselves + or -.
+function _combIsPM(v){return v==='+'||v==='-'||v==='−';}
+function _combIsNeg(v){return v==='-'||v==='−';}
+// Whenever a still-pending +/- connector sits immediately before an already-collapsed NEGATIVE result
+// (typically a chain-fold's merged value), that result's own raw column span has no spare column left over
+// for its own dedicated negative-sign box — every one of its columns is already claimed by its digits — so
+// showing the connector's own glyph AND a separate "−" box right after it would land both in the very same
+// display cell. Instead, the value's sign is folded directly into the connector's own glyph ("+" flips to
+// show "−", "−" flips to show "+" for a value that's actually non-negative) and the value itself renders as
+// a plain, unsigned magnitude — mathematically identical, and it also matches how a folded sign is meant to
+// be read as belonging to the connector, not to the number. tokArr/j is the CONNECTOR's own position;
+// inRangeFn(k) should report whether position k is being consumed/selected by the row currently rendering
+// (so an operand mid-solve elsewhere is never mistaken for a plain through-value here).
+function _combConnAbsorbsSign(tokArr,j,inRangeFn){
+  const tok=tokArr[j], next=tokArr[j+1];
+  // Both the connector itself and the value right after it must actually be the ones on display in THIS
+  // row (neither consumed/selected elsewhere) for there to be a real visible collision to resolve.
+  return !!(tok&&typeof tok.v==='string'&&_combIsPM(tok.v)&&(!inRangeFn||!inRangeFn(j))&&next&&typeof next.v==='number'&&next.v<0&&(!inRangeFn||!inRangeFn(j+1)));
+}
+function _combFoldedExpected(toks,opIdx){
+  const lt=toks[opIdx-1], op=toks[opIdx], rt=toks[opIdx+1];
+  const opBefore=opIdx>=2?toks[opIdx-2]:null;
+  // "chainable" = this operator's left operand is itself directly preceded by another unconsumed +/-
+  // operator — regardless of THAT operator's own sign. Whether op_before is "-" only decides if it needs
+  // to visually flip to "+" afterward (flipCol); it does NOT decide whether the sign question is
+  // meaningful — "114-378" (op_before="+") is just as much a real sign question as "-49+42" (op_before="-").
+  const chainable=!!(opBefore&&typeof opBefore.v==='string'&&_combIsPM(opBefore.v)&&_combIsPM(op.v));
+  if(!chainable) return {expected:_combCalc(lt.v,op.v,rt.v), flipCol:null, chainable:false};
+  const signedLt=_combIsNeg(opBefore.v)?-lt.v:lt.v;
+  const signedRt=_combIsNeg(op.v)?-rt.v:rt.v;
+  return {expected:signedLt+signedRt, flipCol:_combIsNeg(opBefore.v)?opBefore.cs:null, chainable:true};
+}
+// How many grid columns a value's box-group needs: one per magnitude digit, plus one more up front for a
+// dedicated "−" sign box when the value is negative. Reserving that extra column in the anchor/compaction
+// math (instead of squeezing the sign into the first digit's own box) is what lets the sign land in its
+// own cell, flush with everything around it, instead of overlapping the first digit.
+function _combNCols(v){return String(Math.abs(v)).length+(v<0?1:0);}
+// Single source of truth for how wide a √ or single-digit-^ RESULT's box reserves, and which side it hugs
+// when that reservation is wider than the digits actually filling it — used by row 0's own root/pow
+// rendering, _combSlotAnchor (done rows), and the active row's nColsArr, so the three can never drift out
+// of sync with each other the way row 0 and the done/active rows repeatedly did before this was unified.
+// Returns null for any operator/result that doesn't need special treatment (plain nCols/align apply).
+function _combSpecialOpWidth(opVal,resultVal){
+  if(opVal==='√') return {nCols:Math.max(2,_combNCols(resultVal)),align:'root'};
+  // Row 0 always reserves exactly 2 raw columns of VISIBLE content for "base^exponent" whenever the result
+  // stays under 3 digits (base drawn at the "^" token's own column, exponent at its own column right after —
+  // see the isExpBase branch in row 0's rendering and _combExpBaseCols) — true whether the result ends up
+  // needing 1 digit or 2, so both share this same pinned-position treatment, never the generic hasRight/
+  // hasLeft neighbor-hugging rule (a power is more "anchored" than its neighbors, same as a root — see
+  // _combSlotAnchor). Only a 3+ digit result switches to the wider, base-spans-2-columns layout instead.
+  if(opVal==='^'&&resultVal>=0&&String(resultVal).length<=2) return {nCols:2,align:'pow'};
+  return null;
+}
+// How many raw columns a still-PENDING "base ^ exponent" group's BASE digit alone should widen across in
+// any row (row 0, a done row showing it as an unsolved through-value, or the active row doing the same):
+// only when the eventual arithmetic result needs 3+ digits does the base widen to swallow the "^" token's
+// own raw column too (see the isExpBase branches below) — a 1-2 digit result instead sits entirely in the
+// "^" token's own column, so the base itself never draws there. Used by row 0 and both isExpBase branches
+// so all three make the exact same 1-vs-2 decision from the exact same arithmetic.
+function _combExpBaseCols(baseVal,expVal){
+  return String(Math.abs(Math.pow(baseVal,expVal))).length>=3?2:1;
+}
+// Operator hierarchy for anchor-priority purposes when 2+ independent operators are solved TOGETHER in one
+// step (either the active row while it's being solved, or a done row the instant it's confirmed — both must
+// agree, see the anchor-priority blocks that call this in each place): ^/√ outrank ×/÷, which outrank +/−,
+// matching real math precedence. Shared (not duplicated) so both places can never quietly drift apart.
+function _combOpTier(v){ return (v==='√'||v==='^')?2:(v==='×'||v==='÷')?1:0; }
+// Static "−" box for a negative result's sign: same size/border/corner-radius as any digit box, colored
+// like a plain not-yet-resolved "-" operator badge, but inert — it's not a button, the sign is already
+// baked into the value it precedes.
+function _combSignBox(sym){
+  return `<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:19px;font-weight:900;border-radius:8px;border:2px solid rgba(249,115,22,0.3);background:rgba(249,115,22,0.06);color:rgba(249,115,22,0.65)">${sym}</div>`;
+}
+function _combNegBox(){ return _combSignBox('−'); }
+// When a step's left operand is itself directly preceded by another unconsumed +/- operator (a chain like
+// "16-49+42"), the sign of the combined result isn't just arithmetic — it's the actual thing being taught,
+// so instead of silently computing it, the student must explicitly choose it. The interaction is two steps,
+// each its own click: (1) a blank white box that just OPENS the choice — clicking it never picks a sign by
+// itself; (2) once open, two more boxes appear to its right in their own columns, one for "+" and one for
+// "−", and only clicking one of THOSE actually commits the pick. Whichever sign they land on is what gets
+// used when the step is submitted — same as any other wrong digit, an incorrect sign just fails the normal
+// correctness check (shake/retry) instead of being validated the instant it's picked. Clicking the confirmed
+// box afterward reopens the choice in case they change their mind.
+function _combSignPicker(opIdx){
+  return `<button id="_comb_sign_${opIdx}" class="comb-opbtn" onclick="_combOpenSignPicker(${opIdx})" style="font-family:'Orbitron',monospace;font-size:19px;font-weight:900;cursor:pointer;width:38px;height:38px;border-radius:8px;padding:0;line-height:1;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);outline:none"></button>`;
+}
+// The two choice boxes shown once the blank box above has been opened. For a chain-fold, each one takes on
+// the color AND current sign of whichever operand it actually represents (op_before, further left, vs the
+// operator itself, further right) — same colors/order as row 0 — so picking a sign visually means "pick
+// which of these two numbers wins," not an arbitrary abstract choice. When there's no op_before to compare
+// against (a plain, non-chain +/-), there's nothing to color them by, so both stay neutral white.
+function _combSignChoiceBox(opIdx,sign,color,side){
+  const isPlus=sign==='+';
+  // A real, clickable option — unlike the blank picker button (which is DELIBERATELY faint, since it
+  // represents "nothing chosen yet"), this needs to read as fully live at a glance, especially sitting right
+  // next to a fully-saturated colored option. A low-alpha white reads as "dimmed" by comparison even though
+  // it isn't actually opacity-dimmed — so the neutral fallback stays bright/near-opaque white instead.
+  const c=color||{b:'rgba(255,255,255,0.85)',bg:'rgba(255,255,255,0.08)'};
+  // id includes "side" too — when both choices happen to share the same sign (e.g. an implicit "+" fold
+  // where both operands are positive), the sign alone isn't enough to keep the two ids unique.
+  return `<button id="_comb_signopt_${opIdx}_${side}_${isPlus?'p':'m'}" class="comb-opbtn" onclick="_combPickChainSign(${opIdx},'${sign}','${side}')" style="font-family:'Orbitron',monospace;font-size:19px;font-weight:900;cursor:pointer;width:38px;height:38px;border-radius:8px;padding:0;line-height:1;border:2px solid ${c.b};background:${c.bg};color:${c.b};outline:none">${isPlus?'+':'−'}</button>`;
+}
+// The single confirmed box once a sign has been picked — still clickable, so the student can reopen the
+// choice and change their mind, same as any other already-typed digit. Its color follows whichever side was
+// actually picked (op_before's color, or the operator's own), not always the operator's own color.
+function _combSignConfirmedBox(opIdx,pick,color){
+  return `<button id="_comb_sign_${opIdx}" class="comb-opbtn" onclick="_combOpenSignPicker(${opIdx})" style="font-family:'Orbitron',monospace;font-size:19px;font-weight:900;cursor:pointer;width:38px;height:38px;border-radius:8px;padding:0;line-height:1;border:2px solid ${color.b};background:${color.bg};color:${color.b};outline:none">${pick==='-'?'−':'+'}</button>`;
+}
+// Opening (or reopening) the choice never wipes anything on its own — but re-rendering from scratch would,
+// unless every OTHER selected operator's already-typed digits are captured first and restored right after,
+// same pattern _combClickCol already uses. Without this, picking/opening a sign for one operator in a
+// multi-select silently erased whatever the student had already typed for the other one(s).
+function _combOpenSignPicker(opIdx){
+  if(!_combSt||_prep.answered||_prep.retryLock) return;
+  _combSt.chainPicks[opIdx]=null;
+  _combSt.chainPickSide[opIdx]=null;
+  _combSt.signOpen[opIdx]=true;
+  const preserved=_combCaptureActiveValues();
+  _combRender();
+  _combRestoreActiveValues(preserved);
+}
+function _combPickChainSign(opIdx,sign,side){
+  if(!_combSt||_prep.answered||_prep.retryLock) return;
+  _combSt.chainPicks[opIdx]=sign;
+  _combSt.chainPickSide[opIdx]=side;
+  _combSt.signOpen[opIdx]=false;
+  const preserved=_combCaptureActiveValues();
+  _combRender();
+  _combRestoreActiveValues(preserved);
+  _combAutoFocus(_combFirstFocusId(_combSt.toks,opIdx),30);
+}
+// Which direction digits should be typed in: division/root/exponent are worked out left-to-right (that's
+// the order you actually divide/extract/raise in), while +, − and × read more naturally right-to-left
+// (you sum/carry/multiply starting from the units digit).
+function _combIsRTLOp(v){return v==='+'||_combIsNeg(v)||v==='×';}
+// Box-group id for the K-th selected operator's k-th digit (K = its position within _combSt.sel, always
+// 0 for a lone selection). One consistent naming scheme regardless of how many operators are selected at
+// once, instead of separate single/"A"/"B" id schemes.
+function _combGroupBoxId(K,k){ return `_comb_inp${K}_${k}`; }
+function _combFirstFocusId(toks,opIdx){
+  const K=Math.max(0,_combSt.sel.indexOf(opIdx));
+  const op=toks[opIdx];
+  if(_combIsPM(op.v)&&_combSt.chainPicks[opIdx]==null) return '_comb_sign_'+opIdx;
+  const {expected}=_combFoldedExpected(toks,opIdx);
+  const expLen=String(Math.abs(expected)).length;
+  const k=_combIsRTLOp(op.v)?expLen-1:0;
+  return _combGroupBoxId(K,k);
+}
+// Two pending operators are independent (solvable together in one step) only if they don't share an
+// operand — each consumes its own {left, op, right} triple, so the triples must not overlap or touch.
+function _combOpsIndependent(i,j){return Math.abs(i-j)>=3;}
+// An operator can only be selected (solo or joining a group) once BOTH its immediate neighbors are actual
+// numbers. An operator sitting right next to a still-open bracket/paren (e.g. the "×" in "(...)×8" while
+// "(...)" hasn't fully collapsed to one number yet) can satisfy the plain index-distance independence check
+// above while still being mathematically unsolvable right now — its true operand doesn't exist as a number
+// until whatever's inside that bracket finishes resolving. Selecting it anyway would compute garbage (or
+// silently reuse a stale value) instead of the bracket's eventual total.
+function _combOpSelectable(idx){
+  if(!_combSt) return false;
+  const {toks}=_combSt;
+  const lt=toks[idx-1], rt=toks[idx+1];
+  return !!lt&&!!rt&&typeof lt.v==='number'&&typeof rt.v==='number';
+}
+// Standard order-of-operations tiers: brackets are handled separately (an operator touching an unresolved
+// bracket already fails _combOpSelectable above), so this only ranks the actual operator glyphs. √ and ^
+// share the top tier (rendering/gap-closing may treat one as "more central" than the other, but for solve
+// ORDER they're interchangeable — neither has to wait on the other). × and ÷ share the next tier, and +/-
+// share the lowest — real math order of operations, exactly as taught in school.
+function _combPrecTier(v){
+  if(v==='^'||v==='√') return 3;
+  if(v==='×'||v==='÷') return 2;
+  return 1;
+}
+// A pending operator's two neighbors in _combSt.toks (lt/rt) are always plain numbers by the time
+// _combOpSelectable(idx) is true — but one of those numbers can itself be the operand of a DIFFERENT,
+// still-pending operator sitting just past it (toks[idx-2] / toks[idx+2] — the token array strictly
+// alternates value/operator/value, so a real neighboring operator, if any, is always exactly two slots
+// away; a bracket glyph or the array edge in that slot means there's no such neighbor to worry about).
+//
+// A pending HIGHER-tier neighbor on either side always blocks (picking "+" in "1+9^2" before the "^", or
+// "-" in "...-46×9-..." before the "×", is always wrong — × binds to its own term first). A pending
+// LOWER-tier neighbor never blocks — × or ÷ is free to jump ahead of an adjacent pending +/-, because in
+// real precedence that +/- doesn't own the operand yet (e.g. "46×9" inside "...-46×9-1399" is its own term
+// and can be solved before the "-" next to it touches anything).
+//
+// Within the SAME tier, +/- are freely reorderable among themselves — the sign-chain-fold mechanism
+// (_combFoldedExpected) makes a pure +/- run's total order-independent regardless of grouping. ×/÷ are NOT
+// mutually reorderable that way (division isn't commutative/associative), so a pending ×/÷ immediately to
+// this ×/÷'s LEFT still blocks it — they resolve left to right relative to each other.
+//
+// _combClickCol uses this to block the click (shake + lose a life) instead of allowing a wrong-order solve.
+function _combOpPrecedenceOK(idx){
+  if(!_combSt) return true;
+  const {toks}=_combSt;
+  const op=toks[idx];
+  if(!op||typeof op.v!=='string') return true;
+  const tier=_combPrecTier(op.v);
+  const isOp=t=>!!t&&typeof t.v==='string'&&!'()[]{}' .includes(t.v);
+  const neighborTier=t=>isOp(t)?_combPrecTier(t.v):0;
+  const leftOp=toks[idx-2], rightOp=toks[idx+2];
+  if(neighborTier(leftOp)>tier||neighborTier(rightOp)>tier) return false;
+  if((op.v==='×'||op.v==='÷')&&isOp(leftOp)&&(leftOp.v==='×'||leftOp.v==='÷')) return false;
+  return true;
+}
+// Vibrate + immediately cost a life when the student taps an operator that's technically "selectable"
+// (both neighbors are plain numbers) but mathematically out of order per _combOpPrecedenceOK — mirrors the
+// existing wrong-answer shake feedback (see the final-step/verify-step handlers) so both failure modes feel
+// the same to the student, just triggered at click time instead of after typing a wrong digit.
+function _combWrongOrderFeedback(){
+  _prep.retryLock=true;
+  _prep.lives=Math.max(0,(_prep.lives??3)-1);
+  _prep.streak=0;
+  _snd.wrong();
+  _prepUpdateHud();
+  const wrap=document.querySelector('.algo-vert-wrap');
+  if(wrap) wrap.classList.add('algo-shake');
+  setTimeout(()=>{
+    if(wrap) wrap.classList.remove('algo-shake');
+    _prep.retryLock=false;
+    if(_prep.lives<=0){_prep.gameOver=true;_prepFinish();}
+  },650);
+}
+
+function _combReplayToks(){
+  if(!_combSt) return;
+  const q=_combSt.q;
+  let toks=q.tokens.map((v,i)=>({v,cs:i+1,ce:i+1}));
+  for(const step of _combSt.done){
+    for(const op of step.ops){
+      if(op.flipCol!=null){
+        const fi=toks.findIndex(t=>t.cs===op.flipCol);
+        if(fi>=0) toks[fi]={...toks[fi],v:'+'};
+      }
+    }
+    for(const op of step.ops){
+      const lt=step.snap[op.oIdx-1],rt=step.snap[op.oIdx+1];
+      const tidx=toks.findIndex(t=>t.cs===lt.cs);
+      if(tidx>=0) toks=[...toks.slice(0,tidx),{v:op.result,cs:lt.cs,ce:rt.ce},...toks.slice(tidx+3)];
+    }
+  }
+  _combSt.toks=toks;
+}
+// Re-checks/re-derives everything downstream after the student edits an already-submitted result's digits
+// directly (dIdx = which done row, opsIdx = which of that row's operators, 0-based in solve order).
+function _combUpdateDoneN(dIdx,opsIdx,k){
+  if(!_combSt) return;
+  const step=_combSt.done[dIdx];
+  const op=step.ops[opsIdx];
+  if(!op) return;
+  const nBoxes=String(Math.abs(op.result)).length;
+  const digits=Array.from({length:nBoxes},(_,j)=>{const el=document.getElementById(`_comb_done_${dIdx}_${opsIdx}_${j}`);return el?el.value:'';});
+  if(digits.some(d=>d==='')) return;
+  const mag=parseInt(digits.join(''));
+  if(isNaN(mag)) return;
+  op.result=op.result<0?-mag:mag; // keep the original sign — the boxes only ever hold the magnitude
+  _combReplayToks();
+  const focusId=`_comb_done_${dIdx}_${opsIdx}_${k}`;
+  _combNoAutoFocus=true;
+  _combRender();
+  _combNoAutoFocus=false;
+  setTimeout(()=>{const el=document.getElementById(focusId);if(el)el.focus();},0);
+}
+// First (leftmost, in DOM/column order) box of the active row — either a digit input or a sign-picker
+// toggle button — used as the ArrowDown landing spot from a row-0/done-row control. Any number of selected
+// operators can be in the active row at once; this just grabs whichever one renders first.
+function _combFirstActiveEl(){
+  return document.querySelector('#_comb_container [id^="_comb_inp"], #_comb_container [id^="_comb_sign_"]');
+}
+// Called once the final answer is confirmed correct (from _algoMarkPerBox): colors EVERY already-solved
+// digit box green if that step's own arithmetic was actually correct, red if it wasn't — re-deriving each
+// step's true expected value from its own snapshot (step.snap) rather than trusting the entered result, so
+// a step that was individually wrong but still happened to chain into the right final answer still gets
+// flagged. The current (final) active-row boxes are always green, since reaching this point already means
+// the final answer matches.
+function _combMarkAllBoxes(){
+  if(!_combSt) return;
+  _combSt.done.forEach((step,dIdx)=>{
+    step.ops.forEach((op,opsIdx)=>{
+      const {expected}=_combFoldedExpected(step.snap,op.oIdx);
+      const ok=op.result===expected;
+      const nBoxes=String(Math.abs(op.result)).length;
+      for(let k=0;k<nBoxes;k++){
+        const el=document.getElementById(`_comb_done_${dIdx}_${opsIdx}_${k}`);
+        if(el) el.classList.add(ok?'algo-dbox-correct':'algo-dbox-wrong');
+      }
+    });
+  });
+  document.querySelectorAll('#_comb_container [id^="_comb_inp"]').forEach(el=>{
+    if(el.value) el.classList.add('algo-dbox-correct');
+  });
+}
+function _combDoneOpKey(e,curIdx,dIdx){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();_combClickOp(curIdx);return;}
+  if(e.key==='ArrowUp'){
+    e.preventDefault();_combCancelAutoFocus();
+    const dEls=Array.from(document.querySelectorAll(`#_comb_container input[id^="_comb_done_${dIdx}_"]`));
+    if(dEls.length){dEls[dEls.length-1].focus();return;}
+    const ro=document.getElementById('_comb_active_op')||document.querySelector('[data-comb-r0col]');
+    if(ro) ro.focus();
+    return;
+  }
+  if(e.key==='ArrowDown'){
+    e.preventDefault();_combCancelAutoFocus();
+    const first=_combFirstActiveEl();if(first)first.focus();
+    return;
+  }
+}
+function _combR0Key(e,col){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();_combClickCol(col);return;}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+    e.preventDefault();
+    const dir=e.key==='ArrowRight'?1:-1;
+    const btns=Array.from(document.querySelectorAll('[data-comb-r0col]')).sort((a,b)=>+a.dataset.combR0col-+b.dataset.combR0col);
+    const idx=btns.findIndex(b=>+b.dataset.combR0col===col);
+    const t=btns[idx+dir];if(t)t.focus();return;
+  }
+  if(e.key==='ArrowDown'){
+    e.preventDefault();_combCancelAutoFocus();
+    const correctBoxes=Array.from(document.querySelectorAll('#_comb_container input[id^="_comb_done_"]'));
+    if(correctBoxes.length>0){correctBoxes[correctBoxes.length-1].focus();return;}
+    const first=_combFirstActiveEl();if(first)first.focus();return;
+  }
+}
+// isActive: true for a box in the currently-active (not-yet-submitted) input row — Enter there always
+// attempts a full-step submit (the submit function itself no-ops until every group's boxes are filled, so
+// pressing Enter in an incomplete group is harmless). false for an already-solved done-row box being
+// edited directly — Enter must NOT trigger a submit there.
+function _combKey(e,el,isActive){
+  if(e.key==='ArrowUp'){
+    e.preventDefault();
+    _combCancelAutoFocus();
+    if(el.id.startsWith('_comb_inp')||el.id.startsWith('_comb_sign_')){
+      const correctBoxes=Array.from(document.querySelectorAll('#_comb_container input[id^="_comb_done_"]'));
+      if(correctBoxes.length>0){correctBoxes[correctBoxes.length-1].focus();return;}
+    }
+    // done row box or no done rows: go to row 0 operator
+    const op=document.getElementById('_comb_active_op')||document.querySelector('[data-comb-r0col]');
+    if(op) op.focus();
+    return;
+  }
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    _combCancelAutoFocus();
+    if(el.id.startsWith('_comb_done_')){
+      const first=_combFirstActiveEl();if(first){first.focus();return;}
+    }
+    const vb=document.querySelector('.prep-submit-btn:not([disabled])');
+    if(vb) vb.focus();
+    return;
+  }
+  _algoKey(e,el);
+  if(isActive&&e.key==='Enter') _combSubmitStep();
+}
+// Toggle a pending operator into/out of the current selection. A SECOND operator can join the selection
+// only if it shares no operand with the first (see _combOpsIndependent) — the two are then solved together
+// in one step, writing both results into the same row. Clicking a third, non-independent operator drops
+// back to just that single selection — unless the new operator is independent from ALL of them (shares no
+// operand with any currently-selected one), in which case it just joins the group: any number of operators
+// can be selected together as long as every pair is independent.
+function _combToggleSelect(idx){
+  const st=_combSt;
+  const i=st.sel.indexOf(idx);
+  if(i>=0){ st.chainPicks={}; st.chainPickSide={}; st.signOpen={}; st.sel.splice(i,1); return; }
+  if(!_combOpSelectable(idx)) return; // one of its neighbors is still an unresolved bracket — not solvable yet
+  st.chainPicks={}; st.chainPickSide={}; st.signOpen={}; // any selection change clears pending sign-picks — they belonged to the old selection
+  if(st.sel.length===0||st.sel.every(s=>_combOpsIndependent(s,idx))){
+    st.sel.push(idx);
+    st.sel.sort((a,b)=>a-b);
+    return;
+  }
+  st.sel=[idx];
+}
+function _combAutoFocusForSelection(preferIdx){
+  if(!_combSt||!_combSt.sel.length) return;
+  const {toks,sel}=_combSt;
+  // Default to sel[0] (leftmost selected operator) — but when the caller knows exactly which operator the
+  // student just interacted with (preferIdx), prefer that instead. Without this, clicking a NEW operator
+  // while an EARLIER, already-solved one gets reopened and joined alongside it (see
+  // _combReopenLastIfJoinable) would always focus the reopened one first (it sorts first in sel, being
+  // earlier in the array) instead of the one the student is actually trying to solve right now.
+  const idx=(preferIdx!=null&&sel.includes(preferIdx))?preferIdx:sel[0];
+  _combAutoFocus(_combFirstFocusId(toks,idx),30);
+}
+// When the selection GROWS (a new independent operator joins an already-in-progress group), _combRender
+// regenerates every input box from scratch — which would normally wipe out digits the student already typed
+// into the group(s) that were there before. Capture each currently-selected operator's typed digits (keyed
+// by its own operator index, not its K position, since K can shift once a lower-indexed operator joins) so
+// they can be restored right after the re-render.
+function _combCaptureActiveValues(){
+  if(!_combSt||!_combSt.sel.length) return null;
+  const {toks,sel}=_combSt;
+  const out={};
+  sel.forEach((idx,K)=>{
+    const {expected}=_combFoldedExpected(toks,idx);
+    const expLen=String(Math.abs(expected)).length;
+    out[idx]=Array.from({length:expLen},(_,k)=>{const el=document.getElementById(_combGroupBoxId(K,k));return el?el.value:'';});
+  });
+  return out;
+}
+function _combRestoreActiveValues(preserved){
+  if(!preserved||!_combSt) return;
+  const {sel}=_combSt;
+  sel.forEach((idx,K)=>{
+    const vals=preserved[idx];
+    if(!vals) return;
+    vals.forEach((v,k)=>{ if(v){ const el=document.getElementById(_combGroupBoxId(K,k)); if(el) el.value=v; } });
+  });
+}
+// If nothing is currently selected (the "TOCA UN OPERADOR" state) and the just-clicked, still-pending
+// operator is independent from every operator in the MOST RECENTLY solved step, "reopen" that step: undo
+// just its own merge and pre-select all of its operators together with this newly-clicked one, so they can
+// all be solved together after all — with no time limit on when the student decides to do this, unlike an
+// in-progress selection (which can only grow BEFORE it's submitted). Their previously-typed digits (and any
+// +/- sign they'd already picked) are restored automatically instead of making them retype anything.
+// Returns a "preserved values" object (same shape _combCaptureActiveValues produces) on success, or null if
+// reopening wasn't applicable (nothing to reopen, or this operator isn't independent/solvable relative to
+// the last step) — the caller falls back to a plain fresh selection in that case.
+function _combReopenLastIfJoinable(col){
+  const st=_combSt;
+  if(!st.done.length) return null;
+  const last=st.done[st.done.length-1];
+  const idxNow=st.toks.findIndex(t=>t.cs===col&&typeof t.v==='string'&&!'()[]{}' .includes(String(t.v)));
+  if(idxNow<0) return null;
+  // Compare COLUMN SPANS, not raw array indices: lastOpsIdx are indices into last.snap (the array as it was
+  // BEFORE that step merged), while idxNow is an index into the CURRENT st.toks (already shrunk by that
+  // merge and possibly others before it). Column spans are stable across merges, so this is the only valid
+  // way to test whether the newly-clicked operator's operands overlap with any operand already consumed by
+  // the last step.
+  const newSpan=[st.toks[idxNow-1].cs, st.toks[idxNow+1].ce];
+  const overlaps=last.ops.some(op=>{
+    const s=[last.snap[op.oIdx-1].cs, last.snap[op.oIdx+1].ce];
+    return !(newSpan[1]<s[0]||s[1]<newSpan[0]);
+  });
+  if(overlaps) return null;
+  if(!_combOpSelectable(idxNow)||!_combOpPrecedenceOK(idxNow)) return null;
+  // Capture each reopened operator's own column + already-typed result (keyed by column, since array
+  // indices shift once the merge is undone) so they can be silently refilled after replay.
+  const lastColsAndResults=last.ops.map(op=>({col:last.snap[op.oIdx].cs, result:op.result}));
+  st.done=st.done.slice(0,-1);
+  _combReplayToks();
+  const preserved={};
+  st.chainPicks={};
+  st.chainPickSide={};
+  st.signOpen={};
+  const reopenedIdxs=lastColsAndResults.map(({col:c,result})=>{
+    const i=st.toks.findIndex(t=>t.cs===c&&typeof t.v==='string');
+    if(i>=0){
+      preserved[i]=String(Math.abs(result)).split('');
+      if(_combIsPM(st.toks[i].v)){ st.chainPicks[i]=result<0?'-':'+'; st.chainPickSide[i]='own'; }
+    }
+    return i;
+  }).filter(i=>i>=0);
+  const newIdx=st.toks.findIndex(t=>t.cs===col&&typeof t.v==='string');
+  st.sel=[...reopenedIdxs,newIdx].sort((a,b)=>a-b);
+  return preserved;
+}
+function _combClickOp(idx,fromDIdx){
+  if(!_combSt||_prep.answered||_prep.retryLock) return;
+  const col=_combSt.toks[idx]&&_combSt.toks[idx].cs;
+  if(col==null) return;
+  _combClickCol(col,fromDIdx);
+}
+function _combClickCol(col,fromDIdx){
+  if(!_combSt||_prep.answered||_prep.retryLock) return;
+  const _isParen=v=>'()[]{}' .includes(String(v));
+  // Figure out whether this column's operator was already solved in some earlier done step. If it was,
+  // undo back to (and including) that step — NOT the whole exercise — so whatever came before it stays
+  // intact and the student can redo just this operator differently. If it's still pending, this is just
+  // a normal (de)selection and none of the done steps need to change at all — UNLESS nothing is currently
+  // selected, in which case try reopening the last solved step to combine with it instead (see above).
+  //
+  // That reopen-and-join is only sensible when the click came from a row OLDER than the most recent one —
+  // the student is looking back at a superseded snapshot and picking a pending operator from there should
+  // land wherever the CURRENT state already is (the latest done row), same as clicking it fresh would.
+  // Clicking that exact same pending operator's copy drawn IN the latest row itself is different: the
+  // student is looking at the actual current state and choosing what to solve NEXT — that must always start
+  // a clean new step (a new row below), never silently reopen and re-merge the step that's already sitting
+  // right there. fromDIdx (the row this click's button was drawn in, passed by opBtnLive) is how row0's
+  // buttons are distinguished from a done row's own echo — row0 has no fromDIdx at all (always eligible for
+  // reopening, being the oldest possible row by definition).
+  const isLatestRowClick=fromDIdx!=null&&_combSt.done.length>0&&fromDIdx>=_combSt.done.length-1;
+  const cutIdx=_combSt.done.findIndex(step=>step.ops.some(op=>step.snap[op.oIdx].cs===col));
+  let preserved=null, reopenedJoin=false;
+  if(cutIdx>=0){
+    _combSt.done=_combSt.done.slice(0,cutIdx);
+    _combReplayToks();
+    const newIdx=_combSt.toks.findIndex(t=>t.cs===col&&typeof t.v==='string'&&!_isParen(t.v));
+    _combSt.sel=newIdx>=0?[newIdx]:[];
+    _combSt.chainPicks={};
+    _combSt.chainPickSide={};
+    _combSt.signOpen={};
+  } else {
+    preserved=(_combSt.sel.length===0&&!isLatestRowClick)?_combReopenLastIfJoinable(col):null;
+    reopenedJoin=!!preserved;
+    if(!preserved){
+      const idx=_combSt.toks.findIndex(t=>t.cs===col&&typeof t.v==='string'&&!_isParen(t.v));
+      // Blocks two different flavors of "not this operator's turn yet": its neighbor is still an unresolved
+      // bracket (e.g. tapping ÷ before the {...} it applies to has collapsed to a single number), or it's
+      // structurally selectable but mathematically out of order per _combOpPrecedenceOK. Both get the same
+      // shake + lose-a-life feedback — from the student's perspective they're the same mistake (touching an
+      // operator that isn't ready), so they shouldn't feel different (one silently doing nothing, the other
+      // punishing) just because of which internal reason blocks it.
+      if(idx>=0&&_combSt.sel.indexOf(idx)<0&&(!_combOpSelectable(idx)||!_combOpPrecedenceOK(idx))){
+        _combWrongOrderFeedback();
+        return;
+      }
+      preserved=_combCaptureActiveValues();
+      if(idx>=0) _combToggleSelect(idx);
+    }
+  }
+  _combRender();
+  _combRestoreActiveValues(preserved);
+  // Focus normally stays at sel[0] (leftmost pending operator) — right when picking several still-unsolved
+  // operators to solve together, left-to-right is the natural fill-in order regardless of click order. The
+  // ONE case that needs to override it: this click reopened an EARLIER, already-solved step to join it with
+  // a new operator (_combReopenLastIfJoinable) — that reopened operator sorts first in sel (it's earlier in
+  // the array) but already has its digits restored, so focus belongs on the operator just clicked instead.
+  _combAutoFocusForSelection(reopenedJoin?_combSt.toks.findIndex(t=>t.cs===col&&typeof t.v==='string'&&!_isParen(t.v)):undefined);
+}
+
+function _combRender(){
+  const c=document.getElementById('_comb_container');
+  if(!c||!_combSt) return;
+  const {N,toks,sel,done,q}=_combSt;
+  const isSelIdx=i=>sel.includes(i); // selected as part of this step (any number of simultaneously-picked operators)
+  const CL='#f97316';
+
+  // Once every operator inside a given bracket/brace/paren pair has been solved (nothing left inside but a
+  // single plain value), that pair's own glyphs must stop appearing entirely — from the very row where the
+  // last operator inside it got solved, onward. Bracket pairs are matched once, up front, against the
+  // ORIGINAL (row-0) token layout via a simple depth stack (so nested pairs — not that any current generator
+  // produces them — still work); then, replaying `done` in order, each row's own solved operator columns are
+  // folded into a running "resolved" set, and a pair is marked hidden (with the row index it first vanished
+  // at) as soon as every operator column strictly between its open/close is in that set.
+  const _origToks0=q.tokens.map((v,i)=>({v,cs:i+1,ce:i+1}));
+  const _bracketPairs=(()=>{
+    const stack=[], pairs=[];
+    _origToks0.forEach(t=>{
+      if(typeof t.v==='string'&&'([{'.includes(t.v)) stack.push({openCol:t.cs,opCols:[]});
+      else if(typeof t.v==='string'&&')]}'.includes(t.v)){
+        const top=stack.pop();
+        if(top) pairs.push({openCol:top.openCol,closeCol:t.cs,opCols:top.opCols});
+        stack.forEach(fr=>fr.opCols.push(...(top?top.opCols:[])));
+      } else if(typeof t.v==='string'&&!'()[]{}' .includes(t.v)){
+        stack.forEach(fr=>fr.opCols.push(t.cs));
+      }
+    });
+    return pairs;
+  })();
+  const hideBracketColsAll=new Set(); // every raw column, of any hidden pair, regardless of when
+  const hideBracketEvents=[]; // {col, stepIdx} — stepIdx = first done-row index where this column vanished
+  (()=>{
+    const resolved=new Set();
+    done.forEach((step,dIdx)=>{
+      step.ops.forEach(op=>{const t=step.snap[op.oIdx];if(t) resolved.add(t.cs);});
+      _bracketPairs.forEach(bp=>{
+        if(hideBracketColsAll.has(bp.openCol)) return; // already marked from an earlier row
+        if(bp.opCols.length&&bp.opCols.every(c=>resolved.has(c))){
+          hideBracketColsAll.add(bp.openCol); hideBracketColsAll.add(bp.closeCol);
+          hideBracketEvents.push({col:bp.openCol,stepIdx:dIdx},{col:bp.closeCol,stepIdx:dIdx});
+        }
+      });
+    });
+  })();
+
+  // Per-step color palette: [border, text, glow, bg]
+  const combC=[
+    {b:'#22c55e',t:'#86efac',g:'rgba(34,197,94,0.55)',bg:'rgba(34,197,94,0.08)'},
+    {b:'#f97316',t:'#fdba74',g:'rgba(249,115,22,0.55)',bg:'rgba(249,115,22,0.08)'},
+    {b:'#a855f7',t:'#d8b4fe',g:'rgba(168,85,247,0.55)',bg:'rgba(168,85,247,0.08)'},
+  ];
+  const getC=i=>combC[i%combC.length];
+  // Every operator gets a fixed "identity" color based on its position among all operators in the
+  // ORIGINAL expression (left to right), NOT the order they happen to get solved in — so a given operator
+  // is always the same color from row 0 onward, and whatever result it eventually produces keeps that
+  // same color too, instead of colors being reassigned by solve order.
+  const opColOrder=q.tokens.map((v,i)=>({v,col:i+1})).filter(({v})=>typeof v==='string'&&!'()[]{}'.includes(v)).map(({col})=>col);
+  const opColorIdx={};
+  opColOrder.forEach((col,idx)=>{opColorIdx[col]=idx;});
+  const activeC=(sel.length&&sel[0]<toks.length&&opColorIdx[toks[sel[0]].cs]!=null)?getC(opColorIdx[toks[sel[0]].cs]):getC(0);
+  // Map operator column → dIdx that consumed it. A step can resolve any number of mutually-independent
+  // operators in one go (step.ops[]) — every one of their columns maps back to the same row/color.
+  const consumedBy={};
+  done.forEach((step,dIdx)=>{
+    step.ops.forEach(op=>{ consumedBy[step.snap[op.oIdx].cs]=dIdx; });
+  });
+  // Map "cs_ce" span → {dIdx,opsIdx,key,opCol,ics,ice} of the done "slot" whose result collapsed that span
+  // (traces a through-value's origin). A step with N ops contributes N independent slots, keyed
+  // "<dIdx>_<opsIdx>" — they share a row/color but each has its own anchor/result.
+  const originBy={};
+  done.forEach((step,dIdx)=>{
+    step.ops.forEach((op,opsIdx)=>{
+      const l=step.snap[op.oIdx-1], r=step.snap[op.oIdx+1];
+      originBy[l.cs+'_'+r.ce]={dIdx,opsIdx,key:dIdx+'_'+opsIdx,opCol:step.snap[op.oIdx].cs,ics:l.cs,ice:r.ce};
+    });
+  });
+  // Look up which done "slot" produced a given token's value. Normally an exact cs_ce match, but a result's
+  // span can get WIDENED after the fact when an enclosing bracket pair auto-collapses around it (e.g.
+  // "[714]" collapsing to plain 714 once it's the bracket's only remaining content) — the origin slot was
+  // recorded using the un-widened inner span (before the bracket vanished), so fall back to searching for
+  // an origin whose inner span sits fully inside this token's (possibly bracket-widened) span. Several
+  // earlier, now-superseded slots (e.g. the two multiplications that fed into this same bracket before it
+  // fully reduced to one number) can ALL satisfy plain containment, so also require the slot's own recorded
+  // result to match this token's actual value — and among ties prefer the most recently solved one.
+  // The returned object's own ics/ice (its TRUE un-widened raw bounds) let callers detect how many bracket-
+  // glyph columns got absorbed into tok's widened cs/ce, when that matters (see _combPaddedSpan below).
+  const _combFindOrigin=(tok)=>{
+    const direct=originBy[tok.cs+'_'+tok.ce];
+    if(direct) return direct;
+    let best=null;
+    for(const k in originBy){
+      const us=k.indexOf('_');
+      const ics=+k.slice(0,us), ice=+k.slice(us+1);
+      if(ics<tok.cs||ice>tok.ce) continue;
+      const cand=originBy[k];
+      const val=done[cand.dIdx].ops[cand.opsIdx].result;
+      if(val===tok.v&&(!best||cand.dIdx>best.dIdx)) best=cand;
+    }
+    return best;
+  };
+  // Pre-pass: figure out, in the ORIGINAL column numbering, where every already-done slot's result
+  // naturally sits (right-aligned under its original span whenever something still follows it, left-aligned
+  // otherwise). Whenever a result is narrower than the span it replaced, remember the freed-up width so
+  // everything that used to sit to its left can be pulled in flush against it — no empty gaps mid-row.
+  // Crucially, a step's freed-up space only exists FROM ITS OWN ROW ONWARD: an earlier row (before that
+  // step happened) still shows the full original span, so it must never borrow a later step's shrink —
+  // otherwise a through-value ends up dragged into the same column as that row's OWN result digits.
+  // Row 0 permanently reserves fixed-width territory for EVERY unsolved √/^ pair still present in the
+  // ORIGINAL expression (see row0ShiftEvents further below) — not just whichever one the student happens to
+  // be working on right now. Every other row (done or active) must reserve that exact same territory for
+  // any such group that remains unsolved as of that row's own point in time, or anything sitting before an
+  // untouched root/power elsewhere in the row drifts one column off from row 0 the moment some unrelated
+  // operator gets selected or solved (a group two operators away shifting things this row's own compaction
+  // never knew to account for). globalGroupEvents mirrors row0ShiftEvents' own detection/amount logic
+  // exactly, but is keyed to each group's own STABLE raw column (cs never changes once assigned) so any row
+  // can look up whether, by its own point in time, that particular group has already been solved — in which
+  // case its real done-row shrinkAmt (computed elsewhere from the actual result digits) already accounts for
+  // it, and this phantom reservation must stop applying so the two don't stack.
+  const globalGroupEvents=q.tokens.map((tok,i)=>{
+    if(tok==='√'&&typeof q.tokens[i-1]==='number'&&typeof q.tokens[i+1]==='number') return {beforeCol:i,amount:1,opCol:i+1};
+    if(tok==='^'&&typeof q.tokens[i-1]==='number'&&typeof q.tokens[i+1]==='number'){
+      const nCols=String(Math.abs(Math.pow(q.tokens[i-1],q.tokens[i+1]))).length;
+      const amt=nCols>=3?0:1;
+      return amt>0?{beforeCol:i,amount:amt,opCol:i+1}:null;
+    }
+    return null;
+  }).filter(Boolean).map(ev=>({...ev,solvedStep:done.findIndex(step=>step.ops.some(op=>{const t=step.snap[op.oIdx];return t&&t.cs===ev.opCol&&(t.v==='√'||t.v==='^');}))}));
+  // Shared phantom-shift lookup: amount contributed to origCol by every still-unsolved global group whose
+  // boundary sits after it. `solvedBefore(ev)` lets each caller decide, in its own terms, whether a group
+  // counts as "already solved" by this point (done-row/active-row context use different but analogous
+  // cutoffs — see effColFor and _combCompactedSpan below). `excludeOpCols` lets the active row's own
+  // shrinksActive-driven shift (computed separately, see effColActiveD) skip the one group it already
+  // accounts for itself, so the two mechanisms never both shift the same group's phantom territory.
+  const _combPhantomShift=(origCol,solvedBefore,excludeOpCols)=>globalGroupEvents.reduce((c,ev)=>{
+    if(excludeOpCols&&excludeOpCols.has(ev.opCol)) return c;
+    if(ev.solvedStep>=0&&solvedBefore(ev.solvedStep)) return c;
+    return origCol<ev.beforeCol?c+ev.amount:c;
+  },0);
+  const preAnchor={}, shrinkEvents=[]; // preAnchor keyed by slot key; shrinkEvents: {beforeCol, amount, stepIdx}
+  // A result that's PINNED to a fixed position inside its own group (single-digit "^" results — see
+  // _combSlotAnchor's isSingleDigitPow) frees up space on BOTH sides of where it lands: some before it
+  // (shrinkEvents already handles that — "pull earlier content right, flush against it") and some after it
+  // too, since the pin isn't hugging either edge of the group it replaced. shrinkEvents alone can only ever
+  // close the "before" gap; this sister list closes the "after" one by pulling LATER content left instead —
+  // same {amount, stepIdx} shape, but keyed by `afterCol` (contributes to any origCol >= afterCol) instead
+  // of `beforeCol`. A right-hugged result (√, or any plain operator) never opens a gap on this side — its
+  // digits already extend all the way to the group's own right edge — so this stays empty for those.
+  const shrinkAfterEvents=[];
+  // How many display columns a slot's result actually occupies, keyed the same way as preAnchor. Normally
+  // this is just the result's own digit count (_combNCols) — but √ and single-digit ^ results reserve a
+  // FIXED, wider territory (see _combSlotAnchor's isRootOp/isSingleDigitPow) that doesn't match their true
+  // digit count. Every place that re-derives a collapsed result's span from its origin slot (below, and in
+  // thruSpanFor/thruSpanActiveD further down) must use THIS reserved width, not recompute it from the
+  // value's own digit count, or the span disagrees with the anchor and either overlaps or leaves a gap.
+  const anchorWidth={};
+  // Which alignment a slot's reserved-but-underfilled territory (see anchorWidth above) pads on: root
+  // results right-hug (empty padding on the LEFT, matching the row0 box's own flex-end), single-digit power
+  // results left-hug (empty padding on the RIGHT, matching row0's base position) — see the through-value
+  // rendering below for where this actually matters.
+  const anchorAlign={}; // slot key -> 'root' | 'pow' | undefined (undefined = no special padding needed)
+  // Compacted (as-actually-rendered) span of a token, using only shrink events from STRICTLY EARLIER steps
+  // than dIdx — i.e. the state of the grid right before this step's own step is applied. Needed below to
+  // measure the REAL freed gap a step opens up: if lt or rt is itself an earlier step's (already-shrunk)
+  // result, its raw cs/ce no longer reflects where it's actually drawn, and using raw values would double
+  // count compaction an earlier step already applied — over-shifting whatever sits further to the left
+  // (e.g. dragging an enclosing bracket right into the new result's own digit columns).
+  const _combCompactedSpan=(dIdx,tok)=>{
+    const compactedCol=origCol=>{
+      const before=shrinkEvents.reduce((c,ev)=>(ev.stepIdx<dIdx&&origCol<ev.beforeCol)?c+ev.amount:c,origCol);
+      const after=shrinkAfterEvents.reduce((c,ev)=>(ev.stepIdx<dIdx&&origCol>=ev.afterCol)?c+ev.amount:c,0);
+      return before-after+_combPhantomShift(origCol,solvedStep=>solvedStep<dIdx,null);
+    };
+    if(tok.ce>tok.cs){
+      const oi=_combFindOrigin(tok);
+      if(oi&&preAnchor[oi.key]!=null){
+        const nc=anchorWidth[oi.key]!=null?anchorWidth[oi.key]:_combNCols(tok.v);
+        const a=compactedCol(preAnchor[oi.key]);
+        return [a,a+nc-1];
+      }
+    }
+    const ec=compactedCol(tok.cs);
+    return [ec,ec+(tok.ce-tok.cs)];
+  };
+  // Same as _combCompactedSpan, but for measuring the TOTAL raw territory an operand occupies (used only
+  // for shrink-width math, never for where digits actually render). When lt/rt is itself bracket-widened,
+  // _combCompactedSpan jumps straight to where its DIGITS render and misses the vanished bracket glyph(s)
+  // that used to sit immediately next to them, each having occupied their own dedicated column right up
+  // until they collapsed away — under-counting the freed space by exactly one column per vanished bracket.
+  // ics/ice (the origin's own true, un-widened bounds) tell us how many such columns were absorbed on each
+  // side, so we can pad the digit-span back out to the FULL width that was actually visible one row earlier.
+  const _combPaddedSpan=(dIdx,tok)=>{
+    if(tok.ce>tok.cs){
+      const oi=_combFindOrigin(tok);
+      if(oi&&preAnchor[oi.key]!=null){
+        const [a,b]=_combCompactedSpan(dIdx,tok);
+        return [a-(oi.ics-tok.cs), b+(tok.ce-oi.ice)];
+      }
+    }
+    return _combCompactedSpan(dIdx,tok);
+  };
+  const _combSlotAnchor=(oIdx,excludeIdxs,result,snap,dIdx,hugRightOverride)=>{
+    const lt=snap[oIdx-1], rt=snap[oIdx+1];
+    // A "^" result that comes out to exactly 1 digit is a special case for POSITION, not width: row 0
+    // always reserves 2 raw-column territory for "base ^ exponent" (one column for the base, one for the
+    // exponent), and once solved, a single-digit result deliberately lands under the BASE's own column
+    // rather than right-hugged to the exponent's column (which is where the generic "hug the right edge"
+    // rule below would otherwise put it) — matching the intuition that the digit "replaces" the base you
+    // could still read in row 0. _combSpecialOpWidth (single source of truth, shared with row 0's own
+    // rendering and the active row's arcsArr below) is only consulted here to detect WHICH group this is;
+    // its padded nCols is deliberately NOT used for a group's own resolved width — that padding exists
+    // solely to protect a group that's STILL UNSOLVED elsewhere in the row (see globalGroupEvents), which
+    // is a completely separate mechanism from this slot's own, now-actually-known true digit width. Once a
+    // √ or ^ is itself solved, it behaves like any other operator's result: it occupies exactly as many
+    // columns as its own digits need, and whatever follows shifts in to close the rest — never a dangling
+    // reserved-but-empty gap dragged along from row 0's fixed-size glyph box.
+    const special=_combSpecialOpWidth(snap[oIdx].v,result);
+    const isSingleDigitPow=special?.align==='pow', isRootOp=special?.align==='root';
+    // A negative result whose connector (two snap-positions back) is itself a +/- absorbs its sign into
+    // that connector's own glyph instead of a dedicated sign box here (see negFoldConnCols/signAbsorbed in
+    // the row-rendering pass below) — so this slot's own reserved width must NOT budget a column for a sign
+    // box that will never actually be drawn in it, or the true digit(s) end up one column short of where
+    // they're placed, leaving the column meant for a sign (now absorbed elsewhere) as a dangling empty gap.
+    const opBeforeTok=oIdx>=2?snap[oIdx-2]:null;
+    const signAbsorbed=result<0&&!!(opBeforeTok&&typeof opBeforeTok.v==='string'&&_combIsPM(opBeforeTok.v));
+    const nCols=_combNCols(result)-(signAbsorbed?1:0); // true digit width (+1 for sign, unless absorbed) — see comment above
+    // Michel: same chain-fold absorption the active row already accounts for (see shrinkLt/effNCols in the
+    // active row's own shrink loop) — a chain-fold's connector glyph (op_before, now showing the flipped
+    // final sign) occupies its OWN extra display column that this slot's plain lt-to-rt span never included.
+    // Measuring the freed gap from lt alone (and sizing it against nCols alone) leaves that connector's own
+    // column out of the count entirely, so the freed amount ends up including a column that was never really
+    // "freed" — the connector still needs it — which pushes whatever precedes op_before one column too far
+    // right AND leaves op_before itself sitting under a boundary that was never meant to include it.
+    const chainable=!!(opBeforeTok&&typeof opBeforeTok.v==='string'&&_combIsPM(opBeforeTok.v)&&_combIsPM(snap[oIdx].v));
+    const shrinkLt=chainable?opBeforeTok:lt;
+    const effNCols=chainable?nCols+1:nCols;
+    // "Through" = any operator in this row's snapshot other than the one(s) being solved away right now —
+    // for a dual step that means excluding BOTH operators, since neither remains pending afterward.
+    const throughOps=snap.filter((t,j)=>typeof t.v==='string'&&!excludeIdxs.includes(j));
+    const hasLeft=throughOps.some(t=>t.cs<lt.cs), hasRight=throughOps.some(t=>t.cs>rt.ce);
+    let rcs, shrinkAmt=0, shrinkAfterAmt=0;
+    if(isSingleDigitPow){
+      rcs=lt.cs+1;                         // opCol — matches row 0's base position exactly
+      const ltSpanC=_combPaddedSpan(dIdx,lt), rtSpanC=_combPaddedSpan(dIdx,rt);
+      // Pinned to the MIDDLE of the group (not hugging either edge), so closing the gap needs BOTH
+      // directions: freedBefore pulls whatever precedes the group right, flush against rcs; freedAfter
+      // pulls whatever follows the group left, flush against rcs+nCols-1 (nCols is 1 or 2 here — a 2-digit
+      // result's second digit lands on the exponent's own column, right where row 0's exponent glyph already
+      // sits, so freedAfter must measure from THAT far edge, not from rcs itself) — splitting the total freed
+      // width instead of dumping it all on one side, which used to strand the digit and its neighbor on the
+      // SAME column once the neighbor got pulled in by the full amount (see shrinkAfterEvents' own comment
+      // for the general mechanism this relies on).
+      shrinkAmt=rcs-ltSpanC[0];
+      shrinkAfterAmt=rtSpanC[1]-(rcs+nCols-1);
+    }
+    else if(isRootOp){
+      // A root's row-0 glyph is ALWAYS right-hugged to its radicand's own column, fixed width, regardless of
+      // what precedes or follows it in the expression — it never hugs its LEFT neighbor instead just because
+      // nothing happens to follow it (which is what the generic hasRight/hasLeft fallback below would
+      // otherwise do, dragging the result under whatever operator sits to its left instead). The root is the
+      // more visually "anchored" element: once solved, everything else shifts to close up around ITS fixed
+      // position, never the other way around. Same right-hug/shrink formula as the hasRight branch below,
+      // just applied unconditionally instead of only when something happens to follow.
+      rcs=rt.ce-nCols+1;
+      const ltSpanC=_combPaddedSpan(dIdx,lt), rtSpanC=_combPaddedSpan(dIdx,rt);
+      shrinkAmt=(rtSpanC[1]-ltSpanC[0]+1)-nCols;
+    }
+    else if(hugRightOverride===false){
+      // Michel: this operator would naturally hug right (hasRight is true — something genuinely follows it),
+      // but a SIBLING solved in this same step outranks it (higher operator tier, or more result digits —
+      // see the anchor-priority block in done.forEach below, which mirrors the active row's hugRightArr
+      // exactly) and that sibling sits to ITS right — so THIS operator must yield instead, hugging its OWN
+      // left edge and freeing space on its right (shrinkAfterAmt) rather than dragging everything before it
+      // rightward. Without this override, `hasRight` alone would always win here regardless of any sibling,
+      // which is exactly what let an anchor's own reserved territory get dragged around by a lower-priority
+      // neighbor finishing first.
+      rcs=lt.cs;
+      const ltSpanC=_combPaddedSpan(dIdx,shrinkLt), rtSpanC=_combPaddedSpan(dIdx,rt);
+      const amt=(rtSpanC[1]-ltSpanC[0]+1)-effNCols;
+      if(amt>0) shrinkAfterAmt=amt;
+    }
+    else if(hugRightOverride===true||hasRight){
+      rcs=rt.ce-nCols+1;                   // something still follows → hug the right edge of the original span
+      const ltSpanC=_combPaddedSpan(dIdx,shrinkLt), rtSpanC=_combPaddedSpan(dIdx,rt);
+      shrinkAmt=(rtSpanC[1]-ltSpanC[0]+1)-effNCols; // freed width measured in ALREADY-COMPACTED space
+    }
+    else if(hasLeft) rcs=lt.cs;            // nothing follows, something precedes → hug the left edge
+    else if(lt.ce>lt.cs) rcs=lt.cs;        // isolated step, lt itself a collapsed result
+    else if(rt.ce>rt.cs) rcs=rt.cs;        // isolated step, rt itself a collapsed result
+    else rcs=lt.cs;                         // fallback
+    return {rcs,rt,lt,shrinkLt,shrinkAmt,shrinkAfterAmt,isSingleDigitPow,nCols,isRootOp};
+  };
+  // Michel: whichever raw column actually PRODUCED a given shrink/shrinkAfter event — same idea as
+  // globalGroupEvents' own `opCol` — lets the resultAnchor pass below (and anything else that cares) tell
+  // "this event belongs to operator X" and selectively exclude it via effColFor's excludeOpCols, instead of
+  // it silently applying to any earlier column regardless of which independent group that column belongs to.
+  done.forEach((step,dIdx)=>{
+    const excl=step.ops.map(op=>op.oIdx);
+    // Michel: when 2+ independent operators are solved TOGETHER in one step, exactly one of them is this
+    // step's own "anchor" — the one every OTHER operator in the step yields to — using the exact same
+    // priority rule the active row already uses while the student is still typing (operator tier first,
+    // then more result digits, then closer to the row's own center — see _combOpTier and the matching block
+    // in the active row's own rendering). Without this, _combSlotAnchor's plain hasRight/hasLeft always made
+    // a lower-priority operator hug its OWN natural direction regardless of a same-step sibling's priority —
+    // which is exactly what let a still-fixed anchor (or the space between it and a neighbor) get dragged
+    // around the instant the OTHER operator's digits were finished, even though the row looked correct right
+    // up until that moment. A lone operator in a step never needs this (nothing to yield to).
+    let stepAnchorOIdx=null;
+    if(step.ops.length>1){
+      let best=null;
+      step.ops.forEach(op=>{
+        const opTok=step.snap[op.oIdx];
+        const tier=_combOpTier(opTok.v);
+        const digits=String(Math.abs(op.result)).length;
+        const centerDist=Math.abs(opTok.cs-(step.snap.length+1)/2);
+        if(!best||tier>best.tier||(tier===best.tier&&digits>best.digits)||(tier===best.tier&&digits===best.digits&&centerDist<best.centerDist)){
+          best={op,tier,digits,centerDist};
+        }
+      });
+      stepAnchorOIdx=best.op.oIdx;
+    }
+    const stepAnchorCs=stepAnchorOIdx!=null?step.snap[stepAnchorOIdx].cs:null;
+    step.ops.forEach((op,opsIdx)=>{
+      const opCs=step.snap[op.oIdx].cs;
+      const hugRightOverride=stepAnchorOIdx==null||op.oIdx===stepAnchorOIdx?null:opCs<stepAnchorCs;
+      const a=_combSlotAnchor(op.oIdx,excl,op.result,step.snap,dIdx,hugRightOverride);
+      preAnchor[dIdx+'_'+opsIdx]=a.rcs;
+      anchorWidth[dIdx+'_'+opsIdx]=a.nCols;
+      if(a.isRootOp) anchorAlign[dIdx+'_'+opsIdx]='root';
+      else if(a.isSingleDigitPow) anchorAlign[dIdx+'_'+opsIdx]='pow';
+      const opCol=step.snap[op.oIdx].cs;
+      if(a.shrinkAmt>0) shrinkEvents.push({beforeCol:a.shrinkLt.cs, amount:a.shrinkAmt, stepIdx:dIdx, opCol});
+      if(a.shrinkAfterAmt>0) shrinkAfterEvents.push({afterCol:a.rt.ce+1, amount:a.shrinkAfterAmt, stepIdx:dIdx, opCol});
+    });
+  });
+  // Effective column of an ORIGINAL column, as seen from a given row's context (ctx = that row's own step
+  // index). Only shrink events from steps at or before ctx apply. Also folds in bracket-hide compaction:
+  // every hidden bracket column strictly to the left of origCol (and hidden at or before ctx) closes up
+  // one full column, on top of whatever the value-merge shrinks above already did — the two kinds of
+  // compaction are independent (a bracket glyph is never itself part of a merged/widened token) so they
+  // simply add together.
+  const effColFor=(ctx,origCol,excludeOpCols)=>{
+    const c0=shrinkEvents.reduce((c,ev)=>(ev.stepIdx<=ctx&&origCol<ev.beforeCol&&!(excludeOpCols&&excludeOpCols.has(ev.opCol)))?c+ev.amount:c,origCol);
+    const afterN=shrinkAfterEvents.reduce((c,ev)=>(ev.stepIdx<=ctx&&origCol>=ev.afterCol&&!(excludeOpCols&&excludeOpCols.has(ev.opCol)))?c+ev.amount:c,0);
+    const hideN=hideBracketEvents.reduce((n,ev)=>(ev.stepIdx<=ctx&&ev.col<origCol)?n+1:n,0);
+    const phantom=_combPhantomShift(origCol,solvedStep=>solvedStep<=ctx,excludeOpCols);
+    return c0-afterN-hideN+phantom;
+  };
+  // Michel-reported case: when 2+ independent operators are solved TOGETHER in one step and the student
+  // finishes typing every digit, the whole row shifted right compared to how it looked mid-entry (active
+  // row) — an already-placed sibling's own result (e.g. √ in "(√100+9^2)÷7×9-4×9-18") got dragged sideways
+  // by ANOTHER sibling's shrinkage (e.g. the OUTER ×, well past the closing bracket) that has nothing to do
+  // with it. Scoped narrowly to exactly where the active row itself applies this same protection — only when
+  // computing a SIBLING OPERATOR'S OWN result position (never for generic connector/bracket content, which
+  // must keep freely propagating shrinkage from inside a bracket out to whatever follows it once solved —
+  // that part was never broken, and blanket-excluding it there regressed a batch of previously-correct
+  // sequential-solve scenarios). A sibling separated by a bracket boundary (like the × outside the parens)
+  // never gets to move an unrelated group; same-bracket-scope siblings (√ and ^, both inside "(...)") are
+  // deliberately still allowed to affect each other — that's the mechanism that lets a solved group's
+  // position exactly replace its own former phantom row-0 reservation (see globalGroupEvents).
+  const _combBracketBetween=(cs1,cs2)=>{
+    const lo=Math.min(cs1,cs2), hi=Math.max(cs1,cs2);
+    return q.tokens.some((t,i)=>typeof t==='string'&&'()[]{}' .includes(t)&&(i+1)>lo&&(i+1)<hi);
+  };
+  const resultAnchor={}; // slot key -> final column of that slot's own result digits, in its own row
+  done.forEach((step,dIdx)=>{
+    step.ops.forEach((op,opsIdx)=>{
+      const myCol=step.snap[op.oIdx].cs;
+      // Michel: this exclusion only ever needs to block ONE direction — a LATER sibling (further right),
+      // separated by a bracket, is "outside" relative to this operator and must never drag it around. A
+      // sibling that sits EARLIER (further left), separated by a bracket, is INSIDE that bracket relative to
+      // this operator (which comes after it already closed) — its freed space must keep propagating out to
+      // this operator's own position too, same as it already does for any plain through-content in between,
+      // or this operator's own box stops one step short of where that unexcluded content already landed.
+      const excludeOpCols=step.ops.length>1?new Set(step.ops.filter(o=>o.oIdx!==op.oIdx&&step.snap[o.oIdx].cs>myCol&&_combBracketBetween(myCol,step.snap[o.oIdx].cs)).map(o=>step.snap[o.oIdx].cs)):undefined;
+      resultAnchor[dIdx+'_'+opsIdx]=effColFor(dIdx,preAnchor[dIdx+'_'+opsIdx],excludeOpCols);
+    });
+  });
+  // Actual rendered column span of a token AS SEEN IN A GIVEN ROW (ctx): a collapsed result recomputes its
+  // origin slot's anchor for THIS row's context (picking up compaction from steps that happened after it
+  // but at/before this row); a plain original number/operator just gets this row's own compaction.
+  const thruSpanFor=(ctx,tok)=>{
+    if(tok.ce>tok.cs){
+      const oi=_combFindOrigin(tok);
+      if(oi&&preAnchor[oi.key]!=null){
+        const nCols=anchorWidth[oi.key]!=null?anchorWidth[oi.key]:_combNCols(tok.v);
+        const a=effColFor(ctx,preAnchor[oi.key]);
+        return [a,a+nCols-1];
+      }
+    }
+    const ec=effColFor(ctx,tok.cs);
+    return [ec,ec+(tok.ce-tok.cs)];
+  };
+
+  // Place a div in specific grid columns. All rows share ONE css grid with no explicit grid-row per item,
+  // so the browser has to auto-place everything by scanning for free column ranges. That's fragile: any two
+  // items from DIFFERENT visual rows whose column spans don't fully overlap with what's already occupied
+  // (e.g. a divider line that's narrower than the row it belongs to) can get shuffled into different implicit
+  // rows, scrambling the layout. To make this robust, every cell explicitly states which visual row (1 =
+  // row 0, 2 = first solved step, ...) it belongs to, so placement is never left to guesswork.
+  const gd=(cs,ce,inner,xtra='',row)=>
+    `<div style="grid-column:${cs}/${ce+1};${row!=null?`grid-row:${row};`:''}display:flex;align-items:center;justify-content:center;${xtra}">${inner}</div>`;
+  // Inset by half a column (26px = half of the 52px column width) on each end, so the line runs from the
+  // MIDDLE of column cs to the MIDDLE of column ce instead of their full outer edges — this keeps two
+  // dividers that sit right next to each other (e.g. two independently-selected operators in the same row)
+  // visually separated instead of merging into what looks like one continuous line.
+  // NOTE: .algo-line has a fixed width:100% — a plain margin-left/right doesn't shrink that, it just adds
+  // on top and overflows past the grid cell. The width itself must shrink by a full column (52px, 26px
+  // per side) so margin-left:26px + width + margin-right:26px together add back up to exactly 100%.
+  const divider=(cs,ce,row)=>`<div class="algo-line" style="grid-column:${cs}/${ce+1};${row!=null?`grid-row:${row};`:''}width:calc(100% - 52px);margin-left:26px;margin-right:26px"></div>`;
+
+  // Shared box dimensions (match algo-dbox)
+  const SZ='width:38px;height:38px;';
+  // A regular digit box (38px) sits CENTERED inside its 52px column, leaving (52-38)/2 = 7px of empty
+  // margin on each side — so its visible right edge is actually 7px to the LEFT of the column's true
+  // right boundary. The root (√) button, by contrast, is right-hugged via "justify-content:flex-end",
+  // which pushes it flush against the column's true right boundary (0px inset). Even when both are
+  // mathematically anchored to the exact same column, this styling difference makes the root's visible
+  // right edge sit ~7px further right than a digit box's visible right edge in the row below it — a small
+  // but real, consistently-reproducible offset. Adding this same 7px as padding-right wherever the root is
+  // right-hugged closes that gap so the two visibly line up, not just their underlying grid columns.
+  const ROOT_EDGE_INSET=(52-38)/2;
+  // Display box for through values (number or operator, not editable)
+  const dBox=(v)=>{
+    const isOp=typeof v==='string';
+    return `<div style="${SZ}border:2px solid rgba(${isOp?'249,115,22':'255,255,255'},0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);font-family:'Orbitron',monospace;font-size:${isOp?'14':'17'}px;font-weight:700;color:rgba(${isOp?'249,115,22':'255,255,255'},0.6)">${v}</div>`;
+  };
+  const opBtn=(sym,curIdx,isAct,dIdx)=>{
+    const ac=activeC;
+    const bdr=isAct?`2px solid ${ac.b}`:'2px solid rgba(249,115,22,0.3)';
+    const bgC=isAct?ac.bg:'rgba(249,115,22,0.06)';
+    const clr=isAct?ac.b:'rgba(249,115,22,0.65)';
+    const shd='';
+    return `<button class="comb-opbtn" onclick="_combClickOp(${curIdx})" style="font-family:'Orbitron',monospace;font-size:19px;font-weight:900;cursor:pointer;${SZ}border-radius:8px;padding:0;line-height:1;border:${bdr};background:${bgC};color:${clr};${shd}outline:none" onkeydown="_combDoneOpKey(event,${curIdx},${dIdx??0})">${sym}</button>`;
+  };
+  // Every operator's border/background/text always reflects its OWN fixed identity color (opColorIdx),
+  // from row 0 onward — "consumed" only dims the opacity to show it's been dealt with, it never changes
+  // the hue, and the currently-selected one gets the bright orange highlight instead.
+  // Unselected: plain border + icon in the operator's own identity color, no grow/glow at all (matches how
+  // a normal, non-focused digit box looks). Selected: the SAME "grow" look as hovering/focusing any of
+  // these already gets from .comb-opbtn's own hover CSS (transform:scale + glow) — reused here inline so
+  // it stays visible while selected even when the mouse isn't over it — scaling the whole button scales
+  // its icon glyph right along with the border, no separate opacity dimming in either state.
+  const opBtnCol=(sym,col,isAct,isConsumed)=>{
+    const sc=getC(opColorIdx[col]);
+    const bdr=`2px solid ${sc.b}`;
+    const bgC=sc.bg;
+    const clr=sc.b;
+    const shd=isAct?`transform:scale(1.16);box-shadow:0 0 10px ${sc.g};`:'';
+    return `<button id="${isAct?'_comb_active_op':''}" class="comb-opbtn" data-comb-r0col="${col}" onclick="_combClickCol(${col})" style="font-family:'Orbitron',monospace;font-size:19px;font-weight:900;cursor:pointer;${SZ}border-radius:8px;padding:0;line-height:1;border:${bdr};background:${bgC};color:${clr};${shd}outline:none" onkeydown="_combR0Key(event,${col})">${sym}</button>`;
+  };
+  // Same visuals as opBtnCol, but for an operator that still hasn't been resolved and is being shown again
+  // in a later (already partially solved) row: clicking it should just select it as the next step, the same
+  // as _combClickOp does — NOT reset progress like clicking it fresh in row 0 does.
+  const opBtnLive=(sym,col,curIdx,isAct,isConsumed,navDIdx)=>{
+    const sc=getC(opColorIdx[col]);
+    const bdr=`2px solid ${sc.b}`;
+    const bgC=sc.bg;
+    const clr=sc.b;
+    const shd=isAct?`transform:scale(1.16);box-shadow:0 0 10px ${sc.g};`:'';
+    const onclick=isConsumed?`_combClickCol(${col})`:`_combClickOp(${curIdx},${navDIdx??''})`;
+    const onkeydown=isConsumed?`_combR0Key(event,${col})`:`_combDoneOpKey(event,${curIdx},${navDIdx??0})`;
+    const dataAttr=isConsumed?` data-comb-r0col="${col}"`:'';
+    return `<button id="${isAct?'_comb_active_op':''}" class="comb-opbtn"${dataAttr} onclick="${onclick}" style="font-family:'Orbitron',monospace;font-size:19px;font-weight:900;cursor:pointer;${SZ}border-radius:8px;padding:0;line-height:1;border:${bdr};background:${bgC};color:${clr};${shd}outline:none" onkeydown="${onkeydown}">${sym}</button>`;
+  };
+  const powerBtn=(exp,col,isAct,isConsumed)=>{
+    const sc=getC(opColorIdx[col]);
+    const bdr=`2px solid ${sc.b}`;
+    const bgC=sc.bg;
+    const clr=sc.b;
+    const shd=isAct?`transform:scale(1.16);box-shadow:0 0 10px ${sc.g};`:'';
+    // Centered, matching every other digit/operator square — this button now always occupies exactly its
+    // own dedicated grid column (never a wider merged box), so the old top-left "superscript" offset just
+    // made it look off-center within its own square instead of raised above anything.
+    return `<button id="${isAct?'_comb_active_op':''}" class="comb-opbtn" data-comb-r0col="${col}" onclick="_combClickCol(${col})" style="width:38px;height:38px;font-family:'Orbitron',monospace;font-weight:900;cursor:pointer;border-radius:8px;padding:0;display:flex;align-items:center;justify-content:center;border:${bdr};background:${bgC};color:${clr};${shd}outline:none" onkeydown="_combR0Key(event,${col})"><span style="font-size:17px;line-height:1">${exp}</span></button>`;
+  };
+  const rootBtn=(radicand,col,isAct,isConsumed)=>{
+    const sc=getC(opColorIdx[col]);
+    const bdr=`2px solid ${sc.b}`;
+    const bgC=sc.bg;
+    const clr=sc.b;
+    const shd=isAct?`transform:scale(1.16);box-shadow:0 0 10px ${sc.g};`:'';
+    return `<button id="${isAct?'_comb_active_op':''}" class="comb-opbtn" data-comb-r0col="${col}" onclick="_combClickCol(${col})" style="width:90px;height:38px;font-family:'Orbitron',monospace;font-weight:900;cursor:pointer;border-radius:8px;padding:0 8px;display:flex;align-items:center;justify-content:center;border:${bdr};background:${bgC};color:${clr};${shd}outline:none" onkeydown="_combR0Key(event,${col})"><span style="line-height:1;display:inline-flex;align-items:baseline"><span style="font-size:25px;line-height:1">√</span><span style="font-size:16px;text-decoration:overline;text-decoration-color:${clr};line-height:1">${radicand}</span></span></button>`;
+  };
+
+  // As soon as a +/- operator is selected and hasn't been picked yet (even before its blank box has been
+  // clicked open), everything on screen EXCEPT that operator's own operation (op_before, when it's a
+  // chain-fold, plus its left operand, itself, and its right operand) fades down — so the only thing reading
+  // at full strength is the exact pair of numbers the student needs to compare to pick a sign. It clears back
+  // to normal the instant the pick is made. Only the FIRST currently-selected, unpicked +/- operator drives
+  // this (picking two signs at once is vanishingly rare and not worth the extra complexity).
+  const openPMIdx=sel.find(i=>toks[i]&&_combIsPM(toks[i].v)&&_combSt.chainPicks[i]==null);
+  let dimFocus=null; // {dOpBefore,dLt,dOp,dRt,dChainable,rowZeroSafe}
+  if(openPMIdx!=null){
+    const dOp=toks[openPMIdx];
+    const dOpBefore=openPMIdx>=2?toks[openPMIdx-2]:null;
+    const dChainable=!!(dOpBefore&&typeof dOpBefore.v==='string'&&_combIsPM(dOpBefore.v)&&_combIsPM(dOp.v));
+    const dLt=toks[openPMIdx-1], dRt=toks[openPMIdx+1];
+    // Row 0 only shows the SAME operation as a plain, untouched window when none of these three/four tokens
+    // have already been produced by an earlier step — a widened (ce>cs) token is a through-value (e.g. "2"
+    // standing in for an already-solved "√4"), and row 0 can only ever show its ORIGINAL, pre-solve form —
+    // leaving that stale form lit up would be actively misleading rather than helpful, so in that case row 0
+    // gets no undimmed window at all.
+    const rowZeroSafe=!(dLt.ce>dLt.cs)&&!(dRt.ce>dRt.cs)&&(!dChainable||!(dOpBefore.ce>dOpBefore.cs));
+    dimFocus={dOpBefore,dLt,dOp,dRt,dChainable,rowZeroSafe};
+  }
+  const DIM_STYLE='opacity:0.22;filter:saturate(0.35);transition:opacity 0.25s;';
+  // Post-process a finished HTML fragment and fade every grid cell whose column span falls entirely outside
+  // the given DISPLAY-column span (caller is responsible for translating raw → display correctly for
+  // whichever row this fragment belongs to — see thruSpanFor/thruSpanActiveD below).
+  const _combDimOutsideDisplay=(html,spanDisplay)=>{
+    if(!spanDisplay) return html;
+    const [lo,hi]=spanDisplay;
+    return html.replace(/<div style="grid-column:(\d+)\/(\d+);/g,(m,csStr,ceExclStr)=>{
+      const cs=+csStr, ce=+ceExclStr-1;
+      if(ce<lo||cs>hi) return `<div style="grid-column:${csStr}/${ceExclStr};${DIM_STYLE}`;
+      return m;
+    });
+  };
+  // A done row (dIdx) can only show one of dimFocus's tokens (dLt/dRt/dOpBefore) at undimmed strength if
+  // that token's value actually EXISTED as of that row's own point in time. A plain token (never widened,
+  // ce===cs) has been there since row 0, so it's always safe. A through-value (ce>cs) was only born once
+  // its own origin step (_combFindOrigin's dIdx) ran — a done row from BEFORE that (e.g. the step that
+  // solved 7×25 while dLt is "53" from 45+8, solved several steps later) still shows the raw, pre-fold
+  // tokens, so thruSpanFor's computed span there is meaningless (it back-solves a column via the token's
+  // pre-anchor regardless of whether that anchor was ever actually occupied by this value at this point in
+  // time) — same trap row 0 already avoids via rowZeroSafe, just keyed to a row index here instead of a
+  // fixed "before everything" cutoff.
+  const _combDimSafeAtRow=(tok,dIdx)=>{
+    if(!tok||!(tok.ce>tok.cs)) return true;
+    const oi=_combFindOrigin(tok);
+    return !!(oi&&oi.dIdx<=dIdx);
+  };
+
+  // ── Row 0: original tokens (operators always clickable; consumed ones reset exercise) ──
+  let r0='';
+  const skip0=new Set();
+  const gdR0Raw=(cs,ce,inner,xtra)=>gd(cs,ce,inner,xtra,1);
+  // Both "1 √ radicand" and "base ^ exponent" always span exactly 3 raw columns (one per token). "^" still
+  // needs to shrink to match its RESULT's display width (fewer digits than 3 raw columns → free the extra
+  // ones, see below). "√" is different: its own glyph box always keeps a FIXED 2-column display width,
+  // regardless of how many digits the result under the radical actually has — a root should always look
+  // the same size, so a small result (e.g. √9=3) isn't drawn any narrower than a bigger one (e.g. √121=11).
+  // That means √ always frees exactly 1 of its 3 raw columns (when a placeholder precedes it), a constant
+  // amount independent of the result's digit count. The done rows already close the analogous freed gap for
+  // every LATER row (see _combSlotAnchor's shrinkAmt, which DOES vary with the result's own digit count,
+  // since a done row shows the actual solved digits, not a fixed-size glyph) — this mirrors that same
+  // mechanism for row 0 itself, which otherwise always renders at raw columns with no compaction at all.
+  // Each freed column shifts everything to its LEFT one column to the right, same direction/logic as
+  // shrinksActive elsewhere in this file. Row 0's own shift is really just a SPECIAL CASE of effColFor: "the
+  // state of the grid before any step has ever been solved" — globalGroupEvents above already carries this
+  // exact same detection/amount logic (keyed to each group's stable raw column) plus a `solvedStep` field,
+  // so calling effColFor with a context that precedes every possible step index (-1: no shrinkEvents or
+  // hideBracketEvents ever qualify, since their stepIdx is always >=0, and every globalGroupEvents entry
+  // counts as "not yet solved by then" regardless of what's since happened in `done`) reproduces row 0's
+  // permanent, unchanging reservation exactly — without a second, separately-maintained detection pass.
+  const effCol0=rawCol=>effColFor(-1,rawCol);
+  const gdR0=(cs,ce,inner,xtra)=>gdR0Raw(effCol0(cs),effCol0(ce),inner,xtra);
+  q.tokens.forEach((tok,i)=>{
+    if(skip0.has(i)) return;
+    const col=i+1;
+    if(typeof tok==='number'){
+      const isRootPlaceholder=q.tokens[i+1]==='√';
+      const isExpBase=q.tokens[i+1]==='^';
+      if(isRootPlaceholder){
+        // Don't render placeholder — the √ button will span this column
+      } else if(isExpBase){
+        // Three raw columns are always available for "base ^ exponent" (one per token). The exponent digit
+        // always keeps EXACTLY one of them — its own — so it lines up precisely with the result's units
+        // digit (the result is always right-hugged onto this same raw column). When the result is 3
+        // digits, the base widens across the other two raw columns (its own + "^"’s, which never draws a
+        // glyph of its own), centered — pre-aligning it with the result's hundreds+tens. When the result is
+        // exactly 2 digits, the base instead moves entirely into "^"’s own raw column — an exact match with
+        // the tens digit, same as the exponent's exact match with the units digit — leaving its own raw
+        // column unused, which is why row0ShiftEvents exists above.
+        const expVal=q.tokens[i+2];
+        skip0.add(i+1); // '^' itself never draws its own glyph — absorbed into the base's box
+        skip0.add(i+2); // exponent digit is drawn from here instead, in its own dedicated column
+        const opCol=col+1, expCol=col+2; // opCol = "^"’s own raw column (drives color/click identity); expCol = exponent digit's own raw column
+        if(_combExpBaseCols(tok,expVal)<2){
+          r0+=gdR0(opCol,opCol,`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok}</div>`);
+        } else {
+          r0+=gdR0(col,col+1,`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok}</div>`);
+        }
+        const curIdxOp=toks.findIndex(t=>t.cs===opCol&&typeof t.v==='string');
+        const isConsumedOp=curIdxOp<0;
+        const isActiveOp=!isConsumedOp&&isSelIdx(curIdxOp);
+        r0+=gdR0(expCol,expCol,powerBtn(expVal,opCol,isActiveOp,isConsumedOp));
+      } else {
+        r0+=gdR0(col,col,`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok}</div>`);
+      }
+    } else {
+      const curIdx=toks.findIndex(t=>t.cs===col&&typeof t.v==='string');
+      const isConsumed=curIdx<0;
+      const isActive=!isConsumed&&isSelIdx(curIdx);
+      if(tok==='^'&&i+1<q.tokens.length){
+        // Normally unreachable: the numeric base's own branch above (isExpBase) already handles '^'
+        // together with its base and skip0's past this index. Kept as a defensive fallback (original
+        // 2-column span) in case '^' is ever reached without a numeric base immediately before it.
+        skip0.add(i+1);
+        r0+=gdR0(col,col+1,powerBtn(q.tokens[i+1],col,isActive,isConsumed));
+      } else if(tok==='√'&&i+1<q.tokens.length){
+        skip0.add(i+1);
+        // Left edge: same as before — absorb the un-rendered "1×" placeholder's own column when present,
+        // so that column never sits empty. Right edge: now always extended one column further, onto the
+        // radicand's own column, so the glyph's RIGHT edge lands exactly where the eventual (right-hugging)
+        // result digit ends up sitting one row down (see _combSlotAnchor's hasRight branch) — previously
+        // the right edge stopped one column short of that, leaving a gap once the result was multi-digit.
+        // Right edge is the fixed, right-hugged anchor (radicand's own raw column, still routed through
+        // effCol0 so later groups' shift events — e.g. a "^" group further right — still push it correctly).
+        // Left edge is NOT derived from the raw "col-1"/"col" position translated afterward — that approach
+        // left the box's own width always at its full raw span (2 or 3 columns) depending only on whether a
+        // placeholder precedes it, so row0ShiftEvents (which only shifts PRECEDING tokens, never the box's
+        // own left edge) caused those preceding tokens to collide into the box instead of closing a gap.
+        // Instead, derive the left edge directly from the translated right edge minus the box's own FIXED
+        // display width (always 2 — see row0ShiftEvents above for why this never varies with the result's
+        // digit count), so the box itself shrinks in sync with the shift applied to what precedes it.
+        const widthRoot=2; // always exactly 2 display columns, regardless of radicand/result size
+        const ceEffRoot=effCol0(col+1);
+        const csEffRoot=ceEffRoot-(widthRoot-1);
+        r0+=gdR0Raw(csEffRoot,ceEffRoot,rootBtn(q.tokens[i+1],col,isActive,isConsumed),`justify-content:flex-end;padding-right:${ROOT_EDGE_INSET}px`);
+      } else if('()[]{}' .includes(tok)){
+        r0+=gdR0(col,col,`<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:rgba(249,115,22,0.55)">${tok}</div>`);
+      } else {
+        r0+=gdR0(col,col,opBtnCol(tok,col,isActive,isConsumed));
+      }
+    }
+  });
+
+  // ── Completed step rows (stack below, aligned to original columns) ──
+  let doneHtml='';
+  done.forEach((step,dIdx)=>{
+    const {snap,ops}=step;
+    const isLastDone=dIdx===done.length-1;
+    // Grid row 1 is row 0. Each solved step gets TWO explicit grid rows: one just for its divider line
+    // and the next for its actual cells — sharing a single row squashes the thin divider and the 38px
+    // boxes together, so the line ends up cutting through the boxes instead of sitting above them.
+    const dividerRowN=dIdx*2+2, rowN=dIdx*2+3;
+    const gdR=(cs,ce,inner,xtra)=>gd(cs,ce,inner,xtra,rowN);
+    // A step can solve any number of mutually-independent operators in this same row — each gets its OWN
+    // divider line (spanning just ITS OWN pair of operands), so they stay visually separated instead of
+    // merging into one continuous line across all of them.
+    ops.forEach((op,opsIdx)=>{
+      const lt=snap[op.oIdx-1], rt=snap[op.oIdx+1];
+      const ltSpanD=thruSpanFor(dIdx,lt), rtSpanD=thruSpanFor(dIdx,rt);
+      // A root's placeholder ("1×") sits at its own raw column, but the √ BOX drawn one row up doesn't
+      // start there anymore — it's always fixed at exactly 2 display columns, right-hugged to the radicand
+      // (see the row0 rendering above). Using the placeholder's raw/uncompacted column for the divider's
+      // left edge leaves it floating over whatever sits before the box (often the bracket, or empty space
+      // opened up by compaction) instead of starting where the box itself visually begins. Anchor the
+      // divider's left edge the exact same way the box computes its own left edge: 1 column before the
+      // radicand's own (already-compacted) right edge.
+      const isRootOp=snap[op.oIdx].v==='√';
+      // Michel: same fix as the active row's own pow divider — for a "base^exponent" whose result needs
+      // fewer than 3 digits, row 0 draws the base at the OPERATOR's own raw column (lt.cs+1), never at the
+      // base's own raw column (see the isExpBase branch in row 0's rendering / _combExpBaseCols). Using the
+      // base's plain, un-repositioned column here (ltSpanD[0]) left this divider's left edge exactly one
+      // column too far left once the row was confirmed — even though the ACTIVE row (before Verificar)
+      // already got this right. Only applies while the base is still a plain, single-column literal
+      // (lt.ce===lt.cs) — a folded through-value base never gets row 0's repositioning either.
+      const isPowBaseShifted=snap[op.oIdx].v==='^'&&lt.ce===lt.cs&&_combExpBaseCols(lt.v,rt.v)<2;
+      const ltStart=isRootOp?rtSpanD[1]-1:isPowBaseShifted?effColFor(dIdx,lt.cs+1):ltSpanD[0];
+      // Michel: a chain-fold that lands at the very END of its row (nothing follows raw-wise — the "hug
+      // left" branch in _combSlotAnchor, which computes no shrink event at all since there's nothing to
+      // pull flush against) never gets its digits pushed out to rt's own row-0 position — they stay hugged
+      // to lt's own column instead, exactly nCols wide. rt's own thruSpanFor position keeps reflecting
+      // wherever it would sit if untouched, which is now past the actual last digit, leaving a dangling
+      // empty column between the digits and the divider's right edge. Anchoring to the result's own actual
+      // rendered span (resultAnchor + its true digit width) instead keeps the line flush with the real
+      // content — for every OTHER case (hugging right, root, pow) this lands on the exact same column
+      // rtSpanD[1] already gave, since those all size/position themselves to end exactly at rt's edge.
+      const opBeforeD=op.oIdx>=2?snap[op.oIdx-2]:null;
+      const chainableD=!!(opBeforeD&&typeof opBeforeD.v==='string'&&_combIsPM(opBeforeD.v)&&_combIsPM(snap[op.oIdx].v));
+      const rtEnd=chainableD?resultAnchor[dIdx+'_'+opsIdx]+anchorWidth[dIdx+'_'+opsIdx]-1:rtSpanD[1];
+      doneHtml+=divider(ltStart,rtEnd,dividerRowN);
+    });
+    const doneItems=[];
+    const skipDone=new Set();
+    // A step consumed N independent operator triples in one go — all are skipped here and rendered as
+    // their own result boxes afterward, same as the single-op case.
+    const inConsumedRange=j=>ops.some(op=>j>=op.oIdx-1&&j<=op.oIdx+1);
+    // A chain-fold's own result can come out negative — when it does, its plain connector (op_before, two
+    // snap-positions back, still on display right next to it) is the only thing left with any spare column
+    // to carry that sign, so mark it here: its OWN glyph gets swapped ("+"→"−"/"−"→"+") below, and the
+    // result's own sign box gets skipped further down where it's drawn, instead of both landing on the same
+    // cell.
+    const negFoldConnCols=new Set();
+    ops.forEach(op=>{
+      if(op.result<0&&op.oIdx>=2){
+        const ct=snap[op.oIdx-2];
+        if(ct&&typeof ct.v==='string'&&_combIsPM(ct.v)) negFoldConnCols.add(op.oIdx-2);
+      }
+    });
+    // Michel: a chain-fold's connector (op_before) shares its display column with the result's own group —
+    // it's the group's own leftmost cell, not an independent through-value — regardless of whether the
+    // result came out negative (negFoldConnCols above only tracks the GLYPH-FLIP question, which is sign-
+    // specific). Translating it via the generic effColFor(dIdx,tok.cs) instead treats it as ordinary
+    // untouched content, which only happens to land next to the result's own digits by coincidence — any
+    // extra freed space the fold's own shrink event pulls in from further left (see effNCols/shrinkLt above)
+    // then opens a gap, or worse, collides with whatever else that same pull dragged into the connector's
+    // "natural" column. Anchoring it to resultAnchor-1 instead keeps it permanently glued to its own group.
+    const chainConnAnchor=new Map();
+    ops.forEach((op,opsIdx)=>{
+      if(op.oIdx>=2){
+        const ct=snap[op.oIdx-2];
+        if(ct&&typeof ct.v==='string'&&_combIsPM(ct.v)) chainConnAnchor.set(op.oIdx-2,dIdx+'_'+opsIdx);
+      }
+    });
+    snap.forEach((tok,j)=>{
+      if(!inConsumedRange(j)){
+        if(skipDone.has(j)) return;
+        const nextIsThru=j+1<snap.length&&!inConsumedRange(j+1);
+        if(tok.v==='^'&&nextIsThru){
+          // The base (previous token) already claimed its own raw column PLUS this "^" token's raw
+          // column (see the "isExpBase" widening below) — so the exponent digit only ever needs its OWN
+          // dedicated raw column here (tok.cs+1), translated through effColFor same as everything else
+          // in this row so it stays in sync with any earlier shrink/hide events.
+          const expTok=snap[j+1]; skipDone.add(j+1);
+          const ecExp=effColFor(dIdx,tok.cs+1);
+          if(isLastDone){
+            const curIdx=toks.findIndex(t=>t.cs===tok.cs&&typeof t.v==='string');
+            doneItems.push({cs:ecExp,html:gdR(ecExp,ecExp, curIdx>=0 ? powerBtn(expTok.v,tok.cs,isSelIdx(curIdx),false) : `<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;color:rgba(255,255,255,0.6)"><span style="font-size:17px;line-height:1">${expTok.v}</span></div>`)});
+          } else {
+            doneItems.push({cs:ecExp,html:gdR(ecExp,ecExp,`<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;color:rgba(255,255,255,0.6)"><span style="font-size:17px;line-height:1">${expTok.v}</span></div>`)});
+          }
+        } else if(tok.v==='√'&&nextIsThru){
+          const radTok=snap[j+1]; skipDone.add(j+1);
+          // A still-pending √ box always spans exactly 2 columns, anchored to its RADICAND's own translated
+          // column (endCs) with the box extending one column to its left — the exact same formula row 0
+          // itself uses (see the root-box rendering above: csEffRoot=ceEffRoot-1, ceEffRoot=effCol0(radicand's
+          // col)) — NOT the placeholder's own translated column, which used to be used here instead. Those
+          // normally coincide, but a placeholder's raw column is also the phantom-shift event's own
+          // `beforeCol` boundary for THIS root — a column exactly AT a shift boundary is defined to NOT
+          // receive that shift (see globalGroupEvents/_combPhantomShift), while the very next column over
+          // (the bracket etc. just before it) IS strictly before the boundary and DOES receive it — so
+          // translating the placeholder independently could land it on the exact same column as whatever
+          // precedes it, once some other group's own two-sided gap-close also enters the mix. Anchoring to
+          // the radicand instead sidesteps that boundary entirely and always matches row 0 exactly.
+          const endCs=effColFor(dIdx,radTok.cs), startCs=endCs-1;
+          const dimRoot=`<span style="line-height:1;display:inline-flex;align-items:baseline"><span style="font-size:25px;line-height:1">√</span><span style="font-size:16px;text-decoration:overline;text-decoration-color:rgba(255,255,255,0.6);line-height:1">${radTok.v}</span></span>`;
+          if(isLastDone){
+            const curIdx=toks.findIndex(t=>t.cs===tok.cs&&typeof t.v==='string');
+            doneItems.push({cs:startCs,html:gdR(startCs,endCs, curIdx>=0 ? rootBtn(radTok.v,tok.cs,isSelIdx(curIdx),false) : `<div style="width:90px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;color:rgba(255,255,255,0.6)">${dimRoot}</div>`,`justify-content:flex-end;padding-right:${ROOT_EDGE_INSET}px`)});
+          } else {
+            doneItems.push({cs:startCs,html:gdR(startCs,endCs,`<div style="width:90px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-weight:900;color:rgba(255,255,255,0.6)">${dimRoot}</div>`,`justify-content:flex-end;padding-right:${ROOT_EDGE_INSET}px`)});
+          }
+        } else if(typeof tok.v==='string'&&'()[]{}' .includes(tok.v)){
+          // Bracket/parenthesis: never an operator, always inert — same plain look as row 0, never clickable.
+          // Once nothing but a single resolved value is left inside it AS OF THIS ROW, it stops being
+          // rendered — no row may show an empty bracket pair. Gated by dIdx: a pair that only collapses in a
+          // LATER row must still show normally here — hiding it early would suggest it vanished sooner than
+          // it actually did.
+          if(hideBracketEvents.some(ev=>ev.col===tok.cs&&ev.stepIdx<=dIdx)) return;
+          const ec=effColFor(dIdx,tok.cs);
+          doneItems.push({cs:ec,html:gdR(ec,ec,`<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:rgba(249,115,22,0.55)">${tok.v}</div>`)});
+        } else if(typeof tok.v==='string'){
+          // Operator not yet resolved: always looks exactly like row 0 (bright/clickable, or dimmed+colored
+          // by whichever later step ended up consuming it) — never the flat "already passed" dim box.
+          // Clicking a still-pending copy just selects it as the next step (like row 0 does when nothing is
+          // done yet); it must NOT reset the steps already completed — only clicking row 0 itself does that.
+          const curIdx=toks.findIndex(t=>t.cs===tok.cs&&typeof t.v==='string');
+          const ec=chainConnAnchor.has(j)?resultAnchor[chainConnAnchor.get(j)]-1:effColFor(dIdx,tok.cs);
+          const dispV=(negFoldConnCols.has(j)||_combConnAbsorbsSign(snap,j,inConsumedRange))?(_combIsNeg(tok.v)?'+':'−'):tok.v;
+          doneItems.push({cs:ec,html:gdR(ec,ec,opBtnLive(dispV,tok.cs,curIdx,curIdx>=0&&isSelIdx(curIdx),curIdx<0,dIdx))});
+        } else {
+          // Number through-value: an untouched original number always looks like row 0 (plain, no box);
+          // a previously-computed result always mirrors the digit-box look/position from the row where it was computed.
+          const isRootPh=j+1<snap.length&&snap[j+1].v==='√'&&nextIsThru;
+          const isExpBase=j+1<snap.length&&snap[j+1].v==='^'&&nextIsThru;
+          if(!isRootPh){
+            if(tok.ce>tok.cs){
+              const oi=_combFindOrigin(tok);
+              const oc=oi?getC(opColorIdx[oi.opCol]):null;
+              const anchor=oi&&preAnchor[oi.key]!=null?effColFor(dIdx,preAnchor[oi.key]):effColFor(dIdx,tok.cs);
+              // A √ or single-digit-^ result's reserved territory (anchorWidth) can be wider than its own
+              // digit count — see the pre-pass above. When redrawn here as a plain through-value in a LATER
+              // row, it must keep reserving that same extra width (with the same left/right padding), or
+              // this row disagrees with its own preAnchor math and either overlaps a neighbor or opens a gap.
+              const reservedW=oi?anchorWidth[oi.key]:null;
+              const actualDigits=String(Math.abs(tok.v)).length;
+              if(oi&&anchorAlign[oi.key]&&reservedW>actualDigits){
+                const align=anchorAlign[oi.key]==='root'?'justify-content:flex-end':'justify-content:flex-start';
+                doneItems.push({cs:anchor,html:gdR(anchor,anchor+reservedW-1,`<div class="algo-dbox" style="${SZ}display:flex;align-items:center;justify-content:center;border-color:${oc?oc.b:'rgba(255,255,255,0.3)'};color:${oc?oc.t:'rgba(255,255,255,0.6)'};background:transparent">${tok.v}</div>`,align)});
+              } else {
+                // If the connector immediately to this value's left already absorbed its sign (see
+                // _combConnAbsorbsSign), its own glyph is drawn in this exact anchor column — a separate
+                // negative box here would draw right on top of it, so just that box is skipped; the digits
+                // still start one column over, same as always.
+                const signAbsorbed=tok.v<0&&j>0&&_combConnAbsorbsSign(snap,j-1,inConsumedRange);
+                const digCol=anchor+(tok.v<0?1:0);
+                if(tok.v<0&&!signAbsorbed) doneItems.push({cs:anchor,html:gdR(anchor,anchor,_combNegBox())});
+                String(Math.abs(tok.v)).split('').forEach((d,k)=>{
+                  const col=digCol+k;
+                  doneItems.push({cs:col,html:gdR(col,col,`<div class="algo-dbox" style="${SZ}display:flex;align-items:center;justify-content:center;border-color:${oc?oc.b:'rgba(255,255,255,0.3)'};color:${oc?oc.t:'rgba(255,255,255,0.6)'};background:transparent">${d}</div>`)});
+                });
+              }
+            } else if(isExpBase){
+              // Base of a still-pending exponent: same width rule as row 0 (_combExpBaseCols — single
+              // source of truth, see its definition) — widen across this raw column plus the "^" token's
+              // own (which never draws a separate glyph here — see the exponent-digit branch above) ONLY
+              // when the arithmetic result needs 3+ digits; a 1-2 digit result instead sits entirely in the
+              // "^" token's own raw column alone, exactly like row 0.
+              const expTokVal=j+2<snap.length?snap[j+2].v:null;
+              const innerExp=`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok.v}</div>`;
+              if(expTokVal!=null&&_combExpBaseCols(tok.v,expTokVal)<2){
+                const ec1=effColFor(dIdx,tok.cs+1);
+                doneItems.push({cs:ec1,html:gdR(ec1,ec1,innerExp)});
+              } else {
+                const ec0=effColFor(dIdx,tok.cs), ec1=effColFor(dIdx,tok.cs+1);
+                doneItems.push({cs:ec0,html:gdR(ec0,ec1,innerExp)});
+              }
+            } else {
+              const ec=effColFor(dIdx,tok.cs);
+              doneItems.push({cs:ec,html:gdR(ec,ec,`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok.v}</div>`)});
+            }
+          }
+        }
+      }
+    });
+    // One result-digit group per operator solved in this row — each keeps its OWN operator's fixed
+    // identity color, one grid cell per digit (magnitude only). A negative result gets its own dedicated
+    // sign box right before the digits (reserved via _combNCols in the anchor math above), so a 2-digit
+    // -33 still only takes 3 columns total (sign + 2 digits) instead of overlapping the sign onto the
+    // first digit — UNLESS this negative result is a chain-fold whose own connector (see negFoldConnCols
+    // above) already absorbed the sign into its own glyph — in that case its reserved sign column (rcs) is
+    // literally the SAME column the connector itself renders in, so drawing a second, separate sign box
+    // there would draw right on top of it; skip just that box, the digits still start at rcs+1 as usual.
+    ops.forEach((op,opsIdx)=>{
+      const dc=getC(opColorIdx[snap[op.oIdx].cs]);
+      const rcs=resultAnchor[dIdx+'_'+opsIdx];
+      const isPowSpecial=snap[op.oIdx].v==='^'&&op.result>=0&&String(op.result).length<=2;
+      const isSingleDigitRoot=snap[op.oIdx].v==='√'&&String(Math.abs(op.result)).length===1;
+      const inputHtml=(k,d)=>`<input id="_comb_done_${dIdx}_${opsIdx}_${k}" class="algo-dbox" type="text" value="${d}" maxlength="1" inputmode="numeric" autocomplete="off" style="border-color:${dc.b};color:${dc.t}" onfocus="this.select();this.style.borderColor='#ec4899'" onblur="this.style.borderColor='${dc.b}'" oninput="this.value=this.value.replace(/[^0-9]/g,'');_combUpdateDoneN(${dIdx},${opsIdx},${k})" onkeydown="_combKey(event,this,false)">`;
+      if(isPowSpecial){
+        // Pinned under row 0's base/exponent columns (see _combSlotAnchor's isSingleDigitPow) — rcs is
+        // already the correct starting column; 1 or 2 plain digit cells from there, never a separate sign
+        // box (results reaching this branch are always >=0 by construction above).
+        String(op.result).split('').forEach((d,k)=>{
+          const col=rcs+k;
+          doneItems.push({cs:col,html:gdR(col,col,inputHtml(k,d))});
+        });
+        return;
+      }
+      if(isSingleDigitRoot){
+        // A single-digit result reserves exactly the one column it needs (see _combSlotAnchor's comment on
+        // why the padded, row-0-matching width no longer applies to a group's own resolved presentation) —
+        // rcs is already pinned right-hugged to the radicand, so this is just a single plain cell.
+        doneItems.push({cs:rcs,html:gdR(rcs,rcs,inputHtml(0,op.result))});
+        return;
+      }
+      const signAbsorbed=op.result<0&&negFoldConnCols.has(op.oIdx-2);
+      // When the sign is absorbed into the connector's own glyph (see negFoldConnCols above), there's no
+      // separate sign box drawn here at all — so the digits must start right at rcs itself, not rcs+1, or
+      // that reserved-but-never-drawn sign column just sits empty as a visual gap before the digits.
+      const rDigCs=rcs+(op.result<0&&!signAbsorbed?1:0);
+      if(op.result<0&&!signAbsorbed) doneItems.push({cs:rcs,html:gdR(rcs,rcs,_combNegBox())});
+      String(Math.abs(op.result)).split('').forEach((d,k)=>{
+        const col=rDigCs+k;
+        doneItems.push({cs:col,html:gdR(col,col,inputHtml(k,d))});
+      });
+    });
+    doneItems.sort((a,b)=>a.cs-b.cs);
+    let doneChunk=doneItems.map(i=>i.html).join('');
+    // Same dimming as row 0, but translated into THIS done row's own ACTUAL rendered positions via
+    // thruSpanFor — a widened/through-value token's true display column comes from its preAnchor, not a
+    // plain raw-column shift, so re-deriving it with thruSpanFor (the exact same function the rest of this
+    // row's own rendering uses) is what keeps the highlighted window aligned with what's actually drawn,
+    // instead of drifting onto a neighboring bracket or divider.
+    if(dimFocus){
+      const rowSafe=_combDimSafeAtRow(dimFocus.dLt,dIdx)&&_combDimSafeAtRow(dimFocus.dRt,dIdx)&&(!dimFocus.dChainable||_combDimSafeAtRow(dimFocus.dOpBefore,dIdx));
+      if(rowSafe){
+        const spans=[thruSpanFor(dIdx,dimFocus.dLt),thruSpanFor(dIdx,dimFocus.dRt)];
+        if(dimFocus.dChainable) spans.push(thruSpanFor(dIdx,dimFocus.dOpBefore));
+        const lo=Math.min(...spans.map(s=>s[0])), hi=Math.max(...spans.map(s=>s[1]));
+        doneChunk=_combDimOutsideDisplay(doneChunk,[lo,hi]);
+      } else {
+        // Nothing in this row can be shown undimmed truthfully (see _combDimSafeAtRow) — fade it all, same
+        // as row 0 does via rowZeroSafe (an empty/impossible span dims every cell unconditionally).
+        doneChunk=_combDimOutsideDisplay(doneChunk,[1,0]);
+      }
+    }
+    doneHtml+=doneChunk;
+  });
+
+  // ── Active step row (input boxes aligned to the selected operation(s)' columns) ──
+  let activeHtml='';
+  // Same two-rows-per-step scheme as the solved steps above: one row for the divider, the next for the cells.
+  const activeDividerRowN=done.length*2+2, activeRowN=done.length*2+3;
+  const gdRA=(cs,ce,inner,xtra)=>gd(cs,ce,inner,xtra,activeRowN);
+  if(sel.length&&sel.every(i=>i<toks.length)){
+    // Any number of mutually-independent operators can be selected together and solved in this same row —
+    // each gets its own input-box group. Anchors/compaction combine ALL pending shrink events at once (none
+    // of the selected operators counts as "remaining" for another selected one's hasLeft/hasRight check,
+    // since all of them are being consumed right now).
+    const nSel=sel.length;
+    const opsData=sel.map(idx=>{
+      const lt=toks[idx-1], op=toks[idx], rt=toks[idx+1];
+      const {expected,flipCol,chainable}=_combFoldedExpected(toks,idx);
+      return {idx,lt,op,rt,expected,flipCol,chainable};
+    });
+    const remOpsAll=toks.filter((t,j)=>!sel.includes(j)&&typeof t.v==='string');
+    const hasLeftArr=opsData.map(od=>remOpsAll.some(t=>t.cs<od.lt.cs));
+    const hasRightArr=opsData.map(od=>remOpsAll.some(t=>t.cs>od.rt.ce));
+    // When 2+ independent operators are solved together in the same step, at most ONE of them is the row's
+    // "anchor" — the one everything else (sibling groups AND the plain content between/around them) yields
+    // to, never the reverse. Priority: operator hierarchy first (^/√ outrank ×/÷, which outrank +/−, same
+    // order real math precedence would rank them), then — within the same tier — whichever result needs MORE
+    // digits (a wider result is more disruptive to bump sideways), then — if still tied on both — whichever
+    // operator sits closer to the row's own center column. A lone selected operator never needs this (there's
+    // no sibling to yield to), so it's skipped entirely when only one operator is selected.
+    let anchorIdx=null;
+    if(opsData.length>1){
+      let best=null;
+      opsData.forEach(od=>{
+        const tier=_combOpTier(od.op.v);
+        const digits=String(Math.abs(od.expected)).length;
+        const centerDist=Math.abs(od.op.cs-(N+1)/2);
+        if(!best||tier>best.tier||(tier===best.tier&&digits>best.digits)||(tier===best.tier&&digits===best.digits&&centerDist<best.centerDist)){
+          best={od,tier,digits,centerDist};
+        }
+      });
+      anchorIdx=best.od.idx;
+    }
+    const anchorOp=anchorIdx!=null?toks[anchorIdx]:null;
+    // Effective hug direction per selected operator: the anchor (or a lone selection, which is always its
+    // own anchor by default) keeps its natural hasRight/hasLeft direction; every OTHER selected operator
+    // hugs TOWARD wherever the anchor sits instead, so its own freed gap always opens on the side AWAY from
+    // the anchor — never between it and the anchor, which is what used to drag the anchor's whole group
+    // sideways just to close that gap (see the shrink-event loop and arcsArr below, both of which read this
+    // instead of hasRightArr directly).
+    const hugRightArr=opsData.map((od,K)=>anchorIdx==null||od.idx===anchorIdx?hasRightArr[K]:od.op.cs<anchorOp.cs);
+    // EVERY +/- operator being solved requires the student to pick its own sign explicitly: a blank box that
+    // opens two more boxes (one "+", one "−", each its own column) — regardless of how many operators are
+    // selected together and regardless of whether it's a "chain fold" (op_before also +/-) — the student
+    // always identifies the operator that belongs to the left of the result themselves, on top of typing its
+    // magnitude digits. ×, ÷, ^ and √ never ask for a sign pick — their result's sign is unambiguous
+    // arithmetic, not something to choose. Column budget while picking a sign: 1 while just the blank box is
+    // showing, 3 once it's open (blank + "+" + "−" side by side), back down to 1 (just the confirmed box)
+    // plus the magnitude digits once it's picked.
+    const nColsArr=opsData.map(od=>{
+      const mag=String(Math.abs(od.expected)).length;
+      if(_combIsPM(od.op.v)){
+        if(_combSt.chainPicks[od.idx]==null){
+          if(!_combSt.signOpen[od.idx]) return 1;
+          // Left-operand-is-first-token case (isImplicitBefore below) needs the exact same 3-column budget
+          // as a real chain-fold (blank + "+" + "−") — lt's own digits are never drawn a second time here,
+          // just like the operator itself vanishes behind its own picker in every other case.
+          return 3;
+        }
+        return mag+1;
+      }
+      // √ and single-digit-^ now reserve their own TRUE digit width here too, exactly like any other
+      // operator's result — see _combSlotAnchor's matching comment for why the row-0-style padded width
+      // only ever protects a group that's still UNSOLVED elsewhere in the row (globalGroupEvents), not a
+      // group's own resolved presentation. arcsArr below still pins a single-digit "^" result under its
+      // base's column regardless of this width, so shrinking this to the true digit count only closes the
+      // gap that used to sit between the digit and whatever follows — it doesn't move the digit itself.
+      return mag+(od.expected<0?1:0);
+    });
+    const shrinksActive=[];
+    // Only used for the "pow"-aligned two-sided case below (base column is pinned, freed space exists on
+    // BOTH sides of it) — everything else uses shrinksActive alone (freed space always sits before lt, same
+    // direction as lt's own vanishing-behind-its-picker convention).
+    const shrinksActiveAfter=[];
+    // Freed gap is measured in ALREADY-COMPACTED space (via _combPaddedSpan, which reflects every completed
+    // row's own shrinkage AND any vanished-bracket columns) rather than raw cs/ce — otherwise a previously-
+    // shrunk lt/rt double-counts compaction an earlier row already applied, over-shifting through-values
+    // further to the left.
+    opsData.forEach((od,K)=>{
+      // Michel-reported case: a chain-fold operator (op_before is also +/-, e.g. the "+4" in "...-6+4...")
+      // absorbs BOTH itself AND op_before into one result — op_before's own raw column vanishes too (see
+      // chainHideCols below, and the sign box's own left edge, which already widens by exactly one column —
+      // "arcs-1" — to cover it). The freed-space measurement must start from op_before's column instead of
+      // od.lt's own column, or it under-counts by exactly the one column op_before used to occupy, leaving
+      // whatever follows one column too close (this is what let "+41" overlap the sign-pick box once the
+      // preceding "-6+4" was selected as a chain-fold).
+      // The sign box already widens left by one column to cover op_before's own vanished glyph (see
+      // signBoxCs/confirmCs above, "arcs-1" for chainable) — that widen only ever absorbs exactly ONE of
+      // op_before's columns. Comparing op_before's full raw span against nColsArr alone (which doesn't know
+      // about that extra widened column) over-counts the freed space by 1 whenever the placeholder/blank
+      // picker's own fixed 3-column budget already happens to match the raw span (the open-but-unpicked
+      // state) — so the true "already-displayed" width to compare against is nCols+1 for a chain-fold,
+      // exactly matching the widen, and plain nCols for everything else.
+      const shrinkLt=od.chainable?toks[od.idx-2]:od.lt;
+      const effNCols=od.chainable?nColsArr[K]+1:nColsArr[K];
+      const ltSpanC=_combPaddedSpan(done.length,shrinkLt), rtSpanC=_combPaddedSpan(done.length,od.rt);
+      const special=_combSpecialOpWidth(od.op.v,od.expected);
+      if(special?.align==='pow'){
+        if(!hasRightArr[K]) return; // pow's own two-sided gap math is unchanged by the anchor logic above
+        // Pinned to the base's own column (see arcsArr's override below), not hugging either edge of the
+        // group it replaces — same two-sided gap as _combSlotAnchor's isSingleDigitPow (done-row
+        // equivalent): freedBefore pulls whatever precedes the group right, freedAfter pulls whatever
+        // follows it left, instead of dumping the whole freed width on one side (which used to strand the
+        // digit and its now-adjacent neighbor on the exact same column). freedAfter measures from the far
+        // edge of the group's OWN width (rcs+nColsArr[K]-1) — a 2-digit result's second digit lands on the
+        // exponent's own column, so "after" starts one column later than for a 1-digit result, or this ends
+        // up over-shrinking and landing a later token on the exact same column as that second digit.
+        const rcs=od.lt.cs+1;
+        const freedBefore=rcs-ltSpanC[0], freedAfter=rtSpanC[1]-(rcs+nColsArr[K]-1);
+        if(freedBefore>0) shrinksActive.push({beforeCol:shrinkLt.cs,amount:freedBefore,srcIdx:od.idx});
+        if(freedAfter>0) shrinksActiveAfter.push({afterCol:od.rt.ce+1,amount:freedAfter,srcIdx:od.idx});
+        return;
+      }
+      // Freed space always closes toward whichever side this group is actually hugging (see hugRightArr
+      // above) — hug-right pulls whatever precedes it rightward (shrinksActive), hug-left (forced when a
+      // sibling anchor sits to this group's right) pulls whatever follows it leftward (shrinksActiveAfter)
+      // instead, so the gap never opens on the side facing the anchor. Not gated on hasRightArr/hasLeftArr
+      // here: if there's genuinely nothing on the relevant side, the event's boundary matches no real token
+      // and is simply a no-op, so it's always safe to compute.
+      const amt=(rtSpanC[1]-ltSpanC[0]+1)-effNCols;
+      if(amt<=0) return;
+      if(hugRightArr[K]) shrinksActive.push({beforeCol:shrinkLt.cs,amount:amt,srcIdx:od.idx});
+      else shrinksActiveAfter.push({afterCol:od.rt.ce+1,amount:amt,srcIdx:od.idx});
+    });
+    // The operator(s) currently selected already get their own precise shift via shrinksActive/After above
+    // (measured from their actual result, not row 0's fixed reservation) — exclude them from the generic
+    // phantom-shift lookup inside effColFor so a still-unsolved √/^ being actively worked on doesn't get
+    // shifted by BOTH mechanisms at once.
+    const selOpCols=new Set(opsData.map(od=>od.op.cs));
+    // excludeSrc: a Set of operator idx's whose shrink events should be ignored — used to keep one actively
+    // selected operator's OWN box/divider position from ever jumping just because a DIFFERENT operator joins
+    // or leaves the same multi-select. Once a box is on screen for something the student is solving, it must
+    // stay put regardless of what else happens in the row; only that operator's own event (which never
+    // affects its own position anyway — its beforeCol/afterCol boundary is defined relative to itself) and
+    // events from done/row0 compaction (untouched by this exclusion) should ever move it.
+    const effColActiveD=(origCol,excludeSrc)=>{
+      let c=effColFor(done.length-1,origCol,selOpCols);
+      for(const ev of shrinksActive) if(origCol<ev.beforeCol&&!(excludeSrc&&excludeSrc.has(ev.srcIdx))) c+=ev.amount;
+      for(const ev of shrinksActiveAfter) if(origCol>=ev.afterCol&&!(excludeSrc&&excludeSrc.has(ev.srcIdx))) c-=ev.amount;
+      return c;
+    };
+    const thruSpanActiveD=(tok,excludeSrc)=>{
+      if(tok.ce>tok.cs){
+        const oi=_combFindOrigin(tok);
+        if(oi&&preAnchor[oi.key]!=null){
+          const nCols=anchorWidth[oi.key]!=null?anchorWidth[oi.key]:_combNCols(tok.v);
+          const a=effColActiveD(preAnchor[oi.key],excludeSrc);
+          return [a,a+nCols-1];
+        }
+      }
+      const ec=effColActiveD(tok.cs,excludeSrc);
+      return [ec,ec+(tok.ce-tok.cs)];
+    };
+    // Every OTHER selected operator's idx, keyed by this one's own idx — passed as excludeSrc whenever
+    // computing an operator's OWN position (arcsArr, its own divider) so a sibling in a DIFFERENT bracket
+    // scope can never drag it around. Siblings that share the same scope (e.g. √ and ^ both inside the same
+    // "[...]") are NOT excluded — they're genuinely part of one local group whose mutual compaction is what
+    // keeps them from overlapping each other or the bracket glyphs, so that interaction stays intact. Only a
+    // sibling separated by a bracket boundary (crossing into/out of a "(...)"/"[...]"/"{...}") counts as
+    // unrelated — e.g. an exponent finishing inside a bracket must never nudge an unrelated × sitting well
+    // outside it.
+    //
+    // Michel: this exclusion is NOT symmetric — shrinkage only ever needs blocking in ONE direction. A
+    // sibling that sits LATER (to the right) than od, separated by a bracket, is "outside" relative to od
+    // and must never reach backward into it (the original bug this whole exclusion was built for: an outer
+    // × dragging an inner √ around). But a sibling that sits EARLIER (to the left) than od, separated by a
+    // bracket, is INSIDE that bracket relative to od — od comes AFTER the bracket already closed, so it
+    // must keep inheriting that sibling's own freed space same as any other plain through-content already
+    // does (e.g. solving "1^2" inside "[√121-1^2]" frees space that legitimately pulls everything after the
+    // "]" — including a later chain-fold's own box — further left; excluding it here just because a bracket
+    // sits between them made the fold's own box stop short of where the generic content after it (which has
+    // no such exclusion) already landed, producing a same-column collision).
+    const hasBracketBetween=(cs1,cs2)=>{
+      const lo=Math.min(cs1,cs2), hi=Math.max(cs1,cs2);
+      return toks.some(t=>typeof t.v==='string'&&'()[]{}' .includes(t.v)&&t.cs>lo&&t.cs<hi);
+    };
+    const siblingIdxsOf=od=>new Set(opsData.filter(o=>o.idx!==od.idx&&o.op.cs>od.op.cs&&hasBracketBetween(od.op.cs,o.op.cs)).map(o=>o.idx));
+    // A single-digit "^" result pins under its BASE's own column regardless of width — same positioning
+    // rule as _combSlotAnchor's isSingleDigitPow (done-row equivalent) — so now that nColsArr above reports
+    // the true (narrower) digit width, the generic "hug the right edge of rt" formula below (which would
+    // otherwise land it on the exponent's own column once nCols no longer covers both) never gets to run
+    // for this case.
+    const arcsArr=opsData.map((od,K)=>{
+      const excludeSrc=siblingIdxsOf(od);
+      const special=_combSpecialOpWidth(od.op.v,od.expected);
+      if(special?.align==='pow') return effColActiveD(od.lt.cs+1,excludeSrc);
+      return hugRightArr[K]?(thruSpanActiveD(od.rt,excludeSrc)[1]-nColsArr[K]+1):thruSpanActiveD(od.lt,excludeSrc)[0];
+    });
+    // Every selected operator gets its OWN divider (spanning just its own pair of operands) instead of one
+    // line covering all of them — otherwise several lines sitting right next to each other would look like
+    // a single continuous line.
+    //
+    // Michel: this divider always marks which row-0 group is being solved — it must stay anchored to that
+    // group's own row-0 position (projected only through PRIOR done-row compaction, via thruSpanFor/
+    // effColFor) even when this row's own anchor-hug logic above (hugRightArr) drags this group's actual
+    // digit BOXES sideways to hug a sibling anchor. The boxes moving is correct (that's the whole point of
+    // the anchor fix); the line staying put is what tells the student which row-0 numbers those moved boxes
+    // still belong to. Using thruSpanActiveD/effColActiveD here (which DO include the active-row hug shifts)
+    // is exactly what used to drag the line along with the boxes — deliberately not used for this any more.
+    opsData.forEach(od=>{
+      // Same fix as the done-row divider above: a root's box is always fixed at 2 display columns,
+      // right-hugged to the radicand, not anchored to the placeholder's own raw column.
+      const rtSpanA=thruSpanFor(done.length-1,od.rt);
+      let ltStartA;
+      if(od.op.v==='√'){
+        ltStartA=rtSpanA[1]-1;
+      } else if(od.op.v==='^'&&od.lt.ce===od.lt.cs&&_combExpBaseCols(od.lt.v,od.rt.v)<2){
+        // Michel: for a "base^exponent" whose result needs fewer than 3 digits, row 0 itself never draws the
+        // base digit at its own raw column — it draws it one column over, at the "^" operator's own raw
+        // column instead (see the isExpBase branch in row 0's rendering / _combExpBaseCols), leaving the
+        // base's true raw column empty/reserved. The divider's left edge must track that same repositioning
+        // (lt.cs+1, exactly like arcsArr's own pow box already does a few lines up), or it starts one whole
+        // column too far left — over the reserved gap instead of under the base's own visible glyph. Only
+        // applies when the base is still a plain, single-column literal (od.lt.ce===od.lt.cs) — a folded
+        // through-value base (e.g. "(1+2)^2") never gets this row-0 repositioning, so it falls through to
+        // the generic case below instead.
+        ltStartA=effColFor(done.length-1,od.lt.cs+1);
+      } else {
+        ltStartA=thruSpanFor(done.length-1,od.lt)[0];
+      }
+      // Michel: even for a chain-fold (op_before is also +/-, e.g. "...−17+37" folding into a signed
+      // result) — where op_before's own glyph is hidden behind the sign box (see chainHideCols below) —
+      // the divider itself must NOT stretch left to cover that absorbed column too. It stays anchored to
+      // lt's own row-0 column, same as any other operator's divider; only the sign box (a separate visual
+      // element) widens to visually reclaim the absorbed glyph's space.
+      activeHtml+=divider(ltStartA,rtSpanA[1],activeDividerRowN);
+    });
+    const activeItems=[];
+    const skipAct=new Set();
+    // For the ENTIRE time a chain-fold operator is selected — picked or not — also hide its PRECEDING
+    // operator (op_before, two columns back — e.g. the "+" in "...+360-383" when solving "360-383" as a
+    // fold) instead of letting it linger on screen. That "+" was 360's own sign in the row above, but it's
+    // being folded together with 383 into a brand-new signed value right now, so only ONE sign box (the
+    // picker/confirmed sign for the operator being solved) should ever be visible at a time — showing
+    // op_before alongside it, even after the pick is confirmed, reads as two separate signs and invites
+    // misclicks. It reappears normally once this step is submitted (it's never actually consumed by this
+    // step — it still connects to whatever comes next). Applies to every chainable operator currently
+    // selected, not just a lone one.
+    const chainHideCols=new Set(opsData.filter(od=>od.chainable).map(od=>od.idx-2));
+    const inSelRange=j=>sel.some(idx=>j>=idx-1&&j<=idx+1)||chainHideCols.has(j);
+    toks.forEach((tok,j)=>{
+      if(!inSelRange(j)){
+        if(skipAct.has(j)) return;
+        const nextIsThru=j+1<toks.length&&!inSelRange(j+1);
+        if(tok.v==='^'&&nextIsThru){
+          // Exponent digit only ever needs its own dedicated raw column (tok.cs+1) — the base (rendered
+          // from its own position below, via isExpBase) already claims tok.cs itself. Translate through
+          // effColActiveD so it stays in sync with any shrink/hide events from earlier steps.
+          const expTok=toks[j+1]; skipAct.add(j+1);
+          const ecExp=effColActiveD(tok.cs+1);
+          activeItems.push({cs:ecExp,html:gdRA(ecExp,ecExp,powerBtn(expTok.v,tok.cs,false,false))});
+        } else if(tok.v==='√'&&nextIsThru){
+          const radTok=toks[j+1]; skipAct.add(j+1);
+          // Same fix as the done-row equivalent above: anchor to the RADICAND's own translated column (row
+          // 0's own formula) rather than the placeholder's — the placeholder's raw column doubles as this
+          // root's own phantom-shift boundary, so translating it independently can land it on the exact
+          // same column as whatever precedes it once some other group's two-sided gap-close is also active.
+          const endCs=effColActiveD(radTok.cs), startCs=endCs-1;
+          activeItems.push({cs:startCs,html:gdRA(startCs,endCs,rootBtn(radTok.v,tok.cs,false,false),`justify-content:flex-end;padding-right:${ROOT_EDGE_INSET}px`)});
+        } else {
+          const isRootPlaceholder=j+1<toks.length&&toks[j+1].v==='√'&&nextIsThru;
+          if(isRootPlaceholder) return;
+          const isExpBase=typeof tok.v!=='string'&&tok.ce===tok.cs&&j+1<toks.length&&toks[j+1].v==='^'&&nextIsThru;
+          if(isExpBase){
+            // Base of a still-pending exponent: same width rule as row 0 (_combExpBaseCols — single
+            // source of truth, see its definition) — widen across this raw column plus the "^" token's
+            // own (which never draws a separate glyph here — see the exponent-digit branch above) ONLY
+            // when the arithmetic result needs 3+ digits; a 1-2 digit result instead sits entirely in the
+            // "^" token's own raw column alone, exactly like row 0, so it doesn't reserve/occupy a column
+            // its row-0 counterpart never used either.
+            const expTokVal=j+2<toks.length?toks[j+2].v:null;
+            const inner=`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok.v}</div>`;
+            if(expTokVal!=null&&_combExpBaseCols(tok.v,expTokVal)<2){
+              const ec1=effColActiveD(tok.cs+1);
+              activeItems.push({cs:ec1,html:gdRA(ec1,ec1,inner)});
+            } else {
+              const ec0=effColActiveD(tok.cs), ec1=effColActiveD(tok.cs+1);
+              activeItems.push({cs:ec0,html:gdRA(ec0,ec1,inner)});
+            }
+            return;
+          }
+          if(typeof tok.v!=='string'&&tok.ce>tok.cs){
+            const oi=_combFindOrigin(tok);
+            const oc=oi?getC(opColorIdx[oi.opCol]):null;
+            const anchor=oi&&preAnchor[oi.key]!=null?effColActiveD(preAnchor[oi.key]):effColActiveD(tok.cs);
+            // Same reserved-but-underfilled territory as the done-row equivalent above — a √ or single-
+            // digit-^ result redrawn here as a through-value (while some OTHER operator is being actively
+            // solved) must keep the same extra width/padding its own row used, or this row's own compaction
+            // math (which already assumes that width — see anchorWidth/nColsArr) disagrees with what's
+            // actually drawn.
+            const reservedW=oi?anchorWidth[oi.key]:null;
+            const actualDigits=String(Math.abs(tok.v)).length;
+            if(oi&&anchorAlign[oi.key]&&reservedW>actualDigits){
+              const align=anchorAlign[oi.key]==='root'?'justify-content:flex-end':'justify-content:flex-start';
+              activeItems.push({cs:anchor,html:gdRA(anchor,anchor+reservedW-1,`<div class="algo-dbox" style="${SZ}display:flex;align-items:center;justify-content:center;border-color:${oc?oc.b:'rgba(255,255,255,0.3)'};color:${oc?oc.t:'rgba(255,255,255,0.6)'};background:transparent">${tok.v}</div>`,align)});
+              return;
+            }
+            // See _combConnAbsorbsSign: if the connector just to this value's left already absorbed its
+            // sign, its own glyph sits right in this anchor column already — skip the separate negative box
+            // so it doesn't draw on top of it; the digits still start one column over as usual.
+            const signAbsorbed=tok.v<0&&j>0&&_combConnAbsorbsSign(toks,j-1,inSelRange);
+            const digCol=anchor+(tok.v<0?1:0);
+            if(tok.v<0&&!signAbsorbed) activeItems.push({cs:anchor,html:gdRA(anchor,anchor,_combNegBox())});
+            String(Math.abs(tok.v)).split('').forEach((d,k)=>{
+              const col=digCol+k;
+              activeItems.push({cs:col,html:gdRA(col,col,`<div class="algo-dbox" style="${SZ}display:flex;align-items:center;justify-content:center;border-color:${oc?oc.b:'rgba(255,255,255,0.3)'};color:${oc?oc.t:'rgba(255,255,255,0.6)'};background:transparent">${d}</div>`)});
+            });
+            return;
+          }
+          const ec=effColActiveD(tok.cs);
+          let content;
+          if(typeof tok.v==='string'&&'()[]{}' .includes(tok.v))
+            content=`<div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:rgba(249,115,22,0.4)">${tok.v}</div>`;
+          else if(typeof tok.v==='string') content=opBtnLive(_combConnAbsorbsSign(toks,j,inSelRange)?(_combIsNeg(tok.v)?'+':'−'):tok.v,tok.cs,j,false,false,done.length-1);
+          else content=`<div style="${SZ}display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:22px;font-weight:900;color:#fff">${tok.v}</div>`;
+          activeItems.push({cs:ec,html:gdRA(ec,ec,content)});
+        }
+      }
+    });
+    // One input-box group (or sign-picker, for any +/- operator) per selected operator — each keeps its OWN
+    // operator's identity color. Once a group's own last box (in typing order) is filled, focus hops
+    // straight into the NEXT group's first control (a digit box, or that group's own sign picker if it's a
+    // +/- that hasn't been picked yet) — so focus flows group-by-group, left to right, without a manual click.
+    const nextGroupFirstId=K=>{
+      if(K>=nSel-1) return null;
+      const nOd=opsData[K+1];
+      if(_combIsPM(nOd.op.v)&&_combSt.chainPicks[nOd.idx]==null) return '_comb_sign_'+nOd.idx;
+      const nRtl=_combIsRTLOp(nOd.op.v);
+      const nExpLen=String(Math.abs(nOd.expected)).length;
+      return _combGroupBoxId(K+1,nRtl?nExpLen-1:0);
+    };
+    opsData.forEach((od,K)=>{
+      const {idx,op,expected,chainable}=od;
+      const expLen=String(Math.abs(expected)).length;
+      const col0=getC(opColorIdx[toks[idx].cs]);
+      // For a chain-fold, op_before (two positions back) is the OTHER real candidate sign — its own current
+      // color, same as it's shown in row 0 — so the two choice boxes can be colored/ordered to match exactly
+      // which number each one belongs to, instead of an arbitrary pair of colors.
+      const opBeforeTok=chainable?toks[idx-2]:null;
+      const colBefore=opBeforeTok?getC(opColorIdx[opBeforeTok.cs]):null;
+      // The left operand has no real operator before it at all (it's the very first token) — math convention
+      // infers it's implicitly positive. Unlike a real chain-fold (where op_before is an actual operator with
+      // its own identity color), there's nothing real to color this implicit sign by, so its choice box stays
+      // neutral white — same fallback _combSignChoiceBox already uses for a fully-standalone (non-chain)
+      // pick. lt itself is never redrawn a second time here; it vanishes behind its own picker exactly like
+      // every other operator's left operand does, so no special anchor/width case is needed for it either.
+      const isImplicitBefore=idx===1&&!chainable;
+      const arcs=arcsArr[K];
+      const rtl=_combIsRTLOp(op.v);
+      if(_combIsPM(op.v)){
+        const picked=_combSt.chainPicks[idx];
+        const side=_combSt.chainPickSide[idx];
+        if(picked==null){
+          // Sign not picked yet: show the blank box, and — once it's been clicked open — the two separate
+          // "+"/"−" choice boxes right next to it, each its own column. Hold off on the digit boxes — there's
+          // nothing to type until the sign is actually settled.
+          // Chain-fold: op_before's own glyph column is hidden/absorbed here (see chainHideCols) and the
+          // divider above already widens to cover it — so the blank box itself must widen left by one column
+          // too (cs:arcs-1 instead of arcs), or that absorbed column renders as a bare visual gap. Only this
+          // box widens; the choice/digit boxes below keep their existing arcs+1/arcs+2 offsets untouched.
+          const signBoxCs=chainable?arcs-1:arcs;
+          activeItems.push({cs:signBoxCs,html:gdRA(signBoxCs,arcs,_combSignPicker(idx))});
+          if(_combSt.signOpen[idx]){
+            if(isImplicitBefore){
+              // Same two-box layout as a real chain-fold (arcs+1, arcs+2), same left-to-right order (the
+              // "before"/implicit sign first, the operator's own sign second) — just with the "before" box
+              // forced neutral white (passing null color) since there's no real op_before token to color it
+              // by. lt itself might already be negative (e.g. the running result of an earlier fold) — its
+              // implicit sign always reflects lt's own true sign, not always "+"; math only infers "+" when
+              // nothing else is shown, which is the common case (a plain original first number).
+              const implicitSign=od.lt.v<0?'-':'+';
+              const rightSign=_combIsNeg(op.v)?'-':'+';
+              activeItems.push({cs:arcs+1,html:gdRA(arcs+1,arcs+1,_combSignChoiceBox(idx,implicitSign,null,'before'))});
+              activeItems.push({cs:arcs+2,html:gdRA(arcs+2,arcs+2,_combSignChoiceBox(idx,rightSign,col0,'own'))});
+            } else if(chainable){
+              // A real op_before token exists, so each choice box has a genuine identity to color by —
+              // same as row 0's own operator colors, in the same left-to-right order (op_before first,
+              // own operator second). Unlike the fully-standalone case below (no real op to color by),
+              // there's no ambiguity here about which color belongs to which choice.
+              const leftSign=_combIsNeg(opBeforeTok.v)?'-':'+';
+              const rightSign=_combIsNeg(op.v)?'-':'+';
+              activeItems.push({cs:arcs+1,html:gdRA(arcs+1,arcs+1,_combSignChoiceBox(idx,leftSign,colBefore,'before'))});
+              activeItems.push({cs:arcs+2,html:gdRA(arcs+2,arcs+2,_combSignChoiceBox(idx,rightSign,col0,'own'))});
+            } else {
+              activeItems.push({cs:arcs+1,html:gdRA(arcs+1,arcs+1,_combSignChoiceBox(idx,'+',null,'own'))});
+              activeItems.push({cs:arcs+2,html:gdRA(arcs+2,arcs+2,_combSignChoiceBox(idx,'-',null,'own'))});
+            }
+          }
+          return;
+        }
+        const digArcs=arcs+1;
+        // side==='before' picks colBefore for a real chain-fold, or stays neutral white for the implicit-
+        // first-token case (colBefore is null there) — same bright fallback _combSignChoiceBox itself uses,
+        // not the faint placeholder style (that one's for the blank, nothing-chosen-yet state only).
+        const NEUTRAL_C={b:'rgba(255,255,255,0.85)',bg:'rgba(255,255,255,0.08)'};
+        const confirmColor=side==='before'?(colBefore||(isImplicitBefore?NEUTRAL_C:col0)):col0;
+        // Same widening as the blank picker above — once confirmed, the sign box still needs to cover the
+        // absorbed op_before column so nothing sits empty between it and whatever precedes this group.
+        const confirmCs=chainable?arcs-1:arcs;
+        activeItems.push({cs:confirmCs,html:gdRA(confirmCs,arcs,_combSignConfirmedBox(idx,picked,confirmColor))});
+        Array.from({length:expLen},(_,k)=>{
+          const nextK=rtl?k-1:k+1;
+          const isLastOfGroup=rtl?k===0:k===expLen-1;
+          const nid=isLastOfGroup?nextGroupFirstId(K):null;
+          const advance=!isLastOfGroup
+            ?`var _n=document.getElementById('${_combGroupBoxId(K,nextK)}');if(_n)_n.focus();`
+            :(nid?`var _n=document.getElementById('${nid}');if(_n)_n.focus();`:'');
+          const c=digArcs+k;
+          const oninput=`this.value=this.value.replace(/[^0-9]/g,'');if(this.value){${advance}}_combActiveInputCheck()`;
+          activeItems.push({cs:c,html:gdRA(c,c,`<input id="${_combGroupBoxId(K,k)}" class="algo-dbox" type="text" inputmode="numeric" maxlength="1" autocomplete="off" style="border-color:${col0.b};color:${col0.t}" onfocus="this.select();this.style.borderColor='#ec4899'" onblur="this.style.borderColor='${col0.b}'" oninput="${oninput}" onkeydown="_combKey(event,this,true)">`)});
+        });
+        return;
+      }
+      // ×, ÷, ^, √: no sign to pick, just a plain sign box when the result happens to be negative. A
+      // single-digit √ result used to need a special 2-column, right-hugged box here to match row 0's
+      // fixed-width glyph — now that nColsArr reports its true (1-digit) width and arcs is already
+      // positioned correctly for it (see arcsArr above), the generic per-digit loop below already produces
+      // the exact same single input box, so no special case is needed here anymore.
+      const showSign=expected<0;
+      const digCs=arcs+(showSign?1:0);
+      if(showSign) activeItems.push({cs:arcs,html:gdRA(arcs,arcs,_combNegBox())});
+      Array.from({length:expLen},(_,k)=>{
+        const nextK=rtl?k-1:k+1;
+        const isLastOfGroup=rtl?k===0:k===expLen-1;
+        const nid=isLastOfGroup?nextGroupFirstId(K):null;
+        const advance=!isLastOfGroup
+          ?`var _n=document.getElementById('${_combGroupBoxId(K,nextK)}');if(_n)_n.focus();`
+          :(nid?`var _n=document.getElementById('${nid}');if(_n)_n.focus();`:'');
+        const c=digCs+k;
+        const oninput=`this.value=this.value.replace(/[^0-9]/g,'');if(this.value){${advance}}_combActiveInputCheck()`;
+        activeItems.push({cs:c,html:gdRA(c,c,`<input id="${_combGroupBoxId(K,k)}" class="algo-dbox" type="text" inputmode="numeric" maxlength="1" autocomplete="off" style="border-color:${col0.b};color:${col0.t}" onfocus="this.select();this.style.borderColor='#ec4899'" onblur="this.style.borderColor='${col0.b}'" oninput="${oninput}" onkeydown="_combKey(event,this,true)">`)});
+      });
+    });
+    activeItems.sort((a,b)=>a.cs-b.cs);
+    let activeChunk=activeItems.map(i=>i.html).join('');
+    // Same dimming as row 0/done rows, using thruSpanActiveD (this row's own equivalent of thruSpanFor) so
+    // the highlighted window matches this row's ACTUAL rendered positions — the open operator's own picker/
+    // choice boxes sit right between dLt's and dRt's spans, so they always land safely inside and are never
+    // accidentally dimmed.
+    if(dimFocus){
+      const spans=[thruSpanActiveD(dimFocus.dLt),thruSpanActiveD(dimFocus.dRt)];
+      if(dimFocus.dChainable){
+        // dOpBefore's own raw column is hidden/absorbed behind the picker (see chainHideCols/signBoxCs) —
+        // once the freed space from that absorption is redistributed (see the shrinksActive fix above),
+        // whatever precedes it can legitimately compact right up to that same raw column, so translating
+        // dOpBefore.cs "naively" here can coincide with unrelated preceding content's own translated column
+        // and wrongly pull it inside the undimmed window. The picker's own actual widened left edge
+        // (arcsArr's "arcs-1", already computed for this exact operator above) is the real, unambiguous
+        // boundary — anything at or past it is genuinely part of this operation, never a coincidental tie.
+        const kOwn=opsData.findIndex(od=>od.idx===openPMIdx);
+        const widenedStart=kOwn>=0?arcsArr[kOwn]-1:thruSpanActiveD(dimFocus.dOpBefore)[0];
+        spans.push([widenedStart,widenedStart]);
+      }
+      const lo=Math.min(...spans.map(s=>s[0])), hi=Math.max(...spans.map(s=>s[1]));
+      activeChunk=_combDimOutsideDisplay(activeChunk,[lo,hi]);
+    }
+    activeHtml+=activeChunk;
+  } else if(toks.length>1){
+    activeHtml+=divider(1,N,activeDividerRowN);
+    activeHtml+=`<div style="grid-column:1/${N+1};grid-row:${activeRowN};text-align:center;color:rgba(249,115,22,0.4);font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.12em;padding:6px 0">TOCA UN OPERADOR PARA RESOLVER ↑</div>`;
+  }
+
+  // Row 0 never compacts (raw column === display column there), so its span needs no translation — except
+  // when rowZeroSafe is false, in which case row 0 has nothing valid to show undimmed at all (see above).
+  const r0Span=dimFocus&&dimFocus.rowZeroSafe?[dimFocus.dChainable?dimFocus.dOpBefore.cs:dimFocus.dLt.cs,dimFocus.dRt.ce]:(dimFocus?[0,0]:null);
+  const r0Dimmed=_combDimOutsideDisplay(r0,r0Span);
+  let combinedHtml=r0Dimmed+doneHtml+activeHtml;
+  // The very first token's own sign is always implicit ("15" really means "+15") and normally never drawn —
+  // but while the operator right after it (toks[1], a +/- with no real op_before of its own) has its sign-
+  // picker OPEN and not yet picked, briefly surface that implicit "+" as a normal-sized, decorative badge so
+  // the student can compare it against the operator's own sign before deciding. It attaches to wherever
+  // toks[0] (this operator's lt) is CURRENTLY being displayed — row 0 if still untouched, or the LAST done
+  // row's echo if an earlier step already solved it into a merged value (e.g. "297" from "9×33", which no
+  // longer appears in row 0 at all, or "40" from "2×20"). That row is always either row 0 (row number 1, when
+  // no step has happened yet) or the most recently added done row (row number (done.length-1)*2+3, per the
+  // same numbering _combRender uses everywhere else) — never anything older, since every done row re-echoes
+  // the full running state, so only the LAST one reflects what's actually on screen right now. Within that
+  // one row, lt's own raw span (cs..ce) can have MORE columns reserved than digits shown (e.g. "40" only
+  // needs 2 digits but kept its original 3-column reservation, right-aligned — leaving its own first column
+  // genuinely empty) — so the badge anchors to the LEFTMOST element actually rendered inside that span, not
+  // blindly to column 1 itself, which would land in the wrong row entirely once lt is a multi-digit value
+  // that isn't perfectly flush-left. It's purely decorative (the actual pick happens via the active row's own
+  // choice boxes), positioned via absolute overlay so it never claims a real grid column of its own — nothing
+  // else in that row shifts because of it — and disappears the instant a pick is made either way.
+  //
+  // Only meaningful when toks[0] itself has no sign of its own to look at yet (a plain, never-folded number
+  // like the 90 in "90-50" — genuinely implicit, nothing drawn for it anywhere on screen). Once toks[0] is
+  // already a through-value with its own NEGATIVE sign on display (e.g. "-107" from an earlier "38-145",
+  // shown with its own inert "−" box right there), its sign is no longer implicit at all — it's already
+  // explicit and visible — so badging a "+" next to it would be actively wrong, not just redundant.
+  const implicitBeforeOp=toks[1];
+  const showImplicitPlus=!!(implicitBeforeOp&&typeof implicitBeforeOp.v==='string'&&_combIsPM(implicitBeforeOp.v)&&isSelIdx(1)&&_combSt.signOpen[1]&&_combSt.chainPicks[1]==null&&toks[0]&&toks[0].v>=0);
+  if(showImplicitPlus){
+    const ltTok=toks[0];
+    const targetRow=done.length>0?(done.length-1)*2+3:1;
+    const elRe=/<div style="grid-column:(\d+)\/(\d+);([^"]*)"([^>]*)>/g;
+    let best=null,mm;
+    while((mm=elRe.exec(combinedHtml))){
+      const cs=+mm[1];
+      const rowM=/grid-row:(\d+)/.exec(mm[3]);
+      const row=rowM?+rowM[1]:null;
+      if(row===targetRow&&cs>=ltTok.cs&&cs<=ltTok.ce&&(!best||cs<best.cs)) best=mm;
+    }
+    if(best){
+      const badge=`<div style="position:absolute;left:-44px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:8px;border:2px solid rgba(255,255,255,0.85);background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:19px;font-weight:900;color:rgba(255,255,255,0.85)">+</div>`;
+      const newTag=`<div style="grid-column:${best[1]}/${best[2]};position:relative;${best[3]}"${best[4]}>${badge}`;
+      combinedHtml=combinedHtml.slice(0,best.index)+newTag+combinedHtml.slice(best.index+best[0].length);
+    }
+  }
+  c.innerHTML=`<div style="display:grid;grid-template-columns:repeat(${N},52px);gap:5px 3px;margin:0 auto;padding:4px 2px">${combinedHtml}</div>`;
+
+  if(!_combNoAutoFocus){
+    if(sel.length&&sel.every(i=>i<toks.length)){
+      _combAutoFocus(_combFirstFocusId(toks,sel[0]),30);
+    } else if(done.length===0) setTimeout(()=>document.querySelector('#_comb_container button')?.focus(),150);
+  }
+}
+
+// Once a chain-fold's sign has been confirmed as "+", the confirmed box is redundant the moment its full
+// result is typed in — a positive number never needs its sign shown, same reasoning as row 0's implicit
+// "+" on the very first token. A confirmed "−" is never hidden this way (it's the only visual cue the value
+// is negative), and the box itself is never removed, just visually hidden — erasing a digit afterward
+// (group no longer fully filled) brings it right back, still clickable, so the student can reopen the
+// choice and change their mind exactly as before.
+function _combSyncPlusSignVisibility(){
+  if(!_combSt||!_combSt.sel.length) return;
+  const {toks,sel}=_combSt;
+  sel.forEach((idx,K)=>{
+    const op=toks[idx];
+    if(!_combIsPM(op.v)||_combSt.chainPicks[idx]!=='+') return;
+    const btn=document.getElementById('_comb_sign_'+idx);
+    if(!btn) return;
+    const {expected}=_combFoldedExpected(toks,idx);
+    const expLen=String(Math.abs(expected)).length;
+    const filled=Array.from({length:expLen},(_,k)=>document.getElementById(_combGroupBoxId(K,k))).every(el=>el&&el.value);
+    btn.style.display=filled?'none':'';
+  });
+}
+// Called from every active-row digit box's oninput. Order-independent: checks whether ALL groups' boxes
+// currently hold a digit (regardless of which one was just typed) and advances only then — so filling them
+// out of sequence still completes the step instead of silently getting stuck. Works for any number of
+// simultaneously-selected operators (including a lone one, which may also need its sign picked first).
+function _combActiveInputCheck(){
+  if(!_combSt||!_combSt.sel.length) return;
+  _combSyncPlusSignVisibility();
+  const {toks,sel}=_combSt;
+  const nSel=sel.length;
+  for(let K=0;K<nSel;K++){
+    const idx=sel[K];
+    const op=toks[idx];
+    const {expected}=_combFoldedExpected(toks,idx);
+    if(_combIsPM(op.v)&&_combSt.chainPicks[idx]==null) return; // sign not chosen yet
+    const expLen=String(Math.abs(expected)).length;
+    const els=Array.from({length:expLen},(_,k)=>document.getElementById(_combGroupBoxId(K,k)));
+    if(els.some(el=>!el||!el.value)) return;
+  }
+  if(nSel===1&&toks.length===3){
+    // Final step: don't auto-submit, just let the student press Verificar themselves.
+    const btn=document.querySelector('.prep-submit-btn:not([disabled])');
+    if(btn) btn.focus();
+    return;
+  }
+  // Advance immediately — combining with ANOTHER operator after this one has already submitted is still
+  // possible with no time pressure at all, since clicking a still-pending, independent operator right after
+  // this step lands reopens it (see _combReopenLastIfJoinable) instead of requiring it to be picked before
+  // typing or within some arbitrary window.
+  _combSubmitStep();
+}
+// Generic N-way splice: given a base toks array and a set of mutually-independent {idx,result} operators
+// (sorted ascending by idx), replaces each {left,op,right} triple with a single collapsed result token,
+// preserving everything in between untouched. Generalizes what used to be a hardcoded 2-operator splice.
+function _combMergeN(baseToks,opsSorted){
+  const out=[];
+  let cursor=0;
+  opsSorted.forEach(({idx,result})=>{
+    const lt=baseToks[idx-1], rt=baseToks[idx+1];
+    out.push(...baseToks.slice(cursor,idx-1));
+    out.push({v:result,cs:lt.cs,ce:rt.ce});
+    cursor=idx+2;
+  });
+  out.push(...baseToks.slice(cursor));
+  return out;
+}
+function _combSubmitStep(){
+  if(!_combSt||_prep.answered||_prep.retryLock) return;
+  const {toks,sel,q}=_combSt;
+  if(!sel.length) return;
+  const nSel=sel.length;
+  const opsData=sel.map(idx=>{
+    const lt=toks[idx-1], op=toks[idx], rt=toks[idx+1];
+    const {expected,flipCol,chainable}=_combFoldedExpected(toks,idx);
+    return {idx,lt,op,rt,expected,flipCol,chainable};
+  });
+  const entries=[];
+  for(let K=0;K<nSel;K++){
+    const od=opsData[K];
+    if(_combIsPM(od.op.v)&&_combSt.chainPicks[od.idx]==null) return; // sign not chosen yet
+    const expLen=String(Math.abs(od.expected)).length;
+    const inps=Array.from({length:expLen},(_,k)=>document.getElementById(_combGroupBoxId(K,k)));
+    if(inps.some(el=>!el||!el.value)) return; // esperar a que todos los dígitos estén llenos
+    const enteredAbs=parseInt(inps.map(el=>el.value).join(''));
+    if(isNaN(enteredAbs)) return;
+    // For any +/- operator, the sign is whatever the student picked — for ×,÷,^,√ it's just the arithmetic
+    // sign of the true expected result (never a student choice).
+    const entered=_combIsPM(od.op.v)?(_combSt.chainPicks[od.idx]==='-'?-enteredAbs:enteredAbs):(od.expected<0?-enteredAbs:enteredAbs);
+    entries.push({...od,entered,inps});
+  }
+
+  const isFinalCandidate=nSel===1&&toks.length===3;
+  if(isFinalCandidate){
+    const od=entries[0];
+    if(od.entered!==od.expected){
+      // Final step (Verificar) wrong: shake + lives--
+      _prep.retryLock=true;
+      _prep.lives=Math.max(0,(_prep.lives??3)-1);
+      _prep.streak=0;
+      _snd.wrong();
+      _prepUpdateHud();
+      const wrap=document.querySelector('.algo-vert-wrap');
+      if(wrap) wrap.classList.add('algo-shake');
+      setTimeout(()=>{
+        if(wrap) wrap.classList.remove('algo-shake');
+        _prep.retryLock=false;
+        od.inps.forEach(el=>{if(el)el.value='';});
+        document.getElementById(_combFirstFocusId(toks,od.idx))?.focus();
+        if(_prep.lives<=0){_prep.gameOver=true;_prepFinish();}
+      },650);
+      return;
+    }
+  }
+
+  // Intermediate steps always advance with entered values (even if wrong); a final step only reaches here
+  // once entered===expected (correct). If a step absorbed a preceding "-" (chain fold), that operator must
+  // display as "+" from here on — its sign is now baked into `entered`, so leaving it as "-" would
+  // double-count it.
+  let base=toks;
+  entries.forEach(od=>{ if(od.flipCol!=null) base=base.map(t=>t.cs===od.flipCol?{...t,v:'+'}:t); });
+  const opsSorted=[...entries].sort((a,b)=>a.idx-b.idx);
+  _combSt.done.push({snap:base.map(t=>({...t})), ops:opsSorted.map(od=>({oIdx:od.idx,result:od.entered,flipCol:od.flipCol}))});
+  _combSt.toks=_combMergeN(base,opsSorted.map(od=>({idx:od.idx,result:od.entered})));
+  _combSt.sel=[]; _combSt.chainPicks={}; _combSt.chainPickSide={}; _combSt.signOpen={};
+  // Auto-collapse surrounding parens/brackets after each step
+  const _pc={'(':')',  '[':']', '{':'}'};
+  let _t=_combSt.toks,_ch=true;
+  while(_ch){_ch=false;for(let _i=1;_i<_t.length-1;_i++){const _pv=_t[_i-1],_cv=_t[_i],_nv=_t[_i+1];if(typeof _pv.v==='string'&&typeof _cv.v==='number'&&typeof _nv.v==='string'&&_pc[_pv.v]===_nv.v){_t=[..._t.slice(0,_i-1),{v:_cv.v,cs:_pv.cs,ce:_nv.ce},..._t.slice(_i+2)];_ch=true;break;}}}
+  _combSt.toks=_t;
+
+  if(_combSt.toks.length===1){
+    const correct=String(_combSt.toks[0].v)===q.a;
+    if(!correct){
+      // Respuesta final incorrecta (un paso intermedio tenía valor incorrecto).
+      // Deshacer el push+collapse para que el usuario pueda corregir y reintentar.
+      _combSt.done.pop();
+      _combSt.toks=toks;
+      _combSt.sel=sel;
+      _prep.retryLock=true;
+      _prep.lives=Math.max(0,(_prep.lives??3)-1);
+      _prep.streak=0;
+      _snd.wrong();
+      _prepUpdateHud();
+      const wrapW=document.querySelector('.algo-vert-wrap');
+      if(wrapW) wrapW.classList.add('algo-shake');
+      setTimeout(()=>{
+        if(wrapW) wrapW.classList.remove('algo-shake');
+        _prep.retryLock=false;
+        entries.forEach(od=>od.inps.forEach(el=>{if(el)el.value='';}));
+        document.getElementById(_combFirstFocusId(toks,sel[0]))?.focus();
+        if(_prep.lives<=0){_prep.gameOver=true;_prepFinish();}
+      },650);
+      return;
+    }
+    // Respuesta final correcta: avance automático sin necesidad de Verificar
+    _prep.answered=true;
+    _prep.answers.push({correct:true,given:q.a,q:q.q||'',a:q.a,_src:q._src||null});
+    if(typeof _prep.streak==='number') _prep.streak++;
+    _snd.correct();
+    const wrapC=document.querySelector('.algo-vert-wrap');
+    if(wrapC){wrapC.classList.add('algo-correct');_algoMarkPerBox(q);}
+    _prepUpdateHud();
+    setTimeout(()=>_prepNextQ(),300);
+    return;
+  }
+  // After correct non-final step: auto-select if only one operator remains
+  const remOps=_combSt.toks.map((t,i)=>({t,i})).filter(({t})=>typeof t.v==='string');
+  if(remOps.length===1){
+    _combSt.sel=[remOps[0].i];
+    _combRender();
+    // _combRender already schedules the right autofocus; no extra timer needed
+  } else {
+    _combRender();
+    // No operator selected: _combRender shows "TOCA UN OPERADOR" hint, focus a button
+    setTimeout(()=>{const btn=document.querySelector('#_comb_container button');if(btn)btn.focus();},60);
+  }
+}
+// ══════════════════════════════════════════════════════════════════════════════
+
 function _prepConfirmDelete(id){
   if(!id||!isAdmin()) return;
   const ex=document.getElementById('_prepDelModal');
@@ -10285,13 +12473,199 @@ function _genDsMult3(){const n1=_dsRi(100,999),n2=_dsRi(100,999);return{algo:'mu
 function _genDsDiv1(){const n2=_dsRi(1,12),cociente=_dsRi(1,12),n1=n2*cociente;return{algo:'div',n1,n2,cociente,residuo:0,a:cociente+'r0',q:`${n1} ÷ ${n2}`};}
 function _genDsDiv2(){const n2=_dsRi(1,12),n1=_dsRi(100,999),cociente=Math.floor(n1/n2),residuo=n1%n2;return{algo:'div',n1,n2,cociente,residuo,a:cociente+'r'+residuo,q:`${n1} ÷ ${n2}`};}
 function _genDsDiv3(){const n2=_dsRi(13,99),n1=_dsRi(10000,99999),cociente=Math.floor(n1/n2),residuo=n1%n2;return{algo:'div',n1,n2,cociente,residuo,a:cociente+'r'+residuo,q:`${n1} ÷ ${n2}`};}
+// OPERACIÓN COMBINADA
+function _genDsComb1(){const b=_dsRi(2,9),c=_dsRi(2,9),a=_dsRi(1,9);return{algo:'comb',tokens:[a,'+',b,'×',c],a:String(a+b*c),q:`${a} + ${b} × ${c}`};}
+function _genDsComb2(){const a=_dsRi(10,99),b=_dsRi(2,9),c=_dsRi(10,99);return{algo:'comb',tokens:[a,'×',b,'+',c],a:String(a*b+c),q:`${a} × ${b} + ${c}`};}
+function _genDsComb3(){const a=_dsRi(10,50),b=_dsRi(2,9),c=_dsRi(10,50),d=_dsRi(2,9);return{algo:'comb',tokens:[a,'×',b,'+',c,'×',d],a:String(a*b+c*d),q:`${a} × ${b} + ${c} × ${d}`};}
+// Resta
+function _genDsComb4(){const b=_dsRi(2,9),c=_dsRi(2,9),bc=b*c,a=bc+_dsRi(1,20);return{algo:'comb',tokens:[a,'-',b,'×',c],a:String(a-bc),q:`${a} − ${b} × ${c}`};}
+function _genDsComb5(){const a=_dsRi(2,9),b=_dsRi(2,9),ab=a*b,c=_dsRi(1,ab-1);return{algo:'comb',tokens:[a,'×',b,'-',c],a:String(ab-c),q:`${a} × ${b} − ${c}`};}
+// División
+function _genDsComb6(){const c=_dsRi(2,9),b=c*_dsRi(2,9),a=_dsRi(1,20);return{algo:'comb',tokens:[a,'+',b,'÷',c],a:String(a+b/c),q:`${a} + ${b} ÷ ${c}`};}
+function _genDsComb7(){const c=_dsRi(2,9),b=c*_dsRi(2,9),q=b/c,a=q+_dsRi(1,20);return{algo:'comb',tokens:[a,'-',b,'÷',c],a:String(a-q),q:`${a} − ${b} ÷ ${c}`};}
+// Exponente
+function _genDsComb8(){const b=_dsRi(2,5),e=_dsRi(2,3),be=Math.pow(b,e),a=_dsRi(1,15);return{algo:'comb',tokens:[a,'+',b,'^',e],a:String(a+be),q:`${a} + ${b}^${e}`};}
+function _genDsComb9(){const b=_dsRi(2,5),e=_dsRi(2,3),be=Math.pow(b,e),a=be+_dsRi(1,15);return{algo:'comb',tokens:[a,'-',b,'^',e],a:String(a-be),q:`${a} − ${b}^${e}`};}
+function _genDsComb10(){const b=_dsRi(2,4),be=Math.pow(b,2),c=_dsRi(2,9);return{algo:'comb',tokens:[b,'^',2,'×',c],a:String(be*c),q:`${b}^2 × ${c}`};}
+// Raíz cuadrada (placeholder 1 antes de √ — se oculta en display)
+function _genDsComb11(){const sqs=[4,9,16,25,36,49,64,81,100],sq=sqs[_dsRi(0,sqs.length-1)],r=Math.sqrt(sq),a=_dsRi(1,20);return{algo:'comb',tokens:[a,'+',1,'√',sq],a:String(a+r),q:`${a} + √${sq}`};}
+function _genDsComb12(){const sqs=[4,9,16,25,36,49,64,81,100],sq=sqs[_dsRi(0,sqs.length-1)],r=Math.sqrt(sq),a=r+_dsRi(1,15);return{algo:'comb',tokens:[a,'-',1,'√',sq],a:String(a-r),q:`${a} − √${sq}`};}
+function _genDsComb13(){const sqs=[4,9,16,25,36,49,64,81,100],sq=sqs[_dsRi(0,sqs.length-1)],r=Math.sqrt(sq),c=_dsRi(2,9);return{algo:'comb',tokens:[1,'√',sq,'×',c],a:String(r*c),q:`√${sq} × ${c}`};}
+// Mixtas 3 operadores
+function _genDsComb14(){const div=_dsRi(2,9),b=div*_dsRi(2,9),a=_dsRi(2,9),c=_dsRi(1,20);return{algo:'comb',tokens:[a,'×',b,'÷',div,'+',c],a:String(a*b/div+c),q:`${a} × ${b} ÷ ${div} + ${c}`};}
+function _genDsComb15(){const b=_dsRi(2,4),be=Math.pow(b,2),a=_dsRi(1,10),c=_dsRi(1,a+be-1);return{algo:'comb',tokens:[a,'+',b,'^',2,'-',c],a:String(a+be-c),q:`${a} + ${b}^2 − ${c}`};}
+// Básico: ÷ antes de + ó −, y ×÷
+function _genDsComb16(){const c=_dsRi(2,9),k=_dsRi(2,9),a=c*k,b=_dsRi(1,20);return{algo:'comb',tokens:[a,'÷',c,'+',b],a:String(k+b),q:`${a} ÷ ${c} + ${b}`};}
+function _genDsComb17(){const c=_dsRi(2,9),k=_dsRi(3,9),a=c*k,b=_dsRi(1,k-1);return{algo:'comb',tokens:[a,'÷',c,'-',b],a:String(k-b),q:`${a} ÷ ${c} − ${b}`};}
+function _genDsComb18(){const c=_dsRi(2,9),a=_dsRi(2,9),b=c*_dsRi(2,9);return{algo:'comb',tokens:[a,'×',b,'÷',c],a:String(a*b/c),q:`${a} × ${b} ÷ ${c}`};}
+// Intermedio: ^ y √ con × ó ÷
+function _genDsComb19(){const b=_dsRi(2,4),e=_dsRi(2,3),be=Math.pow(b,e),c=_dsRi(2,9);return{algo:'comb',tokens:[c,'×',b,'^',e],a:String(c*be),q:`${c} × ${b}^${e}`};}
+function _genDsComb20(){const b=_dsRi(2,5),e=2,be=Math.pow(b,e),divs=[2,3,4,5,6,7,8,9].filter(d=>be%d===0);if(!divs.length)return _genDsComb20();const c=divs[_dsRi(0,divs.length-1)];return{algo:'comb',tokens:[b,'^',e,'÷',c],a:String(be/c),q:`${b}^${e} ÷ ${c}`};}
+function _genDsComb21(){const sqs=[4,9,16,25,36,49,64,81,100],sq=sqs[_dsRi(0,sqs.length-1)],r=Math.sqrt(sq),c=_dsRi(2,9);return{algo:'comb',tokens:[c,'×',1,'√',sq],a:String(c*r),q:`${c} × √${sq}`};}
+function _genDsComb22(){const sqs=[4,9,16,25,36,49,64,81,100];let sq,r,c;do{sq=sqs[_dsRi(0,sqs.length-1)];r=Math.sqrt(sq);const divs=[2,3,4,5,6,7,8,9].filter(d=>r%d===0);if(divs.length){c=divs[_dsRi(0,divs.length-1)];break;}}while(true);return{algo:'comb',tokens:[1,'√',sq,'÷',c],a:String(r/c),q:`√${sq} ÷ ${c}`};}
+// Potencia/raíz para los pools B/I/A realmente usados por Desafío de Dominio (_desafioGens abajo) — las
+// funciones _genDsComb8-13/19-22 de arriba quedaron huérfanas cuando el sistema de niveles B/I/A reemplazó
+// a este set original de "Ds", así que exponente y raíz nunca llegaban a aparecer en un ejercicio real.
+function _genCombB19(){const b=_dsRi(2,5),e=_dsRi(2,3),be=Math.pow(b,e),a=_dsRi(1,30);return{algo:'comb',tokens:[a,'+',b,'^',e],a:String(a+be),q:`${a} + ${b}^${e}`};}
+function _genCombB20(){const sqs=[4,9,16,25,36,49,64,81,100],sq=sqs[_dsRi(0,sqs.length-1)],r=Math.sqrt(sq),a=_dsRi(1,30);return{algo:'comb',tokens:[a,'+',1,'√',sq],a:String(a+r),q:`${a} + √${sq}`};}
+function _genCombI13(){let p,q,pq,b,e,be,a,v;do{[p,q,pq]=_cdMul();b=_dsRi(2,4);e=2;be=Math.pow(b,e);a=_dsRi(1,30);v=a+pq-be;}while(v<=0);return{algo:'comb',tokens:[a,'+',p,'×',q,'-',b,'^',e],a:String(v),q:`${a} + ${p} × ${q} − ${b}^${e}`};}
+function _genCombI14(){let r,s,k,sqs=[4,9,16,25,36,49,64,81,100],sq,rt,a,v;do{[r,s,k]=_cdDiv();sq=sqs[_dsRi(0,sqs.length-1)];rt=Math.sqrt(sq);a=_dsRi(1,30);v=k+rt+a;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'+',1,'√',sq,'+',a],a:String(v),q:`${r}÷${s} + √${sq} + ${a}`};}
+function _genCombA11(){let b,e,be,a,inn,p2,r,s,k,c,v;do{b=_dsRi(2,4);e=2;be=Math.pow(b,e);a=_dsRi(1,20);inn=be+a;p2=_dsRi(2,9);[r,s,k]=_cdDiv();c=_dsRi(1,50);v=inn*p2+k-c;}while(v<=0||inn*p2>9999);return{algo:'comb',tokens:['(',b,'^',e,'+',a,')','×',p2,'+',r,'÷',s,'-',c],a:String(v),q:`(${b}^${e}+${a})×${p2}+${r}÷${s}−${c}`};}
+function _genCombA12(){const sqs=[4,9,16,25,36,49,64,81,100];let sq,rt,a,inn,p2,b,v;do{sq=sqs[_dsRi(0,sqs.length-1)];rt=Math.sqrt(sq);a=_dsRi(1,20);inn=rt+a;p2=_dsRi(2,9);b=_dsRi(1,50);v=inn*p2-b;}while(v<=0||inn*p2>9999);return{algo:'comb',tokens:['[',1,'√',sq,'+',a,']','×',p2,'-',b],a:String(v),q:`[√${sq}+${a}]×${p2}−${b}`};}
+// Avanzado (nivel 3), CADA ejercicio: los 6 operadores base (×, ÷, +, −, ^, √) aparecen al menos una vez
+// cada uno — nunca falta el exponente ni la raíz — más 2 operadores extra elegidos al azar (entre +, −, ×)
+// para completar 8 operadores en total, siempre. EXACTLY ONE bracket/brace/paren pair (chosen at random
+// among "()", "{}", "[]") appears anywhere in the exercise, and it always wraps exactly 3 operators — √,
+// a +/- sign, and ^, in that fixed safe order — never more than one pair at once, and never fewer than 3
+// or more than 5 operators inside it. The root's "1,√,sq" placeholder always sits immediately after the
+// opening bracket (never bare mid-expression right after a real operator), so it can never be mistakenly
+// reachable as a real right operand.
+//
+// The answer key (`v`) is computed with REAL operator precedence, not by threading a single running
+// accumulator through every outside operator in literal left-to-right order regardless of type: × and ÷
+// bind only to their own immediate term (so e.g. "...−46×9−1399" means −(46×9), NOT (...−46)×9), while +
+// and − start a new term and are freely reorderable among themselves (their sum is order-independent). A
+// student can therefore correctly solve √/^ in either order, and any ×/÷ the instant it's structurally
+// reachable, and any +/- once its own neighbors are resolved — exactly standard order-of-operations, with
+// no hidden "solve outside strictly left-to-right" requirement.
+function _genCombAdvBracket(swapOutsideOrder){
+  const bracketPairs=[['(',')'],['{','}'],['[',']']];
+  // Exponent/root degree->base range rule: e=0,1,2 -> base 1-12; e=3 -> base 1-6; e=4 -> base 1-4. Only e=2
+  // is used here (every advanced exercise's ^ is degree 2), so base is drawn from 1-12 — and the SAME rule,
+  // by analogy (root degree 2 -> radicand's own base 1-12), sizes the perfect-square list up through 12².
+  const sqBases=[1,2,3,4,5,6,7,8,9,10,11,12];
+  const extraPool=['+','-','×'];
+  let bo,bc,rtBase,sq,rt,b,e,be,signIn,signOut,innerVal,divs1,s,p1,a2,extra1,v1,extra2,v2,v,ok,terms;
+  do{
+    ok=true;
+    const bt=bracketPairs[_dsRi(0,2)];
+    bo=bt[0]; bc=bt[1];
+    rtBase=sqBases[_dsRi(0,sqBases.length-1)]; sq=rtBase*rtBase; rt=rtBase; // √ used (radicand always a perfect square, base 1-12)
+    b=_dsRi(1,12); e=2; be=Math.pow(b,e); // ^ used — exponent degree 2 -> base range 1-12
+    signIn=_dsRi(0,1)===0?'+':'-';
+    signOut=signIn==='+'?'-':'+'; // + and − both guaranteed to appear at least once (one inside, one outside)
+    innerVal=signIn==='+'?rt+be:rt-be;
+    if(innerVal<=0){ok=false;continue;}
+    // ÷ ALWAYS applies directly to the bracket's own (atomic, single-token) result, as the very first
+    // outside step — its left operand can therefore NEVER be anything but that one already-correct number,
+    // no matter what order the student solves the rest of the exercise in. Putting ÷ anywhere else risks a
+    // student reaching it via an unrelated partial value that doesn't divide evenly, leaving them stuck with
+    // no integer answer to enter — a hard dead end, not just a wrong-but-enterable result.
+    divs1=[2,3,4,5,6,7,8,9].filter(d=>innerVal%d===0);
+    if(!divs1.length){ok=false;continue;}
+    s=divs1[_dsRi(0,divs1.length-1)];
+    p1=_dsRi(2,9); // × used
+    a2=_dsRi(1,50);
+    extra1=extraPool[_dsRi(0,extraPool.length-1)];
+    v1=extra1==='×'?_dsRi(2,9):_dsRi(1,50);
+    extra2=extraPool[_dsRi(0,extraPool.length-1)];
+    v2=extra2==='×'?_dsRi(2,9):_dsRi(1,50);
+    // Build the exact outer (operator,value) sequence in the order it will be tokenized/displayed, then
+    // evaluate it with real precedence: start a fresh signed TERM on '+'/'-', multiply/divide IN PLACE on
+    // the most recent term for '×'/'÷' (so a run of consecutive ×/÷ stays one term, matching how the tokens
+    // will actually read left to right once printed).
+    const outerPairs=swapOutsideOrder
+      ? [['÷',s],[signOut,a2],['×',p1],[extra1,v1],[extra2,v2]]
+      : [['÷',s],['×',p1],[signOut,a2],[extra1,v1],[extra2,v2]];
+    terms=[{sign:'+',val:innerVal}];
+    for(const [op,val] of outerPairs){
+      if(op==='×') terms[terms.length-1].val*=val;
+      else if(op==='÷') terms[terms.length-1].val/=val;
+      else terms.push({sign:op,val});
+    }
+    if(terms.some(t=>!Number.isInteger(t.val)||Math.abs(t.val)>9999)){ok=false;continue;}
+    v=terms.reduce((sum,t)=>sum+(t.sign==='+'?t.val:-t.val),0);
+  }while(!ok||v<=0||v>99999);
+  const dispOp=o=>o==='-'?'−':o;
+  const inner=[1,'√',sq,signIn,b,'^',e];
+  const innerQ=`√${sq}${dispOp(signIn)}${b}^${e}`;
+  const outer=swapOutsideOrder
+    ? ['÷',s,signOut,a2,'×',p1,extra1,v1,extra2,v2]
+    : ['÷',s,'×',p1,signOut,a2,extra1,v1,extra2,v2];
+  const outerQ=swapOutsideOrder
+    ? `÷${s}${dispOp(signOut)}${a2}×${p1}${dispOp(extra1)}${v1}${dispOp(extra2)}${v2}`
+    : `÷${s}×${p1}${dispOp(signOut)}${a2}${dispOp(extra1)}${v1}${dispOp(extra2)}${v2}`;
+  const tokens=[bo,...inner,bc,...outer];
+  const q=`${bo}${innerQ}${bc}${outerQ}`;
+  return {algo:'comb',tokens,a:String(v),q};
+}
+function _genCombA13(){ return _genCombAdvBracket(false); }
+function _genCombA14(){ return _genCombAdvBracket(true); }
+// Avanzado: paréntesis () y corchetes [] — el operador interior se evalúa primero
+function _genDsComb23(){const a=_dsRi(2,15),b=_dsRi(2,15),c=_dsRi(2,9);return{algo:'comb',tokens:['(',a,'+',b,')','×',c],a:String((a+b)*c),q:`(${a}+${b})×${c}`};}
+function _genDsComb24(){const b=_dsRi(2,12),a=b+_dsRi(1,10),c=_dsRi(2,9);return{algo:'comb',tokens:['(',a,'-',b,')','×',c],a:String((a-b)*c),q:`(${a}-${b})×${c}`};}
+function _genDsComb25(){const c=_dsRi(2,9),k=_dsRi(2,5),a=_dsRi(1,k*c-1),b=k*c-a;return{algo:'comb',tokens:['(',a,'+',b,')','÷',c],a:String(k),q:`(${a}+${b})÷${c}`};}
+function _genDsComb26(){const c=_dsRi(2,9),k=_dsRi(2,9),diff=c*k,b=_dsRi(1,15),a=diff+b;return{algo:'comb',tokens:['(',a,'-',b,')','÷',c],a:String(k),q:`(${a}-${b})÷${c}`};}
+function _genDsComb27(){const a=_dsRi(2,9),b=_dsRi(2,12),c=_dsRi(2,12);return{algo:'comb',tokens:[a,'×','[',b,'+',c,']'],a:String(a*(b+c)),q:`${a}×[${b}+${c}]`};}
+function _genDsComb28(){const a=_dsRi(2,9),c=_dsRi(2,10),b=c+_dsRi(1,10);return{algo:'comb',tokens:[a,'×','[',b,'-',c,']'],a:String(a*(b-c)),q:`${a}×[${b}-${c}]`};}
+// ─── Helpers: operandos con restricción de tamaño ────────────────────────────
+function _cdDiv(){const s=_dsRi(2,9),kMin=Math.ceil(100/s),kMax=Math.floor(999/s),k=_dsRi(kMin,kMax);return[s*k,s,k];}
+function _cdMul(){const p=_dsRi(2,9),q=_dsRi(10,99);return[p,q,p*q];}
+function _cdMulDiv(){let p,q,pq,dv;do{p=_dsRi(2,9);q=_dsRi(10,99);pq=p*q;dv=[2,3,4,5,6,7,8,9].filter(d=>pq%d===0&&pq>=100);}while(!dv.length);const s=dv[_dsRi(0,dv.length-1)];return[p,q,s,pq/s];}
+// ─── BÁSICO: {+,−,×,÷} cada uno 1 vez — 18 patrones (5 núms, 4 ops) ─────────
+function _genCombB1(){let p,q,s,xy,a,b,v;do{[p,q,s,xy]=_cdMulDiv();a=_dsRi(1,50);b=_dsRi(1,50);v=a+b-xy;}while(v<=0);return{algo:'comb',tokens:[a,'+',b,'-',p,'×',q,'÷',s],a:String(v),q:`${a} + ${b} − ${p} × ${q} ÷ ${s}`};}
+function _genCombB2(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);v=a+pq-k;}while(v<=0);return{algo:'comb',tokens:[a,'+',p,'×',q,'-',r,'÷',s],a:String(v),q:`${a} + ${p} × ${q} − ${r} ÷ ${s}`};}
+function _genCombB3(){let p,q,s,xy,a,b,v;do{[p,q,s,xy]=_cdMulDiv();a=_dsRi(1,30);b=_dsRi(1,a+xy-1);v=a+xy-b;}while(v<=0);return{algo:'comb',tokens:[a,'+',p,'×',q,'÷',s,'-',b],a:String(v),q:`${a} + ${p} × ${q} ÷ ${s} − ${b}`};}
+function _genCombB4(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);v=a+k-pq;}while(v<=0);return{algo:'comb',tokens:[a,'+',r,'÷',s,'-',p,'×',q],a:String(v),q:`${a} + ${r} ÷ ${s} − ${p} × ${q}`};}
+function _genCombB5(){let p,q,s,xy,a,b,v;do{[p,q,s,xy]=_cdMulDiv();a=_dsRi(1,50);b=_dsRi(1,a);v=a-b+xy;}while(v<=0);return{algo:'comb',tokens:[a,'-',b,'+',p,'×',q,'÷',s],a:String(v),q:`${a} − ${b} + ${p} × ${q} ÷ ${s}`};}
+function _genCombB6(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(Math.max(1,pq-k+1),pq+30);v=a-pq+k;}while(v<=0);return{algo:'comb',tokens:[a,'-',p,'×',q,'+',r,'÷',s],a:String(v),q:`${a} − ${p} × ${q} + ${r} ÷ ${s}`};}
+function _genCombB7(){let p,q,s,xy,a,b,v;do{[p,q,s,xy]=_cdMulDiv();a=_dsRi(1,30);b=_dsRi(Math.max(1,xy-a+1),50);v=a-xy+b;}while(v<=0);return{algo:'comb',tokens:[a,'-',p,'×',q,'÷',s,'+',b],a:String(v),q:`${a} − ${p} × ${q} ÷ ${s} + ${b}`};}
+function _genCombB8(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);v=a-k+pq;}while(v<=0);return{algo:'comb',tokens:[a,'-',r,'÷',s,'+',p,'×',q],a:String(v),q:`${a} − ${r} ÷ ${s} + ${p} × ${q}`};}
+function _genCombB9(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(Math.max(1,k-pq+1),50);v=pq+a-k;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'+',a,'-',r,'÷',s],a:String(v),q:`${p} × ${q} + ${a} − ${r} ÷ ${s}`};}
+function _genCombB10(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,pq+k-1);v=pq+k-a;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'+',r,'÷',s,'-',a],a:String(v),q:`${p} × ${q} + ${r} ÷ ${s} − ${a}`};}
+function _genCombB11(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,pq);v=pq-a+k;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'-',a,'+',r,'÷',s],a:String(v),q:`${p} × ${q} − ${a} + ${r} ÷ ${s}`};}
+function _genCombB12(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(Math.max(1,k-pq+1),50);v=pq-k+a;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'-',r,'÷',s,'+',a],a:String(v),q:`${p} × ${q} − ${r} ÷ ${s} + ${a}`};}
+function _genCombB13(){let p,q,s,xy,a,b,v;do{[p,q,s,xy]=_cdMulDiv();a=_dsRi(1,30);b=_dsRi(1,xy+a-1);v=xy+a-b;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'÷',s,'+',a,'-',b],a:String(v),q:`${p} × ${q} ÷ ${s} + ${a} − ${b}`};}
+function _genCombB14(){let p,q,s,xy,a,b,v;do{[p,q,s,xy]=_cdMulDiv();a=_dsRi(1,xy);b=_dsRi(1,50);v=xy-a+b;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'÷',s,'-',a,'+',b],a:String(v),q:`${p} × ${q} ÷ ${s} − ${a} + ${b}`};}
+function _genCombB15(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(Math.max(1,pq-k+1),50);v=k+a-pq;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'+',a,'-',p,'×',q],a:String(v),q:`${r} ÷ ${s} + ${a} − ${p} × ${q}`};}
+function _genCombB16(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,k+pq-1);v=k+pq-a;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'+',p,'×',q,'-',a],a:String(v),q:`${r} ÷ ${s} + ${p} × ${q} − ${a}`};}
+function _genCombB17(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,k+pq-1);v=k-a+pq;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'-',a,'+',p,'×',q],a:String(v),q:`${r} ÷ ${s} − ${a} + ${p} × ${q}`};}
+function _genCombB18(){let p,q,pq,r,s,k,a,v;do{[p,q,pq]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(Math.max(1,pq-k+1),50);v=k-pq+a;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'-',p,'×',q,'+',a],a:String(v),q:`${r} ÷ ${s} − ${p} × ${q} + ${a}`};}
+// ─── INTERMEDIO: 6 ops (+,− ≥1; × y ÷ se repiten), 7 números ────────────────
+function _genCombI1(){let p1,q1,pq1,p2,q2,pq2,r,s,k,a,v;do{[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);v=pq1+pq2+k-a;}while(v<=0);return{algo:'comb',tokens:[p1,'×',q1,'+',p2,'×',q2,'+',r,'÷',s,'-',a],a:String(v),q:`${p1}×${q1} + ${p2}×${q2} + ${r}÷${s} − ${a}`};}
+function _genCombI2(){let p1,q1,pq1,p2,q2,pq2,r,s,k,a,v;do{[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);v=pq1+pq2-k+a;}while(v<=0);return{algo:'comb',tokens:[p1,'×',q1,'+',p2,'×',q2,'-',r,'÷',s,'+',a],a:String(v),q:`${p1}×${q1} + ${p2}×${q2} − ${r}÷${s} + ${a}`};}
+function _genCombI3(){let r1,s1,k1,r2,s2,k2,p,q,pq,a,v;do{[r1,s1,k1]=_cdDiv();[r2,s2,k2]=_cdDiv();[p,q,pq]=_cdMul();a=_dsRi(1,50);v=k1+k2+pq-a;}while(v<=0);return{algo:'comb',tokens:[r1,'÷',s1,'+',r2,'÷',s2,'+',p,'×',q,'-',a],a:String(v),q:`${r1}÷${s1} + ${r2}÷${s2} + ${p}×${q} − ${a}`};}
+function _genCombI4(){let r1,s1,k1,r2,s2,k2,p,q,pq,a,v;do{[r1,s1,k1]=_cdDiv();[r2,s2,k2]=_cdDiv();[p,q,pq]=_cdMul();a=_dsRi(1,50);v=k1+k2-pq+a;}while(v<=0);return{algo:'comb',tokens:[r1,'÷',s1,'+',r2,'÷',s2,'-',p,'×',q,'+',a],a:String(v),q:`${r1}÷${s1} + ${r2}÷${s2} − ${p}×${q} + ${a}`};}
+function _genCombI5(){let p1,q1,pq1,p2,q2,pq2,r,s,k,a,v;do{[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);v=pq1-pq2+k+a;}while(v<=0);return{algo:'comb',tokens:[p1,'×',q1,'-',p2,'×',q2,'+',r,'÷',s,'+',a],a:String(v),q:`${p1}×${q1} − ${p2}×${q2} + ${r}÷${s} + ${a}`};}
+function _genCombI6(){let r,s,k,p1,q1,pq1,p2,q2,pq2,a,v;do{[r,s,k]=_cdDiv();[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();a=_dsRi(1,50);v=k+pq1+pq2-a;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'+',p1,'×',q1,'+',p2,'×',q2,'-',a],a:String(v),q:`${r}÷${s} + ${p1}×${q1} + ${p2}×${q2} − ${a}`};}
+function _genCombI7(){let r,s,k,p1,q1,pq1,p2,q2,pq2,a,v;do{[r,s,k]=_cdDiv();[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();a=_dsRi(1,50);v=k-pq1+pq2+a;}while(v<=0);return{algo:'comb',tokens:[r,'÷',s,'-',p1,'×',q1,'+',p2,'×',q2,'+',a],a:String(v),q:`${r}÷${s} − ${p1}×${q1} + ${p2}×${q2} + ${a}`};}
+function _genCombI8(){let p1,q1,pq1,p2,q2,pq2,p3,q3,pq3,a,v;do{[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();[p3,q3,pq3]=_cdMul();a=_dsRi(1,50);v=pq1+pq2-pq3+a;}while(v<=0);return{algo:'comb',tokens:[p1,'×',q1,'+',p2,'×',q2,'-',p3,'×',q3,'+',a],a:String(v),q:`${p1}×${q1} + ${p2}×${q2} − ${p3}×${q3} + ${a}`};}
+function _genCombI9(){let r1,s1,k1,r2,s2,k2,p,q,pq,a,v;do{[r1,s1,k1]=_cdDiv();[r2,s2,k2]=_cdDiv();[p,q,pq]=_cdMul();a=_dsRi(1,50);v=k1-k2+pq+a;}while(v<=0);return{algo:'comb',tokens:[r1,'÷',s1,'-',r2,'÷',s2,'+',p,'×',q,'+',a],a:String(v),q:`${r1}÷${s1} − ${r2}÷${s2} + ${p}×${q} + ${a}`};}
+function _genCombI10(){let p,q,s1,xy,r,s2,k,a,b,v;do{[p,q,s1,xy]=_cdMulDiv();[r,s2,k]=_cdDiv();a=_dsRi(1,30);b=_dsRi(1,50);v=xy+k+a-b;}while(v<=0);return{algo:'comb',tokens:[p,'×',q,'÷',s1,'+',r,'÷',s2,'+',a,'-',b],a:String(v),q:`${p}×${q}÷${s1} + ${r}÷${s2} + ${a} − ${b}`};}
+function _genCombI11(){let p1,q1,pq1,a,p2,q2,pq2,r,s,k,v;do{[p1,q1,pq1]=_cdMul();a=_dsRi(1,50);[p2,q2,pq2]=_cdMul();[r,s,k]=_cdDiv();v=pq1+a-pq2+k;}while(v<=0);return{algo:'comb',tokens:[p1,'×',q1,'+',a,'-',p2,'×',q2,'+',r,'÷',s],a:String(v),q:`${p1}×${q1} + ${a} − ${p2}×${q2} + ${r}÷${s}`};}
+function _genCombI12(){let r1,s1,k1,p,q,pq,a,r2,s2,k2,v;do{[r1,s1,k1]=_cdDiv();[p,q,pq]=_cdMul();a=_dsRi(1,50);[r2,s2,k2]=_cdDiv();v=k1+pq-a+k2;}while(v<=0);return{algo:'comb',tokens:[r1,'÷',s1,'+',p,'×',q,'-',a,'+',r2,'÷',s2],a:String(v),q:`${r1}÷${s1} + ${p}×${q} − ${a} + ${r2}÷${s2}`};}
+// ─── AVANZADO: agrupador obligatorio, cualquier op adentro ───────────────────
+function _genCombA1(){let p1,q1,pq1,a,inn,p2,r,s,k,b,v;do{[p1,q1,pq1]=_cdMul();a=_dsRi(5,40);inn=pq1+a;p2=_dsRi(2,9);[r,s,k]=_cdDiv();b=_dsRi(1,inn*p2+k-1);v=inn*p2+k-b;}while(v<=0||inn*p2>9999);return{algo:'comb',tokens:['(',p1,'×',q1,'+',a,')','×',p2,'+',r,'÷',s,'-',b],a:String(v),q:`(${p1}×${q1}+${a})×${p2}+${r}÷${s}−${b}`};}
+function _genCombA2(){let r,s,k,p1,q1,pq1,a,inn,p2,b,v;do{[r,s,k]=_cdDiv();[p1,q1,pq1]=_cdMul();a=_dsRi(1,k+pq1-1);inn=k+pq1-a;p2=_dsRi(2,9);b=_dsRi(1,50);v=inn*p2+b;}while(v<=0||inn<=0||inn*p2>9999);return{algo:'comb',tokens:['[',r,'÷',s,'+',p1,'×',q1,'-',a,']','×',p2,'+',b],a:String(v),q:`[${r}÷${s}+${p1}×${q1}−${a}]×${p2}+${b}`};}
+function _genCombA3(){let p1,q1,pq1,r,s,k,a,inn,p2,b,v;do{[p1,q1,pq1]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,50);inn=pq1-k+a;p2=_dsRi(2,9);b=_dsRi(1,50);v=inn*p2-b;}while(v<=0||inn<=0||inn*p2>9999);return{algo:'comb',tokens:['{',p1,'×',q1,'-',r,'÷',s,'+',a,'}','×',p2,'-',b],a:String(v),q:`{${p1}×${q1}−${r}÷${s}+${a}}×${p2}−${b}`};}
+function _genCombA4(){let p1,q1,pq1,r,s,k,a,b,inn,p2,c,v;do{[p1,q1,pq1]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,30);b=_dsRi(1,Math.max(1,k+a-1));inn=k+a-b;p2=_dsRi(2,9);c=_dsRi(1,50);v=pq1+inn*p2-c;}while(v<=0||inn<=0||inn*p2>9999);return{algo:'comb',tokens:[p1,'×',q1,'+','(',r,'÷',s,'+',a,'-',b,')','×',p2,'-',c],a:String(v),q:`${p1}×${q1}+(${r}÷${s}+${a}−${b})×${p2}−${c}`};}
+function _genCombA5(){let r,s,k,p1,q1,pq1,p2,q2,pq2,a,inn,b,v;do{[r,s,k]=_cdDiv();[p1,q1,pq1]=_cdMul();[p2,q2,pq2]=_cdMul();a=_dsRi(1,pq1+pq2-1);inn=pq1+pq2-a;b=_dsRi(1,50);v=k+inn-b;}while(v<=0||inn<=0);return{algo:'comb',tokens:[r,'÷',s,'+','[',p1,'×',q1,'+',p2,'×',q2,'-',a,']','-',b],a:String(v),q:`${r}÷${s}+[${p1}×${q1}+${p2}×${q2}−${a}]−${b}`};}
+function _genCombA6(){let r,s,k,a,p,q,pq,b,inn,p2,c,v;do{[r,s,k]=_cdDiv();a=_dsRi(1,30);[p,q,pq]=_cdMul();b=_dsRi(1,30);inn=k+a-pq+b;p2=_dsRi(2,9);c=_dsRi(1,50);v=inn*p2-c;}while(v<=0||inn<=0||inn*p2>9999);return{algo:'comb',tokens:['(',r,'÷',s,'+',a,'-',p,'×',q,'+',b,')','×',p2,'-',c],a:String(v),q:`(${r}÷${s}+${a}−${p}×${q}+${b})×${p2}−${c}`};}
+function _genCombA7(){let p1,q1,pq1,r,s,k,a,b,c,inn,p2,d,v;do{[p1,q1,pq1]=_cdMul();[r,s,k]=_cdDiv();a=_dsRi(1,20);b=_dsRi(1,20);c=_dsRi(1,Math.max(1,pq1+k-a+b-1));inn=pq1+k-a+b-c;p2=_dsRi(2,9);d=_dsRi(1,50);v=inn*p2+d;}while(v<=0||inn<=0||inn*p2>9999);return{algo:'comb',tokens:['{',p1,'×',q1,'+',r,'÷',s,'-',a,'+',b,'-',c,'}','×',p2,'+',d],a:String(v),q:`{${p1}×${q1}+${r}÷${s}−${a}+${b}−${c}}×${p2}+${d}`};}
+function _genCombA8(){let p1,q1,pq1,r,s,k,p2,q2,pq2,a,inn,b,v;do{[p1,q1,pq1]=_cdMul();[r,s,k]=_cdDiv();[p2,q2,pq2]=_cdMul();a=_dsRi(1,30);inn=pq1-k+pq2+a;b=_dsRi(1,inn-1);v=inn-b;}while(v<=0||inn<=0);return{algo:'comb',tokens:['[',p1,'×',q1,'-',r,'÷',s,'+',p2,'×',q2,'+',a,']','-',b],a:String(v),q:`[${p1}×${q1}−${r}÷${s}+${p2}×${q2}+${a}]−${b}`};}
+function _genCombA9(){let r1,s1,k1,p,q,pq,a,r2,s2,k2,b,inn,p2,c,v;do{[r1,s1,k1]=_cdDiv();[p,q,pq]=_cdMul();a=_dsRi(1,20);[r2,s2,k2]=_cdDiv();b=_dsRi(1,20);p2=_dsRi(2,9);const raw=k1+pq+a-k2+b;const rem=((raw%p2)+p2)%p2;c=rem||p2;inn=raw-c;}while(inn<=0);v=inn/p2;return{algo:'comb',tokens:['(',r1,'÷',s1,'+',p,'×',q,'+',a,'-',r2,'÷',s2,'+',b,'-',c,')','÷',p2],a:String(v),q:`(${r1}÷${s1}+${p}×${q}+${a}−${r2}÷${s2}+${b}−${c})÷${p2}`};}
+function _genCombA10(){let r1,s1,k1,p1,q1,pq1,a,b2,q2c,bc,r2,s2,k2,d,inn,p3,q3,pq3,v;do{[r1,s1,k1]=_cdDiv();[p1,q1,pq1]=_cdMul();a=_dsRi(1,20);b2=_dsRi(2,9);q2c=_dsRi(10,99);bc=b2*q2c;[r2,s2,k2]=_cdDiv();d=_dsRi(1,20);inn=pq1-a+bc-k2+d;[p3,q3,pq3]=_cdMul();v=k1+inn-pq3;}while(v<=0||inn<=0);return{algo:'comb',tokens:[r1,'÷',s1,'+','{',p1,'×',q1,'-',a,'+',b2,'×',q2c,'-',r2,'÷',s2,'+',d,'}','-',p3,'×',q3],a:String(v),q:`${r1}÷${s1}+{${p1}×${q1}−${a}+${b2}×${q2c}−${r2}÷${s2}+${d}}−${p3}×${q3}`};}
+// ECUACIÓN
+function _genDsEq1(){const x=_dsRi(1,20),a=_dsRi(1,20),b=x+a;return{algo:'eq',expr:`x + ${a} = ${b}`,a:String(x),q:`x + ${a} = ${b}`};}
+function _genDsEq2(){const x=_dsRi(2,15),a=_dsRi(2,12),b=x*a;return{algo:'eq',expr:`${a} × x = ${b}`,a:String(x),q:`${a} × x = ${b}`};}
+function _genDsEq3(){const a=_dsRi(2,9),x=_dsRi(2,20),b=_dsRi(1,50),c=a*x+b;return{algo:'eq',expr:`${a} × x + ${b} = ${c}`,a:String(x),q:`${a} × x + ${b} = ${c}`};}
 const _desafioGens={
   'Suma':{1:_genDsSuma1,2:_genDsSuma2,3:_genDsSuma3},
   'Resta':{1:_genDsResta1,2:_genDsResta2,3:_genDsResta3},
   'Multiplicación':{1:_genDsMult1,2:_genDsMult2,3:_genDsMult3},
   'Multiplicacion':{1:_genDsMult1,2:_genDsMult2,3:_genDsMult3},
   'División':{1:_genDsDiv1,2:_genDsDiv2,3:_genDsDiv3},
-  'Division':{1:_genDsDiv1,2:_genDsDiv2,3:_genDsDiv3}
+  'Division':{1:_genDsDiv1,2:_genDsDiv2,3:_genDsDiv3},
+  'Op. Combinada':{
+    1:()=>{const p=[_genCombB1,_genCombB2,_genCombB3,_genCombB4,_genCombB5,_genCombB6,_genCombB7,_genCombB8,_genCombB9,_genCombB10,_genCombB11,_genCombB12,_genCombB13,_genCombB14,_genCombB15,_genCombB16,_genCombB17,_genCombB18,_genCombB19,_genCombB20];return p[_dsRi(0,p.length-1)]();},
+    2:()=>{const p=[_genCombI1,_genCombI2,_genCombI3,_genCombI4,_genCombI5,_genCombI6,_genCombI7,_genCombI8,_genCombI9,_genCombI10,_genCombI11,_genCombI12,_genCombI13,_genCombI14];return p[_dsRi(0,p.length-1)]();},
+    // Avanzado: SIEMPRE 8 operadores en total — ×,÷,+,−,^,√ garantizados (uno de cada), más 2 extra al
+    // azar — así que solo estos dos generadores (que garantizan esa composición) se usan aquí, en vez
+    // del pool anterior donde el exponente y la raíz solo aparecían en 2 de 12 ejercicios al azar.
+    3:()=>{const p=[_genCombA13,_genCombA14];return p[_dsRi(0,p.length-1)]();}
+  },
+  'Ecuación':{1:_genDsEq1,2:_genDsEq2,3:_genDsEq3},
+  'Ecuacion':{1:_genDsEq1,2:_genDsEq2,3:_genDsEq3}
 };
 function _prepDesafioExam(retoLbl,nivel,skills,uIdx){
   const gen=_desafioGens[retoLbl]?.[nivel];
@@ -10386,6 +12760,9 @@ function _prepSubmitAlgo(){
     });
     const ansD=Array.from(document.querySelectorAll('[id^="algo_a_"]')).map(i=>i.value).join('');
     if(ansD!==q.a) correct=false;
+  } else if(q.algo==='comb'){
+    _combSubmitStep();
+    return;
   } else {
     // Solo se verifica la fila de la diferencia/suma; la fila de llevadas es solo ayuda
     const digits = Array.from(document.querySelectorAll('[id^="algo_a_"]')).map(i=>i.value).join('');

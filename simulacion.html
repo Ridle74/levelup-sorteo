@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Op. Combinada — Simulación</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  background:#0d1117;color:#fff;
+  font-family:'Orbitron',monospace;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 12px 40px;gap:16px;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.hdr{display:flex;flex-direction:column;align-items:center;gap:5px}
+.hdr-title{font-size:12px;color:rgba(255,255,255,0.38);letter-spacing:3px;text-transform:uppercase}
+.hdr-sub{font-size:10px;color:rgba(255,255,255,0.22);letter-spacing:1px}
+
+/* ── Level tabs ─────────────────────────────────────────── */
+.tabs{display:flex;gap:8px}
+.tab{
+  padding:8px 16px;border-radius:8px;border:none;
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+  background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.4);
+  border:1px solid rgba(255,255,255,0.08);
+}
+.tab.active{background:rgba(249,115,22,0.18);color:#f97316;border-color:#f97316;}
+.tab:hover:not(.active){background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);}
+
+/* ── Nav row ────────────────────────────────────────────── */
+.nav-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.nav-btn{
+  padding:7px 14px;border-radius:8px;border:none;
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  background:#1a2232;border:1px solid rgba(255,255,255,0.12);
+  color:rgba(255,255,255,0.6);transition:opacity .2s;
+}
+.nav-btn:hover{opacity:.8}
+.nav-lbl{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1px;min-width:80px;text-align:center}
+
+/* ── Pattern dots ───────────────────────────────────────── */
+.dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:600px}
+.dot{
+  width:11px;height:11px;border-radius:50%;
+  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;transition:background .2s;flex-shrink:0;
+}
+.dot.active{background:#f97316;border-color:#f97316;}
+.dot.done{background:rgba(34,197,94,0.45);border-color:#22c55e;}
+
+/* ── Exercise board ─────────────────────────────────────── */
+.board{
+  width:100%;max-width:700px;
+  background:#0f141c;
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;
+  padding:20px 16px;
+  display:flex;flex-direction:column;gap:0;
+  overflow:hidden;
+}
+
+/* Each row in the board */
+.row{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+  padding:10px 4px;
+  position:relative;
+}
+
+/* Row 0 — original expression (dim) */
+.row-0{opacity:0.38;pointer-events:none;}
+
+/* Done rows */
+.row-done{opacity:0.55;pointer-events:none;}
+
+/* Active row */
+.row-active{opacity:1;}
+
+/* Row separator */
+.row-sep{
+  width:100%;height:1px;
+  background:rgba(255,255,255,0.08);
+  margin:0;
+}
+
+/* ── Token styles ────────────────────────────────────────── */
+.tok{
+  height:42px;min-width:42px;padding:0 10px;
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:14px;
+  position:relative;
+}
+/* Number */
+.tok-num{
+  background:#151d2b;
+  border:1.5px solid rgba(255,255,255,0.14);
+  color:#fff;
+}
+/* Collapsed result (new number after an op) */
+.tok-result{
+  background:#1a2740;
+  border:1.5px solid rgba(255,255,255,0.22);
+  color:#fff;
+}
+/* Operators — default (not clickable) */
+.tok-op{
+  min-width:42px;padding:0;
+  border-radius:9px;
+  font-size:20px;
+}
+.tok-op-add{background:rgba(120,53,15,0.5);border:1.5px solid #f97316;color:#f97316;}
+.tok-op-sub{background:rgba(28,33,48,0.9);border:1.5px solid rgba(148,163,184,0.35);color:#94a3b8;}
+.tok-op-mul{background:rgba(120,40,15,0.5);border:1.5px solid #f97316;color:#f97316;font-size:18px;}
+.tok-op-div{background:rgba(20,83,45,0.5);border:1.5px solid #22c55e;color:#22c55e;font-size:18px;}
+/* Paren */
+.tok-paren{
+  min-width:28px;padding:0;
+  font-size:24px;font-weight:900;
+  color:rgba(249,115,22,0.5);
+  background:transparent;border:none;
+}
+/* Clickable operator in active row */
+.tok-op.clickable{
+  cursor:pointer;
+  transition:transform .12s,box-shadow .12s,filter .12s;
+}
+.tok-op.clickable:hover{
+  transform:scale(1.12);
+  box-shadow:0 0 14px rgba(249,115,22,0.35);
+  filter:brightness(1.25);
+}
+.tok-op.clickable:active{transform:scale(0.97);}
+/* Selected/active operator highlight */
+.tok-op.op-active{
+  box-shadow:0 0 0 2.5px #f97316, 0 0 18px rgba(249,115,22,0.45);
+  transform:scale(1.08);
+}
+/* Disabled operator (neighbors are not numbers) */
+.tok-op.disabled{
+  opacity:0.3;cursor:not-allowed;
+}
+
+/* ── Answer input (shown when op selected) ───────────────── */
+.ans-input-wrap{
+  display:none;align-items:center;gap:8px;
+  padding:10px 16px 4px;
+}
+.ans-input-wrap.visible{display:flex;}
+.ans-eq{font-size:13px;color:rgba(255,255,255,0.5);letter-spacing:1px}
+.ans-field{
+  width:90px;height:40px;
+  background:#1a2232;border:1.5px solid rgba(249,115,22,0.6);
+  border-radius:8px;
+  font-family:'Orbitron',monospace;font-size:15px;font-weight:700;
+  color:#fff;text-align:center;padding:0 8px;
+  outline:none;
+}
+.ans-field:focus{border-color:#f97316;box-shadow:0 0 10px rgba(249,115,22,0.25);}
+.ans-btn{
+  height:40px;padding:0 14px;
+  background:#f97316;border:none;border-radius:8px;
+  font-family:'Orbitron',monospace;font-size:11px;font-weight:700;
+  color:#fff;cursor:pointer;letter-spacing:1px;text-transform:uppercase;
+  transition:opacity .2s;
+}
+.ans-btn:hover{opacity:.85}
+
+/* ── Feedback ────────────────────────────────────────────── */
+.feedback{
+  font-size:12px;letter-spacing:1px;
+  min-height:20px;text-align:center;padding:0 4px;
+}
+.feedback.ok{color:#22c55e}
+.feedback.err{color:#ef4444}
+.feedback.info{color:rgba(255,255,255,0.45)}
+
+/* ── Bottom buttons ──────────────────────────────────────── */
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{
+  padding:10px 18px;border-radius:9px;border:none;
+  font-family:'Orbitron',monospace;font-size:10px;font-weight:700;
+  cursor:pointer;letter-spacing:1px;text-transform:uppercase;
+  transition:opacity .2s,transform .1s;
+}
+.btn:hover{opacity:.82}
+.btn:active{transform:scale(.97)}
+#btn-new{background:#f97316;color:#fff}
+#btn-reset{background:#1a2232;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55)}
+#btn-reveal{background:#1a2232;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.45)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-title">Op. Combinada — Simulación</div>
+  <div class="hdr-sub" id="pat-lbl">Patrón 1/18 — básico</div>
+</div>
+
+<!-- Level tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="setLevel(0)">Básico</button>
+  <button class="tab" onclick="setLevel(1)">Intermedio</button>
+  <button class="tab" onclick="setLevel(2)">Avanzado</button>
+</div>
+
+<!-- Nav row -->
+<div class="nav-row">
+  <button class="nav-btn" onclick="prevPat()">← Anterior</button>
+  <div class="nav-lbl" id="nav-lbl">1 / 18</div>
+  <button class="nav-btn" onclick="nextPat()">Siguiente →</button>
+</div>
+
+<!-- Dot navigation -->
+<div class="dots" id="dots"></div>
+
+<!-- Board -->
+<div class="board" id="board"></div>
+
+<!-- Answer input (shown when op selected) -->
+<div class="ans-input-wrap" id="ans-wrap">
+  <div class="ans-eq" id="ans-eq"></div>
+  <input class="ans-field" id="ans-field" type="number" inputmode="numeric"
+    placeholder="?" onkeydown="if(event.key==='Enter')submitAns()">
+  <button class="ans-btn" onclick="submitAns()">OK</button>
+</div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="btn-row">
+  <button class="btn" id="btn-new" onclick="newExercise()">Nuevo ejercicio</button>
+  <button class="btn" id="btn-reset" onclick="resetSteps()">Reiniciar</button>
+  <button class="btn" id="btn-reveal" onclick="revealAnswer()">Ver respuesta</button>
+</div>
+
+<script>
+// ────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ────────────────────────────────────────────────────────────────────────────
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const SH=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function cdDiv(){const s=R(2,9),mn=Math.ceil(100/s),mx=Math.floor(999/s),k=R(mn,mx);return[s*k,s,k];}
+function cdMul(){const p=R(2,9),q=R(10,99);return[p,q,p*q];}
+function cdMD(){let p,q,pq,dv;do{p=R(2,9);q=R(10,99);pq=p*q;dv=[2,3,4,5,6,7,8,9].filter(d=>pq%d===0&&pq>=100);}while(!dv.length);const s=dv[R(0,dv.length-1)];return[p,q,s,pq/s];}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Generators  (return {t:[tokens], v:answer, lbl:string})
+// ────────────────────────────────────────────────────────────────────────────
+const GENS=[
+// ── BÁSICO (18) ──────────────────────────────────────────────────────────
+[
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,50);b=R(1,50);v=a+b-xy;}while(v<=0);return{t:[a,'+',b,'−',p,'×',q,'÷',s],v,lbl:'B1: a+b−p×q÷s'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=a+pq-k;}while(v<=0);return{t:[a,'+',p,'×',q,'−',r,'÷',s],v,lbl:'B2: a+p×q−r÷s'};},
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,30);b=R(1,a+xy-1);v=a+xy-b;}while(v<=0);return{t:[a,'+',p,'×',q,'÷',s,'−',b],v,lbl:'B3: a+p×q÷s−b'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=a+k-pq;}while(v<=0);return{t:[a,'+',r,'÷',s,'−',p,'×',q],v,lbl:'B4: a+r÷s−p×q'};},
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,50);b=R(1,a);v=a-b+xy;}while(v<=0);return{t:[a,'−',b,'+',p,'×',q,'÷',s],v,lbl:'B5: a−b+p×q÷s'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,pq-k+1),pq+30);v=a-pq+k;}while(v<=0);return{t:[a,'−',p,'×',q,'+',r,'÷',s],v,lbl:'B6: a−p×q+r÷s'};},
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,30);b=R(Math.max(1,xy-a+1),50);v=a-xy+b;}while(v<=0);return{t:[a,'−',p,'×',q,'÷',s,'+',b],v,lbl:'B7: a−p×q÷s+b'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=a-k+pq;}while(v<=0);return{t:[a,'−',r,'÷',s,'+',p,'×',q],v,lbl:'B8: a−r÷s+p×q'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,k-pq+1),50);v=pq+a-k;}while(v<=0);return{t:[p,'×',q,'+',a,'−',r,'÷',s],v,lbl:'B9: p×q+a−r÷s'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,pq+k-1);v=pq+k-a;}while(v<=0);return{t:[p,'×',q,'+',r,'÷',s,'−',a],v,lbl:'B10: p×q+r÷s−a'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,pq);v=pq-a+k;}while(v<=0);return{t:[p,'×',q,'−',a,'+',r,'÷',s],v,lbl:'B11: p×q−a+r÷s'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,k-pq+1),50);v=pq-k+a;}while(v<=0);return{t:[p,'×',q,'−',r,'÷',s,'+',a],v,lbl:'B12: p×q−r÷s+a'};},
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,30);b=R(1,xy+a-1);v=xy+a-b;}while(v<=0);return{t:[p,'×',q,'÷',s,'+',a,'−',b],v,lbl:'B13: p×q÷s+a−b'};},
+  ()=>{let p,q,s,xy,a,b,v;do{[p,q,s,xy]=cdMD();a=R(1,xy);b=R(1,50);v=xy-a+b;}while(v<=0);return{t:[p,'×',q,'÷',s,'−',a,'+',b],v,lbl:'B14: p×q÷s−a+b'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,pq-k+1),50);v=k+a-pq;}while(v<=0);return{t:[r,'÷',s,'+',a,'−',p,'×',q],v,lbl:'B15: r÷s+a−p×q'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,k+pq-1);v=k+pq-a;}while(v<=0);return{t:[r,'÷',s,'+',p,'×',q,'−',a],v,lbl:'B16: r÷s+p×q−a'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(1,k+pq-1);v=k-a+pq;}while(v<=0);return{t:[r,'÷',s,'−',a,'+',p,'×',q],v,lbl:'B17: r÷s−a+p×q'};},
+  ()=>{let p,q,pq,r,s,k,a,v;do{[p,q,pq]=cdMul();[r,s,k]=cdDiv();a=R(Math.max(1,pq-k+1),50);v=k-pq+a;}while(v<=0);return{t:[r,'÷',s,'−',p,'×',q,'+',a],v,lbl:'B18: r÷s−p×q+a'};}
+],
+// ── INTERMEDIO (12) ──────────────────────────────────────────────────────
+[
+  ()=>{let p1,q1,pq1,p2,q2,pq2,r,s,k,a,v;do{[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=pq1+pq2+k-a;}while(v<=0);return{t:[p1,'×',q1,'+',p2,'×',q2,'+',r,'÷',s,'−',a],v,lbl:'I1: p×q+p×q+r÷s−a'};},
+  ()=>{let p1,q1,pq1,p2,q2,pq2,r,s,k,a,v;do{[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=pq1+pq2-k+a;}while(v<=0);return{t:[p1,'×',q1,'+',p2,'×',q2,'−',r,'÷',s,'+',a],v,lbl:'I2: p×q+p×q−r÷s+a'};},
+  ()=>{let r1,s1,k1,r2,s2,k2,p,q,pq,a,v;do{[r1,s1,k1]=cdDiv();[r2,s2,k2]=cdDiv();[p,q,pq]=cdMul();a=R(1,50);v=k1+k2+pq-a;}while(v<=0);return{t:[r1,'÷',s1,'+',r2,'÷',s2,'+',p,'×',q,'−',a],v,lbl:'I3: r÷s+r÷s+p×q−a'};},
+  ()=>{let r1,s1,k1,r2,s2,k2,p,q,pq,a,v;do{[r1,s1,k1]=cdDiv();[r2,s2,k2]=cdDiv();[p,q,pq]=cdMul();a=R(1,50);v=k1+k2-pq+a;}while(v<=0);return{t:[r1,'÷',s1,'+',r2,'÷',s2,'−',p,'×',q,'+',a],v,lbl:'I4: r÷s+r÷s−p×q+a'};},
+  ()=>{let p1,q1,pq1,p2,q2,pq2,r,s,k,a,v;do{[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();[r,s,k]=cdDiv();a=R(1,50);v=pq1-pq2+k+a;}while(v<=0);return{t:[p1,'×',q1,'−',p2,'×',q2,'+',r,'÷',s,'+',a],v,lbl:'I5: p×q−p×q+r÷s+a'};},
+  ()=>{let r,s,k,p1,q1,pq1,p2,q2,pq2,a,v;do{[r,s,k]=cdDiv();[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();a=R(1,50);v=k+pq1+pq2-a;}while(v<=0);return{t:[r,'÷',s,'+',p1,'×',q1,'+',p2,'×',q2,'−',a],v,lbl:'I6: r÷s+p×q+p×q−a'};},
+  ()=>{let r,s,k,p1,q1,pq1,p2,q2,pq2,a,v;do{[r,s,k]=cdDiv();[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();a=R(1,50);v=k-pq1+pq2+a;}while(v<=0);return{t:[r,'÷',s,'−',p1,'×',q1,'+',p2,'×',q2,'+',a],v,lbl:'I7: r÷s−p×q+p×q+a'};},
+  ()=>{let p1,q1,pq1,p2,q2,pq2,p3,q3,pq3,a,v;do{[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();[p3,q3,pq3]=cdMul();a=R(1,50);v=pq1+pq2-pq3+a;}while(v<=0);return{t:[p1,'×',q1,'+',p2,'×',q2,'−',p3,'×',q3,'+',a],v,lbl:'I8: p×q+p×q−p×q+a'};},
+  ()=>{let r1,s1,k1,r2,s2,k2,p,q,pq,a,v;do{[r1,s1,k1]=cdDiv();[r2,s2,k2]=cdDiv();[p,q,pq]=cdMul();a=R(1,50);v=k1-k2+pq+a;}while(v<=0);return{t:[r1,'÷',s1,'−',r2,'÷',s2,'+',p,'×',q,'+',a],v,lbl:'I9: r÷s−r÷s+p×q+a'};},
+  ()=>{let p,q,s1,xy,r,s2,k,a,b,v;do{[p,q,s1,xy]=cdMD();[r,s2,k]=cdDiv();a=R(1,30);b=R(1,50);v=xy+k+a-b;}while(v<=0);return{t:[p,'×',q,'÷',s1,'+',r,'÷',s2,'+',a,'−',b],v,lbl:'I10: p×q÷s+r÷s+a−b'};},
+  ()=>{let p1,q1,pq1,a,p2,q2,pq2,r,s,k,v;do{[p1,q1,pq1]=cdMul();a=R(1,50);[p2,q2,pq2]=cdMul();[r,s,k]=cdDiv();v=pq1+a-pq2+k;}while(v<=0);return{t:[p1,'×',q1,'+',a,'−',p2,'×',q2,'+',r,'÷',s],v,lbl:'I11: p×q+a−p×q+r÷s'};},
+  ()=>{let r1,s1,k1,p,q,pq,a,r2,s2,k2,v;do{[r1,s1,k1]=cdDiv();[p,q,pq]=cdMul();a=R(1,50);[r2,s2,k2]=cdDiv();v=k1+pq-a+k2;}while(v<=0);return{t:[r1,'÷',s1,'+',p,'×',q,'−',a,'+',r2,'÷',s2],v,lbl:'I12: r÷s+p×q−a+r÷s'};}
+],
+// ── AVANZADO (10) ────────────────────────────────────────────────────────
+[
+  ()=>{let p1,q1,pq1,a,inn,p2,r,s,k,b,v;do{[p1,q1,pq1]=cdMul();a=R(5,40);inn=pq1+a;p2=R(2,9);[r,s,k]=cdDiv();b=R(1,inn*p2+k-1);v=inn*p2+k-b;}while(v<=0||inn*p2>9999);return{t:['(',p1,'×',q1,'+',a,')','×',p2,'+',r,'÷',s,'−',b],v,lbl:'A1: (p×q+a)×p+r÷s−b'};},
+  ()=>{let r,s,k,p1,q1,pq1,a,inn,p2,b,v;do{[r,s,k]=cdDiv();[p1,q1,pq1]=cdMul();a=R(1,k+pq1-1);inn=k+pq1-a;p2=R(2,9);b=R(1,50);v=inn*p2+b;}while(v<=0||inn<=0||inn*p2>9999);return{t:['[',r,'÷',s,'+',p1,'×',q1,'−',a,']','×',p2,'+',b],v,lbl:'A2: [r÷s+p×q−a]×p+b'};},
+  ()=>{let p1,q1,pq1,r,s,k,a,inn,p2,b,v;do{[p1,q1,pq1]=cdMul();[r,s,k]=cdDiv();a=R(1,50);inn=pq1-k+a;p2=R(2,9);b=R(1,50);v=inn*p2-b;}while(v<=0||inn<=0||inn*p2>9999);return{t:['{',p1,'×',q1,'−',r,'÷',s,'+',a,'}','×',p2,'−',b],v,lbl:'A3: {p×q−r÷s+a}×p−b'};},
+  ()=>{let p1,q1,pq1,r,s,k,a,b,inn,p2,c,v;do{[p1,q1,pq1]=cdMul();[r,s,k]=cdDiv();a=R(1,30);b=R(1,Math.max(1,k+a-1));inn=k+a-b;p2=R(2,9);c=R(1,50);v=pq1+inn*p2-c;}while(v<=0||inn<=0||inn*p2>9999);return{t:[p1,'×',q1,'+','(',r,'÷',s,'+',a,'−',b,')','×',p2,'−',c],v,lbl:'A4: p×q+(r÷s+a−b)×p−c'};},
+  ()=>{let r,s,k,p1,q1,pq1,p2,q2,pq2,a,inn,b,v;do{[r,s,k]=cdDiv();[p1,q1,pq1]=cdMul();[p2,q2,pq2]=cdMul();a=R(1,pq1+pq2-1);inn=pq1+pq2-a;b=R(1,50);v=k+inn-b;}while(v<=0||inn<=0);return{t:[r,'÷',s,'+','[',p1,'×',q1,'+',p2,'×',q2,'−',a,']','−',b],v,lbl:'A5: r÷s+[p×q+p×q−a]−b'};},
+  ()=>{let r,s,k,a,p,q,pq,b,inn,p2,c,v;do{[r,s,k]=cdDiv();a=R(1,30);[p,q,pq]=cdMul();b=R(1,30);inn=k+a-pq+b;p2=R(2,9);c=R(1,50);v=inn*p2-c;}while(v<=0||inn<=0||inn*p2>9999);return{t:['(',r,'÷',s,'+',a,'−',p,'×',q,'+',b,')','×',p2,'−',c],v,lbl:'A6: (r÷s+a−p×q+b)×p−c'};},
+  ()=>{let p1,q1,pq1,r,s,k,a,b,c,inn,p2,d,v;do{[p1,q1,pq1]=cdMul();[r,s,k]=cdDiv();a=R(1,20);b=R(1,20);c=R(1,Math.max(1,pq1+k-a+b-1));inn=pq1+k-a+b-c;p2=R(2,9);d=R(1,50);v=inn*p2+d;}while(v<=0||inn<=0||inn*p2>9999);return{t:['{',p1,'×',q1,'+',r,'÷',s,'−',a,'+',b,'−',c,'}','×',p2,'+',d],v,lbl:'A7: {p×q+r÷s−a+b−c}×p+d'};},
+  ()=>{let p1,q1,pq1,r,s,k,p2,q2,pq2,a,inn,b,v;do{[p1,q1,pq1]=cdMul();[r,s,k]=cdDiv();[p2,q2,pq2]=cdMul();a=R(1,30);inn=pq1-k+pq2+a;b=R(1,inn-1);v=inn-b;}while(v<=0||inn<=0);return{t:['[',p1,'×',q1,'−',r,'÷',s,'+',p2,'×',q2,'+',a,']','−',b],v,lbl:'A8: [p×q−r÷s+p×q+a]−b'};},
+  ()=>{let r1,s1,k1,p,q,pq,a,r2,s2,k2,b,inn,p2,c,v;do{[r1,s1,k1]=cdDiv();[p,q,pq]=cdMul();a=R(1,20);[r2,s2,k2]=cdDiv();b=R(1,20);p2=R(2,9);const raw=k1+pq+a-k2+b;const rem=((raw%p2)+p2)%p2;c=rem||p2;inn=raw-c;}while(inn<=0);v=inn/p2;return{t:['(',r1,'÷',s1,'+',p,'×',q,'+',a,'−',r2,'÷',s2,'+',b,'−',c,')','÷',p2],v,lbl:'A9: (r÷s+p×q+a−r÷s+b−c)÷p'};},
+  ()=>{let r1,s1,k1,p1,q1,pq1,a,b2,q2c,bc,r2,s2,k2,d,inn,p3,q3,pq3,v;do{[r1,s1,k1]=cdDiv();[p1,q1,pq1]=cdMul();a=R(1,20);b2=R(2,9);q2c=R(10,99);bc=b2*q2c;[r2,s2,k2]=cdDiv();d=R(1,20);inn=pq1-a+bc-k2+d;[p3,q3,pq3]=cdMul();v=k1+inn-pq3;}while(v<=0||inn<=0);return{t:[r1,'÷',s1,'+','{',p1,'×',q1,'−',a,'+',b2,'×',q2c,'−',r2,'÷',s2,'+',d,'}','−',p3,'×',q3],v,lbl:'A10: r÷s+{p×q−a+p×q−r÷s+d}−p×q'};}
+]];
+
+// ────────────────────────────────────────────────────────────────────────────
+// State
+// ────────────────────────────────────────────────────────────────────────────
+let lvl=0;                     // 0=básico 1=inter 2=avanzado
+let patIdx=0;                  // current pattern index
+let doneMask=[new Array(18).fill(false),new Array(12).fill(false),new Array(10).fill(false)];
+let correctToks=[];            // original token array
+let answer=0;
+let patLbl='';
+let history=[];                // array of token arrays (each completed step)
+let curToks=[];                // current token array
+let selOpIdx=null;             // index of selected operator in curToks (or null)
+let solved=false;
+
+const PAREN_PAIRS={'(':')',  '[':']', '{':'}'};
+const CLOSE_PARENS=new Set([')',']','}']);
+const OPEN_PARENS=new Set(['(','[','{']);
+const OPERATORS=new Set(['+','−','-','×','÷']);
+
+// ────────────────────────────────────────────────────────────────────────────
+// Exercise logic
+// ────────────────────────────────────────────────────────────────────────────
+function loadExercise(li, pi){
+  lvl=li; patIdx=pi;
+  const res=GENS[li][pi]();
+  // Normalize minus sign
+  correctToks=res.t.map(t=>t==='-'?'−':t);
+  answer=res.v;
+  patLbl=res.lbl;
+  history=[];
+  curToks=[...correctToks];
+  selOpIdx=null;
+  solved=false;
+  hideAnsInput();
+  setFeedback('','info');
+  render();
+}
+
+function newExercise(){loadExercise(lvl,patIdx);}
+
+function resetSteps(){
+  history=[];curToks=[...correctToks];selOpIdx=null;solved=false;
+  hideAnsInput();setFeedback('','info');render();
+}
+
+function revealAnswer(){
+  setFeedback('Respuesta: '+answer,'info');
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Engine: apply operator at index opIdx in curToks
+// ────────────────────────────────────────────────────────────────────────────
+function isNum(v){return typeof v==='number';}
+function isOp(v){return OPERATORS.has(String(v));}
+function isParen(v){return OPEN_PARENS.has(String(v))||CLOSE_PARENS.has(String(v));}
+
+function canApply(toks,i){
+  return isOp(toks[i]) && i>0 && i<toks.length-1 && isNum(toks[i-1]) && isNum(toks[i+1]);
+}
+
+function applyOp(opIdx,userVal){
+  const left=curToks[opIdx-1], op=curToks[opIdx], right=curToks[opIdx+1];
+  let real;
+  if(op==='+'||op==='+') real=left+right;
+  else if(op==='−'||op==='-') real=left-right;
+  else if(op==='×') real=left*right;
+  else if(op==='÷') real=left/right;
+
+  // Check user value
+  if(Math.round(userVal*1000)/1000 !== Math.round(real*1000)/1000){
+    setFeedback(`✗  ${left} ${op} ${right} ≠ ${userVal}  (correcto: ${real})`,'err');
+    return;
+  }
+
+  history.push([...curToks]);
+  let next=[...curToks.slice(0,opIdx-1), real, ...curToks.slice(opIdx+2)];
+  next=autoCollapse(next);
+  curToks=next;
+  selOpIdx=null;
+  hideAnsInput();
+
+  if(curToks.length===1){
+    solved=true;
+    doneMask[lvl][patIdx]=true;
+    if(Math.abs(curToks[0]-answer)<0.001){
+      setFeedback('✓  ¡Correcto!  = '+answer,'ok');
+    } else {
+      setFeedback('✗  Resultado '+curToks[0]+' (esperado '+answer+'  — orden de operaciones)','err');
+    }
+  } else {
+    setFeedback('','info');
+  }
+  render();
+}
+
+function autoCollapse(toks){
+  let changed=true;
+  while(changed){
+    changed=false;
+    for(let i=1;i<toks.length-1;i++){
+      const lv=toks[i-1], cv=toks[i], rv=toks[i+1];
+      if(typeof lv==='string' && PAREN_PAIRS[lv] && isNum(cv) && rv===PAREN_PAIRS[lv]){
+        toks=[...toks.slice(0,i-1), cv, ...toks.slice(i+2)];
+        changed=true; break;
+      }
+    }
+  }
+  return toks;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Answer input
+// ────────────────────────────────────────────────────────────────────────────
+function showAnsInput(opIdx){
+  selOpIdx=opIdx;
+  const left=curToks[opIdx-1], op=curToks[opIdx], right=curToks[opIdx+1];
+  document.getElementById('ans-eq').textContent=`${left} ${op} ${right} =`;
+  const wrap=document.getElementById('ans-wrap');
+  wrap.classList.add('visible');
+  const field=document.getElementById('ans-field');
+  field.value='';
+  setTimeout(()=>field.focus(),80);
+  render();
+}
+
+function hideAnsInput(){
+  document.getElementById('ans-wrap').classList.remove('visible');
+  document.getElementById('ans-field').value='';
+}
+
+function submitAns(){
+  if(selOpIdx===null)return;
+  const raw=document.getElementById('ans-field').value.trim();
+  if(raw===''){setFeedback('Escribe el resultado primero','warn');return;}
+  const val=parseFloat(raw);
+  if(isNaN(val)){setFeedback('Número inválido','err');return;}
+  applyOp(selOpIdx,val);
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Render
+// ────────────────────────────────────────────────────────────────────────────
+function render(){
+  // Tabs
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===lvl));
+  // Counter/label
+  const counts=[18,12,10];
+  document.getElementById('pat-lbl').textContent=`${patLbl}`;
+  document.getElementById('nav-lbl').textContent=`${patIdx+1} / ${counts[lvl]}`;
+  renderDots();
+  renderBoard();
+}
+
+function renderDots(){
+  const counts=[18,12,10];
+  const cont=document.getElementById('dots');
+  cont.innerHTML='';
+  for(let i=0;i<counts[lvl];i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===patIdx?' active':doneMask[lvl][i]?' done':'');
+    d.title=`Patrón ${i+1}`;
+    d.onclick=(()=>{const ii=i;return()=>loadExercise(lvl,ii);})();
+    cont.appendChild(d);
+  }
+}
+
+function renderBoard(){
+  const board=document.getElementById('board');
+  board.innerHTML='';
+
+  // Row 0 — original
+  board.appendChild(makeRow(correctToks,'row-0',false));
+
+  // Done rows
+  history.forEach((toks,hi)=>{
+    board.appendChild(makeSep());
+    board.appendChild(makeRow(toks,'row-done',false));
+  });
+
+  // Active row
+  if(!solved){
+    board.appendChild(makeSep());
+    board.appendChild(makeRow(curToks,'row-active',true));
+  } else {
+    board.appendChild(makeSep());
+    board.appendChild(makeRow(curToks,'row-done',false));
+  }
+}
+
+function makeSep(){
+  const d=document.createElement('div');
+  d.className='row-sep';
+  return d;
+}
+
+function makeRow(toks, rowClass, interactive){
+  const row=document.createElement('div');
+  row.className='row '+rowClass;
+
+  toks.forEach((tok,i)=>{
+    if(isNum(tok)){
+      const el=document.createElement('div');
+      // If this is a result from last step, slightly different style
+      const isResult=(rowClass==='row-active'&&history.length>0&&i===findResult(toks,i));
+      el.className='tok '+(isResult?'tok-result':'tok-num');
+      el.textContent=String(Number.isInteger(tok)?tok:tok.toFixed(2));
+      row.appendChild(el);
+    } else if(isOp(tok)){
+      const el=document.createElement('div');
+      const cls=opClass(tok);
+      el.className='tok tok-op '+cls;
+      el.textContent=String(tok);
+
+      if(interactive && !solved){
+        const clickable=canApply(toks,i);
+        const isSelected=(selOpIdx===i);
+        if(clickable){
+          el.classList.add('clickable');
+          if(isSelected) el.classList.add('op-active');
+          el.onclick=(()=>{
+            const ii=i;
+            return ()=>{
+              if(selOpIdx===ii){selOpIdx=null;hideAnsInput();render();}
+              else showAnsInput(ii);
+            };
+          })();
+        } else {
+          el.classList.add('disabled');
+        }
+      }
+      row.appendChild(el);
+    } else if(isParen(tok)){
+      const el=document.createElement('div');
+      el.className='tok tok-paren';
+      el.textContent=String(tok);
+      row.appendChild(el);
+    }
+  });
+
+  return row;
+}
+
+// Heuristic: in the active row, if a token is new (not in original), mark it
+function findResult(toks,i){return -1;} // simplified
+
+function opClass(op){
+  if(op==='+'||op==='+') return 'tok-op-add';
+  if(op==='−'||op==='-') return 'tok-op-sub';
+  if(op==='×') return 'tok-op-mul';
+  if(op==='÷') return 'tok-op-div';
+  return '';
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Navigation
+// ────────────────────────────────────────────────────────────────────────────
+function setLevel(li){
+  lvl=li;
+  patIdx=0;
+  loadExercise(li,0);
+}
+function prevPat(){const n=GENS[lvl].length;loadExercise(lvl,(patIdx-1+n)%n);}
+function nextPat(){const n=GENS[lvl].length;loadExercise(lvl,(patIdx+1)%n);}
+
+function setFeedback(msg,cls){
+  const el=document.getElementById('feedback');
+  el.textContent=msg; el.className='feedback '+cls;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+function warn_text(){
+  const p=document.createElement('p');
+  p.style.cssText='color:rgba(255,255,255,0.28);font-size:10px;letter-spacing:1px;text-align:center;max-width:500px;line-height:1.8';
+  p.textContent='Click en un operador → escribe el resultado de esa operación → OK  |  Los operadores grises esperan que resuelvas primero sus vecinos';
+  document.body.insertBefore(p,document.getElementById('btn-new').parentElement);
+}
+warn_text();
+loadExercise(0,0);
+</script>
+</body>
+</html>
