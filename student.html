@@ -363,6 +363,53 @@ textarea.fsm { resize:none; height:64px; }
   box-shadow: 0 0 14px -3px rgba(255,92,122,0.6), inset 0 0 10px rgba(255,92,122,0.1);
 }
 #app .btn-neon-rst:hover { box-shadow: 0 0 20px -2px rgba(255,92,122,0.85), inset 0 0 12px rgba(255,92,122,0.18); }
+#app .btn-neon-preguntas {
+  background: linear-gradient(135deg, rgba(251,191,36,0.20), rgba(245,158,11,0.12));
+  border: 1px solid rgba(251,191,36,0.5);
+  color: #fbbf24;
+  box-shadow: 0 0 14px -3px rgba(251,191,36,0.6), inset 0 0 10px rgba(251,191,36,0.1);
+}
+#app .btn-neon-preguntas:hover { box-shadow: 0 0 20px -2px rgba(251,191,36,0.85), inset 0 0 12px rgba(251,191,36,0.18); }
+
+/* ── MODAL PREGUNTAS ADMIN ─────────────────────────────── */
+#questions-modal-ov {
+  position: fixed; inset: 0; z-index: 9800;
+  background: rgba(0,0,0,0.80); backdrop-filter: blur(6px);
+  display: none; align-items: flex-start; justify-content: center;
+  overflow-y: auto; padding: 20px 12px 40px;
+}
+#questions-modal-ov.open { display: flex; }
+#questions-modal-box {
+  background: linear-gradient(160deg,#0d1b30,#060e1a);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: 20px; width: 100%; max-width: 560px;
+  padding: 20px 18px; box-sizing: border-box;
+  box-shadow: 0 0 60px -10px rgba(251,191,36,0.2);
+}
+.qm-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.qm-title { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:900; color:#fbbf24; letter-spacing:0.08em; text-transform:uppercase; }
+.qm-close { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:rgba(255,255,255,0.6); width:34px; height:34px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.qm-topic { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
+.qm-topic-hdr { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
+.qm-topic-ico { font-size:18px; line-height:1; flex-shrink:0; }
+.qm-topic-lbl { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; color:#e2e8f0; letter-spacing:0.04em; flex:1; }
+.qm-topic-arr { color:rgba(255,255,255,0.35); font-size:12px; transition:transform .2s; }
+.qm-topic.open .qm-topic-arr { transform:rotate(90deg); }
+.qm-topic-body { display:none; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); }
+.qm-topic.open .qm-topic-body { display:block; }
+.qm-sample { margin-bottom:10px; }
+.qm-q { font-family:'Barlow',sans-serif; font-size:12px; color:rgba(255,255,255,0.85); margin-bottom:7px; line-height:1.5; }
+.qm-opts { display:flex; flex-wrap:wrap; gap:5px; }
+.qm-opt { padding:5px 10px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); }
+.qm-opt.correct { background:rgba(57,255,122,0.15); border-color:rgba(57,255,122,0.5); color:#39ff7a; }
+.qm-regen { background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); border-radius:8px; padding:4px 10px; color:#fbbf24; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; letter-spacing:0.08em; cursor:pointer; margin-top:4px; }
+.qm-svg-wrap { margin-bottom:6px; }
+.qm-svg-wrap svg { max-width:100% !important; }
+.qm-nomc { font-family:'Barlow Condensed',sans-serif; font-size:13px; color:#6b7280; font-style:italic; }
+.qm-single-block { padding: 4px 0; }
+.qm-sample { padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.qm-sample:last-of-type { border-bottom:none; }
+.qm-sample-num { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:900; color:#6b7280; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:4px; }
 
 #app .tab-btn.active {
   background: linear-gradient(180deg, #0c1f14, #06120c);
@@ -7439,6 +7486,7 @@ function vTablero() {
       <button id="btn-toggle-config" class="btn-admin btn-neon-cfg" onclick="toggleAdminPanel()">⚡ CONFIG</button>
       <button class="btn-admin btn-neon-rep" onclick="openReportModal()">🎯 REPORTE</button>
       <button class="btn-admin btn-neon-rst" onclick="openReset()">💥 RESET</button>
+      <button class="btn-admin btn-neon-preguntas" onclick="openQuestionsModal()">📚 PREGUNTAS</button>
     </div>
   </header>
 
@@ -12192,6 +12240,149 @@ function _prepModalLogin() {
     </div>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL PREGUNTAS (solo admin)
+════════════════════════════════════════════════════ -->
+<div id="questions-modal-ov" onclick="if(event.target===this)closeQuestionsModal()">
+  <div id="questions-modal-box">
+    <div class="qm-header">
+      <div class="qm-title" id="qm-modal-title">📚 Preguntas</div>
+      <button class="qm-close" onclick="closeQuestionsModal()">✕</button>
+    </div>
+    <div id="qm-topics-list"></div>
+  </div>
+</div>
+
+<script>
+// ─── MODAL PREGUNTAS ADMIN ──────────────────────────────────────────────
+// Estado actual del modal (para regenerar sin pasar parámetros)
+var _qmCurrentKeys = [];
+var _qmCurrentLabel = '';
+
+// topicOrArray: string (una habilidad) o array de strings (examen)
+// label: título opcional para exámenes
+function openQuestionsModal(topicOrArray, label) {
+  var ov = document.getElementById('questions-modal-ov');
+  ov.classList.add('open');
+  ov.scrollTop = 0;
+  _qmRenderTopics(topicOrArray, label);
+}
+function closeQuestionsModal() {
+  document.getElementById('questions-modal-ov').classList.remove('open');
+}
+
+function _qmSafeGen(def) {
+  try { return def.gen(); } catch(e) { return null; }
+}
+
+// Genera N preguntas de muestra para una habilidad y devuelve HTML
+function _qmBuildSkillHtml(key) {
+  var def = BINGO_TOPICS[key];
+  if (!def) return '<div class="qm-nomc">Tema no encontrado: ' + key + '</div>';
+  var html = '';
+  var count = Math.max(def.qCount || 5, 5); // mínimo 5 ejemplos
+  for (var i = 0; i < count; i++) {
+    var sample = _qmSafeGen(def);
+    if (!sample) continue;
+    html += '<div class="qm-sample">';
+    html += '<div class="qm-sample-num">' + (i + 1) + '</div>';
+    // pregunta
+    if (sample.q && sample.q.toString().trim().startsWith('<')) {
+      html += '<div class="qm-svg-wrap">' + sample.q + '</div>';
+    } else {
+      html += '<div class="qm-q">' + (sample.q || '') + '</div>';
+    }
+    // opciones
+    if (sample.opts && sample.opts.length) {
+      html += '<div class="qm-opts">';
+      sample.opts.forEach(function(opt) {
+        var isCorrect = String(opt) === String(sample.a);
+        html += '<span class="qm-opt' + (isCorrect ? ' correct' : '') + '">' + opt + '</span>';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="qm-nomc">Respuesta: <b>' + sample.a + '</b></div>';
+    }
+    html += '</div>';
+  }
+  return html || '<div class="qm-nomc">No se pudieron generar preguntas.</div>';
+}
+
+function _qmRenderTopics(topicOrArray, label) {
+  var list = document.getElementById('qm-topics-list');
+  var titleEl = document.getElementById('qm-modal-title');
+  if (!list) return;
+
+  // Normalizar a array de keys y guardar estado para regenerar
+  var keys = Array.isArray(topicOrArray) ? topicOrArray : (topicOrArray ? [topicOrArray] : []);
+  keys = keys.filter(function(k){ return k && BINGO_TOPICS[k]; });
+  _qmCurrentKeys = keys;
+  _qmCurrentLabel = label || '';
+
+  if (!keys.length) {
+    list.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-size:13px;text-align:center;padding:24px">Selecciona una habilidad primero.</div>';
+    if (titleEl) titleEl.textContent = '📚 Preguntas';
+    return;
+  }
+
+  // Título del modal
+  var titleText = label || (keys.length === 1 ? (BINGO_TOPICS[keys[0]].lbl || keys[0]) : (keys.length + ' habilidades'));
+  if (titleEl) titleEl.textContent = '📚 ' + titleText;
+
+  var html = '';
+  if (keys.length === 1) {
+    // Habilidad única: mostrar preguntas directamente
+    html += '<div class="qm-single-block">';
+    html += _qmBuildSkillHtml(keys[0]);
+    html += '<button class="qm-regen" onclick="_qmRegenAll()">↺ Regenerar ejemplos</button>';
+    html += '</div>';
+  } else {
+    // Múltiples habilidades (examen): acordeón por habilidad
+    keys.forEach(function(key) {
+      var def = BINGO_TOPICS[key];
+      var ico = def.ico || '❓';
+      html += '<div class="qm-topic" data-key="' + key + '">'
+        + '<div class="qm-topic-hdr" onclick="_qmToggleTopic(this.parentElement)">'
+        + '<span class="qm-topic-ico">' + ico + '</span>'
+        + '<span class="qm-topic-lbl">' + (def.lbl || key) + '</span>'
+        + '<span class="qm-topic-arr">›</span>'
+        + '</div>'
+        + '<div class="qm-topic-body"></div>'
+        + '</div>';
+    });
+  }
+  list.innerHTML = html;
+}
+
+function _qmRegenAll() {
+  _qmRenderTopics(_qmCurrentKeys, _qmCurrentLabel);
+}
+
+function _qmToggleTopic(el) {
+  var wasOpen = el.classList.contains('open');
+  document.querySelectorAll('#qm-topics-list .qm-topic.open').forEach(function(t){ t.classList.remove('open'); });
+  if (!wasOpen) {
+    el.classList.add('open');
+    var key = el.dataset.key;
+    var body = el.querySelector('.qm-topic-body');
+    if (body && !body.dataset.loaded) {
+      body.innerHTML = _qmBuildSkillHtml(key)
+        + '<button class="qm-regen" data-key="' + key + '" onclick="_qmRegenTopic(this)">↺ Regenerar</button>';
+      body.dataset.loaded = '1';
+    }
+  }
+}
+
+function _qmRegenTopic(btn) {
+  var key = btn.dataset.key;
+  var body = btn.closest('.qm-topic-body');
+  if (!body || !key) return;
+  body.dataset.loaded = '1';
+  body.innerHTML = _qmBuildSkillHtml(key)
+    + '<button class="qm-regen" data-key="' + key + '" onclick="_qmRegenTopic(this)">↺ Regenerar</button>';
+}
+</script>
 
 </body>
 </html>
