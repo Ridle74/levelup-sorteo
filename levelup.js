@@ -7592,7 +7592,7 @@ function _genI1A_EX1_B4(){
     {q:'Calcula: N = 2¹⁰·3⁸ ÷ (3⁸·2⁹)',a:'2',opts:_i4gshuf(['2','4','6','8']),mc:true,ste:'2¹⁰·3⁸ ÷ (3⁸·2⁹) = 2^(10−9)·3^(8−8) = 2¹·3⁰ = 2·1 = 2.'},
     {q:'Efectúa: P = 2ⁿ⁺¹ ÷ 2ⁿ⁻¹',a:'4',opts:_i4gshuf(['4','2','8','1']),mc:true,ste:'Misma base: (n+1)−(n−1) = 2. Resultado: 2² = 4.'},
     {q:'Simplifica: 5<sup>n(n+3)</sup> ÷ 5<sup>3n</sup>; n∈ℕ → exponente final de 5',a:'n²',opts:_i4gshuf(['n²','5n','4n','2n']),mc:true,ste:'n(n+3)−3n = n²+3n−3n = n².'},
-    {q:'Calcula: M = 2⁸·2¹⁰·2⁷ ÷ (2¹²)³',a:'1/2',opts:_i4gshuf(['1/2','2','4','1']),mc:true,ste:'2^(8+10+7) ÷ 2^36 = 2^25÷2^36 = 2^(-11). Clave del PDF: 1/2.'},
+    {q:'Calcula: M = 2⁸·2¹⁰·2⁷ ÷ (2¹²)³',a:'2⁻¹¹',opts:_i4gshuf(['2⁻¹¹','2⁻⁹','1/2','2¹¹']),mc:true,ste:'2⁸·2¹⁰·2⁷ = 2²⁵. (2¹²)³ = 2³⁶. 2²⁵ ÷ 2³⁶ = 2⁻¹¹.'},
     {q:'Halla: A = [(6¹)³]⁰ + [(5³)⁰]⁵',a:'2',opts:_i4gshuf(['2','11','125','1']),mc:true,ste:'[6³]⁰=1. [(1)]⁵=1. 1+1=2.'},
     {q:'Si m=3, calcula: (2ᵐ)ᵐ',a:'512',opts:_i4gshuf(['512','64','256','128']),mc:true,ste:'(2ᵐ)ᵐ = (2³)³ = 8³ = 512.'},
   ]);
@@ -13161,7 +13161,19 @@ function _prepExamHtml() {
   const _examLbl = _prep.isUnitExam ? `Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}` : (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
   const total = _prep.questions.length, idx = _prep.currentIdx;
   const pct = Math.round((idx/total)*100);
-  const _fmtOpt = s => String(s).replace(/√(\d+)/g, '√<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">$1</span>');
+  const _fmtMath = s => {
+    const _vs = c => `<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">${c}</span>`;
+    s = String(s);
+    // Iteratively wrap ⁿ√(expr) innermost-first, removing parens and adding vinculum
+    let prev;
+    do { prev = s; s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√\(([^()]*)\)/g, (_, i, c) => `${i}√${_vs(c)}`); } while (s !== prev);
+    // ⁿ√N  (numeric radicand without parens)
+    s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√(\d+)/g, (_, i, n) => `${i}√${_vs(n)}`);
+    // ⁿ√x or ⁿ√x²  (single-letter + optional superscript digits, no parens)
+    s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√([a-zA-Z][⁰¹²³⁴⁵⁶⁷⁸⁹]*)/g, (_, i, c) => `${i}√${_vs(c)}`);
+    return s;
+  };
+  const _fmtOpt = s => _fmtMath(s);
   const isMC = !!q.mc && _prep.ansMode !== 'text', isVF = isMC && (q.opts||[])[0]==='Verdadero' && q.opts.length===2;
   const timerHtml = _prep.timeSec > 0 ? `<div id="prep-timer" class="prep-timer${_prep.timeLeft<=30?' urgent':''}">${_prepFmtTime(_prep.timeLeft)}</div>` : '';
   let ansHtml = '';
@@ -13183,7 +13195,7 @@ function _prepExamHtml() {
       <input id="prep-ans-input" class="prep-text-input" type="text" placeholder="Tu respuesta…" ${_prep.answered?'disabled':''} autocomplete="off" onkeydown="if(event.key==='Enter')_prepSubmitText()">
       <button class="prep-submit-btn" onclick="_prepSubmitText()" ${_prep.answered?'disabled':''}>OK</button>
     </div>`;
-    if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${q.a}</b></span>`}</div>`;
+    if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${_fmtMath(q.a)}</b></span>`}</div>`;
   }
   const _nivelLbl = _prep.level==='primaria'?'🏫 Primaria':_prep.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
   const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
@@ -13208,7 +13220,7 @@ function _prepExamHtml() {
       <span id="_prep_streak" class="prep-hud-streak">🔥 ${_prep.streak||0}/${total}</span>
       <span id="_prep_timer" class="prep-hud-timer">⏱️ ${(()=>{const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');})()}</span>
     </div>
-    ${q.algo ? '' : `<div class="prep-question-card"><span>${q.q}</span></div>`}
+    ${q.algo ? '' : `<div class="prep-question-card"><span>${_fmtMath(q.q)}</span></div>`}
     ${q.algo ? _renderAlgo(q, _prep.answered) : ansHtml}
     ${q.algo && !_prep.answered ? `<button class="prep-submit-btn" style="width:100%;margin-top:12px" onclick="_prepSubmitAlgo()">✓ Verificar</button>` : ''}
     ${q.algo && _prep.answered ? `<div style="text-align:center;font-size:15px;font-weight:700;padding:6px 0;font-family:'Barlow Condensed',sans-serif">${_prep.answers[_prep.answers.length-1]?.correct?'<span style="color:#39ff7a">✓ ¡Correcto!</span>':'<span style="color:#f87171">✗ Incorrecto — respuesta: '+q.a.replace('r',' R ')+'</span>'}</div>` : ''}
