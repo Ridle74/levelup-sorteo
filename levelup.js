@@ -6842,7 +6842,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b4','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2'],
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b4','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
     areas:[
@@ -9185,6 +9185,198 @@ function _genDD_COMB_B3(){
   return picks[_dsRi(0,picks.length-1)]();
 }
 _SKILL_META['dd_comb_b3']={ico:'🔢',lbl:'Op. Combinada avanzada',qCount:3,gen:_genDD_COMB_B3};
+
+// ══ Álgebra 1° Secundaria – Saco Oliveros (ol1a) ══════════════════════════════
+// Cap. 13: Productos Notables I — Binomio al Cuadrado e Identidades de Legendre
+
+// ─── B1: 🖼 Cuadrado de binomio suma – vista geométrica (parámetros aleatorios) ─
+function _genOl1aPn1_B1(){
+  var a=_i4grnd(1,6), b=_i4grnd(1,5);
+  var W=180, H=180;
+  var wa=Math.round(W*a/(a+b)), wb=W-wa, ha=Math.round(H*a/(a+b)), hb=H-ha;
+  var ox=40, oy=10;
+  var svg='<svg viewBox="0 0 '+(W+ox+10)+' '+(H+oy+45)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;margin:4px auto;display:block">'+
+    '<rect x="'+ox+'" y="'+oy+'" width="'+wa+'" height="'+ha+'" fill="#6366f1" rx="2"/>'+
+    '<text x="'+(ox+wa/2)+'" y="'+(oy+ha/2+5)+'" text-anchor="middle" font-size="14" font-weight="700" fill="white">a²</text>'+
+    '<rect x="'+(ox+wa)+'" y="'+oy+'" width="'+wb+'" height="'+ha+'" fill="#a78bfa" rx="2"/>'+
+    '<text x="'+(ox+wa+wb/2)+'" y="'+(oy+ha/2+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#1e1b4b">ab</text>'+
+    '<rect x="'+ox+'" y="'+(oy+ha)+'" width="'+wa+'" height="'+hb+'" fill="#818cf8" rx="2"/>'+
+    '<text x="'+(ox+wa/2)+'" y="'+(oy+ha+hb/2+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="white">ab</text>'+
+    '<rect x="'+(ox+wa)+'" y="'+(oy+ha)+'" width="'+wb+'" height="'+hb+'" fill="#c4b5fd" rx="2"/>'+
+    '<text x="'+(ox+wa+wb/2)+'" y="'+(oy+ha+hb/2+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#1e1b4b">b²</text>'+
+    '<text x="'+(ox+wa/2)+'" y="'+(oy+H+18)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">a='+a+'</text>'+
+    '<text x="'+(ox+wa+wb/2)+'" y="'+(oy+H+18)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">b='+b+'</text>'+
+    '<text x="'+(ox-18)+'" y="'+(oy+ha/2+4)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">a</text>'+
+    '<text x="'+(ox-18)+'" y="'+(oy+ha+hb/2+4)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">b</text>'+
+    '</svg>';
+  var total=(a+b)*(a+b), a2=a*a, b2=b*b, ab=a*b, ab2=2*ab;
+  var t=_i4grnd(0,5);
+  if(t===0) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto mide el área total del cuadrado?</div></div>',a:''+total,opts:_i4gshuf([''+total,''+(a2+b2),''+(a2+b2+ab),''+(2*(a+b))]),mc:true,ste:'(a+b)²='+a2+'+'+ab2+'+'+b2+'='+total+'.'};
+  if(t===1) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Qué expresión representa el área total?</div></div>',a:'a²+2ab+b²',opts:_i4gshuf(['a²+2ab+b²','a²+ab+b²','a²+b²','2a²+2b²']),mc:true,ste:'(a+b)²=a²+2ab+b².'};
+  if(t===2) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto mide la región coloreada a²?</div></div>',a:''+a2,opts:_i4gshuf([''+a2,''+(a2+b2),''+ab2,''+(a+b)]),mc:true,ste:'La región a² mide '+a+'×'+a+'='+a2+'.'};
+  if(t===3) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto mide la región coloreada b²?</div></div>',a:''+b2,opts:_i4gshuf([''+b2,''+a2,''+ab2,''+total]),mc:true,ste:'La región b² mide '+b+'×'+b+'='+b2+'.'};
+  if(t===4) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto suman las dos regiones ab juntas?</div></div>',a:''+ab2,opts:_i4gshuf([''+ab2,''+ab,''+(ab2+1),''+a2]),mc:true,ste:'Cada rectángulo mide '+a+'×'+b+'='+ab+'. Juntos: 2ab='+ab2+'.'};
+  return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuántas regiones de área "ab" hay en el diagrama?</div></div>',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Hay 2 rectángulos ab. Por eso el término medio de (a+b)² es 2ab.'};
+}
+_SKILL_META['ol1a_pn1_b1']={ico:'🖼',lbl:'Cuadrado de binomio – vista geométrica',qCount:3,gen:_genOl1aPn1_B1};
+
+// ─── B2: 📐 Desarrollar binomio al cuadrado – generación procedural ──────────
+function _genOl1aPn1_B2(){
+  var r=_i4grnd, sh=_i4gshuf, t=r(0,8);
+  var a,b,A,B,C,aS,tA,ans,w1,w2,w3,p,q,s,n,nS,pow2,pow2S,pr,primes,pairs;
+  if(t===0){
+    // (ax+b)²  a∈[1,4] b∈[2,9]
+    a=r(1,4); b=r(2,9); A=a*a; B=2*a*b; C=b*b;
+    aS=a===1?'':''+a; tA=a===1?'x²':A+'x²';
+    ans=tA+'+'+B+'x+'+C;
+    return {q:'Desarrolla: ('+aS+'x+'+b+')²',a:ans,opts:sh([ans,tA+'+'+b+'x+'+C,tA+'+'+C,tA+'−'+B+'x+'+C]),mc:true,ste:'('+aS+'x)²+2('+aS+'x)('+b+')+'+b+'²='+ans+'.'};
+  }
+  if(t===1){
+    // (ax−b)²  a∈[1,4] b∈[2,9]
+    a=r(1,4); b=r(2,9); A=a*a; B=2*a*b; C=b*b;
+    aS=a===1?'':''+a; tA=a===1?'x²':A+'x²';
+    ans=tA+'−'+B+'x+'+C;
+    return {q:'Desarrolla: ('+aS+'x−'+b+')²',a:ans,opts:sh([ans,tA+'+'+B+'x+'+C,tA+'−'+b+'x+'+C,tA+'−'+B+'x−'+C]),mc:true,ste:'('+aS+'x)²−2('+aS+'x)('+b+')+'+b+'²='+ans+'.'};
+  }
+  if(t===2){
+    // (√p+√q)²  p,q primos distintos
+    primes=[[2,3],[2,5],[3,5],[2,7],[3,7],[5,7],[2,11],[3,11],[5,11],[7,11],[2,13],[3,13]];
+    pr=primes[r(0,primes.length-1)]; p=pr[0]; q=pr[1]; s=p+q; var pq=p*q;
+    ans=s+'+2√'+pq;
+    return {q:'Desarrolla: (√'+p+'+√'+q+')²',a:ans,opts:sh([ans,s+'+√'+pq,s+'−2√'+pq,'√'+(p+q)+'+2√'+pq]),mc:true,ste:''+p+'+2√'+pq+'+'+q+'='+ans+'.'};
+  }
+  if(t===3){
+    // (√p−√q)²  p>q
+    pairs=[[3,2],[5,2],[7,2],[5,3],[7,3],[7,5],[11,2],[11,3],[11,5],[11,7],[13,2],[13,3]];
+    pr=pairs[r(0,pairs.length-1)]; p=pr[0]; q=pr[1]; s=p+q; var pq2=p*q;
+    ans=s+'−2√'+pq2;
+    return {q:'Desarrolla: (√'+p+'−√'+q+')²',a:ans,opts:sh([ans,s+'+2√'+pq2,(p>q?p-q:q-p)+'−2√'+pq2,s+'−√'+pq2]),mc:true,ste:''+p+'−2√'+pq2+'+'+q+'='+ans+'.'};
+  }
+  if(t===4){
+    // (ax^n+b)²  a∈[1,3] b∈[2,6] n∈[2,3]
+    a=r(1,3); b=r(2,6); n=r(2,3); A=a*a; B=2*a*b; C=b*b;
+    nS=n===2?'x²':'x³'; pow2=n*2; pow2S=pow2===4?'x⁴':'x⁶';
+    aS=a===1?'':''+a; tA=a===1?pow2S:A+pow2S;
+    ans=tA+'+'+B+nS+'+'+C;
+    return {q:'Desarrolla: ('+aS+nS+'+'+b+')²',a:ans,opts:sh([ans,tA+'+'+b+nS+'+'+C,tA+'+'+C,tA+'−'+B+nS+'+'+C]),mc:true,ste:'('+aS+nS+')²+2('+aS+nS+')('+b+')+'+b+'²='+ans+'.'};
+  }
+  if(t===5){
+    // (ax^n−b)²  a∈[1,3] b∈[2,6] n∈[2,3]
+    a=r(1,3); b=r(2,6); n=r(2,3); A=a*a; B=2*a*b; C=b*b;
+    nS=n===2?'x²':'x³'; pow2=n*2; pow2S=pow2===4?'x⁴':'x⁶';
+    aS=a===1?'':''+a; tA=a===1?pow2S:A+pow2S;
+    ans=tA+'−'+B+nS+'+'+C;
+    return {q:'Desarrolla: ('+aS+nS+'−'+b+')²',a:ans,opts:sh([ans,tA+'+'+B+nS+'+'+C,tA+'−'+b+nS+'+'+C,tA+'−'+B+nS+'−'+C]),mc:true,ste:'('+aS+nS+')²−2('+aS+nS+')('+b+')+'+b+'²='+ans+'.'};
+  }
+  if(t===6){
+    // Término independiente de (ax±b)²
+    a=r(1,4); b=r(2,9); var sg=r(0,1)?'+':'−';
+    C=b*b; aS=a===1?'':''+a;
+    return {q:'Término independiente de ('+aS+'x'+sg+b+')²:',a:''+C,opts:sh([''+C,''+(2*a*b),''+(a*a),''+b]),mc:true,ste:'(±'+b+')²='+C+'.'};
+  }
+  if(t===7){
+    // Término central de (ax+b)²: coeficiente de x = 2ab
+    a=r(1,4); b=r(2,9); B=2*a*b; aS=a===1?'':''+a;
+    return {q:'Término central de ('+aS+'x+'+b+')²:',a:''+B,opts:sh([''+B,''+(a*b),''+(a+b),''+(a*a)]),mc:true,ste:'2×'+a+'×'+b+'='+B+'.'};
+  }
+  // t===8: Término cuadrático de (ax+b)²: coeficiente de x² = a²
+  a=r(1,4); b=r(2,9); A=a*a; aS=a===1?'':''+a;
+  return {q:'Término cuadrático de ('+aS+'x+'+b+')²:',a:''+A,opts:sh([''+A,''+(2*a*b),''+(b*b),''+(a+b)]),mc:true,ste:'('+aS+'x)²='+A+'x². El coeficiente de x² es '+A+'.'};
+}
+_SKILL_META['ol1a_pn1_b2']={ico:'📐',lbl:'Desarrollar binomio al cuadrado',qCount:4,gen:_genOl1aPn1_B2};
+
+function _genOl1aPn1_BQ1(){return _bqSrcPick(['ol1a_pn1_b1','ol1a_pn1_b2'],[_genOl1aPn1_B1,_genOl1aPn1_B2]);}
+_SKILL_META['ol1a_pn1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Binomio al Cuadrado',qCount:5,gen:_genOl1aPn1_BQ1,quiz:true};
+
+// ─── B3: 📐 Identidades de Legendre – generación procedural ─────────────────
+function _genOl1aPn1_B3(){
+  var r=_i4grnd, sh=_i4gshuf, t=r(0,5);
+  var p,q,s,pq,a,k,coeff,d,quot,ans,pr,primes;
+  if(t===0){
+    // (√p+√q)²+(√p−√q)² = 2(p+q)
+    primes=[2,3,5,7,11,13,17,19]; p=primes[r(0,7)]; q=primes[r(0,7)];
+    while(q===p) q=primes[r(0,7)];
+    ans=2*(p+q);
+    return {q:'Efectúa: (√'+p+'+√'+q+')²+(√'+p+'−√'+q+')²',a:''+ans,opts:sh([''+ans,''+(p+q),''+(4*p*q),''+(2*Math.abs(p-q))]),mc:true,ste:'2('+p+'+'+q+')='+ans+'.'};
+  }
+  if(t===1){
+    // [(√p+√q)²+(√p−√q)²]÷2 = p+q
+    primes=[2,3,5,7,11,13]; p=primes[r(0,5)]; q=primes[r(0,5)];
+    while(q===p) q=primes[r(0,5)];
+    ans=p+q;
+    return {q:'Efectúa: [(√'+p+'+√'+q+')²+(√'+p+'−√'+q+')²]÷2',a:''+ans,opts:sh([''+ans,''+(2*(p+q)),''+(p*q),''+(Math.abs(p-q))]),mc:true,ste:'2('+p+'+'+q+')÷2='+ans+'.'};
+  }
+  if(t===2){
+    // (ax+k)²−(ax−k)² = 4akx  →  simplificar
+    a=r(1,3); k=r(2,8); coeff=4*a*k;
+    var aS=a===1?'':''+a;
+    ans=coeff+'x';
+    return {q:'Simplifica: ('+aS+'x+'+k+')²−('+aS+'x−'+k+')²',a:ans,opts:sh([ans,''+(2*a*k)+'x',''+k+'x','0']),mc:true,ste:'4·('+aS+'x)·'+k+'='+ans+'.'};
+  }
+  if(t===3){
+    // [(ax+k)²−(ax−k)²]÷d = resultado  (d siempre divide a 4ak)
+    a=r(1,3); k=r(2,7); coeff=4*a*k;
+    // divisores seguros: 2k, 4k, coeff (siempre dividen exactamente)
+    var divs=[2*k, 4*k, coeff]; d=divs[r(0,2)]; quot=coeff/d;
+    var aS2=a===1?'':''+a;
+    ans=quot===1?'x':quot+'x';
+    return {q:'Reduzca: [('+aS2+'x+'+k+')²−('+aS2+'x−'+k+')²]÷'+d,a:ans,opts:sh([ans,''+(quot+1)+'x',''+(Math.max(1,quot-1))+'x',''+d]),mc:true,ste:coeff+'x÷'+d+'='+ans+'.'};
+  }
+  if(t===4){
+    // Numérico: (m+n)²−(m−n)² = 4mn  con m,n enteros pequeños
+    var m=r(2,9), n=r(2,8); while(n===m) n=r(2,8);
+    ans=4*m*n;
+    return {q:'Efectúa: ('+m+'+'+n+')²−('+m+'−'+n+')²',a:''+ans,opts:sh([''+ans,''+(2*m*n),''+(m*m+n*n),''+(m+n)*(m+n)]),mc:true,ste:'4·'+m+'·'+n+'='+ans+'.'};
+  }
+  // t===5: [(m+n)²+(m−n)²]÷2 = m²+n²  con enteros
+  var m2=r(2,8), n2=r(2,7); while(n2===m2) n2=r(2,7);
+  ans=m2*m2+n2*n2;
+  return {q:'Efectúa: [('+m2+'+'+n2+')²+('+m2+'−'+n2+')²]÷2',a:''+ans,opts:sh([''+ans,''+(m2+n2),''+(m2*n2),''+(2*ans)]),mc:true,ste:'2('+m2+'²+'+n2+'²)÷2='+m2*m2+'+'+n2*n2+'='+ans+'.'};
+}
+_SKILL_META['ol1a_pn1_b3']={ico:'📐',lbl:'Identidades de Legendre',qCount:4,gen:_genOl1aPn1_B3};
+
+// ─── B4: 📐 Aplicaciones con datos relacionados – generación procedural ──────
+function _genOl1aPn1_B4(){
+  var r=_i4grnd, sh=_i4gshuf, t=r(0,5);
+  var k,s,p,d,S,P,xy,ans;
+  var ks3=[3,4,5,6,7,8,9], ks2=[2,3,4,5,6];
+  if(t===0){
+    // x+1/x=k → x²+1/x²=k²−2
+    k=ks3[r(0,ks3.length-1)]; ans=k*k-2;
+    return {q:'Si x+1/x='+k+', halla x²+1/x²',a:''+ans,opts:sh([''+ans,''+(k*k),''+(k*k+2),''+(k*k-4)]),mc:true,ste:'(x+1/x)²='+k*k+'=x²+2+1/x². x²+1/x²='+k*k+'−2='+ans+'.'};
+  }
+  if(t===1){
+    // x−1/x=k → x²+1/x²=k²+2
+    k=ks2[r(0,ks2.length-1)]; ans=k*k+2;
+    return {q:'Si x−1/x='+k+', halla x²+1/x²',a:''+ans,opts:sh([''+ans,''+(k*k),''+(k*k-2),''+(k*k+4)]),mc:true,ste:'(x−1/x)²='+k*k+'=x²−2+1/x². x²+1/x²='+k*k+'+2='+ans+'.'};
+  }
+  if(t===2){
+    // x+y=s, xy=p → x²+y²=s²−2p
+    s=r(4,9); p=r(2,6); ans=s*s-2*p;
+    return {q:'Si x+y='+s+' y xy='+p+', halla x²+y²',a:''+ans,opts:sh([''+ans,''+(s*s),''+(s*s+2*p),''+(s*s-p)]),mc:true,ste:'(x+y)²='+s*s+'=x²+'+2*p+'+y². x²+y²='+s*s+'−'+2*p+'='+ans+'.'};
+  }
+  if(t===3){
+    // x−y=d, xy=p → x²+y²=d²+2p
+    d=r(2,6); p=r(2,8); ans=d*d+2*p;
+    return {q:'Si x−y='+d+' y xy='+p+', halla x²+y²',a:''+ans,opts:sh([''+ans,''+(d*d),''+(d*d+p),''+(d*d+4*p)]),mc:true,ste:'(x−y)²='+d*d+'=x²−'+2*p+'+y². x²+y²='+d*d+'+'+2*p+'='+ans+'.'};
+  }
+  if(t===4){
+    // x²+y²=S, xy=P → (x+y)²=S+2P
+    S=r(10,30); P=r(2,8); ans=S+2*P;
+    return {q:'Si x²+y²='+S+' y xy='+P+', halla (x+y)²',a:''+ans,opts:sh([''+ans,''+S,''+(S+P),''+(S+4*P)]),mc:true,ste:'(x+y)²=x²+2xy+y²='+S+'+'+2*P+'='+ans+'.'};
+  }
+  // t===5: x−y=d, x²+y²=S → xy=(S−d²)/2
+  d=r(2,5); var dif=r(1,8)*2; S=d*d+dif; xy=dif/2; ans=xy;
+  return {q:'Si x−y='+d+' y x²+y²='+S+', halla xy',a:''+ans,opts:sh([''+ans,''+(ans+1),''+(ans-1),''+dif]),mc:true,ste:'(x−y)²='+d*d+'=x²−2xy+y²='+S+'−2xy. 2xy='+dif+'. xy='+ans+'.'};
+}
+_SKILL_META['ol1a_pn1_b4']={ico:'📐',lbl:'Aplicaciones con datos relacionados',qCount:3,gen:_genOl1aPn1_B4};
+
+function _genOl1aPn1_BQ2(){return _bqSrcPick(['ol1a_pn1_b3','ol1a_pn1_b4'],[_genOl1aPn1_B3,_genOl1aPn1_B4]);}
+_SKILL_META['ol1a_pn1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Legendre y Aplicaciones',qCount:5,gen:_genOl1aPn1_BQ2,quiz:true};
+
+function _genOl1aPn1_BPU(){return _bqSrcPick(['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_b3','ol1a_pn1_b4'],[_genOl1aPn1_B1,_genOl1aPn1_B2,_genOl1aPn1_B3,_genOl1aPn1_B4]);}
+_SKILL_META['ol1a_pn1_bpu']={ico:'⚡',lbl:'Examen – Productos Notables I',qCount:5,gen:_genOl1aPn1_BPU,quiz:true};
+
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
@@ -9296,7 +9488,8 @@ const PREP_CURRICULUM = {
          {lbl:'Valor Absoluto',                  area:'algebra', editorial:'intelectum', skills:['i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2']},
          {lbl:'Logaritmos',                      area:'algebra', editorial:'intelectum', skills:['i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2']},
          {lbl:'Funciones',                       area:'algebra', editorial:'intelectum', skills:['i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2']},
-         {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2']}],
+         {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2']},
+         {lbl:'Productos Notables I',            area:'algebra', editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2']}],
     '2':[
       {lbl:'Polígonos',                 area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},
       {lbl:'Operaciones con Decimales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},

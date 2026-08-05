@@ -10416,10 +10416,11 @@ function vPuntos() {
 
     ${puntosTab==='historial' ? vPuntosHistorial() : `
     ${sorted.map((s,idx) => {
-      // Si este alumno tiene el checklist expandido, mostrar los puntos del mes
-      // que el admin está editando (ptsMonthOffset), no el oficial — así los puntos
-      // marcados se reflejan en las barras aunque haya traslape de mes.
-      const rowOffset = (expandedPtsStudent === s.id) ? ptsMonthOffset : offset;
+      // En admin, las barras siempre usan ptsMonthOffset (el mes que el admin navega),
+      // independientemente de si el checklist está abierto o cerrado. Esto evita que
+      // los puntos marcados desaparezcan al ocultar el checklist durante un traslape
+      // de mes (cuando offset = mes oficial ≠ ptsMonthOffset = mes en curso).
+      const rowOffset = (admin) ? ptsMonthOffset : offset;
       const p     = getStudentPoints(s.id, rowOffset);
       const total = p.hours+p.progress+p.tasks;
       const isMe  = s.id===loggedId;
