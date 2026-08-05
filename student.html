@@ -2124,6 +2124,31 @@ function savePrompts(transformFn) {
 // una sesión de una sola vez (recurring:false + date) solo cuenta en su fecha exacta, y una sesión
 // semanal se omite en cualquier fecha presente en su propio skipDates (porque esa fecha ya quedó
 // cancelada/movida a una sesión de una sola vez en otro lugar). Si no hay match, devuelve [].
+// Verifica si una sesión está activa en una fecha dada, respetando cycleId, nWeeks y weekStart.
+// Mismo contrato que _pCalIsStudentActive en vHorarios, pero a nivel de módulo para poder
+// usarse también desde getClassDatesForStudent.
+function isSessionActive(s, d, dstr) {
+  if (s.nWeeks && s.weekStart) {
+    const ws = new Date(s.weekStart + 'T00:00:00');
+    const we = new Date(ws.getTime() + s.nWeeks * 7 * 24 * 60 * 60 * 1000);
+    if (d < ws || d >= we) return false;
+  } else {
+    const cycles = padresRaw.cycles || [];
+    if (s.cycleId != null) {
+      const cyc = cycles.find(c => String(c.id) === String(s.cycleId));
+      if (cyc) {
+        if (cyc.end)   { const cutoff = new Date(cyc.end   + 'T00:00:00'); if (d > cutoff) return false; }
+        if (cyc.start) { const cStart = new Date(cyc.start + 'T00:00:00'); if (d < cStart) return false; }
+      }
+    } else {
+      let maxEnd = null;
+      cycles.forEach(c => { if (!c.end) return; const e = new Date(c.end+'T00:00:00'); if (!maxEnd || e > maxEnd) maxEnd = e; });
+      if (maxEnd && d > maxEnd) return false;
+    }
+  }
+  return true;
+}
+
 function getClassDatesForStudent(studentName, monthOffset=0) {
   const nn = normName(studentName);
   const mySessions = classSessByName[nn] || [];
@@ -2138,9 +2163,10 @@ function getClassDatesForStudent(studentName, monthOffset=0) {
     const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const todays = mySessions.filter(s => {
       const isOneTime = s.recurring === false && s.date;
-      if (isOneTime) return s.date === key;
+      if (isOneTime) return s.date === key && isSessionActive(s, dt, key);
       if (Array.isArray(s.skipDates) && s.skipDates.includes(key)) return false;
-      return Number(s.day) === dt.getDay();
+      if (Number(s.day) !== dt.getDay()) return false;
+      return isSessionActive(s, dt, key);
     });
     if (todays.length) {
       const h = todays.reduce((sum,s) => sum + Math.max(1, Math.round((s.dur||60)/60)), 0);
@@ -10390,7 +10416,11 @@ function vPuntos() {
 
     ${puntosTab==='historial' ? vPuntosHistorial() : `
     ${sorted.map((s,idx) => {
-      const p     = getStudentPoints(s.id, offset);
+      // Si este alumno tiene el checklist expandido, mostrar los puntos del mes
+      // que el admin está editando (ptsMonthOffset), no el oficial — así los puntos
+      // marcados se reflejan en las barras aunque haya traslape de mes.
+      const rowOffset = (expandedPtsStudent === s.id) ? ptsMonthOffset : offset;
+      const p     = getStudentPoints(s.id, rowOffset);
       const total = p.hours+p.progress+p.tasks;
       const isMe  = s.id===loggedId;
       const medal = idx<3 ? medals[idx] : `<span style="font-size:12px;color:rgba(255,255,255,0.3);font-family:'Barlow Condensed',sans-serif;font-weight:900">${idx+1}</span>`;
@@ -10407,17 +10437,17 @@ function vPuntos() {
         <div class="vr-row">
           <span class="vr-lbl">⏱️ Horas</span>
           <div class="vr-bg"><div class="vr-fill" style="background:#4fb6ff;width:${Math.min(100,p.hours*10)}%" id="bar-h-${s.id}"></div></div>
-          <span class="vr-num">${p.hours}</span>
+          <span class="vr-num" id="num-h-${s.id}">${p.hours}</span>
         </div>
         <div class="vr-row">
           <span class="vr-lbl">📈 Progreso</span>
           <div class="vr-bg"><div class="vr-fill" style="background:#b06bff;width:${Math.min(100,p.progress*10)}%" id="bar-p-${s.id}"></div></div>
-          <span class="vr-num">${p.progress}</span>
+          <span class="vr-num" id="num-p-${s.id}">${p.progress}</span>
         </div>
         <div class="vr-row">
           <span class="vr-lbl">✅ Tareas</span>
           <div class="vr-bg"><div class="vr-fill" style="background:#39ff7a;width:${Math.min(100,p.tasks*10)}%" id="bar-t-${s.id}"></div></div>
-          <span class="vr-num">${p.tasks}</span>
+          <span class="vr-num" id="num-t-${s.id}">${p.tasks}</span>
         </div>
         ${admin ? vPtsAdminPanel(s) : ''}
       </div>`;
@@ -10876,28 +10906,10 @@ function renderHorariosCalendar() {
     : Math.floor((containerW - 44) / daysCount);
 
   // Helper: ¿está activo este alumno en la fecha dada?
-  // Mismo contrato que calIsStudentActive (calendar-utils.js) pero usando padresRaw.cycles.
+  // Delega a isSessionActive (módulo) para no duplicar lógica.
   function _pCalIsStudentActive(st, d, dstr) {
     if ((st.skipDates||[]).indexOf(dstr) !== -1) return false;
-    if (st.nWeeks && st.weekStart) {
-      var ws = new Date(st.weekStart + 'T00:00:00');
-      var we = new Date(ws.getTime() + st.nWeeks * 7 * 24 * 60 * 60 * 1000);
-      if (d < ws || d >= we) return false;
-    } else {
-      var cycles = padresRaw.cycles || [];
-      if (st.cycleId != null) {
-        var cyc = cycles.find(function(c){ return String(c.id) === String(st.cycleId); });
-        if (cyc) {
-          if (cyc.end) { var cutoff = new Date(cyc.end + 'T00:00:00'); if (d > cutoff) return false; }
-          if (cyc.start) { var cStart = new Date(cyc.start + 'T00:00:00'); if (d < cStart) return false; }
-        }
-      } else {
-        var maxEnd = null;
-        cycles.forEach(function(c){ if (!c.end) return; var e = new Date(c.end+'T00:00:00'); if (!maxEnd || e > maxEnd) maxEnd = e; });
-        if (maxEnd && d > maxEnd) return false;
-      }
-    }
-    return true;
+    return isSessionActive(st, d, dstr);
   }
 
   // Build slotMap: group by day+start (recurring) or date+start (excepción puntual),
@@ -11940,6 +11952,26 @@ function _flushPointsLog() {
   savePointsLog(fresh => _applyPtsEditsToLog(fresh, edits));
 }
 // idx = posición del cuadradito dentro del campo (0..count-1); count = tamaño esperado del arreglo (para rellenar huecos).
+// Refresca en vivo las barras y el total de un alumno usando el mes que el admin
+// está editando (ptsMonthOffset), no el oficial — evita que los puntos aparezcan en
+// 0 durante el traslape de mes (cuando getCupoMonthOffset() ≠ ptsMonthOffset).
+function _refreshPtsBars(studentId) {
+  const p = getStudentPoints(studentId, ptsMonthOffset);
+  const total = p.hours + p.progress + p.tasks;
+  const id = studentId;
+  const totalEl = document.getElementById(`pts-total-${id}`);
+  if (totalEl) {
+    totalEl.textContent = total;
+    totalEl.style.color = total > 0 ? '#39ff7a' : '#4b5563';
+  }
+  const bh = document.getElementById(`bar-h-${id}`); if (bh) bh.style.width = Math.min(100, p.hours*10)+'%';
+  const bp = document.getElementById(`bar-p-${id}`); if (bp) bp.style.width = Math.min(100, p.progress*10)+'%';
+  const bt = document.getElementById(`bar-t-${id}`); if (bt) bt.style.width = Math.min(100, p.tasks*10)+'%';
+  const nh = document.getElementById(`num-h-${id}`); if (nh) nh.textContent = p.hours;
+  const np = document.getElementById(`num-p-${id}`); if (np) np.textContent = p.progress;
+  const nt = document.getElementById(`num-t-${id}`); if (nt) nt.textContent = p.tasks;
+}
+
 function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   if (!firestoreDataReady()) return;
   _lastPtsLocalEdit = Date.now();
@@ -11951,9 +11983,7 @@ function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   while (entry[field].length < count) entry[field].push(false);
   entry[field][idx]=!!checked;
   _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
-  // Refresca el total mostrado en la cabecera de la fila sin re-render completo
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
+  _refreshPtsBars(studentId);
   clearTimeout(_ptsTimer);
   _ptsTimer=setTimeout(()=>{ _flushPointsLog(); showToast('Puntos guardados.','success'); },800);
 }
@@ -11970,8 +12000,7 @@ function toggleAbsent(studentId, dateKey, checked) {
   entry.absent = !!checked;
   if (checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
   _ptsPendingEdits.push({type:'absent', studentId, dateKey, checked});
-  const totalEl=document.getElementById(`pts-total-${studentId}`);
-  if (totalEl) totalEl.textContent=getTotalPts2(studentId, getPubMonthOffset());
+  _refreshPtsBars(studentId);
   const cont=document.getElementById(`pts-dates-${studentId}`);
   const st=getStudents().find(x=>String(x.id)===key);
   if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
@@ -12007,6 +12036,7 @@ PADRES_REF.onSnapshot(doc => {
     // recurring/date/skipDates fecha por fecha.
     const hoursByDay = {}, slotsByDay = {};
     mySessions.forEach(s => {
+      const h = Math.max(1, Math.round((s.dur||60)/60));
       hoursByDay[s.day] = (hoursByDay[s.day]||0) + h;
       if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
       slotsByDay[s.day].push({ start: s.start || '', dur: s.dur || 60, modality: s.modality || '' });
