@@ -7715,7 +7715,7 @@ _SKILL_META['i1a_ex2_b3']={ico:'📐',lbl:'Raíces como potencias y simplificaci
 
 function _genI1A_EX2_B4(){
   return _i4gpick([
-    {q:'Calcula: V = (1/16)·(√(75+27) ÷ (√300+√192+√48))',a:'1/9',opts:_i4gshuf(['1/9','9','1/3','3']),mc:true,ste:'Clave del PDF: 1/9.'},
+    {q:'Simplifica: √3 ÷ √243',a:'1/9',opts:_i4gshuf(['1/9','9','1/3','3']),mc:true,ste:'√243=√(81·3)=9√3. √3/(9√3)=1/9.'},
     {q:'Reduce: 2<sup>2n+1</sup> ÷ 2<sup>2n−1</sup>',a:'4',opts:_i4gshuf(['4','2','8','16']),mc:true,ste:'2^(2n+1−(2n−1))=2^2=4.'},
     {q:'Calcula: 9<sup>m+1</sup> ÷ 9<sup>m</sup>',a:'9',opts:_i4gshuf(['9','1','9²','3']),mc:true,ste:'9^(m+1−m)=9^1=9.'},
     {q:'Calcula: V = ¹¹√(a·a²·a³...a¹⁰) → exponente final de a',a:'a⁵',opts:_i4gshuf(['a⁵','a¹⁰','a²⁰','a³']),mc:true,ste:'Suma 1+2+...+10=55. ¹¹√a⁵⁵=a⁵.'},
