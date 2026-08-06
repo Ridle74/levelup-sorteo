@@ -7666,6 +7666,12 @@ function _genI1A_EX2_B1(){
     {q:'Calcula: 2⁻³ + 2⁻²',a:'3/8',opts:_i4gshuf(['3/8','1/4','3/4','1/8']),mc:true,ste:'1/8+1/4=1/8+2/8=3/8.'},
     {q:'Halla: (2/3)⁻²',a:'9/4',opts:_i4gshuf(['9/4','4/9','3/2','2/3']),mc:true,ste:'(3/2)²=9/4.'},
     {q:'Reduce: 5⁻¹ + 5⁻²',a:'6/25',opts:_i4gshuf(['6/25','1/5','6/5','1/25']),mc:true,ste:'5/25+1/25=6/25.'},
+    {q:'La expresión a⁻ⁿ (con a≠0) es equivalente a...',a:'1/aⁿ',opts:_i4gshuf(['1/aⁿ','−aⁿ','a/n','aⁿ']),mc:true,ste:'Definición de exponente negativo: a⁻ⁿ = 1/aⁿ.'},
+    {q:'¿Es verdadero que 2⁻³ es un número negativo?',a:'Falso',opts:_i4gshuf(['Falso','Verdadero']),mc:true,ste:'2⁻³ = 1/8 = 0.125. Es positivo, no negativo.'},
+    {q:'¿Cuál de las siguientes expresiones tiene el mayor valor? 3⁻¹, 3⁻², 3⁻³',a:'3⁻¹',opts:_i4gshuf(['3⁻¹','3⁻²','3⁻³','Son iguales']),mc:true,ste:'3⁻¹=1/3, 3⁻²=1/9, 3⁻³=1/27. Mayor exponente negativo → menor valor. 3⁻¹ es el mayor.'},
+    {q:'Halla n: 5⁻ⁿ = 1/125',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'5⁻³=1/125. n=3.'},
+    {q:'¿Para qué valor de x es cierto que 2ˣ = 1/8?',a:'−3',opts:_i4gshuf(['−3','3','−8','−2']),mc:true,ste:'1/8=2⁻³. Luego x=−3.'},
+    {q:'¿Cuánto vale (−2)⁻³?',a:'−1/8',opts:_i4gshuf(['−1/8','1/8','−8','8']),mc:true,ste:'(−2)⁻³=1/(−2)³=1/(−8)=−1/8.'},
   ]);
 }
 _SKILL_META['i1a_ex2_b1']={ico:'📐',lbl:'Exponentes negativos – conversión a forma positiva',qCount:4,gen:_genI1A_EX2_B1};
@@ -7686,6 +7692,12 @@ function _genI1A_EX2_B2(){
     {q:'Halla: 4<sup>−1/2</sup>',a:'1/2',opts:_i4gshuf(['1/2','2','1/4','4']),mc:true,ste:'1/√4=1/2.'},
     {q:'Simplifica: x<sup>1/2</sup>·x<sup>3/2</sup>',a:'x²',opts:_i4gshuf(['x²','x³','x<sup>3/4</sup>','x']),mc:true,ste:'1/2+3/2=4/2=2.'},
     {q:'Calcula: 32<sup>2/5</sup>',a:'4',opts:_i4gshuf(['4','8','2','16']),mc:true,ste:'(⁵√32)²=2²=4.'},
+    {q:'x<sup>1/n</sup> es equivalente a...',a:'ⁿ√x',opts:_i4gshuf(['ⁿ√x','x/n','n√x','xⁿ']),mc:true,ste:'Definición: x^(1/n) = ⁿ√x.'},
+    {q:'¿Cuál es la forma radical de x<sup>3/4</sup>?',a:'⁴√(x³)',opts:_i4gshuf(['⁴√(x³)','³√(x⁴)','√(x³)','x³/4']),mc:true,ste:'a^(m/n) = ⁿ√(aᵐ). Aquí m=3, n=4 → ⁴√(x³).'},
+    {q:'Halla n: 16ⁿ = 2',a:'1/4',opts:_i4gshuf(['1/4','1/2','2','4']),mc:true,ste:'16^(1/4)=⁴√16=2. Luego n=1/4.'},
+    {q:'¿Son iguales 8<sup>1/3</sup> y 4<sup>1/2</sup>?',a:'Sí, ambos valen 2',opts:_i4gshuf(['Sí, ambos valen 2','No, 8^(1/3)=4 y 4^(1/2)=2','No, son 4 y 2 respectivamente','Sí, ambos valen 4']),mc:true,ste:'∛8=2 y √4=2. Son iguales.'},
+    {q:'¿Cuál de estas expresiones es equivalente a ∛(x²)?',a:'x<sup>2/3</sup>',opts:_i4gshuf(['x<sup>2/3</sup>','x<sup>3/2</sup>','x<sup>1/3</sup>','x²']),mc:true,ste:'³√(x²)=x^(2/3) por definición de exponente fraccionario.'},
+    {q:'¿Es verdadero que (−27)<sup>1/3</sup> = −3?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'(−3)³=−27. Luego ∛(−27)=−3. Verdadero.'},
   ]);
 }
 _SKILL_META['i1a_ex2_b2']={ico:'📐',lbl:'Potencias con exponente fraccionario',qCount:4,gen:_genI1A_EX2_B2};
@@ -7709,6 +7721,12 @@ function _genI1A_EX2_B3(){
     {q:'Efectúa: √45+√20',a:'5√5',opts:_i4gshuf(['5√5','3√5','7√5','4√5']),mc:true,ste:'3√5+2√5=5√5.'},
     {q:'Calcula: (√5+√3)(√5−√3)',a:'2',opts:_i4gshuf(['2','√2','8','4']),mc:true,ste:'5−3=2.'},
     {q:'Efectúa: (√2+1)²',a:'3+2√2',opts:_i4gshuf(['3+2√2','2+√2','3+√2','1+2√2']),mc:true,ste:'2+2√2+1=3+2√2.'},
+    {q:'En general, √a · √b = ...',a:'√(ab)',opts:_i4gshuf(['√(ab)','√a+√b','a·b','√a·b']),mc:true,ste:'Propiedad del producto de radicales: √a·√b=√(ab).'},
+    {q:'Halla x: √x = 7',a:'49',opts:_i4gshuf(['49','7','14','√7']),mc:true,ste:'Si √x=7, elevando al cuadrado: x=49.'},
+    {q:'¿Es verdad que √(a+b) = √a + √b?',a:'Falso',opts:_i4gshuf(['Falso','Verdadero']),mc:true,ste:'Por ejemplo: √(9+16)=√25=5, pero √9+√16=3+4=7≠5.'},
+    {q:'¿Cuál de los siguientes NO es un cuadrado perfecto?',a:'50',opts:_i4gshuf(['50','36','100','144']),mc:true,ste:'36=6², 100=10², 144=12². El 50 no es cuadrado perfecto.'},
+    {q:'¿Cuál es mayor: √2+√3 o √5?',a:'√2+√3',opts:_i4gshuf(['√2+√3','√5','Son iguales','Depende']),mc:true,ste:'√2≈1.41, √3≈1.73, suma≈3.14. √5≈2.24. Luego √2+√3 es mayor.'},
+    {q:'Si x≥0, simplifica √(x²)',a:'x',opts:_i4gshuf(['x','x²','|x|','√x']),mc:true,ste:'Para x≥0, √(x²)=x.'},
   ]);
 }
 _SKILL_META['i1a_ex2_b3']={ico:'📐',lbl:'Raíces como potencias y simplificación de radicales',qCount:4,gen:_genI1A_EX2_B3};
@@ -7729,6 +7747,12 @@ function _genI1A_EX2_B4(){
     {q:'Calcula: (x<sup>2/3</sup>)³',a:'x²',opts:_i4gshuf(['x²','x³','x<sup>2/9</sup>','x⁶']),mc:true,ste:'x^(2/3·3)=x².'},
     {q:'Halla: ⁶√(x³)',a:'x<sup>1/2</sup>',opts:_i4gshuf(['x<sup>1/2</sup>','x²','x³','x<sup>1/3</sup>']),mc:true,ste:'x^(3/6)=x^(1/2).'},
     {q:'Calcula: √(√81)',a:'3',opts:_i4gshuf(['3','9','81','√9']),mc:true,ste:'√81=9. √9=3.'},
+    {q:'La expresión ⁿ√(aᵐ) es equivalente a...',a:'a<sup>m/n</sup>',opts:_i4gshuf(['a<sup>m/n</sup>','a<sup>n/m</sup>','aᵐ·aⁿ','m·aⁿ']),mc:true,ste:'Definición: ⁿ√(aᵐ)=a^(m/n).'},
+    {q:'La notación exponencial de ⁵√(a³) es...',a:'a<sup>3/5</sup>',opts:_i4gshuf(['a<sup>3/5</sup>','a<sup>5/3</sup>','a<sup>15</sup>','a<sup>1/5</sup>']),mc:true,ste:'⁵√(a³)=a^(3/5).'},
+    {q:'Simplifica: ³√(x⁶)',a:'x²',opts:_i4gshuf(['x²','x³','x⁶','x<sup>1/2</sup>']),mc:true,ste:'x^(6/3)=x².'},
+    {q:'Halla el exponente que falta: (∛a)? = a²',a:'6',opts:_i4gshuf(['6','3','2','9']),mc:true,ste:'(a^(1/3))^n=a^(n/3)=a². n/3=2 → n=6.'},
+    {q:'¿Es cierto que √(x²) = x para todo x real?',a:'Falso',opts:_i4gshuf(['Falso','Verdadero']),mc:true,ste:'√(x²)=|x|. Para x negativo, √(x²)=−x≠x.'},
+    {q:'⁶√(x²) = x<sup>n</sup>. ¿Cuánto vale n?',a:'1/3',opts:_i4gshuf(['1/3','1/2','2/3','1/6']),mc:true,ste:'x^(2/6)=x^(1/3). n=1/3.'},
   ]);
 }
 _SKILL_META['i1a_ex2_b4']={ico:'📐',lbl:'Expresiones combinadas con exponentes fraccionarios',qCount:4,gen:_genI1A_EX2_B4};
