@@ -158,6 +158,36 @@ Una vez aprobada la estructura, implementas todo en este orden:
    ```
    `student.html` absorbe estas entradas automáticamente al cargar — **no editar `student.html`**.
 
+### Regla obligatoria: generación procedural (sin pools fijos)
+
+**Nunca uses arrays de preguntas hardcodeadas** de las que se elige con `_i4gpick`. Los alumnos repiten partidas y memorizan las respuestas si el pool es fijo.
+
+Cada generador debe:
+- Elegir un **tipo de pregunta** aleatoriamente con `var t = _i4grnd(0, N)`
+- Generar los **datos numéricos** con `_i4grnd` en cada llamada
+
+```js
+// ✅ CORRECTO — procedural
+function _genXxx_B2(){
+  var r=_i4grnd, sh=_i4gshuf, t=r(0,4);
+  var a,b,ans;
+  if(t===0){ a=r(1,4); b=r(2,9); ans=a*a+'x²+'+(2*a*b)+'x+'+b*b; return {q:'Desarrolla: ('+a+'x+'+b+')²', a:ans, opts:sh([ans,...]), mc:true, ste:'...'}; }
+  if(t===1){ ... }
+  // etc.
+}
+
+// ❌ INCORRECTO — pool fijo
+function _genXxx_B2(){
+  return _i4gpick([
+    {q:'Desarrolla: (x+3)²', a:'x²+6x+9', ...},
+    {q:'Desarrolla: (x+5)²', a:'x²+10x+25', ...},
+    // ...siempre las mismas preguntas
+  ]);
+}
+```
+
+**Cantidad mínima de tipos por generador:** al menos 6 tipos distintos (más es mejor). Cada tipo debe poder generar múltiples variantes por parámetros aleatorios, de modo que cada sesión produzca preguntas con números y respuestas diferentes.
+
 2. **Entrada en `PREP_CURRICULUM` en `levelup.js`**
 
 3. **Verificar sintaxis** con `node --check levelup.js`
