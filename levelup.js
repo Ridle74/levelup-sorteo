@@ -7557,6 +7557,10 @@ function _genI1A_EX1_B1(){
     {q:'Efectúa: N = (−1)⁵ + (−1)⁶ + (−1)⁷',a:'−1',opts:_i4gshuf(['−1','0','1','−3']),mc:true,ste:'−1+1−1=−1.'},
     {q:'Calcula: G = 2⁶ − 3³',a:'37',opts:_i4gshuf(['37','35','39','36']),mc:true,ste:'64−27=37.'},
     {q:'Halla: Z = 5² − 4² + 3²',a:'18',opts:_i4gshuf(['18','16','20','14']),mc:true,ste:'25−16+9=18.'},
+    {q:'Si 2ⁿ = 64, ¿cuánto vale n?',a:'6',opts:_i4gshuf(['6','5','7','4']),mc:true,ste:'2¹=2, 2²=4, 2³=8, 2⁴=16, 2⁵=32, 2⁶=64. n=6.'},
+    {q:'¿(−3)⁵ es positivo o negativo?',a:'Negativo',opts:_i4gshuf(['Negativo','Positivo','Cero','Indefinido']),mc:true,ste:'Un número negativo elevado a un exponente IMPAR da resultado negativo. (−3)⁵=−243.'},
+    {q:'¿A qué es igual cualquier número distinto de cero elevado a la potencia cero?',a:'1',opts:_i4gshuf(['1','0','El mismo número','Indefinido']),mc:true,ste:'Propiedad: a⁰=1 para todo a≠0. Ej: 5⁰=1, (−7)⁰=1.'},
+    {q:'¿Cuál es mayor: 2⁵ o 5²?',a:'2⁵',opts:_i4gshuf(['2⁵','5²','Son iguales','No se puede comparar']),mc:true,ste:'2⁵=32 y 5²=25. Por tanto 2⁵ > 5².'},
   ]);
 }
 _SKILL_META['i1a_ex1_b1']={ico:'📐',lbl:'Potencias con exp 0 y bases numéricas',qCount:4,gen:_genI1A_EX1_B1};
@@ -7577,6 +7581,12 @@ function _genI1A_EX1_B2(){
     {q:'Calcula: xⁿ·xⁿ⁺²',a:'x²ⁿ⁺²',opts:_i4gshuf(['x²ⁿ⁺²','x²ⁿ','2xⁿ','xⁿ⁺²']),mc:true,ste:'n+(n+2)=2n+2.'},
     {q:'Simplifica: (2x)(3x²)(x⁴) + 5x⁷',a:'11x⁷',opts:_i4gshuf(['11x⁷','6x⁷','10x⁷','12x⁷']),mc:true,ste:'6x⁷+5x⁷=11x⁷.'},
     {q:'Efectúa: (−4x³)(2x⁵)',a:'−8x⁸',opts:_i4gshuf(['−8x⁸','8x⁸','−8x¹⁵','8x¹⁵']),mc:true,ste:'−4·2=−8. 3+5=8.'},
+    {q:'x? · x³ = x⁸. ¿Cuál es el exponente que falta?',a:'5',opts:_i4gshuf(['5','3','11','24']),mc:true,ste:'Al multiplicar misma base, se suman exponentes: ?+3=8 → ?=5.'},
+    {q:'El producto de tres monomios negativos tiene signo...',a:'Negativo',opts:_i4gshuf(['Negativo','Positivo','Puede ser ambos','Cero']),mc:true,ste:'Número impar de factores negativos → resultado negativo.'},
+    {q:'¿Cuál es el grado de x⁴·x³·x²?',a:'9',opts:_i4gshuf(['9','24','3','12']),mc:true,ste:'Se suman los exponentes: 4+3+2=9.'},
+    {q:'Al multiplicar potencias de igual base, los exponentes se...',a:'Suman',opts:_i4gshuf(['Suman','Multiplican','Restan','Dividen']),mc:true,ste:'Ley del producto: xᵃ·xᵇ = xᵃ⁺ᵇ.'},
+    {q:'Efectúa: (−x³)(x²)(−x⁴)',a:'x⁹',opts:_i4gshuf(['x⁹','−x⁹','x²⁴','−x²⁴']),mc:true,ste:'Dos factores negativos → positivo. 3+2+4=9.'},
+    {q:'? · x² · 3x³ = 12x⁵. ¿Cuál es el coeficiente que falta?',a:'4',opts:_i4gshuf(['4','2','6','3']),mc:true,ste:'?·3=12 → ?=4. Exponentes: 1+2+3=6... espera: x⁰·x²·x³=x⁵ → 0+2+3=5. ✓ Coeficiente: ?·3=12 → 4.'},
   ]);
 }
 _SKILL_META['i1a_ex1_b2']={ico:'📐',lbl:'Multiplicación de monomios con leyes de exponentes',qCount:4,gen:_genI1A_EX1_B2};
@@ -7600,6 +7610,12 @@ function _genI1A_EX1_B3(){
     {q:'Calcula: x⁶÷x⁴ + 3x⁴÷x²',a:'4x²',opts:_i4gshuf(['4x²','3x²','6x²','2x²']),mc:true,ste:'x²+3x²=4x².'},
     {q:'Efectúa: [(x³)²]²',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','x⁹','x⁶']),mc:true,ste:'x^(3·2·2)=x¹².'},
     {q:'Simplifica: a⁰·a¹·a²·a³',a:'a⁶',opts:_i4gshuf(['a⁶','a⁰','a¹²','a⁴']),mc:true,ste:'0+1+2+3=6.'},
+    {q:'x? ÷ x³ = x⁴. ¿Cuál es el exponente que falta?',a:'7',opts:_i4gshuf(['7','1','12','3']),mc:true,ste:'Al dividir misma base, se restan: ?−3=4 → ?=7.'},
+    {q:'(x³)? = x¹⁵. ¿Cuál es el exponente que falta?',a:'5',opts:_i4gshuf(['5','12','3','18']),mc:true,ste:'Potencia de potencia: 3×?=15 → ?=5.'},
+    {q:'Para dividir potencias de igual base, los exponentes se...',a:'Restan',opts:_i4gshuf(['Restan','Suman','Multiplican','Dividen']),mc:true,ste:'Ley del cociente: xᵃ÷xᵇ = xᵃ⁻ᵇ.'},
+    {q:'Para calcular (xᵃ)ᵇ, los exponentes se...',a:'Multiplican',opts:_i4gshuf(['Multiplican','Suman','Restan','Dividen']),mc:true,ste:'Ley de la potencia de potencia: (xᵃ)ᵇ = xᵃˣᵇ.'},
+    {q:'¿Cuál de estos resultados es correcto?',a:'(x⁴)³ = x¹²',opts:_i4gshuf(['(x⁴)³ = x¹²','(x⁴)³ = x⁷','(x⁴)³ = x⁶⁴','(x⁴)³ = 4x³']),mc:true,ste:'(x⁴)³ = x^(4×3) = x¹². Se multiplican los exponentes.'},
+    {q:'Efectúa: (x³)⁴ ÷ (x²)³',a:'x⁶',opts:_i4gshuf(['x⁶','x¹²','x²','x¹⁸']),mc:true,ste:'x¹²÷x⁶=x⁶.'},
   ]);
 }
 _SKILL_META['i1a_ex1_b3']={ico:'📐',lbl:'Cocientes y potencia de potencia con variables',qCount:4,gen:_genI1A_EX1_B3};
@@ -7620,6 +7636,12 @@ function _genI1A_EX1_B4(){
     {q:'Calcula: A = [(3²)⁰]⁵ + [(2⁰)³]²',a:'2',opts:_i4gshuf(['2','1','0','3']),mc:true,ste:'[1]⁵+[1]²=1+1=2.'},
     {q:'Si m=2, calcula: (3ᵐ)ᵐ',a:'81',opts:_i4gshuf(['81','9','27','18']),mc:true,ste:'(3²)²=9²=81.'},
     {q:'Halla: Q = 5ⁿ⁺³ ÷ 5ⁿ⁺¹',a:'25',opts:_i4gshuf(['25','5','125','1']),mc:true,ste:'5^(n+3−n−1)=5²=25.'},
+    {q:'¿Cuánto es aⁿ⁺¹ ÷ aⁿ para cualquier valor de n?',a:'a',opts:_i4gshuf(['a','1','aⁿ','a²']),mc:true,ste:'aⁿ⁺¹÷aⁿ = a^(n+1−n) = a¹ = a.'},
+    {q:'Si aⁿ = k, ¿cuánto vale a²ⁿ?',a:'k²',opts:_i4gshuf(['k²','2k','k+k','kⁿ']),mc:true,ste:'a²ⁿ = (aⁿ)² = k².'},
+    {q:'¿Cuánto es 2ⁿ⁺⁴ ÷ 2ⁿ?',a:'16',opts:_i4gshuf(['16','8','32','4']),mc:true,ste:'2^(n+4−n)=2⁴=16.'},
+    {q:'Si aⁿ = b, ¿cuánto vale a³ⁿ?',a:'b³',opts:_i4gshuf(['b³','3b','bⁿ','b+b+b']),mc:true,ste:'a³ⁿ=(aⁿ)³=b³.'},
+    {q:'¿Para qué valor de n se cumple que 3ⁿ = 81?',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'3¹=3, 3²=9, 3³=27, 3⁴=81. Por tanto n=4.'},
+    {q:'Si 2ⁿ = 8, ¿cuánto es 4ⁿ?',a:'64',opts:_i4gshuf(['64','16','24','32']),mc:true,ste:'4ⁿ=(2²)ⁿ=(2ⁿ)²=8²=64.'},
   ]);
 }
 _SKILL_META['i1a_ex1_b4']={ico:'📐',lbl:'Expresiones combinadas con múltiples leyes',qCount:4,gen:_genI1A_EX1_B4};
@@ -7673,7 +7695,7 @@ _SKILL_META['i1a_ex2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Leyes de Exponente
 
 function _genI1A_EX2_B3(){
   return _i4gpick([
-    {q:'Efectúa: √(8+32+50−18)',a:'√72=6√2',opts:_i4gshuf(['6√2','8√2','4√2','2√6']),mc:true,ste:'8+32+50−18=72. √72=6√2.'},
+    {q:'Efectúa: √(8+32+50−18)',a:'6√2',opts:_i4gshuf(['6√2','8√2','4√2','2√6']),mc:true,ste:'8+32+50−18=72. √72=√(36·2)=6√2.'},
     {q:'Calcula: (√50 − √18) ÷ √2',a:'2',opts:_i4gshuf(['2','4','√2','8']),mc:true,ste:'(5√2−3√2)/√2=2√2/√2=2.'},
     {q:'Reduce: (√500 − √20 + √45) ÷ √5',a:'11',opts:_i4gshuf(['11','9','15','20']),mc:true,ste:'√500=10√5, √20=2√5, √45=3√5. (10−2+3)√5÷√5=11.'},
     {q:'Calcula: S = √8+√32+√128',a:'14√2',opts:_i4gshuf(['14√2','8√2','12√2','10√2']),mc:true,ste:'2√2+4√2+8√2=14√2.'},
@@ -8283,7 +8305,7 @@ _SKILL_META['i1a_rad_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Radicación',qCoun
 
 function _genI1A_RAD_B3(){
   return _i4gpick([
-    {q:'Calcula: T=√50−√18÷8',a:'1/2',opts:_i4gshuf(['1/2','2','1','3/2']),mc:true,ste:'Clave PDF: 1/2.'},
+    {q:'Calcula: (√50 − √18) ÷ √2',a:'2',opts:_i4gshuf(['2','4','√2','8']),mc:true,ste:'(5√2−3√2)/√2=2√2/√2=2.'},
     {q:'Efectúa: A=(√12+√27+√48)÷√3',a:'9',opts:_i4gshuf(['9','6','12','3']),mc:true,ste:'(2+3+4)√3÷√3=9.'},
     {q:'Calcula: V=(1/16)·(√75+√27)÷(√300+√192+√48)',a:'1/9',opts:_i4gshuf(['1/9','9','1/3','3']),mc:true,ste:'Clave PDF: 1/9.'},
     {q:'Efectúa: (√20+√45+√500)÷(√20−√5)',a:'15',opts:_i4gshuf(['15','10','20','5']),mc:true,ste:'Num: 2√5+3√5+10√5=15√5. Den: 2√5−√5=√5. 15√5/√5=15.'},
