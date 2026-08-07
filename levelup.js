@@ -7892,13 +7892,13 @@ function _genI1A_ETR_B3(){
     {_id:11,q:'Calcula n: 2<sup>4n</sup>·4<sup>n</sup> = 2<sup>18</sup>',a:'3',opts:_i4gshuf(['3','2','4','6']),mc:true,ste:'2^(4n)·2^(2n)=2^(6n)=2¹⁸ → n=3.'},
     {_id:12,q:'Resuelve: 9<sup>x−2</sup> = 27<sup>x</sup>',a:'−4',opts:_i4gshuf(['−4','4','−2','2']),mc:true,ste:'3^(2x−4)=3^(3x) → 2x−4=3x → x=−4.'},
     {_id:13,q:'Halla n: 2<sup>5n</sup>·2<sup>n−1</sup> = 2<sup>23</sup>',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'5n+n−1=23 → 6n=24 → n=4.'},
-    {_id:14,q:'Resuelve: 5<sup>x²−x</sup> = 5<sup>6</sup>',a:'x=3 ó x=−2',opts:_i4gshuf(['x=3 ó x=−2','x=3','x=2','x=−3']),mc:true,ste:'x²−x=6 → x²−x−6=0 → x=3 ó x=−2.'},
+    {_id:14,q:'Para resolver 4<sup>x</sup> = 8, ¿cuál es el primer paso correcto?',a:'Escribir 4=2² y 8=2³',opts:_i4gshuf(['Escribir 4=2² y 8=2³','Dividir: x=8÷4=2','Elevar todo al cuadrado','Restar bases: x=8−4']),mc:true,ste:'Hay que expresar ambos lados en la misma base: 4=2², 8=2³. Así 2^(2x)=2³ → igualando exponentes: 2x=3.'},
     {_id:15,q:'Halla x: 2<sup>3x+1</sup> = 2<sup>x+9</sup>',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'3x+1=x+9 → 2x=8 → x=4.'},
     {_id:16,q:'Resuelve: 11<sup>x−4</sup> = 11<sup>2x−15</sup>',a:'11',opts:_i4gshuf(['11','9','13','7']),mc:true,ste:'x−4=2x−15 → 11=x.'},
     {_id:17,q:'Calcula x: (1/2)<sup>x+4</sup> = 8<sup>x−4</sup>',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'(1/2)=2⁻¹, 8=2³. 2^(−x−4)=2^(3x−12). −x−4=3x−12 → 4x=8 → x=2.'},
     {_id:18,q:'Resuelve: (1/3)<sup>2x+1</sup> = 27<sup>x−2</sup>',a:'1',opts:_i4gshuf(['1','2','3','0']),mc:true,ste:'(1/3)=3⁻¹, 27=3³. 3^(−2x−1)=3^(3x−6). −2x−1=3x−6 → 5=5x → x=1.'},
-    {_id:19,q:'Halla x: 3<sup>x²+x</sup> = 3<sup>6</sup>',a:'x=2 ó x=−3',opts:_i4gshuf(['x=2 ó x=−3','x=2','x=3','x=−2']),mc:true,ste:'x²+x=6 → x²+x−6=0 → (x+3)(x−2)=0 → x=2 ó x=−3.'},
-    {_id:20,q:'Resuelve: 7<sup>x²−2x</sup> = 7³',a:'x=3 ó x=−1',opts:_i4gshuf(['x=3 ó x=−1','x=3','x=−1','x=2']),mc:true,ste:'x²−2x=3 → x²−2x−3=0 → (x−3)(x+1)=0 → x=3 ó x=−1.'},
+    {_id:19,q:'Al resolver 9<sup>x</sup>=27, tras convertir a base 3, la ecuación de exponentes que resulta es:',a:'2x=3',opts:_i4gshuf(['2x=3','9x=27','3x=3','2x=9']),mc:true,ste:'9=3² y 27=3³. Entonces 3^(2x)=3³ → igualando exponentes: 2x=3.'},
+    {_id:20,q:'¿En cuál de estos casos NO se puede igualar los exponentes directamente?',a:'3<sup>x</sup> = 5<sup>x</sup>',opts:_i4gshuf(['3<sup>x</sup> = 5<sup>x</sup>','2<sup>x+1</sup> = 2<sup>3x</sup>','5<sup>x</sup> = 5<sup>2x−3</sup>','7<sup>x+2</sup> = 7⁴']),mc:true,ste:'La propiedad aᵐ=aⁿ → m=n solo aplica cuando las bases son iguales y a≠0, a≠1. En 3^x=5^x las bases son distintas, no se puede igualar directamente.'},
   ]);
 }
 _SKILL_META['i1a_etr_b3']={ico:'📐',lbl:'Ecuaciones con potencias y exponentes variables',qCount:4,gen:_genI1A_ETR_B3};
