@@ -69,6 +69,7 @@ let _prepAdminFilterUid = null;  // null = todos
 let _prepAdminExpandedId = null;
 // Reportes de errores en ejercicios de Level Up
 let _prepReportModalOpen = false;
+let _prepReportPinErr    = false;
 let _prepAdminReportsData = null;
 let _prepAdminReportsLoading = false;
 let _prepAdminShowReports = false;
@@ -14446,6 +14447,14 @@ function _prepExamHtml() {
         <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
         <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Enviar reporte</button>
       </div>
+      ${!_prep.answered ? `<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08)">
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Autorización del profesor — saltar pregunta</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="prep-report-pin-inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña del profesor" onkeydown="if(event.key==='Enter')skipQWithTeacherPin()" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid ${_prepReportPinErr?'rgba(248,113,113,0.7)':'rgba(255,255,255,0.15)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
+          <button onclick="skipQWithTeacherPin()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap">Saltar →</button>
+        </div>
+        ${_prepReportPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}
+      </div>` : ''}
     </div>
   </div>` : ''}`;
 }
@@ -14521,7 +14530,35 @@ function openPrepReportModal() {
 }
 function closePrepReportModal() {
   _prepReportModalOpen = false;
+  _prepReportPinErr    = false;
   _renderPreparatePane();
+}
+function skipQWithTeacherPin() {
+  const inp = document.getElementById('prep-report-pin-inp');
+  const val = inp ? inp.value.trim() : '';
+  const pin = typeof ADMIN !== 'undefined' ? String(ADMIN.pin) : null;
+  if (!pin || val !== pin) {
+    _prepReportPinErr = true;
+    _renderPreparatePane();
+    // Re-enfocar después del re-render
+    setTimeout(()=>{ const i=document.getElementById('prep-report-pin-inp'); if(i){i.focus();i.select();} },60);
+    return;
+  }
+  // PIN correcto: enviar reporte si hay comentario (sin bloquear el flujo)
+  const ta = document.getElementById('prep-report-ta');
+  const comment = ta ? ta.value.trim() : '';
+  if (comment) submitPrepReport();   // se envía en paralelo; no esperamos
+  // Marcar pregunta como respondida/saltada con autorización del profesor
+  const q = _prep.questions[_prep.currentIdx];
+  if (q) {
+    const _qt = Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000);
+    _prep.answers.push({ given:'[saltada]', correct:true, skipped:true, q:q.q||'', a:q.a, mc:!!(q.mc), _src:q._src||null, timeSec:_qt });
+    _prep.answered = true;
+  }
+  _prepReportModalOpen = false;
+  _prepReportPinErr    = false;
+  showToast('✅ Pregunta saltada con autorización del profesor');
+  _prepNextQ();
 }
 async function submitPrepReport() {
   const ta = document.getElementById('prep-report-ta');
