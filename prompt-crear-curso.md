@@ -158,11 +158,46 @@ Una vez aprobada la estructura, implementas todo en este orden:
    ```
    `student.html` absorbe estas entradas automáticamente al cargar — **no editar `student.html`**.
 
-### Regla obligatoria: generación procedural (sin pools fijos)
+### Los ejercicios del PDF/imagen son plantillas — banco de 20 preguntas por habilidad
 
-**Nunca uses arrays de preguntas hardcodeadas** de las que se elige con `_i4gpick`. Los alumnos repiten partidas y memorizan las respuestas si el pool es fijo.
+Los ejercicios que aparecen en el PDF o en las imágenes adjuntas son **plantillas de tipos de pregunta**, no ejercicios individuales a copiar. A partir de cada plantilla debes crear **variaciones** cambiando los datos numéricos, el contexto o la formulación, hasta completar un banco de exactamente **20 preguntas por habilidad**.
 
-Cada generador debe:
+**Cómo usar las plantillas:**
+- Analiza los ejercicios del PDF para identificar los distintos **tipos** (plantillas) que cubre la habilidad.
+- Por cada tipo, genera entre 2 y 5 variaciones con datos distintos.
+- El total de todos los tipos debe sumar exactamente 20 preguntas.
+- **Ninguna plantilla debe dominar**: si hay 5 tipos de ejercicio, lo ideal es ~4 preguntas por tipo. Si una plantilla tiene más del doble que otra, redistribuye.
+
+**Formato del banco (`_i4gpick`):**
+```js
+function _genXxx_B1(){
+  return _i4gpick([
+    // Tipo A — 4 variaciones
+    {_id:1, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
+    {_id:2, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
+    {_id:3, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
+    {_id:4, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
+    // Tipo B — 4 variaciones
+    {_id:5, ...}, {_id:6, ...}, {_id:7, ...}, {_id:8, ...},
+    // Tipo C — 4 variaciones
+    {_id:9, ...}, {_id:10,...}, {_id:11,...}, {_id:12,...},
+    // Tipo D — 4 variaciones
+    {_id:13,...}, {_id:14,...}, {_id:15,...}, {_id:16,...},
+    // Tipo E — 4 variaciones
+    {_id:17,...}, {_id:18,...}, {_id:19,...}, {_id:20,...},
+  ]);
+}
+```
+
+Cada pregunta lleva `_id` del 1 al 20 (permite identificarla unívocamente en el banco). El campo `ste` es la pista/solución paso a paso que se muestra al alumno.
+
+---
+
+### Regla obligatoria: generación procedural (sin pools fijos) — solo para generadores dinámicos
+
+> **Nota:** El formato de banco fijo con `_i4gpick` (descrito arriba) es el estándar para habilidades creadas desde PDF. El formato procedural a continuación aplica solo cuando el contenido es puramente algorítmico (ej. cálculo con variables aleatorias sin contexto de libro).
+
+Cada generador procedural debe:
 - Elegir un **tipo de pregunta** aleatoriamente con `var t = _i4grnd(0, N)`
 - Generar los **datos numéricos** con `_i4grnd` en cada llamada
 
@@ -175,18 +210,9 @@ function _genXxx_B2(){
   if(t===1){ ... }
   // etc.
 }
-
-// ❌ INCORRECTO — pool fijo
-function _genXxx_B2(){
-  return _i4gpick([
-    {q:'Desarrolla: (x+3)²', a:'x²+6x+9', ...},
-    {q:'Desarrolla: (x+5)²', a:'x²+10x+25', ...},
-    // ...siempre las mismas preguntas
-  ]);
-}
 ```
 
-**Cantidad mínima de tipos por generador:** al menos 6 tipos distintos (más es mejor). Cada tipo debe poder generar múltiples variantes por parámetros aleatorios, de modo que cada sesión produzca preguntas con números y respuestas diferentes.
+**Cantidad mínima de tipos por generador procedural:** al menos 6 tipos distintos. Cada tipo debe poder generar múltiples variantes por parámetros aleatorios.
 
 2. **Entrada en `PREP_CURRICULUM` en `levelup.js`**
 

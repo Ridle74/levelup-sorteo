@@ -375,41 +375,118 @@ textarea.fsm { resize:none; height:64px; }
 #questions-modal-ov {
   position: fixed; inset: 0; z-index: 9800;
   background: rgba(0,0,0,0.80); backdrop-filter: blur(6px);
-  display: none; align-items: flex-start; justify-content: center;
-  overflow-y: auto; padding: 20px 12px 40px;
+  display: none; align-items: center; justify-content: center;
+  padding: 20px 12px;
 }
 #questions-modal-ov.open { display: flex; }
 #questions-modal-box {
   background: linear-gradient(160deg,#0d1b30,#060e1a);
   border: 1px solid rgba(251,191,36,0.3);
-  border-radius: 20px; width: 100%; max-width: 560px;
+  border-radius: 20px; width: 100%; max-width: 960px;
+  height: calc(100vh - 40px); max-height: 900px;
   padding: 20px 18px; box-sizing: border-box;
   box-shadow: 0 0 60px -10px rgba(251,191,36,0.2);
+  display: flex; flex-direction: column;
 }
+#qm-topics-list { flex: 1; overflow-y: auto; display:flex; flex-direction:column; min-height:0; }
 .qm-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .qm-title { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:900; color:#fbbf24; letter-spacing:0.08em; text-transform:uppercase; }
 .qm-close { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:10px; color:rgba(255,255,255,0.6); width:34px; height:34px; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
-.qm-topic { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:12px 14px; margin-bottom:8px; }
+.qm-topic { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:14px; padding:14px; margin-bottom:8px; flex-shrink:0; display:flex; flex-direction:column; }
+.qm-topic.open { flex-shrink:0; }
 .qm-topic-hdr { display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none; }
 .qm-topic-ico { font-size:18px; line-height:1; flex-shrink:0; }
 .qm-topic-lbl { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; color:#e2e8f0; letter-spacing:0.04em; flex:1; }
 .qm-topic-arr { color:rgba(255,255,255,0.35); font-size:12px; transition:transform .2s; }
 .qm-topic.open .qm-topic-arr { transform:rotate(90deg); }
 .qm-topic-body { display:none; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); }
-.qm-topic.open .qm-topic-body { display:block; }
-.qm-sample { margin-bottom:10px; }
+.qm-topic.open .qm-topic-body { display:flex; flex-direction:column; min-height:500px; }
+.qm-topic.open .qm-single-block { flex:1; display:flex; flex-direction:column; }
+.qm-topic.open .qm-pg-container { grid-template-rows:1fr 1fr auto; flex:1; }
+.qm-sample { margin-bottom:0; }
+.qm-pg-container { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr auto; gap:8px 14px; flex:1; min-height:0; }
+.qm-pg-container .qm-pagination { grid-column:1 / -1; }
+.qm-sample { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; }
+.qm-sample .qm-sample-num { align-self:flex-start; }
+.qm-sample .qm-q { font-size:15px; margin:0; }
+.qm-sample .qm-opts { justify-content:center; }
+.qm-sample .qm-opt { font-size:15px; padding:7px 14px; }
+.qm-sample .qm-ste { display:none; }
+.qm-verify-btn { position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:7px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.25); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; flex-shrink:0; }
+.qm-verify-btn:hover { border-color:rgba(57,255,122,0.5); color:rgba(57,255,122,0.7); background:rgba(57,255,122,0.08); }
+.qm-verify-btn.verified { border-color:rgba(57,255,122,0.6); background:rgba(57,255,122,0.15); color:#39ff7a; }
+.qm-sample { position:relative; }
+.qm-verify-all-btn { background:rgba(57,255,122,0.08); border:1px solid rgba(57,255,122,0.3); border-radius:10px; color:rgba(57,255,122,0.6); padding:0 12px; height:34px; font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; letter-spacing:0.06em; cursor:pointer; transition:all .15s; white-space:nowrap; }
+.qm-verify-all-btn:hover { background:rgba(57,255,122,0.15); color:#39ff7a; }
+.qm-verify-all-btn.all-verified { background:rgba(57,255,122,0.2); border-color:rgba(57,255,122,0.7); color:#39ff7a; }
 .qm-q { font-family:'Barlow',sans-serif; font-size:12px; color:rgba(255,255,255,0.85); margin-bottom:7px; line-height:1.5; }
 .qm-opts { display:flex; flex-wrap:wrap; gap:5px; }
 .qm-opt { padding:5px 10px; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); }
 .qm-opt.correct { background:rgba(57,255,122,0.15); border-color:rgba(57,255,122,0.5); color:#39ff7a; }
+.qm-ste { font-family:'Barlow',sans-serif; font-size:11px; color:rgba(255,255,255,0.4); margin-top:5px; line-height:1.4; }
+.qm-pagination { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); }
+.qm-pg-btn { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; padding:5px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.75); cursor:pointer; letter-spacing:0.04em; }
+.qm-pg-btn:disabled { opacity:0.25; cursor:default; }
+.qm-pg-btn:not(:disabled):hover { background:rgba(255,255,255,0.14); }
+.qm-pg-info { font-family:'Barlow Condensed',sans-serif; font-size:11px; color:rgba(255,255,255,0.35); text-align:center; flex:1; }
 .qm-regen { background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); border-radius:8px; padding:4px 10px; color:#fbbf24; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; letter-spacing:0.08em; cursor:pointer; margin-top:4px; }
 .qm-svg-wrap { margin-bottom:6px; }
 .qm-svg-wrap svg { max-width:100% !important; }
 .qm-nomc { font-family:'Barlow Condensed',sans-serif; font-size:13px; color:#6b7280; font-style:italic; }
-.qm-single-block { padding: 4px 0; }
-.qm-sample { padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
-.qm-sample:last-of-type { border-bottom:none; }
+.qm-single-block { padding: 4px 0; flex:1; display:flex; flex-direction:column; min-height:0; }
+.qm-sample { padding:10px; border:1px solid rgba(255,255,255,0.06); border-radius:10px; cursor:pointer; transition:background .15s; }
+.qm-sample:hover { background:rgba(255,255,255,0.04); }
 .qm-sample-num { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:900; color:#6b7280; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:4px; }
+/* ── Detail overlay ─────────────────────── */
+#qm-detail-ov {
+  position:fixed; inset:0; z-index:9900;
+  background:rgba(0,0,0,0.88); backdrop-filter:blur(8px);
+  display:none; align-items:center; justify-content:center;
+  padding:24px 14px;
+}
+#qm-detail-ov.open { display:flex; }
+#qm-detail-box {
+  background:linear-gradient(160deg,#0d1b30,#060e1a);
+  border:1px solid rgba(251,191,36,0.35);
+  border-radius:28px; width:100%; max-width:900px;
+  padding:40px 44px; box-sizing:border-box;
+  box-shadow:0 0 100px -10px rgba(251,191,36,0.25);
+  position:relative; overflow:hidden;
+}
+.qmd-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
+.qmd-counter { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; color:#fbbf24; letter-spacing:0.12em; text-transform:uppercase; }
+.qmd-close { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:12px; color:rgba(255,255,255,0.6); width:44px; height:44px; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.qmd-close:hover { background:rgba(255,255,255,0.12); }
+.qmd-body { min-height:180px; }
+.qmd-q { font-family:'Barlow',sans-serif; font-size:22px; color:rgba(255,255,255,0.92); line-height:1.65; margin-bottom:24px; }
+.qmd-opts { display:flex; flex-wrap:wrap; gap:12px; margin-top:20px; }
+.qmd-opt { padding:12px 24px; border-radius:14px; font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:700; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.7); cursor:pointer; transition:background .12s,border-color .12s; }
+.qmd-opt:hover { background:rgba(255,255,255,0.10); border-color:rgba(255,255,255,0.3); }
+.qmd-opt.selected { border-color:rgba(255,255,255,0.5); background:rgba(255,255,255,0.12); color:#fff; }
+.qmd-opt.correct { background:rgba(57,255,122,0.15); border-color:rgba(57,255,122,0.6); color:#39ff7a; }
+.qmd-opt.wrong { background:rgba(255,70,70,0.15); border-color:rgba(255,70,70,0.6); color:#ff6b6b; }
+/* Report form overlay (encima del detail) */
+#qmd-report-form {
+  position:absolute; inset:0; z-index:10; border-radius:28px;
+  background:linear-gradient(160deg,#0d1b30,#060e1a);
+  display:none; flex-direction:column; padding:36px 40px; box-sizing:border-box;
+}
+#qmd-report-form.open { display:flex; }
+.qmdr-title { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:900; color:#fbbf24; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+.qmdr-sub { font-family:'Barlow',sans-serif; font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:18px; line-height:1.5; }
+.qmdr-preview { font-family:'Barlow',sans-serif; font-size:13px; color:rgba(255,255,255,0.65); background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 14px; margin-bottom:16px; line-height:1.5; max-height:80px; overflow:hidden; }
+.qmdr-label { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:900; color:rgba(255,255,255,0.35); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px; }
+.qmdr-ta { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:12px; padding:12px 14px; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; resize:none; outline:none; box-sizing:border-box; min-height:90px; }
+.qmdr-ta:focus { border-color:rgba(251,191,36,0.5); }
+.qmdr-actions { display:flex; gap:10px; margin-top:18px; }
+.qmdr-send { flex:1; font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; padding:11px 0; border-radius:12px; border:none; background:rgba(251,191,36,0.9); color:#0d1b30; cursor:pointer; letter-spacing:0.06em; }
+.qmdr-send:hover { background:#fbbf24; }
+.qmdr-cancel { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; padding:11px 20px; border-radius:12px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.6); cursor:pointer; }
+.qmd-nav { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:36px; padding-top:22px; border-top:1px solid rgba(255,255,255,0.07); }
+.qmd-nav-btn { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:900; padding:12px 28px; border-radius:14px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.8); cursor:pointer; letter-spacing:0.05em; }
+.qmd-nav-btn:disabled { opacity:0.2; cursor:default; }
+.qmd-nav-btn:not(:disabled):hover { background:rgba(255,255,255,0.14); }
+.qmd-skill-lbl { font-family:'Barlow Condensed',sans-serif; font-size:13px; color:rgba(255,255,255,0.25); text-align:center; flex:1; letter-spacing:0.06em; text-transform:uppercase; }
 
 #app .tab-btn.active {
   background: linear-gradient(180deg, #0c1f14, #06120c);
@@ -562,6 +639,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-mode-tab{flex:1;padding:8px 0;border-radius:10px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-family:'Lato',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.02em;cursor:pointer;transition:all .2s}
 .prep-mode-tab.active{background:rgba(124,58,237,0.25);border-color:rgba(124,58,237,0.6);color:#e0aaff;box-shadow:0 0 12px -4px rgba(124,58,237,0.5)}
 .prep-wrap{font-family:'Lato',sans-serif;color:#e5e7eb;padding:2px 0}
+[data-prep-state="exam"] .prep-wrap{zoom:1.25}
 .prep-title{font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;color:#fff;text-align:center;margin-bottom:2px}
 .prep-sub{font-size:12px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:10px}
 .prep-section-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin:12px 0 6px}
@@ -634,7 +712,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-panel{margin-top:12px;background:rgba(250,204,21,0.05);border:1px solid rgba(250,204,21,0.16);border-radius:12px;padding:12px 14px}
 .prep-kh-panel-topic{font-size:16px;font-weight:900;color:#facc15;margin-bottom:9px;letter-spacing:.03em}
 .prep-kh-panel-opts{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-.prep-kh-start-bar{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:8px 12px;margin-bottom:10px}
+.prep-kh-start-bar{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:12px 12px;margin-top:5px;margin-bottom:5px}
 .prep-kh-start-bar-row{display:flex;align-items:center;gap:8px;min-width:0}
 @keyframes prep-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes prepPaneIn{from{opacity:0}to{opacity:1}}
@@ -661,7 +739,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-unit-exp-back:hover{color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.3)}
 .prep-kh-sk-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.025);margin-bottom:10px;cursor:pointer;transition:background .15s}
 .prep-kh-sk-row:hover{background:rgba(255,255,255,0.05)}
-.prep-kh-sk-row.selected{border-color:rgba(109,40,217,0.5);background:rgba(109,40,217,0.08)}
+.prep-kh-sk-row.selected{border-color:rgba(139,92,246,0.7);background:linear-gradient(135deg,rgba(109,40,217,0.22),rgba(139,92,246,0.14));box-shadow:0 0 18px rgba(139,92,246,0.18)}
 .prep-kh-sk-info{flex:1;min-width:0}
 .prep-kh-sk-name{font-size:13px;font-weight:700;color:rgba(255,255,255,0.85);margin-bottom:2px}
 .prep-kh-sk-lvl{font-size:11px;color:rgba(255,255,255,0.4)}
@@ -708,6 +786,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-quiz-card.done .prep-kh-quiz-ico{background:linear-gradient(135deg,#ffffff 0%,#c0c0c8 45%,#808090 100%);border:2px solid #a0a0b0;color:#444}
 .prep-kh-quiz-card.done .prep-kh-quiz-btn{color:#c8c8d8;background:rgba(160,160,180,0.15);border-color:rgba(160,160,180,0.35)}
 .prep-kh-quiz-card.done .prep-kh-quiz-btn:hover{background:rgba(160,160,180,0.28)}
+.prep-kh-quiz-card.selected{border-color:rgba(139,92,246,0.7);background:linear-gradient(135deg,rgba(109,40,217,0.22),rgba(139,92,246,0.14));box-shadow:0 0 18px rgba(139,92,246,0.18)}
 .exam-card.done{background:linear-gradient(135deg,rgba(255,220,60,0.38) 0%,rgba(160,100,0,0.18) 38%,rgba(200,140,10,0.24) 55%,rgba(255,215,50,0.42) 100%);border-color:rgba(250,200,30,0.6)}
 .exam-card.done .prep-kh-quiz-tag{color:rgba(250,204,21,0.8)}
 .exam-card.done .prep-kh-quiz-ico{background:rgba(202,138,4,0.9);border:2px solid #fbbf24;color:#fff}
@@ -776,10 +855,10 @@ textarea.fsm { resize:none; height:64px; }
 .prep-prog-label{font-size:12px;color:rgba(255,255,255,0.4);white-space:nowrap}
 .prep-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden}
 .prep-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:10px;transition:width .3s}
-.prep-question-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;margin-bottom:10px;font-size:20px;font-weight:700;text-align:center;color:#fff;line-height:1.3;min-height:70px;display:flex;align-items:center;justify-content:center}
+.prep-question-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;margin-bottom:10px;font-family:'Barlow',sans-serif;font-size:22px;font-weight:400;text-align:center;color:rgba(255,255,255,0.92);line-height:1.65;min-height:70px;display:flex;align-items:center;justify-content:center}
 .prep-question-card sup{font-size:0.65em;vertical-align:0.45em;line-height:0}
 .prep-mc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
-.prep-mc-btn{padding:12px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e5e7eb;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),background .2s cubic-bezier(0.25,0.46,0.45,0.94),border-color .2s cubic-bezier(0.25,0.46,0.45,0.94);text-align:center}
+.prep-mc-btn{padding:12px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),background .2s cubic-bezier(0.25,0.46,0.45,0.94),border-color .2s cubic-bezier(0.25,0.46,0.45,0.94);text-align:center}
 .prep-mc-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.28)}
 .prep-mc-btn:active{background:rgba(255,255,255,0.15);transition-duration:.08s}
 .prep-mc-btn:hover:not(:disabled){background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
@@ -787,7 +866,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-mc-btn.wrong,.prep-vf-btn.wrong{background:rgba(239,68,68,0.18)!important;border-color:rgba(239,68,68,0.5)!important;color:#fca5a5!important}
 .prep-mc-btn:disabled,.prep-vf-btn:disabled{cursor:default}
 .prep-vf-row{display:flex;gap:10px;margin-bottom:14px}
-.prep-vf-btn{flex:1;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:#e5e7eb;font-family:'Lato',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),background .2s cubic-bezier(0.25,0.46,0.45,0.94),border-color .2s cubic-bezier(0.25,0.46,0.45,0.94);text-align:center;text-transform:uppercase}
+.prep-vf-btn{flex:1;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),background .2s cubic-bezier(0.25,0.46,0.45,0.94),border-color .2s cubic-bezier(0.25,0.46,0.45,0.94);text-align:center;text-transform:uppercase}
 .prep-vf-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.28)}
 .prep-vf-btn:active{background:rgba(255,255,255,0.15);transition-duration:.08s}
 .prep-vf-btn:hover:not(:disabled){background:rgba(255,255,255,0.1)}
@@ -3615,6 +3694,7 @@ const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','
     if(!BINGO_TOPICS[k]){
       var entry={ico:m.ico||'📐', lbl:m.lbl||k, qCount:m.qCount||3, gen:m.gen||function(){}};
       if(m.quiz) entry.quiz=true;
+      if(m.srcKeys) entry.srcKeys=m.srcKeys;
       BINGO_TOPICS[k]=entry;
     }
     if(!seen.has(k)){ BINGO_TOPIC_ORDER.push(k); seen.add(k); }
@@ -12275,11 +12355,50 @@ function _prepModalLogin() {
 <!-- ═══════════════════════════════════════════════════
      MODAL PREGUNTAS (solo admin)
 ════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════
+     DETALLE DE PREGUNTA (sobre el modal de preguntas)
+════════════════════════════════════════════════════ -->
+<div id="qm-detail-ov">
+  <div id="qm-detail-box">
+    <!-- Formulario de reporte (se superpone al contenido) -->
+    <div id="qmd-report-form">
+      <div class="qmdr-title">🚩 Reportar error</div>
+      <div class="qmdr-sub">Describe qué está mal en esta pregunta. El admin revisará el reporte.</div>
+      <div class="qmdr-label">Código</div>
+      <div class="qmdr-preview" id="qmdr-code" style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;letter-spacing:0.08em;color:#fbbf24;padding:8px 14px;margin-bottom:10px;"></div>
+      <div class="qmdr-label">Pregunta</div>
+      <div class="qmdr-preview" id="qmdr-preview"></div>
+      <div class="qmdr-label">Describe el error</div>
+      <textarea class="qmdr-ta" id="qmdr-ta" placeholder="Ej: La respuesta correcta debería ser 8, no 4. El paso dice que 2+2=5..."></textarea>
+      <div class="qmdr-actions">
+        <button class="qmdr-cancel" onclick="_qmCloseReport()">Cancelar</button>
+        <button class="qmdr-send" onclick="_qmSubmitReport()">✓ Enviar reporte</button>
+      </div>
+    </div>
+    <div class="qmd-header">
+      <span class="qmd-counter" id="qmd-counter"></span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="qmd-close" onclick="_qmOpenReport()" title="Reportar error">🚩</button>
+        <button class="qmd-close" onclick="_qmCloseDetail()">✕</button>
+      </div>
+    </div>
+    <div class="qmd-body" id="qmd-body"></div>
+    <div class="qmd-nav">
+      <button class="qmd-nav-btn" id="qmd-prev" onclick="_qmDetailNav(-1)">‹ Anterior</button>
+      <span class="qmd-skill-lbl" id="qmd-skill-lbl"></span>
+      <button class="qmd-nav-btn" id="qmd-next" onclick="_qmDetailNav(1)">Siguiente ›</button>
+    </div>
+  </div>
+</div>
+
 <div id="questions-modal-ov" onclick="if(event.target===this)closeQuestionsModal()">
   <div id="questions-modal-box">
     <div class="qm-header">
       <div class="qm-title" id="qm-modal-title">📚 Preguntas</div>
-      <button class="qm-close" onclick="closeQuestionsModal()">✕</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="qm-verify-all-btn" class="qm-verify-all-btn" onclick="_qmVerifyAll()" title="Marcar todas las preguntas como verificadas"></button>
+        <button class="qm-close" onclick="closeQuestionsModal()">✕</button>
+      </div>
     </div>
     <div id="qm-topics-list"></div>
   </div>
@@ -12303,41 +12422,199 @@ function closeQuestionsModal() {
   document.getElementById('questions-modal-ov').classList.remove('open');
 }
 
+var _qmPoolCache  = {};  // key → array de todas las preguntas del pool
+var _qmPageState  = {};  // key → página actual (0-based)
+var _QM_PER_PAGE  = 4;
+
 function _qmSafeGen(def) {
   try { return def.gen(); } catch(e) { return null; }
 }
 
-// Genera N preguntas de muestra para una habilidad y devuelve HTML
-function _qmBuildSkillHtml(key) {
+// Convierte secuencias de superíndices Unicode a <sup>...</sup> para renderizado uniforme.
+// ², ³ vienen de Latin-1 (U+00B2/B3); ⁰¹⁴⁵⁶⁷⁸⁹ vienen de Superscripts (U+2070+).
+// Al mezclarlos en la misma cadena (ej. x²⁴) el font los pinta en baselines distintas.
+var _qmSupMap = {'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','ⁿ':'n','ⁱ':'i','⁺':'+','⁻':'-','⁼':'=','⁽':'(','⁾':')','ᵃ':'a','ᵇ':'b','ᶜ':'c','ᵈ':'d','ᵉ':'e','ᶠ':'f','ᵍ':'g','ʰ':'h','ʲ':'j','ᵏ':'k','ˡ':'l','ᵐ':'m','ᵒ':'o','ᵖ':'p','ʳ':'r','ˢ':'s','ᵗ':'t','ᵘ':'u','ᵛ':'v','ʷ':'w','ˣ':'x','ʸ':'y','ᶻ':'z'};
+var _qmSubMap = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','₆':'6','₇':'7','₈':'8','₉':'9'};
+function _qmFmt(text) {
+  if (!text) return text;
+  var s = String(text);
+  // Normalizar símbolos de raíz Unicode a forma ⁿ√ para que el vinculum funcione
+  s = s.replace(/∛/g, '³√').replace(/∜/g, '⁴√');
+  // Vinculum: línea superior sobre el radicando (igual que en el examen)
+  var _vs = function(c) { return '<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">'+c+'</span>'; };
+  var prev;
+  do { prev = s; s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√\(([^()]*)\)/g, function(_, i, c){ return i+'√'+_vs(c); }); } while (s !== prev);
+  s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√(\d+)/g, function(_, i, n){ return i+'√'+_vs(n); });
+  s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√([a-zA-Z][⁰¹²³⁴⁵⁶⁷⁸⁹]*)/g, function(_, i, c){ return i+'√'+_vs(c); });
+  // Superíndices y subíndices Unicode → HTML
+  return s
+    .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹ⁿⁱ⁺⁻⁼⁽⁾ᵃᵇᶜᵈᵉᶠᵍʰʲᵏˡᵐᵒᵖʳˢᵗᵘᵛʷˣʸᶻ]+/g, function(m) {
+      return '<sup>' + m.split('').map(function(c){ return _qmSupMap[c]||c; }).join('') + '</sup>';
+    })
+    .replace(/[₀₁₂₃₄₅₆₇₈₉]+/g, function(m) {
+      return '<sub>' + m.split('').map(function(c){ return _qmSubMap[c]||c; }).join('') + '</sub>';
+    });
+}
+
+// Código de pregunta: clave de habilidad + posición en el banco (1-based, 3 dígitos)
+function _qmQCode(key, idx, sample) {
+  // Usar _id si está disponible (mismo sistema que el examen)
+  var id = sample && sample._id != null ? sample._id : (idx + 1);
+  return key.toUpperCase() + ' · P' + String(id).padStart(3, '0');
+}
+
+// Extrae TODAS las preguntas únicas del pool de una habilidad (deduplicación)
+function _qmBuildPool(key) {
+  if (_qmPoolCache[key]) return _qmPoolCache[key];
   var def = BINGO_TOPICS[key];
-  if (!def) return '<div class="qm-nomc">Tema no encontrado: ' + key + '</div>';
-  var html = '';
-  var count = Math.max(def.qCount || 5, 5); // mínimo 5 ejemplos
-  for (var i = 0; i < count; i++) {
-    var sample = _qmSafeGen(def);
-    if (!sample) continue;
-    html += '<div class="qm-sample">';
-    html += '<div class="qm-sample-num">' + (i + 1) + '</div>';
-    // pregunta
-    if (sample.q && sample.q.toString().trim().startsWith('<')) {
-      html += '<div class="qm-svg-wrap">' + sample.q + '</div>';
-    } else {
-      html += '<div class="qm-q">' + (sample.q || '') + '</div>';
-    }
-    // opciones
-    if (sample.opts && sample.opts.length) {
-      html += '<div class="qm-opts">';
-      sample.opts.forEach(function(opt) {
-        var isCorrect = String(opt) === String(sample.a);
-        html += '<span class="qm-opt' + (isCorrect ? ' correct' : '') + '">' + opt + '</span>';
+  if (!def || !def.gen) return [];
+  // Cuestionarios con srcKeys: combinar directamente los pools de las habilidades fuente
+  if (def.srcKeys && def.srcKeys.length) {
+    var combined = [], seen = {};
+    def.srcKeys.forEach(function(sk) {
+      _qmBuildPool(sk).forEach(function(s) {
+        var k = String(s.q||'')+'||'+String(s.a||'');
+        if (!seen[k]) { seen[k]=true; combined.push(s); }
       });
-      html += '</div>';
-    } else {
-      html += '<div class="qm-nomc">Respuesta: <b>' + sample.a + '</b></div>';
-    }
-    html += '</div>';
+    });
+    _qmPoolCache[key] = combined;
+    return combined;
   }
-  return html || '<div class="qm-nomc">No se pudieron generar preguntas.</div>';
+  var samples = [], seen = {}, noNew = 0, idMap = {};
+  for (var i = 0; i < 500; i++) {
+    var s = _qmSafeGen(def);
+    if (!s) { if (++noNew > 15) break; continue; }
+    var k = String(s.q || '') + '||' + String(s.a || '');
+    if (!seen[k]) {
+      seen[k] = true; samples.push(s); noNew = 0;
+      if (s._id != null) idMap[s._id] = true;
+    } else if (++noNew >= 50) break;
+  }
+  // Si las preguntas tienen _id, completar el banco hasta cubrir todos los _id de 1..max
+  // Esto garantiza un total exacto y determinista sin depender de la probabilidad.
+  if (samples.length > 0 && samples[0]._id != null) {
+    var maxId = Math.max.apply(null, Object.keys(idMap).map(Number));
+    for (var j = 0; j < 5000 && Object.keys(idMap).length < maxId; j++) {
+      var s2 = _qmSafeGen(def);
+      if (!s2 || s2._id == null || idMap[s2._id]) continue;
+      idMap[s2._id] = true;
+      var k2 = String(s2.q || '') + '||' + String(s2.a || '');
+      if (!seen[k2]) { seen[k2] = true; samples.push(s2); }
+    }
+  }
+  // Ordenar por _id (orden de registro en el código fuente) → posición siempre fija.
+  // Si no tienen _id (generadores dinámicos), ordenar alfabéticamente como fallback.
+  samples.sort(function(a, b) {
+    var ia = a._id != null ? a._id : Infinity;
+    var ib = b._id != null ? b._id : Infinity;
+    if (ia !== ib) return ia - ib;
+    var qa = String(a.q || '').replace(/<[^>]+>/g, '');
+    var qb = String(b.q || '').replace(/<[^>]+>/g, '');
+    return qa < qb ? -1 : qa > qb ? 1 : 0;
+  });
+  _qmPoolCache[key] = samples;
+  return samples;
+}
+
+// ── Verificación de preguntas ──────────────────────────────────────────────
+var _qmVerified = (function(){ try{ return JSON.parse(localStorage.getItem('qm_verified')||'{}'); }catch(e){ return {}; } })();
+function _qmSaveVerified(){ try{ localStorage.setItem('qm_verified', JSON.stringify(_qmVerified)); }catch(e){} }
+function _qmIsVerified(code){ return !!_qmVerified[code]; }
+function _qmToggleVerify(code, btnEl){
+  event.stopPropagation();
+  _qmVerified[code] = !_qmVerified[code];
+  if (!_qmVerified[code]) delete _qmVerified[code];
+  _qmSaveVerified();
+  if (btnEl) { btnEl.classList.toggle('verified', !!_qmVerified[code]); btnEl.title = _qmVerified[code] ? 'Verificada ✓' : 'Marcar como verificada'; }
+  _qmUpdateVerifyAllBtn();
+}
+function _qmVerifyAll(){
+  var pool = _qmBuildPool(_qmCurrentKeys[0]);
+  var allVerified = pool.every(function(s,i){ return _qmIsVerified(_qmQCode(_qmCurrentKeys[0],i,s)); });
+  pool.forEach(function(s,i){
+    var code = _qmQCode(_qmCurrentKeys[0], i, pool[i]);
+    if (allVerified) delete _qmVerified[code]; else _qmVerified[code] = true;
+  });
+  _qmSaveVerified();
+  // Re-renderizar página actual
+  var key = _qmCurrentKeys[0];
+  var page = _qmPageState[key] || 0;
+  var cid = 'qm-pg-' + key.replace(/[^a-z0-9]/gi,'_');
+  _qmRenderPage(key, page, cid);
+  _qmUpdateVerifyAllBtn();
+}
+function _qmUpdateVerifyAllBtn(){
+  var btn = document.getElementById('qm-verify-all-btn');
+  if (!btn || !_qmCurrentKeys.length) return;
+  var pool = _qmBuildPool(_qmCurrentKeys[0]);
+  var allV = pool.length > 0 && pool.every(function(s,i){ return _qmIsVerified(_qmQCode(_qmCurrentKeys[0],i,s)); });
+  var verifiedCount = pool.filter(function(s,i){ return _qmIsVerified(_qmQCode(_qmCurrentKeys[0],i,s)); }).length;
+  btn.textContent = allV ? '✓ Todo verificado' : ('✓ Verificar habilidad (' + verifiedCount + '/' + pool.length + ')');
+  btn.classList.toggle('all-verified', allV);
+}
+
+// Renderiza una sola pregunta del pool como HTML
+// key y globalIdx opcionales; si se pasan, la tarjeta abre el detalle al hacer click
+function _qmSampleHtml(sample, num, key, globalIdx) {
+  var clickAttr = (key !== undefined && globalIdx !== undefined)
+    ? ' onclick="_qmOpenDetail(\'' + key.replace(/'/g,"\\'") + '\',' + globalIdx + ')"'
+    : '';
+  var h = '<div class="qm-sample"' + clickAttr + '>';
+  h += '<div class="qm-sample-num">' + num + '</div>';
+  if (sample.q && sample.q.toString().trim().startsWith('<')) {
+    h += '<div class="qm-svg-wrap">' + sample.q + '</div>';
+  } else {
+    h += '<div class="qm-q">' + _qmFmt(sample.q || '') + '</div>';
+  }
+  if (sample.opts && sample.opts.length) {
+    h += '<div class="qm-opts">';
+    sample.opts.forEach(function(opt) {
+      var ok = String(opt) === String(sample.a);
+      h += '<span class="qm-opt' + (ok ? ' correct' : '') + '">' + _qmFmt(opt) + '</span>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div class="qm-nomc">Respuesta: <b>' + _qmFmt(sample.a) + '</b></div>';
+  }
+  if (sample.ste) h += '<div class="qm-ste">💡 ' + sample.ste + '</div>';
+  if (key !== undefined && globalIdx !== undefined) {
+    var code = _qmQCode(key, globalIdx, sample);
+    var isV = _qmIsVerified(code);
+    var safeCode = code.replace(/'/g,"\\'");
+    h += '<button class="qm-verify-btn' + (isV?' verified':'') + '" onclick="_qmToggleVerify(\'' + safeCode + '\',this)" title="' + (isV?'Verificada ✓':'Marcar como verificada') + '">✓</button>';
+  }
+  h += '</div>';
+  return h;
+}
+
+// Renderiza la página actual de una habilidad dentro del contenedor dado
+function _qmRenderPage(key, page, containerId) {
+  var pool = _qmBuildPool(key);
+  var total = pool.length;
+  var totalPages = Math.max(1, Math.ceil(total / _QM_PER_PAGE));
+  page = Math.max(0, Math.min(page, totalPages - 1));
+  _qmPageState[key] = page;
+
+  var start = page * _QM_PER_PAGE;
+  var slice = pool.slice(start, start + _QM_PER_PAGE);
+
+  var h = '';
+  slice.forEach(function(s, i) { h += _qmSampleHtml(s, start + i + 1, key, start + i); });
+
+  // Paginación
+  var cid = containerId || ('qm-pg-' + key.replace(/[^a-z0-9]/gi,'_'));
+  h += '<div class="qm-pagination">';
+  h += '<button class="qm-pg-btn" ' + (page === 0 ? 'disabled' : '')
+     + ' onclick="_qmRenderPage(\'' + key + '\',' + (page-1) + ',\'' + cid + '\');document.getElementById(\'' + cid + '\').scrollTop=0">‹ Anterior</button>';
+  h += '<span class="qm-pg-info">Página ' + (page+1) + ' / ' + totalPages + ' · ' + total + ' preguntas</span>';
+  h += '<button class="qm-pg-btn" ' + (page >= totalPages-1 ? 'disabled' : '')
+     + ' onclick="_qmRenderPage(\'' + key + '\',' + (page+1) + ',\'' + cid + '\');document.getElementById(\'' + cid + '\').scrollTop=0">Siguiente ›</button>';
+  h += '</div>';
+
+  var el = document.getElementById(cid);
+  if (el) { el.innerHTML = h; return; }
+  // Si no existe el contenedor, devolver HTML puro (para inserción inicial)
+  return '<div id="' + cid + '">' + h + '</div>';
 }
 
 function _qmRenderTopics(topicOrArray, label) {
@@ -12345,11 +12622,12 @@ function _qmRenderTopics(topicOrArray, label) {
   var titleEl = document.getElementById('qm-modal-title');
   if (!list) return;
 
-  // Normalizar a array de keys y guardar estado para regenerar
   var keys = Array.isArray(topicOrArray) ? topicOrArray : (topicOrArray ? [topicOrArray] : []);
   keys = keys.filter(function(k){ return k && BINGO_TOPICS[k]; });
   _qmCurrentKeys = keys;
   _qmCurrentLabel = label || '';
+  _qmPoolCache = {};   // limpiar caché al abrir (nueva tirada)
+  _qmPageState = {};
 
   if (!keys.length) {
     list.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-size:13px;text-align:center;padding:24px">Selecciona una habilidad primero.</div>';
@@ -12357,61 +12635,311 @@ function _qmRenderTopics(topicOrArray, label) {
     return;
   }
 
-  // Título del modal
   var titleText = label || (keys.length === 1 ? (BINGO_TOPICS[keys[0]].lbl || keys[0]) : (keys.length + ' habilidades'));
   if (titleEl) titleEl.textContent = '📚 ' + titleText;
 
-  var html = '';
+  // Determinar qué claves mostrar en el acordeón
+  var accordionKeys = keys;
   if (keys.length === 1) {
-    // Habilidad única: mostrar preguntas directamente
-    html += '<div class="qm-single-block">';
-    html += _qmBuildSkillHtml(keys[0]);
-    html += '<button class="qm-regen" onclick="_qmRegenAll()">↺ Regenerar ejemplos</button>';
-    html += '</div>';
+    var singleDef = BINGO_TOPICS[keys[0]];
+    if (singleDef && singleDef.srcKeys && singleDef.srcKeys.length) {
+      // Cuestionario con srcKeys: mostrar acordeón de habilidades fuente
+      accordionKeys = singleDef.srcKeys.filter(function(k){ return BINGO_TOPICS[k]; });
+    }
   } else {
-    // Múltiples habilidades (examen): acordeón por habilidad
-    keys.forEach(function(key) {
-      var def = BINGO_TOPICS[key];
-      var ico = def.ico || '❓';
-      html += '<div class="qm-topic" data-key="' + key + '">'
-        + '<div class="qm-topic-hdr" onclick="_qmToggleTopic(this.parentElement)">'
-        + '<span class="qm-topic-ico">' + ico + '</span>'
-        + '<span class="qm-topic-lbl">' + (def.lbl || key) + '</span>'
-        + '<span class="qm-topic-arr">›</span>'
-        + '</div>'
-        + '<div class="qm-topic-body"></div>'
-        + '</div>';
-    });
+    // Examen: excluir cuestionarios (quiz:true) porque sus habilidades ya aparecen individualmente
+    accordionKeys = keys.filter(function(k){ return !BINGO_TOPICS[k].quiz; });
   }
-  list.innerHTML = html;
+
+  _qmCurrentAccordionKeys = accordionKeys;
+
+  if (accordionKeys.length === 1) {
+    // Habilidad o cuestionario con una sola fuente: vista paginada directa
+    _qmShowSkillQuestions(accordionKeys[0], false);
+  } else {
+    // Cuestionario con srcKeys o examen: grid de habilidades
+    _qmRenderSkillGrid(0);
+  }
+}
+
+var _qmCurrentAccordionKeys = [];
+
+function _qmRenderSkillGrid(page) {
+  var list = document.getElementById('qm-topics-list');
+  if (!list) return;
+  var keys = _qmCurrentAccordionKeys;
+  var perPage = 4;
+  var totalPages = Math.max(1, Math.ceil(keys.length / perPage));
+  page = Math.max(0, Math.min(page, totalPages - 1));
+  var start = page * perPage;
+  var slice = keys.slice(start, start + perPage);
+  var h = '<div class="qm-single-block"><div class="qm-pg-container">';
+  slice.forEach(function(key) {
+    var def = BINGO_TOPICS[key] || {};
+    var pool = _qmBuildPool(key);
+    var total = pool.length;
+    var verified = pool.filter(function(s, i){ return _qmIsVerified(_qmQCode(key, i, pool[i])); }).length;
+    var pending = total - verified;
+    h += '<div class="qm-sample" style="cursor:pointer;justify-content:center" onclick="_qmShowSkillQuestions(\'' + key + '\',true)">'
+      + '<div style="font-size:22px;line-height:1;margin-bottom:6px">' + (def.ico || '📐') + '</div>'
+      + '<div class="qm-q" style="font-size:14px;font-weight:800;margin:0">' + (def.lbl || key) + '</div>'
+      + '<div style="font-size:11px;color:#39ff7a;margin-top:6px">✓ ' + verified + ' verificadas</div>'
+      + '<div style="font-size:11px;color:rgba(255,255,255,0.35)">⬜ ' + pending + ' pendientes</div>'
+      + '</div>';
+  });
+  h += '</div>';
+  if (totalPages > 1) {
+    h += '<div class="qm-pagination">'
+      + '<button class="qm-pg-btn"' + (page===0?' disabled':'') + ' onclick="_qmRenderSkillGrid(' + (page-1) + ')">‹ Anterior</button>'
+      + '<span class="qm-pg-info">Página ' + (page+1) + ' / ' + totalPages + ' · ' + keys.length + ' habilidades</span>'
+      + '<button class="qm-pg-btn"' + (page>=totalPages-1?' disabled':'') + ' onclick="_qmRenderSkillGrid(' + (page+1) + ')">Siguiente ›</button>'
+      + '</div>';
+  }
+  h += '</div>';
+  list.innerHTML = h;
+}
+
+function _qmShowSkillQuestions(key, showBack) {
+  var list = document.getElementById('qm-topics-list');
+  if (!list) return;
+  var def = BINGO_TOPICS[key] || {};
+  var cid = 'qm-pg-' + key.replace(/[^a-z0-9]/gi,'_');
+  var backBtn = showBack
+    ? '<button class="qm-pg-btn" onclick="_qmRenderSkillGrid(0)" style="margin-bottom:10px">← Volver</button>'
+    : '';
+  list.innerHTML = '<div class="qm-single-block">'
+    + backBtn
+    + '<div id="' + cid + '" class="qm-pg-container"></div>'
+    + '</div>';
+  _qmRenderPage(key, 0, cid);
+  setTimeout(_qmUpdateVerifyAllBtn, 0);
 }
 
 function _qmRegenAll() {
+  _qmPoolCache = {};
+  _qmPageState = {};
   _qmRenderTopics(_qmCurrentKeys, _qmCurrentLabel);
 }
 
-function _qmToggleTopic(el) {
-  var wasOpen = el.classList.contains('open');
-  document.querySelectorAll('#qm-topics-list .qm-topic.open').forEach(function(t){ t.classList.remove('open'); });
-  if (!wasOpen) {
-    el.classList.add('open');
-    var key = el.dataset.key;
-    var body = el.querySelector('.qm-topic-body');
-    if (body && !body.dataset.loaded) {
-      body.innerHTML = _qmBuildSkillHtml(key)
-        + '<button class="qm-regen" data-key="' + key + '" onclick="_qmRegenTopic(this)">↺ Regenerar</button>';
-      body.dataset.loaded = '1';
-    }
-  }
-}
+function _qmToggleTopic(el) { /* legacy - no usado */ }
 
 function _qmRegenTopic(btn) {
   var key = btn.dataset.key;
   var body = btn.closest('.qm-topic-body');
   if (!body || !key) return;
+  delete _qmPoolCache[key];
+  delete _qmPageState[key];
+  var cid = 'qm-pg-' + key.replace(/[^a-z0-9]/gi,'_');
+  body.innerHTML = '<div id="' + cid + '"></div>';
   body.dataset.loaded = '1';
-  body.innerHTML = _qmBuildSkillHtml(key)
-    + '<button class="qm-regen" data-key="' + key + '" onclick="_qmRegenTopic(this)">↺ Regenerar</button>';
+  _qmRenderPage(key, 0, cid);
+}
+
+// ─── DETALLE DE PREGUNTA ──────────────────────────────────────────────
+var _qmDetailKey = null;
+var _qmDetailIdx = 0;
+var _qmDetailAnswered = false;  // true cuando ya eligió una opción en esta pregunta
+
+function _qmOpenDetail(key, idx) {
+  _qmDetailKey = key;
+  _qmDetailIdx = idx;
+  _qmDetailAnswered = false;
+  _qmRenderDetail();
+  document.getElementById('qm-detail-ov').classList.add('open');
+}
+
+function _qmCloseDetail() {
+  document.getElementById('qm-detail-ov').classList.remove('open');
+  _qmCloseReport();
+}
+
+function _qmDetailNav(dir) {
+  _qmCloseReport();
+  var pool = _qmBuildPool(_qmDetailKey);
+  _qmDetailIdx = Math.max(0, Math.min(_qmDetailIdx + dir, pool.length - 1));
+  _qmDetailAnswered = false;
+  _qmRenderDetail();
+}
+
+function _qmDetailPick(optEl, chosen) {
+  if (_qmDetailAnswered) return;
+  _qmDetailAnswered = true;
+  var pool = _qmBuildPool(_qmDetailKey);
+  var correct = String(pool[_qmDetailIdx].a);
+  // Marcar todas las opciones
+  var allOpts = document.querySelectorAll('#qmd-body .qmd-opt');
+  allOpts.forEach(function(el) {
+    var val = el.dataset.val;
+    if (val === correct) { el.classList.add('correct'); }
+    else if (el === optEl) { el.classList.add('wrong'); }
+    else { el.style.opacity = '0.35'; }
+  });
+}
+
+function _qmRenderDetail() {
+  var pool = _qmBuildPool(_qmDetailKey);
+  var total = pool.length;
+  var idx = _qmDetailIdx;
+  var s = pool[idx];
+  if (!s) return;
+
+  // Contador + código de pregunta
+  var counterEl = document.getElementById('qmd-counter');
+  if (counterEl) counterEl.textContent = 'Pregunta ' + (idx + 1) + ' / ' + total + '  ·  ' + _qmQCode(_qmDetailKey, idx, pool[idx]);
+
+  // Label de habilidad
+  var lblEl = document.getElementById('qmd-skill-lbl');
+  if (lblEl) {
+    var def = BINGO_TOPICS[_qmDetailKey];
+    lblEl.textContent = (def && def.lbl) ? def.lbl : _qmDetailKey;
+  }
+
+  // Cuerpo — display only, SIN marcar respuesta correcta
+  var h = '';
+  if (s.q && s.q.toString().trim().startsWith('<')) {
+    h += '<div class="qm-svg-wrap">' + s.q + '</div>';
+  } else {
+    h += '<div class="qmd-q">' + _qmFmt(s.q || '') + '</div>';
+  }
+  if (s.opts && s.opts.length) {
+    h += '<div class="qmd-opts">';
+    s.opts.forEach(function(opt) {
+      var safeVal = String(opt).replace(/"/g,'&quot;');
+      h += '<span class="qmd-opt" data-val="' + safeVal + '" onclick="_qmDetailPick(this,\'' + String(opt).replace(/'/g,"\\'") + '\')">' + _qmFmt(opt) + '</span>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div class="qm-nomc" style="margin-top:10px;">Respuesta: <b>' + _qmFmt(s.a) + '</b></div>';
+  }
+  if (s.ste) h += '<div class="qm-ste" style="margin-top:18px;font-size:14px;">💡 ' + s.ste + '</div>';
+
+  var bodyEl = document.getElementById('qmd-body');
+  if (bodyEl) bodyEl.innerHTML = h;
+
+  // Botones prev/next
+  var prevBtn = document.getElementById('qmd-prev');
+  var nextBtn = document.getElementById('qmd-next');
+  if (prevBtn) prevBtn.disabled = (idx === 0);
+  if (nextBtn) nextBtn.disabled = (idx >= total - 1);
+}
+
+// ─── REPORTE DE ERRORES ──────────────────────────────────────────────
+function _qmOpenReport() {
+  var pool = _qmBuildPool(_qmDetailKey);
+  var s = pool[_qmDetailIdx];
+  if (!s) return;
+  var codeEl = document.getElementById('qmdr-code');
+  if (codeEl) codeEl.textContent = _qmQCode(_qmDetailKey, _qmDetailIdx, _qmBuildPool(_qmDetailKey)[_qmDetailIdx]);
+  // Texto plano de la pregunta
+  var preview = document.getElementById('qmdr-preview');
+  if (preview) {
+    var qText = String(s.q || '').replace(/<[^>]+>/g, '');
+    preview.textContent = qText;
+  }
+  var ta = document.getElementById('qmdr-ta');
+  if (ta) ta.value = '';
+  document.getElementById('qmd-report-form').classList.add('open');
+  if (ta) setTimeout(function(){ ta.focus(); }, 50);
+}
+
+function _qmCloseReport() {
+  var f = document.getElementById('qmd-report-form');
+  if (f) f.classList.remove('open');
+}
+
+function _qmSubmitReport() {
+  var ta = document.getElementById('qmdr-ta');
+  var comment = ta ? ta.value.trim() : '';
+  if (!comment) { if (ta) ta.focus(); return; }
+
+  var pool = _qmBuildPool(_qmDetailKey);
+  var s = pool[_qmDetailIdx];
+  var skillDef = BINGO_TOPICS[_qmDetailKey];
+  var report = {
+    ts: new Date().toISOString(),
+    codigo: _qmQCode(_qmDetailKey, _qmDetailIdx, _qmBuildPool(_qmDetailKey)[_qmDetailIdx]),
+    skill: _qmDetailKey,
+    skillLbl: (skillDef && skillDef.lbl) || _qmDetailKey,
+    idx: _qmDetailIdx,
+    q: String(s ? s.q || '' : '').replace(/<[^>]+>/g, ''),
+    a: String(s ? s.a || '' : ''),
+    comment: comment
+  };
+
+  // Guardar en localStorage
+  var key = 'qm_error_reports';
+  var existing = [];
+  try { existing = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+  existing.push(report);
+  try { localStorage.setItem(key, JSON.stringify(existing)); } catch(e) {}
+
+  _qmCloseReport();
+  if (typeof showToast === 'function') showToast('Reporte enviado. Gracias 👍', 'success');
+}
+
+// Exportar todos los reportes como JSON (para admin)
+function _qmExportReports() {
+  var key = 'qm_error_reports';
+  var reports = [];
+  try { reports = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+  if (!reports.length) { if (typeof showToast === 'function') showToast('No hay reportes guardados.'); return; }
+  var blob = new Blob([JSON.stringify(reports, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'reportes_preguntas.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+<!-- ── Modal PIN Admin ──────────────────────────────────────── -->
+<div id="prep-pin-modal-ov" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(3,7,18,0.88);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px">
+  <div style="background:linear-gradient(160deg,#0f0a2e,#130d35);border:1px solid rgba(168,85,247,0.4);border-radius:20px;padding:28px 24px;width:100%;max-width:320px;box-shadow:0 0 40px rgba(168,85,247,0.25);display:flex;flex-direction:column;align-items:center;gap:14px;font-family:'Barlow Condensed',sans-serif">
+    <div style="font-size:32px;filter:drop-shadow(0 0 10px rgba(168,85,247,0.8))">🔑</div>
+    <div style="font-size:16px;font-weight:800;color:#fff;letter-spacing:0.06em;text-transform:uppercase;text-align:center">Clave de Administrador</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.45);text-align:center">Ingresa la clave para acceder a la configuración</div>
+    <input id="prep-pin-input" type="password" placeholder="••••••" maxlength="20"
+      style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.07);border:1px solid rgba(168,85,247,0.4);border-radius:10px;padding:10px 14px;font-size:18px;color:#fff;text-align:center;letter-spacing:0.2em;outline:none;font-family:'Barlow Condensed',sans-serif"
+      onfocus="this.style.borderColor='rgba(168,85,247,0.9)';this.style.boxShadow='0 0 14px rgba(168,85,247,0.35)'"
+      onblur="this.style.borderColor='rgba(168,85,247,0.4)';this.style.boxShadow='none'"
+      onkeydown="if(event.key==='Enter')_prepPinConfirm();if(event.key==='Escape')_prepPinClose()">
+    <div id="prep-pin-error" style="display:none;font-size:11px;color:#f87171;font-weight:700;letter-spacing:0.05em">Clave incorrecta</div>
+    <div style="display:flex;gap:10px;width:100%">
+      <button onclick="_prepPinClose()" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.05em;text-transform:uppercase">Cancelar</button>
+      <button onclick="_prepPinConfirm()" style="flex:1;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,rgba(168,85,247,0.7),rgba(168,85,247,1));color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.05em;text-transform:uppercase;box-shadow:0 0 14px rgba(168,85,247,0.4)">Confirmar</button>
+    </div>
+  </div>
+</div>
+<script>
+var _prepPinCallback = null;
+function _prepShowPinModal(onSuccess) {
+  _prepPinCallback = onSuccess;
+  const ov = document.getElementById('prep-pin-modal-ov');
+  const inp = document.getElementById('prep-pin-input');
+  const err = document.getElementById('prep-pin-error');
+  ov.style.display = 'flex';
+  inp.value = '';
+  err.style.display = 'none';
+  setTimeout(()=>inp.focus(), 80);
+}
+function _prepPinClose() {
+  document.getElementById('prep-pin-modal-ov').style.display = 'none';
+  _prepPinCallback = null;
+}
+function _prepPinConfirm() {
+  const inp = document.getElementById('prep-pin-input');
+  const err = document.getElementById('prep-pin-error');
+  if (inp.value === String(ADMIN.pin)) {
+    document.getElementById('prep-pin-modal-ov').style.display = 'none';
+    if (_prepPinCallback) _prepPinCallback();
+    _prepPinCallback = null;
+  } else {
+    err.style.display = 'block';
+    inp.value = '';
+    inp.focus();
+    inp.style.borderColor = 'rgba(248,113,113,0.8)';
+    inp.style.boxShadow = '0 0 12px rgba(248,113,113,0.3)';
+    setTimeout(()=>{ inp.style.borderColor='rgba(168,85,247,0.4)'; inp.style.boxShadow='none'; }, 1200);
+  }
 }
 </script>
 
