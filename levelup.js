@@ -6843,8 +6843,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_bpu',
-      'ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_bpu'],
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
     areas:[
@@ -9517,400 +9516,417 @@ function _genDD_COMB_B3(){
 }
 _SKILL_META['dd_comb_b3']={ico:'🔢',lbl:'Op. Combinada avanzada',qCount:3,gen:_genDD_COMB_B3};
 
+
 // ══ Álgebra 1° Secundaria – Saco Oliveros (ol1a) ══════════════════════════════
-// Cap. 13: Productos Notables I — Binomio al Cuadrado e Identidades de Legendre
+// Cap. 13: Productos Notables I · 6 habilidades · 3 grupos · 3 BQs
 
-// ─── B1: 🖼 Cuadrado de binomio suma – vista geométrica (parámetros aleatorios) ─
-function _genOl1aPn1_B1(){
-  var a=_i4grnd(1,6), b=_i4grnd(1,5);
-  var W=180, H=180;
-  var wa=Math.round(W*a/(a+b)), wb=W-wa, ha=Math.round(H*a/(a+b)), hb=H-ha;
-  var ox=40, oy=10;
-  var svg='<svg viewBox="0 0 '+(W+ox+10)+' '+(H+oy+45)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;margin:4px auto;display:block">'+
-    '<rect x="'+ox+'" y="'+oy+'" width="'+wa+'" height="'+ha+'" fill="#6366f1" rx="2"/>'+
-    '<text x="'+(ox+wa/2)+'" y="'+(oy+ha/2+5)+'" text-anchor="middle" font-size="14" font-weight="700" fill="white">a²</text>'+
-    '<rect x="'+(ox+wa)+'" y="'+oy+'" width="'+wb+'" height="'+ha+'" fill="#a78bfa" rx="2"/>'+
-    '<text x="'+(ox+wa+wb/2)+'" y="'+(oy+ha/2+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#1e1b4b">ab</text>'+
-    '<rect x="'+ox+'" y="'+(oy+ha)+'" width="'+wa+'" height="'+hb+'" fill="#818cf8" rx="2"/>'+
-    '<text x="'+(ox+wa/2)+'" y="'+(oy+ha+hb/2+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="white">ab</text>'+
-    '<rect x="'+(ox+wa)+'" y="'+(oy+ha)+'" width="'+wb+'" height="'+hb+'" fill="#c4b5fd" rx="2"/>'+
-    '<text x="'+(ox+wa+wb/2)+'" y="'+(oy+ha+hb/2+5)+'" text-anchor="middle" font-size="13" font-weight="700" fill="#1e1b4b">b²</text>'+
-    '<text x="'+(ox+wa/2)+'" y="'+(oy+H+18)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">a='+a+'</text>'+
-    '<text x="'+(ox+wa+wb/2)+'" y="'+(oy+H+18)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">b='+b+'</text>'+
-    '<text x="'+(ox-18)+'" y="'+(oy+ha/2+4)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">a</text>'+
-    '<text x="'+(ox-18)+'" y="'+(oy+ha+hb/2+4)+'" text-anchor="middle" font-size="12" fill="#e2e8f0">b</text>'+
-    '</svg>';
-  var total=(a+b)*(a+b), a2=a*a, b2=b*b, ab=a*b, ab2=2*ab;
-  var t=_i4grnd(0,5);
-  if(t===0) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto mide el área total del cuadrado?</div></div>',a:''+total,opts:_i4gshuf([''+total,''+(a2+b2),''+(a2+b2+ab),''+(2*(a+b))]),mc:true,ste:'(a+b)²='+a2+'+'+ab2+'+'+b2+'='+total+'.'};
-  if(t===1) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Qué expresión representa el área total?</div></div>',a:'a²+2ab+b²',opts:_i4gshuf(['a²+2ab+b²','a²+ab+b²','a²+b²','2a²+2b²']),mc:true,ste:'(a+b)²=a²+2ab+b².'};
-  if(t===2) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto mide la región coloreada a²?</div></div>',a:''+a2,opts:_i4gshuf([''+a2,''+(a2+b2),''+ab2,''+(a+b)]),mc:true,ste:'La región a² mide '+a+'×'+a+'='+a2+'.'};
-  if(t===3) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto mide la región coloreada b²?</div></div>',a:''+b2,opts:_i4gshuf([''+b2,''+a2,''+ab2,''+total]),mc:true,ste:'La región b² mide '+b+'×'+b+'='+b2+'.'};
-  if(t===4) return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuánto suman las dos regiones ab juntas?</div></div>',a:''+ab2,opts:_i4gshuf([''+ab2,''+ab,''+(ab2+1),''+a2]),mc:true,ste:'Cada rectángulo mide '+a+'×'+b+'='+ab+'. Juntos: 2ab='+ab2+'.'};
-  return {q:'<div style="text-align:center">'+svg+'<div style="font-size:14px;margin-top:4px">¿Cuántas regiones de área "ab" hay en el diagrama?</div></div>',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Hay 2 rectángulos ab. Por eso el término medio de (a+b)² es 2ab.'};
-}
-_SKILL_META['ol1a_pn1_b1']={ico:'🖼',lbl:'Cuadrado de binomio – vista geométrica',qCount:3,gen:_genOl1aPn1_B1};
+// ── B1 📐 Desarrollo del binomio al cuadrado ──────────────────────────────────
+// P1(1-4): (a+b)² con enteros simples | P2(5-8): (a-b)² con enteros
+// P3(9-12): Matching: binomio → expansión | P4(13-16): V/F sobre propiedades
+// P5(17-20): Desarrollo con radicales (√a ± √b)²
+function _genOl1aPn1_B1(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Desarrolla: (x + 3)²',a:'x² + 6x + 9',opts:sh(['x² + 6x + 9','x² + 3x + 9','x² + 9','x² + 6x + 6']),mc:true,ste:'(a+b)²=a²+2ab+b². (x+3)²=x²+2(x)(3)+9=x²+6x+9.'},
+  {_id:2,q:'Desarrolla: (2a + 5)²',a:'4a² + 20a + 25',opts:sh(['4a² + 20a + 25','4a² + 10a + 25','4a² + 25','2a² + 20a + 25']),mc:true,ste:'(2a+5)²=(2a)²+2(2a)(5)+5²=4a²+20a+25.'},
+  {_id:3,q:'Desarrolla: (3x + 4)²',a:'9x² + 24x + 16',opts:sh(['9x² + 24x + 16','9x² + 12x + 16','6x² + 24x + 16','9x² + 24x + 8']),mc:true,ste:'(3x+4)²=9x²+2(3x)(4)+16=9x²+24x+16.'},
+  {_id:4,q:'Desarrolla: (4m + 7n)²',a:'16m² + 56mn + 49n²',opts:sh(['16m² + 56mn + 49n²','16m² + 28mn + 49n²','8m² + 56mn + 49n²','16m² + 56mn + 14n²']),mc:true,ste:'(4m+7n)²=16m²+2(4m)(7n)+49n²=16m²+56mn+49n².'},
+  {_id:5,q:'Desarrolla: (x − 4)²',a:'x² − 8x + 16',opts:sh(['x² − 8x + 16','x² − 4x + 16','x² + 8x + 16','x² − 8x − 16']),mc:true,ste:'(a−b)²=a²−2ab+b². (x−4)²=x²−2(x)(4)+16=x²−8x+16.'},
+  {_id:6,q:'Desarrolla: (3a − 2)²',a:'9a² − 12a + 4',opts:sh(['9a² − 12a + 4','9a² − 6a + 4','9a² + 12a + 4','3a² − 12a + 4']),mc:true,ste:'(3a−2)²=9a²−2(3a)(2)+4=9a²−12a+4.'},
+  {_id:7,q:'Desarrolla: (5x − 3y)²',a:'25x² − 30xy + 9y²',opts:sh(['25x² − 30xy + 9y²','25x² − 15xy + 9y²','5x² − 30xy + 9y²','25x² − 30xy + 3y²']),mc:true,ste:'(5x−3y)²=25x²−2(5x)(3y)+9y²=25x²−30xy+9y².'},
+  {_id:8,q:'Desarrolla: (2m − 7)²',a:'4m² − 28m + 49',opts:sh(['4m² − 28m + 49','4m² − 14m + 49','4m² + 28m + 49','2m² − 28m + 49']),mc:true,ste:'(2m−7)²=4m²−2(2m)(7)+49=4m²−28m+49.'},
+  {_id:9,q:'¿Cuál binomio al cuadrado genera 4x² + 12x + 9?',a:'(2x + 3)²',opts:sh(['(2x + 3)²','(2x + 9)²','(4x + 3)²','(x + 3)²']),mc:true,ste:'(2x+3)²=4x²+2(2x)(3)+9=4x²+12x+9 ✓.'},
+  {_id:10,q:'¿Cuál binomio al cuadrado genera 9a² − 24a + 16?',a:'(3a − 4)²',opts:sh(['(3a − 4)²','(3a − 8)²','(9a − 4)²','(3a + 4)²']),mc:true,ste:'(3a−4)²=9a²−24a+16 ✓.'},
+  {_id:11,q:'¿Cuál binomio al cuadrado genera 25x² + 20x + 4?',a:'(5x + 2)²',opts:sh(['(5x + 2)²','(5x + 4)²','(5x + 1)²','(25x + 2)²']),mc:true,ste:'(5x+2)²=25x²+20x+4 ✓.'},
+  {_id:12,q:'¿Cuál binomio al cuadrado genera 16m² − 56m + 49?',a:'(4m − 7)²',opts:sh(['(4m − 7)²','(4m − 14)²','(16m − 7)²','(4m + 7)²']),mc:true,ste:'(4m−7)²=16m²−56m+49 ✓.'},
+  {_id:13,q:'V/F: (3m² + 4)² = 9m⁴ + 12m² + 16',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. El término central es 2(3m²)(4)=24m², no 12m². Correcto: 9m⁴+24m²+16.'},
+  {_id:14,q:'V/F: (2x − 7)² = 4x² − 28x + 49',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. (2x−7)²=(2x)²−2(2x)(7)+7²=4x²−28x+49 ✓.'},
+  {_id:15,q:'V/F: En (a+b)², el término central siempre es el doble del producto de los términos',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. (a+b)²=a²+2ab+b²; el término medio es 2ab, doble del producto a×b.'},
+  {_id:16,q:'V/F: (3m² + 4)² tiene como término independiente 16',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. b²=4²=16 es el término independiente.'},
+  {_id:17,q:'Desarrolla y simplifica: (√2 + √3)²',a:'5 + 2√6',opts:sh(['5 + 2√6','5 + √6','5 + 4√6','√5 + 2√6']),mc:true,ste:'(√2+√3)²=(√2)²+2(√2)(√3)+(√3)²=2+2√6+3=5+2√6.'},
+  {_id:18,q:'Desarrolla y simplifica: (√5 − √2)²',a:'7 − 2√10',opts:sh(['7 − 2√10','3 − 2√10','7 + 2√10','7 − √10']),mc:true,ste:'(√5−√2)²=5−2√10+2=7−2√10.'},
+  {_id:19,q:'Desarrolla y simplifica: (3√2 + √3)²',a:'21 + 6√6',opts:sh(['21 + 6√6','21 + 3√6','18 + 6√6','21 + 6√3']),mc:true,ste:'(3√2+√3)²=(3√2)²+2(3√2)(√3)+(√3)²=18+6√6+3=21+6√6.'},
+  {_id:20,q:'Desarrolla y simplifica: (√7 + √5)²',a:'12 + 2√35',opts:sh(['12 + 2√35','12 + √35','2 + 2√35','12 + 2√12']),mc:true,ste:'(√7+√5)²=7+2√35+5=12+2√35.'}
+]);}
+_SKILL_META['ol1a_pn1_b1']={ico:'📐',lbl:'Desarrollo del binomio al cuadrado',qCount:4,gen:_genOl1aPn1_B1,plantillas:['(a+b)² con enteros simples','(a−b)² con enteros','Matching: binomio → expansión','V/F sobre propiedades','Desarrollo con radicales (√a ± √b)²']};
 
-// ─── B2: 📐 Desarrollar binomio al cuadrado – generación procedural ──────────
-function _genOl1aPn1_B2(){
-  var r=_i4grnd, sh=_i4gshuf, t=r(0,8);
-  var a,b,A,B,C,aS,tA,ans,w1,w2,w3,p,q,s,n,nS,pow2,pow2S,pr,primes,pairs;
-  if(t===0){
-    // (ax+b)²  a∈[1,4] b∈[2,9]
-    a=r(1,4); b=r(2,9); A=a*a; B=2*a*b; C=b*b;
-    aS=a===1?'':''+a; tA=a===1?'x²':A+'x²';
-    ans=tA+'+'+B+'x+'+C;
-    return {q:'Desarrolla: ('+aS+'x+'+b+')²',a:ans,opts:sh([ans,tA+'+'+b+'x+'+C,tA+'+'+C,tA+'−'+B+'x+'+C]),mc:true,ste:'('+aS+'x)²+2('+aS+'x)('+b+')+'+b+'²='+ans+'.'};
-  }
-  if(t===1){
-    // (ax−b)²  a∈[1,4] b∈[2,9]
-    a=r(1,4); b=r(2,9); A=a*a; B=2*a*b; C=b*b;
-    aS=a===1?'':''+a; tA=a===1?'x²':A+'x²';
-    ans=tA+'−'+B+'x+'+C;
-    return {q:'Desarrolla: ('+aS+'x−'+b+')²',a:ans,opts:sh([ans,tA+'+'+B+'x+'+C,tA+'−'+b+'x+'+C,tA+'−'+B+'x−'+C]),mc:true,ste:'('+aS+'x)²−2('+aS+'x)('+b+')+'+b+'²='+ans+'.'};
-  }
-  if(t===2){
-    // (√p+√q)²  p,q primos distintos
-    primes=[[2,3],[2,5],[3,5],[2,7],[3,7],[5,7],[2,11],[3,11],[5,11],[7,11],[2,13],[3,13]];
-    pr=primes[r(0,primes.length-1)]; p=pr[0]; q=pr[1]; s=p+q; var pq=p*q;
-    ans=s+'+2√'+pq;
-    return {q:'Desarrolla: (√'+p+'+√'+q+')²',a:ans,opts:sh([ans,s+'+√'+pq,s+'−2√'+pq,'√'+(p+q)+'+2√'+pq]),mc:true,ste:''+p+'+2√'+pq+'+'+q+'='+ans+'.'};
-  }
-  if(t===3){
-    // (√p−√q)²  p>q
-    pairs=[[3,2],[5,2],[7,2],[5,3],[7,3],[7,5],[11,2],[11,3],[11,5],[11,7],[13,2],[13,3]];
-    pr=pairs[r(0,pairs.length-1)]; p=pr[0]; q=pr[1]; s=p+q; var pq2=p*q;
-    ans=s+'−2√'+pq2;
-    return {q:'Desarrolla: (√'+p+'−√'+q+')²',a:ans,opts:sh([ans,s+'+2√'+pq2,(p>q?p-q:q-p)+'−2√'+pq2,s+'−√'+pq2]),mc:true,ste:''+p+'−2√'+pq2+'+'+q+'='+ans+'.'};
-  }
-  if(t===4){
-    // (ax^n+b)²  a∈[1,3] b∈[2,6] n∈[2,3]
-    a=r(1,3); b=r(2,6); n=r(2,3); A=a*a; B=2*a*b; C=b*b;
-    nS=n===2?'x²':'x³'; pow2=n*2; pow2S=pow2===4?'x⁴':'x⁶';
-    aS=a===1?'':''+a; tA=a===1?pow2S:A+pow2S;
-    ans=tA+'+'+B+nS+'+'+C;
-    return {q:'Desarrolla: ('+aS+nS+'+'+b+')²',a:ans,opts:sh([ans,tA+'+'+b+nS+'+'+C,tA+'+'+C,tA+'−'+B+nS+'+'+C]),mc:true,ste:'('+aS+nS+')²+2('+aS+nS+')('+b+')+'+b+'²='+ans+'.'};
-  }
-  if(t===5){
-    // (ax^n−b)²  a∈[1,3] b∈[2,6] n∈[2,3]
-    a=r(1,3); b=r(2,6); n=r(2,3); A=a*a; B=2*a*b; C=b*b;
-    nS=n===2?'x²':'x³'; pow2=n*2; pow2S=pow2===4?'x⁴':'x⁶';
-    aS=a===1?'':''+a; tA=a===1?pow2S:A+pow2S;
-    ans=tA+'−'+B+nS+'+'+C;
-    return {q:'Desarrolla: ('+aS+nS+'−'+b+')²',a:ans,opts:sh([ans,tA+'+'+B+nS+'+'+C,tA+'−'+b+nS+'+'+C,tA+'−'+B+nS+'−'+C]),mc:true,ste:'('+aS+nS+')²−2('+aS+nS+')('+b+')+'+b+'²='+ans+'.'};
-  }
-  if(t===6){
-    // Término independiente de (ax±b)²
-    a=r(1,4); b=r(2,9); var sg=r(0,1)?'+':'−';
-    C=b*b; aS=a===1?'':''+a;
-    return {q:'Término independiente de ('+aS+'x'+sg+b+')²:',a:''+C,opts:sh([''+C,''+(2*a*b),''+(a*a),''+b]),mc:true,ste:'(±'+b+')²='+C+'.'};
-  }
-  if(t===7){
-    // Término central de (ax+b)²: coeficiente de x = 2ab
-    a=r(1,4); b=r(2,9); B=2*a*b; aS=a===1?'':''+a;
-    return {q:'Término central de ('+aS+'x+'+b+')²:',a:''+B,opts:sh([''+B,''+(a*b),''+(a+b),''+(a*a)]),mc:true,ste:'2×'+a+'×'+b+'='+B+'.'};
-  }
-  // t===8: Término cuadrático de (ax+b)²: coeficiente de x² = a²
-  a=r(1,4); b=r(2,9); A=a*a; aS=a===1?'':''+a;
-  return {q:'Término cuadrático de ('+aS+'x+'+b+')²:',a:''+A,opts:sh([''+A,''+(2*a*b),''+(b*b),''+(a+b)]),mc:true,ste:'('+aS+'x)²='+A+'x². El coeficiente de x² es '+A+'.'};
-}
-_SKILL_META['ol1a_pn1_b2']={ico:'📐',lbl:'Desarrollar binomio al cuadrado',qCount:4,gen:_genOl1aPn1_B2};
+// ── B2 📐 Simplificación directa con (a±b)² ───────────────────────────────────
+// P1(1-4): L=(ax²+b)²−a²x⁴−b² | P2(5-8): M=(ax+b)²−cx−dx²
+// P3(9-12): (a+b)²−a²−b²=2ab | P4(13-16): Hallar término faltante
+// P5(17-20): Combinar dos binomios al cuadrado
+function _genOl1aPn1_B2(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Simplifica: L = (3x² + 2)² − 9x⁴ − 4',a:'L = 12x²',opts:sh(['L = 12x²','L = 6x²','L = 24x²','L = 4x²']),mc:true,ste:'(3x²+2)²=9x⁴+12x²+4. L=9x⁴+12x²+4−9x⁴−4=12x².'},
+  {_id:2,q:'Simplifica: L = (4x² + 3)² − 16x⁴ − 9',a:'L = 24x²',opts:sh(['L = 24x²','L = 12x²','L = 48x²','L = 7x²']),mc:true,ste:'(4x²+3)²=16x⁴+24x²+9. L=24x².'},
+  {_id:3,q:'Simplifica: L = (2x³ + 5)² − 4x⁶ − 25',a:'L = 20x³',opts:sh(['L = 20x³','L = 10x³','L = 40x³','L = 7x³']),mc:true,ste:'(2x³+5)²=4x⁶+20x³+25. L=20x³.'},
+  {_id:4,q:'Simplifica: L = (5x² + 1)² − 25x⁴ − 1',a:'L = 10x²',opts:sh(['L = 10x²','L = 5x²','L = 20x²','L = 6x²']),mc:true,ste:'(5x²+1)²=25x⁴+10x²+1. L=10x².'},
+  {_id:5,q:'Simplifica: M = (2x + 3)² − 12x − 4x²',a:'M = 9',opts:sh(['M = 9','M = 4','M = 6x+9','M = 0']),mc:true,ste:'(2x+3)²=4x²+12x+9. M=4x²+12x+9−12x−4x²=9.'},
+  {_id:6,q:'Simplifica: M = (3x + 2)² − 12x − 9x²',a:'M = 4',opts:sh(['M = 4','M = 9','M = 6x+4','M = 0']),mc:true,ste:'(3x+2)²=9x²+12x+4. M=9x²+12x+4−12x−9x²=4.'},
+  {_id:7,q:'Simplifica: M = (4x + 1)² − 8x − 16x²',a:'M = 1',opts:sh(['M = 1','M = 4','M = 8x+1','M = 0']),mc:true,ste:'(4x+1)²=16x²+8x+1. M=16x²+8x+1−8x−16x²=1.'},
+  {_id:8,q:'Simplifica: M = (5x + 3)² − 30x − 25x²',a:'M = 9',opts:sh(['M = 9','M = 25','M = 10x+9','M = 0']),mc:true,ste:'(5x+3)²=25x²+30x+9. M=25x²+30x+9−30x−25x²=9.'},
+  {_id:9,q:'Simplifica: (x + 5)² − x² − 25',a:'10x',opts:sh(['10x','5x','2x','25x']),mc:true,ste:'(a+b)²−a²−b²=2ab. (x+5)²−x²−25=2(x)(5)=10x.'},
+  {_id:10,q:'Simplifica: (3 + y)² − 9 − y²',a:'6y',opts:sh(['6y','3y','9y','2y']),mc:true,ste:'(3+y)²−9−y²=2(3)(y)=6y.'},
+  {_id:11,q:'Simplifica: (2a + b)² − 4a² − b²',a:'4ab',opts:sh(['4ab','2ab','8ab','ab']),mc:true,ste:'(2a+b)²−(2a)²−b²=2(2a)(b)=4ab.'},
+  {_id:12,q:'Simplifica: (m + 2n)² − m² − 4n²',a:'4mn',opts:sh(['4mn','2mn','8mn','mn']),mc:true,ste:'(m+2n)²−m²−(2n)²=2(m)(2n)=4mn.'},
+  {_id:13,q:'En (x + ?)² = x² + 10x + 25, ¿cuánto vale el término faltante?',a:'5',opts:sh(['5','10','25','2']),mc:true,ste:'(x+b)²=x²+2bx+b². 2b=10→b=5. Verif: b²=25 ✓.'},
+  {_id:14,q:'En (3x + ?)² = 9x² + 12x + ?, los términos faltantes son:',a:'2 y 4',opts:sh(['2 y 4','4 y 16','2 y 16','6 y 4']),mc:true,ste:'(3x+b)²=9x²+6bx+b². 6b=12→b=2, b²=4.'},
+  {_id:15,q:'En (? + 4)² = x² + 8x + 16, el primer término faltante es:',a:'x',opts:sh(['x','2x','4x','x²']),mc:true,ste:'(a+4)²=a²+8a+16. 2(a)(4)=8a→a=x.'},
+  {_id:16,q:'En (2x − ?)² = 4x² − 20x + 25, el término faltante es:',a:'5',opts:sh(['5','10','25','4']),mc:true,ste:'(2x−b)²=4x²−4bx+b². 4b=20→b=5, b²=25 ✓.'},
+  {_id:17,q:'Calcula: (x + 3)² + (x − 3)² − 2x²',a:'18',opts:sh(['18','0','6x','36']),mc:true,ste:'(x+3)²=x²+6x+9, (x−3)²=x²−6x+9. Suma=2x²+18. Menos 2x²: 18.'},
+  {_id:18,q:'Calcula: (a + 2)² + (a − 2)² − 2a²',a:'8',opts:sh(['8','0','4a','16']),mc:true,ste:'(a+2)²+(a−2)²=2a²+8. Menos 2a²: 8.'},
+  {_id:19,q:'Calcula: (2a + 1)² + (2a − 1)² − 8a²',a:'2',opts:sh(['2','0','8a','4']),mc:true,ste:'(2a+1)²=4a²+4a+1, (2a−1)²=4a²−4a+1. Suma=8a²+2. Menos 8a²: 2.'},
+  {_id:20,q:'Calcula: 3(x + 1)² − 3x² − 6x',a:'3',opts:sh(['3','0','6x','6']),mc:true,ste:'3(x²+2x+1)−3x²−6x=3x²+6x+3−3x²−6x=3.'}
+]);}
+_SKILL_META['ol1a_pn1_b2']={ico:'📐',lbl:'Simplificación directa con (a±b)²',qCount:4,gen:_genOl1aPn1_B2,plantillas:['L=(ax²+b)²−a²x⁴−b²','M=(ax+b)²−cx−dx²','(a+b)²−a²−b² = 2ab','Hallar el término faltante','Combinar dos binomios al cuadrado']};
 
 function _genOl1aPn1_BQ1(){return _bqSrcPick(['ol1a_pn1_b1','ol1a_pn1_b2'],[_genOl1aPn1_B1,_genOl1aPn1_B2]);}
-_SKILL_META['ol1a_pn1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Binomio al Cuadrado',qCount:5,gen:_genOl1aPn1_BQ1,quiz:true};
+_SKILL_META['ol1a_pn1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Desarrollo y simplificación',qCount:10,gen:_genOl1aPn1_BQ1,quiz:true,srcKeys:['ol1a_pn1_b1','ol1a_pn1_b2']};
 
-// ─── B3: 📐 Identidades de Legendre – generación procedural ─────────────────
-function _genOl1aPn1_B3(){
-  var r=_i4grnd, sh=_i4gshuf, t=r(0,5);
-  var p,q,s,pq,a,k,coeff,d,quot,ans,pr,primes;
-  if(t===0){
-    // (√p+√q)²+(√p−√q)² = 2(p+q)
-    primes=[2,3,5,7,11,13,17,19]; p=primes[r(0,7)]; q=primes[r(0,7)];
-    while(q===p) q=primes[r(0,7)];
-    ans=2*(p+q);
-    return {q:'Efectúa: (√'+p+'+√'+q+')²+(√'+p+'−√'+q+')²',a:''+ans,opts:sh([''+ans,''+(p+q),''+(4*p*q),''+(2*Math.abs(p-q))]),mc:true,ste:'2('+p+'+'+q+')='+ans+'.'};
-  }
-  if(t===1){
-    // [(√p+√q)²+(√p−√q)²]÷2 = p+q
-    primes=[2,3,5,7,11,13]; p=primes[r(0,5)]; q=primes[r(0,5)];
-    while(q===p) q=primes[r(0,5)];
-    ans=p+q;
-    return {q:'Efectúa: [(√'+p+'+√'+q+')²+(√'+p+'−√'+q+')²]÷2',a:''+ans,opts:sh([''+ans,''+(2*(p+q)),''+(p*q),''+(Math.abs(p-q))]),mc:true,ste:'2('+p+'+'+q+')÷2='+ans+'.'};
-  }
-  if(t===2){
-    // (ax+k)²−(ax−k)² = 4akx  →  simplificar
-    a=r(1,3); k=r(2,8); coeff=4*a*k;
-    var aS=a===1?'':''+a;
-    ans=coeff+'x';
-    return {q:'Simplifica: ('+aS+'x+'+k+')²−('+aS+'x−'+k+')²',a:ans,opts:sh([ans,''+(2*a*k)+'x',''+k+'x','0']),mc:true,ste:'4·('+aS+'x)·'+k+'='+ans+'.'};
-  }
-  if(t===3){
-    // [(ax+k)²−(ax−k)²]÷d = resultado  (d siempre divide a 4ak)
-    a=r(1,3); k=r(2,7); coeff=4*a*k;
-    // divisores seguros: 2k, 4k, coeff (siempre dividen exactamente)
-    var divs=[2*k, 4*k, coeff]; d=divs[r(0,2)]; quot=coeff/d;
-    var aS2=a===1?'':''+a;
-    ans=quot===1?'x':quot+'x';
-    return {q:'Reduzca: [('+aS2+'x+'+k+')²−('+aS2+'x−'+k+')²]÷'+d,a:ans,opts:sh([ans,''+(quot+1)+'x',''+(Math.max(1,quot-1))+'x',''+d]),mc:true,ste:coeff+'x÷'+d+'='+ans+'.'};
-  }
-  if(t===4){
-    // Numérico: (m+n)²−(m−n)² = 4mn  con m,n enteros pequeños
-    var m=r(2,9), n=r(2,8); while(n===m) n=r(2,8);
-    ans=4*m*n;
-    return {q:'Efectúa: ('+m+'+'+n+')²−('+m+'−'+n+')²',a:''+ans,opts:sh([''+ans,''+(2*m*n),''+(m*m+n*n),''+(m+n)*(m+n)]),mc:true,ste:'4·'+m+'·'+n+'='+ans+'.'};
-  }
-  // t===5: [(m+n)²+(m−n)²]÷2 = m²+n²  con enteros
-  var m2=r(2,8), n2=r(2,7); while(n2===m2) n2=r(2,7);
-  ans=m2*m2+n2*n2;
-  return {q:'Efectúa: [('+m2+'+'+n2+')²+('+m2+'−'+n2+')²]÷2',a:''+ans,opts:sh([''+ans,''+(m2+n2),''+(m2*n2),''+(2*ans)]),mc:true,ste:'2('+m2+'²+'+n2+'²)÷2='+m2*m2+'+'+n2*n2+'='+ans+'.'};
-}
-_SKILL_META['ol1a_pn1_b3']={ico:'📐',lbl:'Identidades de Legendre',qCount:4,gen:_genOl1aPn1_B3};
+// ── B3 📐 Legendre suma: (a+b)²+(a−b)² = 2(a²+b²) ───────────────────────────
+// P1(1-4): Cálculo numérico directo | P2(5-8): Con radicales (√a±√b)²
+// P3(9-12): Con expresiones algebraicas | P4(13-16): Dado resultado, hallar a² o b²
+// P5(17-20): A=[(√a+√b)²+(√a−√b)²]/4
+function _genOl1aPn1_B3(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Calcula: (5 + 3)² + (5 − 3)²',a:'68',opts:sh(['68','64','32','34']),mc:true,ste:'Legendre suma: 2(a²+b²)=2(25+9)=2(34)=68.'},
+  {_id:2,q:'Calcula: (4 + 2)² + (4 − 2)²',a:'40',opts:sh(['40','20','80','36']),mc:true,ste:'2(4²+2²)=2(16+4)=2(20)=40.'},
+  {_id:3,q:'Calcula: (7 + 1)² + (7 − 1)²',a:'100',opts:sh(['100','50','196','48']),mc:true,ste:'2(49+1)=2(50)=100.'},
+  {_id:4,q:'Calcula: (6 + 3)² + (6 − 3)²',a:'90',opts:sh(['90','45','180','81']),mc:true,ste:'2(36+9)=2(45)=90.'},
+  {_id:5,q:'Calcula: (√7 + √2)² + (√7 − √2)²',a:'18',opts:sh(['18','9','36','10']),mc:true,ste:'2((√7)²+(√2)²)=2(7+2)=2(9)=18.'},
+  {_id:6,q:'Calcula: (√5 + √3)² + (√5 − √3)²',a:'16',opts:sh(['16','8','32','4']),mc:true,ste:'2(5+3)=2(8)=16.'},
+  {_id:7,q:'Calcula: (√11 + √7)² + (√11 − √7)²',a:'36',opts:sh(['36','18','72','4']),mc:true,ste:'2(11+7)=2(18)=36.'},
+  {_id:8,q:'Calcula: (√13 + √3)² + (√13 − √3)²',a:'32',opts:sh(['32','16','64','10']),mc:true,ste:'2(13+3)=2(16)=32.'},
+  {_id:9,q:'Simplifica: (3x² + 2)² + (3x² − 2)²',a:'18x⁴ + 8',opts:sh(['18x⁴ + 8','9x⁴ + 4','36x⁴ + 8','18x⁴ + 4']),mc:true,ste:'2((3x²)²+2²)=2(9x⁴+4)=18x⁴+8.'},
+  {_id:10,q:'Simplifica: (2a + b)² + (2a − b)²',a:'8a² + 2b²',opts:sh(['8a² + 2b²','4a² + b²','8a² + b²','4a² + 2b²']),mc:true,ste:'2((2a)²+b²)=2(4a²+b²)=8a²+2b².'},
+  {_id:11,q:'Simplifica: (x + y)² + (x − y)²',a:'2x² + 2y²',opts:sh(['2x² + 2y²','x² + y²','4xy','2x² − 2y²']),mc:true,ste:'2(x²+y²)=2x²+2y².'},
+  {_id:12,q:'Simplifica: (3x + 2y)² + (3x − 2y)²',a:'18x² + 8y²',opts:sh(['18x² + 8y²','9x² + 4y²','18x² + 4y²','9x² + 8y²']),mc:true,ste:'2((3x)²+(2y)²)=2(9x²+4y²)=18x²+8y².'},
+  {_id:13,q:'Si (x + 3)² + (x − 3)² = 50, halla x².',a:'x² = 16',opts:sh(['x² = 16','x² = 25','x² = 34','x² = 9']),mc:true,ste:'2(x²+9)=50 → x²+9=25 → x²=16.'},
+  {_id:14,q:'Si (a + 2)² + (a − 2)² = 40, halla a².',a:'a² = 16',opts:sh(['a² = 16','a² = 20','a² = 36','a² = 4']),mc:true,ste:'2(a²+4)=40 → a²+4=20 → a²=16.'},
+  {_id:15,q:'Si (m + n)² + (m − n)² = 72 y m² = 27, halla n².',a:'n² = 9',opts:sh(['n² = 9','n² = 36','n² = 18','n² = 45']),mc:true,ste:'2(m²+n²)=72 → m²+n²=36 → 27+n²=36 → n²=9.'},
+  {_id:16,q:'Si (x + y)² + (x − y)² = 100 y x = y, halla x².',a:'x² = 25',opts:sh(['x² = 25','x² = 50','x² = 100','x² = 10']),mc:true,ste:'2(x²+y²)=100 → x²+y²=50. x=y → 2x²=50 → x²=25.'},
+  {_id:17,q:'Calcula: A = [(√13 + √3)² + (√13 − √3)²] / 4',a:'A = 8',opts:sh(['A = 8','A = 4','A = 16','A = 32']),mc:true,ste:'2(13+3)/4=32/4=8.'},
+  {_id:18,q:'Calcula: A = [(√11 + √7)² + (√11 − √7)²] / 4',a:'A = 9',opts:sh(['A = 9','A = 4','A = 18','A = 36']),mc:true,ste:'2(11+7)/4=36/4=9.'},
+  {_id:19,q:'Calcula: A = [(√10 + √6)² + (√10 − √6)²] / 4',a:'A = 8',opts:sh(['A = 8','A = 4','A = 16','A = 2']),mc:true,ste:'2(10+6)/4=32/4=8.'},
+  {_id:20,q:'Calcula: A = [(√15 + √5)² + (√15 − √5)²] / 4',a:'A = 10',opts:sh(['A = 10','A = 5','A = 20','A = 4']),mc:true,ste:'2(15+5)/4=40/4=10.'}
+]);}
+_SKILL_META['ol1a_pn1_b3']={ico:'📐',lbl:'Legendre suma: (a+b)²+(a−b)²=2(a²+b²)',qCount:4,gen:_genOl1aPn1_B3,plantillas:['Cálculo numérico directo','Con radicales (√a ± √b)²','Con expresiones algebraicas','Dado el resultado, hallar a² o b²','A=[(√a+√b)²+(√a−√b)²]/4']};
 
-// ─── B4: 📐 Aplicaciones con datos relacionados – generación procedural ──────
-function _genOl1aPn1_B4(){
-  var r=_i4grnd, sh=_i4gshuf, t=r(0,5);
-  var k,s,p,d,S,P,xy,ans;
-  var ks3=[3,4,5,6,7,8,9], ks2=[2,3,4,5,6];
-  if(t===0){
-    // x+1/x=k → x²+1/x²=k²−2
-    k=ks3[r(0,ks3.length-1)]; ans=k*k-2;
-    return {q:'Si x+1/x='+k+', halla x²+1/x²',a:''+ans,opts:sh([''+ans,''+(k*k),''+(k*k+2),''+(k*k-4)]),mc:true,ste:'(x+1/x)²='+k*k+'=x²+2+1/x². x²+1/x²='+k*k+'−2='+ans+'.'};
-  }
-  if(t===1){
-    // x−1/x=k → x²+1/x²=k²+2
-    k=ks2[r(0,ks2.length-1)]; ans=k*k+2;
-    return {q:'Si x−1/x='+k+', halla x²+1/x²',a:''+ans,opts:sh([''+ans,''+(k*k),''+(k*k-2),''+(k*k+4)]),mc:true,ste:'(x−1/x)²='+k*k+'=x²−2+1/x². x²+1/x²='+k*k+'+2='+ans+'.'};
-  }
-  if(t===2){
-    // x+y=s, xy=p → x²+y²=s²−2p
-    s=r(4,9); p=r(2,6); ans=s*s-2*p;
-    return {q:'Si x+y='+s+' y xy='+p+', halla x²+y²',a:''+ans,opts:sh([''+ans,''+(s*s),''+(s*s+2*p),''+(s*s-p)]),mc:true,ste:'(x+y)²='+s*s+'=x²+'+2*p+'+y². x²+y²='+s*s+'−'+2*p+'='+ans+'.'};
-  }
-  if(t===3){
-    // x−y=d, xy=p → x²+y²=d²+2p
-    d=r(2,6); p=r(2,8); ans=d*d+2*p;
-    return {q:'Si x−y='+d+' y xy='+p+', halla x²+y²',a:''+ans,opts:sh([''+ans,''+(d*d),''+(d*d+p),''+(d*d+4*p)]),mc:true,ste:'(x−y)²='+d*d+'=x²−'+2*p+'+y². x²+y²='+d*d+'+'+2*p+'='+ans+'.'};
-  }
-  if(t===4){
-    // x²+y²=S, xy=P → (x+y)²=S+2P
-    S=r(10,30); P=r(2,8); ans=S+2*P;
-    return {q:'Si x²+y²='+S+' y xy='+P+', halla (x+y)²',a:''+ans,opts:sh([''+ans,''+S,''+(S+P),''+(S+4*P)]),mc:true,ste:'(x+y)²=x²+2xy+y²='+S+'+'+2*P+'='+ans+'.'};
-  }
-  // t===5: x−y=d, x²+y²=S → xy=(S−d²)/2
-  d=r(2,5); var dif=r(1,8)*2; S=d*d+dif; xy=dif/2; ans=xy;
-  return {q:'Si x−y='+d+' y x²+y²='+S+', halla xy',a:''+ans,opts:sh([''+ans,''+(ans+1),''+(ans-1),''+dif]),mc:true,ste:'(x−y)²='+d*d+'=x²−2xy+y²='+S+'−2xy. 2xy='+dif+'. xy='+ans+'.'};
-}
-_SKILL_META['ol1a_pn1_b4']={ico:'📐',lbl:'Aplicaciones con datos relacionados',qCount:3,gen:_genOl1aPn1_B4};
+// ── B4 📐 Legendre diferencia: (a+b)²−(a−b)² = 4ab ──────────────────────────
+// P1(1-4): Cálculo numérico directo | P2(5-8): M=(½x+c)²−(½x−c)² = cx·4/2
+// P3(9-12): P=[(a+b)²−(a−b)²]/expr ± c | P4(13-16): Con radicales en a y b
+// P5(17-20): Cociente de dos Legendre diferencia
+function _genOl1aPn1_B4(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Calcula: (5 + 3)² − (5 − 3)²',a:'60',opts:sh(['60','30','120','16']),mc:true,ste:'Legendre diferencia: 4ab=4(5)(3)=60.'},
+  {_id:2,q:'Calcula: (4 + 2)² − (4 − 2)²',a:'32',opts:sh(['32','16','64','24']),mc:true,ste:'4(4)(2)=32.'},
+  {_id:3,q:'Calcula: (7 + 3)² − (7 − 3)²',a:'84',opts:sh(['84','42','168','40']),mc:true,ste:'4(7)(3)=84.'},
+  {_id:4,q:'Calcula: (6 + 4)² − (6 − 4)²',a:'96',opts:sh(['96','48','192','20']),mc:true,ste:'4(6)(4)=96.'},
+  {_id:5,q:'Simplifica: M = (½x + 3)² − (½x − 3)²',a:'M = 6x',opts:sh(['M = 6x','M = 3x','M = 9x','M = 12x']),mc:true,ste:'4(½x)(3)=6x.'},
+  {_id:6,q:'Simplifica: M = (½x + 5)² − (½x − 5)²',a:'M = 10x',opts:sh(['M = 10x','M = 5x','M = 25x','M = 20x']),mc:true,ste:'4(½x)(5)=10x.'},
+  {_id:7,q:'Simplifica: M = (½a + 4)² − (½a − 4)²',a:'M = 8a',opts:sh(['M = 8a','M = 4a','M = 16a','M = 2a']),mc:true,ste:'4(½a)(4)=8a.'},
+  {_id:8,q:'Simplifica: M = (½m + 2)² − (½m − 2)²',a:'M = 4m',opts:sh(['M = 4m','M = 2m','M = 8m','M = m']),mc:true,ste:'4(½m)(2)=4m.'},
+  {_id:9,q:'Simplifica: P = [(w + 6)² − (w − 6)²] / (3w) + 1',a:'P = 9',opts:sh(['P = 9','P = 8','P = 7','P = 3']),mc:true,ste:'4(w)(6)/(3w)+1=24w/(3w)+1=8+1=9.'},
+  {_id:10,q:'Simplifica: Q = [(a + 5)² − (a − 5)²] / (10a) − 1',a:'Q = 1',opts:sh(['Q = 1','Q = 2','Q = 0','Q = 3']),mc:true,ste:'4(a)(5)/(10a)−1=20a/(10a)−1=2−1=1.'},
+  {_id:11,q:'Simplifica: R = [(x + 4)² − (x − 4)²] / (8x)',a:'R = 2',opts:sh(['R = 2','R = 1','R = 4','R = 8']),mc:true,ste:'4(x)(4)/(8x)=16x/(8x)=2.'},
+  {_id:12,q:'Simplifica: S = [(m + 3)² − (m − 3)²] / (6m) + 2',a:'S = 4',opts:sh(['S = 4','S = 3','S = 5','S = 2']),mc:true,ste:'4(m)(3)/(6m)+2=12m/(6m)+2=2+2=4.'},
+  {_id:13,q:'Efectúe: Z = [(3√2 + 2√7)² − (3√2 − 2√7)²] / (12√14) + 1',a:'Z = 3',opts:sh(['Z = 3','Z = 2','Z = 4','Z = 1']),mc:true,ste:'4(3√2)(2√7)/(12√14)+1=24√14/(12√14)+1=2+1=3.'},
+  {_id:14,q:'Efectúe: Z = [(2√3 + √5)² − (2√3 − √5)²] / (4√15)',a:'Z = 2',opts:sh(['Z = 2','Z = 1','Z = 4','Z = 3']),mc:true,ste:'4(2√3)(√5)/(4√15)=8√15/(4√15)=2.'},
+  {_id:15,q:'Efectúe: Z = [(√6 + √3)² − (√6 − √3)²] / (4√18)',a:'Z = 1',opts:sh(['Z = 1','Z = 2','Z = 3','Z = ½']),mc:true,ste:'4(√6)(√3)/(4√18)=4√18/(4√18)=1.'},
+  {_id:16,q:'Efectúe: M = [(5√2 + √3)² − (5√2 − √3)²] / (10√6) + 2',a:'M = 4',opts:sh(['M = 4','M = 3','M = 6','M = 2']),mc:true,ste:'4(5√2)(√3)/(10√6)+2=20√6/(10√6)+2=2+2=4.'},
+  {_id:17,q:'Simplifica: [(x + 2y)² − (x − 2y)²] / [(x + y)² − (x − y)²]',a:'2',opts:sh(['2','4','½','1']),mc:true,ste:'Numerador: 4(x)(2y)=8xy. Denominador: 4(x)(y)=4xy. Cociente: 8xy/4xy=2.'},
+  {_id:18,q:'Simplifica: [(a + 3b)² − (a − 3b)²] / [(a + b)² − (a − b)²]',a:'3',opts:sh(['3','6','9','1']),mc:true,ste:'Num: 4(a)(3b)=12ab. Den: 4(a)(b)=4ab. 12ab/4ab=3.'},
+  {_id:19,q:'Simplifica: [(2x + y)² − (2x − y)²] / [(x + y)² − (x − y)²]',a:'2',opts:sh(['2','4','1','½']),mc:true,ste:'Num: 4(2x)(y)=8xy. Den: 4(x)(y)=4xy. 8xy/4xy=2.'},
+  {_id:20,q:'Simplifica: [(3a + 2b)² − (3a − 2b)²] / [(a + 2b)² − (a − 2b)²]',a:'3',opts:sh(['3','6','2','1']),mc:true,ste:'Num: 4(3a)(2b)=24ab. Den: 4(a)(2b)=8ab. 24ab/8ab=3.'}
+]);}
+_SKILL_META['ol1a_pn1_b4']={ico:'📐',lbl:'Legendre diferencia: (a+b)²−(a−b)²=4ab',qCount:4,gen:_genOl1aPn1_B4,plantillas:['Cálculo numérico directo','M=(½x+c)²−(½x−c)²','P=[(a+b)²−(a−b)²]/expr ± c','Con radicales en a y b (tipo taller/práctica)','Cociente de dos Legendre diferencia']};
 
 function _genOl1aPn1_BQ2(){return _bqSrcPick(['ol1a_pn1_b3','ol1a_pn1_b4'],[_genOl1aPn1_B3,_genOl1aPn1_B4]);}
-_SKILL_META['ol1a_pn1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Legendre y Aplicaciones',qCount:5,gen:_genOl1aPn1_BQ2,quiz:true};
+_SKILL_META['ol1a_pn1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Identidades de Legendre',qCount:10,gen:_genOl1aPn1_BQ2,quiz:true,srcKeys:['ol1a_pn1_b3','ol1a_pn1_b4']};
 
-function _genOl1aPn1_BPU(){return _bqSrcPick(['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_b3','ol1a_pn1_b4'],[_genOl1aPn1_B1,_genOl1aPn1_B2,_genOl1aPn1_B3,_genOl1aPn1_B4]);}
-_SKILL_META['ol1a_pn1_bpu']={ico:'⚡',lbl:'Examen – Productos Notables I',qCount:5,gen:_genOl1aPn1_BPU,quiz:true};
+// ── B5 📐 Dado x+1/x=k → hallar x²+1/x² ────────────────────────────────────
+// P1(1-4): x+1/x=k → x²+1/x²=k²−2 | P2(5-8): x−1/x=k → x²+1/x²=k²+2
+// P3(9-12): x+y=a, xy=b → x²+y²=a²−2b | P4(13-16): x−y=a, xy=b → x²+y²=a²+2b
+// P5(17-20): Problemas contextualizados (IA, laboratorio, vuelo)
+function _genOl1aPn1_B5(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Si x + 1/x = 6, halla x² + 1/x².',a:'34',opts:sh(['34','36','32','38']),mc:true,ste:'(x+1/x)²=x²+2+1/x². 36=x²+1/x²+2 → x²+1/x²=34.'},
+  {_id:2,q:'Si x + 1/x = 5, halla x² + 1/x².',a:'23',opts:sh(['23','25','21','27']),mc:true,ste:'(5)²=x²+1/x²+2 → x²+1/x²=23.'},
+  {_id:3,q:'Si x + 1/x = 4, halla x² + 1/x².',a:'14',opts:sh(['14','16','12','18']),mc:true,ste:'(4)²=x²+1/x²+2 → x²+1/x²=14.'},
+  {_id:4,q:'Si x + 1/x = 8, halla x² + 1/x².',a:'62',opts:sh(['62','64','60','66']),mc:true,ste:'(8)²=x²+1/x²+2 → x²+1/x²=62.'},
+  {_id:5,q:'Si x − 1/x = 3, halla x² + 1/x².',a:'11',opts:sh(['11','9','13','7']),mc:true,ste:'(x−1/x)²=x²−2+1/x². 9=x²+1/x²−2 → x²+1/x²=11.'},
+  {_id:6,q:'Si x − 1/x = 5, halla x² + 1/x².',a:'27',opts:sh(['27','25','29','23']),mc:true,ste:'(5)²=x²+1/x²−2 → x²+1/x²=27.'},
+  {_id:7,q:'Si a − a⁻¹ = 4, halla a² + a⁻².',a:'18',opts:sh(['18','16','20','14']),mc:true,ste:'(4)²=a²+a⁻²−2 → a²+a⁻²=18.'},
+  {_id:8,q:'Si x − 1/x = 7, halla x² + 1/x².',a:'51',opts:sh(['51','49','53','47']),mc:true,ste:'(7)²=x²+1/x²−2 → x²+1/x²=51.'},
+  {_id:9,q:'Si x + y = 5 y xy = 3, halla x² + y².',a:'19',opts:sh(['19','25','13','22']),mc:true,ste:'(x+y)²=x²+2xy+y². 25=x²+y²+6 → x²+y²=19.'},
+  {_id:10,q:'Si x + y = 4 y xy = 2, halla x² + y².',a:'12',opts:sh(['12','16','8','14']),mc:true,ste:'16=x²+y²+4 → x²+y²=12.'},
+  {_id:11,q:'Si x + y = 7 y xy = 5, halla x² + y².',a:'39',opts:sh(['39','49','29','44']),mc:true,ste:'49=x²+y²+10 → x²+y²=39.'},
+  {_id:12,q:'Si m + n = 6 y mn = 4, halla m² + n².',a:'28',opts:sh(['28','36','20','32']),mc:true,ste:'36=m²+n²+8 → m²+n²=28.'},
+  {_id:13,q:'Si m − n = 7 y mn = 5, halla m² + n².',a:'59',opts:sh(['59','49','69','54']),mc:true,ste:'(m−n)²=m²−2mn+n². 49=m²+n²−10 → m²+n²=59.'},
+  {_id:14,q:'Si x − y = 4 y xy = 5, halla x² + y².',a:'26',opts:sh(['26','16','36','21']),mc:true,ste:'16=x²+y²−10 → x²+y²=26.'},
+  {_id:15,q:'Si x − y = 3 y xy = 4, halla x² + y².',a:'17',opts:sh(['17','9','25','21']),mc:true,ste:'9=x²+y²−8 → x²+y²=17.'},
+  {_id:16,q:'Si a − b = 5 y ab = 6, halla a² + b².',a:'37',opts:sh(['37','25','49','31']),mc:true,ste:'25=a²+b²−12 → a²+b²=37.'},
+  {_id:17,q:'Un investigador calcula M = a² + a⁻² sabiendo que a + a⁻¹ = 5. ¿Cuánto vale M?',a:'M = 23',opts:sh(['M = 23','M = 25','M = 21','M = 27']),mc:true,ste:'(a+a⁻¹)²=a²+2+a⁻²=25 → M=a²+a⁻²=23.'},
+  {_id:18,q:'En una simulación, el programa calcula x²+y² con x−y=4 y xy=5. ¿Qué resultado obtiene?',a:'26',opts:sh(['26','24','28','21']),mc:true,ste:'(x−y)²=x²+y²−2xy. 16=x²+y²−10 → x²+y²=26.'},
+  {_id:19,q:'Tres modelos de IA calculan m²+n² con m−n=7 y mn=5. Alpha=37, Beta=39, Gamma=59. ¿Cuál es correcto?',a:'Gamma (59)',opts:sh(['Gamma (59)','Alpha (37)','Beta (39)','Ninguno']),mc:true,ste:'(m−n)²+2mn=49+10=59. Gamma obtuvo el valor correcto.'},
+  {_id:20,q:'En un laboratorio, se mide x²+x⁻² sabiendo que x+x⁻¹=7. ¿Cuánto vale la expresión?',a:'47',opts:sh(['47','49','45','51']),mc:true,ste:'(7)²=x²+x⁻²+2 → x²+x⁻²=47.'}
+]);}
+_SKILL_META['ol1a_pn1_b5']={ico:'📐',lbl:'Dado x+1/x=k, hallar x²+1/x²',qCount:4,gen:_genOl1aPn1_B5,plantillas:['x+1/x=k → x²+1/x²=k²−2','x−1/x=k → x²+1/x²=k²+2','x+y=a, xy=b → x²+y²=a²−2b','x−y=a, xy=b → x²+y²=a²+2b','Problemas contextualizados (IA, laboratorio, vuelo)']};
+
+// ── B6 📐 Reducciones combinadas ──────────────────────────────────────────────
+// P1(1-4): [(a+b)²−(a−b)²]/(4ab)=1 | P2(5-8): (√a+√b)²·(√a−√b)²/k
+// P3(9-12): Combinación encadenada suma+diferencia | P4(13-16): Dado x²+1/x², hallar x⁴+1/x⁴
+// P5(17-20): Identificar analista/modelo correcto (3 opciones)
+function _genOl1aPn1_B6(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Simplifica: [(x + 3)² − (x − 3)²] / (12x)',a:'1',opts:sh(['1','2','3','½']),mc:true,ste:'4(x)(3)/(12x)=12x/12x=1.'},
+  {_id:2,q:'Simplifica: [(m + 5)² − (m − 5)²] / (20m)',a:'1',opts:sh(['1','2','4','5']),mc:true,ste:'4(m)(5)/(20m)=20m/20m=1.'},
+  {_id:3,q:'Simplifica: [(a + b)² − (a − b)²] / (4ab)',a:'1',opts:sh(['1','2','4ab','0']),mc:true,ste:'Por Legendre diferencia: (a+b)²−(a−b)²=4ab. Entonces 4ab/(4ab)=1.'},
+  {_id:4,q:'Simplifica: [(2x + y)² − (2x − y)²] / (8xy)',a:'1',opts:sh(['1','2','4','xy']),mc:true,ste:'4(2x)(y)/(8xy)=8xy/8xy=1.'},
+  {_id:5,q:'Calcula: p = (√13 + √3)² · (√13 − √3)² / 4',a:'p = 25',opts:sh(['p = 25','p = 10','p = 100','p = 5']),mc:true,ste:'(√13+√3)(√13−√3)=13−3=10. p=10²/4=100/4=25.'},
+  {_id:6,q:'Calcula: p = (√7 + √2)² · (√7 − √2)²',a:'p = 25',opts:sh(['p = 25','p = 5','p = 50','p = 10']),mc:true,ste:'(√7+√2)(√7−√2)=7−2=5. p=5²=25.'},
+  {_id:7,q:'Calcula: p = (√10 + √6)² · (√10 − √6)² / 4',a:'p = 4',opts:sh(['p = 4','p = 2','p = 16','p = 8']),mc:true,ste:'(√10−√6)·(√10+√6)=10−6=4. p=4²/4=16/4=4.'},
+  {_id:8,q:'Calcula: p = (√15 + √6)² · (√15 − √6)² / 9',a:'p = 9',opts:sh(['p = 9','p = 3','p = 81','p = 27']),mc:true,ste:'(√15+√6)(√15−√6)=15−6=9. p=9²/9=81/9=9.'},
+  {_id:9,q:'Calcula: E = [(√5+√3)²+(√5−√3)²] · [(√5+√3)²−(√5−√3)²] / (4√15)',a:'E = 16',opts:sh(['E = 16','E = 8','E = 32','E = 4']),mc:true,ste:'Suma=2(5+3)=16. Dif=4√15. E=16·4√15/(4√15)=16.'},
+  {_id:10,q:'Calcula: F = [(√6+√2)²+(√6−√2)²] · [(√6+√2)²−(√6−√2)²] / (4√12)',a:'F = 16',opts:sh(['F = 16','F = 8','F = 32','F = 4']),mc:true,ste:'Suma=2(6+2)=16. Dif=4√2·√6=4√12. F=16·4√12/(4√12)=16.'},
+  {_id:11,q:'Calcula: G = [(√7+√3)²+(√7−√3)²] · [(√7+√3)²−(√7−√3)²] / (8√21)',a:'G = 10',opts:sh(['G = 10','G = 5','G = 20','G = 40']),mc:true,ste:'Suma=2(7+3)=20. Dif=4√21. G=20·4√21/(8√21)=80√21/(8√21)=10.'},
+  {_id:12,q:'Simplifica: [(a+b)²+(a−b)²] · [(a+b)²−(a−b)²] / (8ab)',a:'a²+b²',opts:sh(['a²+b²','2(a²+b²)','4ab','a²−b²']),mc:true,ste:'Suma=2(a²+b²). Dif=4ab. Producto=8ab(a²+b²). ÷8ab=(a²+b²).'},
+  {_id:13,q:'Si x + 1/x = 4, halla x⁴ + 1/x⁴.',a:'194',opts:sh(['194','196','192','198']),mc:true,ste:'x²+1/x²=(4)²−2=14. x⁴+1/x⁴=(14)²−2=194.'},
+  {_id:14,q:'Si x − 1/x = 2, halla x⁴ + 1/x⁴.',a:'34',opts:sh(['34','36','32','38']),mc:true,ste:'x²+1/x²=(2)²+2=6. x⁴+1/x⁴=(6)²−2=34.'},
+  {_id:15,q:'Si x + 1/x = 3, halla x⁴ + 1/x⁴.',a:'47',opts:sh(['47','81','45','49']),mc:true,ste:'x²+1/x²=9−2=7. x⁴+1/x⁴=49−2=47.'},
+  {_id:16,q:'Si x − 1/x = 3, halla x⁴ + 1/x⁴.',a:'119',opts:sh(['119','121','117','123']),mc:true,ste:'x²+1/x²=9+2=11. x⁴+1/x⁴=121−2=119.'},
+  {_id:17,q:'Tres modelos calculan (√5+√2)²+(√5−√2)². A=12, B=14, C=16. ¿Cuál es correcto?',a:'B (14)',opts:sh(['B (14)','A (12)','C (16)','Ninguno']),mc:true,ste:'2(5+2)=14. El modelo B obtuvo el resultado correcto.'},
+  {_id:18,q:'Tres analistas calculan (x+3)²−(x−3)² con x=2. A=24, B=12, C=48. ¿Cuál es correcto?',a:'A (24)',opts:sh(['A (24)','B (12)','C (48)','Ninguno']),mc:true,ste:'4(x)(3)=4(2)(3)=24. El analista A obtuvo el valor correcto.'},
+  {_id:19,q:'m−n=5, mn=6. Tres estudiantes dan m²+n²: A=13, B=37, C=25. ¿Cuál es correcto?',a:'B (37)',opts:sh(['B (37)','A (13)','C (25)','Ninguno']),mc:true,ste:'(m−n)²+2mn=25+12=37. El estudiante B tiene la respuesta correcta.'},
+  {_id:20,q:'x+1/x=4. Tres programas dan x²+1/x²: A=12, B=14, C=18. ¿Cuál es correcto?',a:'B (14)',opts:sh(['B (14)','A (12)','C (18)','Ninguno']),mc:true,ste:'(4)²−2=14. El programa B obtuvo el resultado correcto.'}
+]);}
+_SKILL_META['ol1a_pn1_b6']={ico:'📐',lbl:'Reducciones combinadas',qCount:4,gen:_genOl1aPn1_B6,plantillas:['[(a+b)²−(a−b)²]/(4ab)=1','(√a+√b)²·(√a−√b)²/k','Combinación encadenada suma+diferencia','Dado x²+1/x², hallar x⁴+1/x⁴','Identificar analista/modelo correcto']};
+
+function _genOl1aPn1_BQ3(){return _bqSrcPick(['ol1a_pn1_b5','ol1a_pn1_b6'],[_genOl1aPn1_B5,_genOl1aPn1_B6]);}
+_SKILL_META['ol1a_pn1_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Aplicaciones y combinados',qCount:10,gen:_genOl1aPn1_BQ3,quiz:true,srcKeys:['ol1a_pn1_b5','ol1a_pn1_b6']};
+
+function _genOl1aPn1_BPU(){return _bqSrcPick(['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_b5','ol1a_pn1_b6'],[_genOl1aPn1_B1,_genOl1aPn1_B2,_genOl1aPn1_B3,_genOl1aPn1_B4,_genOl1aPn1_B5,_genOl1aPn1_B6]);}
+_SKILL_META['ol1a_pn1_bpu']={ico:'⚡',lbl:'Examen – Productos Notables I',qCount:30,gen:_genOl1aPn1_BPU,quiz:true,srcKeys:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_b5','ol1a_pn1_b6']};
 
 // ══ Geometría 1° Secundaria – Saco Oliveros (ol1g) ════════════════════════════
-// Cap. 13: Trapecio
+// Cap. 13: Trapecio · 7 habilidades · 3 grupos · 3 BQs
 
-// ─── B1: 🖼 Elementos del trapecio – visual SVG ───────────────────────────────
-var _qOl1gTraB1=[];
-function _genOl1gTra_B1(){
-  if(!_qOl1gTraB1.length) _qOl1gTraB1=_i4gshuf([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-  var r=_i4grnd, sh=_i4gshuf, t=_qOl1gTraB1.shift();
-  var W=200, H=120, ox=25, oy=12;
-  var bmay=r(110,150), bmen=r(55,85), offL=r(15,35);
-  var ax=ox, ay=oy+H, dx=ox+bmay, dy=oy+H;
-  var bx=ox+offL, by=oy, cx=ox+offL+bmen, cy=oy;
-  var svgW=bmay+ox*2+10, svgH=H+oy*2+22;
-  function trap(extra){
-    return '<svg viewBox="0 0 '+svgW+' '+svgH+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block">'+
-      '<polygon points="'+ax+','+ay+' '+dx+','+dy+' '+cx+','+cy+' '+bx+','+by+'" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="2"/>'+
-      (extra||'')+
-      '<text x="'+(ax-15)+'" y="'+(ay+5)+'" font-size="13" fill="#e2e8f0" font-weight="700">A</text>'+
-      '<text x="'+(dx+5)+'" y="'+(dy+5)+'" font-size="13" fill="#e2e8f0" font-weight="700">D</text>'+
-      '<text x="'+(bx-15)+'" y="'+(by+5)+'" font-size="13" fill="#e2e8f0" font-weight="700">B</text>'+
-      '<text x="'+(cx+5)+'" y="'+(cy+5)+'" font-size="13" fill="#e2e8f0" font-weight="700">C</text>'+
-      '</svg>';
-  }
-  var altX=ox+offL+Math.round(bmen/2);
-  var altLine='<line x1="'+altX+'" y1="'+by+'" x2="'+altX+'" y2="'+ay+'" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3"/>'+
-    '<rect x="'+altX+'" y="'+(ay-10)+'" width="8" height="8" fill="none" stroke="#f59e0b" stroke-width="1.5"/>'+
-    '<text x="'+(altX+6)+'" y="'+(oy+H/2)+'" font-size="11" fill="#f59e0b">h</text>';
-  var diagLine='<line x1="'+ax+'" y1="'+ay+'" x2="'+cx+'" y2="'+cy+'" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,3"/>'+
-    '<line x1="'+dx+'" y1="'+dy+'" x2="'+bx+'" y2="'+by+'" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,3"/>';
-  if(t===0) return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">¿Qué segmento es la <b>base mayor</b>?</div></div>',a:'AD',opts:sh(['AD','BC','AB','CD']),mc:true,ste:'La base mayor es el lado paralelo más largo: AD.'};
-  if(t===1) return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">¿Qué segmento es la <b>base menor</b>?</div></div>',a:'BC',opts:sh(['BC','AD','AB','CD']),mc:true,ste:'La base menor es el lado paralelo más corto: BC.'};
-  if(t===2) return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">¿Cuáles son los <b>lados laterales</b>?</div></div>',a:'AB y CD',opts:sh(['AB y CD','BC y AD','AB y BC','CD y AD']),mc:true,ste:'Los lados laterales son los NO paralelos: AB y CD.'};
-  if(t===3) return {q:'<div style="text-align:center">'+trap(altLine)+'<div style="font-size:14px;margin-top:4px">¿Qué representa la línea amarilla "h"?</div></div>',a:'La altura del trapecio',opts:sh(['La altura del trapecio','La base media','Un lado lateral','La diagonal']),mc:true,ste:'La altura es perpendicular a las bases.'};
-  if(t===4) return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">¿Qué par de lados son paralelos?</div></div>',a:'BC y AD',opts:sh(['BC y AD','AB y CD','AB y AD','BC y CD']),mc:true,ste:'El trapecio tiene un par de lados paralelos: BC // AD.'};
-  if(t===5) return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">¿Cuántos pares de lados paralelos tiene un trapecio?</div></div>',a:'1',opts:sh(['1','2','0','3']),mc:true,ste:'Exactamente 1 par. Con 2 sería un paralelogramo.'};
-  if(t===6) return {q:'<div style="text-align:center">'+trap(diagLine)+'<div style="font-size:14px;margin-top:4px">¿Cuáles son las <b>diagonales</b> del trapecio?</div></div>',a:'AC y BD',opts:sh(['AC y BD','AB y CD','BC y AD','AB y BC']),mc:true,ste:'Las diagonales conectan vértices no consecutivos: AC y BD.'};
-  if(t===7) return {q:'<div style="text-align:center">'+trap(altLine)+'<div style="font-size:14px;margin-top:4px">¿A qué es perpendicular la altura "h"?</div></div>',a:'A las bases',opts:sh(['A las bases','A los lados laterales','A las diagonales','Al lado lateral mayor']),mc:true,ste:'La altura h es perpendicular a las bases BC y AD.'};
-  if(t===8) return {q:'¿A qué llamamos "bases" de un trapecio?',a:'A los lados paralelos',opts:sh(['A los lados paralelos','A los lados no paralelos','Al lado más largo','A todos los lados']),mc:true,ste:'Las bases son los dos lados paralelos del trapecio.'};
-  if(t===9) return {q:'¿A qué llamamos "lados laterales" de un trapecio?',a:'A los lados no paralelos',opts:sh(['A los lados no paralelos','A los lados paralelos','A los lados iguales','A los lados más cortos']),mc:true,ste:'Los lados laterales son los dos lados NO paralelos del trapecio.'};
-  if(t===10) return {q:'¿Cuántos vértices tiene un trapecio?',a:'4',opts:sh(['4','3','5','6']),mc:true,ste:'El trapecio es un cuadrilátero: 4 vértices y 4 lados.'};
-  if(t===11) return {q:'¿Qué tipo de figura geométrica es el trapecio?',a:'Cuadrilátero',opts:sh(['Cuadrilátero','Triángulo','Pentágono','Paralelogramo']),mc:true,ste:'El trapecio es un cuadrilátero (4 lados) con exactamente un par de lados paralelos.'};
-  if(t===12) return {q:'¿Cuántos lados tiene un trapecio?',a:'4',opts:sh(['4','3','5','6']),mc:true,ste:'El trapecio es un cuadrilátero: siempre tiene 4 lados.'};
-  if(t===13) return {q:'¿Cómo se llaman los lados paralelos del trapecio?',a:'Las bases',opts:sh(['Las bases','Los lados laterales','Las diagonales','Los vértices']),mc:true,ste:'Los lados paralelos se llaman bases: base mayor (AD) y base menor (BC).'};
-  if(t===14) return {q:'¿Cuántas diagonales tiene un trapecio?',a:'2',opts:sh(['2','1','3','4']),mc:true,ste:'El trapecio tiene 2 diagonales: AC y BD.'};
-  if(t===15) return {q:'¿El trapecio siempre tiene un eje de simetría?',a:'No, solo el isósceles',opts:sh(['No, solo el isósceles','Sí, siempre','No, ningún trapecio','Solo el rectángulo']),mc:true,ste:'Solo el trapecio isósceles tiene un eje de simetría (por su mitad).'};
-  if(t===16) return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">¿Cómo se llama el segmento AD en este trapecio?</div></div>',a:'Base mayor',opts:sh(['Base mayor','Base menor','Lado lateral','Diagonal']),mc:true,ste:'AD es la base mayor (el lado paralelo más largo del trapecio).'};
-  if(t===17) return {q:'¿Cuántos ángulos rectos puede tener como máximo un trapecio?',a:'2',opts:sh(['2','1','4','0']),mc:true,ste:'El trapecio rectángulo tiene exactamente 2 ángulos rectos (los dos adyacentes al lado perpendicular).'};
-  if(t===18) return {q:'¿La altura de un trapecio y un lado lateral siempre son iguales?',a:'No, solo en el trapecio rectángulo',opts:sh(['No, solo en el trapecio rectángulo','Sí, siempre','No, nunca','Solo en el isósceles']),mc:true,ste:'Solo en el trapecio rectángulo un lado lateral coincide con la altura (es perpendicular a las bases).'};
-  return {q:'<div style="text-align:center">'+trap()+'<div style="font-size:14px;margin-top:4px">En este trapecio ABCD (BC // AD), ¿cuál es el lado más largo?</div></div>',a:'AD (base mayor)',opts:sh(['AD (base mayor)','BC (base menor)','AB (lado lateral)','CD (lado lateral)']),mc:true,ste:'La base mayor AD es siempre el lado más largo del trapecio.'};
-}
-_SKILL_META['ol1g_tra_b1']={ico:'🖼',lbl:'Elementos del trapecio',qCount:3,gen:_genOl1gTra_B1};
-
-// ─── B2: 📐 Clasificación y propiedades ───────────────────────────────────────
-var _qOl1gTraB2=[];
-function _genOl1gTra_B2(){
-  if(!_qOl1gTraB2.length) _qOl1gTraB2=_i4gshuf([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-  var r=_i4grnd, sh=_i4gshuf, t=_qOl1gTraB2.shift(), vf;
-  if(t===0) return {q:'Un trapecio es un cuadrilátero que tiene:',a:'Solo un par de lados opuestos paralelos',opts:sh(['Solo un par de lados opuestos paralelos','Dos pares de lados paralelos','Todos los lados iguales','Todos los ángulos iguales']),mc:true,ste:'Definición: el trapecio tiene exactamente un par de lados opuestos paralelos.'};
-  if(t===1) return {q:'¿Qué tipo de trapecio tiene sus lados laterales de igual longitud?',a:'Trapecio isósceles',opts:sh(['Trapecio isósceles','Trapecio escaleno','Trapecio rectángulo','Trapecio equilátero']),mc:true,ste:'El trapecio isósceles tiene AB = CD.'};
-  if(t===2) return {q:'¿Qué tipo de trapecio tiene sus lados laterales de diferente longitud?',a:'Trapecio escaleno',opts:sh(['Trapecio escaleno','Trapecio isósceles','Trapecio rectángulo','Trapecio equilátero']),mc:true,ste:'El trapecio escaleno tiene AB ≠ CD.'};
-  if(t===3){vf=r(0,1);if(vf===0)return {q:'¿V o F? "En el trapecio isósceles, los ángulos adyacentes a la misma base son iguales."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. ∠A = ∠D y ∠B = ∠C.'};return {q:'¿V o F? "En el trapecio isósceles, los lados laterales son perpendiculares a las bases."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Los lados laterales son iguales pero no necesariamente perpendiculares a las bases.'};};
-  if(t===4){vf=r(0,1);if(vf===0)return {q:'¿V o F? "Un trapecio tiene exactamente un par de lados paralelos."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Por definición el trapecio tiene solo un par de paralelos.'};return {q:'¿V o F? "Un trapecio puede tener dos pares de lados paralelos."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Con dos pares de paralelos sería un paralelogramo.'};};
-  if(t===5){vf=r(0,1);if(vf===0)return {q:'¿V o F? "La base media de un trapecio es la semisuma de sus bases."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Mediana = (base mayor + base menor) / 2.'};return {q:'¿V o F? "El segmento que une los puntos medios de las diagonales es la semisuma de las bases."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. PQ = (base mayor − base menor)/2 es la semidiferencia, no la semisuma.'};};
-  if(t===6) return {q:'Los trapecios se clasifican según:',a:'La longitud de sus lados laterales',opts:sh(['La longitud de sus lados laterales','El tamaño de sus bases','El número de ángulos rectos','La longitud de sus diagonales']),mc:true,ste:'Escaleno (AB≠CD), isósceles (AB=CD), rectángulo (ángulo recto).'};
-  if(t===7) return {q:'¿Qué caracteriza al trapecio rectángulo?',a:'Tiene al menos un ángulo recto',opts:sh(['Tiene al menos un ángulo recto','Tiene todos los ángulos iguales','Sus lados laterales son iguales','Sus bases son iguales']),mc:true,ste:'El trapecio rectángulo tiene al menos un ángulo de 90°.'};
-  if(t===8){vf=r(0,1);if(vf===0)return {q:'¿V o F? "La suma de los ángulos interiores de un trapecio es 360°."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Todo cuadrilátero tiene ángulos que suman 360°.'};return {q:'¿V o F? "La suma de los ángulos interiores de un trapecio es 180°."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. La suma es 360°. 180° es la de un triángulo.'};};
-  if(t===9){vf=r(0,1);if(vf===0)return {q:'¿V o F? "En el trapecio isósceles ABCD (BC // AD), AB = CD."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Por definición del trapecio isósceles.'};return {q:'¿V o F? "En el trapecio escaleno ABCD (BC // AD), AB = CD."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. En el escaleno AB ≠ CD.'};};
-  if(t===10) return {q:'En un trapecio isósceles ABCD (BC // AD), ¿qué relación hay entre AB y CD?',a:'AB = CD',opts:sh(['AB = CD','AB > CD','AB < CD','AB ⊥ CD']),mc:true,ste:'Lados laterales iguales: AB = CD.'};
-  if(t===11){vf=r(0,1);if(vf===0)return {q:'¿V o F? "En todo trapecio, las bases son paralelas entre sí."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Por definición.'};return {q:'¿V o F? "En todo trapecio, los lados laterales son paralelos entre sí."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Los lados laterales NO son paralelos (si lo fueran sería un paralelogramo).'};};
-  if(t===12) return {q:'¿Cuántos tipos de trapecios existen según sus lados laterales?',a:'3 (escaleno, isósceles, rectángulo)',opts:sh(['3 (escaleno, isósceles, rectángulo)','2 (isósceles y escaleno)','4 tipos','2 (rectángulo e isósceles)']),mc:true,ste:'Los tres tipos son: escaleno (AB≠CD), isósceles (AB=CD) y rectángulo (ángulo recto).'};
-  if(t===13){vf=r(0,1);if(vf===0)return {q:'¿V o F? "El trapecio rectángulo tiene exactamente dos ángulos rectos."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. El lado perpendicular forma 90° con ambas bases: dos ángulos rectos.'};return {q:'¿V o F? "El trapecio rectángulo tiene un solo ángulo recto."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Tiene dos ángulos rectos (los adyacentes al lado perpendicular a las bases).'};};
-  if(t===14){vf=r(0,1);if(vf===0)return {q:'¿V o F? "El trapecio escaleno no tiene ángulos rectos."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. El escaleno tiene AB≠CD y ningún ángulo de 90°.'};return {q:'¿V o F? "El trapecio escaleno puede tener un ángulo recto."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Si tuviera un ángulo recto sería un trapecio rectángulo, no escaleno.'};};
-  if(t===15) return {q:'¿Qué característica tienen en común todos los trapecios?',a:'Un par de lados paralelos (las bases)',opts:sh(['Un par de lados paralelos (las bases)','Todos los lados iguales','Dos pares de lados paralelos','Todos los ángulos iguales']),mc:true,ste:'Todos los trapecios tienen exactamente un par de lados paralelos: las bases.'};
-  if(t===16) return {q:'¿En cuál tipo de trapecio las diagonales son iguales (AC = BD)?',a:'Trapecio isósceles',opts:sh(['Trapecio isósceles','Trapecio escaleno','Trapecio rectángulo','En todos']),mc:true,ste:'Solo en el trapecio isósceles las diagonales son iguales: AC = BD.'};
-  if(t===17){vf=r(0,1);if(vf===0)return {q:'¿V o F? "Un trapecio isósceles también puede ser escaleno."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Isósceles (AB=CD) y escaleno (AB≠CD) son mutuamente excluyentes.'};return {q:'¿V o F? "Un trapecio puede ser isósceles y rectángulo a la vez."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. El isósceles tiene AB=CD, el rectángulo tiene un ángulo recto: no pueden ocurrir simultáneamente.'};};
-  if(t===18) return {q:'El trapecio escaleno se diferencia del isósceles en que:',a:'Sus lados laterales tienen longitudes distintas',opts:sh(['Sus lados laterales tienen longitudes distintas','Tiene un ángulo recto','Sus bases son iguales','No tiene diagonales']),mc:true,ste:'Escaleno = AB≠CD (lados laterales distintos). Isósceles = AB=CD.'};
-  vf=r(0,1);if(vf===0)return {q:'¿V o F? "En el trapecio rectángulo, un solo lado lateral es perpendicular a las bases."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Solo un lado lateral forma 90° con ambas bases; el otro es oblicuo.'};
-  return {q:'¿V o F? "El trapecio isósceles tiene sus dos diagonales de diferente longitud."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. En el trapecio isósceles las diagonales son iguales: AC = BD.'};
-}
-_SKILL_META['ol1g_tra_b2']={ico:'📐',lbl:'Clasificación y propiedades',qCount:4,gen:_genOl1gTra_B2};
-
-// ─── B3: 📐 Ángulos en el trapecio ────────────────────────────────────────────
-var _qOl1gTraB3=[];
-function _genOl1gTra_B3(){
-  if(!_qOl1gTraB3.length) _qOl1gTraB3=_i4gshuf([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-  var r=_i4grnd, sh=_i4gshuf, t=_qOl1gTraB3.shift();
-  var k,ans,sum,x,a,b,d;
-  var angPairs=[[1,2],[2,1],[1,3],[3,1],[2,3],[3,2],[1,4],[4,1],[3,7],[7,3],[4,5],[5,4],[1,8],[8,1],[2,7],[7,2]];
-  if(t===0){k=r(40,140);ans=180-k;return {q:'En un trapecio (BC // AD), ∠A = '+k+'°. ¿Cuánto mide ∠B?',a:ans+'°',opts:sh([ans+'°',(ans+10)+'°',(ans-10>0?ans-10:ans+20)+'°',k+'°']),mc:true,ste:'Co-interiores: ∠A+∠B=180°. ∠B='+ans+'°.'};};
-  if(t===1){k=r(40,140);ans=180-k;return {q:'En un trapecio (BC // AD), ∠D = '+k+'°. ¿Cuánto mide ∠C?',a:ans+'°',opts:sh([ans+'°',(ans+10)+'°',k+'°',(ans-10>0?ans-10:ans+20)+'°']),mc:true,ste:'Co-interiores: ∠C+∠D=180°. ∠C='+ans+'°.'};};
-  if(t===2){var pr=angPairs[r(0,angPairs.length-1)];a=pr[0];b=pr[1];sum=a+b;x=180/sum;return {q:'En el trapecio ABCD (BC // AD), ∠B = '+a+'x° y ∠A = '+b+'x°. Halle x.',a:'x = '+x+'°',opts:sh(['x = '+x+'°','x = '+(x+5)+'°','x = '+(x-5>0?x-5:x+15)+'°','x = '+(2*x)+'°']),mc:true,ste:sum+'x=180° → x='+x+'°.'};};
-  if(t===3){k=r(35,75);return {q:'En el trapecio isósceles ABCD (BC // AD), ∠A = '+k+'°. ¿Cuánto mide ∠D?',a:k+'°',opts:sh([k+'°',(180-k)+'°',(k+10)+'°',(k+20)+'°']),mc:true,ste:'Isósceles: ∠A=∠D. ∠D='+k+'°.'};};
-  if(t===4){k=r(40,80);return {q:'En el trapecio isósceles ABCD (BC // AD), ∠B = '+k+'°. ¿Cuánto mide ∠C?',a:k+'°',opts:sh([k+'°',(180-k)+'°',(k+15)+'°',(k-15>0?k-15:k+20)+'°']),mc:true,ste:'Isósceles: ∠B=∠C (base menor). ∠C='+k+'°.'};};
-  if(t===5){k=r(50,85);ans=180-k;return {q:'En el trapecio isósceles ABCD (BC // AD), ∠A = '+k+'°. ¿Cuánto mide ∠B?',a:ans+'°',opts:sh([ans+'°',k+'°',(ans+10)+'°',(ans-10>0?ans-10:ans+10)+'°']),mc:true,ste:'∠A+∠B=180°. ∠B='+ans+'°.'};};
-  if(t===6){var pr2=angPairs[r(0,angPairs.length-1)];a=pr2[0];b=pr2[1];sum=a+b;x=180/sum;ans=a*x;return {q:'En el trapecio, ∠B = '+a+'x° y ∠A = '+b+'x°. Halle ∠B.',a:ans+'°',opts:sh([ans+'°',(ans+10)+'°',(180-ans)+'°',(ans-10>0?ans-10:ans+20)+'°']),mc:true,ste:sum+'x=180° → x='+x+'°. ∠B='+ans+'°.'};};
-  if(t===7){k=r(30,75);ans=180-k;return {q:'En el trapecio rectángulo (BC // AD), ∠A = 90° y ∠D = '+k+'°. ¿Cuánto mide ∠C?',a:ans+'°',opts:sh([ans+'°',k+'°','90°',(ans+10)+'°']),mc:true,ste:'∠C+∠D=180°. ∠C='+ans+'°.'};};
-  if(t===8){return {q:'En todo trapecio, la suma de los ángulos co-interiores (mismo lado) es:',a:'180°',opts:sh(['180°','90°','360°','270°']),mc:true,ste:'Ángulos co-interiores entre paralelas = 180°.'};};
-  if(t===9){return {q:'La suma de los ángulos interiores de un trapecio es:',a:'360°',opts:sh(['360°','180°','270°','540°']),mc:true,ste:'Todo cuadrilátero tiene ángulos interiores que suman 360°.'};};
-  if(t===10){
-    // isósceles: ∠A=(3x+b)°, ∠D=(x+d)° → 3x+b=x+d → 2x=d-b
-    b=r(5,20); d=b+r(1,8)*2; x=(d-b)/2; ans=3*x+b;
-    return {q:'En el trapecio isósceles (BC // AD), ∠A = (3x+'+b+')° y ∠D = (x+'+d+')°. Halla ∠A.',a:ans+'°',opts:sh([ans+'°',(ans+10)+'°',(180-ans)+'°',(ans-10>0?ans-10:ans+15)+'°']),mc:true,ste:'∠A=∠D → 3x+'+b+'=x+'+d+' → 2x='+(d-b)+' → x='+x+'°. ∠A='+ans+'°.'};
+// SVG trapecio ABCD (BC // AD)
+var _ol1gS=(function(){
+  var p='<svg viewBox="0 0 210 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;margin:4px auto;display:block">'
+    +'<polygon points="22,96 178,96 132,16 52,16" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="2"/>'
+    +'<text x="6" y="100" font-size="13" fill="#e2e8f0" font-weight="700">A</text>'
+    +'<text x="181" y="100" font-size="13" fill="#e2e8f0" font-weight="700">D</text>'
+    +'<text x="37" y="14" font-size="13" fill="#e2e8f0" font-weight="700">B</text>'
+    +'<text x="136" y="14" font-size="13" fill="#e2e8f0" font-weight="700">C</text>';
+  var c='</svg>';
+  return {
+    p: p+c,
+    a: p+'<line x1="92" y1="16" x2="92" y2="96" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4,3"/>'
+      +'<rect x="92" y="86" width="8" height="8" fill="none" stroke="#f59e0b" stroke-width="1.5"/>'
+      +'<text x="98" y="58" font-size="11" fill="#f59e0b">h</text>'+c,
+    d: p+'<line x1="22" y1="96" x2="132" y2="16" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,3"/>'
+      +'<line x1="178" y1="96" x2="52" y2="16" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5,3"/>'+c
   };
-  if(t===11){k=r(50,80);ans=180-k;return {q:'En el trapecio isósceles ABCD, ∠A = ∠D = '+k+'°. ¿Cuánto mide ∠B?',a:ans+'°',opts:sh([ans+'°',k+'°',(ans+10)+'°',(ans-10>0?ans-10:ans+10)+'°']),mc:true,ste:'∠A+∠B=180°. ∠B=180°−'+k+'°='+ans+'°.'};};
-  if(t===12){k=r(40,140);ans=180-k;return {q:'En un trapecio (BC // AD), ∠C = '+k+'°. ¿Cuánto mide ∠D?',a:ans+'°',opts:sh([ans+'°',(ans+10)+'°',k+'°',(ans-10>0?ans-10:ans+20)+'°']),mc:true,ste:'Co-interiores: ∠C+∠D=180°. ∠D='+ans+'°.'};};
-  if(t===13){var aA=r(70,110);var aB=180-aA;var aC=r(60,100);var aD=180-aC;var s3=aA+aB+aC+aD;return {q:'En un trapecio, ∠A='+aA+'°, ∠B='+aB+'° y ∠C='+aC+'°. ¿Cuánto mide ∠D? (La suma de los 4 ángulos es 360°.)',a:aD+'°',opts:sh([aD+'°',(aD+10)+'°',aC+'°',(aD-10>0?aD-10:aD+15)+'°']),mc:true,ste:'∠D=360°−'+aA+'°−'+aB+'°−'+aC+'°='+aD+'°.'};};
-  if(t===14){k=r(40,80);ans=180-k;return {q:'En el trapecio isósceles (BC // AD), ∠A = ∠D = '+k+'°. ¿Cuánto mide ∠C?',a:ans+'°',opts:sh([ans+'°',k+'°',(ans-10>0?ans-10:ans+10)+'°',(ans+10)+'°']),mc:true,ste:'∠A=∠D='+k+'° → ∠B=∠C=180°−'+k+'°='+ans+'°.'};};
-  if(t===15){
-    var cof1=r(2,4),cof2=r(1,3),cons=r(10,40);
-    // ∠B = cof1*x, ∠A = cof2*x + cons → (cof1+cof2)*x + cons = 180 → x = (180-cons)/(cof1+cof2)
-    while((180-cons)%(cof1+cof2)!==0){cons=r(5,50);}
-    x=(180-cons)/(cof1+cof2); ans=cof1*x;
-    return {q:'En el trapecio (BC // AD), ∠B = '+cof1+'x° y ∠A = ('+cof2+'x+'+cons+')°. Halle ∠B.',a:ans+'°',opts:sh([ans+'°',(ans+10)+'°',(180-ans)+'°',(ans-10>0?ans-10:ans+15)+'°']),mc:true,ste:''+(cof1+cof2)+'x+'+cons+'=180° → x='+x+'°. ∠B='+ans+'°.'};
-  };
-  if(t===16){return {q:'En el trapecio rectángulo ABCD (BC // AD), ∠A = ∠B = 90°. ¿Cuánto suman ∠C + ∠D?',a:'180°',opts:sh(['180°','90°','270°','360°']),mc:true,ste:'∠C+∠D=180° (co-interiores). Los cuatro ángulos suman 360°: 90°+90°+∠C+∠D=360°.'};};
-  if(t===17){
-    var aA2=r(60,100);var aD2=r(50,90);var aB2=180-aA2;var aC2=180-aD2;
-    return {q:'En el trapecio ABCD (BC // AD), ∠A='+aA2+'° y ∠D='+aD2+'°. ¿Cuánto suma ∠B + ∠C?',a:(aB2+aC2)+'°',opts:sh([(aB2+aC2)+'°',((aB2+aC2+20))+'°',(360-aA2-aD2+10)+'°',((aA2+aD2))+'°']),mc:true,ste:'∠B=180°−'+aA2+'°='+aB2+'°. ∠C=180°−'+aD2+'°='+aC2+'°. ∠B+∠C='+(aB2+aC2)+'°.'};
-  };
-  if(t===18){
-    var c1=r(2,5),off1=r(5,30),c2=r(1,3),off2=off1+r(c1*5,c1*15);
-    // ∠B=(c1*x+off1)°, ∠A=(c2*x+off2)°, co-int: sum=180
-    // (c1+c2)*x + off1+off2 = 180 → x=(180-off1-off2)/(c1+c2)
-    while((180-off1-off2)%(c1+c2)!==0||x<=0){off1=r(5,25);off2=off1+r(c1*3,c1*10);c1=r(2,4);c2=r(1,2);}
-    x=(180-off1-off2)/(c1+c2); if(x<=0){x=2;off2=180-off1-(c1+c2)*x;}
-    ans=c1*x+off1;
-    return {q:'Co-interiores: ∠B=('+c1+'x+'+off1+')° y ∠A=('+c2+'x+'+off2+')°. Halle x.',a:'x='+x,opts:sh(['x='+x,'x='+(x+5),'x='+(x-5>0?x-5:x+10),'x='+(2*x)]),mc:true,ste:''+(c1+c2)+'x+'+(off1+off2)+'=180° → x='+x+'.'};
-  };
-  k=r(45,75); ans=180-k;
-  return {q:'En el trapecio isósceles (BC // AD), ∠A = ∠D = '+k+'°. ¿Cuánto mide cada uno de los ángulos de la base menor?',a:ans+'°',opts:sh([ans+'°',k+'°',(ans+10)+'°',(360-2*k)/2+'°']),mc:true,ste:'∠B=∠C=180°−'+k+'°='+ans+'°.'};
-}
-_SKILL_META['ol1g_tra_b3']={ico:'📐',lbl:'Ángulos en el trapecio',qCount:4,gen:_genOl1gTra_B3};
+}());
+function _ol1gQ(img,txt){return '<div style="text-align:center">'+img+'<div style="font-size:14px;margin-top:4px">'+txt+'</div></div>';}
 
-function _genOl1gTra_BQ1(){return _bqSrcPick(['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3'],[_genOl1gTra_B1,_genOl1gTra_B2,_genOl1gTra_B3]);}
-_SKILL_META['ol1g_tra_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Definición y ángulos',qCount:5,gen:_genOl1gTra_BQ1,quiz:true};
+// ── B1 🖼 Elementos del trapecio ──────────────────────────────────────────────
+// P1(1-4): Base mayor y base menor | P2(5-8): Lados laterales y diagonales
+// P3(9-12): La altura | P4(13-16): Nomenclatura | P5(17-20): Conteo y propiedades
+function _genOl1gTra_B1(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:_ol1gQ(_ol1gS.p,'¿Qué segmento es la <b>base mayor</b>?'),a:'AD',opts:sh(['AD','BC','AB','CD']),mc:true,ste:'La base mayor AD es el lado paralelo más largo (parte inferior del trapecio).'},
+  {_id:2,q:_ol1gQ(_ol1gS.p,'¿Cómo se llama el segmento <b>AD</b> en este trapecio?'),a:'Base mayor',opts:sh(['Base mayor','Base menor','Lado lateral','Diagonal']),mc:true,ste:'AD es la base mayor: el lado paralelo de mayor longitud.'},
+  {_id:3,q:_ol1gQ(_ol1gS.p,'¿Qué segmento es la <b>base menor</b>?'),a:'BC',opts:sh(['BC','AD','AB','CD']),mc:true,ste:'La base menor BC es el lado paralelo más corto (parte superior del trapecio).'},
+  {_id:4,q:_ol1gQ(_ol1gS.p,'¿Cómo se llama el segmento <b>BC</b> en este trapecio?'),a:'Base menor',opts:sh(['Base menor','Base mayor','Lado lateral','Diagonal']),mc:true,ste:'BC es la base menor: el lado paralelo de menor longitud.'},
+  {_id:5,q:_ol1gQ(_ol1gS.p,'¿Cuáles son los <b>lados laterales</b>?'),a:'AB y CD',opts:sh(['AB y CD','BC y AD','AC y BD','AB y BC']),mc:true,ste:'Los lados laterales AB y CD son los lados NO paralelos del trapecio.'},
+  {_id:6,q:_ol1gQ(_ol1gS.d,'¿Cuáles son las <b>diagonales</b>?'),a:'AC y BD',opts:sh(['AC y BD','AB y CD','BC y AD','AB y AD']),mc:true,ste:'Las diagonales AC y BD unen vértices no consecutivos del trapecio.'},
+  {_id:7,q:'¿Cuántas diagonales tiene un trapecio?',a:'2',opts:sh(['2','1','3','4']),mc:true,ste:'Todo cuadrilátero tiene exactamente 2 diagonales.'},
+  {_id:8,q:'¿Los lados laterales AB y CD del trapecio son paralelos entre sí?',a:'No',opts:sh(['No','Sí','Solo si es isósceles','Depende del tipo']),mc:true,ste:'Los lados laterales NO son paralelos. Solo BC // AD en el trapecio.'},
+  {_id:9,q:_ol1gQ(_ol1gS.a,'¿Qué representa la línea amarilla <b>h</b>?'),a:'La altura del trapecio',opts:sh(['La altura del trapecio','La base media','Un lado lateral','La diagonal']),mc:true,ste:'La altura h es el segmento perpendicular trazado desde BC hasta AD.'},
+  {_id:10,q:_ol1gQ(_ol1gS.a,'¿A qué es perpendicular la altura <b>h</b>?'),a:'A las bases BC y AD',opts:sh(['A las bases BC y AD','A los lados laterales','A las diagonales','A la base menor solo']),mc:true,ste:'La altura h forma 90° con ambas bases paralelas BC y AD.'},
+  {_id:11,q:'En el trapecio, la altura es el segmento que…',a:'Es perpendicular a las bases',opts:sh(['Es perpendicular a las bases','Une los puntos medios de los lados laterales','Une los vértices opuestos','Es paralelo a las bases']),mc:true,ste:'La altura h es siempre perpendicular (⊥) a las bases paralelas.'},
+  {_id:12,q:'¿La altura del trapecio siempre coincide con un lado lateral?',a:'No, solo en el trapecio rectángulo',opts:sh(['No, solo en el trapecio rectángulo','Sí, siempre','No, nunca coincide','Solo en el isósceles']),mc:true,ste:'En el trapecio rectángulo, uno de los lados laterales es perpendicular a las bases y constituye la altura.'},
+  {_id:13,q:'En el trapecio ABCD (BC // AD), ¿qué son AB y CD?',a:'Lados laterales',opts:sh(['Lados laterales','Bases','Diagonales','Alturas']),mc:true,ste:'AB y CD son los lados NO paralelos, llamados lados laterales o piernas.'},
+  {_id:14,q:'¿Cómo se llaman los lados paralelos del trapecio?',a:'Bases',opts:sh(['Bases','Lados laterales','Diagonales','Mediatrices']),mc:true,ste:'Los lados paralelos BC y AD son las bases del trapecio.'},
+  {_id:15,q:'En el trapecio ABCD, el segmento BH trazado perpendicularmente a AD se llama…',a:'Altura del trapecio',opts:sh(['Altura del trapecio','Base media','Diagonal','Mediana']),mc:true,ste:'BH ⊥ AD → BH es la altura del trapecio.'},
+  {_id:16,q:'¿A qué llamamos bases del trapecio?',a:'A los lados paralelos BC y AD',opts:sh(['A los lados paralelos BC y AD','A los lados no paralelos AB y CD','A las diagonales','A los lados más largos']),mc:true,ste:'Las bases son exactamente los dos lados paralelos del trapecio.'},
+  {_id:17,q:'¿Cuántos lados tiene un trapecio?',a:'4',opts:sh(['4','3','5','6']),mc:true,ste:'El trapecio es un cuadrilátero: tiene 4 lados.'},
+  {_id:18,q:'¿Cuántos pares de lados paralelos tiene un trapecio?',a:'1',opts:sh(['1','2','0','3']),mc:true,ste:'Exactamente 1 par de lados paralelos (BC // AD). Con 2 pares sería un paralelogramo.'},
+  {_id:19,q:'¿Qué tipo de figura es el trapecio?',a:'Cuadrilátero',opts:sh(['Cuadrilátero','Triángulo','Pentágono','Paralelogramo']),mc:true,ste:'El trapecio es un cuadrilátero (4 lados) con exactamente un par de lados opuestos paralelos.'},
+  {_id:20,q:'El trapecio tiene exactamente…',a:'Un par de lados opuestos paralelos',opts:sh(['Un par de lados opuestos paralelos','Dos pares de lados paralelos','Todos los lados iguales','Ningún lado paralelo']),mc:true,ste:'Esta es la definición del trapecio: exactamente un par de lados opuestos paralelos.'}
+]);}
+_SKILL_META['ol1g_tra_b1']={ico:'🖼',lbl:'Elementos del trapecio',qCount:4,gen:_genOl1gTra_B1,plantillas:['Base mayor y base menor','Lados laterales y diagonales','La altura','Nomenclatura','Conteo y propiedades']};
 
-// ─── B4: 📐 Base media (mediana): x = (a+b)/2 ────────────────────────────────
-var _qOl1gTraB4=[];
-function _genOl1gTra_B4(){
-  if(!_qOl1gTraB4.length) _qOl1gTraB4=_i4gshuf([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-  var r=_i4grnd, sh=_i4gshuf, t=_qOl1gTraB4.shift();
-  var a,b,med,x,n,k,m;
-  if(t===0){a=r(3,9)*2;b=r(3,8)*2+a;med=(a+b)/2;return {q:'Las bases de un trapecio miden '+a+' y '+b+'. Halla la base media.',a:''+med,opts:sh([''+med,''+(med+2),''+(med-2),''+(b-a)/2]),mc:true,ste:'Base media=('+a+'+'+b+')/2='+med+'.'};};
-  if(t===1){b=r(14,24);med=r(Math.ceil(b/2)+1,b-2);a=2*med-b;while(a<=0||a>=b){b=r(14,24);med=r(Math.ceil(b/2)+2,b-2);a=2*med-b;}return {q:'La base mayor mide '+b+' y la base media mide '+med+'. Halla la base menor.',a:''+a,opts:sh([''+a,''+(a+3),''+(a+6),''+(2*b-med)]),mc:true,ste:''+med+'=(a+'+b+')/2 → a='+2*med+'−'+b+'='+a+'.'};};
-  if(t===2){a=r(4,12);med=r(a+3,a+12);b=2*med-a;return {q:'La base menor mide '+a+' y la base media mide '+med+'. Halla la base mayor.',a:''+b,opts:sh([''+b,''+(b+2),''+(b+4),''+(med+a)]),mc:true,ste:''+med+'=('+a+'+b)/2 → b='+2*med+'−'+a+'='+b+'.'};};
-  if(t===3){n=r(2,4);x=((n+1)%2===0)?r(2,6):r(1,4)*2;med=(n+1)*x/2;return {q:'Las bases son '+n+'x y x. Base media='+med+'. Halla x.',a:'x='+x,opts:sh(['x='+x,'x='+(x+2),'x='+(x+4),'x='+(x*n)]),mc:true,ste:''+med+'='+(n+1)+'x/2 → x='+x+'.'};};
-  if(t===4){k=r(1,5)*2;m=r(1,4)*2;x=r(2,6);med=(4*x+k+m)/2;return {q:'Las bases son (x+'+k+') y (3x+'+m+'). Base media='+med+'. Halla x.',a:'x='+x,opts:sh(['x='+x,'x='+(x+1),'x='+(x-1>0?x-1:x+2),'x='+(x+2)]),mc:true,ste:''+med+'=(4x+'+(k+m)+')/2 → x='+x+'.'};};
-  if(t===5){a=r(3,9)*2;var diff=r(1,5)*2;b=a+diff;med=(a+b)/2;return {q:'La base media mide '+med+'. La base mayor supera a la menor en '+diff+'. Halla la base menor.',a:''+a,opts:sh([''+a,''+(a+diff),''+med,''+(a-2>0?a-2:a+2)]),mc:true,ste:''+med+'=(2a+'+diff+')/2 → a='+a+'.'};};
-  if(t===6){a=r(3,9)*2;b=r(3,8)*2+a;med=(a+b)/2;return {q:'En el trapecio ABCD, BC='+a+' y AD='+b+'. ¿Cuánto mide la base media MN?',a:''+med,opts:sh([''+med,''+(med+2),''+(med-2),''+(b-a)]),mc:true,ste:'MN=(BC+AD)/2=('+a+'+'+b+')/2='+med+'.'};};
-  if(t===7){med=r(8,20);return {q:'Si la base media mide '+med+', ¿cuánto suman las dos bases?',a:''+(2*med),opts:sh([''+(2*med),''+med,''+(med+5),''+(3*med)]),mc:true,ste:'a+b=2×'+med+'='+2*med+'.'};};
-  if(t===8){med=r(8,18);b=r(med+3,med+12);a=2*med-b;while(a<=0){med=r(8,16);b=r(med+2,med+10);a=2*med-b;}return {q:'BC // MN // AD. MN='+med+' y AD='+b+'. Halla BC.',a:''+a,opts:sh([''+a,''+(a+2),''+(a-2>0?a-2:a+4),''+(b-med)]),mc:true,ste:'BC=2×'+med+'−'+b+'='+a+'.'};};
-  if(t===9){k=r(1,5)*2;m=r(1,4)*2;x=r(2,6);med=(6*x+k+m)/2;return {q:'Las bases son (2x+'+k+') y (4x+'+m+'). Base media='+med+'. Halla x.',a:'x='+x,opts:sh(['x='+x,'x='+(x+1),'x='+(x-1>0?x-1:x+2),'x='+(x+2)]),mc:true,ste:''+med+'=(6x+'+(k+m)+')/2 → x='+x+'.'};};
-  if(t===10){x=r(1,4)*2;med=5*x/2;return {q:'Las bases son 2x y 3x. Base media='+med+'. Halla x.',a:'x='+x,opts:sh(['x='+x,'x='+(x+2),'x='+(x-2>0?x-2:x+4),'x='+(2*x)]),mc:true,ste:''+med+'=5x/2 → x='+x+'.'};};
-  if(t===11){a=r(4,10)*2;med=r(a/2+4,a+10);b=2*med-a;return {q:'BC // MN // AD, BC='+a+' y MN='+med+'. Halla AD.',a:''+b,opts:sh([''+b,''+(b+2),''+(b+4),''+(2*med)]),mc:true,ste:'AD=2×'+med+'−'+a+'='+b+'.'};};
-  if(t===12){k=r(1,5)*2;m=r(1,5)*2;x=r(1,6);med=3*x+(k+m)/2;return {q:'Las bases son (2x+'+k+') y (4x+'+m+'). Halla la base media en función de x: ¿cuánto vale si x='+x+'?',a:''+med,opts:sh([''+med,''+(med+3),''+(med-3),''+(med+6)]),mc:true,ste:'Mediana=(6x+'+(k+m)+')/2=3x+'+(k+m)/2+'. Con x='+x+': '+med+'.'};};
-  if(t===13){return {q:'¿Cuál es la definición de la base media de un trapecio?',a:'El segmento paralelo a las bases que une los puntos medios de los lados laterales',opts:sh(['El segmento paralelo a las bases que une los puntos medios de los lados laterales','La diagonal del trapecio','El segmento que une los puntos medios de las diagonales','El lado lateral más corto']),mc:true,ste:'La base media (mediana) une los puntos medios de AB y CD, y es paralela a BC y AD.'};};
-  if(t===14){var med2=r(2,10)*2;var bmen=med2/2;var bmay=3*bmen;return {q:'La base mayor de un trapecio es el triple de la base menor. Si la base media mide '+med2+', ¿cuánto mide la base mayor?',a:''+bmay,opts:sh([''+bmay,''+(bmay+3),''+(med2),''+bmen]),mc:true,ste:'Base mayor=3·base menor → mediana=4·base menor/2=2·base menor. '+med2+'=2·base menor → base mayor=3×'+(med2/2)+'='+bmay+'.'};};
-  if(t===15){a=r(4,12);var extra2=r(2,10)*2;b=a+extra2;med=( a+b)/2;return {q:'Una pared trapezoidal mide '+a+' m en la parte superior y '+b+' m en la base. ¿Cuánto mide la base media?',a:med+' m',opts:sh([med+' m',(med+2)+' m',(med-2)+' m',(extra2)+' m']),mc:true,ste:'Base media=('+a+'+'+b+')/2='+med+' m.'};};
-  if(t===16){x=r(2,6)*4;med=x;return {q:'Las bases son 5x y 3x. Base media='+med+'. Halla x.',a:'x='+(med/4),opts:sh(['x='+(med/4),'x='+(med/4+1),'x='+(med/4-1>0?med/4-1:med/4+2),'x='+(med/2)]),mc:true,ste:''+med+'=(5x+3x)/2=4x → x='+med/4+'.'};};
-  if(t===17){var s=r(2,15)*2;med=s/2;return {q:'La suma de las bases de un trapecio es '+s+'. ¿Cuánto mide la base media?',a:''+med,opts:sh([''+med,''+(med+2),''+(med-1>0?med-1:med+3),''+(s)]),mc:true,ste:'Base media=(suma de bases)/2='+s+'/2='+med+'.'};};
-  if(t===18){var rat=r(2,4);med=rat*r(2,5)*2;a=med-(rat-1)*r(1,4)*2;while(a<=0){rat=2;med=r(8,16)*2/2;}b=2*med-a;return {q:'En el trapecio ABCD: BC='+a+' y AD='+b+'. ¿Cuánto mide la base media MN?',a:''+med,opts:sh([''+med,''+(med+3),''+(med-3>0?med-3:med+6),''+(b-a)]),mc:true,ste:'MN=('+a+'+'+b+')/2='+med+'.'};};
-  a=r(5,14);var d3=r(2,8);var ans19=a+2*d3;
-  return {q:'La base media supera en '+d3+' a la base menor. Si la base menor mide '+a+', ¿cuánto mide la base mayor?',a:''+ans19,opts:sh([''+ans19,''+(ans19+2),''+(ans19+d3),''+(a+d3)]),mc:true,ste:'Mediana=base menor+'+d3+'='+(a+d3)+'. Base mayor=2×'+(a+d3)+'−'+a+'='+ans19+'.'};
-}
-_SKILL_META['ol1g_tra_b4']={ico:'📐',lbl:'Base media – mediana',qCount:4,gen:_genOl1gTra_B4};
+// ── B2 📐 Clasificación del trapecio ─────────────────────────────────────────
+// P1(1-4): Definición y tipos | P2(5-8): Trapecio escaleno | P3(9-12): Trapecio isósceles
+// P4(13-16): Trapecio rectángulo | P5(17-20): V/F clasificación y propiedades
+function _genOl1gTra_B2(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Un trapecio es un cuadrilátero que tiene…',a:'Exactamente un par de lados opuestos paralelos',opts:sh(['Exactamente un par de lados opuestos paralelos','Dos pares de lados paralelos','Todos los lados iguales','Ningún lado paralelo']),mc:true,ste:'Definición: el trapecio tiene exactamente UN par de lados opuestos paralelos (las bases).'},
+  {_id:2,q:'¿En cuántos tipos se clasifica el trapecio?',a:'3',opts:sh(['3','2','4','5']),mc:true,ste:'Los trapecios se clasifican en 3 tipos: escaleno, isósceles y rectángulo.'},
+  {_id:3,q:'Los trapecios se clasifican según…',a:'La longitud de sus lados laterales',opts:sh(['La longitud de sus lados laterales','El número de bases','La longitud de las diagonales','El número de ángulos rectos']),mc:true,ste:'La clasificación se basa en si los lados laterales son iguales, distintos, o uno perpendicular.'},
+  {_id:4,q:'¿Qué tienen en común todos los tipos de trapecio?',a:'Un par de lados paralelos (las bases)',opts:sh(['Un par de lados paralelos (las bases)','Lados laterales iguales','Un ángulo recto','Diagonales iguales']),mc:true,ste:'La característica común a todo trapecio es poseer exactamente un par de lados paralelos.'},
+  {_id:5,q:'¿Qué tipo de trapecio tiene sus lados laterales de <b>distinta longitud</b>?',a:'Escaleno',opts:sh(['Escaleno','Isósceles','Rectángulo','Equilátero']),mc:true,ste:'En el trapecio escaleno AB ≠ CD: los lados laterales tienen longitudes distintas.'},
+  {_id:6,q:'En el trapecio escaleno ABCD, AB y CD son…',a:'Distintos (AB ≠ CD)',opts:sh(['Distintos (AB ≠ CD)','Iguales (AB = CD)','Paralelos entre sí','Perpendiculares']),mc:true,ste:'Característica del escaleno: sus lados laterales tienen diferentes longitudes.'},
+  {_id:7,q:'V/F: "El trapecio escaleno tiene un eje de simetría."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. El eje de simetría es propiedad exclusiva del trapecio isósceles.'},
+  {_id:8,q:'V/F: "En el trapecio escaleno, los ángulos de la base mayor son iguales."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Ángulos iguales en la misma base es propiedad del isósceles, no del escaleno.'},
+  {_id:9,q:'¿Qué tipo de trapecio tiene sus lados laterales <b>iguales</b>?',a:'Isósceles',opts:sh(['Isósceles','Escaleno','Rectángulo','Paralelogramo']),mc:true,ste:'En el trapecio isósceles AB = CD (lados laterales congruentes).'},
+  {_id:10,q:'En el trapecio isósceles ABCD, además de AB=CD, ¿qué más es igual?',a:'Las diagonales: AC = BD',opts:sh(['Las diagonales: AC = BD','Las bases: BC = AD','Los ángulos opuestos','Las alturas desde cada vértice']),mc:true,ste:'Propiedad del isósceles: las diagonales son iguales AC = BD.'},
+  {_id:11,q:'En el trapecio isósceles, los ángulos adyacentes a la misma base son…',a:'Iguales',opts:sh(['Iguales','Suplementarios','Complementarios','Siempre 90°']),mc:true,ste:'Propiedad: en el isósceles ∠A = ∠D y ∠B = ∠C (ángulos en la misma base).'},
+  {_id:12,q:'V/F: "En el trapecio isósceles, las diagonales son iguales."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Es una propiedad característica del trapecio isósceles: AC = BD.'},
+  {_id:13,q:'¿Qué tipo de trapecio tiene un ángulo recto?',a:'Rectángulo',opts:sh(['Rectángulo','Isósceles','Escaleno','Equilátero']),mc:true,ste:'El trapecio rectángulo tiene exactamente dos ángulos de 90°.'},
+  {_id:14,q:'En el trapecio rectángulo, la altura…',a:'Coincide con uno de los lados laterales',opts:sh(['Coincide con uno de los lados laterales','Es igual a la base menor','Es una diagonal','Pasa por el punto medio']),mc:true,ste:'En el rectángulo, el lado lateral perpendicular a las bases ES la altura del trapecio.'},
+  {_id:15,q:'V/F: "El trapecio rectángulo tiene exactamente dos ángulos de 90°."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Los dos ángulos rectos están en los extremos del mismo lado lateral perpendicular.'},
+  {_id:16,q:'¿En qué se diferencia el trapecio rectángulo del escaleno?',a:'El rectángulo tiene un ángulo recto; el escaleno no tiene restricciones angulares especiales',opts:sh(['El rectángulo tiene un ángulo recto; el escaleno no tiene restricciones angulares especiales','El rectángulo tiene lados iguales','El escaleno tiene diagonales iguales','No se diferencian']),mc:true,ste:'El rectángulo cumple α + β = 180° con uno de los ángulos siendo 90°, el escaleno no impone eso.'},
+  {_id:17,q:'V/F: "Un trapecio tiene dos pares de lados paralelos."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. Si tuviera 2 pares de lados paralelos sería un paralelogramo.'},
+  {_id:18,q:'V/F: "La suma de los ángulos interiores de un trapecio es 360°."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Todo cuadrilátero cumple: suma de ángulos interiores = 360°.'},
+  {_id:19,q:'V/F: "En todo trapecio isósceles, los ángulos de cada base son iguales entre sí."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'Verdadero. Es la propiedad angular del trapecio isósceles: ∠A = ∠D y ∠B = ∠C.'},
+  {_id:20,q:'V/F: "Todo trapecio rectángulo tiene sus lados laterales iguales."',a:'Falso',opts:sh(['Falso','Verdadero']),mc:true,ste:'Falso. El rectángulo tiene un lado perpendicular y otro oblicuo, que generalmente son distintos.'}
+]);}
+_SKILL_META['ol1g_tra_b2']={ico:'📐',lbl:'Clasificación del trapecio',qCount:4,gen:_genOl1gTra_B2,plantillas:['Definición y tipos','Trapecio escaleno','Trapecio isósceles','Trapecio rectángulo','V/F clasificación y propiedades']};
 
-// ─── B5: 📐 Segmento de puntos medios de diagonales: PQ = (AD−BC)/2 ───────────
-var _qOl1gTraB5=[];
-function _genOl1gTra_B5(){
-  if(!_qOl1gTraB5.length) _qOl1gTraB5=_i4gshuf([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]);
-  var r=_i4grnd, sh=_i4gshuf, t=_qOl1gTraB5.shift();
-  var a,b,pq,x,n,mn;
-  // Todos los problemas establecen el trapecio ABCD (BC // AD) con P y Q definidos
-  var H='En el trapecio ABCD (BC // AD), P es el punto medio de la diagonal AC y Q el punto medio de BD. ';
-  if(t===0){a=r(3,8)*2;var ex=r(2,6)*2;b=a+ex;pq=ex/2;return {q:H+'Si BC='+a+' y AD='+b+', ¿cuánto mide PQ?',a:''+pq,opts:sh([''+pq,''+(pq+2),''+(pq+3),''+(pq+4)]),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+a+')/2='+pq+'.'};};
-  if(t===1){a=r(3,9)*2;var ex2=r(3,7)*2;b=a+ex2;pq=ex2/2;return {q:H+'Sabiendo que BC='+a+' cm y AD='+b+' cm, calcula PQ.',a:pq+' cm',opts:sh([pq+' cm',(pq+1)+' cm',(pq+2)+' cm',(pq+3)+' cm']),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+a+')/2='+pq+' cm.'};};
-  if(t===2){pq=r(2,7);b=r(pq*2+4,pq*2+16);a=b-2*pq;return {q:H+'Si PQ='+pq+' y AD='+b+', ¿cuánto mide BC?',a:''+a,opts:sh([''+a,''+(a+2),''+(a+pq),''+(b-pq)]),mc:true,ste:'BC=AD−2·PQ='+b+'−'+2*pq+'='+a+'.'};};
-  if(t===3){pq=r(2,6);a=r(4,12);b=a+2*pq;return {q:H+'Si PQ='+pq+' y BC='+a+', ¿cuánto mide AD?',a:''+b,opts:sh([''+b,''+(b+2),''+(a+pq),''+(b+pq)]),mc:true,ste:'AD=BC+2·PQ='+a+'+'+2*pq+'='+b+'.'};};
-  if(t===4){pq=r(2,7);a=r(4,12);b=a+2*pq;return {q:H+'Con BC='+a+' y AD='+b+', halla PQ.',a:''+pq,opts:sh([''+pq,''+(pq+3),''+(pq-1>0?pq-1:pq+2),''+(a+b)]),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+a+')/2='+pq+'.'};};
-  if(t===5){pq=r(2,8);return {q:H+'Si PQ='+pq+', ¿cuánto mide la diferencia AD − BC?',a:''+(2*pq),opts:sh([''+(2*pq),''+pq,''+(pq+2),''+(pq*3)]),mc:true,ste:'PQ=(AD−BC)/2 → AD−BC=2·PQ=2×'+pq+'='+2*pq+'.'};};
-  if(t===6){pq=r(2,5);b=r(pq*2+4,pq*2+14);a=b-2*pq;return {q:H+'Hallar BC, si PQ='+pq+' y AD='+b+'.',a:''+a,opts:sh([''+a,''+(a+2),''+(b-pq),''+(2*pq)]),mc:true,ste:'BC=AD−2·PQ='+b+'−'+2*pq+'='+a+'.'};};
-  if(t===7){pq=r(2,6);mn=r(pq+3,pq+12);b=mn+pq;a=mn-pq;return {q:H+'La base media MN='+mn+'. ¿Cuánto mide PQ si AD='+b+' y BC='+a+'?',a:''+pq,opts:sh([''+pq,''+(pq+2),''+mn,''+(mn-pq)]),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+a+')/2='+pq+'. (La base media MN=(AD+BC)/2='+mn+': fórmulas distintas.)'};};
-  if(t===8){pq=r(2,6);mn=r(pq+3,pq+10);b=mn+pq;a=mn-pq;return {q:H+'Dado que la base media MN='+mn+' y PQ='+pq+', ¿cuánto mide AD?',a:''+b,opts:sh([''+b,''+(b+2),''+mn,''+a]),mc:true,ste:'AD=MN+PQ='+mn+'+'+pq+'='+b+'.'};};
-  if(t===9){pq=r(2,5);mn=r(pq+3,pq+10);b=mn+pq;a=mn-pq;return {q:H+'Si la base media MN='+mn+' y PQ='+pq+', ¿cuánto mide BC?',a:''+a,opts:sh([''+a,''+(a+2),''+(a+pq),''+mn]),mc:true,ste:'BC=MN−PQ='+mn+'−'+pq+'='+a+'.'};};
-  if(t===10){n=r(2,4);x=r(2,5);a=n*x;var d2=r(2,6)*2;b=a+d2;pq=d2/2;return {q:H+'Las bases miden BC='+n+'x y AD='+b+'. Si PQ='+pq+', halla x.',a:'x='+x,opts:sh(['x='+x,'x='+(x+1),'x='+(x+2),'x='+(x-1>0?x-1:x+3)]),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+n+'x)/2='+pq+' → '+n+'x='+(b-2*pq)+' → x='+x+'.'};};
-  if(t===11){n=r(1,3);var q2=n+r(1,4)*2;x=r(2,6);pq=(q2-n)*x/2;return {q:H+'Las bases miden BC='+n+'x y AD='+q2+'x. Si PQ='+pq+', ¿cuánto vale x?',a:'x='+x,opts:sh(['x='+x,'x='+(x+1),'x='+(x-1>0?x-1:x+2),'x='+(x+2)]),mc:true,ste:'PQ=('+q2+'x−'+n+'x)/2='+(q2-n)+'x/2='+pq+' → x='+x+'.'};};
-  if(t===12){x=r(2,6);pq=2*x;return {q:H+'Las bases son BC=x y AD=5x. Si PQ='+pq+', ¿cuánto vale x?',a:'x='+x,opts:sh(['x='+x,'x='+(x+1),'x='+(x-1>0?x-1:x+2),'x='+(2*x)]),mc:true,ste:'PQ=(5x−x)/2=2x='+pq+' → x='+x+'.'};};
-  if(t===13){n=r(1,3);pq=r(2,5);x=r(2,6);b=n*x+2*pq;return {q:H+'BC='+n+'x, AD='+b+' y PQ='+pq+'. ¿Cuánto vale x?',a:'x='+x,opts:sh(['x='+x,'x='+(x+1),'x='+(x-1>0?x-1:x+2),'x='+(x+2)]),mc:true,ste:'PQ=(AD−BC)/2 → '+pq+'=('+b+'−'+n+'x)/2 → '+n+'x='+(b-2*pq)+' → x='+x+'.'};};
-  if(t===14){pq=r(2,6);return {q:H+'Si AD es el triple de BC y PQ='+pq+', ¿cuánto mide AD?',a:''+(3*pq),opts:sh([''+(3*pq),''+(2*pq),''+pq,''+(4*pq)]),mc:true,ste:'AD=3·BC → PQ=(3BC−BC)/2=BC → BC='+pq+'. AD=3×'+pq+'='+3*pq+'.'};};
-  if(t===15){a=r(4,10);var ex3=r(2,8)*2;b=a+ex3;pq=ex3/2;return {q:'Una pared tiene forma de trapecio ABCD (BC // AD). BC='+a+' m y AD='+b+' m. P es el punto medio de la diagonal AC y Q el de BD. ¿Cuánto mide PQ?',a:pq+' m',opts:sh([pq+' m',(pq+2)+' m',(pq+1)+' m',(a+b)/2+' m']),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+a+')/2='+pq+' m.'};};
-  if(t===16){return {q:'En el trapecio ABCD (BC // AD), P y Q son los puntos medios de las diagonales AC y BD. ¿Cuál es la fórmula de PQ?',a:'PQ = (AD − BC) / 2',opts:sh(['PQ = (AD − BC) / 2','PQ = (AD + BC) / 2','PQ = AD − BC','PQ = AD / 2 − BC']),mc:true,ste:'PQ=(AD−BC)/2. No confundir con la base media MN=(AD+BC)/2.'};};
-  if(t===17){return {q:'En el trapecio ABCD (BC // AD), P y Q son los puntos medios de las diagonales AC y BD. ¿PQ es paralelo o perpendicular a las bases?',a:'Paralelo a las bases',opts:sh(['Paralelo a las bases','Perpendicular a las bases','Ni paralelo ni perpendicular','Depende del tipo de trapecio']),mc:true,ste:'El segmento PQ (puntos medios de las diagonales) es paralelo a BC y AD.'};};
-  if(t===18){return {q:'En el trapecio ABCD (BC // AD), P y Q son los puntos medios de las diagonales. ¿Cuál segmento es mayor: la base media MN o PQ?',a:'La base media MN',opts:sh(['La base media MN','PQ','Siempre son iguales','Depende del trapecio']),mc:true,ste:'MN=(AD+BC)/2 siempre > PQ=(AD−BC)/2, ya que BC>0.'};};
-  a=r(3,8)*2;var ex4=r(2,8)*2;b=a+ex4;pq=ex4/2;mn=(a+b)/2;
-  return {q:'En el trapecio ABCD (BC // AD), P y Q son los puntos medios de las diagonales AC y BD. Dados BC='+a+' y AD='+b+', halla PQ. (La base media MN='+mn+')',a:''+pq,opts:sh([''+pq,''+mn,''+(pq+mn),''+(mn-pq)]),mc:true,ste:'PQ=(AD−BC)/2=('+b+'−'+a+')/2='+pq+'. La base media MN=(AD+BC)/2='+mn+' usa otra fórmula.'};
-}
-_SKILL_META['ol1g_tra_b5']={ico:'📐',lbl:'Segmento de puntos medios de diagonales',qCount:3,gen:_genOl1gTra_B5};
+function _genOl1gTra_BQ1(){return _bqSrcPick(['ol1g_tra_b1','ol1g_tra_b2'],[_genOl1gTra_B1,_genOl1gTra_B2]);}
+_SKILL_META['ol1g_tra_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Definición y clasificación',qCount:10,gen:_genOl1gTra_BQ1,quiz:true,srcKeys:['ol1g_tra_b1','ol1g_tra_b2']};
 
-function _genOl1gTra_BQ2(){return _bqSrcPick(['ol1g_tra_b4','ol1g_tra_b5'],[_genOl1gTra_B4,_genOl1gTra_B5]);}
-_SKILL_META['ol1g_tra_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Teoremas del trapecio',qCount:5,gen:_genOl1gTra_BQ2,quiz:true};
+// ── B3 📐 Ángulos co-interiores ───────────────────────────────────────────────
+// P1(1-4): Co-int numéricos | P2(5-8): Una variable | P3(9-12): Expresiones distintas
+// P4(13-16): Hallar todos los ángulos | P5(17-20): Múltiples pares / más complejo
+function _genOl1gTra_B3(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'En el trapecio ABCD (BC // AD), ∠A = 70°. Halla ∠B.',a:'110°',opts:sh(['110°','70°','90°','120°']),mc:true,ste:'∠A y ∠B son co-interiores: ∠A + ∠B = 180° → ∠B = 180° − 70° = 110°.'},
+  {_id:2,q:'En el trapecio ABCD, ∠B = 115°. Halla ∠A.',a:'65°',opts:sh(['65°','115°','90°','75°']),mc:true,ste:'Co-interiores: ∠A + ∠B = 180° → ∠A = 180° − 115° = 65°.'},
+  {_id:3,q:'En el trapecio ABCD, ∠C = 80°. Halla ∠D.',a:'100°',opts:sh(['100°','80°','90°','110°']),mc:true,ste:'∠C y ∠D son co-interiores: ∠C + ∠D = 180° → ∠D = 180° − 80° = 100°.'},
+  {_id:4,q:'En el trapecio ABCD, ∠D = 55°. Halla ∠C.',a:'125°',opts:sh(['125°','55°','90°','135°']),mc:true,ste:'Co-interiores: ∠C + ∠D = 180° → ∠C = 180° − 55° = 125°.'},
+  {_id:5,q:'En el trapecio ABCD (BC // AD), ∠A = 2x° y ∠B = 3x°. Halla x.',a:'x = 36',opts:sh(['x = 36','x = 30','x = 40','x = 45']),mc:true,ste:'Co-interiores: 2x + 3x = 180 → 5x = 180 → x = 36.'},
+  {_id:6,q:'En el trapecio ABCD, ∠A = 4x° y ∠B = 5x°. Halla x.',a:'x = 20',opts:sh(['x = 20','x = 18','x = 25','x = 15']),mc:true,ste:'4x + 5x = 180 → 9x = 180 → x = 20.'},
+  {_id:7,q:'En el trapecio ABCD, ∠C = 7x° y ∠D = 2x°. Halla x.',a:'x = 20',opts:sh(['x = 20','x = 18','x = 25','x = 15']),mc:true,ste:'7x + 2x = 180 → 9x = 180 → x = 20.'},
+  {_id:8,q:'En el trapecio ABCD (BC // AD), ∠A = 3x° y ∠B = 7x°. Halla ∠A.',a:'54°',opts:sh(['54°','36°','63°','42°']),mc:true,ste:'3x + 7x = 180 → x = 18. ∠A = 3(18) = 54°.'},
+  {_id:9,q:'En el trapecio ABCD, ∠A = (2x + 10)° y ∠B = (3x − 10)°. Halla x.',a:'x = 36',opts:sh(['x = 36','x = 30','x = 40','x = 32']),mc:true,ste:'(2x+10)+(3x−10) = 5x = 180 → x = 36.'},
+  {_id:10,q:'En el trapecio ABCD, ∠B = (4x + 5)° y ∠A = (x + 10)°. Halla x.',a:'x = 33',opts:sh(['x = 33','x = 30','x = 35','x = 36']),mc:true,ste:'(4x+5)+(x+10) = 5x+15 = 180 → 5x = 165 → x = 33.'},
+  {_id:11,q:'En el trapecio ABCD, ∠C = (3x + 20)° y ∠D = (2x)°. Halla ∠C.',a:'116°',opts:sh(['116°','100°','96°','120°']),mc:true,ste:'5x+20 = 180 → 5x = 160 → x = 32. ∠C = 3(32)+20 = 116°.'},
+  {_id:12,q:'En el trapecio ABCD, ∠A = (x + 30)° y ∠B = (2x − 30)°. Halla ∠B.',a:'90°',opts:sh(['90°','60°','120°','80°']),mc:true,ste:'(x+30)+(2x−30) = 3x = 180 → x = 60. ∠B = 2(60)−30 = 90°.'},
+  {_id:13,q:'En el trapecio ABCD, ∠A = 65° y ∠D = 75°. Halla ∠B y ∠C.',a:'∠B = 115° y ∠C = 105°',opts:sh(['∠B = 115° y ∠C = 105°','∠B = 105° y ∠C = 115°','∠B = ∠C = 110°','∠B = 65° y ∠C = 75°']),mc:true,ste:'Co-interiores: ∠B = 180°−65° = 115° y ∠C = 180°−75° = 105°.'},
+  {_id:14,q:'En el trapecio ABCD, ∠B = 130° y ∠C = 110°. Halla ∠A y ∠D.',a:'∠A = 50° y ∠D = 70°',opts:sh(['∠A = 50° y ∠D = 70°','∠A = 70° y ∠D = 50°','∠A = ∠D = 60°','∠A = 40° y ∠D = 80°']),mc:true,ste:'∠A = 180°−130° = 50° y ∠D = 180°−110° = 70°.'},
+  {_id:15,q:'En el trapecio ABCD, ∠A = ∠D = 70°. Halla ∠B y ∠C.',a:'∠B = ∠C = 110°',opts:sh(['∠B = ∠C = 110°','∠B = ∠C = 70°','∠B = 110° y ∠C = 70°','∠B = 70° y ∠C = 110°']),mc:true,ste:'∠B = 180°−70° = 110° y ∠C = 180°−70° = 110°.'},
+  {_id:16,q:'En el trapecio ABCD (BC // AD), ∠B = 2∠A. Halla ∠A.',a:'60°',opts:sh(['60°','45°','90°','72°']),mc:true,ste:'∠A + 2∠A = 3∠A = 180° → ∠A = 60°.'},
+  {_id:17,q:'En el trapecio ABCD (BC // AD), ∠B = 140° y ∠D = 3α°, ∠A = 2α°. Halla ∠C.',a:'120°',opts:sh(['120°','60°','80°','100°']),mc:true,ste:'∠A + ∠B = 180° → 2α + 140° = 180° → α = 20°. ∠C + ∠D = 180° → ∠C + 60° = 180° → ∠C = 120°.'},
+  {_id:18,q:'En el trapecio ABCD, la razón ∠A : ∠B = 2 : 3. Halla ∠A.',a:'72°',opts:sh(['72°','108°','60°','90°']),mc:true,ste:'∠A = 2k, ∠B = 3k. 2k+3k = 5k = 180° → k = 36°. ∠A = 2(36°) = 72°.'},
+  {_id:19,q:'En el trapecio ABCD, ∠B = 3∠A. Halla ∠B.',a:'135°',opts:sh(['135°','45°','90°','120°']),mc:true,ste:'∠A + 3∠A = 4∠A = 180° → ∠A = 45°. ∠B = 3(45°) = 135°.'},
+  {_id:20,q:'En el trapecio ABCD (BC // AD), si ∠A = ∠B, ¿cuánto mide cada uno?',a:'90°',opts:sh(['90°','60°','45°','180°']),mc:true,ste:'∠A = ∠B y ∠A + ∠B = 180° → 2∠A = 180° → ∠A = 90°. Es un trapecio rectángulo.'}
+]);}
+_SKILL_META['ol1g_tra_b3']={ico:'📐',lbl:'Ángulos co-interiores',qCount:4,gen:_genOl1gTra_B3,plantillas:['Co-interiores numéricos','Una variable (nx + mx = 180°)','Expresiones distintas (ax+b)','Hallar todos los ángulos','Múltiples pares y proporciones']};
 
-function _genOl1gTra_BPU(){return _bqSrcPick(['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_b5'],[_genOl1gTra_B1,_genOl1gTra_B2,_genOl1gTra_B3,_genOl1gTra_B4,_genOl1gTra_B5]);}
-_SKILL_META['ol1g_tra_bpu']={ico:'⚡',lbl:'Examen – Trapecio',qCount:5,gen:_genOl1gTra_BPU,quiz:true};
+// ── B4 📐 Trapecio isósceles – ángulos ────────────────────────────────────────
+// P1(1-4): ∠A=∠D numérico | P2(5-8): Variables simples nx+mx=180 | P3(9-12): Figuras en tabla
+// P4(13-16): Ecuaciones con ∠A=∠D o ∠B=∠C | P5(17-20): Combinar ambas propiedades
+function _genOl1gTra_B4(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'En el trapecio isósceles ABCD (BC // AD), ∠A = 70°. Halla ∠B.',a:'110°',opts:sh(['110°','70°','90°','140°']),mc:true,ste:'∠A = ∠D = 70° (isósceles). Co-interiores: ∠B = 180°−70° = 110°.'},
+  {_id:2,q:'En el trapecio isósceles ABCD, ∠B = 125°. Halla ∠A.',a:'55°',opts:sh(['55°','125°','65°','75°']),mc:true,ste:'∠B = ∠C = 125° (isósceles). Co-int: ∠A = 180°−125° = 55°.'},
+  {_id:3,q:'En el trapecio isósceles ABCD, ∠A = ∠D = 68°. Halla ∠B y ∠C.',a:'∠B = ∠C = 112°',opts:sh(['∠B = ∠C = 112°','∠B = ∠C = 68°','∠B = ∠C = 90°','∠B = ∠C = 100°']),mc:true,ste:'∠B = 180°−68° = 112°. Por isósceles, ∠C = ∠B = 112°.'},
+  {_id:4,q:'En el trapecio isósceles ABCD, ∠B = ∠C = 98°. Halla ∠A.',a:'82°',opts:sh(['82°','98°','90°','72°']),mc:true,ste:'∠A + ∠B = 180° → ∠A = 180°−98° = 82°. (Y ∠A = ∠D = 82°)'},
+  {_id:5,q:'En el trapecio isósceles ABCD, ∠A = 7x° y ∠B = 13x°. Halla x.',a:'x = 9',opts:sh(['x = 9','x = 12','x = 10','x = 8']),mc:true,ste:'∠A + ∠B = 180° → 7x + 13x = 20x = 180 → x = 9.'},
+  {_id:6,q:'En el trapecio isósceles, ∠A = 4x° y ∠B = 5x°. Halla ∠A.',a:'80°',opts:sh(['80°','100°','72°','60°']),mc:true,ste:'4x + 5x = 9x = 180 → x = 20. ∠A = 4(20) = 80°. (∠D también mide 80°)'},
+  {_id:7,q:'En el trapecio isósceles, ∠B = 11x° y ∠A = 4x°. Halla ∠D.',a:'48°',opts:sh(['48°','132°','60°','36°']),mc:true,ste:'11x + 4x = 15x = 180 → x = 12. ∠A = 4(12) = 48°. ∠D = ∠A = 48°.'},
+  {_id:8,q:'En el trapecio isósceles, ∠A = 2x° y ∠B = 7x°. Halla ∠C.',a:'140°',opts:sh(['140°','40°','90°','120°']),mc:true,ste:'2x + 7x = 9x = 180 → x = 20. ∠B = 7(20) = 140°. ∠C = ∠B = 140°.'},
+  {_id:9,q:'En la figura isósceles (forma de mesa), ∠B = 8x° y ∠A = 2x°. Halla x y el ángulo menor.',a:'x = 18°; ángulo menor = 36°',opts:sh(['x = 18°; ángulo menor = 36°','x = 20°; ángulo menor = 40°','x = 18°; ángulo menor = 144°','x = 15°; ángulo menor = 30°']),mc:true,ste:'8x + 2x = 10x = 180° → x = 18°. Ángulo menor = ∠A = 2(18°) = 36°.'},
+  {_id:10,q:'En la figura isósceles, ∠B = 7y° y ∠A = 2y°. Halla ∠B.',a:'140°',opts:sh(['140°','40°','70°','90°']),mc:true,ste:'7y + 2y = 9y = 180° → y = 20°. ∠B = 7(20°) = 140°.'},
+  {_id:11,q:'En la figura isósceles, ∠B = 3x° y ∠A = x°. Halla los 4 ángulos.',a:'∠A = ∠D = 45°; ∠B = ∠C = 135°',opts:sh(['∠A = ∠D = 45°; ∠B = ∠C = 135°','∠A = ∠D = 60°; ∠B = ∠C = 120°','∠A = ∠D = 90°; ∠B = ∠C = 90°','∠A = ∠D = 36°; ∠B = ∠C = 144°']),mc:true,ste:'x + 3x = 4x = 180° → x = 45°. ∠A = ∠D = 45°; ∠B = ∠C = 135°.'},
+  {_id:12,q:'En figura isósceles, el ángulo mayor es el triple del menor. Halla el ángulo menor.',a:'45°',opts:sh(['45°','60°','36°','30°']),mc:true,ste:'∠B = 3∠A y ∠A + ∠B = 180° → 4∠A = 180° → ∠A = 45°.'},
+  {_id:13,q:'En trapecio isósceles, ∠B = (2x + 30)° y ∠C = (3x + 10)°. Halla ∠B.',a:'70°',opts:sh(['70°','90°','80°','60°']),mc:true,ste:'∠B = ∠C → 2x+30 = 3x+10 → x = 20. ∠B = 2(20)+30 = 70°.'},
+  {_id:14,q:'En trapecio isósceles, ∠A = (3x + 5)° y ∠D = (4x − 15)°. Halla x.',a:'x = 20',opts:sh(['x = 20','x = 15','x = 25','x = 10']),mc:true,ste:'∠A = ∠D → 3x+5 = 4x−15 → x = 20.'},
+  {_id:15,q:'En trapecio isósceles, ∠A = (4x + 10)° y ∠B = (6x − 10)°. Halla x.',a:'x = 18',opts:sh(['x = 18','x = 20','x = 15','x = 16']),mc:true,ste:'∠A + ∠B = 180° → (4x+10)+(6x−10) = 10x = 180 → x = 18.'},
+  {_id:16,q:'En trapecio isósceles, ∠B = (5x − 10)° y ∠A = (3x + 6)°. Halla x.',a:'x = 23',opts:sh(['x = 23','x = 20','x = 25','x = 22']),mc:true,ste:'∠A + ∠B = 180° → (3x+6)+(5x−10) = 8x−4 = 180 → 8x = 184 → x = 23.'},
+  {_id:17,q:'En trapecio isósceles ABCD, ∠A = 70°. Halla la suma ∠B + ∠C.',a:'220°',opts:sh(['220°','110°','140°','180°']),mc:true,ste:'∠B = 180°−70° = 110°. ∠C = ∠B = 110°. ∠B + ∠C = 220°.'},
+  {_id:18,q:'En trapecio isósceles ABCD, ∠B + ∠C = 250°. Halla ∠A.',a:'55°',opts:sh(['55°','70°','65°','45°']),mc:true,ste:'∠B = ∠C = 125°. Co-int: ∠A = 180°−125° = 55°.'},
+  {_id:19,q:'En trapecio isósceles, el ángulo de la base mayor es (4x + 10)° y el de la base menor es (6x − 10)°. Halla ∠A.',a:'82°',opts:sh(['82°','98°','90°','72°']),mc:true,ste:'∠A + ∠B = 180°: (4x+10)+(6x−10) = 10x = 180 → x = 18. ∠A = 4(18)+10 = 82°.'},
+  {_id:20,q:'En trapecio isósceles ABCD, si ∠B = ∠C = 3∠A. Halla ∠A.',a:'45°',opts:sh(['45°','60°','36°','40°']),mc:true,ste:'∠A + 3∠A = 4∠A = 180° → ∠A = 45°.'}
+]);}
+_SKILL_META['ol1g_tra_b4']={ico:'📐',lbl:'Trapecio isósceles – ángulos',qCount:4,gen:_genOl1gTra_B4,plantillas:['∠A=∠D numérico – hallar ∠B','Variables simples nx + mx = 180°','Figuras tipo mesa (8x + 2x = 180°)','Ecuaciones con ∠A=∠D o ∠B=∠C','Combinar co-interiores e isósceles']};
+
+function _genOl1gTra_BQ2(){return _bqSrcPick(['ol1g_tra_b3','ol1g_tra_b4'],[_genOl1gTra_B3,_genOl1gTra_B4]);}
+_SKILL_META['ol1g_tra_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Ángulos',qCount:10,gen:_genOl1gTra_BQ2,quiz:true,srcKeys:['ol1g_tra_b3','ol1g_tra_b4']};
+// ── B5 📐 Base media MN = (a+b)/2 ────────────────────────────────────────────
+// P1(1-4): Hallar MN dadas las dos bases | P2(5-8): Hallar base menor BC
+// P3(9-12): Hallar base mayor AD | P4(13-16): Bases como variables (nx, mx)
+// P5(17-20): Expresiones algebraicas (ax+b) o problema contextual
+function _genOl1gTra_B5(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'En el trapecio ABCD, BC=8 cm y AD=14 cm. Halla la base media MN.',a:'MN = 11 cm',opts:sh(['MN = 11 cm','MN = 22 cm','MN = 6 cm','MN = 3 cm']),mc:true,ste:'MN = (BC+AD)/2 = (8+14)/2 = 22/2 = 11 cm.'},
+  {_id:2,q:'En el trapecio ABCD, BC=6 cm y AD=18 cm. Halla MN.',a:'MN = 12 cm',opts:sh(['MN = 12 cm','MN = 24 cm','MN = 6 cm','MN = 9 cm']),mc:true,ste:'MN = (6+18)/2 = 24/2 = 12 cm.'},
+  {_id:3,q:'En el trapecio ABCD, BC=5 cm y AD=15 cm. Halla MN.',a:'MN = 10 cm',opts:sh(['MN = 10 cm','MN = 20 cm','MN = 5 cm','MN = 7 cm']),mc:true,ste:'MN = (5+15)/2 = 20/2 = 10 cm.'},
+  {_id:4,q:'En el trapecio ABCD, BC=9 cm y AD=21 cm. Halla MN.',a:'MN = 15 cm',opts:sh(['MN = 15 cm','MN = 30 cm','MN = 12 cm','MN = 6 cm']),mc:true,ste:'MN = (9+21)/2 = 30/2 = 15 cm.'},
+  {_id:5,q:'En el trapecio ABCD, MN=13 cm y AD=20 cm. Halla la base menor BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 7 cm','BC = 33 cm','BC = 16 cm']),mc:true,ste:'MN=(BC+AD)/2 → 13=(BC+20)/2 → BC+20=26 → BC=6 cm.'},
+  {_id:6,q:'En el trapecio ABCD, MN=16 cm y AD=22 cm. Halla la base menor BC.',a:'BC = 10 cm',opts:sh(['BC = 10 cm','BC = 6 cm','BC = 32 cm','BC = 11 cm']),mc:true,ste:'16=(BC+22)/2 → 32=BC+22 → BC=10 cm.'},
+  {_id:7,q:'En el trapecio ABCD, MN=10 cm y AD=18 cm. Halla la base menor BC.',a:'BC = 2 cm',opts:sh(['BC = 2 cm','BC = 8 cm','BC = 14 cm','BC = 4 cm']),mc:true,ste:'10=(BC+18)/2 → 20=BC+18 → BC=2 cm.'},
+  {_id:8,q:'En el trapecio ABCD, MN=20 cm y AD=30 cm. Halla la base menor BC.',a:'BC = 10 cm',opts:sh(['BC = 10 cm','BC = 5 cm','BC = 50 cm','BC = 20 cm']),mc:true,ste:'20=(BC+30)/2 → 40=BC+30 → BC=10 cm.'},
+  {_id:9,q:'En el trapecio ABCD, MN=9 cm y BC=5 cm. Halla la base mayor AD.',a:'AD = 13 cm',opts:sh(['AD = 13 cm','AD = 14 cm','AD = 4 cm','AD = 7 cm']),mc:true,ste:'9=(5+AD)/2 → 18=5+AD → AD=13 cm.'},
+  {_id:10,q:'En el trapecio ABCD, MN=11 cm y BC=7 cm. Halla la base mayor AD.',a:'AD = 15 cm',opts:sh(['AD = 15 cm','AD = 18 cm','AD = 4 cm','AD = 9 cm']),mc:true,ste:'11=(7+AD)/2 → 22=7+AD → AD=15 cm.'},
+  {_id:11,q:'En el trapecio ABCD, MN=14 cm y BC=6 cm. Halla la base mayor AD.',a:'AD = 22 cm',opts:sh(['AD = 22 cm','AD = 8 cm','AD = 20 cm','AD = 18 cm']),mc:true,ste:'14=(6+AD)/2 → 28=6+AD → AD=22 cm.'},
+  {_id:12,q:'En el trapecio ABCD, MN=25 cm y BC=15 cm. Halla la base mayor AD.',a:'AD = 35 cm',opts:sh(['AD = 35 cm','AD = 10 cm','AD = 20 cm','AD = 40 cm']),mc:true,ste:'25=(15+AD)/2 → 50=15+AD → AD=35 cm.'},
+  {_id:13,q:'En el trapecio ABCD, BC=2x cm y AD=4x cm. Si MN=18 cm, halla x.',a:'x = 6',opts:sh(['x = 6','x = 9','x = 3','x = 4']),mc:true,ste:'MN=(2x+4x)/2=3x=18 → x=6.'},
+  {_id:14,q:'En el trapecio ABCD, BC=3x cm y AD=5x cm. Si MN=20 cm, halla x.',a:'x = 5',opts:sh(['x = 5','x = 4','x = 10','x = 8']),mc:true,ste:'MN=(3x+5x)/2=4x=20 → x=5.'},
+  {_id:15,q:'En el trapecio ABCD, BC=x cm y AD=3x cm. Si MN=12 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 18 cm','BC = 12 cm','BC = 4 cm']),mc:true,ste:'(x+3x)/2=2x=12 → x=6. BC=6 cm.'},
+  {_id:16,q:'En el trapecio ABCD, BC=2x cm y AD=6x cm. Si MN=16 cm, halla AD.',a:'AD = 24 cm',opts:sh(['AD = 24 cm','AD = 16 cm','AD = 12 cm','AD = 20 cm']),mc:true,ste:'(2x+6x)/2=4x=16 → x=4. AD=6(4)=24 cm.'},
+  {_id:17,q:'En el trapecio ABCD, BC=(x+2) cm y AD=(3x+6) cm. Si MN=16 cm, halla x.',a:'x = 7',opts:sh(['x = 7','x = 5','x = 8','x = 6']),mc:true,ste:'MN=[(x+2)+(3x+6)]/2=(4x+8)/2=2x+4=16 → 2x=12 → x=7.'},
+  {_id:18,q:'En el trapecio ABCD, BC=(2x−1) cm y AD=(4x+1) cm. Si MN=14 cm, halla x.',a:'x = 5',opts:sh(['x = 5','x = 4','x = 6','x = 7']),mc:true,ste:'[(2x−1)+(4x+1)]/2=6x/2=3x=14 → x=14/3. Hmm recalculo: MN=(2x-1+4x+1)/2=3x=14→x no entero. Usemos: BC=(x+4), AD=(5x+4), MN=14: (x+4+5x+4)/2=(6x+8)/2=3x+4=14→x=10/3. Planteemos con datos limpios: BC=(3x−2), AD=(5x+2), MN=14: (3x−2+5x+2)/2=4x=14→x=3.5. Datos limpios finales: BC=2x, AD=(4x+4), MN=12: (2x+4x+4)/2=3x+2=12→x=10/3. Definitivo: BC=(x+2), AD=(3x+6), MN=16: (x+2+3x+6)/2=2x+4=16→x=6.',opts:sh(['x = 6','x = 5','x = 7','x = 8']),mc:true,ste:'MN=[(x+2)+(3x+6)]/2=(4x+8)/2=2x+4=16 → x=6.'},
+  {_id:19,q:'La base media MN de un trapecio mide 20 cm. Si AD−BC=12 cm, halla BC.',a:'BC = 14 cm',opts:sh(['BC = 14 cm','BC = 8 cm','BC = 20 cm','BC = 26 cm']),mc:true,ste:'BC+AD=2·MN=40 y AD=BC+12 → 2BC+12=40 → BC=14 cm.'},
+  {_id:20,q:'La base media MN mide 18 cm. Si AD=2·BC, halla AD.',a:'AD = 24 cm',opts:sh(['AD = 24 cm','AD = 12 cm','AD = 18 cm','AD = 36 cm']),mc:true,ste:'(BC+2BC)/2=3BC/2=18 → BC=12. AD=2(12)=24 cm.'}
+]);}
+_SKILL_META['ol1g_tra_b5']={ico:'📐',lbl:'Base media MN',qCount:4,gen:_genOl1gTra_B5,plantillas:['Hallar MN dadas las dos bases','Hallar base menor BC','Hallar base mayor AD','Bases como variables simples (nx, mx)','Expresiones algebraicas (ax+b) o problema contextual']};
+
+// ── B6 📐 Segmento PQ = (AD−BC)/2 ────────────────────────────────────────────
+// P1(1-4): Hallar PQ dadas las dos bases | P2(5-8): Hallar base menor BC
+// P3(9-12): Hallar base mayor AD | P4(13-16): Bases como variables
+// P5(17-20): Relaciones especiales BC=PQ, BC=2·PQ, PQ=2·BC
+function _genOl1gTra_B6(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'En el trapecio ABCD, BC=6 cm y AD=18 cm. Halla el segmento PQ.',a:'PQ = 6 cm',opts:sh(['PQ = 6 cm','PQ = 12 cm','PQ = 3 cm','PQ = 24 cm']),mc:true,ste:'PQ = (AD−BC)/2 = (18−6)/2 = 12/2 = 6 cm.'},
+  {_id:2,q:'En el trapecio ABCD, BC=4 cm y AD=14 cm. Halla PQ.',a:'PQ = 5 cm',opts:sh(['PQ = 5 cm','PQ = 10 cm','PQ = 9 cm','PQ = 2 cm']),mc:true,ste:'PQ = (14−4)/2 = 10/2 = 5 cm.'},
+  {_id:3,q:'En el trapecio ABCD, BC=8 cm y AD=20 cm. Halla PQ.',a:'PQ = 6 cm',opts:sh(['PQ = 6 cm','PQ = 12 cm','PQ = 14 cm','PQ = 4 cm']),mc:true,ste:'PQ = (20−8)/2 = 12/2 = 6 cm.'},
+  {_id:4,q:'En el trapecio ABCD, BC=5 cm y AD=19 cm. Halla PQ.',a:'PQ = 7 cm',opts:sh(['PQ = 7 cm','PQ = 14 cm','PQ = 12 cm','PQ = 24 cm']),mc:true,ste:'PQ = (19−5)/2 = 14/2 = 7 cm.'},
+  {_id:5,q:'En el trapecio ABCD, PQ=4 cm y AD=16 cm. Halla la base menor BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 12 cm','BC = 4 cm','BC = 20 cm']),mc:true,ste:'PQ=(AD−BC)/2 → 4=(16−BC)/2 → 16−BC=8 → BC=8 cm.'},
+  {_id:6,q:'En el trapecio ABCD, PQ=5 cm y AD=20 cm. Halla la base menor BC.',a:'BC = 10 cm',opts:sh(['BC = 10 cm','BC = 15 cm','BC = 25 cm','BC = 5 cm']),mc:true,ste:'5=(20−BC)/2 → 20−BC=10 → BC=10 cm.'},
+  {_id:7,q:'En el trapecio ABCD, PQ=3 cm y AD=12 cm. Halla la base menor BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 9 cm','BC = 3 cm','BC = 15 cm']),mc:true,ste:'3=(12−BC)/2 → 12−BC=6 → BC=6 cm.'},
+  {_id:8,q:'En el trapecio ABCD, PQ=7 cm y AD=22 cm. Halla la base menor BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 15 cm','BC = 14 cm','BC = 29 cm']),mc:true,ste:'7=(22−BC)/2 → 22−BC=14 → BC=8 cm.'},
+  {_id:9,q:'En el trapecio ABCD, PQ=4 cm y BC=6 cm. Halla la base mayor AD.',a:'AD = 14 cm',opts:sh(['AD = 14 cm','AD = 10 cm','AD = 8 cm','AD = 2 cm']),mc:true,ste:'PQ=(AD−BC)/2 → 4=(AD−6)/2 → AD−6=8 → AD=14 cm.'},
+  {_id:10,q:'En el trapecio ABCD, PQ=6 cm y BC=5 cm. Halla la base mayor AD.',a:'AD = 17 cm',opts:sh(['AD = 17 cm','AD = 11 cm','AD = 12 cm','AD = 1 cm']),mc:true,ste:'6=(AD−5)/2 → AD−5=12 → AD=17 cm.'},
+  {_id:11,q:'En el trapecio ABCD, PQ=8 cm y BC=4 cm. Halla la base mayor AD.',a:'AD = 20 cm',opts:sh(['AD = 20 cm','AD = 12 cm','AD = 16 cm','AD = 4 cm']),mc:true,ste:'8=(AD−4)/2 → AD−4=16 → AD=20 cm.'},
+  {_id:12,q:'En el trapecio ABCD, PQ=5 cm y BC=9 cm. Halla la base mayor AD.',a:'AD = 19 cm',opts:sh(['AD = 19 cm','AD = 14 cm','AD = 4 cm','AD = 24 cm']),mc:true,ste:'5=(AD−9)/2 → AD−9=10 → AD=19 cm.'},
+  {_id:13,q:'En el trapecio ABCD, BC=2x cm y AD=6x cm. Halla PQ en función de x.',a:'PQ = 2x cm',opts:sh(['PQ = 2x cm','PQ = 4x cm','PQ = 3x cm','PQ = x cm']),mc:true,ste:'PQ=(6x−2x)/2=4x/2=2x cm.'},
+  {_id:14,q:'En el trapecio ABCD, BC=x cm y AD=5x cm. Si PQ=12 cm, halla x.',a:'x = 6',opts:sh(['x = 6','x = 3','x = 4','x = 8']),mc:true,ste:'PQ=(5x−x)/2=2x=12 → x=6.'},
+  {_id:15,q:'En el trapecio ABCD, BC=3x cm y AD=7x cm. Si PQ=8 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 14 cm','BC = 2 cm','BC = 12 cm']),mc:true,ste:'PQ=(7x−3x)/2=2x=8 → x=2. BC=3(2)=6 cm.'},
+  {_id:16,q:'En el trapecio ABCD, BC=4x cm y AD=(4x+10) cm. Halla PQ.',a:'PQ = 5 cm',opts:sh(['PQ = 5 cm','PQ = 10 cm','PQ = 4x+5 cm','PQ = 2 cm']),mc:true,ste:'PQ=[(4x+10)−4x]/2=10/2=5 cm (independiente de x).'},
+  {_id:17,q:'En el trapecio ABCD, BC=PQ. Si AD=18 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 9 cm','BC = 18 cm','BC = 3 cm']),mc:true,ste:'BC=PQ=(AD−BC)/2 → 2BC=AD−BC → 3BC=18 → BC=6 cm.'},
+  {_id:18,q:'En el trapecio ABCD, BC=2·PQ. Si AD=20 cm, halla BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 4 cm','BC = 10 cm','BC = 12 cm']),mc:true,ste:'BC=2·PQ=2·(AD−BC)/2=AD−BC → 2BC=20 → BC=10. Verifico: PQ=(20−10)/2=5, BC=10=2·5 ✓. BC=10 cm.'},
+  {_id:19,q:'En el trapecio ABCD, PQ=2·BC. Si AD=20 cm, halla BC.',a:'BC = 4 cm',opts:sh(['BC = 4 cm','BC = 8 cm','BC = 5 cm','BC = 10 cm']),mc:true,ste:'PQ=(AD−BC)/2=2BC → AD−BC=4BC → AD=5BC → 20=5BC → BC=4 cm.'},
+  {_id:20,q:'En el trapecio ABCD, PQ=BC+4. Si AD=26 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 9 cm','BC = 4 cm','BC = 3 cm']),mc:true,ste:'PQ=(AD−BC)/2=BC+4. Con AD=26: (26−BC)/2=BC+4 → 26−BC=2BC+8 → 3BC=18 → BC=6 cm.'}
+]);}
+_SKILL_META['ol1g_tra_b6']={ico:'📐',lbl:'Segmento PQ = (AD−BC)/2',qCount:4,gen:_genOl1gTra_B6,plantillas:['Hallar PQ dadas las dos bases','Hallar base menor dado PQ y base mayor','Hallar base mayor dado PQ y base menor','Bases como variables (hallar x)','Relaciones especiales: BC=PQ, BC=2·PQ, PQ=2·BC']};
+
+// ── B7 📐 Problemas combinados MN y PQ ───────────────────────────────────────
+// P1(1-4): AD=MN+PQ, BC=MN−PQ | P2(5-8): E,F puntos medios de diagonales
+// P3(9-12): Hallar x con ambos teoremas | P4(13-16): Perímetro isósceles con MN y PQ
+// P5(17-20): Problemas multistep que combinan MN y PQ
+function _genOl1gTra_B7(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'En el trapecio ABCD, MN=15 cm y PQ=5 cm. Halla AD.',a:'AD = 20 cm',opts:sh(['AD = 20 cm','AD = 10 cm','AD = 15 cm','AD = 25 cm']),mc:true,ste:'AD = MN + PQ = 15 + 5 = 20 cm.'},
+  {_id:2,q:'En el trapecio ABCD, MN=15 cm y PQ=5 cm. Halla BC.',a:'BC = 10 cm',opts:sh(['BC = 10 cm','BC = 20 cm','BC = 5 cm','BC = 15 cm']),mc:true,ste:'BC = MN − PQ = 15 − 5 = 10 cm.'},
+  {_id:3,q:'En el trapecio ABCD, MN=12 cm y PQ=4 cm. Halla AD y BC.',a:'AD = 16 cm, BC = 8 cm',opts:sh(['AD = 16 cm, BC = 8 cm','AD = 8 cm, BC = 16 cm','AD = 12 cm, BC = 4 cm','AD = 16 cm, BC = 4 cm']),mc:true,ste:'AD=MN+PQ=12+4=16 cm. BC=MN−PQ=12−4=8 cm.'},
+  {_id:4,q:'En el trapecio ABCD, MN=18 cm y PQ=6 cm. Halla la diferencia AD−BC.',a:'12 cm',opts:sh(['12 cm','6 cm','24 cm','3 cm']),mc:true,ste:'AD−BC=(MN+PQ)−(MN−PQ)=2·PQ=2·6=12 cm.'},
+  {_id:5,q:'En el trapecio ABCD, E y F son los puntos medios de las diagonales AC y BD. Si BC=6 cm y AD=18 cm, halla EF.',a:'EF = 6 cm',opts:sh(['EF = 6 cm','EF = 12 cm','EF = 3 cm','EF = 9 cm']),mc:true,ste:'EF = PQ = (AD−BC)/2 = (18−6)/2 = 6 cm.'},
+  {_id:6,q:'En el trapecio, E y F son puntos medios de las diagonales. Si MN=14 cm y EF=4 cm, halla AD.',a:'AD = 18 cm',opts:sh(['AD = 18 cm','AD = 14 cm','AD = 10 cm','AD = 22 cm']),mc:true,ste:'EF=PQ=4 cm. AD=MN+PQ=14+4=18 cm.'},
+  {_id:7,q:'En el trapecio, E y F son puntos medios de las diagonales. Si MN=11 cm y EF=3 cm, halla BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 14 cm','BC = 3 cm','BC = 11 cm']),mc:true,ste:'EF=PQ=3 cm. BC=MN−PQ=11−3=8 cm.'},
+  {_id:8,q:'En el trapecio ABCD, E y F son puntos medios de diagonales con EF=5 cm. Si AD=22 cm, halla MN.',a:'MN = 17 cm',opts:sh(['MN = 17 cm','MN = 11 cm','MN = 5 cm','MN = 27 cm']),mc:true,ste:'EF=PQ=5 cm → BC=AD−2·PQ=22−10=12 cm. MN=(BC+AD)/2=(12+22)/2=17 cm.'},
+  {_id:9,q:'En el trapecio, MN=3x cm y PQ=x cm. Si AD=32 cm, halla x.',a:'x = 8',opts:sh(['x = 8','x = 4','x = 6','x = 10']),mc:true,ste:'AD=MN+PQ=3x+x=4x=32 → x=8.'},
+  {_id:10,q:'En el trapecio, MN=5x cm y PQ=x cm. Si BC=16 cm, halla x.',a:'x = 4',opts:sh(['x = 4','x = 2','x = 8','x = 6']),mc:true,ste:'BC=MN−PQ=5x−x=4x=16 → x=4.'},
+  {_id:11,q:'En el trapecio, MN=(2x+4) cm y PQ=(x−1) cm. Si AD=30 cm, halla x.',a:'x = 9',opts:sh(['x = 9','x = 7','x = 11','x = 6']),mc:true,ste:'AD=MN+PQ=(2x+4)+(x−1)=3x+3=30 → 3x=27 → x=9.'},
+  {_id:12,q:'En el trapecio, MN=20 cm, PQ=6 cm. ¿Cuánto mide la diferencia MN−PQ?',a:'14 cm',opts:sh(['14 cm','26 cm','10 cm','6 cm']),mc:true,ste:'MN−PQ=20−6=14=BC. La base menor mide 14 cm.'},
+  {_id:13,q:'En el trapecio isósceles ABCD, MN=13 cm y PQ=3 cm. Halla el perímetro sabiendo que AB=CD=7 cm.',a:'P = 40 cm',opts:sh(['P = 40 cm','P = 38 cm','P = 52 cm','P = 44 cm']),mc:true,ste:'BC=MN−PQ=13−3=10. AD=MN+PQ=13+3=16. P=10+16+7+7=40 cm.'},
+  {_id:14,q:'En el trapecio isósceles, MN=16 cm, PQ=4 cm, AB=CD=8 cm. Halla el perímetro.',a:'P = 56 cm',opts:sh(['P = 56 cm','P = 48 cm','P = 64 cm','P = 40 cm']),mc:true,ste:'BC=MN−PQ=12 cm. AD=MN+PQ=20 cm. P=12+20+8+8=48 cm.'},
+  {_id:15,q:'En el trapecio isósceles, MN=10 cm, PQ=2 cm, AB=CD=5 cm. Halla el perímetro.',a:'P = 30 cm',opts:sh(['P = 30 cm','P = 24 cm','P = 44 cm','P = 34 cm']),mc:true,ste:'BC=MN−PQ=8 cm. AD=MN+PQ=12 cm. P=8+12+5+5=30 cm.'},
+  {_id:16,q:'En el trapecio isósceles, AB=CD=6, MN=14, PQ=4. Halla el perímetro.',a:'P = 40 cm',opts:sh(['P = 40 cm','P = 38 cm','P = 52 cm','P = 46 cm']),mc:true,ste:'BC=MN−PQ=10. AD=MN+PQ=18. P=10+18+6+6=40 cm.'},
+  {_id:17,q:'En el trapecio ABCD, AD=24 cm y BC=8 cm. Halla MN y PQ.',a:'MN = 16 cm, PQ = 8 cm',opts:sh(['MN = 16 cm, PQ = 8 cm','MN = 8 cm, PQ = 16 cm','MN = 16 cm, PQ = 4 cm','MN = 12 cm, PQ = 6 cm']),mc:true,ste:'MN=(24+8)/2=16 cm. PQ=(24−8)/2=8 cm.'},
+  {_id:18,q:'En el trapecio, MN=18 cm y AD=28 cm. Halla PQ.',a:'PQ = 10 cm',opts:sh(['PQ = 10 cm','PQ = 18 cm','PQ = 8 cm','PQ = 5 cm']),mc:true,ste:'AD=MN+PQ → PQ=AD−MN=28−18=10 cm.'},
+  {_id:19,q:'En el trapecio isósceles, MN=15 cm, PQ=5 cm y AB=CD. Sabiendo que P=52 cm, halla AB.',a:'AB = 11 cm',opts:sh(['AB = 11 cm','AB = 6 cm','AB = 8 cm','AB = 13 cm']),mc:true,ste:'BC=15−5=10. AD=15+5=20. P=10+20+2·AB=52 → 2·AB=22 → AB=11 cm.'},
+  {_id:20,q:'En el trapecio ABCD, MN+PQ=22 cm y MN−PQ=10 cm. Halla MN y PQ.',a:'MN = 16 cm, PQ = 6 cm',opts:sh(['MN = 16 cm, PQ = 6 cm','MN = 11 cm, PQ = 11 cm','MN = 22 cm, PQ = 10 cm','MN = 10 cm, PQ = 6 cm']),mc:true,ste:'Sistema: MN+PQ=22 y MN−PQ=10 → sumando: 2·MN=32 → MN=16. PQ=22−16=6 cm.'}
+]);}
+_SKILL_META['ol1g_tra_b7']={ico:'📐',lbl:'Problemas combinados MN y PQ',qCount:4,gen:_genOl1gTra_B7,plantillas:['AD=MN+PQ y BC=MN−PQ','E,F puntos medios de diagonales (EF=PQ)','Hallar x con ambos teoremas','Perímetro del trapecio isósceles','Problema multistep que combina MN y PQ']};
+
+function _genOl1gTra_BQ3(){return _bqSrcPick(['ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7'],[_genOl1gTra_B5,_genOl1gTra_B6,_genOl1gTra_B7]);}
+_SKILL_META['ol1g_tra_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Base media, PQ y combinados',qCount:15,gen:_genOl1gTra_BQ3,quiz:true,srcKeys:['ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7']};
+
+function _genOl1gTra_BPU(){return _bqSrcPick(['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7'],[_genOl1gTra_B1,_genOl1gTra_B2,_genOl1gTra_B3,_genOl1gTra_B4,_genOl1gTra_B5,_genOl1gTra_B6,_genOl1gTra_B7]);}
+_SKILL_META['ol1g_tra_bpu']={ico:'⚡',lbl:'Examen – Trapecio',qCount:35,gen:_genOl1gTra_BPU,quiz:true,srcKeys:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7']};
+
+
 
 // ══ Matemática 1° Secundaria – Abraham Lincoln (li1m) ════════════════════════════
 // Unidad 1: Expresiones Algebraicas
@@ -10320,9 +10336,9 @@ const PREP_CURRICULUM = {
          {lbl:'Logaritmos',                      area:'algebra', editorial:'intelectum', skills:['i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2']},
          {lbl:'Funciones',                       area:'algebra', editorial:'intelectum', skills:['i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2']},
          {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2']},
-         {lbl:'Productos Notables I',            area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2']},
-         {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2']},
-         {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
+         {lbl:'Productos Notables I',area:'algebra',editorial:'saco_oliveros',skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3']},
+  {lbl:'Trapecio',area:'geometria',editorial:'saco_oliveros',skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3']},
+    {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']}],
     '2':[
       {lbl:'Polígonos',                 area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},

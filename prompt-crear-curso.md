@@ -76,10 +76,10 @@ Ejemplo con un grupo de 3 habilidades y otro de 2 (los tipos visual/verbal se as
 clave_b1:  { ico:'🖼', lbl:'Nombre habilidad 1', qCount:4, gen:()=>_genXxx_B1() },
 clave_b2:  { ico:'📐', lbl:'Nombre habilidad 2', qCount:4, gen:()=>_genXxx_B2() },
 clave_b3:  { ico:'🖼', lbl:'Nombre habilidad 3', qCount:4, gen:()=>_genXxx_B3() },
-clave_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:15, gen:()=>_genXxx_BQ1(), quiz:true }, // 3 habilidades × 5 = 15
+clave_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:15, gen:()=>_genXxx_BQ1(), quiz:true, srcKeys:['clave_b1','clave_b2','clave_b3'] }, // 3 habilidades × 5 = 15
 clave_b4:  { ico:'📐', lbl:'Nombre habilidad 4', qCount:4, gen:()=>_genXxx_B4() },
 clave_b5:  { ico:'🖼', lbl:'Nombre habilidad 5', qCount:4, gen:()=>_genXxx_B5() },
-clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:10, gen:()=>_genXxx_BQ2(), quiz:true }, // 2 habilidades × 5 = 10
+clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:10, gen:()=>_genXxx_BQ2(), quiz:true, srcKeys:['clave_b4','clave_b5'] }, // 2 habilidades × 5 = 10
 // … continúa según el número de grupos
 ```
 
@@ -88,10 +88,12 @@ clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:10, gen:()=>_genXx
 ```js
 // BQ1 cubre todas las habilidades del grupo 1 (pueden ser 2, 3 o más)
 function _genXxx_BQ1(){ return _bqSrcPick(['clave_b1','clave_b2','clave_b3'],[_genXxx_B1,_genXxx_B2,_genXxx_B3]); }
+_SKILL_META['xxx_bq1']={ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:15, gen:_genXxx_BQ1, quiz:true, srcKeys:['xxx_b1','xxx_b2','xxx_b3']};
+// ⚠️ srcKeys es OBLIGATORIO en todo BQ — sin él el motor usa el qCount global (10) en lugar de srcKeys.length × 5
+
 // BQ2 cubre todas las habilidades del grupo 2
 function _genXxx_BQ2(){ return _bqSrcPick(['clave_b4','clave_b5'],[_genXxx_B4,_genXxx_B5]); }
-// BPU (examen) cubre todas las habilidades de la unidad
-function _genXxx_BPU(){ return _bqSrcPick(['clave_b1','clave_b2','clave_b3','clave_b4','clave_b5',...],[_genXxx_B1,_genXxx_B2,...]); }
+_SKILL_META['xxx_bq2']={ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:10, gen:_genXxx_BQ2, quiz:true, srcKeys:['xxx_b4','xxx_b5']};
 ```
 
 ### Registro en `PREP_CURRICULUM` (levelup.js)
@@ -128,7 +130,11 @@ Te adjunto PDFs con los temas del libro. A partir de ellos necesito que:
 2. Para cada unidad: describas qué habilidades irían en cada grupo, indicando si cada una es visual o verbal y por qué, y cuántas habilidades tiene cada grupo
 3. Confirmes la clave prefijo que usarás para cada unidad (ej. `xxx_ele`, `xxx_tri`…)
 
-Al final de la propuesta, incluye una tabla por unidad con el orden exacto de cada elemento, usando este formato:
+La propuesta tiene **dos partes obligatorias**. No escribas código hasta que yo apruebe ambas.
+
+### Parte A — Tabla de orden por unidad
+
+Incluye una tabla por unidad con el orden exacto de cada elemento:
 
 | # | Clave | Tipo |
 |---|-------|------|
@@ -138,9 +144,27 @@ Al final de la propuesta, incluye una tabla por unidad con el orden exacto de ca
 | … | … | … |
 | n | ★ Examen | automático |
 
-Esta tabla es obligatoria — permite validar que la estructura es correcta antes de implementar.
+### Parte B — Tabla de plantillas por habilidad
 
-**No escribas código todavía.** Primero validamos la estructura juntos y yo apruebo o corrijo.
+Inmediatamente después de la Parte A, incluye una tabla de plantillas para **cada habilidad** (B1, B2, … Bn), con exactamente 5 filas P1–P5 y una descripción precisa de qué tipo de ejercicio cubre cada plantilla, citando la imagen o sección del PDF de donde se extrae:
+
+**Ejemplo de formato:**
+
+**B1 🖼 Nombre de la habilidad** — [razón visual/verbal, referencia a imagen o sección del PDF]
+
+| Plantilla | Descripción |
+|-----------|-------------|
+| P1 | Descripción exacta del tipo de ejercicio (ej: imagen 2, Nivel I) |
+| P2 | … |
+| P3 | … |
+| P4 | … |
+| P5 | … |
+
+Repite este bloque para cada habilidad de la unidad antes de continuar con la siguiente.
+
+**Regla:** la descripción de cada plantilla debe ser suficientemente específica para que, al implementar, sea imposible confundirla con otra. Si una plantilla dice "ejercicios numéricos", eso no es suficiente — debe decir qué se da, qué se pide, y de qué parte del PDF proviene.
+
+**No escribas código todavía.** Primero valido ambas partes y apruebo o corrijo.
 
 ---
 
@@ -230,6 +254,52 @@ function _genXxx_B2(){
 2. **Entrada en `PREP_CURRICULUM` en `levelup.js`**
 
 3. **Verificar sintaxis** con `node --check levelup.js`
+
+---
+
+## Paso 3 – Verificación final (OBLIGATORIO antes de declarar el curso listo)
+
+Una vez implementado todo el código y verificada la sintaxis, realiza esta auditoría comparando el código contra la Parte B aprobada en Paso 1. El curso **no está terminado** hasta que pases esta verificación.
+
+### 3a — Verificar nombres de plantillas en `_SKILL_META`
+
+Para cada habilidad, extrae el array `plantillas:[...]` del `_SKILL_META` implementado y compáralo línea a línea con la tabla aprobada en Paso 1 Parte B. Muestra la comparación en este formato:
+
+| Habilidad | Plantilla | Aprobado en Paso 1 | Implementado en código | ¿Coincide? |
+|-----------|-----------|-------------------|----------------------|-----------|
+| B1 | P1 | "Descripción aprobada" | "Nombre en plantillas:[]" | ✅ / ❌ |
+| B1 | P2 | … | … | … |
+| … | … | … | … | … |
+
+Si alguna celda tiene ❌, **corrige el código antes de continuar**. No se acepta un nombre diferente aunque el ejercicio sea "parecido".
+
+### 3b — Verificar que las preguntas (_id 1–20) corresponden a su plantilla
+
+Para cada habilidad, revisa que los grupos de preguntas estén en el lugar correcto:
+- `_id` 1–4 → P1
+- `_id` 5–8 → P2
+- `_id` 9–12 → P3
+- `_id` 13–16 → P4
+- `_id` 17–20 → P5
+
+Para cada plantilla, cita el enunciado de una pregunta representativa y confirma que corresponde a la descripción aprobada. Si alguna pregunta está en el grupo equivocado o no corresponde a la descripción, corrígela.
+
+### 3c — Verificar trazabilidad con el PDF/imágenes
+
+Para cada habilidad, indica de qué imagen o sección del PDF proviene el contenido de cada plantilla. Si una plantilla no tiene respaldo en el material enviado (fue inventada sin referencia al PDF), reemplázala por contenido basado en el material real.
+
+### Formato del reporte de verificación
+
+Al terminar los pasos 3a, 3b y 3c, emite un resumen con este formato:
+
+```
+✅ B1 – [Nombre]: todas las plantillas coinciden y tienen respaldo en PDF
+✅ B2 – [Nombre]: todas las plantillas coinciden y tienen respaldo en PDF
+❌ B3 – [Nombre]: P2 no coincide ("X" implementado vs "Y" aprobado) — CORREGIDO
+…
+```
+
+Solo cuando todas las habilidades muestran ✅ el curso está terminado.
 
 ---
 
