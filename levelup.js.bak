@@ -6843,7 +6843,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_bpu',
+    grades:{ '1':['trigoprop','trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b4','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_bpu',
       'ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_bpu'],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
@@ -7597,204 +7597,142 @@ function _genI1A_EX1_B2(){
     {_id:17,q:'x<sup>?</sup> · x³ = x⁸. ¿Cuál es el exponente que falta?',a:'5',opts:_i4gshuf(['5','3','11','24']),mc:true,ste:'Al multiplicar misma base, se suman exponentes: ?+3=8 → ?=5.'},
     {_id:18,q:'Al multiplicar potencias de igual base, los exponentes se...',a:'Suman',opts:_i4gshuf(['Suman','Multiplican','Restan','Dividen']),mc:true,ste:'Ley del producto: xᵃ·xᵇ = xᵃ⁺ᵇ.'},
     {_id:19,q:'? · 2x³ · x = 12x⁶. ¿Cuál es el término que falta?',a:'6x²',opts:_i4gshuf(['6x²','4x²','6x³','3x²']),mc:true,ste:'Coeficiente: ?·2=12 → ?=6. Exponentes: ?+3+1=6 → ?=2. El término es 6x².'},
-    {_id:20,q:'Si xᵃ · xᵇ = x⁰, ¿qué relación hay entre a y b?',a:'a = −b',opts:_i4gshuf(['a = −b','a = b','a · b = 0','a − b = 0']),mc:true,ste:'Al multiplicar se suman exponentes: a+b=0 → a=−b.'},
+    {_id:20,q:'Al dividir potencias de igual base, los exponentes se...',a:'Restan',opts:_i4gshuf(['Restan','Suman','Multiplican','Dividen']),mc:true,ste:'Ley del cociente: xᵃ ÷ xᵇ = xᵃ⁻ᵇ. Los exponentes se restan.'},
   ]);
 }
-_SKILL_META['i1a_ex1_b2']={ico:'📐',lbl:'Multiplicación de potencias de igual base',qCount:4,gen:_genI1A_EX1_B2,plantillas:['Producto de bases positivas','Producto de bases negativas','Producto de bases mixtas','Suma o resta de multiplicaciones','Razonamiento']};
+_SKILL_META['i1a_ex1_b2']={ico:'📐',lbl:'Multiplicación de monomios con leyes de exponentes',qCount:4,gen:_genI1A_EX1_B2,plantillas:['Producto de bases positivas','Producto de bases negativas','Producto de bases mixtas','Suma de productos','Razonamiento']};
 
-function _genI1A_EX1_BQ1(){return _bqSrcPick(['i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_b3'],[_genI1A_EX1_B1,_genI1A_EX1_B2,_genI1A_EX1_B3]);}
-_SKILL_META['i1a_ex1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Leyes de Exponentes I',qCount:15,gen:_genI1A_EX1_BQ1,quiz:true,srcKeys:['i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_b3']};
+function _genI1A_EX1_BQ1(){return _bqSrcPick(['i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_b3a'],[_genI1A_EX1_B1,_genI1A_EX1_B2,_genI1A_EX1_B3A]);}
+_SKILL_META['i1a_ex1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Leyes de Exponentes I',qCount:15,gen:_genI1A_EX1_BQ1,quiz:true,srcKeys:['i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_b3a']};
 
-function _genI1A_EX1_B3(){
+function _genI1A_EX1_B3A(){
   return _i4gpick([
     // Plantilla 1: División básica de igual base
     {_id:1,q:'Simplifica: x¹⁰ ÷ x³',a:'x⁷',opts:_i4gshuf(['x⁷','x¹³','x³⁰','x']),mc:true,ste:'Misma base: se restan exponentes. 10−3=7.'},
     {_id:2,q:'Simplifica: x⁸ ÷ x⁵',a:'x³',opts:_i4gshuf(['x³','x¹³','x⁴⁰','x']),mc:true,ste:'8−5=3.'},
     {_id:3,q:'Simplifica: y¹⁵ ÷ y⁷',a:'y⁸',opts:_i4gshuf(['y⁸','y²²','y¹⁰⁵','y']),mc:true,ste:'15−7=8.'},
-    {_id:4,q:'Simplifica: z¹² ÷ z⁴',a:'z⁸',opts:_i4gshuf(['z⁸','z¹⁶','z⁴⁸','z³']),mc:true,ste:'12−4=8. Resultado: z⁸.'},
-    // Plantilla 2: Cociente de bases negativas
-    {_id:5,q:'Simplifica: (−a⁴b⁶) ÷ (a²b³)',a:'−a²b³',opts:_i4gshuf(['−a²b³','a²b³','−a⁶b⁹','a²b⁹']),mc:true,ste:'Negativo ÷ positivo → negativo. a^(4−2)·b^(6−3)=a²b³.'},
-    {_id:6,q:'Simplifica: (a⁶b⁴) ÷ (−a³b⁴)',a:'−a³',opts:_i4gshuf(['−a³','a³','−a³b⁸','a⁹b⁸']),mc:true,ste:'Positivo ÷ negativo → negativo. a^(6−3)·b^(4−4)=a³.'},
-    {_id:7,q:'Simplifica: (−x³y⁵) ÷ (−xy²)',a:'x²y³',opts:_i4gshuf(['x²y³','−x²y³','x³y⁵','x²y²']),mc:true,ste:'Negativo ÷ negativo → positivo. x^(3−1)·y^(5−2)=x²y³.'},
-    {_id:8,q:'Calcula: (−4a⁵b³) ÷ (−2a²b)',a:'2a³b²',opts:_i4gshuf(['2a³b²','−2a³b²','4a³b²','2a⁷b⁴']),mc:true,ste:'Negativo ÷ negativo → positivo. 4/2=2. a^(5−2)=a³. b^(3−1)=b².'},
-    // Plantilla 3: Cociente de bases mixtas
-    {_id:9,q:'Calcula: (−a³)(b⁵) ÷ (ab²)',a:'−a²b³',opts:_i4gshuf(['−a²b³','a²b³','−a³b⁵','a²b²']),mc:true,ste:'1 factor negativo → resultado negativo. a^(3−1)=a². b^(5−2)=b³.'},
-    {_id:10,q:'Calcula: (−a³)(−b⁵) ÷ (ab²)',a:'a²b³',opts:_i4gshuf(['a²b³','−a²b³','a³b⁵','a²b²']),mc:true,ste:'2 factores negativos → resultado positivo. a^(3−1)=a². b^(5−2)=b³.'},
-    {_id:11,q:'Calcula: (−a³)(−b⁵) ÷ [(−a)b²]',a:'−a²b³',opts:_i4gshuf(['−a²b³','a²b³','−a³b⁵','−a²b²']),mc:true,ste:'3 factores negativos → resultado negativo. a^(3−1)=a². b^(5−2)=b³.'},
-    {_id:12,q:'Calcula: (−a³)(−b⁵) ÷ [(−a)(−b²)]',a:'a²b³',opts:_i4gshuf(['a²b³','−a²b³','a³b⁵','a²b²']),mc:true,ste:'4 factores negativos → resultado positivo. a^(3−1)=a². b^(5−2)=b³.'},
-    // Plantilla 4: Suma o resta de divisiones
+    {_id:4,q:'Para dividir potencias de igual base, los exponentes se...',a:'Restan',opts:_i4gshuf(['Restan','Suman','Multiplican','Dividen']),mc:true,ste:'Ley del cociente: xᵃ÷xᵇ = xᵃ⁻ᵇ.'},
+    // Plantilla 2: División con coeficientes
+    {_id:5,q:'Simplifica: (6x⁷) ÷ (3x⁴)',a:'2x³',opts:_i4gshuf(['2x³','2x¹¹','3x³','2x⁴']),mc:true,ste:'6/3=2 y x^(7−4)=x³. Resultado: 2x³.'},
+    {_id:6,q:'Calcula: (8x⁹) ÷ (2x³)',a:'4x⁶',opts:_i4gshuf(['4x⁶','4x³','6x⁶','4x¹²']),mc:true,ste:'8/2=4 y x^(9−3)=x⁶.'},
+    {_id:7,q:'Simplifica: (15a⁸) ÷ (5a³)',a:'3a⁵',opts:_i4gshuf(['3a⁵','3a¹¹','10a⁵','3a²⁴']),mc:true,ste:'15/5=3 y a^(8−3)=a⁵.'},
+    {_id:8,q:'Calcula: a¹² ÷ a¹²',a:'1',opts:_i4gshuf(['1','0','a','a¹²']),mc:true,ste:'Exponentes iguales: a^(12−12)=a⁰=1.'},
+    // Plantilla 3: División con dos variables y combinados
+    {_id:9,q:'Simplifica: (a⁴b⁶) ÷ (a²b³)',a:'a²b³',opts:_i4gshuf(['a²b³','a⁶b⁹','a²b⁹','a⁶b³']),mc:true,ste:'a^(4−2)·b^(6−3)=a²b³.'},
+    {_id:10,q:'Simplifica: (a⁶b⁴) ÷ (a³b⁴)',a:'a³',opts:_i4gshuf(['a³','a³b⁸','a⁹b⁸','a²b']),mc:true,ste:'a^(6−3)·b^(4−4)=a³·b⁰=a³.'},
+    {_id:11,q:'Simplifica: (x⁵·x³) ÷ x⁴',a:'x⁴',opts:_i4gshuf(['x⁴','x²','x¹²','x⁶']),mc:true,ste:'x^(5+3)÷x⁴=x⁸÷x⁴=x⁴.'},
+    {_id:12,q:'Simplifica: (x⁶·x⁴) ÷ (x²·x³)',a:'x⁵',opts:_i4gshuf(['x⁵','x¹⁵','x³','x⁹']),mc:true,ste:'Numerador: x^(6+4)=x¹⁰. Denominador: x^(2+3)=x⁵. x¹⁰÷x⁵=x⁵.'},
+    // Plantilla 4: Suma de divisiones
     {_id:13,q:'Simplifica: a⁵÷a³ + 2a¹⁰÷a⁸ + 3a¹⁵÷a¹³',a:'6a²',opts:_i4gshuf(['6a²','5a²','8a²','4a²']),mc:true,ste:'a²+2a²+3a²=6a².'},
-    {_id:14,q:'Calcula: x⁶÷x⁴ − 3x⁴÷x²',a:'−2x²',opts:_i4gshuf(['−2x²','2x²','4x²','−4x²']),mc:true,ste:'x²−3x²=−2x².'},
-    {_id:15,q:'Calcula: (−2x⁵)÷x² + 3x⁷÷x⁴',a:'x³',opts:_i4gshuf(['x³','−x³','5x³','−5x³']),mc:true,ste:'−2x³+3x³=x³.'},
-    {_id:16,q:'Calcula: (−3x⁷)÷x³ − (−x⁹)÷x⁵',a:'−2x⁴',opts:_i4gshuf(['−2x⁴','2x⁴','−4x⁴','4x⁴']),mc:true,ste:'−3x⁴−(−x⁴)=−3x⁴+x⁴=−2x⁴.'},
+    {_id:14,q:'Calcula: x⁶÷x⁴ + 3x⁴÷x²',a:'4x²',opts:_i4gshuf(['4x²','3x²','6x²','2x²']),mc:true,ste:'x²+3x²=4x².'},
+    {_id:15,q:'Calcula: 2x⁵÷x² + 3x⁷÷x⁴',a:'5x³',opts:_i4gshuf(['5x³','6x³','4x³','5x⁷']),mc:true,ste:'2x³+3x³=5x³.'},
+    {_id:16,q:'Si xᵃ ÷ xᵇ = x⁵ y a=9, ¿cuánto vale b?',a:'4',opts:_i4gshuf(['4','14','5','9']),mc:true,ste:'9−b=5 → b=4.'},
     // Plantilla 5: Ecuaciones y casos especiales
     {_id:17,q:'x<sup>?</sup> ÷ x³ = x⁴. ¿Cuál es el exponente que falta?',a:'7',opts:_i4gshuf(['7','1','12','3']),mc:true,ste:'Al dividir misma base, se restan: ?−3=4 → ?=7.'},
-    {_id:18,q:'Si x³ ÷ x<sup>?</sup> = x⁸, ¿cuánto vale el exponente que falta?',a:'−5',opts:_i4gshuf(['−5','5','11','−11']),mc:true,ste:'3−?=8 → ?=3−8=−5. El exponente puede ser negativo.'},
+    {_id:18,q:'Si x⁸ ÷ x<sup>?</sup> = x³, ¿cuál es el exponente que falta?',a:'5',opts:_i4gshuf(['5','11','3','24']),mc:true,ste:'8−?=3 → ?=5.'},
     {_id:19,q:'Si xᵃ ÷ xᵇ = x⁰, ¿qué relación hay entre a y b?',a:'a = b',opts:_i4gshuf(['a = b','a = 0','b = 0','a + b = 0']),mc:true,ste:'x^(a−b)=x⁰ → a−b=0 → a=b.'},
-    {_id:20,q:'Para dividir potencias de igual base, los exponentes se...',a:'Restan',opts:_i4gshuf(['Restan','Suman','Multiplican','Dividen']),mc:true,ste:'Ley del cociente: xᵃ÷xᵇ = xᵃ⁻ᵇ.'},
+    {_id:20,q:'¿Cuánto es xⁿ ÷ xⁿ para cualquier x≠0?',a:'1',opts:_i4gshuf(['1','0','x','xⁿ']),mc:true,ste:'x^(n−n)=x⁰=1.'},
   ]);
 }
-_SKILL_META['i1a_ex1_b3']={ico:'📐',lbl:'División de potencias de igual base',qCount:4,gen:_genI1A_EX1_B3,plantillas:['Cociente de bases positivas','Cociente de bases negativas','Cociente de bases mixtas','Suma o resta de divisiones','Razonamiento']};
+_SKILL_META['i1a_ex1_b3a']={ico:'📐',lbl:'División de potencias de igual base',qCount:4,gen:_genI1A_EX1_B3A,plantillas:['División básica de igual base','División con coeficientes','División con dos variables','Suma de divisiones','Ecuaciones y casos especiales']};
 
-function _genI1A_EX1_B4(){
+function _genI1A_EX1_B3B(){
   return _i4gpick([
-    // Plantilla 1: PP con dos variables
-    {_id:1,q:'Calcula: (a²b³)³',a:'a⁶b⁹',opts:_i4gshuf(['a⁶b⁹','a⁵b⁶','a⁸b¹²','3a²b³']),mc:true,ste:'a^(2·3)·b^(3·3)=a⁶b⁹.'},
-    {_id:2,q:'Calcula: (a³b²)²',a:'a⁶b⁴',opts:_i4gshuf(['a⁶b⁴','a⁵b⁴','a⁶b²','3a⁶b⁴']),mc:true,ste:'a^(3·2)·b^(2·2)=a⁶b⁴.'},
-    {_id:3,q:'Calcula: (5a²)³',a:'125a⁶',opts:_i4gshuf(['125a⁶','15a⁶','125a⁵','25a⁶']),mc:true,ste:'5³·a^(2·3)=125a⁶.'},
-    {_id:4,q:'Calcula: (2ab)⁴',a:'16a⁴b⁴',opts:_i4gshuf(['16a⁴b⁴','8a⁴b⁴','16a⁴b','2a⁴b⁴']),mc:true,ste:'2⁴·a⁴·b⁴=16a⁴b⁴.'},
-    // Plantilla 2: Potencias encadenadas
-    {_id:5,q:'Efectúa: [(x³)²]²',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','x⁹','x⁶']),mc:true,ste:'x^(3·2·2)=x¹².'},
-    {_id:6,q:'Simplifica: [(a³)²]³',a:'a¹⁸',opts:_i4gshuf(['a¹⁸','a⁸','a⁶','a²⁴']),mc:true,ste:'(a⁶)³=a¹⁸.'},
-    {_id:7,q:'Simplifica: ((x²)³)²',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','x¹⁸','x²⁴']),mc:true,ste:'(x⁶)²=x¹².'},
-    {_id:8,q:'Simplifica: [(x³)²]⁴',a:'x²⁴',opts:_i4gshuf(['x²⁴','x⁹','x¹²','x⁶']),mc:true,ste:'(x⁶)⁴=x²⁴.'},
-    // Plantilla 3: PP con multiplicación
-    {_id:9,q:'Calcula: (x²)³ · (x⁴)²',a:'x¹⁴',opts:_i4gshuf(['x¹⁴','x²⁴','x¹²','x¹⁰']),mc:true,ste:'x⁶·x⁸=x¹⁴.'},
-    {_id:10,q:'Calcula: (b²)⁵ · (b³)²',a:'b¹⁶',opts:_i4gshuf(['b¹⁶','b¹²','b²⁴','b¹⁰']),mc:true,ste:'b¹⁰·b⁶=b¹⁶.'},
-    {_id:11,q:'Calcula: (3x²)³ · (x²)²',a:'27x¹⁰',opts:_i4gshuf(['27x¹⁰','9x¹⁰','27x¹²','3x¹⁰']),mc:true,ste:'27x⁶·x⁴=27x¹⁰.'},
-    {_id:12,q:'Calcula: (4x³)² · (x²)³',a:'16x¹²',opts:_i4gshuf(['16x¹²','16x⁶','4x¹²','8x¹²']),mc:true,ste:'16x⁶·x⁶=16x¹².'},
+    // Plantilla 1: Potencia de potencia básica
+    {_id:1,q:'Efectúa: (x³)⁴',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','4x³','x⁸¹']),mc:true,ste:'Potencia de potencia: se multiplican. 3×4=12.'},
+    {_id:2,q:'Simplifica: (2x)³',a:'8x³',opts:_i4gshuf(['8x³','6x³','2x³','8x']),mc:true,ste:'2³·x³=8x³.'},
+    {_id:3,q:'Para calcular (xᵃ)ᵇ, los exponentes se...',a:'Multiplican',opts:_i4gshuf(['Multiplican','Suman','Restan','Dividen']),mc:true,ste:'Ley de la potencia de potencia: (xᵃ)ᵇ=xᵃˣᵇ.'},
+    {_id:4,q:'¿Cuál de estos resultados es correcto?',a:'(x⁴)³ = x¹²',opts:_i4gshuf(['(x⁴)³ = x¹²','(x⁴)³ = x⁷','(x⁴)³ = x⁶⁴','(x⁴)³ = 4x³']),mc:true,ste:'(x⁴)³=x^(4×3)=x¹².'},
+    // Plantilla 2: PP con dos variables y coeficientes
+    {_id:5,q:'Calcula: (a²b³)³',a:'a⁶b⁹',opts:_i4gshuf(['a⁶b⁹','a⁵b⁶','a⁸b¹²','3a²b³']),mc:true,ste:'a^(2·3)·b^(3·3)=a⁶b⁹.'},
+    {_id:6,q:'Calcula: (a³b²)²',a:'a⁶b⁴',opts:_i4gshuf(['a⁶b⁴','a⁵b⁴','a⁶b²','3a⁶b⁴']),mc:true,ste:'a^(3·2)·b^(2·2)=a⁶b⁴.'},
+    {_id:7,q:'Calcula: (5a²)³',a:'125a⁶',opts:_i4gshuf(['125a⁶','15a⁶','125a⁵','25a⁶']),mc:true,ste:'5³·a^(2·3)=125a⁶.'},
+    {_id:8,q:'Calcula: (2ab)⁴',a:'16a⁴b⁴',opts:_i4gshuf(['16a⁴b⁴','8a⁴b⁴','16a⁴b','2a⁴b⁴']),mc:true,ste:'2⁴·a⁴·b⁴=16a⁴b⁴.'},
+    // Plantilla 3: Potencias encadenadas
+    {_id:9,q:'Efectúa: [(x³)²]²',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','x⁹','x⁶']),mc:true,ste:'x^(3·2·2)=x¹².'},
+    {_id:10,q:'Simplifica: [(a³)²]³',a:'a¹⁸',opts:_i4gshuf(['a¹⁸','a⁸','a⁶','a²⁴']),mc:true,ste:'(a⁶)³=a¹⁸.'},
+    {_id:11,q:'Simplifica: ((x²)³)²',a:'x¹²',opts:_i4gshuf(['x¹²','x⁷','x¹⁸','x²⁴']),mc:true,ste:'(x⁶)²=x¹².'},
+    {_id:12,q:'¿A qué es igual (x·y)ⁿ?',a:'xⁿ·yⁿ',opts:_i4gshuf(['xⁿ·yⁿ','x·yⁿ','xⁿ+yⁿ','(xy)·n']),mc:true,ste:'El exponente se distribuye sobre el producto: (xy)ⁿ=xⁿyⁿ.'},
     // Plantilla 4: PP con división
     {_id:13,q:'Efectúa: (x²)⁵ ÷ x³',a:'x⁷',opts:_i4gshuf(['x⁷','x¹⁰','x¹³','x³']),mc:true,ste:'(x²)⁵=x¹⁰. x¹⁰÷x³=x⁷.'},
     {_id:14,q:'Simplifica: (x⁴)³ ÷ x⁶',a:'x⁶',opts:_i4gshuf(['x⁶','x²','x¹²','x⁴']),mc:true,ste:'x¹²÷x⁶=x⁶.'},
     {_id:15,q:'Simplifica: (3x²)⁴ ÷ 9x³',a:'9x⁵',opts:_i4gshuf(['9x⁵','3x⁵','27x⁵','x⁵']),mc:true,ste:'81x⁸÷9x³=9x⁵.'},
     {_id:16,q:'Efectúa: (x³)⁴ ÷ (x²)³',a:'x⁶',opts:_i4gshuf(['x⁶','x¹²','x²','x¹⁸']),mc:true,ste:'x¹²÷x⁶=x⁶.'},
-    // Plantilla 5: Razonamiento
-    {_id:17,q:'¿Qué ocurre con cada exponente al calcular (xᵃyᵇ)ⁿ?',a:'Cada uno se multiplica por n',opts:_i4gshuf(['Cada uno se multiplica por n','Se suman los exponentes','Solo x se eleva a n','Se multiplica x·y primero']),mc:true,ste:'(xᵃyᵇ)ⁿ=xᵃⁿ·yᵇⁿ. Cada exponente se multiplica por n.'},
-    {_id:18,q:'Para calcular [(x²)³]⁴, los exponentes se…',a:'Multiplican: 2·3·4 = 24',opts:_i4gshuf(['Multiplican: 2·3·4 = 24','Suman: 2+3+4 = 9','Solo aplica la última potencia','Multiplican de afuera hacia adentro']),mc:true,ste:'Se aplica PP repetidamente: (x⁶)⁴=x²⁴. Los exponentes se multiplican todos.'},
-    {_id:19,q:'Al calcular (xᵃ)ᵇ · (xᶜ)ᵈ, el exponente resultante es…',a:'a·b + c·d',opts:_i4gshuf(['a·b + c·d','a+b + c+d','a·b·c·d','(a+b)·(c+d)']),mc:true,ste:'(xᵃ)ᵇ=xᵃᵇ y (xᶜ)ᵈ=xᶜᵈ. Al multiplicar bases iguales: x^(ab+cd).'},
-    {_id:20,q:'Al calcular (xᵃ)ᵇ ÷ xᶜ, el exponente resultante es…',a:'a·b − c',opts:_i4gshuf(['a·b − c','a+b − c','a·b·c','a·b ÷ c']),mc:true,ste:'(xᵃ)ᵇ=xᵃᵇ. Al dividir bases iguales: x^(ab−c).'},
+    // Plantilla 5: Ecuaciones con PP
+    {_id:17,q:'(x³)<sup>?</sup> = x¹⁵. ¿Cuál es el exponente que falta?',a:'5',opts:_i4gshuf(['5','12','3','18']),mc:true,ste:'Potencia de potencia: 3×?=15 → ?=5.'},
+    {_id:18,q:'¿Para qué valor de n se cumple (x²)ⁿ = x¹⁰?',a:'5',opts:_i4gshuf(['5','8','20','12']),mc:true,ste:'2n=10 → n=5.'},
+    {_id:19,q:'Si (xᵃ)³ = x¹², ¿cuánto vale a?',a:'4',opts:_i4gshuf(['4','9','36','3']),mc:true,ste:'3a=12 → a=4.'},
+    {_id:20,q:'Calcula: (4x³)² · (x²)³',a:'16x¹²',opts:_i4gshuf(['16x¹²','16x⁶','4x¹²','8x¹²']),mc:true,ste:'(4x³)²=16x⁶. (x²)³=x⁶. 16x⁶·x⁶=16x¹².'},
   ]);
 }
-_SKILL_META['i1a_ex1_b4']={ico:'📐',lbl:'Potencia de una potencia',qCount:4,gen:_genI1A_EX1_B4,plantillas:['PP con dos variables','Potencias encadenadas','PP con multiplicación','PP con división','Razonamiento']};
+_SKILL_META['i1a_ex1_b3b']={ico:'📐',lbl:'Potencia de una potencia',qCount:4,gen:_genI1A_EX1_B3B,plantillas:['Potencia de potencia básica','PP con dos variables','Potencias encadenadas','PP con división','Ecuaciones con PP']};
 
-function _genI1A_EX1_B5(){
+function _genI1A_EX1_B4(){
   return _i4gpick([
-    // Plantilla 1: Potencia de un producto
-    {_id:1,q:'Simplifica: (xy)³',a:'x³y³',opts:_i4gshuf(['x³y³','x³+y³','xy³','3xy']),mc:true,ste:'El exponente se distribuye en el producto: (xy)³=x³·y³.'},
-    {_id:2,q:'Calcula: (2x)⁴',a:'16x⁴',opts:_i4gshuf(['16x⁴','8x⁴','2x⁴','16x']),mc:true,ste:'(2x)⁴=2⁴·x⁴=16x⁴.'},
-    {_id:3,q:'Simplifica: (3ab)²',a:'9a²b²',opts:_i4gshuf(['9a²b²','6a²b²','3a²b²','9ab']),mc:true,ste:'3²·a²·b²=9a²b².'},
-    {_id:4,q:'Calcula: (−2x)³',a:'−8x³',opts:_i4gshuf(['−8x³','8x³','−6x³','−2x³']),mc:true,ste:'(−2)³·x³=−8x³. Base negativa con exponente impar → resultado negativo.'},
-    // Plantilla 2: Potencia de un cociente
-    {_id:5,q:'Simplifica: (x/y)³',a:'x³/y³',opts:_i4gshuf(['x³/y³','x/y³','x³/y','x³+y³']),mc:true,ste:'El exponente se distribuye en el cociente: (x/y)³=x³/y³.'},
-    {_id:6,q:'Calcula: (x/2)⁴',a:'x⁴/16',opts:_i4gshuf(['x⁴/16','x⁴/8','x/16','x⁴/2']),mc:true,ste:'x⁴/2⁴=x⁴/16.'},
-    {_id:7,q:'Simplifica: (a/b)²',a:'a²/b²',opts:_i4gshuf(['a²/b²','a/b²','a²/b','(a/b)²']),mc:true,ste:'a²/b².'},
-    {_id:8,q:'Calcula: (2x/3y)²',a:'4x²/9y²',opts:_i4gshuf(['4x²/9y²','2x²/3y²','4x/9y','4x²/3y²']),mc:true,ste:'2²x²/3²y²=4x²/9y².'},
-    // Plantilla 3: Potencia de una suma (no distribuye)
-    {_id:9,q:'¿Es correcto que (a+b)² = a²+b²?',a:'No, es incorrecto',opts:_i4gshuf(['No, es incorrecto','Sí, es correcto','Solo si a=b','Solo si a>0']),mc:true,ste:'(a+b)²=a²+2ab+b². El término 2ab hace que NO sean iguales.'},
-    {_id:10,q:'Calcula (2+3)². ¿Es igual que 2²+3²?',a:'No: 25 ≠ 13',opts:_i4gshuf(['No: 25 ≠ 13','Sí: ambos dan 25','No: 25 ≠ 26','Sí: ambos dan 13']),mc:true,ste:'(2+3)²=5²=25. Pero 2²+3²=4+9=13. Son distintos.'},
-    {_id:11,q:'¿Cuánto vale realmente (x+y)²?',a:'x²+2xy+y²',opts:_i4gshuf(['x²+2xy+y²','x²+y²','2x+2y','x²−y²']),mc:true,ste:'(x+y)²=x²+2xy+y². El exponente NO se distribuye en una suma.'},
-    {_id:12,q:'¿Es verdad que (1+4)² = 1²+4²?',a:'Falso: 25 ≠ 17',opts:_i4gshuf(['Falso: 25 ≠ 17','Verdad: ambos dan 25','Falso: 25 ≠ 16','Verdad: ambos dan 17']),mc:true,ste:'(1+4)²=5²=25. 1²+4²=1+16=17. Falso.'},
-    // Plantilla 4: Potencia de una resta (no distribuye)
-    {_id:13,q:'¿Es correcto que (a−b)² = a²−b²?',a:'No, es incorrecto',opts:_i4gshuf(['No, es incorrecto','Sí, es correcto','Solo si a>b','Solo si b=0']),mc:true,ste:'(a−b)²=a²−2ab+b². El término −2ab hace que NO sean iguales.'},
-    {_id:14,q:'Calcula (5−2)². ¿Es igual que 5²−2²?',a:'No: 9 ≠ 21',opts:_i4gshuf(['No: 9 ≠ 21','Sí: ambos dan 9','No: 9 ≠ 3','Sí: ambos dan 21']),mc:true,ste:'(5−2)²=3²=9. Pero 5²−2²=25−4=21. Son distintos.'},
-    {_id:15,q:'¿Cuánto vale realmente (x−y)²?',a:'x²−2xy+y²',opts:_i4gshuf(['x²−2xy+y²','x²−y²','x²+y²','2x−2y']),mc:true,ste:'(x−y)²=x²−2xy+y². El exponente NO se distribuye en una resta.'},
-    {_id:16,q:'¿Es verdad que (4−1)² = 4²−1²?',a:'Falso: 9 ≠ 15',opts:_i4gshuf(['Falso: 9 ≠ 15','Verdad: ambos dan 9','Falso: 9 ≠ 3','Verdad: ambos dan 15']),mc:true,ste:'(4−1)²=3²=9. 4²−1²=16−1=15. Falso.'},
-    // Plantilla 5: Razonamiento
-    {_id:17,q:'¿Cuál de estas igualdades ES correcta?',a:'(xy)³ = x³y³',opts:_i4gshuf(['(xy)³ = x³y³','(x+y)³ = x³+y³','(x−y)² = x²−y²','(x/y)² = x/y²']),mc:true,ste:'Solo en productos y cocientes el exponente se puede distribuir.'},
-    {_id:18,q:'¿Cuál de estas igualdades NO es correcta?',a:'(a+b)² = a²+b²',opts:_i4gshuf(['(a+b)² = a²+b²','(ab)² = a²b²','(a/b)³ = a³/b³','(2x)² = 4x²']),mc:true,ste:'(a+b)²≠a²+b². El exponente NO se distribuye sobre sumas.'},
-    {_id:19,q:'Si (xy)ⁿ = x⁵y⁵, ¿cuánto vale n?',a:'5',opts:_i4gshuf(['5','2','10','1']),mc:true,ste:'(xy)ⁿ=xⁿyⁿ. Como el resultado es x⁵y⁵, n=5.'},
-    {_id:20,q:'¿Cuándo se puede distribuir un exponente sobre los factores?',a:'Solo en productos y cocientes',opts:_i4gshuf(['Solo en productos y cocientes','Siempre','Solo en sumas y restas','Nunca']),mc:true,ste:'(xy)ⁿ=xⁿyⁿ y (x/y)ⁿ=xⁿ/yⁿ. En sumas y restas NO: (x+y)ⁿ≠xⁿ+yⁿ.'},
-  ]);
-}
-_SKILL_META['i1a_ex1_b5']={ico:'📐',lbl:'Propiedad distributiva de la potencia',qCount:4,gen:_genI1A_EX1_B5,plantillas:['Potencia de un producto','Potencia de un cociente','Potencia de una suma','Potencia de una resta','Razonamiento']};
-
-function _genI1A_EX1_B6(){
-  return _i4gpick([
-    // Plantilla 1: Simplificación de cocientes
+    // Plantilla 1: Cocientes aⁿ⁺ᵏ÷aⁿ
     {_id:1,q:'Simplifica: 7ⁿ⁺² ÷ 7ⁿ⁺¹',a:'7',opts:_i4gshuf(['7','49','1','7²']),mc:true,ste:'Misma base: se restan exponentes. (n+2)−(n+1) = 1. Resultado: 7¹ = 7.'},
     {_id:2,q:'Calcula: N = 3ⁿ⁺² ÷ 3ⁿ',a:'9',opts:_i4gshuf(['9','3','27','81']),mc:true,ste:'3^(n+2−n)=3²=9.'},
     {_id:3,q:'Halla: Q = 5ⁿ⁺³ ÷ 5ⁿ⁺¹',a:'25',opts:_i4gshuf(['25','5','125','1']),mc:true,ste:'5^(n+3−n−1)=5²=25.'},
     {_id:4,q:'¿Cuánto es 2ⁿ⁺⁴ ÷ 2ⁿ?',a:'16',opts:_i4gshuf(['16','8','32','4']),mc:true,ste:'2^(n+4−n)=2⁴=16.'},
-    // Plantilla 2: Simplificación de productos
-    {_id:5,q:'Simplifica: 3ⁿ · 3ⁿ⁺¹',a:'3²ⁿ⁺¹',opts:_i4gshuf(['3²ⁿ⁺¹','3²ⁿ','3ⁿ⁺¹','9ⁿ⁺¹']),mc:true,ste:'Misma base: se suman exponentes. n+(n+1)=2n+1. Resultado: 3²ⁿ⁺¹.'},
-    {_id:6,q:'Simplifica: 2ⁿ · 4 · 2ⁿ⁺¹',a:'2²ⁿ⁺³',opts:_i4gshuf(['2²ⁿ⁺³','2²ⁿ⁺²','2²ⁿ⁺⁴','4²ⁿ⁺¹']),mc:true,ste:'4=2². Sumando: n+2+(n+1)=2n+3. Resultado: 2²ⁿ⁺³.'},
-    {_id:7,q:'Simplifica: xⁿ · x³ · xⁿ⁺²',a:'x²ⁿ⁺⁵',opts:_i4gshuf(['x²ⁿ⁺⁵','x²ⁿ⁺³','x³ⁿ⁺⁵','xⁿ⁺⁵']),mc:true,ste:'Sumando exponentes: n+3+(n+2)=2n+5. Resultado: x²ⁿ⁺⁵.'},
-    {_id:8,q:'Simplifica: 2ⁿ · 2 · 2ⁿ⁺³',a:'2²ⁿ⁺⁴',opts:_i4gshuf(['2²ⁿ⁺⁴','2²ⁿ⁺³','2²ⁿ⁺⁵','2²ⁿ⁺⁶']),mc:true,ste:'Sumando: n+1+(n+3)=2n+4. Resultado: 2²ⁿ⁺⁴.'},
-    // Plantilla 3: Sustitución
-    {_id:9,q:'Si xⁿ=3, halla x³ⁿ − x²ⁿ',a:'18',opts:_i4gshuf(['18','20','16','24']),mc:true,ste:'x³ⁿ=(xⁿ)³=27. x²ⁿ=(xⁿ)²=9. 27−9=18.'},
-    {_id:10,q:'Si aⁿ=2, halla a⁴ⁿ + a³ⁿ',a:'24',opts:_i4gshuf(['24','20','18','32']),mc:true,ste:'a⁴ⁿ=(aⁿ)⁴=16. a³ⁿ=(aⁿ)³=8. 16+8=24.'},
-    {_id:11,q:'Si bⁿ=3, halla b²ⁿ · b³ⁿ',a:'243',opts:_i4gshuf(['243','81','729','27']),mc:true,ste:'b²ⁿ=(bⁿ)²=9. b³ⁿ=(bⁿ)³=27. 9·27=243.'},
-    {_id:12,q:'Si aⁿ=2, halla a⁴ⁿ ÷ aⁿ',a:'8',opts:_i4gshuf(['8','4','16','2']),mc:true,ste:'a⁴ⁿ=(aⁿ)⁴=16. 16÷2=8.'},
-    // Plantilla 4: Potencia de potencia
-    {_id:13,q:'Si 2ⁿ=a, halla (2⁴)ⁿ ÷ (2²)ⁿ',a:'a²',opts:_i4gshuf(['a²','a³','a⁸','a⁶']),mc:true,ste:'(2⁴)ⁿ=a⁴. (2²)ⁿ=a². a⁴÷a²=a².'},
-    {_id:14,q:'Si 3ⁿ=m, halla (3²)ⁿ + (3³)ⁿ',a:'m²+m³',opts:_i4gshuf(['m²+m³','m⁵','2m⁵','m²·m³']),mc:true,ste:'(3²)ⁿ=m². (3³)ⁿ=m³. Resultado: m²+m³.'},
-    {_id:15,q:'Si 3ⁿ=a, halla (3⁴)ⁿ − (3²)ⁿ',a:'a⁴−a²',opts:_i4gshuf(['a⁴−a²','a²','2a²','a⁶']),mc:true,ste:'(3⁴)ⁿ=a⁴. (3²)ⁿ=a². Resultado: a⁴−a².'},
-    {_id:16,q:'Si 2ⁿ=m, halla (2³)ⁿ · (2²)ⁿ',a:'m⁵',opts:_i4gshuf(['m⁵','m⁶','2m⁵','5m']),mc:true,ste:'(2³)ⁿ=m³. (2²)ⁿ=m². m³·m²=m⁵.'},
-    // Plantilla 5: Conversión de base
-    {_id:17,q:'Si 2ⁿ=5, ¿cuánto es 4ⁿ?',a:'25',opts:_i4gshuf(['25','10','20','50']),mc:true,ste:'4ⁿ=(2²)ⁿ=(2ⁿ)²=5²=25.'},
-    {_id:18,q:'Si 7ⁿ=3, ¿cuánto es 49ⁿ?',a:'9',opts:_i4gshuf(['9','6','3','21']),mc:true,ste:'49ⁿ=(7²)ⁿ=(7ⁿ)²=3²=9.'},
-    {_id:19,q:'Si 3ⁿ=4, ¿cuánto es 9ⁿ?',a:'16',opts:_i4gshuf(['16','8','12','64']),mc:true,ste:'9ⁿ=(3²)ⁿ=(3ⁿ)²=4²=16.'},
-    {_id:20,q:'Si 5ⁿ=3, ¿cuánto es 25ⁿ?',a:'9',opts:_i4gshuf(['9','6','15','27']),mc:true,ste:'25ⁿ=(5²)ⁿ=(5ⁿ)²=3²=9.'},
+    // Plantilla 2: Cocientes con diferencia de exp ≥2
+    {_id:5,q:'Efectúa: P = 2ⁿ⁺¹ ÷ 2ⁿ⁻¹',a:'4',opts:_i4gshuf(['4','2','8','1']),mc:true,ste:'Misma base: (n+1)−(n−1) = 2. Resultado: 2² = 4.'},
+    {_id:6,q:'Simplifica: 6ⁿ⁺¹ ÷ 6ⁿ⁻¹',a:'36',opts:_i4gshuf(['36','6','216','1']),mc:true,ste:'6^(n+1−n+1)=6²=36.'},
+    {_id:7,q:'¿Cuánto es aⁿ⁺¹ ÷ aⁿ para cualquier valor de n?',a:'a',opts:_i4gshuf(['a','1','aⁿ','a²']),mc:true,ste:'aⁿ⁺¹÷aⁿ = a^(n+1−n) = a¹ = a.'},
+    {_id:8,q:'Calcula: N = 2¹⁰·3⁸ ÷ (3⁸·2⁹)',a:'2',opts:_i4gshuf(['2','4','6','8']),mc:true,ste:'2¹⁰·3⁸ ÷ (3⁸·2⁹) = 2^(10−9)·3^(8−8) = 2¹·3⁰ = 2·1 = 2.'},
+    // Plantilla 3: Sustitución y potencia de potencia
+    {_id:9,q:'Si xⁿ=3, reduce: x<sup>3n</sup>−100',a:'−73',opts:_i4gshuf(['−73','−72','−74','−75']),mc:true,ste:'x^(3n) = (xⁿ)³ = 27. 27−100 = −73.'},
+    {_id:10,q:'Si m=3, calcula: (2ᵐ)ᵐ',a:'512',opts:_i4gshuf(['512','64','256','128']),mc:true,ste:'(2ᵐ)ᵐ = (2³)³ = 8³ = 512.'},
+    {_id:11,q:'Si m=2, calcula: (3ᵐ)ᵐ',a:'81',opts:_i4gshuf(['81','9','27','18']),mc:true,ste:'(3²)²=9²=81.'},
+    {_id:12,q:'Si aⁿ = k, ¿cuánto vale a²ⁿ?',a:'k²',opts:_i4gshuf(['k²','2k','k+k','kⁿ']),mc:true,ste:'a²ⁿ = (aⁿ)² = k².'},
+    // Plantilla 4: Conversión de base
+    {_id:13,q:'Si 2ⁿ=5, calcula 4ⁿ',a:'25',opts:_i4gshuf(['25','10','20','50']),mc:true,ste:'4ⁿ=(2²)ⁿ=(2ⁿ)²=5²=25.'},
+    {_id:14,q:'Si 2ⁿ = 8, ¿cuánto es 4ⁿ?',a:'64',opts:_i4gshuf(['64','16','24','32']),mc:true,ste:'4ⁿ=(2²)ⁿ=(2ⁿ)²=8²=64.'},
+    {_id:15,q:'Si aⁿ = b, ¿cuánto vale a³ⁿ?',a:'b³',opts:_i4gshuf(['b³','3b','bⁿ','b+b+b']),mc:true,ste:'a³ⁿ=(aⁿ)³=b³.'},
+    {_id:16,q:'¿Para qué valor de n se cumple que 3ⁿ = 81?',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'3¹=3, 3²=9, 3³=27, 3⁴=81. Por tanto n=4.'},
+    // Plantilla 5: Expresiones complejas
+    {_id:17,q:'Simplifica: 5<sup>n(n+3)</sup> ÷ 5<sup>3n</sup>; n∈ℕ → exponente final de 5',a:'n²',opts:_i4gshuf(['n²','5n','4n','2n']),mc:true,ste:'n(n+3)−3n = n²+3n−3n = n².'},
+    {_id:18,q:'Calcula: M = 2⁸·2¹⁰·2⁷ ÷ (2¹²)³',a:'2⁻¹¹',opts:_i4gshuf(['2⁻¹¹','2⁻⁹','1/2','2¹¹']),mc:true,ste:'2⁸·2¹⁰·2⁷ = 2²⁵. (2¹²)³ = 2³⁶. 2²⁵ ÷ 2³⁶ = 2⁻¹¹.'},
+    {_id:19,q:'Halla: A = [(6¹)³]⁰ + [(5³)⁰]⁵',a:'2',opts:_i4gshuf(['2','11','125','1']),mc:true,ste:'[6³]⁰=1. [(1)]⁵=1. 1+1=2.'},
+    {_id:20,q:'Calcula: A = [(3²)⁰]⁵ + [(2⁰)³]²',a:'2',opts:_i4gshuf(['2','1','0','3']),mc:true,ste:'[1]⁵+[1]²=1+1=2.'},
   ]);
 }
-_SKILL_META['i1a_ex1_b6']={ico:'📐',lbl:'Expresiones combinadas con múltiples leyes',qCount:4,gen:_genI1A_EX1_B6,plantillas:['Simplificación de cocientes','Simplificación de productos','Sustitución','Potencia de potencia','Conversión de base']};
+_SKILL_META['i1a_ex1_b4']={ico:'📐',lbl:'Expresiones combinadas con múltiples leyes',qCount:4,gen:_genI1A_EX1_B4,plantillas:['Cocientes aⁿ⁺ᵏ÷aⁿ','Cocientes con diferencia ≥2','Sustitución y potencia de potencia','Conversión de base','Expresiones complejas']};
 
-function _genI1A_EX1_BQ2(){return _bqSrcPick(['i1a_ex1_b4','i1a_ex1_b5','i1a_ex1_b6'],[_genI1A_EX1_B4,_genI1A_EX1_B5,_genI1A_EX1_B6]);}
-_SKILL_META['i1a_ex1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Leyes de Exponentes I',qCount:15,gen:_genI1A_EX1_BQ2,quiz:true,srcKeys:['i1a_ex1_b4','i1a_ex1_b5','i1a_ex1_b6']};
+function _genI1A_EX1_BQ2(){return _bqSrcPick(['i1a_ex1_b3b','i1a_ex1_b4'],[_genI1A_EX1_B3B,_genI1A_EX1_B4]);}
+_SKILL_META['i1a_ex1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Leyes de Exponentes I',qCount:10,gen:_genI1A_EX1_BQ2,quiz:true,srcKeys:['i1a_ex1_b3b','i1a_ex1_b4']};
 
-function _genI1A_EX1_B7(){
+function _genI1A_EX1_B5(){
   return _i4gpick([
-    // P1: Suma de cadenas anidadas
-    {_id:1,q:'Calcula: 6<sup>3<sup>4⁰</sup></sup> + 7<sup>2¹</sup>',a:'265',opts:_i4gshuf(['265','216','285','245']),mc:true,ste:'4⁰=1,3¹=3,6³=216. 2¹=2,7²=49. 216+49=265.'},
-    {_id:2,q:'Calcula: 10<sup>2<sup>3⁰</sup></sup> + 3<sup>5¹</sup>',a:'343',opts:_i4gshuf(['343','350','300','243']),mc:true,ste:'3⁰=1,2¹=2,10²=100. 5¹=5,3⁵=243. 100+243=343.'},
-    {_id:3,q:'Calcula: 8<sup>2<sup>5⁰</sup></sup> + 5<sup>3¹</sup>',a:'189',opts:_i4gshuf(['189','196','164','225']),mc:true,ste:'5⁰=1,2¹=2,8²=64. 3¹=3,5³=125. 64+125=189.'},
-    {_id:4,q:'Calcula: 9<sup>2<sup>3⁰</sup></sup> + 2<sup>2³</sup>',a:'337',opts:_i4gshuf(['337','350','325','256']),mc:true,ste:'3⁰=1,2¹=2,9²=81. 2³=8,2⁸=256. 81+256=337.'},
-    // P2: Resta de cadenas anidadas
-    {_id:5,q:'Calcula: 3<sup>6<sup>1⁰</sup></sup> − 6<sup>3<sup>4⁰</sup></sup>',a:'513',opts:_i4gshuf(['513','524','729','500']),mc:true,ste:'1⁰=1,6¹=6,3⁶=729. 4⁰=1,3¹=3,6³=216. 729−216=513.'},
-    {_id:6,q:'Calcula: 2<sup>3²</sup> − 8<sup>2<sup>4⁰</sup></sup>',a:'448',opts:_i4gshuf(['448','444','576','468']),mc:true,ste:'3²=9,2⁹=512. 4⁰=1,2¹=2,8²=64. 512−64=448.'},
-    {_id:7,q:'Calcula: 5<sup>4<sup>1³</sup></sup> − 4<sup>3<sup>5⁰</sup></sup>',a:'561',opts:_i4gshuf(['561','550','689','625']),mc:true,ste:'1³=1,4¹=4,5⁴=625. 5⁰=1,3¹=3,4³=64. 625−64=561.'},
-    {_id:8,q:'Calcula: 9<sup>3<sup>5⁰</sup></sup> − 7<sup>3<sup>4⁰</sup></sup>',a:'386',opts:_i4gshuf(['386','512','343','400']),mc:true,ste:'5⁰=1,3¹=3,9³=729. 4⁰=1,3¹=3,7³=343. 729−343=386.'},
-    // P3: Multiplicación de cadenas anidadas
-    {_id:9,q:'Calcula: 4<sup>3<sup>5⁰</sup></sup> · 2<sup>2²</sup>',a:'1024',opts:_i4gshuf(['1024','512','2048','256']),mc:true,ste:'5⁰=1,3¹=3,4³=64. 2²=4,2⁴=16. 64·16=1024.'},
-    {_id:10,q:'Calcula: 6<sup>2<sup>3⁰</sup></sup> · 5<sup>2¹</sup>',a:'900',opts:_i4gshuf(['900','800','625','1125']),mc:true,ste:'3⁰=1,2¹=2,6²=36. 2¹=2,5²=25. 36·25=900.'},
-    {_id:11,q:'Calcula: 8<sup>1²</sup> · 10<sup>2<sup>3⁰</sup></sup>',a:'800',opts:_i4gshuf(['800','700','1000','900']),mc:true,ste:'1²=1,8¹=8. 3⁰=1,2¹=2,10²=100. 8·100=800.'},
-    {_id:12,q:'Calcula: 3<sup>2¹</sup> · 7<sup>2¹</sup>',a:'441',opts:_i4gshuf(['441','490','250','432']),mc:true,ste:'2¹=2,3²=9. 2¹=2,7²=49. 9·49=441.'},
-    // P4: División de cadenas anidadas
-    {_id:13,q:'Calcula: 9<sup>3<sup>5⁰</sup></sup> ÷ 3<sup>2²</sup>',a:'9',opts:_i4gshuf(['9','27','3','81']),mc:true,ste:'5⁰=1,3¹=3,9³=729. 2²=4,3⁴=81. 729÷81=9.'},
-    {_id:14,q:'Calcula: 8<sup>3<sup>4⁰</sup></sup> ÷ 4<sup>3¹</sup>',a:'8',opts:_i4gshuf(['8','4','64','16']),mc:true,ste:'4⁰=1,3¹=3,8³=512. 3¹=3,4³=64. 512÷64=8.'},
-    {_id:15,q:'Calcula: 10<sup>4<sup>1²</sup></sup> ÷ 10<sup>2¹</sup>',a:'100',opts:_i4gshuf(['100','1000','10','10000']),mc:true,ste:'1²=1,4¹=4,10⁴=10000. 2¹=2,10²=100. 10000÷100=100.'},
-    {_id:16,q:'Calcula: 6<sup>3<sup>4⁰</sup></sup> ÷ 2<sup>2¹</sup>',a:'54',opts:_i4gshuf(['54','72','108','27']),mc:true,ste:'4⁰=1,3¹=3,6³=216. 2¹=2,2²=4. 216÷4=54.'},
-    // P5: Razonamiento
+    // Plantilla 1: Cadena de exponentes anidados (4 qx)
+    {_id:1,q:'Calcula: E = 5<sup>2<sup>3⁰</sup></sup>',a:'25',opts:_i4gshuf(['25','5','125','15']),mc:true,ste:'Evalúa de adentro hacia afuera: 3⁰=1, luego 2¹=2, luego 5²=25.'},
+    {_id:2,q:'Calcula: F = 7<sup>3<sup>4⁰</sup></sup>',a:'343',opts:_i4gshuf(['343','7','49','2401']),mc:true,ste:'4⁰=1, luego 3¹=3, luego 7³=343.'},
+    {_id:3,q:'Calcula: G = 2<sup>3<sup>5⁰</sup></sup>',a:'8',opts:_i4gshuf(['8','32','6','16']),mc:true,ste:'5⁰=1, luego 3¹=3, luego 2³=8.'},
+    {_id:4,q:'Calcula: 3<sup>2<sup>6⁰</sup></sup>',a:'9',opts:_i4gshuf(['9','6','8','27']),mc:true,ste:'6⁰=1, luego 2¹=2, luego 3²=9.'},
+    // Plantilla 2: Conversión a dos bases primas y simplificación (4 qx)
+    {_id:5,q:'Calcula: N = (4³ · 9²) ÷ (2⁵ · 3³)',a:'6',opts:_i4gshuf(['6','3','12','9']),mc:true,ste:'4³=(2²)³=2⁶, 9²=(3²)²=3⁴. N=2^(6−5)·3^(4−3)=2·3=6.'},
+    {_id:6,q:'Calcula: M = (16 · 27) ÷ (2² · 3³)',a:'4',opts:_i4gshuf(['4','6','12','2']),mc:true,ste:'16=2⁴, 27=3³. M=2^(4−2)·3^(3−3)=2²·1=4.'},
+    {_id:7,q:'Calcula: P = (16 · 81) ÷ (2² · 3³)',a:'12',opts:_i4gshuf(['12','6','9','18']),mc:true,ste:'16=2⁴, 81=3⁴. P=2^(4−2)·3^(4−3)=4·3=12.'},
+    {_id:8,q:'Calcula: R = (8 · 81) ÷ (2² · 3²)',a:'18',opts:_i4gshuf(['18','6','9','12']),mc:true,ste:'8=2³, 81=3⁴. R=2^(3−2)·3^(4−2)=2·9=18.'},
+    // Plantilla 3: Conversión de bases compuestas (16, 8, 27, 25…) (4 qx)
+    {_id:9,q:'Calcula: Q = 2¹⁶ · 16² ÷ 8⁸',a:'1',opts:_i4gshuf(['1','2','4','8']),mc:true,ste:'16²=(2⁴)²=2⁸, 8⁸=(2³)⁸=2²⁴. Q=2^(16+8)/2^24=1.'},
+    {_id:10,q:'Calcula: R = 7⁴ · 343 ÷ 7⁵',a:'49',opts:_i4gshuf(['49','7','343','1']),mc:true,ste:'343=7³. R=7^(4+3)/7^5=7^7/7^5=7²=49.'},
+    {_id:11,q:'Calcula: S = 3⁶ · 27 ÷ 9³',a:'27',opts:_i4gshuf(['27','9','3','81']),mc:true,ste:'27=3³, 9³=(3²)³=3⁶. S=3^(6+3)/3^6=3^9/3^6=3³=27.'},
+    {_id:12,q:'Calcula: T = 5⁶ · 25 ÷ 5⁴',a:'625',opts:_i4gshuf(['625','25','125','5']),mc:true,ste:'25=5². T=5^(6+2)/5^4=5^8/5^4=5⁴=625.'},
+    // Plantilla 4: Suma de exponentes en num vs denominador como potencia (4 qx)
+    {_id:13,q:'Calcula: P = 2³ · 2⁴ · 2⁵ ÷ (2³)⁴',a:'1',opts:_i4gshuf(['1','2','4','8']),mc:true,ste:'Num: 2^(3+4+5)=2¹². Den: (2³)⁴=2¹². P=1.'},
+    {_id:14,q:'Calcula: Q = 3² · 3³ · 3⁴ ÷ (3³)³',a:'1',opts:_i4gshuf(['1','3','9','27']),mc:true,ste:'Num: 3^(2+3+4)=3⁹. Den: (3³)³=3⁹. Q=1.'},
+    {_id:15,q:'Calcula: R = 4² · 8 · 2 ÷ (2⁴)²',a:'1',opts:_i4gshuf(['1','2','4','8']),mc:true,ste:'4²=2⁴, 8=2³. Num: 2^(4+3+1)=2⁸. Den: 2⁸. R=1.'},
+    {_id:16,q:'Calcula: S = 5 · 25² ÷ 5³',a:'25',opts:_i4gshuf(['25','5','125','1']),mc:true,ste:'25²=(5²)²=5⁴. S=5^(1+4)/5³=5^5/5³=5²=25.'},
+    // Plantilla 5: Conceptual sobre estrategia de conversión (4 qx)
     {_id:17,q:'Para calcular 7<sup>3<sup>4⁰</sup></sup>, ¿cuál es el primer paso?',a:'Calcular 4⁰=1 desde adentro',opts:_i4gshuf(['Calcular 4⁰=1 desde adentro','Elevar 7 al exponente 3','Multiplicar 3·4=12','Sumar los exponentes']),mc:true,ste:'En una cadena anidada siempre se evalúa el exponente más interno primero.'},
-    {_id:18,q:'¿Son iguales 2<sup>3²</sup> y 2<sup>3¹</sup>?',a:'No: 2⁹=512 y 2³=8',opts:_i4gshuf(['No: 2⁹=512 y 2³=8','Sí, ambos valen 8','Sí, ambos valen 512','Depende del valor de n']),mc:true,ste:'2<sup>3²</sup>: 3²=9, 2⁹=512. 2<sup>3¹</sup>: 3¹=3, 2³=8. Son distintos.'},
-    {_id:19,q:'En 5<sup>2²</sup>, ¿cuál es el exponente final de 5?',a:'4',opts:_i4gshuf(['4','2','8','25']),mc:true,ste:'2²=4. El exponente con que se eleva 5 es 4.'},
-    {_id:20,q:'¿Cuál es mayor: 8<sup>3<sup>4⁰</sup></sup> u 8<sup>2<sup>5⁰</sup></sup>?',a:'8<sup>3<sup>4⁰</sup></sup> = 512',opts:_i4gshuf(['8<sup>3<sup>4⁰</sup></sup> = 512','8<sup>2<sup>5⁰</sup></sup> = 64','Son iguales','No se puede comparar']),mc:true,ste:'4⁰=1,3¹=3,8³=512. 5⁰=1,2¹=2,8²=64. Mayor: 8<sup>3<sup>4⁰</sup></sup>.'},
+    {_id:18,q:'Para simplificar 16 en una expresión con potencias de 2, se escribe como...',a:'2⁴',opts:_i4gshuf(['2⁴','4²','8²','2³']),mc:true,ste:'16=2×2×2×2=2⁴. Convertir a base prima facilita la simplificación.'},
+    {_id:19,q:'Al simplificar (4²·9)/(2³·3²), ¿cuál es el primer paso?',a:'Convertir 4=2² y 9=3²',opts:_i4gshuf(['Convertir 4=2² y 9=3²','Multiplicar 4×9=36','Dividir 4÷2=2','Sumar los exponentes directamente']),mc:true,ste:'Siempre se expresa cada base como potencia de un número primo antes de operar.'},
+    {_id:20,q:'¿Son iguales 2<sup>3²</sup> y (2³)²?',a:'No: 2<sup>3²</sup>=512 y (2³)²=64',opts:_i4gshuf(['No: 2<sup>3²</sup>=512 y (2³)²=64','Sí, ambos valen 64','Sí, ambos valen 512','No: 2<sup>3²</sup>=64 y (2³)²=512']),mc:true,ste:'En 2<sup>3²</sup> primero se calcula 3²=9, luego 2⁹=512. En (2³)² se multiplican exponentes: 2⁶=64. Son distintos.'},
   ]);
 }
-_SKILL_META['i1a_ex1_b7']={ico:'📐',lbl:'Cadena anidada',qCount:4,gen:_genI1A_EX1_B7,plantillas:['Suma de cadenas','Resta de cadenas','Multiplicación de cadenas','División de cadenas','Razonamiento']};
+_SKILL_META['i1a_ex1_b5']={ico:'📐',lbl:'Cadena anidada y conversión a bases primas',qCount:4,gen:_genI1A_EX1_B5,plantillas:['Cadena anidada','Conversión a 2 bases primas','Conversión de bases compuestas','Suma de exponentes vs potencia de potencia','Conceptual']};
 
-function _genI1A_EX1_B8(){
-  return _i4gpick([
-    // P1: División entre conversiones de bases primas
-    {_id:1,q:'Calcula: (4³ · 9²) ÷ (2⁵ · 3³)',a:'6',opts:_i4gshuf(['6','18','12','3']),mc:true,ste:'4³=(2²)³=2⁶, 9²=(3²)²=3⁴. (2⁶·3⁴)÷(2⁵·3³)=2¹·3¹=6.'},
-    {_id:2,q:'Calcula: (8² · 27) ÷ (2³ · 3²)',a:'24',opts:_i4gshuf(['24','12','48','8']),mc:true,ste:'8²=(2³)²=2⁶, 27=3³. (2⁶·3³)÷(2³·3²)=2³·3¹=24.'},
-    {_id:3,q:'Calcula: (16 · 81) ÷ (2² · 3³)',a:'12',opts:_i4gshuf(['12','6','24','36']),mc:true,ste:'16=2⁴, 81=3⁴. (2⁴·3⁴)÷(2²·3³)=2²·3¹=12.'},
-    {_id:4,q:'Calcula: (4² · 27) ÷ (2³ · 3)',a:'18',opts:_i4gshuf(['18','6','12','9']),mc:true,ste:'4²=(2²)²=2⁴, 27=3³. (2⁴·3³)÷(2³·3)=2¹·3²=18.'},
-    // P2: Multiplicación entre conversiones de bases primas
-    {_id:5,q:'Calcula: (8 · 9) · (2 · 3)',a:'432',opts:_i4gshuf(['432','216','864','108']),mc:true,ste:'8=2³, 9=3². (2³·3²)·(2·3)=2⁴·3³=16·27=432.'},
-    {_id:6,q:'Calcula: (4 · 3) · (2 · 9)',a:'216',opts:_i4gshuf(['216','108','432','72']),mc:true,ste:'4=2², 9=3². (2²·3)·(2·3²)=2³·3³=8·27=216.'},
-    {_id:7,q:'Calcula: (16 · 3) · (2 · 3)',a:'288',opts:_i4gshuf(['288','144','576','96']),mc:true,ste:'16=2⁴. (2⁴·3)·(2·3)=2⁵·3²=32·9=288.'},
-    {_id:8,q:'Calcula: (8 · 9) · (4 · 3)',a:'864',opts:_i4gshuf(['864','432','216','288']),mc:true,ste:'8=2³, 9=3², 4=2². (2³·3²)·(2²·3)=2⁵·3³=32·27=864.'},
-    // P3: Suma entre conversiones de bases primas
-    {_id:9,q:'Calcula: (4² · 9) + (2³ · 3²)',a:'216',opts:_i4gshuf(['216','144','288','72']),mc:true,ste:'4²=2⁴. (2⁴·3²)+(2³·3²)=2³·3²·(2+1)=2³·3²·3=216.'},
-    {_id:10,q:'Calcula: (8 · 27) + (2² · 3³)',a:'324',opts:_i4gshuf(['324','216','162','432']),mc:true,ste:'8=2³, 27=3³. (2³·3³)+(2²·3³)=2²·3³·(2+1)=2²·3³·3=324.'},
-    {_id:11,q:'Calcula: (16 · 3) + (2³ · 3)',a:'72',opts:_i4gshuf(['72','48','96','36']),mc:true,ste:'16=2⁴. (2⁴·3)+(2³·3)=2³·3·(2+1)=2³·3·3=72.'},
-    {_id:12,q:'Calcula: (4 · 9) + (2² · 3)',a:'48',opts:_i4gshuf(['48','36','72','24']),mc:true,ste:'4=2², 9=3². (2²·3²)+(2²·3)=2²·3·(3+1)=2²·3·4=48.'},
-    // P4: Resta entre conversiones de bases primas
-    {_id:13,q:'Calcula: (4³ · 9) − (2⁵ · 3²)',a:'288',opts:_i4gshuf(['288','144','576','324']),mc:true,ste:'4³=2⁶. (2⁶·3²)−(2⁵·3²)=2⁵·3²·(2−1)=2⁵·3²·1=288.'},
-    {_id:14,q:'Calcula: (8² · 27) − (2⁵ · 3³)',a:'864',opts:_i4gshuf(['864','432','288','216']),mc:true,ste:'8²=2⁶. (2⁶·3³)−(2⁵·3³)=2⁵·3³·(2−1)=2⁵·3³·1=864.'},
-    {_id:15,q:'Calcula: (4³ · 9) − (2⁴ · 3²)',a:'432',opts:_i4gshuf(['432','288','144','216']),mc:true,ste:'4³=2⁶. (2⁶·3²)−(2⁴·3²)=2⁴·3²·(2²−1)=2⁴·3²·3=432.'},
-    {_id:16,q:'Calcula: (16 · 27) − (2³ · 3³)',a:'216',opts:_i4gshuf(['216','108','432','288']),mc:true,ste:'16=2⁴. (2⁴·3³)−(2³·3³)=2³·3³·(2−1)=2³·3³·1=216.'},
-    // P5: Razonamiento
-    {_id:17,q:'Para calcular (8² · 27) ÷ (2³ · 3²), ¿cuál es el primer paso?',a:'Convertir 8=2³ y 27=3³',opts:_i4gshuf(['Convertir 8=2³ y 27=3³','Multiplicar 8·27=216','Restar los exponentes directamente','Dividir 8÷2=4']),mc:true,ste:'Siempre se convierte cada base a su forma prima antes de operar.'},
-    {_id:18,q:'Al convertir (16·81)÷(2²·3³), ¿qué ley se aplica luego?',a:'División de potencias de misma base',opts:_i4gshuf(['División de potencias de misma base','Potencia de un producto','Suma de potencias','Distributiva del exponente']),mc:true,ste:'16=2⁴, 81=3⁴. Luego aᵐ÷aⁿ=aᵐ⁻ⁿ para cada base prima.'},
-    {_id:19,q:'¿Para qué sirve convertir a bases primas?',a:'Para obtener bases iguales y aplicar las leyes de exponentes',opts:_i4gshuf(['Para obtener bases iguales y aplicar las leyes de exponentes','Para simplificar los coeficientes','Para eliminar el exponente','Para convertir en fracciones']),mc:true,ste:'Al tener la misma base prima, podemos aplicar las leyes de exponentes directamente.'},
-    {_id:20,q:'¿Cuál es la descomposición en bases primas de 36?',a:'2²·3²',opts:_i4gshuf(['2²·3²','2·3³','2³·3','4·9']),mc:true,ste:'36=4·9=2²·3². Siempre se descompone en factores primos.'},
-  ]);
-}
-_SKILL_META['i1a_ex1_b8']={ico:'📐',lbl:'Conversión a bases primas',qCount:4,gen:_genI1A_EX1_B8,plantillas:['División','Multiplicación','Suma','Resta','Razonamiento']};
-
-function _genI1A_EX1_B9(){
+function _genI1A_EX1_B6(){
   return _i4gpick([
     // Plantilla 1: (a^(n+p)+a^(n+q))/a^(n+r) → fracción (4 qx)
     {_id:1,q:'Reduce: (2<sup>n+1</sup>+2<sup>n+2</sup>) ÷ 2<sup>n+3</sup>',a:'3/4',opts:_i4gshuf(['3/4','3/2','3','6']),mc:true,ste:'Factor 2^(n+1): 2^(n+1)(1+2)/2^(n+3)=3/2²=3/4.'},
@@ -7823,10 +7761,10 @@ function _genI1A_EX1_B9(){
     {_id:20,q:'¿Para qué base aplica la técnica de factorizar sumas como (a<sup>n+1</sup>+a<sup>n+2</sup>)/a<sup>n+3</sup>?',a:'Para cualquier base a≠0',opts:_i4gshuf(['Para cualquier base a≠0','Solo para base 2','Solo para bases enteras','Solo cuando n=0']),mc:true,ste:'La propiedad aᵐ·aⁿ=aᵐ⁺ⁿ y el factor común aplican para cualquier a≠0.'},
   ]);
 }
-_SKILL_META['i1a_ex1_b9']={ico:'📐',lbl:'Factorización de sumas y restas exponenciales',qCount:4,gen:_genI1A_EX1_B9,plantillas:['Fracción simple','Cociente de dos sumas','Z-tipo: base cruzada + suma','Cocientes constantes','Conceptual']};
+_SKILL_META['i1a_ex1_b6']={ico:'📐',lbl:'Factorización algebraica de sumas exponenciales',qCount:4,gen:_genI1A_EX1_B6,plantillas:['Fracción simple','Cociente de dos sumas','Z-tipo: base cruzada + suma','Cocientes constantes','Conceptual']};
 
-function _genI1A_EX1_BQ3(){return _bqSrcPick(['i1a_ex1_b7','i1a_ex1_b8','i1a_ex1_b9'],[_genI1A_EX1_B7,_genI1A_EX1_B8,_genI1A_EX1_B9]);}
-_SKILL_META['i1a_ex1_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Leyes de Exponentes I',qCount:15,gen:_genI1A_EX1_BQ3,quiz:true,srcKeys:['i1a_ex1_b7','i1a_ex1_b8','i1a_ex1_b9']};
+function _genI1A_EX1_BQ3(){return _bqSrcPick(['i1a_ex1_b5','i1a_ex1_b6'],[_genI1A_EX1_B5,_genI1A_EX1_B6]);}
+_SKILL_META['i1a_ex1_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Leyes de Exponentes I',qCount:10,gen:_genI1A_EX1_BQ3,quiz:true,srcKeys:['i1a_ex1_b5','i1a_ex1_b6']};
 
 // ─── U2: Leyes de Exponentes II ───────────────────────────────────────────────
 function _genI1A_EX2_B1(){
@@ -10006,7 +9944,7 @@ const PREP_CURRICULUM = {
     '1':[{lbl:'Primera Unidad — Trigonometría',   area:'trigonometria', editorial:'intelectum', skills:['trig1_a1','trig1_a2','trig1_a3','trig1_a4','trig1_a5','trig1_angulo','trig1_m1','trig1_m2','trig1_m3','trig1_medicion','trig1_l1','trig1_l2','trig1_l3','trig1_arco']},
          {lbl:'Propiedades Trigonométricas',      area:'trigonometria', editorial:'intelectum', skills:['trigoprop']},
          {lbl:'Fracciones',                       area:'aritmetica',    editorial:'san_ignacio', skills:['fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4']},
-         {lbl:'Leyes de Exponentes I',          area:'algebra', editorial:'intelectum', skills:['i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_b3','i1a_ex1_bq1','i1a_ex1_b4','i1a_ex1_b5','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex1_b7','i1a_ex1_b8','i1a_ex1_b9','i1a_ex1_bq3']},
+         {lbl:'Leyes de Exponentes I',          area:'algebra', editorial:'intelectum', skills:['i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_b3a','i1a_ex1_bq1','i1a_ex1_b3b','i1a_ex1_b4','i1a_ex1_bq2','i1a_ex1_b5','i1a_ex1_b6','i1a_ex1_bq3']},
          {lbl:'Leyes de Exponentes II',         area:'algebra', editorial:'intelectum', skills:['i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3a','i1a_ex2_b3b','i1a_ex2_b4','i1a_ex2_bq2']},
          {lbl:'Ecuaciones Trascendentes',        area:'algebra', editorial:'intelectum', skills:['i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2']},
          {lbl:'Monomios',                        area:'algebra', editorial:'intelectum', skills:['i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2']},

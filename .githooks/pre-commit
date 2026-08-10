@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+// Pre-commit hook: auto-bumps ?v= in student.html whenever levelup.js is staged.
+// Install once with: git config core.hooksPath .githooks
+
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+// Check if levelup.js is among staged files
+let staged = '';
+try { staged = execSync('git diff --cached --name-only').toString(); } catch(e) {}
+if (!staged.includes('levelup.js')) process.exit(0);
+
+// Generate version: YYYYMMDDHHmm
+const now = new Date();
+const pad = n => String(n).padStart(2,'0');
+const ver = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}`;
+
+// Update student.html
+const htmlPath = path.join(__dirname, '..', 'student.html');
+const html = fs.readFileSync(htmlPath, 'utf8');
+const updated = html.replace(/levelup\.js\?v=[^"]+/, `levelup.js?v=${ver}`);
+if (updated === html) process.exit(0); // no change needed
+
+fs.writeFileSync(htmlPath, updated, 'utf8');
+
+// Stage the change so it goes in the same commit
+execSync('git add student.html');
+console.log(`✅ levelup.js version bumped to ?v=${ver} in student.html`);

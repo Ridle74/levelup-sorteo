@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260807b"></script>
+  <script src="/levelup.js?v=20260811i"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -425,10 +425,10 @@ textarea.fsm { resize:none; height:64px; }
 .qm-opt.correct { background:rgba(57,255,122,0.15); border-color:rgba(57,255,122,0.5); color:#39ff7a; }
 .qm-ste { font-family:'Barlow',sans-serif; font-size:11px; color:rgba(255,255,255,0.4); margin-top:5px; line-height:1.4; }
 .qm-pagination { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:14px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.07); }
-.qm-pg-btn { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:700; padding:5px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.75); cursor:pointer; letter-spacing:0.04em; }
+.qm-pg-btn { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:400; padding:5px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.75); cursor:pointer; letter-spacing:0.04em; }
 .qm-pg-btn:disabled { opacity:0.25; cursor:default; }
 .qm-pg-btn:not(:disabled):hover { background:rgba(255,255,255,0.14); }
-.qm-pg-info { font-family:'Barlow Condensed',sans-serif; font-size:11px; color:rgba(255,255,255,0.35); text-align:center; flex:1; }
+.qm-pg-info { font-family:'Barlow Condensed',sans-serif; font-size:12px; font-weight:400; color:rgba(255,255,255,0.75); text-align:center; flex:1; letter-spacing:0.04em; }
 .qm-regen { background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); border-radius:8px; padding:4px 10px; color:#fbbf24; font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:900; letter-spacing:0.08em; cursor:pointer; margin-top:4px; }
 .qm-svg-wrap { margin-bottom:6px; }
 .qm-svg-wrap svg { max-width:100% !important; }
@@ -856,7 +856,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-prog-bar{flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:10px;overflow:hidden}
 .prep-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#a855f7);border-radius:10px;transition:width .3s}
 .prep-question-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;margin-bottom:10px;font-family:'Barlow',sans-serif;font-size:22px;font-weight:400;text-align:center;color:rgba(255,255,255,0.92);line-height:1.65;min-height:70px;display:flex;align-items:center;justify-content:center}
-.prep-question-card sup{font-size:0.65em;vertical-align:0.45em;line-height:0}
+.prep-question-card sup{font-size:0.65em;vertical-align:0.45em;line-height:0}.prep-question-card sup sup{font-size:1em;vertical-align:0.45em}
 .prep-mc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
 .prep-mc-btn{padding:12px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;cursor:pointer;transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),background .2s cubic-bezier(0.25,0.46,0.45,0.94),border-color .2s cubic-bezier(0.25,0.46,0.45,0.94);text-align:center}
 .prep-mc-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.28)}
@@ -3695,6 +3695,7 @@ const BINGO_TOPIC_ORDER = ['suma','suma10','resta','mult','div','div5x2','neg','
       var entry={ico:m.ico||'📐', lbl:m.lbl||k, qCount:m.qCount||3, gen:m.gen||function(){}};
       if(m.quiz) entry.quiz=true;
       if(m.srcKeys) entry.srcKeys=m.srcKeys;
+      if(m.plantillas) entry.plantillas=m.plantillas;
       BINGO_TOPICS[k]=entry;
     }
     if(!seen.has(k)){ BINGO_TOPIC_ORDER.push(k); seen.add(k); }
@@ -12460,7 +12461,15 @@ function _qmFmt(text) {
 function _qmQCode(key, idx, sample) {
   // Usar _id si está disponible (mismo sistema que el examen)
   var id = sample && sample._id != null ? sample._id : (idx + 1);
-  return key.toUpperCase() + ' · P' + String(id).padStart(3, '0');
+  var base = key.toUpperCase() + ' · P' + String(id).padStart(3, '0');
+  // Fingerprint del contenido: si cambia q o a, el código cambia y el check se borra
+  if (sample && (sample.q != null || sample.a != null)) {
+    var s = String(sample.q || '') + '|' + String(sample.a || '');
+    var h = 0;
+    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0xFFFFFF;
+    base += ':' + h.toString(36);
+  }
+  return base;
 }
 
 // Extrae TODAS las preguntas únicas del pool de una habilidad (deduplicación)
@@ -12599,16 +12608,20 @@ function _qmRenderPage(key, page, containerId) {
   var slice = pool.slice(start, start + _QM_PER_PAGE);
 
   var h = '';
+  var _meta = BINGO_TOPICS[key];
   slice.forEach(function(s, i) { h += _qmSampleHtml(s, start + i + 1, key, start + i); });
 
   // Paginación
   var cid = containerId || ('qm-pg-' + key.replace(/[^a-z0-9]/gi,'_'));
-  h += '<div class="qm-pagination">';
-  h += '<button class="qm-pg-btn" ' + (page === 0 ? 'disabled' : '')
-     + ' onclick="_qmRenderPage(\'' + key + '\',' + (page-1) + ',\'' + cid + '\');document.getElementById(\'' + cid + '\').scrollTop=0">‹ Anterior</button>';
+  var _pgMeta = BINGO_TOPICS[key];
+  var _pgPlantillaName = (_pgMeta && _pgMeta.plantillas && _pgMeta.plantillas[page]) ? _pgMeta.plantillas[page] : '';
+  var _pgPlantillaSpan = _pgPlantillaName ? ('<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:400;text-transform:uppercase;letter-spacing:0.04em;color:rgba(255,255,255,0.75)">' + _pgPlantillaName + '</span>') : '';
+  h += '<div class="qm-pagination" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center">';
+  h += '<div style="display:flex;align-items:center;gap:10px"><button class="qm-pg-btn" ' + (page === 0 ? 'disabled' : '')
+     + ' onclick="_qmRenderPage(\'' + key + '\',' + (page-1) + ',\'' + cid + '\');document.getElementById(\'' + cid + '\').scrollTop=0">‹ Anterior</button>' + _pgPlantillaSpan + '</div>';
   h += '<span class="qm-pg-info">Página ' + (page+1) + ' / ' + totalPages + ' · ' + total + ' preguntas</span>';
-  h += '<button class="qm-pg-btn" ' + (page >= totalPages-1 ? 'disabled' : '')
-     + ' onclick="_qmRenderPage(\'' + key + '\',' + (page+1) + ',\'' + cid + '\');document.getElementById(\'' + cid + '\').scrollTop=0">Siguiente ›</button>';
+  h += '<div style="display:flex;align-items:center;justify-content:flex-end;gap:10px">' + _pgPlantillaSpan + '<button class="qm-pg-btn" ' + (page >= totalPages-1 ? 'disabled' : '')
+     + ' onclick="_qmRenderPage(\'' + key + '\',' + (page+1) + ',\'' + cid + '\');document.getElementById(\'' + cid + '\').scrollTop=0">Siguiente ›</button></div>';
   h += '</div>';
 
   var el = document.getElementById(cid);
