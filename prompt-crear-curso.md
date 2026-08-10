@@ -73,13 +73,13 @@ B1, B2, …, Bn, BQ1, Bn+1, …, Bm, BQ2, …
 Ejemplo con un grupo de 3 habilidades y otro de 2 (los tipos visual/verbal se asignan según contenido):
 
 ```js
-clave_b1:  { ico:'🖼', lbl:'Nombre habilidad 1',   qCount:3, gen:()=>_genXxx_B1() },
-clave_b2:  { ico:'📐', lbl:'Nombre habilidad 2',   qCount:4, gen:()=>_genXxx_B2() },
-clave_b3:  { ico:'🖼', lbl:'Nombre habilidad 3',   qCount:3, gen:()=>_genXxx_B3() },
-clave_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:5, gen:()=>_genXxx_BQ1(), quiz:true },
-clave_b4:  { ico:'📐', lbl:'Nombre habilidad 4',   qCount:4, gen:()=>_genXxx_B4() },
-clave_b5:  { ico:'🖼', lbl:'Nombre habilidad 5',   qCount:3, gen:()=>_genXxx_B5() },
-clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:5, gen:()=>_genXxx_BQ2(), quiz:true },
+clave_b1:  { ico:'🖼', lbl:'Nombre habilidad 1', qCount:4, gen:()=>_genXxx_B1() },
+clave_b2:  { ico:'📐', lbl:'Nombre habilidad 2', qCount:4, gen:()=>_genXxx_B2() },
+clave_b3:  { ico:'🖼', lbl:'Nombre habilidad 3', qCount:4, gen:()=>_genXxx_B3() },
+clave_bq1: { ico:'⚡', lbl:'Cuestionario 1 – Tema', qCount:15, gen:()=>_genXxx_BQ1(), quiz:true }, // 3 habilidades × 5 = 15
+clave_b4:  { ico:'📐', lbl:'Nombre habilidad 4', qCount:4, gen:()=>_genXxx_B4() },
+clave_b5:  { ico:'🖼', lbl:'Nombre habilidad 5', qCount:4, gen:()=>_genXxx_B5() },
+clave_bq2: { ico:'⚡', lbl:'Cuestionario 2 – Tema', qCount:10, gen:()=>_genXxx_BQ2(), quiz:true }, // 2 habilidades × 5 = 10
 // … continúa según el número de grupos
 ```
 
@@ -162,34 +162,47 @@ Una vez aprobada la estructura, implementas todo en este orden:
 
 Los ejercicios que aparecen en el PDF o en las imágenes adjuntas son **plantillas de tipos de pregunta**, no ejercicios individuales a copiar. A partir de cada plantilla debes crear **variaciones** cambiando los datos numéricos, el contexto o la formulación, hasta completar un banco de exactamente **20 preguntas por habilidad**.
 
-**Cómo usar las plantillas:**
-- Analiza los ejercicios del PDF para identificar los distintos **tipos** (plantillas) que cubre la habilidad.
-- Por cada tipo, genera entre 2 y 5 variaciones con datos distintos.
-- El total de todos los tipos debe sumar exactamente 20 preguntas.
-- **Ninguna plantilla debe dominar**: si hay 5 tipos de ejercicio, lo ideal es ~4 preguntas por tipo. Si una plantilla tiene más del doble que otra, redistribuye.
+**Cómo identificar plantillas desde el PDF:**
+- El criterio es el **procedimiento/razonamiento**, no el enunciado. Dos ejercicios con números distintos pero mismo procedimiento → misma plantilla.
+- Si varios ejercicios del PDF son del mismo tipo, escoge los **4 más representativos** para esa plantilla y descarta el resto — no los fuerzas a otra plantilla ni a otra habilidad solo porque sobran.
+- Una **habilidad nueva** solo nace cuando el procedimiento es genuinamente distinto, nunca como válvula de escape para ejercicios que no cupieron.
+- El límite de 20 preguntas por habilidad es estricto. Si un ejercicio del PDF encaja conceptualmente en una habilidad ya completa, se descarta — no se crea una habilidad nueva para acomodarlo.
+- Al terminar el curso, reporta qué ejercicios del PDF quedaron fuera y por qué (redundancia, plantilla ya completa, o sin valor pedagógico adicional).
+
+**Estructura fija: siempre 5 plantillas × 4 preguntas = 20**
+- Cada habilidad tiene **exactamente 5 plantillas** con **exactamente 4 preguntas** cada una.
+- No "~4": son exactamente 4. No hay plantillas con 3 ni con 5.
 
 **Formato del banco (`_i4gpick`):**
 ```js
 function _genXxx_B1(){
   return _i4gpick([
-    // Tipo A — 4 variaciones
+    // Plantilla 1 — Nombre descriptivo (4 preguntas)
     {_id:1, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
     {_id:2, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
     {_id:3, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
     {_id:4, q:'...', a:'...', opts:_i4gshuf([...]), mc:true, ste:'...'},
-    // Tipo B — 4 variaciones
+    // Plantilla 2 — Nombre descriptivo (4 preguntas)
     {_id:5, ...}, {_id:6, ...}, {_id:7, ...}, {_id:8, ...},
-    // Tipo C — 4 variaciones
+    // Plantilla 3 — Nombre descriptivo (4 preguntas)
     {_id:9, ...}, {_id:10,...}, {_id:11,...}, {_id:12,...},
-    // Tipo D — 4 variaciones
+    // Plantilla 4 — Nombre descriptivo (4 preguntas)
     {_id:13,...}, {_id:14,...}, {_id:15,...}, {_id:16,...},
-    // Tipo E — 4 variaciones
+    // Plantilla 5 — Nombre descriptivo (4 preguntas)
     {_id:17,...}, {_id:18,...}, {_id:19,...}, {_id:20,...},
   ]);
 }
+_SKILL_META['xxx_b1'] = {
+  ico:'📐', lbl:'Nombre habilidad', qCount:4, gen:_genXxx_B1,
+  plantillas:['Nombre plantilla 1','Nombre plantilla 2','Nombre plantilla 3','Nombre plantilla 4','Nombre plantilla 5']
+};
 ```
 
 Cada pregunta lleva `_id` del 1 al 20 (permite identificarla unívocamente en el banco). El campo `ste` es la pista/solución paso a paso que se muestra al alumno.
+
+**`qCount` por tipo:**
+- Habilidad: siempre `qCount:4`
+- Cuestionario BQ: `qCount` = número de habilidades del grupo × 5 (porque `_bqSrcPick` extrae 1 pregunta por plantilla por habilidad). Ejemplo: BQ que cubre 3 habilidades → `qCount:15`.
 
 ---
 

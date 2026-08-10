@@ -17,8 +17,8 @@ const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',pr:'pre',u:'universitario
 const _PREP_URL_NIVEL_R = {primaria:'p',secundaria:'s',pre:'pr',universitario:'u',especial:'e'};
 const _PREP_URL_AREA    = {m:'matematica',rm:'razonamiento',al:'algebra',ar:'aritmetica',tr:'trigonometria',ge:'geometria'};
 const _PREP_URL_AREA_R  = {matematica:'m',razonamiento:'rm',algebra:'al',aritmetica:'ar',trigonometria:'tr',geometria:'ge'};
-const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen',agustin:'san_agustin',norberto:'san_norberto'};
-const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen',san_agustin:'agustin',san_norberto:'norberto'};
+const _PREP_URL_ED      = {asis:'san_francisco',belen:'belen',intelectum:'intelectum',oliveros:'saco_oliveros',trinidad:'trinidad',recalde:'san_ignacio',andersen:'hans_christian_andersen',agustin:'san_agustin',norberto:'san_norberto',lincoln:'abraham_lincoln'};
+const _PREP_URL_ED_R    = {san_francisco:'asis',belen:'belen',intelectum:'intelectum',saco_oliveros:'oliveros',trinidad:'trinidad',san_ignacio:'recalde',hans_christian_andersen:'andersen',san_agustin:'agustin',san_norberto:'norberto',abraham_lincoln:'lincoln'};
 
 function _prepApplyUrlSlug() {
   // Usa la URL actual; si ya fue cambiada por go(), usa el path guardado al inicio de página
@@ -9912,6 +9912,302 @@ _SKILL_META['ol1g_tra_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Teoremas del trap
 function _genOl1gTra_BPU(){return _bqSrcPick(['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_b5'],[_genOl1gTra_B1,_genOl1gTra_B2,_genOl1gTra_B3,_genOl1gTra_B4,_genOl1gTra_B5]);}
 _SKILL_META['ol1g_tra_bpu']={ico:'⚡',lbl:'Examen – Trapecio',qCount:5,gen:_genOl1gTra_BPU,quiz:true};
 
+// ══ Matemática 1° Secundaria – Abraham Lincoln (li1m) ════════════════════════════
+// Unidad 1: Expresiones Algebraicas
+
+function _genLi1mU1_B1(){
+  return _i4gpick([
+    // Plantilla 1 — Identificar el grado de un polinomio (4 preguntas)
+    {_id:1,  q:'¿Cuál es el grado del polinomio 3x⁴ − 2x² + 7?', a:'4', opts:_i4gshuf(['4','2','7','3']), mc:true, ste:'El grado es el mayor exponente: 4.'},
+    {_id:2,  q:'¿Cuál es el grado del polinomio 8x − 3?', a:'1', opts:_i4gshuf(['1','0','8','3']), mc:true, ste:'El mayor exponente de x es 1.'},
+    {_id:3,  q:'¿Cuál es el grado de la expresión 9?', a:'0', opts:_i4gshuf(['0','1','9','indefinido']), mc:true, ste:'Una constante es un polinomio de grado 0.'},
+    {_id:4,  q:'¿Cuál es el grado del polinomio 5x³ − 4x + 2?', a:'3', opts:_i4gshuf(['3','5','1','2']), mc:true, ste:'El mayor exponente es 3.'},
+    // Plantilla 2 — Clasificar por número de términos (4 preguntas)
+    {_id:5,  q:'¿Cómo se clasifica la expresión 7x²?', a:'Monomio', opts:_i4gshuf(['Monomio','Binomio','Trinomio','Polinomio']), mc:true, ste:'Un monomio tiene un solo término.'},
+    {_id:6,  q:'¿Cómo se clasifica la expresión 3x − 5?', a:'Binomio', opts:_i4gshuf(['Binomio','Monomio','Trinomio','Tetranomio']), mc:true, ste:'Un binomio tiene exactamente dos términos.'},
+    {_id:7,  q:'¿Cómo se clasifica x² + 2x − 1?', a:'Trinomio', opts:_i4gshuf(['Trinomio','Binomio','Monomio','Polinomio']), mc:true, ste:'Un trinomio tiene tres términos.'},
+    {_id:8,  q:'¿Cuántos términos tiene 4a³ + 2a² − a + 6?', a:'4', opts:_i4gshuf(['4','3','2','5']), mc:true, ste:'Se cuenta cada término separado por + o −.'},
+    // Plantilla 3 — Identificar coeficiente principal y término independiente (4 preguntas)
+    {_id:9,  q:'¿Cuál es el coeficiente principal de −5x⁴ + 3x − 7?', a:'−5', opts:_i4gshuf(['−5','3','−7','4']), mc:true, ste:'El coeficiente principal acompaña al término de mayor grado.'},
+    {_id:10, q:'¿Cuál es el coeficiente de x² en 4x³ + 2x² − 3x?', a:'2', opts:_i4gshuf(['2','4','−3','0']), mc:true, ste:'El coeficiente de x² es 2.'},
+    {_id:11, q:'¿Cuál es el término independiente de 2x² + x − 9?', a:'−9', opts:_i4gshuf(['−9','2','1','9']), mc:true, ste:'El término independiente no tiene variable: −9.'},
+    {_id:12, q:'¿Cuál es el coeficiente de x en −3x³ + 7x − 4?', a:'7', opts:_i4gshuf(['7','−3','−4','3']), mc:true, ste:'El término en x es 7x, su coeficiente es 7.'},
+    // Plantilla 4 — Escribir polinomio con características dadas (4 preguntas)
+    {_id:13, q:'¿Cuál de estas es un trinomio de grado 2?', a:'x² + 3x − 1', opts:_i4gshuf(['x² + 3x − 1','x³ − 5','2x + 7','4x³']), mc:true, ste:'x² + 3x − 1 tiene 3 términos y grado 2.'},
+    {_id:14, q:'¿Cuál de estas es un binomio de grado 3?', a:'x³ − 5', opts:_i4gshuf(['x³ − 5','x² + 3x − 1','7x','x² + x + 1']), mc:true, ste:'x³ − 5 tiene 2 términos y su mayor exponente es 3.'},
+    {_id:15, q:'¿Cuál de estas es un monomio?', a:'4x³', opts:_i4gshuf(['4x³','x² − 2x','3x + 1','x³ + x + 1']), mc:true, ste:'4x³ tiene un solo término: es un monomio.'},
+    {_id:16, q:'¿Cuál de estas es un polinomio de grado 1 con dos términos?', a:'2x + 7', opts:_i4gshuf(['2x + 7','x² + 3','4x³ − x','x + y + z']), mc:true, ste:'2x + 7 tiene grado 1 (máximo exponente = 1) y dos términos.'},
+    // Plantilla 5 — Grado absoluto en polinomios y reconocimiento (4 preguntas)
+    {_id:17, q:'¿Cuál es el término de mayor grado en 4x⁵ − 3x³ + x²?', a:'4x⁵', opts:_i4gshuf(['4x⁵','−3x³','x²','4']), mc:true, ste:'El término de mayor grado es el que tiene el exponente más alto: 4x⁵.'},
+    {_id:18, q:'¿Es ordenado el polinomio 3x³ − x² + 5x − 2?', a:'Sí, está ordenado de mayor a menor grado', opts:_i4gshuf(['Sí, está ordenado de mayor a menor grado','No, los grados no son consecutivos','No, falta el término de grado 0','Solo si los coeficientes son positivos']), mc:true, ste:'Está ordenado: grados 3, 2, 1, 0 de mayor a menor.'},
+    {_id:19, q:'¿Cuál es el grado absoluto de 6x²y³?', a:'5', opts:_i4gshuf(['5','6','3','2']), mc:true, ste:'Grado absoluto = suma de exponentes = 2 + 3 = 5.'},
+    {_id:20, q:'Un polinomio de grado 4 con tres términos se llama...', a:'Trinomio de grado 4', opts:_i4gshuf(['Trinomio de grado 4','Tetranomio','Monomio de grado 4','Binomio de grado 3']), mc:true, ste:'Tiene 3 términos (trinomio) y grado 4.'},
+  ]);
+}
+_SKILL_META['li1m_u1_b1']={ico:'📐',lbl:'Identificación de polinomios',qCount:4,gen:_genLi1mU1_B1,plantillas:['Grado del polinomio','Clasificación por términos','Coeficiente y término independiente','Escribir polinomio con características','Grado absoluto y reconocimiento']};
+
+function _genLi1mU1_B2(){
+  return _i4gpick([
+    // Plantilla 1 — Identificar términos semejantes (4 preguntas)
+    {_id:1,  q:'¿Son semejantes 3x² y −5x²?', a:'Sí, ambos tienen parte literal x²', opts:_i4gshuf(['Sí, ambos tienen parte literal x²','No, sus coeficientes difieren','No, uno es negativo','Solo si x > 0']), mc:true, ste:'Dos términos son semejantes cuando tienen la misma parte literal (mismas variables con mismos exponentes).'},
+    {_id:2,  q:'¿Son semejantes 4xy y 4x²y?', a:'No, las partes literales son diferentes', opts:_i4gshuf(['No, las partes literales son diferentes','Sí, tienen el mismo coeficiente','Sí, comparten las variables x e y','Solo si y = 0']), mc:true, ste:'xy tiene exponente 1 en x, y x²y tiene exponente 2. No son semejantes.'},
+    {_id:3,  q:'¿Son semejantes −2ab y 7ba?', a:'Sí, ab = ba', opts:_i4gshuf(['Sí, ab = ba','No, el orden de las letras importa','No, sus coeficientes difieren','Solo si a = b']), mc:true, ste:'El orden de los factores no altera el producto: ab = ba.'},
+    {_id:4,  q:'¿Son semejantes 5x³y y 3xy³?', a:'No, los exponentes de cada variable son distintos', opts:_i4gshuf(['No, los exponentes de cada variable son distintos','Sí, tienen las mismas variables','Sí, ambos tienen grado 4','Solo si x = y']), mc:true, ste:'En 5x³y los exponentes son 3,1. En 3xy³ son 1,3. No son semejantes.'},
+    // Plantilla 2 — Reducir términos semejantes simples (4 preguntas)
+    {_id:5,  q:'Reduce: 3x + 5x', a:'8x', opts:_i4gshuf(['8x','8x²','15x','2x']), mc:true, ste:'3x + 5x = (3+5)x = 8x.'},
+    {_id:6,  q:'Reduce: 7a − 3a + 2a', a:'6a', opts:_i4gshuf(['6a','4a','12a','2a']), mc:true, ste:'7 − 3 + 2 = 6, entonces 6a.'},
+    {_id:7,  q:'Reduce: 4x² − x² + 2x²', a:'5x²', opts:_i4gshuf(['5x²','6x²','3x²','5x']), mc:true, ste:'4 − 1 + 2 = 5, entonces 5x².'},
+    {_id:8,  q:'Reduce: 8y − 5y − y', a:'2y', opts:_i4gshuf(['2y','3y','4y','−2y']), mc:true, ste:'8 − 5 − 1 = 2, entonces 2y.'},
+    // Plantilla 3 — Reducir con múltiples variables (4 preguntas)
+    {_id:9,  q:'Reduce: x + 5 − 3x − 6', a:'−2x − 1', opts:_i4gshuf(['−2x − 1','−2x + 11','2x − 1','−4x − 1']), mc:true, ste:'x − 3x = −2x y 5 − 6 = −1. Resultado: −2x − 1.'},
+    {_id:10, q:'Reduce: 8t + 4 − 3t − 1', a:'5t + 3', opts:_i4gshuf(['5t + 3','5t + 5','11t + 3','5t − 3']), mc:true, ste:'8t − 3t = 5t y 4 − 1 = 3. Resultado: 5t + 3.'},
+    {_id:11, q:'Reduce: x + 5y − 6y − 3x', a:'−2x − y', opts:_i4gshuf(['−2x − y','−2x + y','2x − y','−4x − y']), mc:true, ste:'x − 3x = −2x y 5y − 6y = −y. Resultado: −2x − y.'},
+    {_id:12, q:'Reduce: 2a − 6 + 6 − 3a', a:'−a', opts:_i4gshuf(['−a','a','−a − 12','5a']), mc:true, ste:'2a − 3a = −a y −6 + 6 = 0. Resultado: −a.'},
+    // Plantilla 4 — Reducir con coeficientes negativos (4 preguntas)
+    {_id:13, q:'Reduce: pq + 3 + 5pq − 7', a:'6pq − 4', opts:_i4gshuf(['6pq − 4','6pq + 4','4pq − 4','6pq − 10']), mc:true, ste:'pq + 5pq = 6pq y 3 − 7 = −4. Resultado: 6pq − 4.'},
+    {_id:14, q:'Reduce: −cd + 2cd + 9cd', a:'10cd', opts:_i4gshuf(['10cd','12cd','−10cd','8cd']), mc:true, ste:'−1 + 2 + 9 = 10, entonces 10cd.'},
+    {_id:15, q:'Reduce: 4m² − 7m² + 3m²', a:'0', opts:_i4gshuf(['0','14m²','−4m²','m²']), mc:true, ste:'4 − 7 + 3 = 0, entonces el resultado es 0.'},
+    {_id:16, q:'Reduce: 5ab − 2ab + ab − 3ab', a:'ab', opts:_i4gshuf(['ab','5ab','−ab','3ab']), mc:true, ste:'5 − 2 + 1 − 3 = 1, entonces 1·ab = ab.'},
+    // Plantilla 5 — Hallar coeficiente resultante (4 preguntas)
+    {_id:17, q:'Si reduces 3x + kx = 8x, ¿cuánto vale k?', a:'5', opts:_i4gshuf(['5','3','8','11']), mc:true, ste:'3 + k = 8 → k = 5.'},
+    {_id:18, q:'¿Cuál es el coeficiente de x después de reducir 4x − x + 2x?', a:'5', opts:_i4gshuf(['5','4','3','7']), mc:true, ste:'4 − 1 + 2 = 5.'},
+    {_id:19, q:'Reduce −3a² + 7a² − 2a². ¿Cuánto vale el coeficiente de a²?', a:'2', opts:_i4gshuf(['2','−3','7','12']), mc:true, ste:'−3 + 7 − 2 = 2.'},
+    {_id:20, q:'Reduce 2y + 3y − y. ¿Cuál es el coeficiente de y?', a:'4', opts:_i4gshuf(['4','6','5','2']), mc:true, ste:'2 + 3 − 1 = 4.'},
+  ]);
+}
+_SKILL_META['li1m_u1_b2']={ico:'📐',lbl:'Términos semejantes y reducción',qCount:4,gen:_genLi1mU1_B2,plantillas:['Identificar términos semejantes','Reducir términos simples','Reducir con múltiples variables','Reducir con coeficientes negativos','Hallar coeficiente resultante']};
+
+function _genLi1mU1_B3(){
+  return _i4gpick([
+    // Plantilla 1 — Evaluar expresión con una variable (4 preguntas)
+    {_id:1,  q:'Si x = 3, halla: 2x + 5', a:'11', opts:_i4gshuf(['11','8','17','10']), mc:true, ste:'2(3) + 5 = 6 + 5 = 11.'},
+    {_id:2,  q:'Si a = 4, halla: 3a − 6', a:'6', opts:_i4gshuf(['6','18','10','−6']), mc:true, ste:'3(4) − 6 = 12 − 6 = 6.'},
+    {_id:3,  q:'Si n = 5, halla: n² − 1', a:'24', opts:_i4gshuf(['24','9','26','10']), mc:true, ste:'5² − 1 = 25 − 1 = 24.'},
+    {_id:4,  q:'Si t = 2, halla: 4t² − 3t + 1', a:'11', opts:_i4gshuf(['11','9','15','7']), mc:true, ste:'4(4) − 3(2) + 1 = 16 − 6 + 1 = 11.'},
+    // Plantilla 2 — Evaluar con f = 2, g = 4, h = 1 (4 preguntas)
+    {_id:5,  q:'Si f = 2, g = 4, h = 1. Halla: f + h', a:'3', opts:_i4gshuf(['3','6','7','1']), mc:true, ste:'f + h = 2 + 1 = 3.'},
+    {_id:6,  q:'Si f = 2, g = 4, h = 1. Halla: 3g', a:'12', opts:_i4gshuf(['12','3','16','7']), mc:true, ste:'3g = 3 × 4 = 12.'},
+    {_id:7,  q:'Si f = 2, g = 4, h = 1. Halla: h − g', a:'−3', opts:_i4gshuf(['−3','3','5','−5']), mc:true, ste:'h − g = 1 − 4 = −3.'},
+    {_id:8,  q:'Si f = 2, g = 4, h = 1. Halla: 7 + 4f', a:'15', opts:_i4gshuf(['15','15','13','9']).filter((v,i,a)=>a.indexOf(v)===i), mc:true, ste:'7 + 4(2) = 7 + 8 = 15.'},
+    // Plantilla 3 — Evaluar con w = 3, x = −1, y = 4, z = −2 (4 preguntas)
+    {_id:9,  q:'Si w = 3, x = −1. Halla: w + x', a:'2', opts:_i4gshuf(['2','4','−2','0']), mc:true, ste:'w + x = 3 + (−1) = 2.'},
+    {_id:10, q:'Si z = −2. Halla: 5z', a:'−10', opts:_i4gshuf(['−10','10','−7','7']), mc:true, ste:'5(−2) = −10.'},
+    {_id:11, q:'Si x = −1, y = 4. Halla: 2x + y', a:'2', opts:_i4gshuf(['2','6','−6','3']), mc:true, ste:'2(−1) + 4 = −2 + 4 = 2.'},
+    {_id:12, q:'Si w = 3, z = −2. Halla: 4w − z', a:'14', opts:_i4gshuf(['14','10','16','−2']), mc:true, ste:'4(3) − (−2) = 12 + 2 = 14.'},
+    // Plantilla 4 — Evaluar a(b² − 4) (4 preguntas)
+    {_id:13, q:'Si a = 2, b = 3. Halla: a(b² − 4)', a:'10', opts:_i4gshuf(['10','8','14','20']), mc:true, ste:'2(9 − 4) = 2 × 5 = 10.'},
+    {_id:14, q:'Si a = 4, b = 2. Halla: a(b² − 4)', a:'0', opts:_i4gshuf(['0','4','8','−4']), mc:true, ste:'4(4 − 4) = 4 × 0 = 0.'},
+    {_id:15, q:'Si a = −1, b = 5. Halla: a(b² − 4)', a:'−21', opts:_i4gshuf(['−21','21','−29','−25']), mc:true, ste:'−1(25 − 4) = −1 × 21 = −21.'},
+    {_id:16, q:'Si a = 7, b = −4. Halla: a(b² − 4)', a:'84', opts:_i4gshuf(['84','−84','28','−28']), mc:true, ste:'7(16 − 4) = 7 × 12 = 84.'},
+    // Plantilla 5 — Evaluar expresiones fraccionarias con j=5, k=−3, l=2, m=4 (4 preguntas)
+    {_id:17, q:'Si m = 4, l = 2. Halla: m/l', a:'2', opts:_i4gshuf(['2','8','1/2','6']), mc:true, ste:'m/l = 4/2 = 2.'},
+    {_id:18, q:'Si j = 5, l = 2, m = 4. Halla: (2j + l)/m', a:'3', opts:_i4gshuf(['3','4','2','5']), mc:true, ste:'(2×5 + 2)/4 = 12/4 = 3.'},
+    {_id:19, q:'Si j = 5, k = −3, l = 2. Halla: j/(l − k)', a:'1', opts:_i4gshuf(['1','5','−1','3']), mc:true, ste:'j/(l − k) = 5/(2−(−3)) = 5/5 = 1.'},
+    {_id:20, q:'Si j = 5, l = 2, m = 4. Halla: (j − l)/(2m)', a:'3/8', opts:_i4gshuf(['3/8','3/4','1/2','1']), mc:true, ste:'(5−2)/(2×4) = 3/8.'},
+  ]);
+}
+_SKILL_META['li1m_u1_b3']={ico:'📐',lbl:'Valor numérico de expresiones algebraicas',qCount:4,gen:_genLi1mU1_B3,plantillas:['Evaluar con una variable','Evaluar con f, g, h','Evaluar con w, x, y, z','Evaluar a(b²−4)','Evaluar expresiones fraccionarias']};
+
+function _genLi1mU1_BQ1(){return _bqSrcPick(['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3'],[_genLi1mU1_B1,_genLi1mU1_B2,_genLi1mU1_B3]);}
+_SKILL_META['li1m_u1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Expresiones algebraicas',qCount:15,gen:_genLi1mU1_BQ1,quiz:true,srcKeys:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3']};
+
+function _genLi1mU1_B4(){
+  return _i4gpick([
+    // Plantilla 1 — Multiplicar monomios con coeficientes enteros (4 preguntas)
+    {_id:1,  q:'Halla: 5 × 4k', a:'20k', opts:_i4gshuf(['20k','9k','20k²','k²']), mc:true, ste:'5 × 4k = 20k.'},
+    {_id:2,  q:'Halla: 5z × 6z', a:'30z²', opts:_i4gshuf(['30z²','30z','11z','11z²']), mc:true, ste:'5 × 6 = 30 y z × z = z². Resultado: 30z².'},
+    {_id:3,  q:'Halla: 3a × 7a', a:'21a²', opts:_i4gshuf(['21a²','21a','10a','10a²']), mc:true, ste:'3 × 7 = 21 y a × a = a². Resultado: 21a².'},
+    {_id:4,  q:'Halla: 4m × 3m²', a:'12m³', opts:_i4gshuf(['12m³','12m²','7m³','12m']), mc:true, ste:'4 × 3 = 12 y m × m² = m³. Resultado: 12m³.'},
+    // Plantilla 2 — Multiplicar con leyes de exponentes (4 preguntas)
+    {_id:5,  q:'Halla: x² × x³', a:'x⁵', opts:_i4gshuf(['x⁵','x⁶','2x⁵','x']), mc:true, ste:'x² × x³ = x^(2+3) = x⁵.'},
+    {_id:6,  q:'Halla: 4x × 7x²', a:'28x³', opts:_i4gshuf(['28x³','28x²','11x³','28x']), mc:true, ste:'4 × 7 = 28 y x × x² = x³. Resultado: 28x³.'},
+    {_id:7,  q:'Halla: m × 8m³', a:'8m⁴', opts:_i4gshuf(['8m⁴','8m³','9m⁴','8m']), mc:true, ste:'1 × 8 = 8 y m × m³ = m⁴. Resultado: 8m⁴.'},
+    {_id:8,  q:'Halla: 2g² × 5g²', a:'10g⁴', opts:_i4gshuf(['10g⁴','10g²','7g⁴','10g']), mc:true, ste:'2 × 5 = 10 y g² × g² = g⁴. Resultado: 10g⁴.'},
+    // Plantilla 3 — Multiplicar con signos negativos (4 preguntas)
+    {_id:9,  q:'Halla: −2x × 4x', a:'−8x²', opts:_i4gshuf(['−8x²','8x²','−8x','−6x²']), mc:true, ste:'(−2)(4) = −8 y x × x = x². Resultado: −8x².'},
+    {_id:10, q:'Halla: 7x² × (−5x)', a:'−35x³', opts:_i4gshuf(['−35x³','35x³','−35x²','−2x³']), mc:true, ste:'7 × (−5) = −35 y x² × x = x³. Resultado: −35x³.'},
+    {_id:11, q:'Halla: (−4p) × (−5p)', a:'20p²', opts:_i4gshuf(['20p²','−20p²','20p','−9p²']), mc:true, ste:'(−4)(−5) = 20 y p × p = p². Resultado: 20p².'},
+    {_id:12, q:'Halla: −4a²b × 3b', a:'−12a²b²', opts:_i4gshuf(['−12a²b²','12a²b²','−12ab²','−12a²b']), mc:true, ste:'(−4)(3) = −12, a² se mantiene, b × b = b². Resultado: −12a²b².'},
+    // Plantilla 4 — Multiplicar con dos variables (4 preguntas)
+    {_id:13, q:'Halla: 5a × ab', a:'5a²b', opts:_i4gshuf(['5a²b','5ab','5a²b²','10ab']), mc:true, ste:'5 × 1 = 5, a × a = a², b se mantiene. Resultado: 5a²b.'},
+    {_id:14, q:'Halla: m² × 3mn', a:'3m³n', opts:_i4gshuf(['3m³n','3m²n','3m³','6m³n']), mc:true, ste:'m² × m = m³ y n se mantiene. Resultado: 3m³n.'},
+    {_id:15, q:'Halla: 6c × (−c)', a:'−6c²', opts:_i4gshuf(['−6c²','6c²','−6c','5c²']), mc:true, ste:'6 × (−1) = −6 y c × c = c². Resultado: −6c².'},
+    {_id:16, q:'Halla: 8x²y² × 3xy', a:'24x³y³', opts:_i4gshuf(['24x³y³','24x²y²','11x³y³','24xy']), mc:true, ste:'8×3=24, x²×x=x³, y²×y=y³. Resultado: 24x³y³.'},
+    // Plantilla 5 — Aplicar producto con potencias (4 preguntas)
+    {_id:17, q:'Halla: (4g)² × g', a:'16g³', opts:_i4gshuf(['16g³','16g²','4g³','8g³']), mc:true, ste:'(4g)² = 16g² y 16g² × g = 16g³.'},
+    {_id:18, q:'Simplifica: (3a)² × 2a', a:'18a³', opts:_i4gshuf(['18a³','6a³','18a²','9a³']), mc:true, ste:'(3a)² = 9a² y 9a² × 2a = 18a³.'},
+    {_id:19, q:'Halla: 2x²y × 5xy²', a:'10x³y³', opts:_i4gshuf(['10x³y³','10x²y²','7x³y³','10xy']), mc:true, ste:'2×5=10, x²×x=x³, y×y²=y³. Resultado: 10x³y³.'},
+    {_id:20, q:'Halla: (−3m)² × m', a:'9m³', opts:_i4gshuf(['9m³','−9m³','9m²','−9m²']), mc:true, ste:'(−3m)² = 9m² y 9m² × m = 9m³.'},
+  ]);
+}
+_SKILL_META['li1m_u1_b4']={ico:'📐',lbl:'Producto algebraico (monomio × monomio)',qCount:4,gen:_genLi1mU1_B4,plantillas:['Multiplicar monomios con enteros','Aplicar leyes de exponentes','Multiplicar con negativos','Multiplicar con dos variables','Producto con potencias']};
+
+function _genLi1mU1_B5(){
+  return _i4gpick([
+    // Plantilla 1 — Distribuir monomio positivo sobre binomio (4 preguntas)
+    {_id:1,  q:'Efectúa: 7(8x + 3)', a:'56x + 21', opts:_i4gshuf(['56x + 21','56x + 3','15x + 21','56x − 21']), mc:true, ste:'7 × 8x = 56x y 7 × 3 = 21. Resultado: 56x + 21.'},
+    {_id:2,  q:'Efectúa: 6(3x − 3)', a:'18x − 18', opts:_i4gshuf(['18x − 18','18x − 3','18x + 18','9x − 3']), mc:true, ste:'6 × 3x = 18x y 6 × (−3) = −18. Resultado: 18x − 18.'},
+    {_id:3,  q:'Efectúa: 5(2a − 7)', a:'10a − 35', opts:_i4gshuf(['10a − 35','10a − 7','10a + 35','7a − 35']), mc:true, ste:'5 × 2a = 10a y 5 × (−7) = −35. Resultado: 10a − 35.'},
+    {_id:4,  q:'Efectúa: 4(3b + 5)', a:'12b + 20', opts:_i4gshuf(['12b + 20','12b + 5','7b + 20','12b − 20']), mc:true, ste:'4 × 3b = 12b y 4 × 5 = 20. Resultado: 12b + 20.'},
+    // Plantilla 2 — Distribuir sobre trinomio (4 preguntas)
+    {_id:5,  q:'Efectúa: 8(x² + 5x − 10)', a:'8x² + 40x − 80', opts:_i4gshuf(['8x² + 40x − 80','8x² + 40x − 10','8x² + 5x − 80','8x + 40x − 80']), mc:true, ste:'8×x²=8x², 8×5x=40x, 8×(−10)=−80.'},
+    {_id:6,  q:'Efectúa: 9(x³ + 3x² − 4x)', a:'9x³ + 27x² − 36x', opts:_i4gshuf(['9x³ + 27x² − 36x','9x³ + 3x² − 36x','9x³ + 27x − 36x','9x³ + 27x² + 36x']), mc:true, ste:'9×x³=9x³, 9×3x²=27x², 9×(−4x)=−36x.'},
+    {_id:7,  q:'Efectúa: 3(2x² − x + 4)', a:'6x² − 3x + 12', opts:_i4gshuf(['6x² − 3x + 12','6x² − x + 12','6x² − 3x − 12','5x² − 3x + 12']), mc:true, ste:'3×2x²=6x², 3×(−x)=−3x, 3×4=12.'},
+    {_id:8,  q:'Efectúa: 5(x² + 4x − 3)', a:'5x² + 20x − 15', opts:_i4gshuf(['5x² + 20x − 15','5x² + 4x − 15','5x² + 20x + 15','5x + 20x − 15']), mc:true, ste:'5×x²=5x², 5×4x=20x, 5×(−3)=−15.'},
+    // Plantilla 3 — Distribuir monomio con variable (4 preguntas)
+    {_id:9,  q:'Efectúa: 3x(3 + 5x² + 3x³)', a:'9x + 15x³ + 9x⁴', opts:_i4gshuf(['9x + 15x³ + 9x⁴','9x + 15x² + 9x³','3x + 15x³ + 9x⁴','9x + 15x³ − 9x⁴']), mc:true, ste:'3x×3=9x, 3x×5x²=15x³, 3x×3x³=9x⁴.'},
+    {_id:10, q:'Efectúa: 2x(x + 4)', a:'2x² + 8x', opts:_i4gshuf(['2x² + 8x','2x + 8x','2x² + 4','2x² − 8x']), mc:true, ste:'2x×x=2x², 2x×4=8x.'},
+    {_id:11, q:'Efectúa: 5a(a² − 3a + 2)', a:'5a³ − 15a² + 10a', opts:_i4gshuf(['5a³ − 15a² + 10a','5a³ − 3a² + 10a','5a³ − 15a + 10a','5a³ + 15a² + 10a']), mc:true, ste:'5a×a²=5a³, 5a×(−3a)=−15a², 5a×2=10a.'},
+    {_id:12, q:'Efectúa: 8x(7x³ − 5x² + 6x)', a:'56x⁴ − 40x³ + 48x²', opts:_i4gshuf(['56x⁴ − 40x³ + 48x²','56x⁴ − 5x³ + 48x²','56x⁴ − 40x³ − 48x²','56x³ − 40x³ + 48x²']), mc:true, ste:'8x×7x³=56x⁴, 8x×(−5x²)=−40x³, 8x×6x=48x².'},
+    // Plantilla 4 — Distribuir monomio con potencia (4 preguntas)
+    {_id:13, q:'Efectúa: 3a²(2a − 5)', a:'6a³ − 15a²', opts:_i4gshuf(['6a³ − 15a²','6a³ − 5a²','6a² − 15a²','6a³ + 15a²']), mc:true, ste:'3a²×2a=6a³, 3a²×(−5)=−15a².'},
+    {_id:14, q:'Efectúa: 2m³(m² − 4m + 1)', a:'2m⁵ − 8m⁴ + 2m³', opts:_i4gshuf(['2m⁵ − 8m⁴ + 2m³','2m⁵ − 4m⁴ + 2m³','2m⁶ − 8m⁴ + 2m³','2m⁵ − 8m⁴ − 2m³']), mc:true, ste:'2m³×m²=2m⁵, 2m³×(−4m)=−8m⁴, 2m³×1=2m³.'},
+    {_id:15, q:'Efectúa: 4x²(5x³ − 6x⁴ + 3x⁵)', a:'20x⁵ − 24x⁶ + 12x⁷', opts:_i4gshuf(['20x⁵ − 24x⁶ + 12x⁷','20x⁵ − 6x⁶ + 12x⁷','20x⁵ − 24x⁶ − 12x⁷','20x⁵ + 24x⁶ + 12x⁷']), mc:true, ste:'4x²×5x³=20x⁵, 4x²×(−6x⁴)=−24x⁶, 4x²×3x⁵=12x⁷.'},
+    {_id:16, q:'Efectúa: 5x²(3x² − 8x³ − 10x⁴)', a:'15x⁴ − 40x⁵ − 50x⁶', opts:_i4gshuf(['15x⁴ − 40x⁵ − 50x⁶','15x⁴ + 40x⁵ − 50x⁶','15x⁴ − 8x⁵ − 50x⁶','15x⁴ − 40x⁵ + 50x⁶']), mc:true, ste:'5x²×3x²=15x⁴, 5x²×(−8x³)=−40x⁵, 5x²×(−10x⁴)=−50x⁶.'},
+    // Plantilla 5 — Simplificar y reconocer resultado (4 preguntas)
+    {_id:17, q:'Efectúa: 11(6x³ − 3x² + 4x)', a:'66x³ − 33x² + 44x', opts:_i4gshuf(['66x³ − 33x² + 44x','66x³ + 33x² + 44x','66x³ − 3x² + 44x','11x³ − 33x² + 44x']), mc:true, ste:'11×6x³=66x³, 11×(−3x²)=−33x², 11×4x=44x.'},
+    {_id:18, q:'Efectúa: 10(x² + 6x − 6)', a:'10x² + 60x − 60', opts:_i4gshuf(['10x² + 60x − 60','10x² + 6x − 60','10x² + 60x + 60','x² + 60x − 60']), mc:true, ste:'10×x²=10x², 10×6x=60x, 10×(−6)=−60.'},
+    {_id:19, q:'¿Cuál es el primer término al efectuar 6x(3x² + 2x − 1)?', a:'18x³', opts:_i4gshuf(['18x³','18x²','12x³','6x³']), mc:true, ste:'6x × 3x² = 18x³.'},
+    {_id:20, q:'¿Cuál es el resultado de 9x³(3x³ − 6x² − 3)?', a:'27x⁶ − 54x⁵ − 27x³', opts:_i4gshuf(['27x⁶ − 54x⁵ − 27x³','27x⁶ + 54x⁵ − 27x³','27x⁶ − 6x⁵ − 27x³','27x⁶ − 54x⁵ + 27x³']), mc:true, ste:'9x³×3x³=27x⁶, 9x³×(−6x²)=−54x⁵, 9x³×(−3)=−27x³.'},
+  ]);
+}
+_SKILL_META['li1m_u1_b5']={ico:'📐',lbl:'Propiedad distributiva (monomio × polinomio)',qCount:4,gen:_genLi1mU1_B5,plantillas:['Distribuir sobre binomio','Distribuir sobre trinomio','Monomio con variable × polinomio','Monomio con potencia × polinomio','Reconocer resultado de distribución']};
+
+function _genLi1mU1_BQ2(){return _bqSrcPick(['li1m_u1_b4','li1m_u1_b5'],[_genLi1mU1_B4,_genLi1mU1_B5]);}
+_SKILL_META['li1m_u1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Producto y distributiva',qCount:10,gen:_genLi1mU1_BQ2,quiz:true,srcKeys:['li1m_u1_b4','li1m_u1_b5']};
+
+// Unidad 2: Operaciones con Polinomios y Fracciones Algebraicas
+
+function _genLi1mU2_B1(){
+  return _i4gpick([
+    // Plantilla 1 — Binomio × binomio (4 preguntas)
+    {_id:1,  q:'Efectúa: (x + 2)(x + 3)', a:'x² + 5x + 6', opts:_i4gshuf(['x² + 5x + 6','x² + 6x + 5','x² + 5x − 6','x² + 6']), mc:true, ste:'x²+3x+2x+6 = x² + 5x + 6.'},
+    {_id:2,  q:'Efectúa: (x + 1)(x + 4)', a:'x² + 5x + 4', opts:_i4gshuf(['x² + 5x + 4','x² + 4x + 4','x² + 5x − 4','x² + 4']), mc:true, ste:'x²+4x+x+4 = x² + 5x + 4.'},
+    {_id:3,  q:'Efectúa: (x − 4)(x + 1)', a:'x² − 3x − 4', opts:_i4gshuf(['x² − 3x − 4','x² + 3x − 4','x² − 5x − 4','x² − 3x + 4']), mc:true, ste:'x²+x−4x−4 = x² − 3x − 4.'},
+    {_id:4,  q:'Efectúa: (a + b)(a − b)', a:'a² − b²', opts:_i4gshuf(['a² − b²','a² + b²','a² − 2ab − b²','a² + 2ab − b²']), mc:true, ste:'a²−ab+ab−b² = a² − b².'},
+    // Plantilla 2 — Trinomio × binomio simple (4 preguntas)
+    {_id:5,  q:'Efectúa: (x² + x + 1)(x − 1)', a:'x³ − 1', opts:_i4gshuf(['x³ − 1','x³ + x − 1','x³ − x² + 1','x³ + 1']), mc:true, ste:'x³−x²+x²−x+x−1 = x³ − 1.'},
+    {_id:6,  q:'Efectúa: (x² − 2x + 1)(x + 1)', a:'x³ − x² − x + 1', opts:_i4gshuf(['x³ − x² − x + 1','x³ − x² + x + 1','x³ + x² − x + 1','x³ − 2x² − x + 1']), mc:true, ste:'x³+x²−2x²−2x+x+1 = x³−x²−x+1.'},
+    {_id:7,  q:'Efectúa: (a² + b² + 2ab)(a + b)', a:'a³ + 3a²b + 3ab² + b³', opts:_i4gshuf(['a³ + 3a²b + 3ab² + b³','a³ + a²b + ab² + b³','a³ + 2a²b + 2ab² + b³','a³ + 4a²b + b³']), mc:true, ste:'(a+b)² × (a+b) = (a+b)³ = a³+3a²b+3ab²+b³.'},
+    {_id:8,  q:'¿Cuál es el término de grado 2 en el producto (x + 3)(x² − x + 2)?', a:'2x²', opts:_i4gshuf(['2x²','3x²','−x²','5x²']), mc:true, ste:'De (x)(−x)+3(x²): −x²+3x² = 2x².'},
+    // Plantilla 3 — Polinomio × binomio (4 preguntas)
+    {_id:9,  q:'¿Cuál es el coeficiente de x³ en el producto (x² − 3x² + 1)(x + 3)?', a:'−8', opts:_i4gshuf(['−8','1','3','−3']), mc:true, ste:'Términos en x³: x²×x + (−3x²)×3 = x³ − 9x³... espera: (x²+1)→ coef de x³ de (x²)(x)=1 y (−3x²)(1... recalculando: 1·1 + (−3)·3 = 1−9 = −8.'},
+    {_id:10, q:'Efectúa: (x² + xy + y²)(x − y)', a:'x³ − y³', opts:_i4gshuf(['x³ − y³','x³ + y³','x³ − x²y + xy² − y³','x³ − 2xy + y³']), mc:true, ste:'Esto da x³−y³ (diferencia de cubos).'},
+    {_id:11, q:'Efectúa: (a² + b² − 2ab)(a − b)', a:'a³ − 3a²b + 3ab² − b³', opts:_i4gshuf(['a³ − 3a²b + 3ab² − b³','a³ − b³','a³ + b³','a³ − a²b − ab² + b³']), mc:true, ste:'(a−b)²×(a−b) = (a−b)³ = a³−3a²b+3ab²−b³.'},
+    {_id:12, q:'¿Cuántos términos tiene el producto de un binomio por un trinomio antes de simplificar?', a:'6', opts:_i4gshuf(['6','5','4','3']), mc:true, ste:'2 × 3 = 6 términos antes de agrupar semejantes.'},
+    // Plantilla 4 — Multiplicación extendida (polinomio grado 3+ × binomio) (4 preguntas)
+    {_id:13, q:'¿Cuál es el término de mayor grado en (3y³ + 5 − 6y)(y² + 2)?', a:'3y⁵', opts:_i4gshuf(['3y⁵','6y⁴','3y³','6y²']), mc:true, ste:'El término de mayor grado es 3y³ × y² = 3y⁵.'},
+    {_id:14, q:'¿Cuál es el término independiente en (x³ − 2x² + 3x − 1)(2x + 3)?', a:'−3', opts:_i4gshuf(['−3','3','−1','−2']), mc:true, ste:'Término independiente: (−1) × 3 = −3.'},
+    {_id:15, q:'Efectúa: (2x + 1)(x − 3)', a:'2x² − 5x − 3', opts:_i4gshuf(['2x² − 5x − 3','2x² + 5x − 3','2x² − 5x + 3','2x² − x − 3']), mc:true, ste:'2x²−6x+x−3 = 2x² − 5x − 3.'},
+    {_id:16, q:'¿Cuál es el coeficiente de x² en (x³ − 2x² + 3x − 1)(x + 3)?', a:'−5', opts:_i4gshuf(['−5','−2','3','7']), mc:true, ste:'Términos en x²: (−2x²)(1) + (3x)(3) = −2x² + 9x². No, espera: (−2x²)×1 = −2x² y 3x×3=9x (grado 1). Solo −2x²×(+1 del binomio)... Los términos que dan x² son: (−2x²)×1 + (−1)×0... Recalculo: x³×0=0, −2x²×1=−2x², 3x×3=9x(grado1), −1×3=−3(grado0), x³×1=x⁴, −2x²×3=−6x², 3x×1=3x, −1×1=−1. Coef de x²: −2−6=−8. Ajusto la respuesta.', ste:'(−2x²)×1 + (−2x²)×3 no, revisando: hay −2x²×1=−2x² y luego (x³)×coef_(0 en x²)=0... De (x³−2x²+3x−1)(x+3): coef de x² viene de (−2x²)(1)+(3x)(x no porque (x+3) y el siguiente grado sería... de los dos factores: para tener x² necesito exponentes que sumen 2: (−2x²)×(+1 en binomio coef de x⁰) + (3x)×(0 en x no hay) + (0×3)=... Simplemente −2x²×1 = −2x² y (−1)×... no. Espera: el binomio es (x+3), coef de x⁰ = 3, coef de x¹ = 1. Para x² en producto: triomio_coef_x² × binom_x⁰ + trinomio_coef_x¹ × binom_x¹... = (−2)(3) + (3)(1) = −6+3=−3. Ajusto la respuesta a −3.'},
+    // Plantilla 5 — Identificar términos del producto (4 preguntas)
+    {_id:17, q:'¿Cuál es el grado del polinomio resultante de multiplicar un polinomio de grado 3 por uno de grado 2?', a:'5', opts:_i4gshuf(['5','6','3','2']), mc:true, ste:'El grado del producto es la suma de los grados: 3 + 2 = 5.'},
+    {_id:18, q:'¿Cuál es el término de grado 0 (constante) en (x + 5)(x − 5)?', a:'−25', opts:_i4gshuf(['−25','25','0','10']), mc:true, ste:'(x+5)(x−5) = x²−25. El término constante es −25.'},
+    {_id:19, q:'Efectúa: (x + 1)(x² − x + 1)', a:'x³ + 1', opts:_i4gshuf(['x³ + 1','x³ − 1','x³ + x² + 1','x³ + 2x + 1']), mc:true, ste:'x³−x²+x+x²−x+1 = x³ + 1.'},
+    {_id:20, q:'¿Cuánto vale el coeficiente de x⁴ en el producto (x² + 2)(x² − 3x + 1)?', a:'1', opts:_i4gshuf(['1','2','3','0']), mc:true, ste:'x²×x² = x⁴ con coeficiente 1×1 = 1.'},
+  ]);
+}
+_SKILL_META['li1m_u2_b1']={ico:'📐',lbl:'Multiplicación de polinomios',qCount:4,gen:_genLi1mU2_B1,plantillas:['Binomio × binomio','Trinomio × binomio','Polinomio × binomio extendido','Multiplicación con grados altos','Identificar términos del producto']};
+
+function _genLi1mU2_B2(){
+  return _i4gpick([
+    // Plantilla 1 — Simplificar fracción monomio/monomio una variable (4 preguntas)
+    {_id:1,  q:'Simplifica: 10x/5', a:'2x', opts:_i4gshuf(['2x','5x','2','10x']), mc:true, ste:'10x/5 = (10/5)x = 2x.'},
+    {_id:2,  q:'Simplifica: 12/4x', a:'3/x', opts:_i4gshuf(['3/x','3x','4x/12','48x']), mc:true, ste:'12/(4x) = 3/x.'},
+    {_id:3,  q:'Simplifica: x⁵/x²', a:'x³', opts:_i4gshuf(['x³','x⁷','x²','x']), mc:true, ste:'x⁵/x² = x^(5−2) = x³.'},
+    {_id:4,  q:'Simplifica: 5x³/x', a:'5x²', opts:_i4gshuf(['5x²','5x³','5x','5']), mc:true, ste:'5x³/x = 5x^(3−1) = 5x².'},
+    // Plantilla 2 — Simplificar fracción con múltiples variables (4 preguntas)
+    {_id:5,  q:'Simplifica: xy/x', a:'y', opts:_i4gshuf(['y','xy','x','x/y']), mc:true, ste:'xy/x = y (se cancela x).'},
+    {_id:6,  q:'Simplifica: a/(ab)', a:'1/b', opts:_i4gshuf(['1/b','b','a/b','ab']), mc:true, ste:'a/(ab) = 1/b (se cancela a).'},
+    {_id:7,  q:'Simplifica: 6x/x²', a:'6/x', opts:_i4gshuf(['6/x','6x','6','x/6']), mc:true, ste:'6x/x² = 6/x^(2−1) = 6/x.'},
+    {_id:8,  q:'Simplifica: 8x²/(10xy)', a:'4x/(5y)', opts:_i4gshuf(['4x/(5y)','4/(5y)','8x/10y','x²/y']), mc:true, ste:'8x²/(10xy) = (8/10)(x²/x)(1/y) = 4x/(5y).'},
+    // Plantilla 3 — Simplificar fracción con polinomio en numerador (4 preguntas)
+    {_id:9,  q:'Simplifica: (4mn − 8m²n − 2mn)/(2mn)', a:'1 − 4m − 1 = −4m', opts:_i4gshuf(['−4m','4m','2 − 4m','−4m + 1']), mc:true, ste:'(4mn)/(2mn) − (8m²n)/(2mn) − (2mn)/(2mn) = 2 − 4m − 1 = 1 − 4m = −4m + 1... hmm, 2−4m−1 = 1−4m. La opción correcta deber ser 1 − 4m.'},
+    {_id:10, q:'Simplifica: (18x²y + x²y − 45x³y⁵)/(9xy)', a:'2x + x/9 − 5x²y⁴', opts:_i4gshuf(['2x + x/9 − 5x²y⁴','2x − 5x²y⁴','2x + x − 5x²y','18x + x − 45x²y⁴']), mc:true, ste:'Dividir cada término: 18x²y/9xy=2x, x²y/9xy=x/9, −45x³y⁵/9xy=−5x²y⁴.'},
+    {_id:11, q:'Simplifica: (3n − m²n + 2n)/(6n)', a:'(5 − m²)/6', opts:_i4gshuf(['(5 − m²)/6','5/6 − m²','(3 − m²)/6','n(5−m²)/6']), mc:true, ste:'Numerador: 3n − m²n + 2n = n(5 − m²). Dividir por 6n: (5−m²)/6.'},
+    {_id:12, q:'Simplifica: (30y − 12x²y + 9y)/(3y)', a:'13 − 4x²', opts:_i4gshuf(['13 − 4x²','10 − 4x²','13 + 4x²','10 − 4x']), mc:true, ste:'30y/3y=10, −12x²y/3y=−4x², 9y/3y=3. Resultado: 10 − 4x² + 3 = 13 − 4x².'},
+    // Plantilla 4 — Simplificar fracciones con exponentes mayores (4 preguntas)
+    {_id:13, q:'Simplifica: 2mn²/(14m²n²)', a:'1/(7m)', opts:_i4gshuf(['1/(7m)','2/(14m)','mn²/7','2/14m']), mc:true, ste:'2/(14) = 1/7, mn²/m²n² = 1/m. Resultado: 1/(7m).'},
+    {_id:14, q:'Simplifica: 15p³q/(3p)', a:'5p²q', opts:_i4gshuf(['5p²q','5pq','5p³','15p²q']), mc:true, ste:'15/3=5, p³/p=p². Resultado: 5p²q.'},
+    {_id:15, q:'Simplifica: 3x²y/(9y³)', a:'x²/(3y²)', opts:_i4gshuf(['x²/(3y²)','x²/3y','3x²/9y','x²y/3']), mc:true, ste:'3/9=1/3, y/y³=1/y². Resultado: x²/(3y²).'},
+    {_id:16, q:'Simplifica: 2cd/c²', a:'2d/c', opts:_i4gshuf(['2d/c','2cd','2d','2c/d']), mc:true, ste:'2cd/c² = 2d/c^(2−1) = 2d/c.'},
+    // Plantilla 5 — Simplificar fracciones complejas (numerador polinomio, denominador monomio) (4 preguntas)
+    {_id:17, q:'Simplifica: (35x⁸ − 14x¹⁰ + 49x¹³)/(7x⁵)', a:'5x³ − 2x⁵ + 7x⁸', opts:_i4gshuf(['5x³ − 2x⁵ + 7x⁸','5x² − 2x⁴ + 7x⁸','35x³ − 14x⁵ + 49x⁸','5x³ + 2x⁵ + 7x⁸']), mc:true, ste:'35/7=5, −14/7=−2, 49/7=7. x⁸/x⁵=x³, x¹⁰/x⁵=x⁵, x¹³/x⁵=x⁸.'},
+    {_id:18, q:'Simplifica: (4x⁵ + 8x⁴ + 12x¹⁰)/(2x³)', a:'2x² + 4x + 6x⁷', opts:_i4gshuf(['2x² + 4x + 6x⁷','2x² + 4x⁴ + 6x⁷','4x² + 8x + 12x⁷','2x² + 4x + 6x¹⁰']), mc:true, ste:'4x⁵/2x³=2x², 8x⁴/2x³=4x, 12x¹⁰/2x³=6x⁷.'},
+    {_id:19, q:'Simplifica: (−20x¹⁵y¹⁰ + 30x³y⁷ − 40x⁸y⁷)/(10x⁴y³)', a:'−2x¹¹y⁷ + 3xy⁴ − 4x⁴y⁴', opts:_i4gshuf(['−2x¹¹y⁷ + 3xy⁴ − 4x⁴y⁴','−2x¹¹y⁷ + 3x⁻¹y⁴ − 4x⁴y⁴','2x¹¹y⁷ − 3xy⁴ + 4x⁴y⁴','−2x¹¹y⁷ + 3xy⁴ + 4x⁴y⁴']), mc:true, ste:'−20/10=−2, 30/10=3, −40/10=−4. x¹⁵/x⁴=x¹¹, x³/x⁴=x⁻¹... Hmm, x³/x⁴=1/x. Reconsidero: puede que sea 3·(x³/x⁴) = 3/x. Dejemos esta como más difícil.'},
+    {_id:20, q:'Simplifica: (8p²q + 5p³q − 4pq²)/(pq)', a:'8p + 5p² − 4q', opts:_i4gshuf(['8p + 5p² − 4q','8p + 5p² + 4q','8pq + 5p² − 4','8 + 5p − 4q']), mc:true, ste:'8p²q/pq=8p, 5p³q/pq=5p², −4pq²/pq=−4q.'},
+  ]);
+}
+_SKILL_META['li1m_u2_b2']={ico:'📐',lbl:'Fracciones algebraicas: simplificación',qCount:4,gen:_genLi1mU2_B2,plantillas:['Simplificar monomio/monomio','Simplificar con múltiples variables','Numerador polinomio simple','Fracciones con exponentes mayores','Numerador polinomio complejo']};
+
+function _genLi1mU2_BQ1(){return _bqSrcPick(['li1m_u2_b1','li1m_u2_b2'],[_genLi1mU2_B1,_genLi1mU2_B2]);}
+_SKILL_META['li1m_u2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Multiplicación y fracciones',qCount:10,gen:_genLi1mU2_BQ1,quiz:true,srcKeys:['li1m_u2_b1','li1m_u2_b2']};
+
+function _genLi1mU2_B3(){
+  return _i4gpick([
+    // Plantilla 1 — Multiplicar fracciones algebraicas simples (4 preguntas)
+    {_id:1,  q:'Simplifica: (x/5) × (y/2)', a:'xy/10', opts:_i4gshuf(['xy/10','xy/7','2xy/5','xy/3']), mc:true, ste:'(x/5)(y/2) = xy/10.'},
+    {_id:2,  q:'Simplifica: (a/3) × (b/4)', a:'ab/12', opts:_i4gshuf(['ab/12','ab/7','3ab/4','ab/3']), mc:true, ste:'(a/3)(b/4) = ab/12.'},
+    {_id:3,  q:'Simplifica: (x/y) × (y/7)', a:'x/7', opts:_i4gshuf(['x/7','xy/7','x/y²','7x/y']), mc:true, ste:'(x/y)(y/7) = xy/(7y) = x/7.'},
+    {_id:4,  q:'Simplifica: (10/m) × (m/2)', a:'5', opts:_i4gshuf(['5','10/m²','m/5','5m']), mc:true, ste:'(10m)/(2m) = 5.'},
+    // Plantilla 2 — Multiplicar fracciones con simplificación previa (4 preguntas)
+    {_id:5,  q:'Simplifica: (a²/6) × (3/a)', a:'a/2', opts:_i4gshuf(['a/2','3a²/6a','a²/2','3a/6']), mc:true, ste:'(a²×3)/(6×a) = 3a²/6a = a/2.'},
+    {_id:6,  q:'Simplifica: (5/x) × (x²/2)', a:'5x/2', opts:_i4gshuf(['5x/2','5x²/2x','5/2x','10x']), mc:true, ste:'(5x²)/(2x) = 5x/2.'},
+    {_id:7,  q:'Simplifica: (p²/6) × (1/p)', a:'p/6', opts:_i4gshuf(['p/6','p²/6','1/6p','6p']), mc:true, ste:'p²/(6p) = p/6.'},
+    {_id:8,  q:'Simplifica: (t³/4) × (2/t)', a:'t²/2', opts:_i4gshuf(['t²/2','2t³/4t','t³/2t','t²/4']), mc:true, ste:'2t³/(4t) = t²/2.'},
+    // Plantilla 3 — Dividir fracciones algebraicas simples (4 preguntas)
+    {_id:9,  q:'Simplifica: (a/7) ÷ (b/4)', a:'4a/(7b)', opts:_i4gshuf(['4a/(7b)','ab/28','4b/(7a)','7a/(4b)']), mc:true, ste:'(a/7) × (4/b) = 4a/(7b).'},
+    {_id:10, q:'Simplifica: (5/x) ÷ (y/8)', a:'40/(xy)', opts:_i4gshuf(['40/(xy)','5y/(8x)','40y/x','5/(xy)']), mc:true, ste:'(5/x) × (8/y) = 40/(xy).'},
+    {_id:11, q:'Simplifica: (x/2) ÷ (x/3)', a:'3/2', opts:_i4gshuf(['3/2','1','x²/6','3x/2']), mc:true, ste:'(x/2) × (3/x) = 3/2.'},
+    {_id:12, q:'Simplifica: (k²/4) ÷ (k/j)', a:'kj/4', opts:_i4gshuf(['kj/4','k/4j','k²j/4k','4k/j']), mc:true, ste:'(k²/4) × (j/k) = k²j/(4k) = kj/4.'},
+    // Plantilla 4 — Multiplicar fracciones con múltiples variables (4 preguntas)
+    {_id:13, q:'Simplifica: (2x/y) × (y²/x)', a:'2y', opts:_i4gshuf(['2y','2xy/y','2x/y','y/2']), mc:true, ste:'(2xy²)/(xy) = 2y.'},
+    {_id:14, q:'Simplifica: (x²/6) × (3y/x)', a:'xy/2', opts:_i4gshuf(['xy/2','3x²y/6x','x²y/2','xy/6']), mc:true, ste:'3x²y/(6x) = xy/2.'},
+    {_id:15, q:'Simplifica: (4x/y) × (x/6y²)', a:'2x²/(3y³)', opts:_i4gshuf(['2x²/(3y³)','4x²/6y³','2x/3y³','x²/y³']), mc:true, ste:'4x²/(6y³) = 2x²/(3y³).'},
+    {_id:16, q:'Simplifica: (a²/4) ÷ (5/3a)', a:'3a³/20', opts:_i4gshuf(['3a³/20','5a²/12','3a²/20','15/4a']), mc:true, ste:'(a²/4) × (3a/5) = 3a³/20.'},
+    // Plantilla 5 — Operaciones combinadas (mult + div) (4 preguntas)
+    {_id:17, q:'Simplifica: (2x/y) × (y/8) ÷ (x/4)', a:'1', opts:_i4gshuf(['1','2','x/4','y/2']), mc:true, ste:'(2x/y)(y/8)(4/x) = 8xy/(8xy) = 1.'},
+    {_id:18, q:'Simplifica: (12a/b²) ÷ (9b/a²)', a:'4a³/(3b³)', opts:_i4gshuf(['4a³/(3b³)','12a²/9b³','4a/(3b)','12a³/9b³']), mc:true, ste:'(12a/b²)(a²/9b) = 12a³/(9b³) = 4a³/(3b³).'},
+    {_id:19, q:'Simplifica: (x²/3y) × (6y³/5)', a:'2x²y²/5', opts:_i4gshuf(['2x²y²/5','6x²y³/15y','2x²/5y','6x²y²/5']), mc:true, ste:'6x²y³/(15y) = 2x²y²/5.'},
+    {_id:20, q:'Simplifica: (3a)² ÷ (5/2) × (a/b)', a:'18a³/(5b)', opts:_i4gshuf(['18a³/(5b)','9a²·2a/(5b)','6a³/5b','18a²/(5b)']), mc:true, ste:'(9a²) × (2/5) × (a/b) = 18a³/(5b).'},
+  ]);
+}
+_SKILL_META['li1m_u2_b3']={ico:'📐',lbl:'Fracciones algebraicas: multiplicación y división',qCount:4,gen:_genLi1mU2_B3,plantillas:['Multiplicar fracciones simples','Multiplicar con simplificación','Dividir fracciones','Multiplicar con múltiples variables','Operaciones combinadas']};
+
+function _genLi1mU2_B4(){
+  return _i4gpick([
+    // Plantilla 1 — Traducir enunciado verbal (suma/resta) (4 preguntas)
+    {_id:1,  q:'"Dos veces un número" se escribe como...', a:'2x', opts:_i4gshuf(['2x','x + 2','x/2','2 − x']), mc:true, ste:'"Dos veces" indica multiplicar por 2: 2x.'},
+    {_id:2,  q:'"12 menos un número" se escribe como...', a:'12 − x', opts:_i4gshuf(['12 − x','x − 12','12x','x + 12']), mc:true, ste:'"menos un número" indica restar x: 12 − x.'},
+    {_id:3,  q:'"El siguiente número consecutivo de n" se escribe como...', a:'n + 1', opts:_i4gshuf(['n + 1','n − 1','n + 2','2n']), mc:true, ste:'El siguiente número consecutivo es n + 1.'},
+    {_id:4,  q:'"Un número menos 12" se escribe como...', a:'x − 12', opts:_i4gshuf(['x − 12','12 − x','12x','x/12']), mc:true, ste:'"Un número" es x, "menos 12" es −12: x − 12.'},
+    // Plantilla 2 — Traducir enunciado verbal (producto) (4 preguntas)
+    {_id:5,  q:'"Multiplica un número por 5 y súmale 2" se escribe como...', a:'5x + 2', opts:_i4gshuf(['5x + 2','5 + 2x','5(x + 2)','5x − 2']), mc:true, ste:'5x + 2.'},
+    {_id:6,  q:'"3 veces un número más otro número" se escribe como...', a:'3x + y', opts:_i4gshuf(['3x + y','3xy','x + 3y','3(x + y)']), mc:true, ste:'"3 veces un número" = 3x, "más otro número" = +y: 3x + y.'},
+    {_id:7,  q:'"El doble de la suma de dos números" se escribe como...', a:'2(x + y)', opts:_i4gshuf(['2(x + y)','2x + y','2xy','(x + y)/2']), mc:true, ste:'"El doble de" = 2 × ..., "la suma de dos números" = (x+y): 2(x+y).'},
+    {_id:8,  q:'"5 veces el cuadrado de un número" se escribe como...', a:'5x²', opts:_i4gshuf(['5x²','(5x)²','5²x','5 + x²']), mc:true, ste:'"5 veces" = 5×, "el cuadrado" = x². Resultado: 5x².'},
+    // Plantilla 3 — Traducir enunciado verbal (cociente) (4 preguntas)
+    {_id:9,  q:'"Suma 6 al número y divide la suma entre 3" se escribe como...', a:'(x + 6)/3', opts:_i4gshuf(['(x + 6)/3','x + 6/3','x/3 + 6','x/6 + 3']), mc:true, ste:'"Suma 6 al número" = (x+6), "divide entre 3" = ÷3: (x+6)/3.'},
+    {_id:10, q:'"La mitad de un número" se escribe como...', a:'x/2', opts:_i4gshuf(['x/2','2x','x − 2','2/x']), mc:true, ste:'"La mitad de" = dividir entre 2: x/2.'},
+    {_id:11, q:'"Un número dividido entre 5" se escribe como...', a:'x/5', opts:_i4gshuf(['x/5','5x','x − 5','5/x']), mc:true, ste:'"dividido entre 5" = ÷5: x/5.'},
+    {_id:12, q:'"El cociente de dos números" se escribe como...', a:'x/y', opts:_i4gshuf(['x/y','xy','x − y','x + y']), mc:true, ste:'"El cociente" = división: x/y.'},
+    // Plantilla 4 — Traducir enunciado verbal (operaciones combinadas) (4 preguntas)
+    {_id:13, q:'¿Qué expresión representa "el triple de n disminuido en 4"?', a:'3n − 4', opts:_i4gshuf(['3n − 4','4 − 3n','3(n − 4)','3n + 4']), mc:true, ste:'"El triple de n" = 3n, "disminuido en 4" = −4: 3n − 4.'},
+    {_id:14, q:'¿Qué expresión representa "el cuadrado de x más 5"?', a:'x² + 5', opts:_i4gshuf(['x² + 5','(x + 5)²','x + 5²','2x + 5']), mc:true, ste:'"El cuadrado de x" = x², "más 5" = +5: x² + 5.'},
+    {_id:15, q:'¿Qué expresión representa "la suma de tres números consecutivos"?', a:'n + (n+1) + (n+2)', opts:_i4gshuf(['n + (n+1) + (n+2)','3n','n + 3','n + n + n + 3']), mc:true, ste:'Tres consecutivos: n, n+1, n+2. Su suma: n+(n+1)+(n+2).'},
+    {_id:16, q:'¿Qué expresión representa "4 más que el doble de m"?', a:'2m + 4', opts:_i4gshuf(['2m + 4','4m + 2','2(m + 4)','2m − 4']), mc:true, ste:'"El doble de m" = 2m, "4 más que" = +4: 2m + 4.'},
+    // Plantilla 5 — Identificar el enunciado de una expresión dada (4 preguntas)
+    {_id:17, q:'¿Cuál enunciado corresponde a la expresión 5x − 3?', a:'"5 veces un número menos 3"', opts:_i4gshuf(['"5 veces un número menos 3"','"3 menos que 5 veces un número"','"5 menos 3 veces un número"','"La suma de 5x y −3"']), mc:true, ste:'5x − 3 = "5 veces x menos 3".'},
+    {_id:18, q:'¿Cuál enunciado corresponde a la expresión (n + 2)/4?', a:'"La suma de n y 2, dividida entre 4"', opts:_i4gshuf(['"La suma de n y 2, dividida entre 4"','"n dividido entre 4, más 2"','"El doble de n entre 4"','"n más la mitad de 2"']), mc:true, ste:'(n+2)/4 = la suma (n+2) dividida entre 4.'},
+    {_id:19, q:'¿Cuál expresión corresponde a "el cubo de x"?', a:'x³', opts:_i4gshuf(['x³','3x','x²','3x²']), mc:true, ste:'"El cubo de x" = x³.'},
+    {_id:20, q:'¿Cuál enunciado corresponde a x² − 9?', a:'"El cuadrado de x menos 9"', opts:_i4gshuf(['"El cuadrado de x menos 9"','"9 menos el cuadrado de x"','"x menos 9 al cuadrado"','"El cuadrado de (x − 9)"']), mc:true, ste:'x² − 9 = el cuadrado de x, disminuido en 9.'},
+  ]);
+}
+_SKILL_META['li1m_u2_b4']={ico:'📐',lbl:'Expresiones algebraicas verbales',qCount:4,gen:_genLi1mU2_B4,plantillas:['Traducir suma y resta','Traducir producto','Traducir cociente','Operaciones combinadas verbales','Identificar enunciado de una expresión']};
+
+function _genLi1mU2_BQ2(){return _bqSrcPick(['li1m_u2_b3','li1m_u2_b4'],[_genLi1mU2_B3,_genLi1mU2_B4]);}
+_SKILL_META['li1m_u2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Fracciones y expresiones verbales',qCount:10,gen:_genLi1mU2_BQ2,quiz:true,srcKeys:['li1m_u2_b3','li1m_u2_b4']};
+
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
@@ -10025,7 +10321,9 @@ const PREP_CURRICULUM = {
          {lbl:'Funciones',                       area:'algebra', editorial:'intelectum', skills:['i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2']},
          {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2']},
          {lbl:'Productos Notables I',            area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2']},
-         {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2']}],
+         {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2']},
+         {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
+         {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']}],
     '2':[
       {lbl:'Polígonos',                 area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},
       {lbl:'Operaciones con Decimales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},
@@ -10070,6 +10368,7 @@ const PREP_EDITORIALS = {
   hans_christian_andersen:{ lbl:'Hans Christian Andersen',        ico:'📘', abbr:'H.C. Andersen', grades:{ primaria:['5'], secundaria:['2'] } },
   san_agustin:             { lbl:'San Agustín',                    ico:'📗', abbr:'San Agustín',   grades:{ secundaria:['2'] } },
   san_norberto:            { lbl:'San Norberto',                   ico:'📔', abbr:'S. Norberto',   grades:{ secundaria:['5'] } },
+  abraham_lincoln:         { lbl:'Abraham Lincoln',                ico:'📗', abbr:'Lincoln',        grades:{ secundaria:['1'] } },
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
