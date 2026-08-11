@@ -6821,7 +6821,7 @@ function _genSnb5EST_EX(){return _bqSrcPick(['snb5_est_b1','snb5_est_b2','snb5_e
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','reg_b11','reg_b12','reg_b13','reg_b14','reg_b15','reg_b16','reg_b17','reg_b18','reg_b19','reg_bq1','reg_bq2','reg_bpu','rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','int4g_ele_b1','int4g_ele_b2','int4g_ele_b3','int4g_ele_b4','int4g_ele_bq1','int4g_ele_bq2','int4g_rec_b1','int4g_rec_b2','int4g_rec_b3','int4g_rec_b4','int4g_rec_bq1','int4g_rec_bq2','int4g_seg_b1','int4g_seg_b2','int4g_seg_b3','int4g_seg_b4','int4g_seg_b5','int4g_seg_b6','int4g_seg_bq1','int4g_seg_bq2','int4g_seg_bq3','int4g_ang_b1','int4g_ang_b2','int4g_ang_b3','int4g_ang_b4','int4g_ang_bq1','int4g_ang_bq2','int4g_pol_b1','int4g_pol_b2','int4g_pol_b3','int4g_pol_b4','int4g_pol_bq1','int4g_pol_bq2','int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_b4','int4g_tri_b5','int4g_tri_bq1','int4g_tri_bq2','int4g_cua_b1','int4g_cua_b2','int4g_cua_b3','int4g_cua_b4','int4g_cua_bq1','int4g_cua_bq2','int4g_cir_b1','int4g_cir_b2','int4g_cir_b3','int4g_cir_b4','int4g_cir_bq1','int4g_cir_bq2','int4g_per_b1','int4g_per_b2','int4g_per_b3','int4g_per_b4','int4g_per_bq1','int4g_per_bq2','int4g_are_b1','int4g_are_b2','int4g_are_b3','int4g_are_b4','int4g_are_bq1','int4g_are_bq2','int4g_sol_b1','int4g_sol_b2','int4g_sol_b3','int4g_sol_b4','int4g_sol_bq1','int4g_sol_bq2',
+    grades:{ '1':['suma','suma10','resta','rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','int4g_ele_b1','int4g_ele_b2','int4g_ele_b3','int4g_ele_b4','int4g_ele_bq1','int4g_ele_bq2','int4g_rec_b1','int4g_rec_b2','int4g_rec_b3','int4g_rec_b4','int4g_rec_bq1','int4g_rec_bq2','int4g_seg_b1','int4g_seg_b2','int4g_seg_b3','int4g_seg_b4','int4g_seg_b5','int4g_seg_b6','int4g_seg_bq1','int4g_seg_bq2','int4g_seg_bq3','int4g_ang_b1','int4g_ang_b2','int4g_ang_b3','int4g_ang_b4','int4g_ang_bq1','int4g_ang_bq2','int4g_pol_b1','int4g_pol_b2','int4g_pol_b3','int4g_pol_b4','int4g_pol_bq1','int4g_pol_bq2','int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_b4','int4g_tri_b5','int4g_tri_bq1','int4g_tri_bq2','int4g_cua_b1','int4g_cua_b2','int4g_cua_b3','int4g_cua_b4','int4g_cua_bq1','int4g_cua_bq2','int4g_cir_b1','int4g_cir_b2','int4g_cir_b3','int4g_cir_b4','int4g_cir_bq1','int4g_cir_bq2','int4g_per_b1','int4g_per_b2','int4g_per_b3','int4g_per_b4','int4g_per_bq1','int4g_per_bq2','int4g_are_b1','int4g_are_b2','int4g_are_b3','int4g_are_b4','int4g_are_bq1','int4g_are_bq2','int4g_sol_b1','int4g_sol_b2','int4g_sol_b3','int4g_sol_b4','int4g_sol_bq1','int4g_sol_bq2',
 'int4a_nat_b1','int4a_nat_b2','int4a_nat_b3','int4a_nat_bq1','int4a_nat_b4','int4a_nat_b5','int4a_nat_bq2',
 'int4a_pot_b1','int4a_pot_b2','int4a_pot_bq1','int4a_pot_b3','int4a_pot_b4','int4a_pot_b5','int4a_pot_bq2',
 'int4a_rad_b1','int4a_rad_b2','int4a_rad_bq1','int4a_rad_b3','int4a_rad_b4','int4a_rad_bq2',
@@ -10568,15 +10568,15 @@ _SKILL_META['rg10_b1']={ico:'🖼',lbl:'Sumas con 6 pasando la decena',qCount:4,
   plantillas:['Complemento a la decena','Resto del segundo sumando','Suma completa visual','Desde la decena','Ecuación paso a paso','Color de la regleta que sobra','Color del complemento','Razonamiento']};
 function _genRg10_B2(){return _rg10Gen(7);}
 _SKILL_META['rg10_b2']={ico:'🖼',lbl:'Sumas con 7 pasando la decena',qCount:4,gen:_genRg10_B2,
-  plantillas:['Complemento de 7 a la decena','Descomponer el segundo sumando','Suma completa con regletas','Color de la regleta complemento']};
+  plantillas:['Complemento a la decena','Resto del segundo sumando','Suma completa visual','Desde la decena','Ecuación paso a paso','Color de la regleta que sobra','Color del complemento','Razonamiento']};
 function _genRg10_BQ1(){return _bqSrcPick(['rg10_b1','rg10_b2'],[_genRg10_B1,_genRg10_B2]);}
 _SKILL_META['rg10_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Sumas con 6 y 7',qCount:10,gen:_genRg10_BQ1,quiz:true,srcKeys:['rg10_b1','rg10_b2']};
 function _genRg10_B3(){return _rg10Gen(8);}
 _SKILL_META['rg10_b3']={ico:'🖼',lbl:'Sumas con 8 pasando la decena',qCount:4,gen:_genRg10_B3,
-  plantillas:['Complemento de 8 a la decena','Descomponer el segundo sumando','Suma completa con regletas','Color de la regleta complemento']};
+  plantillas:['Complemento a la decena','Resto del segundo sumando','Suma completa visual','Desde la decena','Ecuación paso a paso','Color de la regleta que sobra','Color del complemento','Razonamiento']};
 function _genRg10_B4(){return _rg10Gen(9);}
 _SKILL_META['rg10_b4']={ico:'🖼',lbl:'Sumas con 9 pasando la decena',qCount:4,gen:_genRg10_B4,
-  plantillas:['Complemento de 9 a la decena','Descomponer el segundo sumando','Suma completa con regletas','Color de la regleta complemento']};
+  plantillas:['Complemento a la decena','Resto del segundo sumando','Suma completa visual','Desde la decena','Ecuación paso a paso','Color de la regleta que sobra','Color del complemento','Razonamiento']};
 function _genRg10_BQ2(){return _bqSrcPick(['rg10_b3','rg10_b4'],[_genRg10_B3,_genRg10_B4]);}
 _SKILL_META['rg10_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Sumas con 8 y 9',qCount:10,gen:_genRg10_BQ2,quiz:true,srcKeys:['rg10_b3','rg10_b4']};
 
@@ -10585,11 +10585,7 @@ const PREP_CURRICULUM = {
   primaria: {
     '1':[
       {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
-      {lbl:'Descomponemos del 11 al 19',              area:'matematica', editorial:'belen', skills:['reg_b11','reg_b12','reg_b13','reg_bq1','reg_b14','reg_b15','reg_b16','reg_bq2','reg_b17','reg_b18','reg_b19']},
       {lbl:'Sumas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2']},
-      {lbl:'Números del 1 al 20',                                area:'matematica', editorial:'belen', skills:['bel1_num_b1','bel1_num_b2','bel1_num_bq1']},
-      {lbl:'Sumas hasta 20',                                     area:'matematica', editorial:'belen', skills:['bel1_sum_b1','bel1_sum_b2','bel1_sum_bq1']},
-      {lbl:'Restas hasta 20',                                    area:'matematica', editorial:'belen', skills:['bel1_res_b1','bel1_res_b2','bel1_res_bq1']},
       {lbl:'Conjuntos',                         area:'matematica', editorial:'intelectum', skills:['bel1_cj_b1','bel1_cj_b2','bel1_cj_bq1','bel1_cj_b3','bel1_cj_b4','bel1_cj_bq2','bel1_cj_b5','bel1_cj_b6','bel1_cj_bq3']},
       {lbl:'Numeración 0 al 100',               area:'matematica', editorial:'intelectum', skills:['bel1_n1_b1','bel1_n1_b2','bel1_n1_bq1','bel1_n1_b3','bel1_n1_b4','bel1_n1_bq2']},
       {lbl:'La Decena',                         area:'matematica', editorial:'intelectum', skills:['bel1_dec_b1','bel1_dec_b2','bel1_dec_bq1','bel1_dec_b3','bel1_dec_b4','bel1_dec_bq2']},
