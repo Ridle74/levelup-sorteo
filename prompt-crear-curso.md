@@ -29,6 +29,36 @@ Cada unidad se organiza en **grupos de habilidades**, cada uno seguido de un cue
 - **No se fuerza que los grupos sean de tamaño par** ni que alternen visual/verbal.
 - **Los grupos se ordenan de menor a mayor dificultad**: el primer grupo contiene los ejercicios más básicos y el último los más complejos. Dentro de cada grupo, las habilidades también siguen esta progresión.
 
+### Cuándo separar vs. fusionar habilidades (criterio de granularidad)
+
+**Un subtema merece su propia habilidad separada cuando cumple las tres condiciones:**
+1. Tiene nombre propio en el libro o en el currículo oficial (ej. "multiplicación de potencias de igual base", "división de potencias de igual base")
+2. El procedimiento o algoritmo es genuinamente distinto al de la habilidad anterior
+3. El PDF tiene suficientes ejercicios de ese subtema para construir 5 plantillas × 4 preguntas = 20 preguntas (es decir, al menos 3–4 tipos de ejercicio distintos de ese subtema)
+
+**No fusionar dos subtemas en una sola habilidad si:**
+- El PDF dedica ejercicios específicos a cada uno (ej. ejercicios de mult. y ejercicios de div. están separados en el libro)
+- Cada subtema tiene 3 o más tipos de ejercicio distintos — eso indica que hay material suficiente para 5 plantillas cada uno
+- Los subtemas son operaciones inversas entre sí (ver regla siguiente)
+
+**Error frecuente a evitar:** juntar "multiplicación de potencias" y "división de potencias" en una sola habilidad solo porque están en el mismo tema del libro. Son procedimientos distintos con material propio — siempre van separados.
+
+### Regla de habilidades análogas (operaciones inversas)
+
+Cuando dos habilidades son **operaciones inversas** entre sí (producto/cociente, suma/resta de exponentes, potencia/raíz, etc.), sus 5 plantillas deben seguir **exactamente la misma estructura**, cambiando solo el nombre de la operación:
+
+| Habilidad A (ej. multiplicación) | Habilidad B (ej. división) |
+|-----------------------------------|----------------------------|
+| Producto de bases positivas | Cociente de bases positivas |
+| Producto de bases negativas | Cociente de bases negativas |
+| Producto de bases mixtas | Cociente de bases mixtas |
+| Suma o resta de multiplicaciones | Suma o resta de divisiones |
+| Razonamiento | Razonamiento |
+
+**Regla:** si en el Paso 1 propones una habilidad de operación X, revisa si el PDF también tiene ejercicios de la operación inversa X⁻¹. Si los tiene, crea ambas habilidades y espeja sus plantillas. El único cambio permitido es sustituir el término de operación (producto↔cociente, multiplica↔divide, suma↔resta, etc.). El nombre de P5 "Razonamiento" es siempre igual en ambas.
+
+Esta regla **solo aplica cuando las dos operaciones son genuinamente inversas** (aᵐ·aⁿ = aᵐ⁺ⁿ vs. aᵐ÷aⁿ = aᵐ⁻ⁿ). No aplica cuando los subtemas son distintos por naturaleza (ej. "potencia de potencia" y "distributiva" no son inversas).
+
 **Tipo de cada habilidad (determinado por el contenido, no por la posición):**
 - **Visual** → `ico:'🖼'`, ejercicios con SVG o diagramas. Se usa cuando el ejercicio se entiende mejor de forma gráfica. `qCount:3` ó `4`
 - **Verbal** → `ico:'📐'`, ejercicios netamente escritos: definiciones, propiedades, problemas de texto. Se usa cuando el ejercicio se entiende mejor de forma escrita. `qCount:3` ó `4`
@@ -53,9 +83,11 @@ Depende de cuántos tipos de ejercicio distintos se pueden extraer del PDF:
 | Grupos | Skills aprox. | BQs | Cuándo usarlo |
 |--------|--------------|-----|---------------|
 | 2 | 4–6 | BQ1, BQ2 | Temas simples, pocas variantes |
-| 3 | 6–9 | BQ1–BQ3 | Variedad moderada |
-| 4 | 8–12 | BQ1–BQ4 | Temas ricos |
+| 3 | 6–9 | BQ1–BQ3 | Variedad moderada — lo más frecuente |
+| 4 | 8–12 | BQ1–BQ4 | Temas ricos con muchos subtemas distintos |
 | 5+ | 10+ | BQ1–BQ5+ | Si el PDF justifica aún más variedad |
+
+**Señal de alerta en el análisis del PDF:** si al revisar el PDF encuentras 6 o más subtemas distintos con ejercicios propios (cada uno con 3+ tipos de ejercicio), lo más probable es que necesitas 3 grupos de 2 habilidades cada uno, o 2 grupos de 3. **No los comprimas en 4 habilidades totales si el material no lo justifica.** El riesgo de ir a pocos grupos es que terminas fusionando subtemas que el alumno necesita practicar por separado.
 
 **Regla de uso del PDF:** Se usan todos los ejercicios del PDF como referencia. Los ejercicios similares se agrupan bajo una misma habilidad en lugar de crear una habilidad por cada ejercicio individual.
 
@@ -129,6 +161,7 @@ Te adjunto PDFs con los temas del libro. A partir de ellos necesito que:
 1. Propongas la lista de unidades con su nombre y número de grupos
 2. Para cada unidad: describas qué habilidades irían en cada grupo, indicando si cada una es visual o verbal y por qué, y cuántas habilidades tiene cada grupo
 3. Confirmes la clave prefijo que usarás para cada unidad (ej. `xxx_ele`, `xxx_tri`…)
+4. **Identifiques explícitamente** si algún par de habilidades son operaciones inversas entre sí, e indiques que sus plantillas seguirán la estructura espejo (ver regla de habilidades análogas). Esto debe aparecer en la propuesta antes de que yo apruebe.
 
 La propuesta tiene **dos partes obligatorias**. No escribas código hasta que yo apruebe ambas.
 
