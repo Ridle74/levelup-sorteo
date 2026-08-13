@@ -12158,12 +12158,48 @@ PADRES_REF.onSnapshot(doc => {
 // ── BACKUP ──────────────────────────────────────────────────
 const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbw3AX1FFUHDlBjYvqooIHIbLDo_pkq0lgMamXNDIM3voF2aXkGJq3PdgBoUdV3wJ_8/exec';
 
-function downloadBackup() {
-  const data = { timestamp: new Date().toISOString(), allocations, overrides, config: appConfig };
+async function _buildBackupPayload() {
+  // Datos que ya están en memoria (sorteo/main)
+  const payload = {
+    timestamp: new Date().toISOString(),
+    sorteo_main: {
+      allocations,
+      overrides,
+      config: appConfig,
+      lms: { tasks, points, pointsLog, pointsHistory, taskMultipliers, prompts }
+    }
+  };
+
+  // padres/main (horarios, links de meet, etc.)
+  try {
+    const padresSnap = await PADRES_REF.get();
+    payload.padres_main = padresSnap.exists ? padresSnap.data() : null;
+  } catch(e) { payload.padres_main = { error: e.message }; }
+
+  // msgs/* (chat grupal + DMs)
+  try {
+    const msgsSnap = await db.collection('msgs').get();
+    payload.msgs = {};
+    msgsSnap.forEach(doc => { payload.msgs[doc.id] = doc.data(); });
+  } catch(e) { payload.msgs = { error: e.message }; }
+
+  // bingoHistory (últimas 20 partidas)
+  try {
+    const bingoSnap = await db.collection('bingoHistory').orderBy('savedAt','desc').limit(20).get();
+    payload.bingoHistory = [];
+    bingoSnap.forEach(doc => payload.bingoHistory.push({ id: doc.id, ...doc.data() }));
+  } catch(e) { payload.bingoHistory = { error: e.message }; }
+
+  return payload;
+}
+
+async function downloadBackup() {
+  showToast('Preparando backup completo...', 'info');
+  const data = await _buildBackupPayload();
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'backup-sorteo-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.download = 'backup-emaths-' + new Date().toISOString().slice(0, 10) + '.json';
   a.click();
   showToast('Backup descargado ✓', 'success');
 }
@@ -12172,14 +12208,18 @@ let _backupTimer = null;
 function scheduleAutoBackup() {
   if (!BACKUP_URL) return;
   clearTimeout(_backupTimer);
-  _backupTimer = setTimeout(sendAutoBackup, 6000);
+  _backupTimer = setTimeout(sendAutoBackup, 8000);
 }
 
-function sendAutoBackup() {
+async function sendAutoBackup() {
   if (!BACKUP_URL) return;
-  fetch(BACKUP_URL, { method: 'POST', body: JSON.stringify({ allocations, overrides, config: appConfig }) })
-    .then(() => console.log('[Backup] Guardado en Google Sheets ✓'))
-    .catch(e => console.warn('[Backup] No se pudo enviar:', e));
+  try {
+    const payload = await _buildBackupPayload();
+    await fetch(BACKUP_URL, { method: 'POST', body: JSON.stringify(payload) });
+    console.log('[Backup] Guardado completo en Google Drive ✓');
+  } catch(e) {
+    console.warn('[Backup] No se pudo enviar:', e);
+  }
 }
 
 function openRestore() {
