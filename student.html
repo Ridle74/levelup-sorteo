@@ -12313,6 +12313,61 @@ function _prepModalLogin() {
   if (typeof loadPrepHistory === 'function') loadPrepHistory();
   else _renderPreparatePane();
 }
+
+// ── Teacher: cambio de alumno sin cerrar sesión ───────────────
+function _isTeacher() {
+  return sessionStorage.getItem('_teacherSession') === '0';
+}
+function _prepOpenSwitchModal() {
+  const modal = document.getElementById('prep-switch-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  const list = document.getElementById('prep-switch-list');
+  if (!list) return;
+  list.innerHTML = '';
+  // Botón "Volver al Profesor" solo si está impersonando
+  if (_isTeacher()) {
+    const b = document.createElement('button');
+    b.onclick = _prepReturnToTeacher;
+    b.className = 'btn-login';
+    b.style.cssText = 'background:linear-gradient(135deg,#6366f1,#4f46e5);border:none;margin-bottom:2px';
+    b.innerHTML = '👨🏻‍🏫 Volver al Profesor';
+    list.appendChild(b);
+    const sep = document.createElement('div');
+    sep.style.cssText = 'height:1px;background:rgba(255,255,255,0.08);margin:10px 0 6px';
+    list.appendChild(sep);
+  }
+  // Lista de alumnos (sin PIN)
+  const curId = getLoggedId();
+  getStudents().forEach(s => {
+    const isCur = curId === s.id;
+    const b = document.createElement('button');
+    if (!isCur) b.onclick = () => _prepSwitchToStudent(s.id);
+    b.style.cssText = `width:100%;background:${isCur?'rgba(149,193,31,0.15)':'rgba(255,255,255,0.04)'};border:1px solid ${isCur?'rgba(149,193,31,0.5)':'rgba(255,255,255,0.1)'};color:${isCur?'#95C11F':'#e2e8f0'};border-radius:12px;padding:10px 14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.03em;cursor:${isCur?'default':'pointer'};display:flex;align-items:center;gap:10px;text-align:left;box-sizing:border-box`;
+    b.innerHTML = `<span style="font-size:18px">${s.icon||'👤'}</span><span style="flex:1">${s.name}</span>${isCur?'<span style="font-size:10px;background:#95C11F;color:#fff;border-radius:6px;padding:2px 7px;font-weight:900">AHORA</span>':''}`;
+    list.appendChild(b);
+  });
+}
+function _prepCloseSwitchModal() {
+  const m = document.getElementById('prep-switch-modal');
+  if (m) m.style.display = 'none';
+}
+function _prepSwitchToStudent(id) {
+  sessionStorage.setItem('_teacherSession', '0');
+  setLoggedId(id);
+  _prepCloseSwitchModal();
+  if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
+  if (typeof loadPrepHistory === 'function') loadPrepHistory();
+  else if (typeof _renderPreparatePane === 'function') _renderPreparatePane();
+}
+function _prepReturnToTeacher() {
+  sessionStorage.removeItem('_teacherSession');
+  setLoggedId(0);
+  _prepCloseSwitchModal();
+  if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
+  if (typeof _prepAdminHistData !== 'undefined') { _prepAdminHistData = null; _prepAdminHistLoading = false; }
+  if (typeof _renderPreparatePane === 'function') _renderPreparatePane();
+}
 </script>
 
 <!-- PREP LOGOUT MODAL -->
@@ -12955,6 +13010,29 @@ function _prepPinConfirm() {
   }
 }
 </script>
+
+<!-- PREP SWITCH MODAL (solo profesor) -->
+<div id="prep-switch-modal" onclick="if(event.target===this)_prepCloseSwitchModal()" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,11,22,0.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;box-sizing:border-box">
+  <div style="width:100%;max-width:340px;background:#111827;border-radius:20px;padding:28px;box-sizing:border-box;max-height:80vh;overflow-y:auto;position:relative">
+    <button onclick="_prepCloseSwitchModal()" style="position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:none;color:rgba(255,255,255,0.6);width:30px;height:30px;border-radius:8px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:28px;margin-bottom:6px">👥</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#fff;letter-spacing:.05em">Resolver como alumno</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px">Selecciona un alumno para practicar en su cuenta</div>
+    </div>
+    <div id="prep-switch-list" style="display:flex;flex-direction:column;gap:6px"></div>
+  </div>
+</div>
+
+<!-- FLOATING BAR: profesor viendo como alumno -->
+<div id="teacher-switch-bar" onclick="_prepReturnToTeacher()" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:8888;background:#6366f1;border:1px solid rgba(99,102,241,0.6);border-radius:24px;padding:8px 16px 8px 12px;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(99,102,241,0.55);cursor:pointer;font-family:'Barlow Condensed',sans-serif;white-space:nowrap">
+  <span id="teacher-switch-bar-ico" style="font-size:18px">👤</span>
+  <div style="display:flex;flex-direction:column;line-height:1.15">
+    <span style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;letter-spacing:.09em;text-transform:uppercase">Viendo como</span>
+    <span id="teacher-switch-bar-name" style="font-size:14px;color:#fff;font-weight:900;letter-spacing:.03em"></span>
+  </div>
+  <span style="font-size:11px;background:rgba(255,255,255,0.18);border-radius:8px;padding:3px 9px;color:#fff;font-weight:900;letter-spacing:.05em">← Volver</span>
+</div>
 
 </body>
 </html>

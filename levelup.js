@@ -11478,6 +11478,22 @@ function _renderPreparatePane() {
   const inp = document.getElementById('prep-ans-input');
   if (inp) { if (savedVal) inp.value = savedVal; inp.focus(); }
   try { _prepSyncUrl(); } catch(e) {}
+  // Actualizar floating bar de impersonación (ocultar mientras resuelve)
+  try {
+    const _tbar = document.getElementById('teacher-switch-bar');
+    const _imp = typeof _isTeacher === 'function' && _isTeacher();
+    const _solving = _prep.state === 'exam';
+    if (_tbar) {
+      _tbar.style.display = (_imp && !_solving) ? 'flex' : 'none';
+      if (_imp) {
+        const _curS = getFullList().find(x => x.id === getLoggedId());
+        const _tbarName = document.getElementById('teacher-switch-bar-name');
+        if (_tbarName && _curS) _tbarName.textContent = (_curS.name?.split(' ')[0] || 'Alumno');
+        const _tbarIco = document.getElementById('teacher-switch-bar-ico');
+        if (_tbarIco && _curS) _tbarIco.textContent = _curS.icon || '👤';
+      }
+    }
+  } catch(e) {}
 }
 function _preparatePaneHtml() {
   if (_prep.state === 'config') return _prepConfigHtml();
@@ -11696,15 +11712,21 @@ function _prepConfigHtml() {
   }).join('');
   const _loggedId = typeof getLoggedId === 'function' ? getLoggedId() : null;
   const _isLogged = _loggedId !== null || (typeof isAdmin === 'function' && isAdmin());
+  const _isAdminMode = typeof isAdmin === 'function' && isAdmin();       // Profesor en su cuenta
+  const _isImpersonating = typeof _isTeacher === 'function' && _isTeacher(); // Profe viendo como alumno
   const _studentFullName = _isLogged ? (()=>{ try { const s=getFullList().find(x=>x.id===_loggedId); return s?.name||null; } catch(e){return null;} })() : null;
   const _studentIcon     = _isLogged ? (()=>{ try { const s=getFullList().find(x=>x.id===_loggedId); return s?.icon||'👤'; } catch(e){return '👤';} })() : null;
   const _studentName = _studentFullName ? _studentFullName.split(' ')[0] : null;
   const _btnStyle  = `background:#95C11F;border-color:#7ca010;color:#fff;font-weight:400;gap:5px`;
   const _btnArrow  = `<img src="/flecha-back.svg" style="height:11px;width:auto;display:block;transform:scaleX(-1);filter:brightness(0) invert(1)">`;
   const _btnEMlogo = `<img src="/emaths-logo.svg" style="height:13px;width:auto;display:block">`;
-  const _inicioBtn = _isLogged
-    ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="_prepOpenLogoutModal()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Inicio'}</button>`
-    : `<button class="prep-sel-btn" style="background:#fff;border-color:#ddd;color:#111;font-weight:600;gap:5px" onclick="_prepOpenLoginModal()">👤 Inicia sesión</button>`;
+  const _inicioBtn = _isAdminMode
+    ? `<div style="display:flex;gap:4px;align-items:center"><button class="prep-sel-btn" style="${_btnStyle}" onclick="_prepOpenLogoutModal()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Inicio'}</button><button class="prep-sel-btn" onclick="_prepOpenSwitchModal()" title="Resolver como alumno" style="flex-shrink:0;min-width:0;padding:0 11px;background:#ffffff;border-color:#d1d5db;color:#111;font-size:15px">🧑</button></div>`
+    : _isImpersonating
+      ? `<div style="display:flex;gap:4px;align-items:center"><button class="prep-sel-btn" style="${_btnStyle}" onclick="_prepOpenSwitchModal()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Alumno'}</button><button class="prep-sel-btn" onclick="_prepOpenSwitchModal()" title="Cambiar alumno" style="flex-shrink:0;min-width:0;padding:0 11px;background:#ffffff;border-color:#d1d5db;color:#111;font-size:15px">🧑</button></div>`
+      : _isLogged
+        ? `<button class="prep-sel-btn" style="${_btnStyle}" onclick="_prepOpenLogoutModal()">${_btnArrow}<span class="prep-mob-ico" style="font-size:15px;line-height:1">${_studentIcon}</span> ${_studentName||'Inicio'}</button>`
+        : `<button class="prep-sel-btn" style="background:#fff;border-color:#ddd;color:#111;font-weight:600;gap:5px" onclick="_prepOpenLoginModal()">👤 Inicia sesión</button>`;
   const sidebar = `<div class="prep-kh-sidebar">
     <div class="prep-kh-sidebar-inicio">
       ${_inicioBtn}
