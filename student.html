@@ -7594,6 +7594,8 @@ function vTablero() {
       <button class="btn-admin btn-neon-rep" onclick="openReportModal()">🎯 REPORTE</button>
       <button class="btn-admin btn-neon-rst" onclick="openReset()">💥 RESET</button>
       <button class="btn-admin btn-neon-preguntas" onclick="openQuestionsModal()">📚 PREGUNTAS</button>
+      <button class="btn-admin" style="background:#7c3aed;color:#fff" onclick="downloadBackup()">💾 BACKUP</button>
+      <button class="btn-admin" style="background:#0369a1;color:#fff" onclick="openRestore()">↩️ RESTAURAR</button>
     </div>
   </header>
 
@@ -12153,6 +12155,53 @@ PADRES_REF.onSnapshot(doc => {
   }
 }, err => console.error('[Firebase padres]', err));
 
+// ── BACKUP ──────────────────────────────────────────────────
+const BACKUP_URL = 'https://script.google.com/macros/s/AKfycbw3AX1FFUHDlBjYvqooIHIbLDo_pkq0lgMamXNDIM3voF2aXkGJq3PdgBoUdV3wJ_8/exec';
+
+function downloadBackup() {
+  const data = { timestamp: new Date().toISOString(), allocations, overrides, config: appConfig };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'backup-sorteo-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  showToast('Backup descargado ✓', 'success');
+}
+
+let _backupTimer = null;
+function scheduleAutoBackup() {
+  if (!BACKUP_URL) return;
+  clearTimeout(_backupTimer);
+  _backupTimer = setTimeout(sendAutoBackup, 6000);
+}
+
+function sendAutoBackup() {
+  if (!BACKUP_URL) return;
+  fetch(BACKUP_URL, { method: 'POST', body: JSON.stringify({ allocations, overrides, config: appConfig }) })
+    .then(() => console.log('[Backup] Guardado en Google Sheets ✓'))
+    .catch(e => console.warn('[Backup] No se pudo enviar:', e));
+}
+
+function openRestore() {
+  const json = prompt('Pega aquí el JSON del backup...');
+  if (!json) return;
+  try {
+    const parsed = JSON.parse(json);
+    const alloc = parsed.allocations !== undefined ? parsed.allocations : parsed;
+    if (typeof alloc !== 'object' || Array.isArray(alloc)) throw new Error('Formato no reconocido');
+    const keys = Object.keys(alloc).length;
+    if (!confirm(`¿Restaurar backup? Se van a cargar ${keys} asignaciones...`)) return;
+    const ovr = parsed.overrides !== undefined ? parsed.overrides : overrides;
+    const cfg = parsed.config    !== undefined ? parsed.config    : appConfig;
+    REF.set({ allocations: alloc, overrides: ovr, config: cfg })
+      .then(() => showToast('¡Backup restaurado! ✓', 'success'))
+      .catch(e => showToast('Error al restaurar: ' + e.message));
+  } catch (e) {
+    showToast('JSON inválido: ' + e.message);
+  }
+}
+// ── FIN BACKUP ───────────────────────────────────────────────
+
 REF.onSnapshot(doc => {
   const data = doc.exists ? doc.data() : {};
   allocations = data.allocations || {};
@@ -12183,6 +12232,7 @@ REF.onSnapshot(doc => {
         saveTaskMultipliers(fresh => ({ ...fresh, [String(joanna.id)]: 3 }));
       }
     })();
+    scheduleAutoBackup();
   } else {
     console.error('[Firebase] sorteo/main no existe en el snapshot recibido — se bloquean los guardados.');
   }
