@@ -11290,56 +11290,45 @@ function _genRg10_BQ2(){return _bqSrcPick(['rg10_b3','rg10_b4'],[_genRg10_B3,_ge
 _SKILL_META['rg10_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Sumas con 8 y 9',qCount:10,gen:_genRg10_BQ2,quiz:true,srcKeys:['rg10_b3','rg10_b4']};
 
 // ── Restas con Regletas – Estrategia de la Decena  1° Primaria – Belén ──────
-// Operación inversa de rg10: C − A = (10+rest) − A = comp + rest
+// Restas con Regletas – Estrategia de la Decena
+// Estrategia: C − A donde C=10+rest, A=rest+rem  →  10 − rem = resultado
+// Ejemplo: 14−6: rest=4 (unidades), rem=6−4=2 (lo que aún falta restar), 10−2=8
 // Reutiliza: _rg10r, _rg10s, _rg10Rod, _rg10Wrongs, _RG_C, _RG_N
 
-function _rs10SVG(A,C,mode,hideComp,hideResult,hideRest){
-  var rest=C-10, comp=10-A, result=C-A;
-  var S=30,H=40,PAD=12,G=10,MW=18;
+function _rs10SVG(A,C,mode,hideRem,hideResult){
+  var rest=C-10, rem=A-rest, result=10-rem;
+  var S=30,H=40,PAD=12,G=8;
+  var vw=PAD+10*S+G+Math.max(rest*S+G+30, rem*S+G+50);
   var nR=mode===0?1:mode===1?2:3;
-  // Row-1 width: |10|+G+|rest| + G+MW + |A|
-  var w1=PAD+10*S+(rest>0?G+rest*S:0)+G+MW+A*S+PAD;
-  // Row-2/3 width: |comp|+G+|rest| + G + "= N"
-  var w23=PAD+comp*S+(rest>0?G+rest*S:0)+G+60;
-  var vw=Math.max(w1,w23);
   var vh=nR*(H+G)+G+4;
   var o='<svg viewBox="0 0 '+vw+' '+vh+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:'+vw+'px;margin:4px auto;display:block">';
   var y=G;
-  // ── Fila 1: [10] + [rest o ?]  −  [A] ──────────────────────────────────
+  // ── Fila 1: [10] + [rest]  etiqueta "− A" ────────────────────────────────
   o+=_rg10Rod(PAD,y,10,S,H);
-  var x1=PAD+10*S;
-  if(rest>0){
-    if(hideRest){
-      var rw=rest*S;
-      o+='<rect x="'+(x1+G)+'" y="'+y+'" width="'+rw+'" height="'+H+'" fill="rgba(255,215,0,0.12)" rx="3" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>';
-      o+='<text x="'+(x1+G+rw/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="#ffd700" font-weight="900" font-family="sans-serif">?</text>';
-    } else {
-      o+=_rg10Rod(x1+G,y,rest,S,H);
-    }
-    x1+=G+rest*S;
-  }
-  o+='<text x="'+(x1+G+MW/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="rgba(255,255,255,0.7)" font-family="sans-serif" font-weight="700">−</text>';
-  o+=_rg10Rod(x1+G+MW,y,A,S,H);
-  // ── Fila 2: [comp o ?] + [rest] ─────────────────────────────────────────
+  if(rest>0) o+=_rg10Rod(PAD+10*S+G,y,rest,S,H);
+  var xLbl=PAD+10*S+G+(rest>0?rest*S+G:0);
+  o+='<text x="'+xLbl+'" y="'+(y+H/2+6)+'" font-size="19" fill="rgba(255,255,255,0.65)" font-family="sans-serif" font-weight="700">− '+A+'</text>';
+  // ── Fila 2: [10] − [rem o ?] ─────────────────────────────────────────────
   if(mode>=1){
     y+=H+G;
-    if(hideComp){
-      var cw=comp*S;
-      o+='<rect x="'+PAD+'" y="'+y+'" width="'+cw+'" height="'+H+'" fill="rgba(255,215,0,0.12)" rx="3" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>';
-      o+='<text x="'+(PAD+cw/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="#ffd700" font-weight="900" font-family="sans-serif">?</text>';
+    o+=_rg10Rod(PAD,y,10,S,H);
+    var xM=PAD+10*S+G;
+    o+='<text x="'+xM+'" y="'+(y+H/2+6)+'" font-size="19" fill="rgba(255,255,255,0.65)" font-family="sans-serif" font-weight="700">−</text>';
+    var xR=xM+22;
+    if(hideRem){
+      var rw=rem*S;
+      o+='<rect x="'+xR+'" y="'+y+'" width="'+rw+'" height="'+H+'" fill="rgba(255,215,0,0.12)" rx="3" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>';
+      o+='<text x="'+(xR+rw/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="#ffd700" font-weight="900" font-family="sans-serif">?</text>';
     } else {
-      o+=_rg10Rod(PAD,y,comp,S,H);
+      if(rem>0) o+=_rg10Rod(xR,y,rem,S,H);
     }
-    if(rest>0) o+=_rg10Rod(PAD+comp*S+G,y,rest,S,H);
   }
-  // ── Fila 3: [comp] + [rest] = result ────────────────────────────────────
+  // ── Fila 3: [result] = N ─────────────────────────────────────────────────
   if(mode>=2){
     y+=H+G;
-    o+=_rg10Rod(PAD,y,comp,S,H);
-    if(rest>0) o+=_rg10Rod(PAD+comp*S+G,y,rest,S,H);
+    o+=_rg10Rod(PAD,y,result,S,H);
     if(!hideResult){
-      var rx=PAD+comp*S+(rest>0?G+rest*S:0)+G;
-      o+='<text x="'+rx+'" y="'+(y+H/2+6)+'" font-size="20" fill="#ffd700" font-weight="700" font-family="sans-serif">= '+result+'</text>';
+      o+='<text x="'+(PAD+result*S+G)+'" y="'+(y+H/2+6)+'" font-size="20" fill="#ffd700" font-weight="700" font-family="sans-serif">= '+result+'</text>';
     }
   }
   return o+'</svg>';
@@ -11347,83 +11336,83 @@ function _rs10SVG(A,C,mode,hideComp,hideResult,hideRest){
 
 function _rs10Gen(A){
   var C=_rg10r(11,A+9);
-  var rest=C-10, comp=10-A, result=C-A;
+  var rest=C-10, rem=A-rest, result=10-rem;
   var t=_rg10r(0,7);
   var W='<div style="display:block;width:100%;text-align:center">',E='</div>';
   var QL='<div style="font-size:13px;margin-top:5px;color:rgba(255,255,255,0.9);line-height:1.4">',QE='</div>';
   var sh=_rg10s;
   if(t===0){
-    // P1: ¿Cuánto sobra del minuendo al quitar 10? → rest
-    var q=W+_rs10SVG(A,C,0,false,false,true)+QL+'En la resta <b>'+C+'−'+A+'</b>, el minuendo <b>'+C+'</b> es 10 + <span style="color:#ffd700;font-weight:800">?</span>. ¿Cuánto vale el <span style="color:#ffd700;font-weight:800">?</span>?'+QE+E;
-    var wr=_rg10Wrongs(rest,[rest-1,rest+1,rest+2,rest+3,A,comp].filter(function(v){return v>0&&v<=9;}));
-    return{q:q,a:String(rest),opts:sh([String(rest)].concat(wr)),mc:true,
-      ste:C+'= 10 + '+rest+'. Sobran '+rest+' (regleta '+_RG_N[rest]+').'};
+    // P1: ¿Cuánto queda por restar del A después de usar las unidades? → rem
+    var q=W+_rs10SVG(A,C,0)+QL+'En <b>'+C+'−'+A+'</b>, usamos las <b>'+rest+'</b> unidades para restar parte del <b>'+A+'</b>. ¿Cuánto queda aún por restar del <b>'+A+'</b>?'+QE+E;
+    var wr=_rg10Wrongs(rem,[rem-1,rem+1,rem+2,rem+3,rest,A].filter(function(v){return v>0&&v<=9;}));
+    return{q:q,a:String(rem),opts:sh([String(rem)].concat(wr)),mc:true,
+      ste:A+'−'+rest+'='+rem+'. Aún faltan '+rem+' por restar de la decena.'};
   }
   if(t===1){
-    // P2: ¿Cuánto es 10−A? → comp (regleta oculta)
-    var q=W+_rs10SVG(A,C,1,true)+QL+'Al restar <b>'+A+'</b> de la decena, ¿cuánto queda? <b>10 − '+A+' = <span style="color:#ffd700;font-weight:800">?</span></b>'+QE+E;
-    var wr=_rg10Wrongs(comp,[comp-1,comp+1,comp+2,comp+3,A,rest].filter(function(v){return v>0&&v<=9;}));
-    return{q:q,a:String(comp),opts:sh([String(comp)].concat(wr)),mc:true,
-      ste:'10−'+A+'='+comp+'. Queda la regleta '+_RG_N[comp]+' ('+comp+').'};
+    // P2: ¿Cuánto queda de la decena al restarle rem? (regleta oculta) → result
+    var q=W+_rs10SVG(A,C,1,true)+QL+'Ya restamos las unidades. Ahora <b>10 − '+rem+' = <span style="color:#ffd700;font-weight:800">?</span></b>'+QE+E;
+    var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2,rem,rest].filter(function(v){return v>0&&v<=9;}));
+    return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
+      ste:'10−'+rem+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
   }
   if(t===2){
-    // P3: ¿Cuánto es C−A? visual completo, resultado oculto
+    // P3: ¿Cuánto es C−A? visual 3 filas, resultado oculto
     var q=W+_rs10SVG(A,C,2,false,true)+QL+'Usando la estrategia de la decena, ¿cuánto es <b>'+C+'−'+A+'</b>?'+QE+E;
     var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2,result-3,result+3].filter(function(v){return v>0;}));
     return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
-      ste:'10−'+A+'='+comp+'. '+comp+'+'+rest+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
+      ste:A+'−'+rest+'='+rem+' (usamos las unidades). Luego 10−'+rem+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
   }
   if(t===3){
-    // P4: Desde el complemento — comp + rest = ?
-    var q=W+_rs10SVG(A,C,1)+QL+'Al restar <b>'+C+'−'+A+'</b>, el complemento es <b>'+comp+'</b> y sobra <b>'+rest+'</b>. ¿Cuánto es <b>'+comp+' + '+rest+'</b>?'+QE+E;
+    // P4: Desde el paso intermedio — ya usamos las unidades, ¿cuánto es 10 − rem?
+    var q=W+_rs10SVG(A,C,1)+QL+'Al restar <b>'+C+'−'+A+'</b>, las '+rest+' unidades restan parte del '+A+' y quedan <b>'+rem+'</b> por restar. ¿Cuánto es <b>10 − '+rem+'</b>?'+QE+E;
     var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2].filter(function(v){return v>0;}));
     return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
-      ste:comp+'+'+rest+'='+result+'. Por eso '+C+'−'+A+'='+result+'.'};
+      ste:'10−'+rem+'='+result+'. Por eso '+C+'−'+A+'='+result+'.'};
   }
   if(t===4){
     // P5: Ecuación paso a paso sin SVG
-    var q=W+QL+'Completa: <b>'+C+' − '+A+' = (10 + '+rest+') − '+A+' = '+comp+' + '+rest+' = ?</b>'+QE+E;
+    var q=W+QL+'Completa: <b>'+C+' − '+A+' = (10 + '+rest+') − ('+rest+' + '+rem+') = 10 − '+rem+' = ?</b>'+QE+E;
     var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2].filter(function(v){return v>0;}));
     return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
-      ste:'Paso a paso: 10−'+A+'='+comp+', luego '+comp+'+'+rest+'='+result+'.'};
+      ste:'Las '+rest+' unidades restan parte del '+A+'; quedan '+rem+' → 10−'+rem+'='+result+'.'};
   }
   if(t===5){
-    // P6: ¿De qué color es la regleta que sobra del minuendo? (rest)
-    var nRest=_RG_N[rest];
-    var wrongColors=sh([1,2,3,4,5,6,7,8,9].filter(function(v){return v!==rest;})).slice(0,3).map(function(v){return _RG_N[v];});
-    var q=W+_rs10SVG(A,C,0,false,false,true)+QL+'En <b>'+C+'−'+A+'</b>, el '+C+' = 10 + '+rest+'. ¿De qué color es la regleta del <b>'+rest+'</b>?'+QE+E;
-    return{q:q,a:nRest,opts:sh([nRest].concat(wrongColors)),mc:true,
-      ste:C+'=10+'+rest+'. La regleta del '+rest+' es '+nRest+'.'};
+    // P6: ¿De qué color es la regleta que queda por restar (rem)?
+    var nRem=_RG_N[rem];
+    var wrongColors=sh([1,2,3,4,5,6,7,8,9].filter(function(v){return v!==rem;})).slice(0,3).map(function(v){return _RG_N[v];});
+    var q=W+_rs10SVG(A,C,0)+QL+'Al restar <b>'+C+'−'+A+'</b>, usamos '+rest+' unidades y quedan <b>'+rem+'</b> por restar de la decena. ¿De qué color es la regleta del <b>'+rem+'</b>?'+QE+E;
+    return{q:q,a:nRem,opts:sh([nRem].concat(wrongColors)),mc:true,
+      ste:A+'−'+rest+'='+rem+'. La regleta del '+rem+' es '+nRem+'.'};
   }
   if(t===6){
-    // P7: ¿De qué color es la regleta complemento? (comp)
-    var nComp=_RG_N[comp];
-    var wrongColors=sh([1,2,3,4,5,6,7,8,9].filter(function(v){return v!==comp;})).slice(0,3).map(function(v){return _RG_N[v];});
-    var q=W+_rs10SVG(A,C,0)+QL+'Al restar <b>'+A+'</b> de la decena quedan <b>'+comp+'</b>. ¿De qué color es la regleta del <b>'+comp+'</b>?'+QE+E;
-    return{q:q,a:nComp,opts:sh([nComp].concat(wrongColors)),mc:true,
-      ste:'10−'+A+'='+comp+'. La regleta del '+comp+' es de color '+nComp+'.'};
+    // P7: ¿De qué color es la regleta resultado?
+    var nResult=_RG_N[result];
+    var wrongColors=sh([1,2,3,4,5,6,7,8,9].filter(function(v){return v!==result;})).slice(0,3).map(function(v){return _RG_N[v];});
+    var q=W+_rs10SVG(A,C,1)+QL+'Al calcular <b>'+C+'−'+A+'</b>, quedó la regleta del <b>'+result+'</b>. ¿De qué color es?'+QE+E;
+    return{q:q,a:nResult,opts:sh([nResult].concat(wrongColors)),mc:true,
+      ste:'10−'+rem+'='+result+'. La regleta del '+result+' es de color '+nResult+'.'};
   }
-  // P8: 3 filas visibles, deducir resultado
-  var q=W+_rs10SVG(A,C,2,false,true)+QL+'Observa las regletas. La fila de abajo es <b>'+comp+' + '+rest+'</b>. ¿Cuánto es <b>'+C+' − '+A+'</b>?'+QE+E;
+  // P8: 3 filas visibles, resultado oculto — alumno deduce
+  var q=W+_rs10SVG(A,C,2,false,true)+QL+'Observa las regletas. La fila del medio muestra <b>10 − '+rem+'</b>. ¿Cuánto es <b>'+C+' − '+A+'</b>?'+QE+E;
   var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2,result-3].filter(function(v){return v>0;}));
   return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
-    ste:'La fila de abajo muestra '+comp+'+'+rest+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
+    ste:'10−'+rem+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
 }
 
 function _genRs10_B1(){return _rs10Gen(6);}
 _SKILL_META['rs10_b1']={ico:'🖼',lbl:'Restas con 6 pasando la decena',qCount:4,gen:_genRs10_B1,
-  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+  plantillas:['Cuánto queda por restar','10 − rem (regleta oculta)','Resta completa visual','Desde el paso intermedio','Ecuación paso a paso','Color del resto por restar','Color de la regleta resultado','Razonamiento']};
 function _genRs10_B2(){return _rs10Gen(7);}
 _SKILL_META['rs10_b2']={ico:'🖼',lbl:'Restas con 7 pasando la decena',qCount:4,gen:_genRs10_B2,
-  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+  plantillas:['Cuánto queda por restar','10 − rem (regleta oculta)','Resta completa visual','Desde el paso intermedio','Ecuación paso a paso','Color del resto por restar','Color de la regleta resultado','Razonamiento']};
 function _genRs10_BQ1(){return _bqSrcPick(['rs10_b1','rs10_b2'],[_genRs10_B1,_genRs10_B2]);}
 _SKILL_META['rs10_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Restas con 6 y 7',qCount:10,gen:_genRs10_BQ1,quiz:true,srcKeys:['rs10_b1','rs10_b2']};
 function _genRs10_B3(){return _rs10Gen(8);}
 _SKILL_META['rs10_b3']={ico:'🖼',lbl:'Restas con 8 pasando la decena',qCount:4,gen:_genRs10_B3,
-  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+  plantillas:['Cuánto queda por restar','10 − rem (regleta oculta)','Resta completa visual','Desde el paso intermedio','Ecuación paso a paso','Color del resto por restar','Color de la regleta resultado','Razonamiento']};
 function _genRs10_B4(){return _rs10Gen(9);}
 _SKILL_META['rs10_b4']={ico:'🖼',lbl:'Restas con 9 pasando la decena',qCount:4,gen:_genRs10_B4,
-  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+  plantillas:['Cuánto queda por restar','10 − rem (regleta oculta)','Resta completa visual','Desde el paso intermedio','Ecuación paso a paso','Color del resto por restar','Color de la regleta resultado','Razonamiento']};
 function _genRs10_BQ2(){return _bqSrcPick(['rs10_b3','rs10_b4'],[_genRs10_B3,_genRs10_B4]);}
 _SKILL_META['rs10_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Restas con 8 y 9',qCount:10,gen:_genRs10_BQ2,quiz:true,srcKeys:['rs10_b3','rs10_b4']};
 
