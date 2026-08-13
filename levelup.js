@@ -8310,10 +8310,10 @@ function _genI1A_MON_B1(){
     {_id:11,q:'M = 5xy²z. Halla (GA + GR(y)) / (GR(x) + GR(z)).',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'GA=4, GR(y)=2, GR(x)=1, GR(z)=1. (4+2)/(1+1) = 6/2 = 3.'},
     {_id:12,q:'M = x⁴y⁴z⁴. Halla (GA + GR(y)) / (GR(x) + GR(z)).',a:'2',opts:_i4gshuf(['2','3','4','1']),mc:true,ste:'GA=12, GR(y)=4, GR(x)=4, GR(z)=4. (12+4)/(4+4) = 16/8 = 2.'},
     // P4: GR(x)=k1, GR(y)=k2, hallar m+n
-    {_id:13,q:'M = x^(2m−1)·y^(n+3)·z². Si GR(x)=3 y GR(y)=5, halla m+n.',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'2m−1=3 → m=2. n+3=5 → n=2. m+n=4.'},
-    {_id:14,q:'M = x^(m+2)·y^(2n−1). Si GR(x)=5 y GR(y)=3, halla m+n.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'m+2=5 → m=3. 2n−1=3 → n=2. m+n=5.'},
-    {_id:15,q:'M = x^(3m)·y^(n+1)·z. Si GR(x)=6 y GR(y)=4, halla m+n.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'3m=6 → m=2. n+1=4 → n=3. m+n=5.'},
-    {_id:16,q:'M = x^(2m+1)·y^(n−2). Si GR(x)=7 y GR(y)=1, halla m+n.',a:'6',opts:_i4gshuf(['6','5','7','8']),mc:true,ste:'2m+1=7 → m=3. n−2=1 → n=3. m+n=6.'},
+    {_id:13,q:'M = x<sup>2m−1</sup>·y<sup>n+3</sup>·z². Si GR(x)=3 y GR(y)=5, halla m+n.',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'2m−1=3 → m=2. n+3=5 → n=2. m+n=4.'},
+    {_id:14,q:'M = x<sup>m+2</sup>·y<sup>2n−1</sup>. Si GR(x)=5 y GR(y)=3, halla m+n.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'m+2=5 → m=3. 2n−1=3 → n=2. m+n=5.'},
+    {_id:15,q:'M = x<sup>3m</sup>·y<sup>n+1</sup>·z. Si GR(x)=6 y GR(y)=4, halla m+n.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'3m=6 → m=2. n+1=4 → n=3. m+n=5.'},
+    {_id:16,q:'M = x<sup>2m+1</sup>·y<sup>n−2</sup>. Si GR(x)=7 y GR(y)=1, halla m+n.',a:'6',opts:_i4gshuf(['6','5','7','8']),mc:true,ste:'2m+1=7 → m=3. n−2=1 → n=3. m+n=6.'},
     // P5: Monomio cociente, hallar GR(y)
     {_id:17,q:'Q = (8x⁶y⁵z⁴) / (2x²y²z). Halla GR(y) del cociente Q.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'Q = 4x⁴y³z³. GR(y) = 5−2 = 3.'},
     {_id:18,q:'Q = (12x⁵y⁷z⁶) / (4x²y⁴z²). Halla GR(y) del cociente Q.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'Q = 3x³y³z⁴. GR(y) = 7−4 = 3.'},
@@ -8326,33 +8326,33 @@ _SKILL_META['i1a_mon_b1']={ico:'📐',lbl:'Grado absoluto y grado relativo de mo
 function _genI1A_MON_B2(){
   return _i4gpick([
     // P1: M(x) con exp lineal en a, dado GA=k, hallar a
-    {_id:1,q:'M = 3x^(2a−1). Si GA=5, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'2a−1=5 → 2a=6 → a=3.'},
-    {_id:2,q:'M = 5x^(3a+2). Si GA=8, halla a.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'3a+2=8 → 3a=6 → a=2.'},
-    {_id:3,q:'M = 2x^(a+4). Si GA=7, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'a+4=7 → a=3.'},
-    {_id:4,q:'M = x^(4a−3). Si GA=9, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'4a−3=9 → 4a=12 → a=3.'},
+    {_id:1,q:'M = 3x<sup>2a−1</sup>. Si GA=5, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'2a−1=5 → 2a=6 → a=3.'},
+    {_id:2,q:'M = 5x<sup>3a+2</sup>. Si GA=8, halla a.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'3a+2=8 → 3a=6 → a=2.'},
+    {_id:3,q:'M = 2x<sup>a+4</sup>. Si GA=7, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'a+4=7 → a=3.'},
+    {_id:4,q:'M = x<sup>4a−3</sup>. Si GA=9, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'4a−3=9 → 4a=12 → a=3.'},
     // P2: Cociente/producto con exp en n, dado grado=k, hallar n
-    {_id:5,q:'Q = xⁿ · x^(n+2). Si el grado de Q es 6, halla n.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'n+(n+2)=6 → 2n+2=6 → n=2.'},
-    {_id:6,q:'Q = x^(2n) · x^(n−1). Si el grado de Q es 8, halla n.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'2n+(n−1)=8 → 3n−1=8 → n=3.'},
-    {_id:7,q:'Q = x^(3n) / x^(n−2). Si el grado de Q es 6, halla n.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'3n−(n−2)=6 → 2n+2=6 → n=2.'},
-    {_id:8,q:'Q = x^(n+3) / x^(2−n). Si el grado de Q es 7, halla n.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'(n+3)−(2−n)=7 → 2n+1=7 → n=3.'},
+    {_id:5,q:'Q = x<sup>n</sup> · x<sup>n+2</sup>. Si el grado de Q es 6, halla n.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'n+(n+2)=6 → 2n+2=6 → n=2.'},
+    {_id:6,q:'Q = x<sup>2n</sup> · x<sup>n−1</sup>. Si el grado de Q es 8, halla n.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'2n+(n−1)=8 → 3n−1=8 → n=3.'},
+    {_id:7,q:'Q = x<sup>3n</sup> / x<sup>n−2</sup>. Si el grado de Q es 6, halla n.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'3n−(n−2)=6 → 2n+2=6 → n=2.'},
+    {_id:8,q:'Q = x<sup>n+3</sup> / x<sup>2−n</sup>. Si el grado de Q es 7, halla n.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'(n+3)−(2−n)=7 → 2n+1=7 → n=3.'},
     // P3: M(x;y;z) exp en p,q,r, dado GA=k, hallar p+q+r
-    {_id:9,q:'M = x^(p+1)·y^(q−1)·z^r. Si GA=10, halla p+q+r.',a:'10',opts:_i4gshuf(['10','9','11','8']),mc:true,ste:'GA=(p+1)+(q−1)+r=p+q+r=10.'},
-    {_id:10,q:'M = x^p·y^(q−1)·z^(r+2). Si GA=11, halla p+q+r.',a:'10',opts:_i4gshuf(['10','11','9','12']),mc:true,ste:'p+(q−1)+(r+2)=11 → p+q+r+1=11 → p+q+r=10.'},
-    {_id:11,q:'M = x^p·y^(q+3)·z^(r−1). Si GA=14, halla p+q+r.',a:'12',opts:_i4gshuf(['12','14','10','11']),mc:true,ste:'p+(q+3)+(r−1)=14 → p+q+r+2=14 → p+q+r=12.'},
-    {_id:12,q:'M = x^(p−2)·y^q·z^(r+4). Si GA=9, halla p+q+r.',a:'7',opts:_i4gshuf(['7','9','5','11']),mc:true,ste:'(p−2)+q+(r+4)=9 → p+q+r+2=9 → p+q+r=7.'},
+    {_id:9,q:'M = x<sup>p+1</sup>·y<sup>q−1</sup>·z<sup>r</sup>. Si GA=10, halla p+q+r.',a:'10',opts:_i4gshuf(['10','9','11','8']),mc:true,ste:'GA=(p+1)+(q−1)+r=p+q+r=10.'},
+    {_id:10,q:'M = x<sup>p</sup>·y<sup>q−1</sup>·z<sup>r+2</sup>. Si GA=11, halla p+q+r.',a:'10',opts:_i4gshuf(['10','11','9','12']),mc:true,ste:'p+(q−1)+(r+2)=11 → p+q+r+1=11 → p+q+r=10.'},
+    {_id:11,q:'M = x<sup>p</sup>·y<sup>q+3</sup>·z<sup>r−1</sup>. Si GA=14, halla p+q+r.',a:'12',opts:_i4gshuf(['12','14','10','11']),mc:true,ste:'p+(q+3)+(r−1)=14 → p+q+r+2=14 → p+q+r=12.'},
+    {_id:12,q:'M = x<sup>p−2</sup>·y<sup>q</sup>·z<sup>r+4</sup>. Si GA=9, halla p+q+r.',a:'7',opts:_i4gshuf(['7','9','5','11']),mc:true,ste:'(p−2)+q+(r+4)=9 → p+q+r+2=9 → p+q+r=7.'},
     // P4: Expresión compuesta con paréntesis, dado grado=k, hallar a
-    {_id:13,q:'M = [(x^(a−1))²·x^(a+2)]³. Si GA=18, halla a.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Exp = [2(a−1)+(a+2)]·3 = [3a]·3 = 9a = 18 → a=2.'},
-    {_id:14,q:'M = [x^(2a−1)·x^(a+3)]². Si GA=16, halla a.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Exp = [2a−1+a+3]·2 = [3a+2]·2 = 6a+4 = 16 → a=2.'},
-    {_id:15,q:'M = [(x^a)²·x^(3−a)]². Si GA=12, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'Exp = [2a+3−a]·2 = [a+3]·2 = 2a+6 = 12 → a=3.'},
-    {_id:16,q:'M = [(x^(a+1))³ / x^(2a−1)]². Si GA=10, halla a.',a:'1',opts:_i4gshuf(['1','2','3','4']),mc:true,ste:'Exp = [3(a+1)−(2a−1)]·2 = [a+4]·2 = 2a+8 = 10 → a=1.'},
+    {_id:13,q:'M = [(x<sup>a−1</sup>)²·x<sup>a+2</sup>]³. Si GA=18, halla a.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Exp = [2(a−1)+(a+2)]·3 = [3a]·3 = 9a = 18 → a=2.'},
+    {_id:14,q:'M = [x<sup>2a−1</sup>·x<sup>a+3</sup>]². Si GA=16, halla a.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Exp = [2a−1+a+3]·2 = [3a+2]·2 = 6a+4 = 16 → a=2.'},
+    {_id:15,q:'M = [(x<sup>a</sup>)²·x<sup>3−a</sup>]². Si GA=12, halla a.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'Exp = [2a+3−a]·2 = [a+3]·2 = 2a+6 = 12 → a=3.'},
+    {_id:16,q:'M = [(x<sup>a+1</sup>)³ / x<sup>2a−1</sup>]². Si GA=10, halla a.',a:'1',opts:_i4gshuf(['1','2','3','4']),mc:true,ste:'Exp = [3(a+1)−(2a−1)]·2 = [a+4]·2 = 2a+8 = 10 → a=1.'},
     // P5: GR(x)=n1, GR(y)=n2, hallar √(a²+b²)
-    {_id:17,q:'M = x^a·y^b. Si GR(x)=3 y GR(y)=4, halla √(a²+b²).',a:'5',opts:_i4gshuf(['5','7','4','6']),mc:true,ste:'a=3, b=4. √(9+16) = √25 = 5.'},
-    {_id:18,q:'M = x^(a+1)·y^(2b). Si GR(x)=5 y GR(y)=6, halla √(a²+b²).',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'a+1=5→a=4; 2b=6→b=3. √(16+9) = 5.'},
-    {_id:19,q:'M = x^(2a)·y^(3b). Si GR(x)=6 y GR(y)=12, halla √(a²+b²).',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'2a=6→a=3; 3b=12→b=4. √(9+16) = 5.'},
-    {_id:20,q:'M = x^a·y^b. Si GR(x)=5 y GR(y)=12, halla √(a²+b²).',a:'13',opts:_i4gshuf(['13','10','15','17']),mc:true,ste:'a=5, b=12. √(25+144) = √169 = 13.'},
+    {_id:17,q:'M = x<sup>a</sup>·y<sup>b</sup>. Si GR(x)=3 y GR(y)=4, halla √(a²+b²).',a:'5',opts:_i4gshuf(['5','7','4','6']),mc:true,ste:'a=3, b=4. √(9+16) = √25 = 5.'},
+    {_id:18,q:'M = x<sup>a+1</sup>·y<sup>2b</sup>. Si GR(x)=5 y GR(y)=6, halla √(a²+b²).',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'a+1=5→a=4; 2b=6→b=3. √(16+9) = 5.'},
+    {_id:19,q:'M = x<sup>2a</sup>·y<sup>3b</sup>. Si GR(x)=6 y GR(y)=12, halla √(a²+b²).',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'2a=6→a=3; 3b=12→b=4. √(9+16) = 5.'},
+    {_id:20,q:'M = x<sup>a</sup>·y<sup>b</sup>. Si GR(x)=5 y GR(y)=12, halla √(a²+b²).',a:'13',opts:_i4gshuf(['13','10','15','17']),mc:true,ste:'a=5, b=12. √(25+144) = √169 = 13.'},
   ]);
 }
-_SKILL_META['i1a_mon_b2']={ico:'📐',lbl:'Parámetros de monomios por grado',qCount:4,gen:_genI1A_MON_B2,plantillas:['Exp lineal en a, dado GA → hallar a','Producto/cociente de xⁿ con exp en n → hallar n','M(x;y;z) con p,q,r → hallar p+q+r','Expresión con potencias anidadas → hallar a','GR(x)=n₁ y GR(y)=n₂ → hallar √(a²+b²)']};
+_SKILL_META['i1a_mon_b2']={ico:'📐',lbl:'Parámetros de monomios por grado',qCount:4,gen:_genI1A_MON_B2,plantillas:['Exp lineal en a, dado GA → hallar a','Producto/cociente de x<sup>n</sup> con exp en n → hallar n','M(x;y;z) con p,q,r → hallar p+q+r','Expresión con potencias anidadas → hallar a','GR(x)=n₁ y GR(y)=n₂ → hallar √(a²+b²)']};
 
 function _genI1A_MON_BQ1(){return _bqSrcPick(['i1a_mon_b1','i1a_mon_b2'],[_genI1A_MON_B1,_genI1A_MON_B2]);}
 _SKILL_META['i1a_mon_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Monomios: Grado y Parámetros',qCount:10,gen:_genI1A_MON_BQ1,quiz:true,srcKeys:['i1a_mon_b1','i1a_mon_b2']};
@@ -8375,10 +8375,10 @@ function _genI1A_MON_B3(){
     {_id:11,q:'M = 5(p+q)². Halla VN sabiendo que p+q=4.',a:'80',opts:_i4gshuf(['80','40','100','20']),mc:true,ste:'VN = 5·(4²) = 5·16 = 80.'},
     {_id:12,q:'M = 3(m+n)³. Halla VN sabiendo que m+n=2.',a:'24',opts:_i4gshuf(['24','12','48','6']),mc:true,ste:'VN = 3·(2³) = 3·8 = 24.'},
     // P4: Exponentes fraccionarios (raíces)
-    {_id:13,q:'M = 4^(1/2) · x^(1/3). Halla VN para x=27.',a:'6',opts:_i4gshuf(['6','4','8','3']),mc:true,ste:'4^(1/2)=2; 27^(1/3)=3. VN = 2·3 = 6.'},
-    {_id:14,q:'M = 8^(1/3) · y². Halla VN para y=2.',a:'8',opts:_i4gshuf(['8','4','16','6']),mc:true,ste:'8^(1/3)=2; y²=4. VN = 2·4 = 8.'},
-    {_id:15,q:'M = 3 · 16^(1/4) · x. Halla VN para x=5.',a:'30',opts:_i4gshuf(['30','24','36','15']),mc:true,ste:'16^(1/4)=2; VN = 3·2·5 = 30.'},
-    {_id:16,q:'M = x^(1/2) · y^(1/3). Halla VN para x=16, y=27.',a:'12',opts:_i4gshuf(['12','9','16','6']),mc:true,ste:'16^(1/2)=4; 27^(1/3)=3. VN = 4·3 = 12.'},
+    {_id:13,q:'M = 4<sup>1/2</sup> · x<sup>1/3</sup>. Halla VN para x=27.',a:'6',opts:_i4gshuf(['6','4','8','3']),mc:true,ste:'4<sup>1/2</sup>=2; 27<sup>1/3</sup>=3. VN = 2·3 = 6.'},
+    {_id:14,q:'M = 8<sup>1/3</sup> · y². Halla VN para y=2.',a:'8',opts:_i4gshuf(['8','4','16','6']),mc:true,ste:'8<sup>1/3</sup>=2; y²=4. VN = 2·4 = 8.'},
+    {_id:15,q:'M = 3 · 16<sup>1/4</sup> · x. Halla VN para x=5.',a:'30',opts:_i4gshuf(['30','24','36','15']),mc:true,ste:'16<sup>1/4</sup>=2; VN = 3·2·5 = 30.'},
+    {_id:16,q:'M = x<sup>1/2</sup> · y<sup>1/3</sup>. Halla VN para x=16, y=27.',a:'12',opts:_i4gshuf(['12','9','16','6']),mc:true,ste:'16<sup>1/2</sup>=4; 27<sup>1/3</sup>=3. VN = 4·3 = 12.'},
     // P5: Comparar VN de dos monomios
     {_id:17,q:'M₁=3x², M₂=x³. Para x=2, halla M₁−M₂.',a:'4',opts:_i4gshuf(['4','2','6','8']),mc:true,ste:'M₁=3·4=12; M₂=8. M₁−M₂=4.'},
     {_id:18,q:'M₁=2x³, M₂=3x². Para x=3, halla M₁−M₂.',a:'27',opts:_i4gshuf(['27','18','9','54']),mc:true,ste:'M₁=2·27=54; M₂=3·9=27. M₁−M₂=27.'},
@@ -8430,15 +8430,15 @@ function _genI1A_MON_B5(){
     {_id:3,q:'¿Cuántos son semejantes a x²y? {x²y, 2x²y, 3xy², 4x²y, xy}',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'x²y, 2x²y, 4x²y tienen parte literal x²y. Total: 3.'},
     {_id:4,q:'¿Cuántos son semejantes a abc? {2abc, 3abc, abc, 5a²bc, 7abc}',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'2abc, 3abc, abc y 7abc tienen parte literal abc. Total: 4.'},
     // P2: Hallar k para que dos monomios sean semejantes (igualando exponentes)
-    {_id:5,q:'M₁=x^(k+1)·y³ y M₂=x⁴·y^k son semejantes. Halla k.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'k+1=4 → k=3. Verificar y: k=3 ✓.'},
-    {_id:6,q:'M₁=x^(2k)·y y M₂=x⁶·y son semejantes. Halla k.',a:'3',opts:_i4gshuf(['3','2','4','6']),mc:true,ste:'2k=6 → k=3.'},
-    {_id:7,q:'M₁=x^(k−1)·y² y M₂=x⁵·y² son semejantes. Halla k.',a:'6',opts:_i4gshuf(['6','5','4','7']),mc:true,ste:'k−1=5 → k=6.'},
-    {_id:8,q:'M₁=x^k·y^(k−1) y M₂=x²·y son semejantes. Halla k.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'k=2 y k−1=1 ✓. k=2.'},
+    {_id:5,q:'M₁=x<sup>k+1</sup>·y³ y M₂=x⁴·y<sup>k</sup> son semejantes. Halla k.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'k+1=4 → k=3. Verificar y: k=3 ✓.'},
+    {_id:6,q:'M₁=x<sup>2k</sup>·y y M₂=x⁶·y son semejantes. Halla k.',a:'3',opts:_i4gshuf(['3','2','4','6']),mc:true,ste:'2k=6 → k=3.'},
+    {_id:7,q:'M₁=x<sup>k−1</sup>·y² y M₂=x⁵·y² son semejantes. Halla k.',a:'6',opts:_i4gshuf(['6','5','4','7']),mc:true,ste:'k−1=5 → k=6.'},
+    {_id:8,q:'M₁=x<sup>k</sup>·y<sup>k−1</sup> y M₂=x²·y son semejantes. Halla k.',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'k=2 y k−1=1 ✓. k=2.'},
     // P3: Condición de semejanza, hallar parámetro
-    {_id:9,q:'M₁=x^(2a)·y^b y M₂=x⁴·y³ son semejantes. Halla a+b.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'2a=4→a=2; b=3. a+b=5.'},
-    {_id:10,q:'M₁=x^a·y^(b+1) y M₂=x³·y⁵ son semejantes. Halla a+b.',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'a=3; b+1=5→b=4. a+b=7.'},
-    {_id:11,q:'M₁=x^(a+b)·y^a y M₂=x⁵·y² son semejantes. Halla b.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'a=2; a+b=5 → b=3.'},
-    {_id:12,q:'M₁=x^(a−1)·y^(b+2) y M₂=x⁴·y⁷ son semejantes. Halla a·b.',a:'25',opts:_i4gshuf(['25','20','30','15']),mc:true,ste:'a−1=4→a=5; b+2=7→b=5. a·b=25.'},
+    {_id:9,q:'M₁=x<sup>2a</sup>·y<sup>b</sup> y M₂=x⁴·y³ son semejantes. Halla a+b.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'2a=4→a=2; b=3. a+b=5.'},
+    {_id:10,q:'M₁=x<sup>a</sup>·y<sup>b+1</sup> y M₂=x³·y⁵ son semejantes. Halla a+b.',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'a=3; b+1=5→b=4. a+b=7.'},
+    {_id:11,q:'M₁=x<sup>a+b</sup>·y<sup>a</sup> y M₂=x⁵·y² son semejantes. Halla b.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'a=2; a+b=5 → b=3.'},
+    {_id:12,q:'M₁=x<sup>a−1</sup>·y<sup>b+2</sup> y M₂=x⁴·y⁷ son semejantes. Halla a·b.',a:'25',opts:_i4gshuf(['25','20','30','15']),mc:true,ste:'a−1=4→a=5; b+2=7→b=5. a·b=25.'},
     // P4: Suma de coeficientes
     {_id:13,q:'Suma: 3x²y + 5x²y + 7x²y. ¿Cuál es el coeficiente del resultado?',a:'15',opts:_i4gshuf(['15','12','10','20']),mc:true,ste:'3+5+7=15. Resultado: 15x²y.'},
     {_id:14,q:'Suma: 4xy − 2xy + 3xy. ¿Cuál es el coeficiente?',a:'5',opts:_i4gshuf(['5','4','3','9']),mc:true,ste:'4−2+3=5. Resultado: 5xy.'},
