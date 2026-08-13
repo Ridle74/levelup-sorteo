@@ -10662,6 +10662,208 @@ _SKILL_META['sir1m_pol_bq1']={ico:'⚡',lbl:'Cuestionario – Polígonos',qCount
 function _genSir1mGeoBPU(){return _bqSrcPick(['sir1m_ang_b1','sir1m_ang_b2','sir1m_tri_b1','sir1m_tri_b2','sir1m_are_b1','sir1m_are_b2','sir1m_pol_b1','sir1m_pol_b2'],[_genSir1mAng_B1,_genSir1mAng_B2,_genSir1mTri_B1,_genSir1mTri_B2,_genSir1mAre_B1,_genSir1mAre_B2,_genSir1mPol_B1,_genSir1mPol_B2]);}
 _SKILL_META['sir1m_geo_bpu']={ico:'⚡',lbl:'Examen – Geometría Básica 1° Secundaria',qCount:35,gen:_genSir1mGeoBPU,quiz:true,srcKeys:['sir1m_ang_b1','sir1m_ang_b2','sir1m_tri_b1','sir1m_tri_b2','sir1m_are_b1','sir1m_are_b2','sir1m_pol_b1','sir1m_pol_b2']};
 
+// ═══════════════════════════════════════════════════════
+//  dat4  — Datos cualitativos y cuantitativos  (4° Belén)
+// ═══════════════════════════════════════════════════════
+function _genDat4B1(){
+  var sh=_i4gshuf;
+  return _i4gpick([
+// ── Plantilla 1 (P1): ¿Cualitativo o cuantitativo? – palabra suelta ─────────
+// 1
+{q:'¿Los datos que expresan <b>colores</b> son...?',
+ a:'Datos cualitativos',opts:sh(['Datos cualitativos','Datos cuantitativos','Datos mixtos','Datos numéricos']),mc:true,
+ ste:'Los colores son cualidades → datos cualitativos.'},
+// 2
+{q:'¿Los datos que indican el <b>número de hermanos</b> que tiene cada alumno son...?',
+ a:'Datos cuantitativos',opts:sh(['Datos cuantitativos','Datos cualitativos','Datos mixtos','Datos descriptivos']),mc:true,
+ ste:'El número de hermanos es una cantidad → datos cuantitativos.'},
+// 3
+{q:'¿Los datos sobre el <b>deporte favorito</b> de los alumnos son...?',
+ a:'Datos cualitativos',opts:sh(['Datos cualitativos','Datos cuantitativos','Datos ordinales','Datos estadísticos']),mc:true,
+ ste:'El deporte favorito es una preferencia/característica → datos cualitativos.'},
+// 4
+{q:'¿Los datos que registran el <b>peso en kilogramos</b> de los estudiantes son...?',
+ a:'Datos cuantitativos',opts:sh(['Datos cuantitativos','Datos cualitativos','Datos nominales','Datos verbales']),mc:true,
+ ste:'El peso en kilogramos es una cantidad → datos cuantitativos.'},
+// ── Plantilla 2 (P2): Pregunta de encuesta → tipo de dato ───────────────────
+// 5
+{q:'Una encuesta pregunta: «¿Cuántos años tienes?» Los datos obtenidos son...',
+ a:'Cuantitativos',opts:sh(['Cuantitativos','Cualitativos','Descriptivos','Ordinales']),mc:true,
+ ste:'La edad es un número → dato cuantitativo.'},
+// 6
+{q:'Una encuesta pregunta: «¿Cuál es tu color preferido?» Los datos obtenidos son...',
+ a:'Cualitativos',opts:sh(['Cualitativos','Cuantitativos','Numéricos','Estadísticos']),mc:true,
+ ste:'El color preferido es una cualidad → dato cualitativo.'},
+// 7
+{q:'Una encuesta pregunta: «¿Cuántas veces por semana practicas deporte?» Los datos obtenidos son...',
+ a:'Cuantitativos',opts:sh(['Cuantitativos','Cualitativos','Nominales','Descriptivos']),mc:true,
+ ste:'Las veces por semana son una cantidad → dato cuantitativo.'},
+// 8
+{q:'Una encuesta pregunta: «¿Qué comida te gusta más?» Los datos obtenidos son...',
+ a:'Cualitativos',opts:sh(['Cualitativos','Cuantitativos','Mixtos','Cardinales']),mc:true,
+ ste:'La comida favorita es una preferencia → dato cualitativo.'},
+// ── Plantilla 3 (P3): Encuesta deportiva del libro ──────────────────────────
+// 9
+{q:'En la encuesta escolar se preguntó: «¿Cuántos años tienes?» con opciones 8, 9 o 10 años. ¿Qué tipo de dato se obtuvo?',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Nominal','Descriptivo']),mc:true,
+ ste:'La edad (8, 9 o 10 años) expresa una cantidad → dato cuantitativo.'},
+// 10
+{q:'En la encuesta escolar se preguntó: «¿Qué deporte practicas más?» con opciones Fútbol, Vóley o Natación. ¿Qué tipo de dato se obtuvo?',
+ a:'Cualitativo',opts:sh(['Cualitativo','Cuantitativo','Numérico','Estadístico']),mc:true,
+ ste:'El deporte preferido es una característica/preferencia → dato cualitativo.'},
+// 11
+{q:'En la encuesta escolar se preguntó: «¿Cuántas veces a la semana practicas ese deporte?» con opciones 1, 2 o 3 veces. ¿Qué tipo de dato se obtuvo?',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Nominal','Descriptivo']),mc:true,
+ ste:'Las veces por semana expresan una cantidad → dato cuantitativo.'},
+// 12
+{q:'Una encuesta registró que los alumnos miden entre 120 cm y 145 cm. ¿Qué tipo de dato es la estatura?',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Verbal','Descriptivo']),mc:true,
+ ste:'La estatura en centímetros es una cantidad → dato cuantitativo.'},
+// ── Plantilla 4 (P4): Completar tabla de clasificación ──────────────────────
+// 13
+{q:'Completa la tabla:<br><table style="border-collapse:collapse;font-size:0.95em;margin:6px auto"><tr style="background:#e8f4fd"><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Pregunta</th><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Tipo de dato</th></tr><tr><td style="border:1px solid #aaa;padding:4px 8px">¿Cuántos libros leíste?</td><td style="border:1px solid #aaa;padding:4px 8px">?</td></tr></table>',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Nominal','Descriptivo']),mc:true,
+ ste:'El número de libros es una cantidad → dato cuantitativo.'},
+// 14
+{q:'Completa la tabla:<br><table style="border-collapse:collapse;font-size:0.95em;margin:6px auto"><tr style="background:#e8f4fd"><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Pregunta</th><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Tipo de dato</th></tr><tr><td style="border:1px solid #aaa;padding:4px 8px">¿Cuál es tu materia favorita?</td><td style="border:1px solid #aaa;padding:4px 8px">?</td></tr></table>',
+ a:'Cualitativo',opts:sh(['Cualitativo','Cuantitativo','Numérico','Estadístico']),mc:true,
+ ste:'La materia favorita es una preferencia → dato cualitativo.'},
+// 15
+{q:'Completa la tabla:<br><table style="border-collapse:collapse;font-size:0.95em;margin:6px auto"><tr style="background:#e8f4fd"><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Pregunta</th><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Tipo de dato</th></tr><tr><td style="border:1px solid #aaa;padding:4px 8px">¿Cuántos soles tienes de propina?</td><td style="border:1px solid #aaa;padding:4px 8px">?</td></tr></table>',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Verbal','Ordinal']),mc:true,
+ ste:'Los soles de propina son una cantidad → dato cuantitativo.'},
+// 16
+{q:'Completa la tabla:<br><table style="border-collapse:collapse;font-size:0.95em;margin:6px auto"><tr style="background:#e8f4fd"><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Pregunta</th><th style="border:1px solid #aaa;padding:4px 8px;color:#222">Tipo de dato</th></tr><tr><td style="border:1px solid #aaa;padding:4px 8px">¿Qué mascota tienes?</td><td style="border:1px solid #aaa;padding:4px 8px">?</td></tr></table>',
+ a:'Cualitativo',opts:sh(['Cualitativo','Cuantitativo','Numérico','Estadístico']),mc:true,
+ ste:'El tipo de mascota es una característica → dato cualitativo.'},
+// ── Plantilla 5 (P5): Verdadero o falso / identificar definición ─────────────
+// 17
+{q:'Una encuesta es una serie de preguntas elaboradas para obtener información sobre un <b>tema determinado</b>. ¿Esta afirmación es...?',
+ a:'Verdadera',opts:sh(['Verdadera','Falsa']),mc:true,
+ ste:'Esa es la definición correcta de encuesta.'},
+// 18
+{q:'Los datos cualitativos expresan <b>cantidades</b>. ¿Esta afirmación es...?',
+ a:'Falsa',opts:sh(['Falsa','Verdadera']),mc:true,
+ ste:'Los datos cualitativos expresan cualidades, preferencias o características; los cuantitativos expresan cantidades.'},
+// 19
+{q:'Los datos cuantitativos expresan <b>cualidades o características</b>. ¿Esta afirmación es...?',
+ a:'Falsa',opts:sh(['Falsa','Verdadera']),mc:true,
+ ste:'Los datos cuantitativos expresan cantidades (números); los cualitativos expresan cualidades.'},
+// 20
+{q:'El resultado de preguntar «¿Cuántos alumnos hay en tu salón?» es un dato <b>cuantitativo</b>. ¿Esta afirmación es...?',
+ a:'Verdadera',opts:sh(['Verdadera','Falsa']),mc:true,
+ ste:'El número de alumnos es una cantidad → dato cuantitativo → afirmación verdadera.'},
+  ]);
+}
+_SKILL_META['dat4_b1']={ico:'📊',lbl:'Datos cualitativos y cuantitativos',qCount:4,gen:_genDat4B1,
+  plantillas:['¿Cualitativo o cuantitativo?','Tipo de dato en preguntas','Encuesta deportiva','Tabla de clasificación','V/F sobre tipos de datos']};
+
+function _genDat4B2(){
+  var sh=_i4gshuf;
+  return _i4gpick([
+// ── Plantilla 1 (P1): Clasificar datos de tabla ─────────────────────────────
+// 1
+{q:'Observa la tabla de la encuesta:<br><table style="border-collapse:collapse;font-size:0.9em;margin:6px auto"><tr style="background:#e8f4fd"><th style="border:1px solid #aaa;padding:3px 7px;color:#222">Deporte</th><th style="border:1px solid #aaa;padding:3px 7px;color:#222">Conteo</th><th style="border:1px solid #aaa;padding:3px 7px;color:#222">Total</th></tr><tr><td style="border:1px solid #aaa;padding:3px 7px">Fútbol</td><td style="border:1px solid #aaa;padding:3px 7px">||||</td><td style="border:1px solid #aaa;padding:3px 7px">4</td></tr><tr><td style="border:1px solid #aaa;padding:3px 7px">Vóley</td><td style="border:1px solid #aaa;padding:3px 7px">||</td><td style="border:1px solid #aaa;padding:3px 7px">2</td></tr><tr><td style="border:1px solid #aaa;padding:3px 7px">Natación</td><td style="border:1px solid #aaa;padding:3px 7px">|||</td><td style="border:1px solid #aaa;padding:3px 7px">3</td></tr></table>Los datos de la columna <b>«Deporte»</b> son...',
+ a:'Cualitativos',opts:sh(['Cualitativos','Cuantitativos','Mixtos','Numéricos']),mc:true,
+ ste:'Los nombres de deportes son características/preferencias → datos cualitativos.'},
+// 2
+{q:'Observa la tabla de la encuesta:<br><table style="border-collapse:collapse;font-size:0.9em;margin:6px auto"><tr style="background:#e8f4fd"><th style="border:1px solid #aaa;padding:3px 7px;color:#222">Deporte</th><th style="border:1px solid #aaa;padding:3px 7px;color:#222">Conteo</th><th style="border:1px solid #aaa;padding:3px 7px;color:#222">Total</th></tr><tr><td style="border:1px solid #aaa;padding:3px 7px">Fútbol</td><td style="border:1px solid #aaa;padding:3px 7px">||||</td><td style="border:1px solid #aaa;padding:3px 7px">4</td></tr><tr><td style="border:1px solid #aaa;padding:3px 7px">Vóley</td><td style="border:1px solid #aaa;padding:3px 7px">||</td><td style="border:1px solid #aaa;padding:3px 7px">2</td></tr><tr><td style="border:1px solid #aaa;padding:3px 7px">Natación</td><td style="border:1px solid #aaa;padding:3px 7px">|||</td><td style="border:1px solid #aaa;padding:3px 7px">3</td></tr></table>Los datos de la columna <b>«Total»</b> son...',
+ a:'Cuantitativos',opts:sh(['Cuantitativos','Cualitativos','Nominales','Descriptivos']),mc:true,
+ ste:'Los totales (4, 2, 3) son cantidades → datos cuantitativos.'},
+// 3
+{q:'Una tabla de encuesta muestra: Fruta favorita → Mango, Manzana, Pera. ¿Qué tipo de datos son estos?',
+ a:'Cualitativos',opts:sh(['Cualitativos','Cuantitativos','Ordinales','Estadísticos']),mc:true,
+ ste:'Los nombres de frutas son preferencias/características → datos cualitativos.'},
+// 4
+{q:'Una tabla de encuesta muestra: Número de mascotas → 0, 1, 2, 3. ¿Qué tipo de datos son estos?',
+ a:'Cuantitativos',opts:sh(['Cuantitativos','Cualitativos','Descriptivos','Verbales']),mc:true,
+ ste:'El número de mascotas son cantidades → datos cuantitativos.'},
+// ── Plantilla 2 (P2): Identificar cuantitativo en contexto ──────────────────
+// 5
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cuantitativos</b>?',
+ a:'¿Cuántos libros lees por mes?',
+ opts:sh(['¿Cuántos libros lees por mes?','¿Qué tipo de música te gusta?','¿Cuál es tu color favorito?','¿Qué deporte prefieres?']),mc:true,
+ ste:'«¿Cuántos libros?» pide una cantidad → dato cuantitativo.'},
+// 6
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cuantitativos</b>?',
+ a:'¿Cuántos años tienes?',
+ opts:sh(['¿Cuántos años tienes?','¿Cuál es tu comida favorita?','¿Qué película te gusta más?','¿Qué materia prefieres?']),mc:true,
+ ste:'«¿Cuántos años tienes?» pide una cantidad → dato cuantitativo.'},
+// 7
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cuantitativos</b>?',
+ a:'¿Cuántos minutos caminas al día?',
+ opts:sh(['¿Cuántos minutos caminas al día?','¿Cuál es tu fruta favorita?','¿Qué hobby tienes?','¿Cómo es tu barrio?']),mc:true,
+ ste:'«¿Cuántos minutos?» pide una cantidad → dato cuantitativo.'},
+// 8
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cuantitativos</b>?',
+ a:'¿Cuántos goles metiste en el partido?',
+ opts:sh(['¿Cuántos goles metiste en el partido?','¿Qué posición juegas?','¿Cuál es tu equipo favorito?','¿Cómo es tu entrenador?']),mc:true,
+ ste:'«¿Cuántos goles?» pide una cantidad → dato cuantitativo.'},
+// ── Plantilla 3 (P3): Identificar cualitativo en contexto ───────────────────
+// 9
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cualitativos</b>?',
+ a:'¿Qué asignatura te gusta más?',
+ opts:sh(['¿Qué asignatura te gusta más?','¿Cuántas horas estudias?','¿Cuántos amigos tienes?','¿Cuántos soles gastas al día?']),mc:true,
+ ste:'«¿Qué asignatura te gusta más?» pide una preferencia → dato cualitativo.'},
+// 10
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cualitativos</b>?',
+ a:'¿Cómo es tu mascota?',
+ opts:sh(['¿Cómo es tu mascota?','¿Cuántas mascotas tienes?','¿Cuántos años tiene tu mascota?','¿Cuánto pesa tu mascota?']),mc:true,
+ ste:'«¿Cómo es tu mascota?» pide una descripción → dato cualitativo.'},
+// 11
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cualitativos</b>?',
+ a:'¿Qué tipo de música escuchas?',
+ opts:sh(['¿Qué tipo de música escuchas?','¿Cuántas canciones tienes?','¿Cuántas horas escuchas música?','¿Cuántos conciertos has ido?']),mc:true,
+ ste:'«¿Qué tipo de música escuchas?» pide una preferencia → dato cualitativo.'},
+// 12
+{q:'¿Cuál de las siguientes preguntas obtiene datos <b>cualitativos</b>?',
+ a:'¿Cuál es tu lugar favorito para pasear?',
+ opts:sh(['¿Cuál es tu lugar favorito para pasear?','¿Cuántos kilómetros caminas?','¿A qué hora sales?','¿Cuántas veces paseas?']),mc:true,
+ ste:'«¿Cuál es tu lugar favorito?» pide una preferencia → dato cualitativo.'},
+// ── Plantilla 4 (P4): Encuesta completa – clasificar cada dato ──────────────
+// 13
+{q:'En una encuesta se registró la <b>talla (cm)</b> de los alumnos. ¿Qué tipo de dato es?',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Nominal','Descriptivo']),mc:true,
+ ste:'La talla en cm es una cantidad → dato cuantitativo.'},
+// 14
+{q:'En una encuesta se registró el <b>equipo de fútbol preferido</b> de los alumnos. ¿Qué tipo de dato es?',
+ a:'Cualitativo',opts:sh(['Cualitativo','Cuantitativo','Numérico','Estadístico']),mc:true,
+ ste:'El equipo preferido es una preferencia → dato cualitativo.'},
+// 15
+{q:'En una encuesta se registró el <b>número de hijos</b> que tienen los padres. ¿Qué tipo de dato es?',
+ a:'Cuantitativo',opts:sh(['Cuantitativo','Cualitativo','Nominal','Descriptivo']),mc:true,
+ ste:'El número de hijos es una cantidad → dato cuantitativo.'},
+// 16
+{q:'En una encuesta se registró el <b>idioma que hablan</b> los estudiantes en casa. ¿Qué tipo de dato es?',
+ a:'Cualitativo',opts:sh(['Cualitativo','Cuantitativo','Numérico','Estadístico']),mc:true,
+ ste:'El idioma es una característica → dato cualitativo.'},
+// ── Plantilla 5 (P5): Aplicar en situación nueva ────────────────────────────
+// 17
+{q:'María encuestó a sus compañeros sobre su <b>programa de TV favorito</b>. ¿Qué tipo de datos recogió?',
+ a:'Cualitativos',opts:sh(['Cualitativos','Cuantitativos','Mixtos','Ordinales']),mc:true,
+ ste:'El programa de TV favorito es una preferencia → dato cualitativo.'},
+// 18
+{q:'Juan encuestó a sus amigos sobre <b>cuántas horas duermen</b> por noche. ¿Qué tipo de datos recogió?',
+ a:'Cuantitativos',opts:sh(['Cuantitativos','Cualitativos','Nominales','Verbales']),mc:true,
+ ste:'Las horas de sueño son cantidades → dato cuantitativo.'},
+// 19
+{q:'La profesora preguntó a los alumnos: «¿Cuántos libros hay en tu casa?» ¿Qué tipo de datos obtuvo?',
+ a:'Cuantitativos',opts:sh(['Cuantitativos','Cualitativos','Descriptivos','Nominales']),mc:true,
+ ste:'El número de libros es una cantidad → dato cuantitativo.'},
+// 20
+{q:'La profesora preguntó a los alumnos: «¿Qué tipo de libro te gusta más?» ¿Qué tipo de datos obtuvo?',
+ a:'Cualitativos',opts:sh(['Cualitativos','Cuantitativos','Numéricos','Estadísticos']),mc:true,
+ ste:'El tipo de libro favorito es una preferencia → dato cualitativo.'},
+  ]);
+}
+_SKILL_META['dat4_b2']={ico:'📋',lbl:'Identificar datos cualitativos y cuantitativos',qCount:4,gen:_genDat4B2,
+  plantillas:['Clasificar datos de tabla','Preguntas cuantitativas','Preguntas cualitativas','Encuesta completa','Aplicar en contexto']};
+
+function _genDat4BQ1(){
+  return _bqSrcPick(['dat4_b1','dat4_b2'],[_genDat4B1,_genDat4B2]);
+}
+_SKILL_META['dat4_bq1']={ico:'⚡',lbl:'BQ – Datos cualitativos y cuantitativos',qCount:10,gen:_genDat4BQ1,quiz:true,srcKeys:['dat4_b1','dat4_b2']};
+
 // ── Sumas con Regletas – Estrategia de la Decena 1° Primaria – Belén ─────────
 // Usa los colores de Cuisenaire ya definidos: _RG_C[v], _RG_N[v]
 function _rg10r(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
@@ -10839,6 +11041,8 @@ const PREP_CURRICULUM = {
     '4':[
       {lbl:'Relaciones entre Conjuntos',       area:'matematica', editorial:'belen', skills:['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2']},
       {lbl:'Operaciones con Conjuntos',          area:'matematica', editorial:'belen', skills:['conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3']},
+
+      {lbl:'Datos cualitativos y cuantitativos', area:'matematica', editorial:'belen', skills:['dat4_b1','dat4_b2','dat4_bq1']},
       {lbl:'Sumas de 2 a 4 Cifras',              area:'matematica', editorial:'belen', skills:['sum2_b1','sum2_b2','sum2_b3','sum2_b4','sum2_bq1','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','sum4_b1','sum4_b2','sum4_b3','sum4_b4','sum4_bq1']},
       {lbl:'Conjuntos: Comprensión y Extensión', area:'matematica', editorial:'belen', skills:['conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1']},
       {lbl:'Tablas de Multiplicación del 1 al 12', area:'matematica', editorial:'belen', skills:['tabla1','tabla2','tabla3','tabla4','tabla_bq1','tabla5','tabla6','tabla7','tabla8','tabla_bq2','tabla9','tabla10','tabla11','tabla12','tabla_bq3']},
