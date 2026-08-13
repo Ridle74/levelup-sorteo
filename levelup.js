@@ -6822,7 +6822,7 @@ function _genSnb5EST_EX(){return _bqSrcPick(['snb5_est_b1','snb5_est_b2','snb5_e
 
 const PREP_LEVELS = {
   primaria:   { lbl:'Primaria',   ico:'🏫', gradeIco:'🎒',
-    grades:{ '1':['suma','suma10','resta','rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','int4g_ele_b1','int4g_ele_b2','int4g_ele_b3','int4g_ele_b4','int4g_ele_bq1','int4g_ele_bq2','int4g_rec_b1','int4g_rec_b2','int4g_rec_b3','int4g_rec_b4','int4g_rec_bq1','int4g_rec_bq2','int4g_seg_b1','int4g_seg_b2','int4g_seg_b3','int4g_seg_b4','int4g_seg_b5','int4g_seg_b6','int4g_seg_bq1','int4g_seg_bq2','int4g_seg_bq3','int4g_ang_b1','int4g_ang_b2','int4g_ang_b3','int4g_ang_b4','int4g_ang_bq1','int4g_ang_bq2','int4g_pol_b1','int4g_pol_b2','int4g_pol_b3','int4g_pol_b4','int4g_pol_bq1','int4g_pol_bq2','int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_b4','int4g_tri_b5','int4g_tri_bq1','int4g_tri_bq2','int4g_cua_b1','int4g_cua_b2','int4g_cua_b3','int4g_cua_b4','int4g_cua_bq1','int4g_cua_bq2','int4g_cir_b1','int4g_cir_b2','int4g_cir_b3','int4g_cir_b4','int4g_cir_bq1','int4g_cir_bq2','int4g_per_b1','int4g_per_b2','int4g_per_b3','int4g_per_b4','int4g_per_bq1','int4g_per_bq2','int4g_are_b1','int4g_are_b2','int4g_are_b3','int4g_are_b4','int4g_are_bq1','int4g_are_bq2','int4g_sol_b1','int4g_sol_b2','int4g_sol_b3','int4g_sol_b4','int4g_sol_bq1','int4g_sol_bq2',
+    grades:{ '1':['suma','suma10','resta','rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2','rs10_b1','rs10_b2','rs10_bq1','rs10_b3','rs10_b4','rs10_bq2'], '2':['mult','div'], '3':['conjuntos'], '4':['incl4_b1','incl4_b2','incl4_b3','incl4_bq1','incl4_b4','incl4_b5','incl4_bq2','conj4_b1','conj4_b2','conj4_b3','conj4_bq1','conj4_b9','conj4_b4','conj4_b5','conj4_bq2','conj4_b6','conj4_b7','conj4_b8','conj4_bq3','sum3_b1','sum3_b2','sum3_b3','sum3_b4','sum3_bq1','mult4_b2','mult4_b3','mult4_b4','mult4_b5','mult4_b6','mult4_b7','mult4_b8','mult4_b9','mult4_bq1','mult4_bq2','mult4_bpu','conjce_b1','conjce_b2','conjce_b3','conjce_b4','conjce_bq1','int4g_ele_b1','int4g_ele_b2','int4g_ele_b3','int4g_ele_b4','int4g_ele_bq1','int4g_ele_bq2','int4g_rec_b1','int4g_rec_b2','int4g_rec_b3','int4g_rec_b4','int4g_rec_bq1','int4g_rec_bq2','int4g_seg_b1','int4g_seg_b2','int4g_seg_b3','int4g_seg_b4','int4g_seg_b5','int4g_seg_b6','int4g_seg_bq1','int4g_seg_bq2','int4g_seg_bq3','int4g_ang_b1','int4g_ang_b2','int4g_ang_b3','int4g_ang_b4','int4g_ang_bq1','int4g_ang_bq2','int4g_pol_b1','int4g_pol_b2','int4g_pol_b3','int4g_pol_b4','int4g_pol_bq1','int4g_pol_bq2','int4g_tri_b1','int4g_tri_b2','int4g_tri_b3','int4g_tri_b4','int4g_tri_b5','int4g_tri_bq1','int4g_tri_bq2','int4g_cua_b1','int4g_cua_b2','int4g_cua_b3','int4g_cua_b4','int4g_cua_bq1','int4g_cua_bq2','int4g_cir_b1','int4g_cir_b2','int4g_cir_b3','int4g_cir_b4','int4g_cir_bq1','int4g_cir_bq2','int4g_per_b1','int4g_per_b2','int4g_per_b3','int4g_per_b4','int4g_per_bq1','int4g_per_bq2','int4g_are_b1','int4g_are_b2','int4g_are_b3','int4g_are_b4','int4g_are_bq1','int4g_are_bq2','int4g_sol_b1','int4g_sol_b2','int4g_sol_b3','int4g_sol_b4','int4g_sol_bq1','int4g_sol_bq2',
 'int4a_nat_b1','int4a_nat_b2','int4a_nat_b3','int4a_nat_bq1','int4a_nat_b4','int4a_nat_b5','int4a_nat_bq2',
 'int4a_pot_b1','int4a_pot_b2','int4a_pot_bq1','int4a_pot_b3','int4a_pot_b4','int4a_pot_b5','int4a_pot_bq2',
 'int4a_rad_b1','int4a_rad_b2','int4a_rad_bq1','int4a_rad_b3','int4a_rad_b4','int4a_rad_bq2',
@@ -11289,12 +11289,153 @@ _SKILL_META['rg10_b4']={ico:'🖼',lbl:'Sumas con 9 pasando la decena',qCount:4,
 function _genRg10_BQ2(){return _bqSrcPick(['rg10_b3','rg10_b4'],[_genRg10_B3,_genRg10_B4]);}
 _SKILL_META['rg10_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Sumas con 8 y 9',qCount:10,gen:_genRg10_BQ2,quiz:true,srcKeys:['rg10_b3','rg10_b4']};
 
+// ── Restas con Regletas – Estrategia de la Decena  1° Primaria – Belén ──────
+// Operación inversa de rg10: C − A = (10+rest) − A = comp + rest
+// Reutiliza: _rg10r, _rg10s, _rg10Rod, _rg10Wrongs, _RG_C, _RG_N
+
+function _rs10SVG(A,C,mode,hideComp,hideResult,hideRest){
+  var rest=C-10, comp=10-A, result=C-A;
+  var S=30,H=40,PAD=12,G=10,MW=18;
+  var nR=mode===0?1:mode===1?2:3;
+  // Row-1 width: |10|+G+|rest| + G+MW + |A|
+  var w1=PAD+10*S+(rest>0?G+rest*S:0)+G+MW+A*S+PAD;
+  // Row-2/3 width: |comp|+G+|rest| + G + "= N"
+  var w23=PAD+comp*S+(rest>0?G+rest*S:0)+G+60;
+  var vw=Math.max(w1,w23);
+  var vh=nR*(H+G)+G+4;
+  var o='<svg viewBox="0 0 '+vw+' '+vh+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:'+vw+'px;margin:4px auto;display:block">';
+  var y=G;
+  // ── Fila 1: [10] + [rest o ?]  −  [A] ──────────────────────────────────
+  o+=_rg10Rod(PAD,y,10,S,H);
+  var x1=PAD+10*S;
+  if(rest>0){
+    if(hideRest){
+      var rw=rest*S;
+      o+='<rect x="'+(x1+G)+'" y="'+y+'" width="'+rw+'" height="'+H+'" fill="rgba(255,215,0,0.12)" rx="3" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>';
+      o+='<text x="'+(x1+G+rw/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="#ffd700" font-weight="900" font-family="sans-serif">?</text>';
+    } else {
+      o+=_rg10Rod(x1+G,y,rest,S,H);
+    }
+    x1+=G+rest*S;
+  }
+  o+='<text x="'+(x1+G+MW/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="rgba(255,255,255,0.7)" font-family="sans-serif" font-weight="700">−</text>';
+  o+=_rg10Rod(x1+G+MW,y,A,S,H);
+  // ── Fila 2: [comp o ?] + [rest] ─────────────────────────────────────────
+  if(mode>=1){
+    y+=H+G;
+    if(hideComp){
+      var cw=comp*S;
+      o+='<rect x="'+PAD+'" y="'+y+'" width="'+cw+'" height="'+H+'" fill="rgba(255,215,0,0.12)" rx="3" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="4,3"/>';
+      o+='<text x="'+(PAD+cw/2)+'" y="'+(y+H/2+6)+'" text-anchor="middle" font-size="22" fill="#ffd700" font-weight="900" font-family="sans-serif">?</text>';
+    } else {
+      o+=_rg10Rod(PAD,y,comp,S,H);
+    }
+    if(rest>0) o+=_rg10Rod(PAD+comp*S+G,y,rest,S,H);
+  }
+  // ── Fila 3: [comp] + [rest] = result ────────────────────────────────────
+  if(mode>=2){
+    y+=H+G;
+    o+=_rg10Rod(PAD,y,comp,S,H);
+    if(rest>0) o+=_rg10Rod(PAD+comp*S+G,y,rest,S,H);
+    if(!hideResult){
+      var rx=PAD+comp*S+(rest>0?G+rest*S:0)+G;
+      o+='<text x="'+rx+'" y="'+(y+H/2+6)+'" font-size="20" fill="#ffd700" font-weight="700" font-family="sans-serif">= '+result+'</text>';
+    }
+  }
+  return o+'</svg>';
+}
+
+function _rs10Gen(A){
+  var C=_rg10r(11,A+9);
+  var rest=C-10, comp=10-A, result=C-A;
+  var t=_rg10r(0,7);
+  var W='<div style="display:block;width:100%;text-align:center">',E='</div>';
+  var QL='<div style="font-size:13px;margin-top:5px;color:rgba(255,255,255,0.9);line-height:1.4">',QE='</div>';
+  var sh=_rg10s;
+  if(t===0){
+    // P1: ¿Cuánto sobra del minuendo al quitar 10? → rest
+    var q=W+_rs10SVG(A,C,0,false,false,true)+QL+'En la resta <b>'+C+'−'+A+'</b>, el minuendo <b>'+C+'</b> es 10 + <span style="color:#ffd700;font-weight:800">?</span>. ¿Cuánto vale el <span style="color:#ffd700;font-weight:800">?</span>?'+QE+E;
+    var wr=_rg10Wrongs(rest,[rest-1,rest+1,rest+2,rest+3,A,comp].filter(function(v){return v>0&&v<=9;}));
+    return{q:q,a:String(rest),opts:sh([String(rest)].concat(wr)),mc:true,
+      ste:C+'= 10 + '+rest+'. Sobran '+rest+' (regleta '+_RG_N[rest]+').'};
+  }
+  if(t===1){
+    // P2: ¿Cuánto es 10−A? → comp (regleta oculta)
+    var q=W+_rs10SVG(A,C,1,true)+QL+'Al restar <b>'+A+'</b> de la decena, ¿cuánto queda? <b>10 − '+A+' = <span style="color:#ffd700;font-weight:800">?</span></b>'+QE+E;
+    var wr=_rg10Wrongs(comp,[comp-1,comp+1,comp+2,comp+3,A,rest].filter(function(v){return v>0&&v<=9;}));
+    return{q:q,a:String(comp),opts:sh([String(comp)].concat(wr)),mc:true,
+      ste:'10−'+A+'='+comp+'. Queda la regleta '+_RG_N[comp]+' ('+comp+').'};
+  }
+  if(t===2){
+    // P3: ¿Cuánto es C−A? visual completo, resultado oculto
+    var q=W+_rs10SVG(A,C,2,false,true)+QL+'Usando la estrategia de la decena, ¿cuánto es <b>'+C+'−'+A+'</b>?'+QE+E;
+    var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2,result-3,result+3].filter(function(v){return v>0;}));
+    return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
+      ste:'10−'+A+'='+comp+'. '+comp+'+'+rest+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
+  }
+  if(t===3){
+    // P4: Desde el complemento — comp + rest = ?
+    var q=W+_rs10SVG(A,C,1)+QL+'Al restar <b>'+C+'−'+A+'</b>, el complemento es <b>'+comp+'</b> y sobra <b>'+rest+'</b>. ¿Cuánto es <b>'+comp+' + '+rest+'</b>?'+QE+E;
+    var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2].filter(function(v){return v>0;}));
+    return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
+      ste:comp+'+'+rest+'='+result+'. Por eso '+C+'−'+A+'='+result+'.'};
+  }
+  if(t===4){
+    // P5: Ecuación paso a paso sin SVG
+    var q=W+QL+'Completa: <b>'+C+' − '+A+' = (10 + '+rest+') − '+A+' = '+comp+' + '+rest+' = ?</b>'+QE+E;
+    var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2].filter(function(v){return v>0;}));
+    return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
+      ste:'Paso a paso: 10−'+A+'='+comp+', luego '+comp+'+'+rest+'='+result+'.'};
+  }
+  if(t===5){
+    // P6: ¿De qué color es la regleta que sobra del minuendo? (rest)
+    var nRest=_RG_N[rest];
+    var wrongColors=sh([1,2,3,4,5,6,7,8,9].filter(function(v){return v!==rest;})).slice(0,3).map(function(v){return _RG_N[v];});
+    var q=W+_rs10SVG(A,C,0,false,false,true)+QL+'En <b>'+C+'−'+A+'</b>, el '+C+' = 10 + '+rest+'. ¿De qué color es la regleta del <b>'+rest+'</b>?'+QE+E;
+    return{q:q,a:nRest,opts:sh([nRest].concat(wrongColors)),mc:true,
+      ste:C+'=10+'+rest+'. La regleta del '+rest+' es '+nRest+'.'};
+  }
+  if(t===6){
+    // P7: ¿De qué color es la regleta complemento? (comp)
+    var nComp=_RG_N[comp];
+    var wrongColors=sh([1,2,3,4,5,6,7,8,9].filter(function(v){return v!==comp;})).slice(0,3).map(function(v){return _RG_N[v];});
+    var q=W+_rs10SVG(A,C,0)+QL+'Al restar <b>'+A+'</b> de la decena quedan <b>'+comp+'</b>. ¿De qué color es la regleta del <b>'+comp+'</b>?'+QE+E;
+    return{q:q,a:nComp,opts:sh([nComp].concat(wrongColors)),mc:true,
+      ste:'10−'+A+'='+comp+'. La regleta del '+comp+' es de color '+nComp+'.'};
+  }
+  // P8: 3 filas visibles, deducir resultado
+  var q=W+_rs10SVG(A,C,2,false,true)+QL+'Observa las regletas. La fila de abajo es <b>'+comp+' + '+rest+'</b>. ¿Cuánto es <b>'+C+' − '+A+'</b>?'+QE+E;
+  var wr=_rg10Wrongs(result,[result-2,result-1,result+1,result+2,result-3].filter(function(v){return v>0;}));
+  return{q:q,a:String(result),opts:sh([String(result)].concat(wr)),mc:true,
+    ste:'La fila de abajo muestra '+comp+'+'+rest+'='+result+'. Entonces '+C+'−'+A+'='+result+'.'};
+}
+
+function _genRs10_B1(){return _rs10Gen(6);}
+_SKILL_META['rs10_b1']={ico:'🖼',lbl:'Restas con 6 pasando la decena',qCount:4,gen:_genRs10_B1,
+  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+function _genRs10_B2(){return _rs10Gen(7);}
+_SKILL_META['rs10_b2']={ico:'🖼',lbl:'Restas con 7 pasando la decena',qCount:4,gen:_genRs10_B2,
+  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+function _genRs10_BQ1(){return _bqSrcPick(['rs10_b1','rs10_b2'],[_genRs10_B1,_genRs10_B2]);}
+_SKILL_META['rs10_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Restas con 6 y 7',qCount:10,gen:_genRs10_BQ1,quiz:true,srcKeys:['rs10_b1','rs10_b2']};
+function _genRs10_B3(){return _rs10Gen(8);}
+_SKILL_META['rs10_b3']={ico:'🖼',lbl:'Restas con 8 pasando la decena',qCount:4,gen:_genRs10_B3,
+  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+function _genRs10_B4(){return _rs10Gen(9);}
+_SKILL_META['rs10_b4']={ico:'🖼',lbl:'Restas con 9 pasando la decena',qCount:4,gen:_genRs10_B4,
+  plantillas:['Resto del minuendo','Complemento de A','Resta completa visual','Desde el complemento','Ecuación paso a paso','Color del resto','Color del complemento','Razonamiento']};
+function _genRs10_BQ2(){return _bqSrcPick(['rs10_b3','rs10_b4'],[_genRs10_B3,_genRs10_B4]);}
+_SKILL_META['rs10_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Restas con 8 y 9',qCount:10,gen:_genRs10_BQ2,quiz:true,srcKeys:['rs10_b3','rs10_b4']};
+
+
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
 const PREP_CURRICULUM = {
   primaria: {
     '1':[
       {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
       {lbl:'Sumas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2']},
+
+      {lbl:'Restas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rs10_b1','rs10_b2','rs10_bq1','rs10_b3','rs10_b4','rs10_bq2']},
       {lbl:'Conjuntos',                         area:'matematica', editorial:'intelectum', skills:['bel1_cj_b1','bel1_cj_b2','bel1_cj_bq1','bel1_cj_b3','bel1_cj_b4','bel1_cj_bq2','bel1_cj_b5','bel1_cj_b6','bel1_cj_bq3']},
       {lbl:'Numeración 0 al 100',               area:'matematica', editorial:'intelectum', skills:['bel1_n1_b1','bel1_n1_b2','bel1_n1_bq1','bel1_n1_b3','bel1_n1_b4','bel1_n1_bq2']},
       {lbl:'La Decena',                         area:'matematica', editorial:'intelectum', skills:['bel1_dec_b1','bel1_dec_b2','bel1_dec_bq1','bel1_dec_b3','bel1_dec_b4','bel1_dec_bq2']},
