@@ -6844,7 +6844,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2','sf6_are_b1','sf6_are_b2','sf6_are_bq1','sf6_are_b3','sf6_are_b4','sf6_are_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu',],
+    grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
     areas:[
@@ -10221,6 +10221,209 @@ _SKILL_META['ol1g_tra_bpu']={ico:'⚡',lbl:'Examen – Trapecio',qCount:35,gen:_
 
 
 
+// ══ Aritmética 1° Secundaria – Saco Oliveros (ol1ar) ═══════════════════════════
+// Unidad: Divisibilidad
+
+function _genOl1arDiv_B1(){
+  return _i4gpick([
+    // P1: Contar múltiplos de n entre 1 y k → ⌊k/n⌋
+    {_id:1,q:'¿Cuántos múltiplos positivos de 8 hay menores que 300?',a:'37',opts:_i4gshuf(['37','36','38','30']),mc:true,ste:'El mayor múltiplo de 8 menor que 300 es 296 = 8×37. Hay 37.'},
+    {_id:2,q:'¿Cuántos múltiplos de 7 hay del 1 al 98?',a:'14',opts:_i4gshuf(['14','13','15','12']),mc:true,ste:'98 ÷ 7 = 14 exacto. Hay 14 múltiplos.'},
+    {_id:3,q:'¿Cuántos múltiplos positivos de 12 son menores que 200?',a:'16',opts:_i4gshuf(['16','15','17','18']),mc:true,ste:'12×16=192<200 y 12×17=204>200. Hay 16.'},
+    {_id:4,q:'¿Cuántos múltiplos de 6 hay del 1 al 150?',a:'25',opts:_i4gshuf(['25','24','26','20']),mc:true,ste:'150 ÷ 6 = 25 exacto. Hay 25 múltiplos.'},
+    // P2: Números de d cifras que son múltiplos de n
+    {_id:5,q:'¿Cuántos números de 3 cifras son múltiplos de 36?',a:'25',opts:_i4gshuf(['25','24','26','27']),mc:true,ste:'⌊999/36⌋ − ⌊99/36⌋ = 27 − 2 = 25.'},
+    {_id:6,q:'¿Cuántos números de 3 cifras son múltiplos de 25?',a:'36',opts:_i4gshuf(['36','35','37','40']),mc:true,ste:'⌊999/25⌋ − ⌊99/25⌋ = 39 − 3 = 36.'},
+    {_id:7,q:'¿Cuántos números de 2 cifras son múltiplos de 7?',a:'13',opts:_i4gshuf(['13','12','14','11']),mc:true,ste:'⌊99/7⌋ − ⌊9/7⌋ = 14 − 1 = 13.'},
+    {_id:8,q:'¿Cuántos números de 4 cifras son múltiplos de 50?',a:'180',opts:_i4gshuf(['180','179','181','200']),mc:true,ste:'⌊9999/50⌋ − ⌊999/50⌋ = 199 − 19 = 180.'},
+    // P3: Contar múltiplos de n en rango [a, b] cerrado
+    {_id:9,q:'¿Cuántos múltiplos de 8 hay desde 240 hasta 880 (inclusive)?',a:'81',opts:_i4gshuf(['81','80','82','79']),mc:true,ste:'⌊880/8⌋ − ⌊239/8⌋ = 110 − 29 = 81.'},
+    {_id:10,q:'¿Cuántos múltiplos de 9 hay entre 72 y 243 (inclusive)?',a:'20',opts:_i4gshuf(['20','19','21','18']),mc:true,ste:'72=9×8, 243=9×27. Cantidad = 27−8+1 = 20.'},
+    {_id:11,q:'¿Cuántos múltiplos de 6 hay entre 60 y 180 (inclusive)?',a:'21',opts:_i4gshuf(['21','20','22','19']),mc:true,ste:'60=6×10, 180=6×30. Cantidad = 30−10+1 = 21.'},
+    {_id:12,q:'¿Cuántos múltiplos de 15 hay entre 30 y 300 (inclusive)?',a:'19',opts:_i4gshuf(['19','18','20','17']),mc:true,ste:'30=15×2, 300=15×20. Cantidad = 20−2+1 = 19.'},
+    // P4: Mayor o menor múltiplo de n dentro de un intervalo
+    {_id:13,q:'¿Cuál es el mayor múltiplo de 7 menor que 100?',a:'98',opts:_i4gshuf(['98','91','97','84']),mc:true,ste:'7×14=98<100 y 7×15=105>100. El mayor es 98.'},
+    {_id:14,q:'¿Cuál es el menor múltiplo de 9 mayor que 50?',a:'54',opts:_i4gshuf(['54','45','63','51']),mc:true,ste:'9×5=45≤50; 9×6=54>50. El menor es 54.'},
+    {_id:15,q:'¿Cuál es el mayor múltiplo de 13 que no supera 200?',a:'195',opts:_i4gshuf(['195','182','196','208']),mc:true,ste:'13×15=195≤200 y 13×16=208>200. El mayor es 195.'},
+    {_id:16,q:'¿Cuál es el menor múltiplo de 11 mayor que 75?',a:'77',opts:_i4gshuf(['77','66','88','80']),mc:true,ste:'11×6=66≤75; 11×7=77>75. El menor es 77.'},
+    // P5: Problema de texto con grupos iguales
+    {_id:17,q:'En una biblioteca hay 108 libros organizados en estantes de 12. ¿Cuántos estantes completos se forman?',a:'9',opts:_i4gshuf(['9','8','10','12']),mc:true,ste:'108 ÷ 12 = 9 estantes exactos.'},
+    {_id:18,q:'Un estudiante tiene 144 fichas para distribuir en cajas de 16. ¿Cuántas cajas completas llena?',a:'9',opts:_i4gshuf(['9','8','10','12']),mc:true,ste:'144 ÷ 16 = 9 cajas exactas.'},
+    {_id:19,q:'En un almacén hay 252 botellas que se empacan en cajas de 18. ¿Cuántas cajas completas se forman?',a:'14',opts:_i4gshuf(['14','13','15','18']),mc:true,ste:'252 ÷ 18 = 14 cajas exactas.'},
+    {_id:20,q:'Una fábrica produce 180 piezas que se organizan en lotes de 15. ¿Cuántos lotes completos se obtienen?',a:'12',opts:_i4gshuf(['12','11','13','15']),mc:true,ste:'180 ÷ 15 = 12 lotes exactos.'},
+  ]);
+}
+_SKILL_META['ol1ar_div_b1']={ico:'📐',lbl:'Múltiplos: conteo directo y en rangos',qCount:4,gen:_genOl1arDiv_B1,plantillas:['Contar múltiplos de n entre 1 y k','Números de d cifras múltiplos de n','Contar múltiplos en rango [a, b]','Mayor o menor múltiplo en un intervalo','Problema de texto: grupos iguales']};
+
+function _genOl1arDiv_B2(){
+  return _i4gpick([
+    // P1: Listar y contar divisores de n
+    {_id:1,q:'¿Cuántos divisores positivos tiene el número 12?',a:'6',opts:_i4gshuf(['6','4','5','8']),mc:true,ste:'Div(12) = {1, 2, 3, 4, 6, 12} → 6 divisores.'},
+    {_id:2,q:'¿Cuántos divisores positivos tiene 18?',a:'6',opts:_i4gshuf(['6','4','5','8']),mc:true,ste:'Div(18) = {1, 2, 3, 6, 9, 18} → 6 divisores.'},
+    {_id:3,q:'¿Cuántos divisores positivos tiene 24?',a:'8',opts:_i4gshuf(['8','6','9','12']),mc:true,ste:'Div(24) = {1,2,3,4,6,8,12,24} → 8 divisores.'},
+    {_id:4,q:'¿Cuántos divisores positivos tiene 36?',a:'9',opts:_i4gshuf(['9','6','8','12']),mc:true,ste:'Div(36) = {1,2,3,4,6,9,12,18,36} → 9 divisores.'},
+    // P2: Contar divisores por factorización prima n = p₁ᵃ×p₂ᵇ → (a+1)(b+1)
+    {_id:5,q:'N = 2³×3². ¿Cuántos divisores tiene N?',a:'12',opts:_i4gshuf(['12','8','10','6']),mc:true,ste:'(3+1)×(2+1) = 4×3 = 12 divisores.'},
+    {_id:6,q:'N = 2⁴×5. ¿Cuántos divisores tiene N?',a:'10',opts:_i4gshuf(['10','8','12','6']),mc:true,ste:'(4+1)×(1+1) = 5×2 = 10 divisores.'},
+    {_id:7,q:'N = 2×3×5×7. ¿Cuántos divisores tiene N?',a:'16',opts:_i4gshuf(['16','8','12','4']),mc:true,ste:'(1+1)×(1+1)×(1+1)×(1+1) = 2⁴ = 16 divisores.'},
+    {_id:8,q:'N = 2⁵. ¿Cuántos divisores tiene N?',a:'6',opts:_i4gshuf(['6','4','5','8']),mc:true,ste:'(5+1) = 6 divisores: {1,2,4,8,16,32}.'},
+    // P3: Suma de todos los divisores de n
+    {_id:9,q:'Halla la suma de todos los divisores positivos de 12.',a:'28',opts:_i4gshuf(['28','24','26','30']),mc:true,ste:'1+2+3+4+6+12 = 28.'},
+    {_id:10,q:'Halla la suma de todos los divisores positivos de 15.',a:'24',opts:_i4gshuf(['24','20','25','18']),mc:true,ste:'1+3+5+15 = 24.'},
+    {_id:11,q:'Halla la suma de todos los divisores positivos de 8.',a:'15',opts:_i4gshuf(['15','14','16','12']),mc:true,ste:'1+2+4+8 = 15.'},
+    {_id:12,q:'Halla la suma de todos los divisores positivos de 28.',a:'56',opts:_i4gshuf(['56','48','54','60']),mc:true,ste:'1+2+4+7+14+28 = 56.'},
+    // P4: Suma de divisores pares o impares; conteo de divisores pares
+    {_id:13,q:'Halla la suma de los divisores PARES de 24.',a:'56',opts:_i4gshuf(['56','44','48','60']),mc:true,ste:'Div pares de 24: 2+4+6+8+12+24 = 56.'},
+    {_id:14,q:'Halla la suma de los divisores IMPARES de 36.',a:'13',opts:_i4gshuf(['13','10','12','14']),mc:true,ste:'Div impares de 36: {1,3,9}. Suma = 1+3+9 = 13.'},
+    {_id:15,q:'Halla la suma de los divisores PARES de 36.',a:'78',opts:_i4gshuf(['78','72','80','70']),mc:true,ste:'Div pares de 36: 2+4+6+12+18+36 = 78.'},
+    {_id:16,q:'¿Cuántos divisores PARES tiene el número 24?',a:'6',opts:_i4gshuf(['6','5','7','4']),mc:true,ste:'Div pares de 24: {2,4,6,8,12,24} → 6 divisores pares.'},
+    // P5: Menor N = MCM(a,b,...) + R
+    {_id:17,q:'Halla el menor N positivo tal que N = MCM(4,6,8) + 3.',a:'27',opts:_i4gshuf(['27','24','3','51']),mc:true,ste:'MCM(4,6,8) = 24. N = 24+3 = 27.'},
+    {_id:18,q:'Halla el menor N > 20 tal que N ≡ 1 (mod 3) y N ≡ 1 (mod 4).',a:'25',opts:_i4gshuf(['25','13','37','21']),mc:true,ste:'MCM(3,4)=12. N=12k+1: …13, 25,… El menor >20 es 25.'},
+    {_id:19,q:'Halla el menor N positivo tal que N = MCM(5,6) + 2.',a:'32',opts:_i4gshuf(['32','30','12','62']),mc:true,ste:'MCM(5,6) = 30. N = 30+2 = 32.'},
+    {_id:20,q:'Halla el menor N tal que al dividirlo entre 4, 5 y 6 deja siempre residuo 1.',a:'61',opts:_i4gshuf(['61','60','1','121']),mc:true,ste:'MCM(4,5,6)=60. N=60k+1. El menor positivo es 61 (k=1).'},
+  ]);
+}
+_SKILL_META['ol1ar_div_b2']={ico:'📐',lbl:'Divisores: identificar, contar y sumar',qCount:4,gen:_genOl1arDiv_B2,plantillas:['Listar y contar divisores de n','Contar divisores por factorización prima','Suma de todos los divisores de n','Suma de divisores pares o impares','Menor N = MCM(a,b,...) + R']};
+
+function _genOl1arDiv_BQ1(){return _bqSrcPick(['ol1ar_div_b1','ol1ar_div_b2'],[_genOl1arDiv_B1,_genOl1arDiv_B2]);}
+_SKILL_META['ol1ar_div_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Múltiplos y Divisores',qCount:10,gen:_genOl1arDiv_BQ1,quiz:true,srcKeys:['ol1ar_div_b1','ol1ar_div_b2']};
+
+function _genOl1arDiv_B3(){
+  return _i4gpick([
+    // P1: Dado B y Â, hallar q+R, q·R o q−R
+    {_id:1,q:'Divide 75 entre 8 (B=75, Â=8). ¿Cuánto vale q+R?',a:'12',opts:_i4gshuf(['12','11','13','10']),mc:true,ste:'75 = 8×9 + 3. q=9, R=3. q+R = 12.'},
+    {_id:2,q:'Divide 47 entre 5 (B=47, Â=5). ¿Cuánto vale q×R?',a:'18',opts:_i4gshuf(['18','16','20','15']),mc:true,ste:'47 = 5×9 + 2. q=9, R=2. q×R = 18.'},
+    {_id:3,q:'Divide 83 entre 7 (B=83, Â=7). ¿Cuánto vale q+R?',a:'17',opts:_i4gshuf(['17','16','18','15']),mc:true,ste:'83 = 7×11 + 6. q=11, R=6. q+R = 17.'},
+    {_id:4,q:'Divide 91 entre 6 (B=91, Â=6). ¿Cuánto vale q−R?',a:'14',opts:_i4gshuf(['14','13','15','16']),mc:true,ste:'91 = 6×15 + 1. q=15, R=1. q−R = 14.'},
+    // P2: Dado Â, q, R, hallar B; o dado B, q, R, hallar Â
+    {_id:5,q:'El divisor es 7, el cociente es 8 y el residuo es 5. ¿Cuánto vale el dividendo B?',a:'61',opts:_i4gshuf(['61','60','62','56']),mc:true,ste:'B = Â×q + R = 7×8 + 5 = 61.'},
+    {_id:6,q:'El divisor es 9, el cociente es 12 y el residuo es 4. ¿Cuánto vale el dividendo B?',a:'112',opts:_i4gshuf(['112','108','116','104']),mc:true,ste:'B = 9×12 + 4 = 108+4 = 112.'},
+    {_id:7,q:'B = 85, q = 4, R = 1. Halla el divisor Â.',a:'21',opts:_i4gshuf(['21','20','22','17']),mc:true,ste:'85 = Â×4 + 1 → Â = (85−1)/4 = 84/4 = 21.'},
+    {_id:8,q:'B = 67, q = 6, R = 7. Halla el divisor Â.',a:'10',opts:_i4gshuf(['10','9','11','8']),mc:true,ste:'67 = Â×6 + 7 → Â = (67−7)/6 = 60/6 = 10.'},
+    // P3: Hallar solo el residuo R
+    {_id:9,q:'Halla el residuo de dividir 127 entre 11.',a:'6',opts:_i4gshuf(['6','5','7','4']),mc:true,ste:'127 = 11×11 + 6. R = 6.'},
+    {_id:10,q:'Halla el residuo de dividir 200 entre 13.',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'200 = 13×15 + 5. R = 5.'},
+    {_id:11,q:'B = 95, Â = 9. ¿Cuánto vale el residuo R?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'95 = 9×10 + 5. R = 5.'},
+    {_id:12,q:'B = 143, Â = 12. ¿Cuánto vale el residuo R?',a:'11',opts:_i4gshuf(['11','10','12','7']),mc:true,ste:'143 = 12×11 + 11. R = 11.'},
+    // P4: Propiedades de la división aplicadas
+    {_id:13,q:'Al dividir N entre 8 se obtiene cociente q=5 y residuo R=3. ¿Cuánto vale N+R?',a:'46',opts:_i4gshuf(['46','43','48','40']),mc:true,ste:'N = 8×5+3 = 43. N+R = 43+3 = 46.'},
+    {_id:14,q:'¿Cuál de los siguientes divisores hace exacta la división de 56?',a:'7',opts:_i4gshuf(['7','5','9','4']),mc:true,ste:'56 = 7×8+0 (R=0). La división es exacta con Â=7.'},
+    {_id:15,q:'Al dividir N entre 6 el cociente es 7 y la división es exacta (R=0). ¿Cuánto vale N?',a:'42',opts:_i4gshuf(['42','43','48','36']),mc:true,ste:'N = 6×7 + 0 = 42.'},
+    {_id:16,q:'Si B = 7×q + 0, ¿cuál afirmación es correcta sobre B?',a:'B es múltiplo de 7',opts:_i4gshuf(['B es múltiplo de 7','B tiene residuo 1 al dividirse por 7','B = q','B < 7']),mc:true,ste:'R=0 significa que la división es exacta, es decir B es múltiplo de 7.'},
+    // P5: Hallar x+y dados dos ecuaciones de división
+    {_id:17,q:'75 = 9×8 + x y 62 = 8×8 − y (con 0≤x<9, 0<y≤8). Halla x+y.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'75−72=3 → x=3. 64−62=2 → y=2. x+y=5.'},
+    {_id:18,q:'58 = 7×8 + x y 50 = 9×6 − y (con 0≤x<7, 0<y≤9). Halla x+y.',a:'6',opts:_i4gshuf(['6','5','7','8']),mc:true,ste:'58−56=2 → x=2. 54−50=4 → y=4. x+y=6.'},
+    {_id:19,q:'97 = 11×8 + x y 80 = 9×9 − y (con 0≤x<11, 0<y≤9). Halla x+y.',a:'10',opts:_i4gshuf(['10','9','11','12']),mc:true,ste:'97−88=9 → x=9. 81−80=1 → y=1. x+y=10.'},
+    {_id:20,q:'50 = 6×8 + x y 71 = 8×9 − y (con 0≤x<6, 0<y≤8). Halla x+y.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'50−48=2 → x=2. 72−71=1 → y=1. x+y=3.'},
+  ]);
+}
+_SKILL_META['ol1ar_div_b3']={ico:'📐',lbl:'División euclidiana: B = Â×q + R',qCount:4,gen:_genOl1arDiv_B3,plantillas:['Dado B y Â, hallar q+R / q×R / q−R','Dado Â, q, R, hallar B; o dado B, q, R, hallar Â','Hallar solo el residuo R','Propiedades de la división aplicadas','Hallar x+y dados dos ecuaciones de división']};
+
+function _genOl1arDiv_B4(){
+  return _i4gpick([
+    // P1: Calcular n mod m
+    {_id:1,q:'Halla el residuo de dividir 50 entre 7 (50 mod 7).',a:'1',opts:_i4gshuf(['1','6','2','5']),mc:true,ste:'50 = 7×7 + 1. El residuo es 1.'},
+    {_id:2,q:'Calcula 45 mod 8.',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'45 = 8×5 + 5. El residuo es 5.'},
+    {_id:3,q:'Calcula 100 mod 9.',a:'1',opts:_i4gshuf(['1','2','9','10']),mc:true,ste:'100 = 9×11 + 1. El residuo es 1.'},
+    {_id:4,q:'Calcula 73 mod 11.',a:'7',opts:_i4gshuf(['7','6','8','2']),mc:true,ste:'73 = 11×6 + 7. El residuo es 7.'},
+    // P2: Dado n = m̄ + x o n = m̄ − y, hallar x o y
+    {_id:5,q:'Si 50 = 7̄ + x con 0 ≤ x < 7, ¿cuánto vale x?',a:'1',opts:_i4gshuf(['1','6','2','5']),mc:true,ste:'50 = 7×7 + 1. El residuo x = 1.'},
+    {_id:6,q:'Si 62 = 8̄ − y con 0 < y ≤ 8, ¿cuánto vale y?',a:'2',opts:_i4gshuf(['2','6','4','8']),mc:true,ste:'8×8 = 64. 64 − 62 = 2. y = 2.'},
+    {_id:7,q:'Si 75 = 9̄ + x con 0 ≤ x < 9, ¿cuánto vale x?',a:'3',opts:_i4gshuf(['3','2','4','6']),mc:true,ste:'75 = 9×8 + 3. El residuo x = 3.'},
+    {_id:8,q:'Si 80 = 7̄ − y con 0 < y ≤ 7, ¿cuánto vale y?',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'7×12 = 84. 84 − 80 = 4. y = 4.'},
+    // P3: Operaciones con módulos – hallar el residuo del resultado
+    {_id:9,q:'Reduce (7+2)(7+3) y halla el residuo al dividir entre 7.',a:'6',opts:_i4gshuf(['6','5','1','2']),mc:true,ste:'(7̄+2)(7̄+3) = 7̄ + 2×3 = 7̄ + 6. El residuo es 6.'},
+    {_id:10,q:'Reduce (9+3)(9+5) y halla el residuo al dividir entre 9.',a:'6',opts:_i4gshuf(['6','15','3','5']),mc:true,ste:'(9̄+3)(9̄+5) = 9̄ + 3×5 = 9̄ + 15 = 9̄ + 6. Residuo = 6.'},
+    {_id:11,q:'Reduce (5+2)³ y halla el residuo al dividir entre 5.',a:'3',opts:_i4gshuf(['3','8','2','1']),mc:true,ste:'(5̄+2)³ = 5̄ + 2³ = 5̄ + 8 = 5̄ + 3. Residuo = 3.'},
+    {_id:12,q:'¿Es correcta la igualdad 17 + 2⁵ = 17̄ − 2?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso','Depende del cociente','Solo si 2⁵>17']),mc:true,ste:'17+32=49. 17×3=51; 51−2=49. ✓ La igualdad es correcta.'},
+    // P4: Reducción modular – cálculo numérico
+    {_id:13,q:'Reduce P = (5+2)(5+3) usando aritmética mod 5. Halla el residuo de P.',a:'1',opts:_i4gshuf(['1','6','5','11']),mc:true,ste:'2×3 = 6. 6 mod 5 = 1. El residuo de P es 1.'},
+    {_id:14,q:'Reduce P = (7+2)(7+6) − (7+2)⁴ mod 7. ¿Cuánto vale P mod 7?',a:'3',opts:_i4gshuf(['3','4','5','1']),mc:true,ste:'(7̄+2)(7̄+6)−(7̄+2)⁴ = 7̄ + 2×6 − 2⁴ = 7̄ + 12−16 = 7̄ − 4 = 7̄ + 3. Residuo = 3.'},
+    {_id:15,q:'Reduce (11+3)² − (11+4) y halla el residuo al dividir entre 11.',a:'5',opts:_i4gshuf(['5','9','4','3']),mc:true,ste:'3² − 4 = 9 − 4 = 5. Residuo = 5.'},
+    {_id:16,q:'Reduce (13+2)(13+5) − (13+3)² y halla el residuo al dividir entre 13.',a:'1',opts:_i4gshuf(['1','10','9','2']),mc:true,ste:'2×5 − 3² = 10 − 9 = 1. Residuo = 1.'},
+    // P5: Hallar N = MCM(a,b,...) + R con condición N > k
+    {_id:17,q:'Halla el menor N positivo tal que al dividirlo entre 4 y entre 6 deja siempre residuo 3.',a:'15',opts:_i4gshuf(['15','3','27','12']),mc:true,ste:'MCM(4,6)=12. N=12k+3: 3,15,27,… El primer N>0 conveniente es 15 (pues 3<4, no es válido). Menor válido: 15.'},
+    {_id:18,q:'Halla el menor N > 60 tal que N ≡ 3 (mod 4) y N ≡ 3 (mod 6).',a:'63',opts:_i4gshuf(['63','51','75','87']),mc:true,ste:'MCM(4,6)=12. N=12k+3. Para N>60: 12×5+3=63. ✓'},
+    {_id:19,q:'Halla el menor N positivo tal que N = MCM(5,6) + 2.',a:'32',opts:_i4gshuf(['32','12','62','2']),mc:true,ste:'MCM(5,6) = 30. N = 30+2 = 32.'},
+    {_id:20,q:'Halla el menor N tal que al dividirlo entre 4, 5 y 6 deja siempre residuo 1.',a:'61',opts:_i4gshuf(['61','60','1','121']),mc:true,ste:'MCM(4,5,6)=60. N=60k+1. Menor positivo: 61.'},
+  ]);
+}
+_SKILL_META['ol1ar_div_b4']={ico:'📐',lbl:'Módulo y aritmética modular',qCount:4,gen:_genOl1arDiv_B4,plantillas:['Calcular n mod m (residuo directo)','Dado n = m̄ ± x, hallar x o y','Operaciones con módulos – hallar residuo','Reducción modular: cálculo numérico','Hallar N = MCM + R con condición']};
+
+function _genOl1arDiv_BQ2(){return _bqSrcPick(['ol1ar_div_b3','ol1ar_div_b4'],[_genOl1arDiv_B3,_genOl1arDiv_B4]);}
+_SKILL_META['ol1ar_div_bq2']={ico:'⚡',lbl:'Cuestionario 2 – División euclidiana y Módulo',qCount:10,gen:_genOl1arDiv_BQ2,quiz:true,srcKeys:['ol1ar_div_b3','ol1ar_div_b4']};
+
+function _genOl1arDiv_B5(){
+  return _i4gpick([
+    // P1: k días DESPUÉS (k pequeño/mediano)
+    {_id:1,q:'Un viajero parte un lunes y regresa 75 días después. ¿Qué día de la semana regresa?',a:'Sábado',opts:_i4gshuf(['Sábado','Viernes','Domingo','Martes']),mc:true,ste:'75 = 7×10 + 5. Lunes + 5 días = Sábado.'},
+    {_id:2,q:'Un viajero parte un sábado y regresa 45 días después. ¿Qué día de la semana regresa?',a:'Martes',opts:_i4gshuf(['Martes','Sábado','Miércoles','Lunes']),mc:true,ste:'45 = 7×6 + 3. Sábado + 3 días = Martes.'},
+    {_id:3,q:'Hoy es viernes. ¿Qué día de la semana será dentro de 20 días?',a:'Jueves',opts:_i4gshuf(['Jueves','Domingo','Lunes','Sábado']),mc:true,ste:'20 = 7×2 + 6. Viernes + 6 días = Jueves.'},
+    {_id:4,q:'Hoy es domingo. ¿Qué día fue hace 10 días?',a:'Jueves',opts:_i4gshuf(['Jueves','Miércoles','Viernes','Martes']),mc:true,ste:'10 = 7×1 + 3. Domingo − 3 días = Jueves.'},
+    // P2: k días DESPUÉS (k grande, >100)
+    {_id:5,q:'Un viajero parte un lunes y regresa 80 días después. ¿Qué día de la semana regresa?',a:'Jueves',opts:_i4gshuf(['Jueves','Miércoles','Viernes','Lunes']),mc:true,ste:'80 = 7×11 + 3. Lunes + 3 días = Jueves.'},
+    {_id:6,q:'Hoy es martes. ¿Qué día de la semana será dentro de 200 días?',a:'Sábado',opts:_i4gshuf(['Sábado','Lunes','Martes','Jueves']),mc:true,ste:'200 = 7×28 + 4. Martes + 4 días = Sábado.'},
+    {_id:7,q:'Un evento cae siempre en domingo. Hoy es domingo. ¿Qué día caerá el evento 105 días después?',a:'Domingo',opts:_i4gshuf(['Domingo','Sábado','Lunes','Martes']),mc:true,ste:'105 = 7×15. 105 mod 7 = 0. Domingo + 0 = Domingo.'},
+    {_id:8,q:'Hoy es miércoles. ¿Qué día de la semana fue hace 150 días?',a:'Domingo',opts:_i4gshuf(['Domingo','Lunes','Martes','Sábado']),mc:true,ste:'150 = 7×21 + 3. Miércoles − 3 días = Domingo.'},
+    // P3: Dado hoy = X y partida fue k días atrás, ¿qué día fue la partida?
+    {_id:9,q:'Un viajero regresó hoy viernes. Partió hace 75 días. ¿Qué día de la semana partió?',a:'Domingo',opts:_i4gshuf(['Domingo','Lunes','Martes','Sábado']),mc:true,ste:'75 = 7×10 + 5. Viernes − 5 días = Domingo.'},
+    {_id:10,q:'Hoy es jueves y mi cumpleaños fue hace 45 días. ¿Qué día de la semana fue mi cumpleaños?',a:'Lunes',opts:_i4gshuf(['Lunes','Martes','Miércoles','Domingo']),mc:true,ste:'45 = 7×6 + 3. Jueves − 3 días = Lunes.'},
+    {_id:11,q:'Un estudiante presentó su examen hace 60 días. Hoy es lunes. ¿Qué día fue el examen?',a:'Jueves',opts:_i4gshuf(['Jueves','Miércoles','Viernes','Martes']),mc:true,ste:'60 = 7×8 + 4. Lunes − 4 días = Jueves.'},
+    {_id:12,q:'Hoy es miércoles y la clase fue hace 50 días. ¿Qué día fue la clase?',a:'Martes',opts:_i4gshuf(['Martes','Lunes','Jueves','Miércoles']),mc:true,ste:'50 = 7×7 + 1. Miércoles − 1 día = Martes.'},
+    // P4: Dos personas o eventos con distintos intervalos
+    {_id:13,q:'Hoy es lunes. Hay reuniones cada 12 días. La primera reunión es en 12 días. ¿Qué día de la semana es la 5ª reunión?',a:'Viernes',opts:_i4gshuf(['Viernes','Lunes','Martes','Domingo']),mc:true,ste:'5ª reunión: 5×12 = 60 días desde hoy. 60 = 7×8+4. Lunes+4 = Viernes.'},
+    {_id:14,q:'Hoy es miércoles. Un ciclista entrena cada 3 días (hoy es el día 1). ¿Qué día es el día de entrenamiento #25?',a:'Viernes',opts:_i4gshuf(['Viernes','Miércoles','Jueves','Lunes']),mc:true,ste:'El día #25 = hoy + (25−1)×3 = hoy+72 días. 72=7×10+2. Miércoles+2=Viernes.'},
+    {_id:15,q:'Hay reuniones semanales los martes. ¿Qué día de la semana caerá la 13ª reunión?',a:'Martes',opts:_i4gshuf(['Martes','Miércoles','Lunes','Jueves']),mc:true,ste:'La 13ª reunión = primer martes + 12 semanas = 84 días. 84 mod 7=0. Martes+0=Martes.'},
+    {_id:16,q:'Ana y Luis parten juntos un jueves. Ana regresa en 50 días y Luis en 64 días. ¿Qué día de la semana regresa Luis?',a:'Viernes',opts:_i4gshuf(['Viernes','Jueves','Sábado','Lunes']),mc:true,ste:'64 = 7×9 + 1. Jueves + 1 día = Viernes.'},
+    // P5: Problemas combinados semanas y fechas
+    {_id:17,q:'Un contrato empieza un martes y dura 180 días. ¿Qué día de la semana termina?',a:'Domingo',opts:_i4gshuf(['Domingo','Sábado','Lunes','Jueves']),mc:true,ste:'180 = 7×25 + 5. Martes + 5 días = Domingo.'},
+    {_id:18,q:'Las clases son de lunes a viernes. El primer día es lunes. ¿Qué día de la semana es el 100° día de clases?',a:'Viernes',opts:_i4gshuf(['Viernes','Lunes','Jueves','Miércoles']),mc:true,ste:'100 = 5×20 exacto. El día 100 es el último día de la semana 20 → Viernes.'},
+    {_id:19,q:'Hoy es miércoles 1 de agosto. ¿Qué día de la semana cae el 1 de septiembre?',a:'Sábado',opts:_i4gshuf(['Sábado','Viernes','Domingo','Lunes']),mc:true,ste:'Agosto tiene 31 días. 31 = 7×4 + 3. Miércoles + 3 = Sábado.'},
+    {_id:20,q:'Un año de 365 días empieza en lunes. ¿Qué día de la semana empieza el año siguiente?',a:'Martes',opts:_i4gshuf(['Martes','Lunes','Miércoles','Domingo']),mc:true,ste:'365 = 7×52 + 1. Lunes + 1 día = Martes.'},
+  ]);
+}
+_SKILL_META['ol1ar_div_b5']={ico:'📐',lbl:'Calendarios: días de la semana con módulo 7',qCount:4,gen:_genOl1arDiv_B5,plantillas:['k días después (k mediano)','k días después (k grande, >100)','Dado hoy=X, la partida fue k días atrás','Dos personas o eventos con distintos intervalos','Fechas y contratos combinados']};
+
+function _genOl1arDiv_B6(){
+  return _i4gpick([
+    // P1: Forma (n+k) – mayor de 2 cifras (suma)
+    {_id:1,q:'Halla el mayor número de 2 cifras de la forma (3+2), es decir de la forma 3k+2.',a:'98',opts:_i4gshuf(['98','97','95','99']),mc:true,ste:'3k+2 ≤ 99 → k ≤ 32. Mayor: 3×32+2 = 98.'},
+    {_id:2,q:'Halla el mayor número de 2 cifras de la forma (4+1), es decir de la forma 4k+1.',a:'97',opts:_i4gshuf(['97','93','98','99']),mc:true,ste:'4k+1 ≤ 99 → k ≤ 24. Mayor: 4×24+1 = 97.'},
+    {_id:3,q:'Halla el mayor número de 2 cifras de la forma (6+5), es decir de la forma 6k+5.',a:'95',opts:_i4gshuf(['95','89','99','91']),mc:true,ste:'6k+5 ≤ 99 → k ≤ 15. Mayor: 6×15+5 = 95.'},
+    {_id:4,q:'Halla el mayor número de 2 cifras de la forma (9+7), es decir de la forma 9k+7.',a:'97',opts:_i4gshuf(['97','88','91','99']),mc:true,ste:'9k+7 ≤ 99 → k ≤ 10. Mayor: 9×10+7 = 97.'},
+    // P2: Forma (n−k) – mayor de 2 cifras (resta)
+    {_id:5,q:'Halla el mayor número de 2 cifras de la forma (5−3), es decir de la forma 5k−3.',a:'97',opts:_i4gshuf(['97','92','93','99']),mc:true,ste:'5k−3 ≤ 99 → k ≤ 20. Mayor: 5×20−3 = 97.'},
+    {_id:6,q:'Halla el mayor número de 2 cifras de la forma (8−1), es decir de la forma 8k−1.',a:'95',opts:_i4gshuf(['95','87','91','99']),mc:true,ste:'8k−1 ≤ 99 → k ≤ 12. Mayor: 8×12−1 = 95.'},
+    {_id:7,q:'Halla el mayor número de 2 cifras de la forma (3−1), es decir de la forma 3k−1.',a:'98',opts:_i4gshuf(['98','95','97','99']),mc:true,ste:'3k−1 ≤ 99 → k ≤ 33. Mayor: 3×33−1 = 98.'},
+    {_id:8,q:'Halla el mayor número de 2 cifras de la forma (11−2), es decir de la forma 11k−2.',a:'97',opts:_i4gshuf(['97','95','88','99']),mc:true,ste:'11k−2 ≤ 99 → k ≤ 9. Mayor: 11×9−2 = 97.'},
+    // P3: Forma (n+k) – mayor de 3 cifras
+    {_id:9,q:'Halla el mayor número de 3 cifras de la forma (4+5), es decir de la forma 4k+5.',a:'997',opts:_i4gshuf(['997','993','999','995']),mc:true,ste:'4k+5 ≤ 999 → k ≤ 248. Mayor: 4×248+5 = 997.'},
+    {_id:10,q:'Halla el mayor número de 3 cifras de la forma (6+5), es decir de la forma 6k+5.',a:'995',opts:_i4gshuf(['995','989','999','997']),mc:true,ste:'6k+5 ≤ 999 → k ≤ 165. Mayor: 6×165+5 = 995.'},
+    {_id:11,q:'Halla el mayor número de 3 cifras de la forma (3+2), es decir de la forma 3k+2.',a:'998',opts:_i4gshuf(['998','995','999','997']),mc:true,ste:'3k+2 ≤ 999 → k ≤ 332. Mayor: 3×332+2 = 998.'},
+    {_id:12,q:'Halla el mayor número de 3 cifras de la forma (5+4), es decir de la forma 5k+4.',a:'999',opts:_i4gshuf(['999','994','997','995']),mc:true,ste:'5k+4 ≤ 999 → k ≤ 199. Mayor: 5×199+4 = 999.'},
+    // P4: Suma de los mayores de 2 cifras de dos formas
+    {_id:13,q:'En una competencia, el puntaje A es de la forma (3+2) y el puntaje B de la forma (5−3). Halla la suma de sus máximos puntajes de 2 cifras.',a:'195',opts:_i4gshuf(['195','193','197','190']),mc:true,ste:'(3+2): máx 2 cifras = 98. (5−3): 5k−3≤99 → k=20 → 97. Suma = 98+97 = 195.'},
+    {_id:14,q:'Puntaje A = forma (4+1), puntaje B = forma (7−2). Halla la suma de sus máximos de 2 cifras.',a:'193',opts:_i4gshuf(['193','195','190','197']),mc:true,ste:'(4+1): máx=97. (7−2): 7k−2≤99 → k=14 → 96. Suma = 97+96 = 193.'},
+    {_id:15,q:'Puntaje A = forma (6+5), puntaje B = forma (8−1). Halla la suma de sus máximos de 2 cifras.',a:'190',opts:_i4gshuf(['190','185','195','200']),mc:true,ste:'(6+5): máx=95. (8−1): máx=95. Suma = 95+95 = 190.'},
+    {_id:16,q:'Puntaje A = forma (7+3), puntaje B = forma (4+2). Halla la suma de sus máximos de 2 cifras.',a:'192',opts:_i4gshuf(['192','193','188','195']),mc:true,ste:'(7+3): 7k+3≤99 → k=13 → 94. (4+2): 4k+2≤99 → k=24 → 98. Suma = 94+98 = 192.'},
+    // P5: Problema de texto de competencia con formas distintas
+    {_id:17,q:'La danza A tiene puntaje de forma (4+3) y la danza B de forma (6+1). Halla la suma de sus máximos puntajes de 2 cifras.',a:'196',opts:_i4gshuf(['196','190','194','200']),mc:true,ste:'(4+3): 4k+3≤99 → k=24 → 99. (6+1): 6k+1≤99 → k=16 → 97. Suma = 99+97 = 196.'},
+    {_id:18,q:'Concurso A: puntaje de forma (8+5); Concurso B: forma (11+3). Halla la suma de sus máximos de 2 cifras.',a:'184',opts:_i4gshuf(['184','180','186','188']),mc:true,ste:'(8+5): 8k+5≤99 → k=11 → 93. (11+3): 11k+3≤99 → k=8 → 91. Suma = 93+91 = 184.'},
+    {_id:19,q:'Grupo Sol: puntaje de forma (5+2); Grupo Luna: forma (9−4). Halla la suma de sus máximos de 2 cifras.',a:'192',opts:_i4gshuf(['192','190','195','188']),mc:true,ste:'(5+2): 5k+2≤99 → k=19 → 97. (9−4): 9k−4≤99 → k=11 → 95. Suma = 97+95 = 192.'},
+    {_id:20,q:'Grupo Sol: puntaje de forma (3+2); Grupo Luna: forma (9−4). ¿Cuántos puntos más anota Sol que Luna con su máximo de 2 cifras?',a:'3',opts:_i4gshuf(['3','5','2','7']),mc:true,ste:'(3+2): máx=98. (9−4): 9k−4≤99 → k=11 → 95. Diferencia = 98−95 = 3.'},
+  ]);
+}
+_SKILL_META['ol1ar_div_b6']={ico:'📐',lbl:'Números de la forma (n+k)',qCount:4,gen:_genOl1arDiv_B6,plantillas:['Forma (n+k): mayor de 2 cifras','Forma (n−k): mayor de 2 cifras','Forma (n+k): mayor de 3 cifras','Suma de máximos de 2 cifras de dos formas','Problema de texto: competencia con formas']};
+
+function _genOl1arDiv_BQ3(){return _bqSrcPick(['ol1ar_div_b5','ol1ar_div_b6'],[_genOl1arDiv_B5,_genOl1arDiv_B6]);}
+_SKILL_META['ol1ar_div_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Calendarios y Forma (n+k)',qCount:10,gen:_genOl1arDiv_BQ3,quiz:true,srcKeys:['ol1ar_div_b5','ol1ar_div_b6']};
+
+function _genOl1arDiv_BPU(){return _bqSrcPick(['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_b5','ol1ar_div_b6'],[_genOl1arDiv_B1,_genOl1arDiv_B2,_genOl1arDiv_B3,_genOl1arDiv_B4,_genOl1arDiv_B5,_genOl1arDiv_B6]);}
+_SKILL_META['ol1ar_div_bpu']={ico:'⚡',lbl:'Examen – Divisibilidad',qCount:30,gen:_genOl1arDiv_BPU,quiz:true,srcKeys:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_b5','ol1ar_div_b6']};
+
+
+
 // ══ Matemática 1° Secundaria – Abraham Lincoln (li1m) ════════════════════════════
 // Unidad 1: Expresiones Algebraicas
 
@@ -11618,6 +11821,7 @@ const PREP_CURRICULUM = {
          {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2']},
          {lbl:'Productos Notables I',            area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu']},
          {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu']},
+         {lbl:'Divisibilidad',                   area:'aritmetica', editorial:'saco_oliveros', skills:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu']},
          {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
