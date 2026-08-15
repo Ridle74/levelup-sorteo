@@ -6844,7 +6844,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2','sf6_are_b1','sf6_are_b2','sf6_are_bq1','sf6_are_b3','sf6_are_b4','sf6_are_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu',],
+    grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
     areas:[
@@ -10422,6 +10422,533 @@ _SKILL_META['ol1ar_div_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Calendarios y Fo
 function _genOl1arDiv_BPU(){return _bqSrcPick(['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_b5','ol1ar_div_b6'],[_genOl1arDiv_B1,_genOl1arDiv_B2,_genOl1arDiv_B3,_genOl1arDiv_B4,_genOl1arDiv_B5,_genOl1arDiv_B6]);}
 _SKILL_META['ol1ar_div_bpu']={ico:'⚡',lbl:'Examen – Divisibilidad',qCount:30,gen:_genOl1arDiv_BPU,quiz:true,srcKeys:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_b5','ol1ar_div_b6']};
 
+// ══ Aritmética 1° Secundaria – Saco Oliveros: Criterios de Divisibilidad (ol1ar_crd) ══
+
+// ── B1: Criterio de divisibilidad por 2 ─────────────────────────────────────
+function _genOl1arCrd_B1(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 2?
+    {_id:1,q:'¿Es 7 346 divisible por 2?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si el divisor es par','No se puede saber']),mc:true,ste:'Criterio del 2: el último dígito debe ser par. 6 es par → 7 346 es divisible por 2.'},
+    {_id:2,q:'¿Es 8 931 divisible por 2?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la suma de dígitos es par','No se puede saber']),mc:true,ste:'Criterio del 2: el último dígito debe ser par. 1 es impar → 8 931 NO es divisible por 2.'},
+    {_id:3,q:'¿Es 50 000 divisible por 2?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en cero','Depende del número de cifras']),mc:true,ste:'Último dígito = 0, que es par → 50 000 es divisible por 2.'},
+    {_id:4,q:'De los números 213, 470, 685 y 892, ¿cuántos son divisibles por 2?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Últimos dígitos: 3 (impar✗), 0 (par✓), 5 (impar✗), 2 (par✓). Son divisibles 470 y 892 → 2 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 74x es divisible por 2, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'5',opts:_i4gshuf(['5','4','3','2']),mc:true,ste:'El último dígito x debe ser par: x ∈ {0, 2, 4, 6, 8} → 5 valores posibles.'},
+    {_id:6,q:'Si el número 96x es divisible por 2, ¿cuál es el mayor valor posible de x?',a:'8',opts:_i4gshuf(['8','6','4','9']),mc:true,ste:'x debe ser par: {0, 2, 4, 6, 8}. El mayor valor par es 8.'},
+    {_id:7,q:'Si el número 31x NO es divisible por 2, ¿cuántos valores puede tomar x?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Para NO ser divisible por 2, x debe ser impar: x ∈ {1, 3, 5, 7, 9} → 5 valores.'},
+    {_id:8,q:'Si el número 4x3 es divisible por 2, ¿cuántos valores puede tomar x?',a:'0',opts:_i4gshuf(['0','5','4','10']),mc:true,ste:'El último dígito de 4x3 es siempre 3 (impar), por lo que NUNCA es divisible por 2 sin importar x → 0 valores posibles.'},
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores posibles de x para que 83x sea divisible por 2.',a:'20',opts:_i4gshuf(['20','25','10','16']),mc:true,ste:'x ∈ {0, 2, 4, 6, 8} → suma = 0+2+4+6+8 = 20.'},
+    {_id:10,q:'Halla la suma de todos los valores posibles de x para que 5x7 NO sea divisible por 2.',a:'45',opts:_i4gshuf(['45','20','25','30']),mc:true,ste:'El último dígito es siempre 7 (impar), nunca es divisible por 2. Entonces x puede tomar cualquier valor de 0 a 9: suma = 0+1+2+…+9 = 45.'},
+    {_id:11,q:'Halla la suma de todos los valores de x para que 61x sea divisible por 2.',a:'20',opts:_i4gshuf(['20','25','45','15']),mc:true,ste:'x debe ser par: {0, 2, 4, 6, 8}. Suma = 0+2+4+6+8 = 20.'},
+    {_id:12,q:'Sea A la cantidad de valores de x que hacen que 27x sea divisible por 2, y S su suma. Halla A + S.',a:'25',opts:_i4gshuf(['25','20','30','10']),mc:true,ste:'x ∈ {0,2,4,6,8}: A = 5, S = 20. A + S = 25.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 4 573 entre 2?',a:'1',opts:_i4gshuf(['1','0','3','2']),mc:true,ste:'Último dígito = 3 (impar) → 4 573 no es divisible por 2 → residuo = 1.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 9 848 entre 2?',a:'0',opts:_i4gshuf(['0','1','8','2']),mc:true,ste:'Último dígito = 8 (par) → 9 848 es divisible por 2 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 100 001 entre 2?',a:'1',opts:_i4gshuf(['1','0','2','3']),mc:true,ste:'Último dígito = 1 (impar) → no divisible por 2 → residuo = 1.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 77 770 entre 2?',a:'0',opts:_i4gshuf(['0','1','7','2']),mc:true,ste:'Último dígito = 0 (par) → divisible por 2 → residuo = 0.'},
+    // P5: Problema de texto
+    {_id:17,q:'Un maestro quiere repartir 346 cuadernos en pares (de 2 en 2). ¿Sobrará alguno?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobra 2','Depende del número de alumnos']),mc:true,ste:'346: último dígito = 6 (par) → divisible por 2 → se reparten exactamente, no sobra ninguno.'},
+    {_id:18,q:'Se producen 1 847 piezas. ¿Pueden empacarlas exactamente de a 2 sin que sobre ninguna?',a:'No, sobra 1 pieza',opts:_i4gshuf(['No, sobra 1 pieza','Sí, exactamente','No, sobran 2 piezas','Solo si se agrupa de a 4']),mc:true,ste:'1 847: último dígito = 7 (impar) → no divisible por 2 → sobra 1 pieza.'},
+    {_id:19,q:'¿Cuántos números de 2 cifras tienen su dígito de las unidades par?',a:'45',opts:_i4gshuf(['45','50','40','54']),mc:true,ste:'Decenas: 1–9 (9 opciones). Unidades pares: 0, 2, 4, 6, 8 (5 opciones). Total = 9 × 5 = 45.'},
+    {_id:20,q:'¿Cuántos múltiplos de 2 hay entre 1 y 100 inclusive?',a:'50',opts:_i4gshuf(['50','49','51','100']),mc:true,ste:'Los pares de 1 a 100: 2, 4, 6, …, 100. Son 100 ÷ 2 = 50 múltiplos.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b1']={ico:'🔢',lbl:'Criterio de divisibilidad por 2',qCount:4,gen:_genOl1arCrd_B1,plantillas:['¿Es N divisible por 2?','Hallar dígito para divisibilidad por 2','Suma de valores posibles del dígito','Calcular residuo al dividir entre 2','Problema de texto con divisibilidad por 2']};
+
+// ── B2: Criterio de divisibilidad por 3 ─────────────────────────────────────
+function _genOl1arCrd_B2(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 3?
+    {_id:1,q:'¿Es 2 457 divisible por 3?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en dígito impar','No se puede saber']),mc:true,ste:'Suma de dígitos: 2+4+5+7 = 18. Como 18 ÷ 3 = 6, la suma es divisible por 3 → 2 457 es divisible por 3.'},
+    {_id:2,q:'¿Es 1 234 divisible por 3?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la cifra de unidades es par','No se puede saber']),mc:true,ste:'Suma de dígitos: 1+2+3+4 = 10. Como 10 no es divisible por 3, tampoco lo es 1 234.'},
+    {_id:3,q:'¿Es 99 999 divisible por 3?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si tiene 5 cifras','Depende del número de dígitos']),mc:true,ste:'Suma de dígitos: 9×5 = 45. Como 45 ÷ 3 = 15, es divisible por 3.'},
+    {_id:4,q:'De los números 111, 124, 222 y 341, ¿cuántos son divisibles por 3?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Sumas: 111→3✓; 124→7✗; 222→6✓; 341→8✗. Son divisibles 111 y 222 → 2 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 35x es divisible por 3, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'3+5+x = 8+x debe ser múltiplo de 3. 8+x ≡ 0(mod 3) → x ≡ 1(mod 3). x ∈ {1, 4, 7} → 3 valores.'},
+    {_id:6,q:'Si el número 4x2 es divisible por 3, ¿cuál es el menor valor de x?',a:'0',opts:_i4gshuf(['0','3','6','1']),mc:true,ste:'4+x+2 = 6+x debe ser múltiplo de 3. x ≡ 0(mod 3). x ∈ {0, 3, 6, 9}. El menor es 0.'},
+    {_id:7,q:'Si el número 7x1 es divisible por 3, ¿cuál es el mayor valor de x?',a:'7',opts:_i4gshuf(['7','4','1','9']),mc:true,ste:'7+x+1 = 8+x. x ≡ 1(mod 3). x ∈ {1, 4, 7}. El mayor es 7.'},
+    {_id:8,q:'Si el número 2x4 es divisible por 3, ¿cuántos valores puede tomar x?',a:'4',opts:_i4gshuf(['4','3','2','1']),mc:true,ste:'2+x+4 = 6+x. x ≡ 0(mod 3). x ∈ {0, 3, 6, 9} → 4 valores.'},
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores posibles de x para que 35x sea divisible por 3.',a:'12',opts:_i4gshuf(['12','15','6','10']),mc:true,ste:'x ∈ {1, 4, 7} → suma = 1+4+7 = 12.'},
+    {_id:10,q:'Halla la suma de todos los valores posibles de x para que 4x2 sea divisible por 3.',a:'18',opts:_i4gshuf(['18','12','9','15']),mc:true,ste:'x ∈ {0, 3, 6, 9} → suma = 0+3+6+9 = 18.'},
+    {_id:11,q:'Halla la suma de todos los valores de x para que 1x3 sea divisible por 3.',a:'15',opts:_i4gshuf(['15','12','18','9']),mc:true,ste:'1+x+3 = 4+x. x ≡ 2(mod 3). x ∈ {2, 5, 8} → suma = 2+5+8 = 15.'},
+    {_id:12,q:'El número 5 4A 8 es múltiplo de 3 y el dígito A es par y menor que 5. ¿Cuánto vale A?',a:'4',opts:_i4gshuf(['4','2','0','6']),mc:true,ste:'5+4+A+8 = 17+A debe ser múltiplo de 3 → A ≡ 1(mod 3) → A ∈ {1,4,7}. A par y menor que 5: A = 4.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 2 456 entre 3?',a:'2',opts:_i4gshuf(['2','0','1','3']),mc:true,ste:'Suma de dígitos: 2+4+5+6 = 17. 17 = 3×5+2 → residuo = 2.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 8 910 entre 3?',a:'0',opts:_i4gshuf(['0','1','2','3']),mc:true,ste:'Suma de dígitos: 8+9+1+0 = 18. 18 ÷ 3 = 6 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 1 000 entre 3?',a:'1',opts:_i4gshuf(['1','0','2','3']),mc:true,ste:'Suma de dígitos: 1+0+0+0 = 1. 1 = 3×0+1 → residuo = 1.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 9 995 entre 3?',a:'2',opts:_i4gshuf(['2','0','1','4']),mc:true,ste:'Suma de dígitos: 9+9+9+5 = 32. 32 = 3×10+2 → residuo = 2.'},
+    // P5: Problema de texto
+    {_id:17,q:'Un colegio tiene 231 alumnos que se organizarán en grupos de 3. ¿Sobrarán alumnos?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobran 2','Depende del número de grupos']),mc:true,ste:'2+3+1 = 6, que es divisible por 3 → 231 ÷ 3 = 77 exacto, no sobra ninguno.'},
+    {_id:18,q:'Una caja contiene 247 chocolates. ¿Se pueden repartir en grupos exactos de 3?',a:'No, sobra 1',opts:_i4gshuf(['No, sobra 1','Sí, exactamente','No, sobran 2','Solo si se retira uno']),mc:true,ste:'2+4+7 = 13. 13 = 3×4+1 → residuo 1 → sobra 1 chocolate.'},
+    {_id:19,q:'¿Cuántos dígitos x (0 ≤ x ≤ 9) hacen que 3x sea múltiplo de 3?',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'3+x divisible por 3 → x ≡ 0(mod 3). x ∈ {0, 3, 6, 9} → 4 dígitos.'},
+    {_id:20,q:'¿Cuántos múltiplos de 3 hay entre 1 y 99 inclusive?',a:'33',opts:_i4gshuf(['33','30','36','32']),mc:true,ste:'Los múltiplos de 3 en ese rango: 3, 6, 9, …, 99. Son 99 ÷ 3 = 33 múltiplos.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b2']={ico:'🔢',lbl:'Criterio de divisibilidad por 3',qCount:4,gen:_genOl1arCrd_B2,plantillas:['¿Es N divisible por 3?','Hallar dígito para divisibilidad por 3','Suma de valores posibles del dígito','Calcular residuo al dividir entre 3','Problema de texto con divisibilidad por 3']};
+
+// ── B3: Criterio de divisibilidad por 5 ─────────────────────────────────────
+function _genOl1arCrd_B3(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 5?
+    {_id:1,q:'¿Es 3 485 divisible por 5?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la suma de dígitos es 5','No se puede saber']),mc:true,ste:'Criterio del 5: el último dígito debe ser 0 o 5. Termina en 5 → 3 485 es divisible por 5.'},
+    {_id:2,q:'¿Es 7 832 divisible por 5?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si tiene 4 cifras','Depende de los demás dígitos']),mc:true,ste:'Último dígito = 2 (no es 0 ni 5) → 7 832 NO es divisible por 5.'},
+    {_id:3,q:'¿Es 100 000 divisible por 5?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si tiene ceros al final','Depende']),mc:true,ste:'Último dígito = 0 → 100 000 es divisible por 5.'},
+    {_id:4,q:'De los números 120, 145, 163, 200, ¿cuántos son divisibles por 5?',a:'3',opts:_i4gshuf(['3','4','2','1']),mc:true,ste:'Últimos dígitos: 0✓, 5✓, 3✗, 0✓. Son divisibles 120, 145 y 200 → 3 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 47x es divisible por 5, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'2',opts:_i4gshuf(['2','1','5','3']),mc:true,ste:'El último dígito x debe ser 0 o 5 → x ∈ {0, 5} → 2 valores.'},
+    {_id:6,q:'Si el número 83x es divisible por 5, ¿cuál es el mayor valor posible de x?',a:'5',opts:_i4gshuf(['5','0','10','9']),mc:true,ste:'x ∈ {0, 5}. El mayor es 5.'},
+    {_id:7,q:'Si el número 9x2 es divisible por 5, ¿cuántos valores puede tomar x?',a:'0',opts:_i4gshuf(['0','2','5','10']),mc:true,ste:'El último dígito de 9x2 es siempre 2 (no es 0 ni 5) → NUNCA es divisible por 5 → 0 valores posibles.'},
+    {_id:8,q:'Si el número 6x0 es divisible por 5, ¿cuántos valores puede tomar x?',a:'10',opts:_i4gshuf(['10','5','2','1']),mc:true,ste:'El último dígito es siempre 0 → siempre divisible por 5. El dígito x (decenas) puede ser cualquier valor de 0 a 9 → 10 valores.'},
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores posibles de x para que 62x sea divisible por 5.',a:'5',opts:_i4gshuf(['5','10','0','2']),mc:true,ste:'x ∈ {0, 5} → suma = 0+5 = 5.'},
+    {_id:10,q:'Halla la suma de todos los valores posibles de x para que 3x4 sea divisible por 5.',a:'0',opts:_i4gshuf(['0','5','10','45']),mc:true,ste:'El último dígito es 4 (no es 0 ni 5) → nunca divisible por 5 → no hay valores posibles → suma = 0.'},
+    {_id:11,q:'Halla la suma de todos los valores de x para que 5x0 sea divisible por 5.',a:'45',opts:_i4gshuf(['45','5','0','9']),mc:true,ste:'El último dígito es 0 → siempre divisible por 5. x puede ser 0–9 → suma = 0+1+2+…+9 = 45.'},
+    {_id:12,q:'Sea A la cantidad de valores de x que hacen que 19x sea divisible por 5, y S su suma. Halla A + S.',a:'7',opts:_i4gshuf(['7','5','2','10']),mc:true,ste:'x ∈ {0, 5}: A = 2, S = 0+5 = 5. A + S = 2+5 = 7.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 3 473 entre 5?',a:'3',opts:_i4gshuf(['3','0','2','4']),mc:true,ste:'Último dígito = 3. Para hallar el residuo de N÷5, basta mirar el último dígito: 3 ÷ 5 = 0 con residuo 3.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 8 920 entre 5?',a:'0',opts:_i4gshuf(['0','5','2','1']),mc:true,ste:'Último dígito = 0 → divisible por 5 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 10 007 entre 5?',a:'2',opts:_i4gshuf(['2','0','7','3']),mc:true,ste:'Último dígito = 7. 7 ÷ 5 = 1 con residuo 2 → residuo = 2.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 99 998 entre 5?',a:'3',opts:_i4gshuf(['3','0','8','4']),mc:true,ste:'Último dígito = 8. 8 ÷ 5 = 1 con residuo 3 → residuo = 3.'},
+    // P5: Problema de texto
+    {_id:17,q:'Se distribuyen 345 soles en billetes de S/5. ¿Sobra algún sol?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobran 5','Depende del número de billetes']),mc:true,ste:'345: último dígito = 5 → divisible por 5 → 345 ÷ 5 = 69 exacto, no sobra nada.'},
+    {_id:18,q:'En una tienda hay 178 caramelos que se venden en bolsas de 5. ¿Cuántos caramelos sobran?',a:'3',opts:_i4gshuf(['3','2','0','5']),mc:true,ste:'178: último dígito = 8. 8 ÷ 5 = 1 con residuo 3 → sobran 3 caramelos.'},
+    {_id:19,q:'¿Cuántos números de 2 cifras son divisibles por 5?',a:'18',opts:_i4gshuf(['18','20','15','16']),mc:true,ste:'Números de 2 cifras divisibles por 5: terminan en 0 o 5. Terminan en 0: 10,20,...,90 (9 números). Terminan en 5: 15,25,...,95 (9 números). Total = 18.'},
+    {_id:20,q:'¿Cuántos múltiplos de 5 hay entre 1 y 100 inclusive?',a:'20',opts:_i4gshuf(['20','19','21','25']),mc:true,ste:'Múltiplos de 5 hasta 100: 5, 10, 15, …, 100. Son 100 ÷ 5 = 20 múltiplos.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b3']={ico:'🔢',lbl:'Criterio de divisibilidad por 5',qCount:4,gen:_genOl1arCrd_B3,plantillas:['¿Es N divisible por 5?','Hallar dígito para divisibilidad por 5','Suma de valores posibles del dígito','Calcular residuo al dividir entre 5','Problema de texto con divisibilidad por 5']};
+
+// ── B4: Criterio de divisibilidad por 9 ─────────────────────────────────────
+function _genOl1arCrd_B4(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 9?
+    {_id:1,q:'¿Es 2 457 divisible por 9?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si es divisible por 3','No se puede saber']),mc:true,ste:'Suma de dígitos: 2+4+5+7 = 18. 18 ÷ 9 = 2 → la suma es múltiplo de 9 → 2 457 es divisible por 9.'},
+    {_id:2,q:'¿Es 3 457 divisible por 9?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si también es divisible por 3','Depende de la paridad']),mc:true,ste:'Suma de dígitos: 3+4+5+7 = 19. Como 19 no es múltiplo de 9 → 3 457 no es divisible por 9.'},
+    // Let me fix q2: use 3 456. 3+4+5+6=18 → divisible by 9. I need a non-divisible example.
+    // Use 1 234: 1+2+3+4=10, not div by 9.
+    {_id:3,q:'¿Es 81 000 divisible por 9?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si tiene ceros al final','Depende']),mc:true,ste:'Suma de dígitos: 8+1+0+0+0 = 9. 9 ÷ 9 = 1 → divisible por 9.'},
+    {_id:4,q:'De los números 108, 207, 305 y 459, ¿cuántos son divisibles por 9?',a:'3',opts:_i4gshuf(['3','4','2','1']),mc:true,ste:'Sumas: 108→9✓; 207→9✓; 305→8✗; 459→18✓. Son divisibles 108, 207 y 459 → 3 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 35x es divisible por 9, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'1',opts:_i4gshuf(['1','2','3','4']),mc:true,ste:'3+5+x = 8+x debe ser múltiplo de 9. 8+x = 9 → x = 1; 8+x = 18 → x = 10 (no es dígito). Solo x = 1 → 1 valor.'},
+    {_id:6,q:'Si el número 6x3 es divisible por 9, ¿cuántos valores puede tomar x?',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'6+x+3 = 9+x. 9+x múltiplo de 9: x = 0 (9÷9=1✓) o x = 9 (18÷9=2✓). x ∈ {0, 9} → 2 valores.'},
+    {_id:7,q:'Si el número 4x2 es divisible por 9, ¿cuál es el valor de x?',a:'3',opts:_i4gshuf(['3','6','0','9']),mc:true,ste:'4+x+2 = 6+x. 6+x múltiplo de 9: x = 3 (9÷9=1✓) o x = 12 (no es dígito). Único: x = 3.'},
+    {_id:8,q:'Si el número 7x5 es divisible por 9, ¿cuál es la suma de todos los posibles valores de x?',a:'6',opts:_i4gshuf(['6','3','9','12']),mc:true,ste:'7+x+5 = 12+x. Para div por 9: 12+x = 18 → x = 6. Único valor → suma = 6. (765÷9=85✓)'},
+    // Let me fix q8: 7+x+5=12+x. div by 9: 12+x=18→x=6. Only x=6, sum=6.
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores posibles de x para que 35x sea divisible por 9.',a:'1',opts:_i4gshuf(['1','8','9','10']),mc:true,ste:'x ∈ {1} (solo x=1 da 8+1=9, múltiplo de 9). Suma = 1.'},
+    {_id:10,q:'Halla la suma de todos los valores posibles de x para que 6x3 sea divisible por 9.',a:'9',opts:_i4gshuf(['9','0','18','3']),mc:true,ste:'x ∈ {0, 9}: suma = 0+9 = 9.'},
+    {_id:11,q:'Halla la suma de los valores de x para que 2x7 sea divisible por 9.',a:'9',opts:_i4gshuf(['9','0','18','4']),mc:true,ste:'2+x+7 = 9+x. 9+x múltiplo de 9: x = 0 (9✓) o x = 9 (18✓). Suma = 0+9 = 9.'},
+    {_id:12,q:'¿Cuántos números de la forma 3_6 (con 1 dígito desconocido en el centro) son divisibles por 9?',a:'2',opts:_i4gshuf(['2','1','3','0']),mc:true,ste:'3+x+6 = 9+x. Para div por 9: x=0 (9÷9=1✓, da 306) o x=9 (18÷9=2✓, da 396). Son 2 números: 306 y 396.'},
+    // Hmm, I made an error above: the answer should be 2. Let me fix:
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 2 456 entre 9?',a:'8',opts:_i4gshuf(['8','0','2','5']),mc:true,ste:'Suma de dígitos: 2+4+5+6 = 17. 17 = 9×1+8 → residuo = 8.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 8 019 entre 9?',a:'0',opts:_i4gshuf(['0','1','9','8']),mc:true,ste:'Suma de dígitos: 8+0+1+9 = 18. 18 ÷ 9 = 2 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 10 000 entre 9?',a:'1',opts:_i4gshuf(['1','0','4','9']),mc:true,ste:'Suma de dígitos: 1+0+0+0+0 = 1. 1 ÷ 9 = 0 con residuo 1 → residuo = 1.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 9 999 entre 9?',a:'0',opts:_i4gshuf(['0','9','3','1']),mc:true,ste:'Suma de dígitos: 9+9+9+9 = 36. 36 ÷ 9 = 4 → residuo = 0.'},
+    // P5: Problema de texto
+    {_id:17,q:'Se reparten 189 libros en cajas de 9. ¿Sobra algún libro?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobran 9','Depende del número de cajas']),mc:true,ste:'1+8+9 = 18. 18 ÷ 9 = 2 → 189 es divisible por 9 → no sobra ningún libro.'},
+    {_id:18,q:'En una clase hay 254 fichas que se distribuyen en grupos de 9. ¿Cuántas sobran?',a:'2',opts:_i4gshuf(['2','0','5','4']),mc:true,ste:'2+5+4 = 11. 11 = 9×1+2 → residuo 2 → sobran 2 fichas.'},
+    {_id:19,q:'¿Cuántos números de 2 cifras son divisibles por 9?',a:'10',opts:_i4gshuf(['10','9','11','12']),mc:true,ste:'Múltiplos de 9 con 2 cifras: 18, 27, 36, 45, 54, 63, 72, 81, 90, 99 → 10 números.'},
+    {_id:20,q:'El número N = 36 es divisible por 9. Si al número 360 se le agrega el dígito d al final formando 360d, ¿para qué valor de d el nuevo número es divisible por 9?',a:'0 o 9',opts:_i4gshuf(['0 o 9','9','0','3']),mc:true,ste:'3+6+0+d = 9+d. Para div por 9: d = 0 (da 9✓) o d = 9 (da 18✓). Valores: 0 o 9.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b4']={ico:'🔢',lbl:'Criterio de divisibilidad por 9',qCount:4,gen:_genOl1arCrd_B4,plantillas:['¿Es N divisible por 9?','Hallar dígito para divisibilidad por 9','Suma de valores posibles del dígito','Calcular residuo al dividir entre 9','Problema de texto con divisibilidad por 9']};
+
+function _genOl1arCrd_BQ1(){return _bqSrcPick(['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4'],[_genOl1arCrd_B1,_genOl1arCrd_B2,_genOl1arCrd_B3,_genOl1arCrd_B4]);}
+_SKILL_META['ol1ar_crd_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Criterios por 2, 3, 5 y 9',qCount:20,gen:_genOl1arCrd_BQ1,quiz:true,srcKeys:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4']};
+
+// ── B5: Criterio de divisibilidad por 4 ─────────────────────────────────────
+function _genOl1arCrd_B5(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 4?
+    {_id:1,q:'¿Es 3 528 divisible por 4?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si también es divisible por 2','No se puede saber']),mc:true,ste:'Criterio del 4: los dos últimos dígitos deben formar un múltiplo de 4. Últimos 2 dígitos: 28. 28 ÷ 4 = 7 → divisible por 4.'},
+    {_id:2,q:'¿Es 7 830 divisible por 4?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en 0','Depende de los demás dígitos']),mc:true,ste:'Últimos 2 dígitos: 30. 30 ÷ 4 = 7.5 → 30 no es múltiplo de 4 → 7 830 no es divisible por 4.'},
+    {_id:3,q:'¿Es 10 000 divisible por 4?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si tiene más de 4 cifras','Depende']),mc:true,ste:'Últimos 2 dígitos: 00. 0 es múltiplo de 4 → 10 000 es divisible por 4.'},
+    {_id:4,q:'De los números 112, 130, 216 y 342, ¿cuántos son divisibles por 4?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Últimos 2 dígitos: 12 (÷4=3✓), 30 (÷4=7.5✗), 16 (÷4=4✓), 42 (÷4=10.5✗). Son 112 y 216 → 2 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 5x8 es divisible por 4, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'5',opts:_i4gshuf(['5','4','3','2']),mc:true,ste:'Los últimos 2 dígitos son x8. Se necesita que x8 sea divisible por 4: 10x+8 ≡ 2x(mod 4) = 0 → x par. x ∈ {0,2,4,6,8} → 5 valores.'},
+    {_id:6,q:'Si el número 3x2 es divisible por 4, ¿cuántos valores puede tomar x?',a:'5',opts:_i4gshuf(['5','4','3','2']),mc:true,ste:'Últimos 2 dígitos: x2. 10x+2 ≡ 2x+2(mod 4) = 0 → 2x ≡ 2(mod 4) → x impar. x ∈ {1,3,5,7,9} → 5 valores.'},
+    {_id:7,q:'Si el número 7x4 es divisible por 4, ¿cuál es el menor valor de x?',a:'0',opts:_i4gshuf(['0','2','4','6']),mc:true,ste:'Últimos 2 dígitos: x4. 10x+4 ≡ 2x(mod 4) = 0 → x par. x ∈ {0,2,4,6,8}. El menor es 0.'},
+    {_id:8,q:'Si el número 4x6 es divisible por 4, ¿cuál es la suma de todos los posibles valores de x?',a:'25',opts:_i4gshuf(['25','20','10','30']),mc:true,ste:'Últimos 2 dígitos: x6. 10x+6 ≡ 2x+2(mod 4) = 0 → x impar. x ∈ {1,3,5,7,9}. Suma = 1+3+5+7+9 = 25.'},
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores de x para que 6x8 sea divisible por 4.',a:'20',opts:_i4gshuf(['20','25','10','18']),mc:true,ste:'x8 divisible por 4: x par. x ∈ {0,2,4,6,8} → suma = 0+2+4+6+8 = 20.'},
+    {_id:10,q:'Halla la suma de los valores de x para que 2x4 sea divisible por 4.',a:'20',opts:_i4gshuf(['20','25','10','45']),mc:true,ste:'x4 divisible por 4: 10x+4 ≡ 2x(mod 4) = 0 → x par. x ∈ {0,2,4,6,8} → suma = 20.'},
+    {_id:11,q:'Halla la suma de los valores de x para que 8x2 sea divisible por 4.',a:'25',opts:_i4gshuf(['25','20','10','45']),mc:true,ste:'x2 divisible por 4: 10x+2 ≡ 2x+2(mod 4) = 0 → x impar. x ∈ {1,3,5,7,9} → suma = 1+3+5+7+9 = 25.'},
+    {_id:12,q:'Sea A la cantidad de valores de x para que 1x6 sea divisible por 4, y S su suma. Halla A + S.',a:'30',opts:_i4gshuf(['30','25','20','45']),mc:true,ste:'x6 ÷ 4: 10x+6 ≡ 2x+2(mod 4) = 0 → x impar. x ∈ {1,3,5,7,9}: A=5, S=25. A+S = 30.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 3 458 entre 4?',a:'2',opts:_i4gshuf(['2','0','1','3']),mc:true,ste:'Últimos 2 dígitos: 58. 58 = 4×14+2 → residuo = 2.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 7 932 entre 4?',a:'0',opts:_i4gshuf(['0','1','2','3']),mc:true,ste:'Últimos 2 dígitos: 32. 32 ÷ 4 = 8 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 10 003 entre 4?',a:'3',opts:_i4gshuf(['3','0','1','2']),mc:true,ste:'Últimos 2 dígitos: 03 = 3. 3 = 4×0+3 → residuo = 3.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 5 678 entre 4?',a:'2',opts:_i4gshuf(['2','0','3','1']),mc:true,ste:'Últimos 2 dígitos: 78. 78 = 4×19+2 → residuo = 2.'},
+    // P5: Problema de texto
+    {_id:17,q:'Se quieren organizar 348 sillas en filas de 4. ¿Sobrarán sillas?',a:'No, ninguna',opts:_i4gshuf(['No, ninguna','Sí, sobra 1','Sí, sobran 2','Sí, sobran 4']),mc:true,ste:'Últimos 2 dígitos: 48. 48 ÷ 4 = 12 → 348 es divisible por 4 → no sobra ninguna silla.'},
+    {_id:18,q:'Una fábrica produce 1 250 piezas que se empacan en cajas de 4. ¿Cuántas piezas sobran?',a:'2',opts:_i4gshuf(['2','0','1','3']),mc:true,ste:'Últimos 2 dígitos: 50. 50 = 4×12+2 → residuo 2 → sobran 2 piezas.'},
+    {_id:19,q:'¿Cuántos números de 2 cifras son divisibles por 4?',a:'22',opts:_i4gshuf(['22','25','20','24']),mc:true,ste:'Múltiplos de 4 entre 10 y 99: 12, 16, 20, …, 96. Cantidad = (96−12)÷4+1 = 84÷4+1 = 21+1 = 22.'},
+    {_id:20,q:'El número 5 63A es divisible por 4, donde A es un dígito. ¿Cuántos valores puede tomar A?',a:'2',opts:_i4gshuf(['2','4','5','1']),mc:true,ste:'Los últimos 2 dígitos son 3A. Para div por 4: 30+A ÷ 4. Probamos: A=0→30(÷4=7.5✗), A=2→32(÷4=8✓), A=4→34(✗), A=6→36(÷4=9✓), A=8→38(✗). A ∈ {2, 6} → 2 valores.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b5']={ico:'🔢',lbl:'Criterio de divisibilidad por 4',qCount:4,gen:_genOl1arCrd_B5,plantillas:['¿Es N divisible por 4?','Hallar dígito para divisibilidad por 4','Suma de valores posibles del dígito','Calcular residuo al dividir entre 4','Problema de texto con divisibilidad por 4']};
+
+// ── B6: Criterio de divisibilidad por 8 ─────────────────────────────────────
+function _genOl1arCrd_B6(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 8?
+    {_id:1,q:'¿Es 5 824 divisible por 8?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si también es divisible por 4','No se puede saber']),mc:true,ste:'Criterio del 8: los tres últimos dígitos deben formar un múltiplo de 8. Últimos 3: 824. 824 ÷ 8 = 103 → divisible por 8.'},
+    {_id:2,q:'¿Es 3 750 divisible por 8?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en 0','Depende de los primeros dígitos']),mc:true,ste:'Últimos 3 dígitos: 750. 750 ÷ 8 = 93.75 → 750 no es múltiplo de 8 → 3 750 no es divisible por 8.'},
+    {_id:3,q:'¿Es 100 000 divisible por 8?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si tiene 6 cifras','Depende']),mc:true,ste:'Últimos 3 dígitos: 000. 0 es múltiplo de 8 → 100 000 es divisible por 8.'},
+    {_id:4,q:'De los números 1 024, 1 100, 2 048 y 3 006, ¿cuántos son divisibles por 8?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Últimos 3: 024=24(÷8=3✓), 100(÷8=12.5✗), 048=48(÷8=6✓), 006=6(÷8=0.75✗). Son 1 024 y 2 048 → 2 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 5x24 es divisible por 8, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'5',opts:_i4gshuf(['5','4','3','2']),mc:true,ste:'Los últimos 3 dígitos son x24. 100x+24 ≡ 4x(mod 8) [pues 100≡4(mod 8), 24≡0(mod 8)]. Para 4x ≡ 0(mod 8): x par. x ∈ {0,2,4,6,8} → 5 valores.'},
+    {_id:6,q:'Si el número 3x12 es divisible por 8, ¿cuántos valores puede tomar x?',a:'5',opts:_i4gshuf(['5','4','3','2']),mc:true,ste:'Últimos 3: x12. 100x+12 ≡ 4x+4(mod 8) = 0 → 4x ≡ 4(mod 8) → x impar. x ∈ {1,3,5,7,9} → 5 valores.'},
+    {_id:7,q:'Si el número 2x40 es divisible por 8, ¿cuál es el mayor valor posible de x?',a:'8',opts:_i4gshuf(['8','6','4','9']),mc:true,ste:'Últimos 3: x40. 100x+40 ≡ 4x(mod 8) [40≡0(mod 8)]. 4x ≡ 0(mod 8) → x par. x ∈ {0,2,4,6,8}. Mayor: 8.'},
+    {_id:8,q:'Si el número 7x32 es divisible por 8, ¿cuántos valores puede tomar x?',a:'5',opts:_i4gshuf(['5','4','3','10']),mc:true,ste:'Últimos 3: x32. 100x+32 ≡ 4x(mod 8) [32≡0(mod 8)]. 4x ≡ 0(mod 8) → x par. x ∈ {0,2,4,6,8} → 5 valores.'},
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores de x para que 6x24 sea divisible por 8.',a:'20',opts:_i4gshuf(['20','25','10','18']),mc:true,ste:'x24 div por 8: 100x+24 ≡ 4x(mod 8) = 0 → x par. x ∈ {0,2,4,6,8} → suma = 20.'},
+    {_id:10,q:'Halla la suma de los valores de x para que 4x12 sea divisible por 8.',a:'25',opts:_i4gshuf(['25','20','10','45']),mc:true,ste:'x12 div por 8: 4x+4 ≡ 0(mod 8) → x impar. x ∈ {1,3,5,7,9} → suma = 25.'},
+    {_id:11,q:'Halla la suma de los valores de x para que 5x40 sea divisible por 8.',a:'20',opts:_i4gshuf(['20','25','10','45']),mc:true,ste:'Últimos 3: x40. 100x+40 ≡ 4x+0 ≡ 4x(mod 8) [pues 40≡0(mod 8)]. 4x≡0(mod 8)→x par. x∈{0,2,4,6,8} → suma = 20.'},
+    {_id:12,q:'Sea A la cantidad de valores de x para que 1x40 sea divisible por 8, y S su suma. Halla A+S.',a:'25',opts:_i4gshuf(['25','20','30','45']),mc:true,ste:'Últimos 3: x40. 100x+40≡4x+0≡4x(mod 8)=0→x par. x∈{0,2,4,6,8}: A=5, S=20. A+S=25.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 5 830 entre 8?',a:'6',opts:_i4gshuf(['6','0','2','4']),mc:true,ste:'Últimos 3 dígitos: 830. 830 = 8×103+6 → residuo = 6.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 3 456 entre 8?',a:'0',opts:_i4gshuf(['0','4','2','6']),mc:true,ste:'Últimos 3 dígitos: 456. 456 ÷ 8 = 57 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 10 010 entre 8?',a:'2',opts:_i4gshuf(['2','0','4','6']),mc:true,ste:'Últimos 3 dígitos: 010 = 10. 10 = 8×1+2 → residuo = 2.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 1 007 entre 8?',a:'7',opts:_i4gshuf(['7','0','1','3']),mc:true,ste:'Últimos 3 dígitos: 007 = 7. 7 = 8×0+7 → residuo = 7.'},
+    // P5: Problema de texto
+    {_id:17,q:'Se reparten 512 bolígrafos en paquetes de 8. ¿Sobra alguno?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobran 2','Sí, sobran 4']),mc:true,ste:'Últimos 3: 512. 512 ÷ 8 = 64 → divisible por 8 → no sobra ninguno.'},
+    {_id:18,q:'Un almacén tiene 1 000 cajas que se agrupan de 8 en 8. ¿Cuántas cajas sobran?',a:'0',opts:_i4gshuf(['0','2','4','8']),mc:true,ste:'Últimos 3: 000. 0 es divisible por 8 → 1 000 ÷ 8 = 125 exacto → sobran 0 cajas.'},
+    {_id:19,q:'¿Cuántos múltiplos de 8 hay entre 1 y 100 inclusive?',a:'12',opts:_i4gshuf(['12','13','10','8']),mc:true,ste:'Múltiplos de 8 hasta 100: 8, 16, 24, …, 96. Son 96 ÷ 8 = 12 múltiplos.'},
+    {_id:20,q:'El número 4 86A es divisible por 8, siendo A un dígito. ¿Cuántos valores puede tomar A?',a:'1',opts:_i4gshuf(['1','2','4','0']),mc:true,ste:'Últimos 3 dígitos: 86A = 860+A. 860 = 8×107+4 → 860≡4(mod 8). 860+A ≡ 4+A ≡ 0(mod 8) → A=4. Solo A=4 → 1 valor. (864÷8=108✓)'},
+    // Hmm my answer is wrong. Let me fix: 86A: 860 mod 8 = 860-8×107=860-856=4. So 860+A≡4+A≡0(mod 8)→A=4 (and A=12 not a digit). Only A=4 → 1 valor.
+  ]);
+}
+_SKILL_META['ol1ar_crd_b6']={ico:'🔢',lbl:'Criterio de divisibilidad por 8',qCount:4,gen:_genOl1arCrd_B6,plantillas:['¿Es N divisible por 8?','Hallar dígito para divisibilidad por 8','Suma de valores posibles del dígito','Calcular residuo al dividir entre 8','Problema de texto con divisibilidad por 8']};
+
+// ── B7: Criterio de divisibilidad por 25 ────────────────────────────────────
+function _genOl1arCrd_B7(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 25?
+    {_id:1,q:'¿Es 4 375 divisible por 25?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en 5','No se puede saber']),mc:true,ste:'Criterio del 25: los dos últimos dígitos deben ser 00, 25, 50 o 75. Termina en 75 → 4 375 es divisible por 25.'},
+    {_id:2,q:'¿Es 6 830 divisible por 25?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en 0','Depende de los otros dígitos']),mc:true,ste:'Últimos 2 dígitos: 30. 30 no pertenece a {00, 25, 50, 75} → 6 830 no es divisible por 25.'},
+    {_id:3,q:'¿Es 100 000 divisible por 25?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en 25','Depende']),mc:true,ste:'Últimos 2 dígitos: 00. 00 ∈ {00,25,50,75} → 100 000 es divisible por 25.'},
+    {_id:4,q:'De los números 250, 375, 480 y 525, ¿cuántos son divisibles por 25?',a:'3',opts:_i4gshuf(['3','4','2','1']),mc:true,ste:'Últimos 2: 50✓, 75✓, 80✗, 25✓. Son divisibles 250, 375 y 525 → 3 números.'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 3x5 es divisible por 25, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'2',opts:_i4gshuf(['2','1','4','3']),mc:true,ste:'Los últimos 2 dígitos son x5. Necesitamos x5 ∈ {25, 75} → x ∈ {2, 7} → 2 valores.'},
+    {_id:6,q:'Si el número 4x0 es divisible por 25, ¿cuántos valores puede tomar x?',a:'2',opts:_i4gshuf(['2','1','4','5']),mc:true,ste:'Los últimos 2 dígitos son x0. Necesitamos x0 ∈ {00, 50} → x ∈ {0, 5} → 2 valores.'},
+    {_id:7,q:'Si el número 8x5 es divisible por 25, ¿cuál es la suma de los posibles valores de x?',a:'9',opts:_i4gshuf(['9','7','5','2']),mc:true,ste:'x5 ∈ {25,75} → x ∈ {2,7}. Suma = 2+7 = 9.'},
+    {_id:8,q:'Si el número 1x0 es divisible por 25, ¿cuál es la mayor valor de x?',a:'5',opts:_i4gshuf(['5','0','9','3']),mc:true,ste:'x0 ∈ {00, 50} → x ∈ {0, 5}. Mayor: 5.'},
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores de x para que 7x5 sea divisible por 25.',a:'9',opts:_i4gshuf(['9','7','5','2']),mc:true,ste:'x5 ∈ {25, 75} → x ∈ {2, 7}. Suma = 2+7 = 9.'},
+    {_id:10,q:'Halla la suma de los valores de x para que 5x0 sea divisible por 25.',a:'5',opts:_i4gshuf(['5','0','9','10']),mc:true,ste:'x0 ∈ {00, 50} → x ∈ {0, 5}. Suma = 0+5 = 5.'},
+    {_id:11,q:'Halla la suma de los valores de x para que 2x3 sea divisible por 25.',a:'0',opts:_i4gshuf(['0','5','9','25']),mc:true,ste:'Últimos 2 dígitos: x3. Necesitamos x3 ∈ {00,25,50,75}: ninguno termina en 3 → no hay valores posibles → suma = 0.'},
+    {_id:12,q:'Sea A la cantidad de valores de x para que 9x5 sea divisible por 25, y S su suma. Halla A × S.',a:'18',opts:_i4gshuf(['18','9','14','25']),mc:true,ste:'x5 ∈ {25,75} → x ∈ {2,7}: A=2, S=9. A×S = 2×9 = 18.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 3 480 entre 25?',a:'5',opts:_i4gshuf(['5','0','25','10']),mc:true,ste:'Últimos 2 dígitos: 80. 80 = 25×3+5 → residuo = 5.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 7 250 entre 25?',a:'0',opts:_i4gshuf(['0','25','50','5']),mc:true,ste:'Últimos 2 dígitos: 50. 50 ÷ 25 = 2 → residuo = 0.'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 10 003 entre 25?',a:'3',opts:_i4gshuf(['3','0','25','13']),mc:true,ste:'Últimos 2 dígitos: 03 = 3. 3 = 25×0+3 → residuo = 3.'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 8 463 entre 25?',a:'13',opts:_i4gshuf(['13','0','25','8']),mc:true,ste:'Últimos 2 dígitos: 63. 63 = 25×2+13 → residuo = 13.'},
+    // P5: Problema de texto
+    {_id:17,q:'Se quieren cambiar 475 soles en monedas de 25 céntimos. ¿Sobra algún sol (siendo divisible exacto)?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobran 25','No se puede saber']),mc:true,ste:'475: últimos 2 dígitos = 75 ∈ {00,25,50,75} → 475 es divisible por 25 → se divide exactamente.'},
+    {_id:18,q:'Se distribuyen 380 fichas en grupos de 25. ¿Cuántas fichas sobran?',a:'5',opts:_i4gshuf(['5','0','25','10']),mc:true,ste:'Últimos 2 dígitos: 80. 80 = 25×3+5 → residuo 5 → sobran 5 fichas.'},
+    {_id:19,q:'¿Cuántos múltiplos de 25 hay entre 1 y 200 inclusive?',a:'8',opts:_i4gshuf(['8','7','10','4']),mc:true,ste:'Múltiplos de 25 hasta 200: 25, 50, 75, 100, 125, 150, 175, 200 → 8 múltiplos.'},
+    {_id:20,q:'El número 2 3x5 es divisible por 25, siendo x un dígito. ¿Cuántos valores posibles tiene x?',a:'2',opts:_i4gshuf(['2','1','4','3']),mc:true,ste:'Últimos 2 dígitos: x5. Para div por 25: x5 ∈ {25, 75} → x ∈ {2, 7} → 2 valores.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b7']={ico:'🔢',lbl:'Criterio de divisibilidad por 25',qCount:4,gen:_genOl1arCrd_B7,plantillas:['¿Es N divisible por 25?','Hallar dígito para divisibilidad por 25','Suma de valores posibles del dígito','Calcular residuo al dividir entre 25','Problema de texto con divisibilidad por 25']};
+
+function _genOl1arCrd_BQ2(){return _bqSrcPick(['ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7'],[_genOl1arCrd_B5,_genOl1arCrd_B6,_genOl1arCrd_B7]);}
+_SKILL_META['ol1ar_crd_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Criterios por 4, 8 y 25',qCount:15,gen:_genOl1arCrd_BQ2,quiz:true,srcKeys:['ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7']};
+
+// ── B8: Criterio de divisibilidad por 11 ────────────────────────────────────
+function _genOl1arCrd_B8(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 11?
+    {_id:1,q:'¿Es 4 729 divisible por 11?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la suma de dígitos es 11','No se puede saber']),mc:true,ste:'Criterio del 11: suma alternada desde la derecha (posiciones impares − pares). 9−2+7−4 = 10. Como 10 no es múltiplo de 11 → 4 729 no es divisible por 11.'},
+    {_id:2,q:'¿Es 3 267 divisible por 11?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la suma alternada es 0','Depende del número de cifras']),mc:true,ste:'Suma alternada (desde la derecha): 7−6+2−3 = 0. Como 0 es múltiplo de 11 → 3 267 es divisible por 11. (3267÷11=297✓)'},
+    {_id:3,q:'¿Es 1 234 divisible por 11?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la suma de dígitos es 10','Depende']),mc:true,ste:'Suma alternada (desde la derecha): 4−3+2−1 = 2. Como 2 no es múltiplo de 11 → 1 234 no es divisible por 11.'},
+    {_id:4,q:'¿Es 9 801 divisible por 11?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si 9+0=8+1','Depende']),mc:true,ste:'Suma alternada: 1−0+8−9 = 0. Múltiplo de 11 → 9 801 es divisible por 11. (9801=99²=11×891✓)'},
+    // P2: Hallar dígito desconocido
+    {_id:5,q:'Si el número 4x8 es divisible por 11, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'1',opts:_i4gshuf(['1','2','3','0']),mc:true,ste:'Suma alternada: 8−x+4 = 12−x ≡ 0(mod 11) → x = 1. (418÷11=38✓). Solo x=1 → 1 valor.'},
+    {_id:6,q:'Si el número 3x5 es divisible por 11, ¿cuál es el valor de x?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'Suma alternada: 5−x+3 = 8−x ≡ 0(mod 11) → x = 8. (385÷11=35✓). x = 8.'},
+    {_id:7,q:'Si el número 7x2 es divisible por 11, ¿cuántos valores puede tomar x?',a:'1',opts:_i4gshuf(['1','2','3','0']),mc:true,ste:'Suma alternada: 2−x+7 = 9−x ≡ 0(mod 11) → x = 9. (792÷11=72✓). Solo x=9 → 1 valor.'},
+    {_id:8,q:'Si el número 5x4 es divisible por 11, ¿cuál es el valor de x?',a:'9',opts:_i4gshuf(['9','5','0','4']),mc:true,ste:'Suma alternada (desde la derecha): 4−x+5 = 9−x ≡ 0(mod 11) → x = 9. (594÷11=54✓)'},
+    // I made an error. Let me correct q8: the answer is 9, not 0.
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores posibles de x para que 4x8 sea divisible por 11.',a:'1',opts:_i4gshuf(['1','8','9','11']),mc:true,ste:'12−x ≡ 0(mod 11) → x=1 (único dígito). Suma = 1.'},
+    {_id:10,q:'Halla la suma de los valores de x para que el número 6x3 sea divisible por 11.',a:'9',opts:_i4gshuf(['9','3','6','0']),mc:true,ste:'Suma alternada: 3−x+6 = 9−x ≡ 0(mod 11) → x=9 (único). Suma = 9. (693÷11=63✓)'},
+    {_id:11,q:'El número 2 x35 (de 4 cifras) es divisible por 11. Halla la suma de los posibles valores de x.',a:'0',opts:_i4gshuf(['0','5','9','11']),mc:true,ste:'Dígitos: 2,x,3,5. Suma alternada desde derecha: 5−3+x−2 = x ≡ 0(mod 11). x=0 (único dígito válido). Suma = 0. (2 035÷11=185✓)'},
+    // Let me recalculate: 2x35 → digits: 2,x,3,5. From right: pos1=5, pos2=3, pos3=x, pos4=2.
+    // Alternating sum = 5-3+x-2 = x. x≡0(mod 11) → x=0. So sum=0, 1 value. Let me pick a better example.
+    // Try 3x47: digits 3,x,4,7. From right: pos1=7, pos2=4, pos3=x, pos4=3.
+    // Alt sum = 7-4+x-3 = x. x≡0(mod 11) → x=0. Same result.
+    // Try 5x08: digits 5,x,0,8. From right: 8-0+x-5 = 3+x. 3+x≡0(mod 11) → x=8 (3+8=11✓). 1 value, sum=8.
+    // For 4 digits, result is almost always 1 value (either 0 or some specific digit).
+    // Let me try 5-digit numbers for more interesting P3:
+    // 1x234: from right: 4-3+2-x+1 = 4-x. 4-x≡0(mod 11) → x=4. (14234÷11=1294=?)
+    // Actually for problems with a 4-digit number where the unknown is the THIRD digit from the right (hundreds):
+    // Try 3 x48: digits 3,x,4,8. From right: 8-4+x-3 = 1+x. 1+x≡0(mod 11)→x=10(not digit). Or 1+x=11→x=10. No valid digit! x must also satisfy x≡-1≡10(mod 11). No digit in 0-9. So 0 valid values.
+    // Hmm. Let me try: 2x59: from right: 9-5+x-2=2+x. 2+x≡0(mod 11)→x=9. 1 value.
+    // Actually for 3-digit numbers, the constraint is always exactly 1 valid digit (or sometimes 0).
+    // For 4-digit numbers: a-b-c+d form, so depends on sum.
+    // Let me just create exercises where I know the answer:
+    // 1x3y where xy are related... this gets complex. Let me keep P3 questions simpler.
+    {_id:12,q:'¿Cuántos números de 3 cifras de la forma A1B son divisibles por 11?',a:'8',opts:_i4gshuf(['8','9','10','7']),mc:true,ste:'Suma alternada: B−1+A = A+B−1 ≡ 0(mod 11). Se necesita A+B=1 o A+B=12. A+B=1: (A,B)=(1,0) → 1 par. A+B=12: (3,9),(4,8),(5,7),(6,6),(7,5),(8,4),(9,3) → 7 pares. Total = 1+7 = 8 números.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 3 456 entre 11?',a:'2',opts:_i4gshuf(['2','0','5','3']),mc:true,ste:'Suma alternada: 6−5+4−3 = 2. El residuo al dividir por 11 es el valor absoluto de la suma alternada mod 11. Residuo = 2. (3456 = 11×314+2✓)'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 9 801 entre 11?',a:'0',opts:_i4gshuf(['0','1','9','11']),mc:true,ste:'Suma alternada: 1−0+8−9 = 0. Múltiplo de 11 → residuo = 0. (9801÷11=891✓)'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 1 000 entre 11?',a:'10',opts:_i4gshuf(['10','0','1','11']),mc:true,ste:'Suma alternada: 0−0+0−1 = −1 ≡ 10(mod 11). Residuo = 10. (1000 = 11×90+10✓)'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 10 000 entre 11?',a:'1',opts:_i4gshuf(['1','0','10','4']),mc:true,ste:'Suma alternada: 0−0+0−0+1 = 1. Residuo = 1. (10000 = 11×909+1✓)'},
+    // P5: Problema de texto
+    {_id:17,q:'Se distribuyen 132 caramelos en grupos iguales de 11. ¿Sobra alguno?',a:'No, ninguno',opts:_i4gshuf(['No, ninguno','Sí, sobra 1','Sí, sobran 2','Depende del número de grupos']),mc:true,ste:'Suma alternada: 2−3+1 = 0. Divisible por 11 → 132÷11=12 exacto, no sobra ninguno.'},
+    {_id:18,q:'Se tienen 1 000 billetes que se agrupan de 11 en 11. ¿Cuántos sobran?',a:'10',opts:_i4gshuf(['10','0','1','11']),mc:true,ste:'1000÷11=90 con residuo 10 (11×90=990, 1000−990=10) → sobran 10 billetes.'},
+    {_id:19,q:'¿Cuántos números palíndromos de 2 cifras (como 11, 22, …) son divisibles por 11?',a:'9',opts:_i4gshuf(['9','10','8','11']),mc:true,ste:'Los palíndromos de 2 cifras son: 11, 22, 33, 44, 55, 66, 77, 88, 99. Todos son de la forma AA = 11×A, por lo tanto todos son divisibles por 11 → 9 números.'},
+    {_id:20,q:'¿Cuántos múltiplos de 11 hay entre 1 y 100 inclusive?',a:'9',opts:_i4gshuf(['9','10','8','11']),mc:true,ste:'Múltiplos de 11 hasta 100: 11, 22, 33, 44, 55, 66, 77, 88, 99 → 9 múltiplos.'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b8']={ico:'🔢',lbl:'Criterio de divisibilidad por 11',qCount:4,gen:_genOl1arCrd_B8,plantillas:['¿Es N divisible por 11?','Hallar dígito para divisibilidad por 11','Suma de valores posibles del dígito','Calcular residuo al dividir entre 11','Problema de texto con divisibilidad por 11']};
+
+// ── B9: Criterio de divisibilidad por 7 ─────────────────────────────────────
+function _genOl1arCrd_B9(){
+  return _i4gpick([
+    // P1: ¿Es N divisible por 7? (usando la regla: separar último dígito, multiplicarlo por 2, restar del resto)
+    {_id:1,q:'¿Es 161 divisible por 7? (Aplica: resto − 2×último dígito)',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si la cifra de unidades es impar','No se puede saber']),mc:true,ste:'Separar último dígito: 16 − 2×1 = 14. 14÷7=2 → divisible por 7. (161=7×23✓)'},
+    {_id:2,q:'¿Es 203 divisible por 7?',a:'Sí, es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si es múltiplo de 7 al reducirlo','Depende']),mc:true,ste:'20 − 2×3 = 14. 14÷7=2 → divisible por 7. (203=7×29✓)'},
+    {_id:3,q:'¿Es 365 divisible por 7?',a:'No, no es divisible',opts:_i4gshuf(['Sí, es divisible','No, no es divisible','Solo si termina en 5','Depende de los demás dígitos']),mc:true,ste:'36 − 2×5 = 26. 2 − 2×6 = 2−12 = −10. −10 no es múltiplo de 7 → 365 no es divisible por 7. (365÷7≈52.1✓)'},
+    {_id:4,q:'De los números 112, 154, 200 y 259, ¿cuántos son divisibles por 7?',a:'3',opts:_i4gshuf(['3','4','2','1']),mc:true,ste:'112: 11−4=7✓. 154: 15−8=7✓. 200: 20−0=20, 2−0=2✗. 259: 25−18=7✓. Son 112, 154 y 259 → 3 números.'},
+    // P2: Hallar dígito desconocido (usar divisibilidad directa)
+    {_id:5,q:'Si 49x es divisible por 7, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'2',opts:_i4gshuf(['2','1','3','7']),mc:true,ste:'490+x ≡ 0(mod 7). 490=7×70 → 490≡0(mod 7). x≡0(mod 7) → x∈{0,7} → 2 valores. (490÷7=70✓, 497÷7=71✓)'},
+    // Let me recalculate: 49x = 490+x. 490÷7=70→490≡0(mod7). So 490+x≡x(mod7)=0→x∈{0,7}→2 valores.
+    {_id:6,q:'Si 14x es divisible por 7, ¿cuántos valores puede tomar x?',a:'2',opts:_i4gshuf(['2','1','3','7']),mc:true,ste:'140+x ≡ 0(mod 7). 140=7×20 → 140≡0(mod 7). x≡0(mod 7) → x∈{0,7} → 2 valores. (140÷7=20✓, 147÷7=21✓)'},
+    {_id:7,q:'Si 21x es divisible por 7, ¿cuántos valores puede tomar x?',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'210+x ≡ 0(mod 7). 210=7×30 → 210≡0(mod 7). x≡0(mod 7) → x∈{0,7} → 2 valores.'},
+    {_id:8,q:'Si 10x es divisible por 7, ¿cuántos valores puede tomar x (0 ≤ x ≤ 9)?',a:'1',opts:_i4gshuf(['1','2','0','3']),mc:true,ste:'100+x ≡ 0(mod 7). 100=7×14+2 → 100≡2(mod 7). 2+x≡0(mod 7) → x≡5(mod 7) → x=5 (único dígito válido, pues 5+7=12 no es dígito). 1 valor. (105÷7=15✓)'},
+    // Hmm I made an error again. Let me fix: 2+x≡0(mod7)→x=5 (or x=5+7=12 not a digit). 1 valor.
+    // P3: Suma de todos los valores posibles del dígito
+    {_id:9,q:'Halla la suma de todos los valores posibles de x para que 14x sea divisible por 7.',a:'7',opts:_i4gshuf(['7','0','14','2']),mc:true,ste:'x ∈ {0, 7} → suma = 0+7 = 7.'},
+    {_id:10,q:'Halla la suma de todos los valores de x para que 21x sea divisible por 7.',a:'7',opts:_i4gshuf(['7','0','14','3']),mc:true,ste:'x ∈ {0, 7} → suma = 0+7 = 7.'},
+    {_id:11,q:'Halla la suma de los valores de x para que 10x sea divisible por 7.',a:'5',opts:_i4gshuf(['5','7','0','12']),mc:true,ste:'100+x≡0(mod 7): 100≡2(mod 7), entonces x≡5(mod 7) → x=5 (único dígito). Suma = 5.'},
+    {_id:12,q:'Sea A la cantidad de valores de x (0≤x≤9) para que 35x sea divisible por 7, y S su suma. Halla S−A.',a:'5',opts:_i4gshuf(['5','7','0','2']),mc:true,ste:'350+x ≡ 0(mod 7). 350=7×50 → x≡0(mod 7) → x∈{0,7}: A=2, S=7. S−A = 7−2 = 5.'},
+    // P4: Calcular residuo
+    {_id:13,q:'¿Cuál es el residuo de dividir 100 entre 7?',a:'2',opts:_i4gshuf(['2','0','1','3']),mc:true,ste:'10 − 2×0 = 10. 1 − 2×0 = 1. Hmm, let me just compute directly: 100 = 7×14+2 → residuo = 2.'},
+    {_id:14,q:'¿Cuál es el residuo de dividir 203 entre 7?',a:'0',opts:_i4gshuf(['0','1','2','3']),mc:true,ste:'203 = 7×29 → residuo = 0. (20−2×3=14=7×2✓)'},
+    {_id:15,q:'¿Cuál es el residuo de dividir 365 entre 7?',a:'1',opts:_i4gshuf(['1','0','2','6']),mc:true,ste:'365 = 7×52+1 → residuo = 1. (Verificación: 7×52=364, 365−364=1✓)'},
+    {_id:16,q:'¿Cuál es el residuo de dividir 1 000 entre 7?',a:'6',opts:_i4gshuf(['6','0','1','5']),mc:true,ste:'1000 = 7×142+6 → residuo = 6. (7×142=994, 1000−994=6✓)'},
+    // P5: Problema de texto
+    {_id:17,q:'Se reparten 245 fichas en grupos de 7. ¿Sobra alguna?',a:'No, ninguna',opts:_i4gshuf(['No, ninguna','Sí, sobra 1','Sí, sobran 3','Depende']),mc:true,ste:'24 − 2×5 = 14 = 7×2 → 245 es divisible por 7 → 245÷7=35 exacto, no sobra ninguna.'},
+    {_id:18,q:'Una bolsa tiene 100 canicas que se reparten entre 7 niños. ¿Cuántas canicas sobran?',a:'2',opts:_i4gshuf(['2','0','1','6']),mc:true,ste:'100 = 7×14+2 → sobran 2 canicas.'},
+    {_id:19,q:'¿Cuántos múltiplos de 7 hay entre 1 y 100 inclusive?',a:'14',opts:_i4gshuf(['14','13','15','7']),mc:true,ste:'Múltiplos de 7 hasta 100: 7, 14, 21, …, 98. Son 98÷7 = 14 múltiplos.'},
+    {_id:20,q:'Un año tiene 365 días. ¿Cuántos días sobran al dividirlos en semanas de 7 días?',a:'1',opts:_i4gshuf(['1','0','2','5']),mc:true,ste:'365 = 7×52+1 → sobra 1 día (el año tiene 52 semanas y 1 día extra).'},
+  ]);
+}
+_SKILL_META['ol1ar_crd_b9']={ico:'🔢',lbl:'Criterio de divisibilidad por 7',qCount:4,gen:_genOl1arCrd_B9,plantillas:['¿Es N divisible por 7?','Hallar dígito para divisibilidad por 7','Suma de valores posibles del dígito','Calcular residuo al dividir entre 7','Problema de texto con divisibilidad por 7']};
+
+function _genOl1arCrd_BQ3(){return _bqSrcPick(['ol1ar_crd_b8','ol1ar_crd_b9'],[_genOl1arCrd_B8,_genOl1arCrd_B9]);}
+_SKILL_META['ol1ar_crd_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Criterios por 11 y 7',qCount:10,gen:_genOl1arCrd_BQ3,quiz:true,srcKeys:['ol1ar_crd_b8','ol1ar_crd_b9']};
+
+function _genOl1arCrd_BPU(){return _bqSrcPick(['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_b8','ol1ar_crd_b9'],[_genOl1arCrd_B1,_genOl1arCrd_B2,_genOl1arCrd_B3,_genOl1arCrd_B4,_genOl1arCrd_B5,_genOl1arCrd_B6,_genOl1arCrd_B7,_genOl1arCrd_B8,_genOl1arCrd_B9]);}
+_SKILL_META['ol1ar_crd_bpu']={ico:'⚡',lbl:'Examen – Criterios de Divisibilidad',qCount:45,gen:_genOl1arCrd_BPU,quiz:true,srcKeys:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_b8','ol1ar_crd_b9']};
+
+
+// ══ Trigonometría 1° Secundaria – Saco Oliveros (ol1t) ══════════════════════════
+// Unidad: Geometría Analítica I
+
+function _genOl1tGa1_B1(){
+  return _i4gpick([
+    // P1: Dado P(x;y) con signos claros, identificar el cuadrante
+    {_id:1,q:'¿A qué cuadrante pertenece el punto P(3; 4)?',a:'I cuadrante',opts:_i4gshuf(['I cuadrante','II cuadrante','III cuadrante','IV cuadrante']),mc:true,ste:'x=3>0 e y=4>0 → I cuadrante.'},
+    {_id:2,q:'¿A qué cuadrante pertenece el punto P(−2; 5)?',a:'II cuadrante',opts:_i4gshuf(['II cuadrante','I cuadrante','III cuadrante','IV cuadrante']),mc:true,ste:'x=−2<0 e y=5>0 → II cuadrante.'},
+    {_id:3,q:'¿A qué cuadrante pertenece el punto P(−3; −6)?',a:'III cuadrante',opts:_i4gshuf(['III cuadrante','I cuadrante','II cuadrante','IV cuadrante']),mc:true,ste:'x=−3<0 e y=−6<0 → III cuadrante.'},
+    {_id:4,q:'¿A qué cuadrante pertenece el punto P(4; −1)?',a:'IV cuadrante',opts:_i4gshuf(['IV cuadrante','I cuadrante','II cuadrante','III cuadrante']),mc:true,ste:'x=4>0 e y=−1<0 → IV cuadrante.'},
+    // P2: V/F simple – "¿P(a;b) ∈ X cuadrante?"
+    {_id:5,q:'¿Es verdadero que P(−4; 7) pertenece al II cuadrante?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x=−4<0 e y=7>0 → II cuadrante. ✓'},
+    {_id:6,q:'¿Es verdadero que P(5; −3) pertenece al I cuadrante?',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x=5>0 pero y=−3<0 → IV cuadrante, no el I. Falso.'},
+    {_id:7,q:'¿Es verdadero que P(−2; −8) pertenece al III cuadrante?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x=−2<0 e y=−8<0 → III cuadrante. ✓'},
+    {_id:8,q:'¿Es verdadero que P(6; 2) pertenece al IV cuadrante?',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x=6>0 e y=2>0 → I cuadrante, no el IV. Falso.'},
+    // P3: V/F triple con 3 puntos en distintos cuadrantes
+    {_id:9,q:'Indica V o F: a) A(3; 4) ∈ IC b) B(−1; 5) ∈ IIC c) C(2; −3) ∈ IIIC',a:'VVF',opts:_i4gshuf(['VVF','VVV','VFV','FVF']),mc:true,ste:'A(3;4): I✓ V. B(−1;5): II✓ V. C(2;−3): IV, no III → F. Resultado: VVF.'},
+    {_id:10,q:'Indica V o F: a) A(−3; −2) ∈ IIIC b) B(−2; 3) ∈ IC c) C(2; 2) ∈ IC',a:'VFV',opts:_i4gshuf(['VFV','VVF','FFV','VVV']),mc:true,ste:'A(−3;−2): III✓ V. B(−2;3): II, no I → F. C(2;2): I✓ V. Resultado: VFV.'},
+    {_id:11,q:'Indica V o F: a) A(−4; 7) ∈ IIC b) B(6; −8) ∈ IVC c) C(2; 3) ∈ IIC',a:'VVF',opts:_i4gshuf(['VVF','VFF','VVV','FVF']),mc:true,ste:'A(−4;7): II✓ V. B(6;−8): IV✓ V. C(2;3): I, no II → F. Resultado: VVF.'},
+    {_id:12,q:'Indica V o F: a) A(−4; −3) ∈ IIC b) B(−2; 3) ∈ IC c) C(2; 2) ∈ IC',a:'FFV',opts:_i4gshuf(['FFV','FFF','FVF','VFV']),mc:true,ste:'A(−4;−3): III, no II → F. B(−2;3): II, no I → F. C(2;2): I✓ V. Resultado: FFV.'},
+    // P4: Dado un cuadrante, ¿cuál punto pertenece a él?
+    {_id:13,q:'¿Cuál de los siguientes puntos pertenece al II cuadrante?',a:'(−3; 5)',opts:_i4gshuf(['(−3; 5)','(3; 5)','(−3; −5)','(3; −5)']),mc:true,ste:'II cuadrante: x<0, y>0. Solo (−3; 5) cumple ambas condiciones.'},
+    {_id:14,q:'¿Cuál de los siguientes puntos pertenece al IV cuadrante?',a:'(2; −3)',opts:_i4gshuf(['(2; −3)','(−2; −3)','(2; 3)','(−2; 3)']),mc:true,ste:'IV cuadrante: x>0, y<0. Solo (2; −3) cumple ambas condiciones.'},
+    {_id:15,q:'¿Cuál de los siguientes puntos pertenece al III cuadrante?',a:'(−4; −2)',opts:_i4gshuf(['(−4; −2)','(4; −2)','(−4; 2)','(4; 2)']),mc:true,ste:'III cuadrante: x<0, y<0. Solo (−4; −2) cumple ambas condiciones.'},
+    {_id:16,q:'¿Cuál de los siguientes puntos pertenece al I cuadrante?',a:'(5; 1)',opts:_i4gshuf(['(5; 1)','(5; −1)','(−5; 1)','(−5; −1)']),mc:true,ste:'I cuadrante: x>0, y>0. Solo (5; 1) cumple ambas condiciones.'},
+    // P5: Dados los signos de x e y, identificar el cuadrante
+    {_id:17,q:'Si la abscisa de P es negativa y la ordenada es positiva, ¿a qué cuadrante pertenece P?',a:'II cuadrante',opts:_i4gshuf(['II cuadrante','I cuadrante','III cuadrante','IV cuadrante']),mc:true,ste:'x<0 e y>0 define el II cuadrante.'},
+    {_id:18,q:'Si la abscisa de P es positiva y la ordenada es negativa, ¿a qué cuadrante pertenece P?',a:'IV cuadrante',opts:_i4gshuf(['IV cuadrante','I cuadrante','II cuadrante','III cuadrante']),mc:true,ste:'x>0 e y<0 define el IV cuadrante.'},
+    {_id:19,q:'Si ambas coordenadas de P son negativas, ¿a qué cuadrante pertenece P?',a:'III cuadrante',opts:_i4gshuf(['III cuadrante','I cuadrante','II cuadrante','IV cuadrante']),mc:true,ste:'x<0 e y<0 define el III cuadrante.'},
+    {_id:20,q:'Si ambas coordenadas de P son positivas, ¿a qué cuadrante pertenece P?',a:'I cuadrante',opts:_i4gshuf(['I cuadrante','II cuadrante','III cuadrante','IV cuadrante']),mc:true,ste:'x>0 e y>0 define el I cuadrante.'},
+  ]);
+}
+_SKILL_META['ol1t_ga1_b1']={ico:'📐',lbl:'Cuadrantes del plano cartesiano',qCount:4,gen:_genOl1tGa1_B1,plantillas:['Identificar cuadrante de P(x;y)','V/F simple: ¿P(a;b) ∈ X cuadrante?','V/F triple con 3 puntos','Dado cuadrante, ¿cuál punto pertenece?','Signos de x e y → cuadrante']};
+
+function _genOl1tGa1_B2(){
+  return _i4gpick([
+    // P1: Identificar la abscisa (1ª componente)
+    {_id:1,q:'P(−5; 3). ¿Cuál es la abscisa de P?',a:'−5',opts:_i4gshuf(['−5','3','5','−3']),mc:true,ste:'La abscisa es la 1ª componente (eje X): −5.'},
+    {_id:2,q:'P(7; −2). ¿Cuál es la abscisa de P?',a:'7',opts:_i4gshuf(['7','−2','2','−7']),mc:true,ste:'La abscisa es la 1ª componente (eje X): 7.'},
+    {_id:3,q:'P(−4; −6). ¿Cuál es la abscisa de P?',a:'−4',opts:_i4gshuf(['−4','−6','4','6']),mc:true,ste:'La abscisa es la 1ª componente (eje X): −4.'},
+    {_id:4,q:'P(0; 8). ¿Cuál es la abscisa de P?',a:'0',opts:_i4gshuf(['0','8','−8','1']),mc:true,ste:'La abscisa es la 1ª componente (eje X): 0. El punto está sobre el eje Y.'},
+    // P2: Identificar la ordenada (2ª componente)
+    {_id:5,q:'P(3; −7). ¿Cuál es la ordenada de P?',a:'−7',opts:_i4gshuf(['−7','3','7','−3']),mc:true,ste:'La ordenada es la 2ª componente (eje Y): −7.'},
+    {_id:6,q:'P(−2; 4). ¿Cuál es la ordenada de P?',a:'4',opts:_i4gshuf(['4','−2','2','−4']),mc:true,ste:'La ordenada es la 2ª componente (eje Y): 4.'},
+    {_id:7,q:'P(6; 0). ¿Cuál es la ordenada de P?',a:'0',opts:_i4gshuf(['0','6','−6','1']),mc:true,ste:'La ordenada es la 2ª componente (eje Y): 0. El punto está sobre el eje X.'},
+    {_id:8,q:'P(−3; −5). ¿Cuál es la ordenada de P?',a:'−5',opts:_i4gshuf(['−5','−3','3','5']),mc:true,ste:'La ordenada es la 2ª componente (eje Y): −5.'},
+    // P3: Calcular a+b
+    {_id:9,q:'P(a;b) = (4; 7). Halla a+b.',a:'11',opts:_i4gshuf(['11','3','−3','28']),mc:true,ste:'a+b = 4+7 = 11.'},
+    {_id:10,q:'P(a;b) = (−5; 3). Halla a+b.',a:'−2',opts:_i4gshuf(['−2','2','8','−8']),mc:true,ste:'a+b = −5+3 = −2.'},
+    {_id:11,q:'P(a;b) = (−6; −4). Halla a+b.',a:'−10',opts:_i4gshuf(['−10','10','2','−2']),mc:true,ste:'a+b = −6+(−4) = −10.'},
+    {_id:12,q:'P(a;b) = (8; −3). Halla a+b.',a:'5',opts:_i4gshuf(['5','−5','11','−11']),mc:true,ste:'a+b = 8+(−3) = 5.'},
+    // P4: Calcular a−b o a·b
+    {_id:13,q:'P(a;b) = (3; −4). Halla a − b.',a:'7',opts:_i4gshuf(['7','−7','1','−1']),mc:true,ste:'a−b = 3−(−4) = 3+4 = 7.'},
+    {_id:14,q:'P(a;b) = (−5; 2). Halla a·b.',a:'−10',opts:_i4gshuf(['−10','10','−7','−3']),mc:true,ste:'a·b = (−5)×2 = −10.'},
+    {_id:15,q:'P(a;b) = (6; −3). Halla a·b.',a:'−18',opts:_i4gshuf(['−18','18','−9','3']),mc:true,ste:'a·b = 6×(−3) = −18.'},
+    {_id:16,q:'P(a;b) = (−2; −7). Halla a − b.',a:'5',opts:_i4gshuf(['5','−5','9','−9']),mc:true,ste:'a−b = (−2)−(−7) = −2+7 = 5.'},
+    // P5: a²+b o a·b²
+    {_id:17,q:'P(a;b) = (3; −2). Halla a²+b.',a:'7',opts:_i4gshuf(['7','11','5','−7']),mc:true,ste:'a²+b = 3²+(−2) = 9−2 = 7.'},
+    {_id:18,q:'P(a;b) = (−4; 3). Halla a²+b.',a:'19',opts:_i4gshuf(['19','13','−13','25']),mc:true,ste:'a²+b = (−4)²+3 = 16+3 = 19.'},
+    {_id:19,q:'P(a;b) = (2; −3). Halla a·b².',a:'18',opts:_i4gshuf(['18','−18','6','−6']),mc:true,ste:'a·b² = 2·(−3)² = 2·9 = 18.'},
+    {_id:20,q:'P(a;b) = (−3; 2). Halla a·b².',a:'−12',opts:_i4gshuf(['−12','12','−6','6']),mc:true,ste:'a·b² = (−3)·(2)² = (−3)·4 = −12.'},
+  ]);
+}
+_SKILL_META['ol1t_ga1_b2']={ico:'📐',lbl:'Par ordenado: abscisa, ordenada y operaciones',qCount:4,gen:_genOl1tGa1_B2,plantillas:['Identificar la abscisa de P(a;b)','Identificar la ordenada de P(a;b)','Calcular a+b','Calcular a−b o a·b','Calcular a²+b o a·b²']};
+
+function _genOl1tGa1_BQ1(){return _bqSrcPick(['ol1t_ga1_b1','ol1t_ga1_b2'],[_genOl1tGa1_B1,_genOl1tGa1_B2]);}
+_SKILL_META['ol1t_ga1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Cuadrantes y Par Ordenado',qCount:10,gen:_genOl1tGa1_BQ1,quiz:true,srcKeys:['ol1t_ga1_b1','ol1t_ga1_b2']};
+
+function _genOl1tGa1_B3(){
+  return _i4gpick([
+    // P1: E = ka + lb (expresión lineal con un punto)
+    {_id:1,q:'P(a;b) = (−5; 7). Calcula E = 5a + 4b.',a:'3',opts:_i4gshuf(['3','−3','53','−53']),mc:true,ste:'E = 5(−5)+4(7) = −25+28 = 3.'},
+    {_id:2,q:'P(a;b) = (3; −4). Calcula E = 2a + 3b.',a:'−6',opts:_i4gshuf(['−6','6','18','−18']),mc:true,ste:'E = 2(3)+3(−4) = 6−12 = −6.'},
+    {_id:3,q:'P(a;b) = (−2; 5). Calcula E = 4a − 2b.',a:'−18',opts:_i4gshuf(['−18','18','2','−2']),mc:true,ste:'E = 4(−2)−2(5) = −8−10 = −18.'},
+    {_id:4,q:'P(a;b) = (4; −3). Calcula E = 3a + 5b.',a:'−3',opts:_i4gshuf(['−3','3','27','−27']),mc:true,ste:'E = 3(4)+5(−3) = 12−15 = −3.'},
+    // P2: E = a²+b o E = a − b²
+    {_id:5,q:'P(a;b) = (3; 5). Calcula E = a²+b.',a:'14',opts:_i4gshuf(['14','4','34','−2']),mc:true,ste:'E = 3²+5 = 9+5 = 14.'},
+    {_id:6,q:'P(a;b) = (−4; 2). Calcula E = a²+b.',a:'18',opts:_i4gshuf(['18','−14','14','−18']),mc:true,ste:'E = (−4)²+2 = 16+2 = 18.'},
+    {_id:7,q:'P(a;b) = (5; 3). Calcula E = a − b².',a:'−4',opts:_i4gshuf(['−4','4','−14','14']),mc:true,ste:'E = 5−3² = 5−9 = −4.'},
+    {_id:8,q:'P(a;b) = (2; −4). Calcula E = a²−b.',a:'8',opts:_i4gshuf(['8','−8','0','6']),mc:true,ste:'E = 2²−(−4) = 4+4 = 8.'},
+    // P3: R = (a+b)ⁿ
+    {_id:9,q:'P(a;b) = (3; 1). Calcula R = (a+b)².',a:'16',opts:_i4gshuf(['16','4','10','8']),mc:true,ste:'a+b = 3+1 = 4. R = 4² = 16.'},
+    {_id:10,q:'P(a;b) = (−2; 5). Calcula R = (a+b)².',a:'9',opts:_i4gshuf(['9','49','1','3']),mc:true,ste:'a+b = −2+5 = 3. R = 3² = 9.'},
+    {_id:11,q:'P(a;b) = (4; −2). Calcula R = (a+b)³.',a:'8',opts:_i4gshuf(['8','2','−8','4']),mc:true,ste:'a+b = 4+(−2) = 2. R = 2³ = 8.'},
+    {_id:12,q:'P(a;b) = (−3; 1). Calcula R = (a+b)³.',a:'−8',opts:_i4gshuf(['−8','8','−4','4']),mc:true,ste:'a+b = −3+1 = −2. R = (−2)³ = −8.'},
+    // P4: R = 2ᵃ − b, 3ᵃ + b, aᵇ, bᵃ + a
+    {_id:13,q:'P(a;b) = (3; 5). Calcula R = 2ᵃ − b.',a:'3',opts:_i4gshuf(['3','−3','13','−13']),mc:true,ste:'R = 2³−5 = 8−5 = 3.'},
+    {_id:14,q:'P(a;b) = (2; 4). Calcula R = 3ᵃ + b.',a:'13',opts:_i4gshuf(['13','5','−5','−13']),mc:true,ste:'R = 3²+4 = 9+4 = 13.'},
+    {_id:15,q:'P(a;b) = (4; 3). Calcula R = aᵇ.',a:'64',opts:_i4gshuf(['64','12','81','27']),mc:true,ste:'R = 4³ = 64.'},
+    {_id:16,q:'P(a;b) = (2; 3). Calcula R = bᵃ + a.',a:'11',opts:_i4gshuf(['11','7','9','−7']),mc:true,ste:'R = 3²+2 = 9+2 = 11.'},
+    // P5: Expresión mixta: producto y suma
+    {_id:17,q:'P(a;b) = (2; 3). Calcula E = 3a·b − a + b.',a:'19',opts:_i4gshuf(['19','21','17','23']),mc:true,ste:'E = 3(2)(3)−2+3 = 18−2+3 = 19.'},
+    {_id:18,q:'P(a;b) = (−1; 4). Calcula E = 2a·b + a − b.',a:'−13',opts:_i4gshuf(['−13','−5','13','5']),mc:true,ste:'E = 2(−1)(4)+(−1)−4 = −8−1−4 = −13.'},
+    {_id:19,q:'P(a;b) = (3; −2). Calcula E = a·b² − a.',a:'9',opts:_i4gshuf(['9','−15','15','−9']),mc:true,ste:'E = 3·(−2)²−3 = 3·4−3 = 12−3 = 9.'},
+    {_id:20,q:'P(a;b) = (−2; 3). Calcula E = a²·b + a.',a:'10',opts:_i4gshuf(['10','−10','14','−14']),mc:true,ste:'E = (−2)²·3+(−2) = 4·3−2 = 12−2 = 10.'},
+  ]);
+}
+_SKILL_META['ol1t_ga1_b3']={ico:'📐',lbl:'Expresiones algebraicas con un punto',qCount:4,gen:_genOl1tGa1_B3,plantillas:['E = ka + lb (expresión lineal)','E = a²+b o a − b² (potencia en una componente)','R = (a+b)ⁿ','R = nᵃ − b o aᵇ (exponente igual a coordenada)','Expresión mixta: producto y suma de componentes']};
+
+function _genOl1tGa1_B4(){
+  return _i4gpick([
+    // P1: Suma de mismas componentes: a+m o b+n
+    {_id:1,q:'P(a;b) = (3; 5) y Q(m;n) = (−1; 2). Calcula a+m.',a:'2',opts:_i4gshuf(['2','4','−4','8']),mc:true,ste:'a+m = 3+(−1) = 2.'},
+    {_id:2,q:'P(a;b) = (−4; 6) y Q(m;n) = (2; −3). Calcula b+n.',a:'3',opts:_i4gshuf(['3','−9','9','−3']),mc:true,ste:'b+n = 6+(−3) = 3.'},
+    {_id:3,q:'P(a;b) = (2; 7) y Q(m;n) = (−5; 3). Calcula a+m.',a:'−3',opts:_i4gshuf(['−3','3','7','−7']),mc:true,ste:'a+m = 2+(−5) = −3.'},
+    {_id:4,q:'P(a;b) = (3; −4) y Q(m;n) = (−7; 2). Calcula b+n.',a:'−2',opts:_i4gshuf(['−2','2','−6','6']),mc:true,ste:'b+n = (−4)+2 = −2.'},
+    // P2: Suma cruzada: a+n o b+m
+    {_id:5,q:'P(a;b) = (4; 6) y Q(m;n) = (−2; 4). Calcula a+n.',a:'8',opts:_i4gshuf(['8','0','2','−2']),mc:true,ste:'a+n = 4+4 = 8.'},
+    {_id:6,q:'P(a;b) = (−4; 6) y Q(m;n) = (−3; 4). Calcula b+m.',a:'3',opts:_i4gshuf(['3','10','−7','−1']),mc:true,ste:'b+m = 6+(−3) = 3.'},
+    {_id:7,q:'P(a;b) = (5; 2) y Q(m;n) = (3; −4). Calcula a+n.',a:'1',opts:_i4gshuf(['1','9','−1','−9']),mc:true,ste:'a+n = 5+(−4) = 1.'},
+    {_id:8,q:'P(a;b) = (−1; 3) y Q(m;n) = (4; −2). Calcula b+m.',a:'7',opts:_i4gshuf(['7','−7','5','1']),mc:true,ste:'b+m = 3+4 = 7.'},
+    // P3: Cociente cruzado (a+n)/(b+m)
+    {_id:9,q:'P(a;b) = (4; 6) y Q(m;n) = (−2; 4). Calcula (a+n)/(b+m).',a:'2',opts:_i4gshuf(['2','3','4','8']),mc:true,ste:'(a+n)/(b+m) = (4+4)/(6+(−2)) = 8/4 = 2.'},
+    {_id:10,q:'P(a;b) = (6; 4) y Q(m;n) = (−2; 6). Calcula (a+n)/(b+m).',a:'6',opts:_i4gshuf(['6','3','2','12']),mc:true,ste:'(a+n)/(b+m) = (6+6)/(4+(−2)) = 12/2 = 6.'},
+    {_id:11,q:'P(a;b) = (2; 3) y Q(m;n) = (4; −2). Calcula (a+n)/(b+m).',a:'0',opts:_i4gshuf(['0','1','7','−1']),mc:true,ste:'(a+n)/(b+m) = (2+(−2))/(3+4) = 0/7 = 0.'},
+    {_id:12,q:'P(a;b) = (5; −1) y Q(m;n) = (2; 3). Calcula (a+n)/(b+m).',a:'8',opts:_i4gshuf(['8','4','2','1']),mc:true,ste:'(a+n)/(b+m) = (5+3)/(−1+2) = 8/1 = 8.'},
+    // P4: m²−n (Solved problems ex.3)
+    {_id:13,q:'P(m;n) = (3; 5). Calcula m²−n.',a:'4',opts:_i4gshuf(['4','−4','14','−14']),mc:true,ste:'m²−n = 3²−5 = 9−5 = 4.'},
+    {_id:14,q:'P(m;n) = (−4; 2). Calcula m²−n.',a:'14',opts:_i4gshuf(['14','−14','18','−18']),mc:true,ste:'m²−n = (−4)²−2 = 16−2 = 14.'},
+    {_id:15,q:'P(m;n) = (2; −3). Calcula m²−n.',a:'7',opts:_i4gshuf(['7','1','−7','−1']),mc:true,ste:'m²−n = 2²−(−3) = 4+3 = 7.'},
+    {_id:16,q:'P(m;n) = (−3; 4). Calcula m²−n.',a:'5',opts:_i4gshuf(['5','13','−5','−13']),mc:true,ste:'m²−n = (−3)²−4 = 9−4 = 5.'},
+    // P5: M = (p+q)^(na+mb) con dos puntos
+    {_id:17,q:'P(p;q) = (−9; 3) y Q(a;b) = (2; −4). Calcula M = (p+q)^(3a+b).',a:'36',opts:_i4gshuf(['36','−36','6','−6']),mc:true,ste:'p+q = −9+3 = −6. 3a+b = 3(2)+(−4) = 2. M = (−6)² = 36.'},
+    {_id:18,q:'P(p;q) = (−2; 5) y Q(a;b) = (3; 1). Calcula M = (p+q)^(a+b).',a:'81',opts:_i4gshuf(['81','3','27','9']),mc:true,ste:'p+q = −2+5 = 3. a+b = 3+1 = 4. M = 3⁴ = 81.'},
+    {_id:19,q:'P(p;q) = (4; −2) y Q(a;b) = (2; 1). Calcula M = (p+q)^(a+b).',a:'8',opts:_i4gshuf(['8','2','4','16']),mc:true,ste:'p+q = 4+(−2) = 2. a+b = 2+1 = 3. M = 2³ = 8.'},
+    {_id:20,q:'P(p;q) = (−3; 5) y Q(a;b) = (1; 2). Calcula M = (p+q)^(2a+b).',a:'16',opts:_i4gshuf(['16','2','4','8']),mc:true,ste:'p+q = −3+5 = 2. 2a+b = 2(1)+2 = 4. M = 2⁴ = 16.'},
+  ]);
+}
+_SKILL_META['ol1t_ga1_b4']={ico:'📐',lbl:'Expresiones algebraicas con dos puntos',qCount:4,gen:_genOl1tGa1_B4,plantillas:['Suma de mismas componentes: a+m o b+n','Suma cruzada: a+n o b+m','Cociente cruzado: (a+n)/(b+m)','Cuadrado de coordenada: m²−n','M = (p+q)^(na+mb) con dos puntos']};
+
+function _genOl1tGa1_BQ2(){return _bqSrcPick(['ol1t_ga1_b3','ol1t_ga1_b4'],[_genOl1tGa1_B3,_genOl1tGa1_B4]);}
+_SKILL_META['ol1t_ga1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Expresiones con Puntos',qCount:10,gen:_genOl1tGa1_BQ2,quiz:true,srcKeys:['ol1t_ga1_b3','ol1t_ga1_b4']};
+
+function _genOl1tGa1_B5(){
+  return _i4gpick([
+    // P1: 2 movimientos desde el origen
+    {_id:1,q:'Desde el origen avanzas 5 cuadras a la derecha y 3 cuadras hacia arriba. ¿Cuál es el par ordenado de llegada?',a:'(5; 3)',opts:_i4gshuf(['(5; 3)','(5; −3)','(−5; 3)','(3; 5)']),mc:true,ste:'Derecha: x+5. Arriba: y+3. Llegada: (5; 3).'},
+    {_id:2,q:'Desde el origen avanzas 4 cuadras a la izquierda y 6 cuadras hacia arriba. ¿Cuál es el par ordenado de llegada?',a:'(−4; 6)',opts:_i4gshuf(['(−4; 6)','(4; 6)','(−4; −6)','(6; −4)']),mc:true,ste:'Izquierda: x−4. Arriba: y+6. Llegada: (−4; 6).'},
+    {_id:3,q:'Desde el origen avanzas 7 cuadras a la derecha y 2 cuadras hacia abajo. ¿Cuál es el par ordenado de llegada?',a:'(7; −2)',opts:_i4gshuf(['(7; −2)','(7; 2)','(−7; 2)','(−7; −2)']),mc:true,ste:'Derecha: x+7. Abajo: y−2. Llegada: (7; −2).'},
+    {_id:4,q:'Desde el origen avanzas 3 cuadras a la izquierda y 5 cuadras hacia abajo. ¿Cuál es el par ordenado de llegada?',a:'(−3; −5)',opts:_i4gshuf(['(−3; −5)','(3; −5)','(−3; 5)','(3; 5)']),mc:true,ste:'Izquierda: x−3. Abajo: y−5. Llegada: (−3; −5).'},
+    // P2: 3 movimientos desde el origen
+    {_id:5,q:'Desde el origen: 5 cuadras derecha, 3 cuadras arriba, 2 cuadras derecha. ¿Par ordenado de llegada?',a:'(7; 3)',opts:_i4gshuf(['(7; 3)','(5; 3)','(7; 5)','(3; 7)']),mc:true,ste:'x: 0+5+2=7. y: 0+3=3. Llegada: (7; 3).'},
+    {_id:6,q:'Desde el origen: 4 cuadras izquierda, 6 cuadras arriba, 3 cuadras derecha. ¿Par ordenado de llegada?',a:'(−1; 6)',opts:_i4gshuf(['(−1; 6)','(7; 6)','(−7; 6)','(1; 6)']),mc:true,ste:'x: 0−4+3=−1. y: 0+6=6. Llegada: (−1; 6).'},
+    {_id:7,q:'Desde el origen: 6 cuadras derecha, 2 cuadras abajo, 4 cuadras izquierda. ¿Par ordenado de llegada?',a:'(2; −2)',opts:_i4gshuf(['(2; −2)','(10; −2)','(2; 2)','(−2; 2)']),mc:true,ste:'x: 0+6−4=2. y: 0−2=−2. Llegada: (2; −2).'},
+    {_id:8,q:'Desde el origen: 3 cuadras arriba, 5 cuadras derecha, 4 cuadras abajo. ¿Par ordenado de llegada?',a:'(5; −1)',opts:_i4gshuf(['(5; −1)','(5; 7)','(−5; −1)','(5; 1)']),mc:true,ste:'x: 0+5=5. y: 0+3−4=−1. Llegada: (5; −1).'},
+    // P3: 4 movimientos tipo Google Maps
+    {_id:9,q:'Desde el origen: 5 cuadras derecha, 3 cuadras arriba, 9 cuadras izquierda. ¿Par ordenado de llegada?',a:'(−4; 3)',opts:_i4gshuf(['(−4; 3)','(4; 3)','(−4; −3)','(1; 3)']),mc:true,ste:'x: 0+5−9=−4. y: 0+3=3. Llegada: (−4; 3).'},
+    {_id:10,q:'Desde el origen: 3 cuadras arriba, 6 cuadras derecha, 4 cuadras abajo, 2 cuadras izquierda. ¿Par ordenado de llegada?',a:'(4; −1)',opts:_i4gshuf(['(4; −1)','(4; 1)','(−4; −1)','(1; 4)']),mc:true,ste:'x: 0+6−2=4. y: 0+3−4=−1. Llegada: (4; −1).'},
+    {_id:11,q:'Desde el origen: 4 cuadras derecha, 7 cuadras arriba, 10 cuadras izquierda, 2 cuadras abajo. ¿Par ordenado de llegada?',a:'(−6; 5)',opts:_i4gshuf(['(−6; 5)','(6; 5)','(−6; −5)','(6; −5)']),mc:true,ste:'x: 0+4−10=−6. y: 0+7−2=5. Llegada: (−6; 5).'},
+    {_id:12,q:'Desde el origen: 2 cuadras izquierda, 3 cuadras arriba, 8 cuadras derecha, 5 cuadras abajo. ¿Par ordenado de llegada?',a:'(6; −2)',opts:_i4gshuf(['(6; −2)','(−6; 2)','(6; 2)','(−6; −2)']),mc:true,ste:'x: 0−2+8=6. y: 0+3−5=−2. Llegada: (6; −2).'},
+    // P4: 4 movimientos con unidades (1 cuadra = 10 m) → coordenada en metros
+    {_id:13,q:'Desde el origen: 6 cuadras derecha, 2 cuadras arriba, 3 cuadras izquierda (1 cuadra = 10 m). ¿Coordenada de llegada en metros?',a:'(30; 20)',opts:_i4gshuf(['(30; 20)','(60; 20)','(30; 10)','(−30; 20)']),mc:true,ste:'x: 0+6−3=3 cuadras. y: 0+2=2 cuadras. En metros: (30; 20).'},
+    {_id:14,q:'Desde el origen: 5 cuadras derecha, 3 cuadras arriba, 9 cuadras izquierda (1 cuadra = 10 m). ¿Coordenada de llegada en metros?',a:'(−40; 30)',opts:_i4gshuf(['(−40; 30)','(40; 30)','(−40; −30)','(50; 30)']),mc:true,ste:'x: 0+5−9=−4 cuadras. y: 0+3=3. En metros: (−40; 30).'},
+    {_id:15,q:'Desde el origen: 3 cuadras derecha, 5 cuadras arriba, 7 cuadras izquierda, 2 cuadras arriba (1 cuadra = 10 m). ¿Coordenada de llegada en metros?',a:'(−40; 70)',opts:_i4gshuf(['(−40; 70)','(40; 70)','(−40; 30)','(70; −40)']),mc:true,ste:'x: 0+3−7=−4 cuadras. y: 0+5+2=7. En metros: (−40; 70).'},
+    {_id:16,q:'Desde el origen: 2 cuadras izquierda, 4 cuadras arriba, 8 cuadras derecha, 6 cuadras abajo (1 cuadra = 10 m). ¿Coordenada de llegada en metros?',a:'(60; −20)',opts:_i4gshuf(['(60; −20)','(−60; 20)','(60; 20)','(−60; −20)']),mc:true,ste:'x: 0−2+8=6 cuadras. y: 0+4−6=−2. En metros: (60; −20).'},
+    // P5: Partiendo de un punto distinto del origen
+    {_id:17,q:'Un personaje está en A(3; 2). Avanza 4 cuadras a la derecha y 3 cuadras arriba. ¿Dónde llega?',a:'(7; 5)',opts:_i4gshuf(['(7; 5)','(7; −1)','(−1; 5)','(4; 3)']),mc:true,ste:'x: 3+4=7. y: 2+3=5. Llegada: (7; 5).'},
+    {_id:18,q:'Un personaje está en B(−2; 5). Avanza 6 cuadras a la derecha y 4 cuadras abajo. ¿Dónde llega?',a:'(4; 1)',opts:_i4gshuf(['(4; 1)','(4; 9)','(−8; 1)','(4; −1)']),mc:true,ste:'x: −2+6=4. y: 5−4=1. Llegada: (4; 1).'},
+    {_id:19,q:'Un personaje está en C(4; −3). Avanza 5 cuadras a la izquierda y 2 cuadras arriba. ¿Dónde llega?',a:'(−1; −1)',opts:_i4gshuf(['(−1; −1)','(9; −1)','(−1; −5)','(1; 1)']),mc:true,ste:'x: 4−5=−1. y: −3+2=−1. Llegada: (−1; −1).'},
+    {_id:20,q:'Un personaje está en D(−3; −4). Avanza 5 cuadras a la derecha y 7 cuadras arriba. ¿Dónde llega?',a:'(2; 3)',opts:_i4gshuf(['(2; 3)','(−8; 3)','(2; −11)','(−8; −11)']),mc:true,ste:'x: −3+5=2. y: −4+7=3. Llegada: (2; 3).'},
+  ]);
+}
+_SKILL_META['ol1t_ga1_b5']={ico:'📐',lbl:'Desplazamientos: par ordenado de llegada',qCount:4,gen:_genOl1tGa1_B5,plantillas:['2 movimientos desde el origen','3 movimientos desde el origen','4 movimientos tipo Google Maps','4 movimientos con unidades (1 cuadra = 10 m)','Partiendo de un punto distinto del origen']};
+
+function _genOl1tGa1_B6(){
+  return _i4gpick([
+    // P1: Distancia total = suma de módulos de movimientos
+    {_id:1,q:'Un personaje avanza 5 cuadras a la derecha y 3 cuadras hacia arriba. ¿Cuál es la distancia total recorrida?',a:'8 cuadras',opts:_i4gshuf(['8 cuadras','2 cuadras','15 cuadras','√34 cuadras']),mc:true,ste:'Distancia total = 5+3 = 8 cuadras.'},
+    {_id:2,q:'Un personaje avanza 4 cuadras izquierda, 6 cuadras arriba y 3 cuadras derecha. ¿Distancia total recorrida?',a:'13 cuadras',opts:_i4gshuf(['13 cuadras','5 cuadras','7 cuadras','72 cuadras']),mc:true,ste:'Distancia total = 4+6+3 = 13 cuadras.'},
+    {_id:3,q:'Un personaje avanza 5 cuadras derecha, 9 cuadras arriba, 2 cuadras izquierda y 4 cuadras abajo. ¿Distancia total?',a:'20 cuadras',opts:_i4gshuf(['20 cuadras','8 cuadras','16 cuadras','10 cuadras']),mc:true,ste:'Distancia total = 5+9+2+4 = 20 cuadras.'},
+    {_id:4,q:'Un personaje avanza 3 cuadras derecha, 7 cuadras abajo, 5 cuadras izquierda y 1 cuadra arriba. ¿Distancia total?',a:'16 cuadras',opts:_i4gshuf(['16 cuadras','4 cuadras','10 cuadras','6 cuadras']),mc:true,ste:'Distancia total = 3+7+5+1 = 16 cuadras.'},
+    // P2: Distancia total con 1 cuadra = 100 m (resultado en metros)
+    {_id:5,q:'Fabricio avanza 5 cuadras a la derecha y 9 cuadras hacia arriba (1 cuadra = 100 m). ¿Cuál es la distancia total en metros?',a:'1400 m',opts:_i4gshuf(['1400 m','500 m','900 m','4500 m']),mc:true,ste:'Total = 5+9 = 14 cuadras × 100 = 1400 m.'},
+    {_id:6,q:'Un personaje avanza 3 cuadras a la derecha y 7 cuadras arriba (1 cuadra = 100 m). ¿Distancia total en metros?',a:'1000 m',opts:_i4gshuf(['1000 m','300 m','700 m','2100 m']),mc:true,ste:'Total = 3+7 = 10 cuadras × 100 = 1000 m.'},
+    {_id:7,q:'Un personaje avanza 4 cuadras izquierda y 11 cuadras abajo (1 cuadra = 100 m). ¿Distancia total en metros?',a:'1500 m',opts:_i4gshuf(['1500 m','400 m','1100 m','4400 m']),mc:true,ste:'Total = 4+11 = 15 cuadras × 100 = 1500 m.'},
+    {_id:8,q:'Un personaje avanza 8 cuadras arriba, 4 cuadras derecha y 6 cuadras abajo (1 cuadra = 100 m). ¿Distancia total en metros?',a:'1800 m',opts:_i4gshuf(['1800 m','600 m','1200 m','800 m']),mc:true,ste:'Total = 8+4+6 = 18 cuadras × 100 = 1800 m.'},
+    // P3: Dado punto de llegada C(a;b), distancia total = |a|+|b|
+    {_id:9,q:'Un personaje parte del origen y llega al punto C(5; 9) en ruta recta en L. ¿Cuántas cuadras recorrió en total?',a:'14',opts:_i4gshuf(['14','4','45','√106']),mc:true,ste:'Distancia total = |5|+|9| = 5+9 = 14 cuadras.'},
+    {_id:10,q:'Raúl parte del origen y llega a la librería en B(10; 15). ¿Cuántas cuadras recorrió en total?',a:'25',opts:_i4gshuf(['25','5','150','18']),mc:true,ste:'Distancia total = |10|+|15| = 10+15 = 25 cuadras.'},
+    {_id:11,q:'Un personaje parte del origen y llega al punto C(−4; 7). ¿Cuántas cuadras recorrió en total?',a:'11',opts:_i4gshuf(['11','3','28','−3']),mc:true,ste:'Distancia total = |−4|+|7| = 4+7 = 11 cuadras.'},
+    {_id:12,q:'Un personaje parte del origen y llega al punto C(−3; 9). ¿Cuántas cuadras recorrió en total?',a:'12',opts:_i4gshuf(['12','6','27','−6']),mc:true,ste:'Distancia total = |−3|+|9| = 3+9 = 12 cuadras.'},
+    // P4: Problema de texto con distancia total
+    {_id:13,q:'Fabricio (en el origen) avanza 5 cuadras a la derecha y 9 cuadras hacia arriba hasta el cine C(a;b) (1 cuadra = 100 m). ¿Cuál es la distancia total recorrida en metros?',a:'1400',opts:_i4gshuf(['1400','500','900','45']),mc:true,ste:'Total = 5+9 = 14 cuadras. En metros: 14×100 = 1400 m.'},
+    {_id:14,q:'Raúl parte del origen, va 15 cuadras hacia arriba y luego 10 cuadras hacia la derecha hasta la librería B(10; 15). ¿Cuántas cuadras recorrió en total?',a:'25',opts:_i4gshuf(['25','10','15','150']),mc:true,ste:'Total = 15+10 = 25 cuadras.'},
+    {_id:15,q:'Ana parte del origen, avanza 4 cuadras a la derecha y 8 cuadras hacia arriba hasta la tienda T(4; 8). ¿Cuántas cuadras recorrió en total?',a:'12',opts:_i4gshuf(['12','4','8','32']),mc:true,ste:'Total = 4+8 = 12 cuadras.'},
+    {_id:16,q:'Carlos parte del origen, avanza 6 cuadras hacia arriba y 3 cuadras hacia la izquierda hasta el parque P(−3; 6). ¿Cuántas cuadras recorrió en total?',a:'9',opts:_i4gshuf(['9','3','6','18']),mc:true,ste:'Total = 6+3 = 9 cuadras.'},
+    // P5: Dado destino B(m;n), hallar incógnita en las instrucciones
+    {_id:17,q:'Raúl llega a la librería B(10; 15). Partió del origen moviéndose m cuadras a la derecha y n cuadras arriba. ¿Cuánto vale m+n?',a:'25',opts:_i4gshuf(['25','10','15','150']),mc:true,ste:'m=10, n=15. m+n = 10+15 = 25.'},
+    {_id:18,q:'María llega al hospital C(7; k). Partió del origen: 7 cuadras derecha y k cuadras arriba. Si la distancia total fue 12 cuadras, ¿cuánto vale k?',a:'5',opts:_i4gshuf(['5','7','12','3']),mc:true,ste:'7+k = 12 → k = 5.'},
+    {_id:19,q:'Luis parte del origen: n cuadras a la derecha y 3 cuadras arriba, llegando a C(n; 3). Si la distancia total fue 8 cuadras, ¿cuánto vale n?',a:'5',opts:_i4gshuf(['5','3','8','11']),mc:true,ste:'n+3 = 8 → n = 5.'},
+    {_id:20,q:'Pedro parte del origen: 4 cuadras a la derecha y k cuadras arriba, llegando a P(4; k). Si la distancia total fue 10 cuadras, ¿cuánto vale k?',a:'6',opts:_i4gshuf(['6','4','10','14']),mc:true,ste:'4+k = 10 → k = 6.'},
+  ]);
+}
+_SKILL_META['ol1t_ga1_b6']={ico:'📐',lbl:'Desplazamientos: distancia total y contexto',qCount:4,gen:_genOl1tGa1_B6,plantillas:['Distancia total (suma de módulos)','Distancia total con 1 cuadra = 100 m','Dado C(a;b), distancia = |a|+|b|','Problema de texto: distancia total con destino dado','Dado destino B(m;n), hallar incógnita en instrucciones']};
+
+function _genOl1tGa1_BQ3(){return _bqSrcPick(['ol1t_ga1_b5','ol1t_ga1_b6'],[_genOl1tGa1_B5,_genOl1tGa1_B6]);}
+_SKILL_META['ol1t_ga1_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Desplazamientos en el Plano',qCount:10,gen:_genOl1tGa1_BQ3,quiz:true,srcKeys:['ol1t_ga1_b5','ol1t_ga1_b6']};
+
+function _genOl1tGa1_BPU(){return _bqSrcPick(['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_b5','ol1t_ga1_b6'],[_genOl1tGa1_B1,_genOl1tGa1_B2,_genOl1tGa1_B3,_genOl1tGa1_B4,_genOl1tGa1_B5,_genOl1tGa1_B6]);}
+_SKILL_META['ol1t_ga1_bpu']={ico:'⚡',lbl:'Examen – Geometría Analítica I',qCount:30,gen:_genOl1tGa1_BPU,quiz:true,srcKeys:['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_b5','ol1t_ga1_b6']};
+
 
 
 // ══ Matemática 1° Secundaria – Abraham Lincoln (li1m) ════════════════════════════
@@ -11821,7 +12348,9 @@ const PREP_CURRICULUM = {
          {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2']},
          {lbl:'Productos Notables I',            area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu']},
          {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu']},
-         {lbl:'Divisibilidad',                   area:'aritmetica', editorial:'saco_oliveros', skills:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu']},
+         {lbl:'Divisibilidad',                   area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu']},
+         {lbl:'Criterios de Divisibilidad',        area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu']},
+         {lbl:'Geometría Analítica I',            area:'trigonometria',  editorial:'saco_oliveros', skills:['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu']},
          {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
