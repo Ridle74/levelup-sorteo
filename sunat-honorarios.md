@@ -329,7 +329,7 @@ Desde el menú SOL (puede estar ya abierto de un login previo):
 
 ### Pantalla 2 — Datos del servicio
 - **Descripción:** según el campo `descripcion` calculado
-- **Fecha:** dejar la fecha actual (se autocompleta)
+- **Fecha:** usar la fecha de pago de cada padre (ver paso previo de confirmación)
 - **Inciso:** Inciso A
 - **Retención:** No
 - **¿Registrar pago?:** Sí
@@ -340,6 +340,25 @@ Desde el menú SOL (puede estar ya abierto de un login previo):
 ### Preview → Emitir
 - Verificar datos
 - Clic en Emitir → confirmar
+
+---
+
+## FLUJO DE CONFIRMACIÓN ANTES DE EMITIR
+
+**OBLIGATORIO** — antes de mostrar la tabla de recibos y preguntar si se desea emitir, preguntar la fecha de pago de cada padre:
+
+> "¿En qué fecha pagó cada padre? (hoy o ayer)"
+
+Presentar la lista de recibos calculados y esperar que el usuario indique, por cada padre, si pagó **hoy** o **ayer** (u otra fecha). Luego mostrar la tabla completa con las fechas ya incorporadas y pedir **una sola confirmación** para emitir todos.
+
+Ejemplo de pregunta:
+> Recibos de hoy:
+> - Claudia Ruizcaro — S/25
+> - Paola Villanueva — S/20
+>
+> ¿En qué fecha pagó cada una? (hoy / ayer)
+
+La fecha indicada por el usuario se usa en el campo **Fecha de Emisión** de cada recibo en SUNAT.
 
 ---
 
