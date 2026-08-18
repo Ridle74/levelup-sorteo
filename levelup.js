@@ -17556,7 +17556,7 @@ function _prepStartFromUnit(sk) {
     qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
   }
   const _autoTime2 = (def.quiz ? 45 : 60) * qs.length;
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,showReview:false,lives:3,streak:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_autoTime2>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -17651,7 +17651,7 @@ function _prepUnitExam(skills, unitIdx) {
   _prep.isUnitExam = true;
   _prep.examUnitSkills = [...valid];
   const _examTime = qs.length * 30;
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,showReview:false,lives:3,streak:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_examTime > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -17714,7 +17714,7 @@ function _prepStart() {
       qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
     }
     const _autoTime = (def.quiz ? 45 : 60) * qs.length;
-    Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, showReview:false, lives:3, streak:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now() });
+    Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, showReview:false, lives:def.quiz?4:5, maxLives:def.quiz?4:5, streak:0, streakBonusAccum:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now() });
     clearInterval(_prepTimerIntv);
     if (_autoTime > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
     clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -18080,8 +18080,9 @@ function _prepGameTimerTick(){
 }
 function _prepUpdateHud(){
   const l=(_prep.lives??3);
+  const mx=(_prep.maxLives??3);
   const livesEl=document.getElementById('_prep_lives');
-  if(livesEl) livesEl.textContent='❤️'.repeat(l)+'🖤'.repeat(Math.max(0,3-l));
+  if(livesEl) livesEl.textContent='❤️'.repeat(Math.max(0,l))+'🖤'.repeat(Math.max(0,mx-l));
   const streakEl=document.getElementById('_prep_streak');
   if(streakEl) streakEl.textContent='🔥 '+(_prep.streak||0)+'/'+_prep.questions.length;
 }
@@ -18455,7 +18456,7 @@ function _combOpPrecedenceOK(idx){
 function _combWrongOrderFeedback(){
   _prep.retryLock=true;
   _prep.lives=Math.max(0,(_prep.lives??3)-1);
-  _prep.streak=0;
+  _prep.streak=0; _prep.streakBonusAccum=0;
   _snd.wrong();
   _prepUpdateHud();
   const wrap=document.querySelector('.algo-vert-wrap');
@@ -20268,7 +20269,7 @@ function _combSubmitStep(){
       // Final step (Verificar) wrong: shake + lives--
       _prep.retryLock=true;
       _prep.lives=Math.max(0,(_prep.lives??3)-1);
-      _prep.streak=0;
+      _prep.streak=0; _prep.streakBonusAccum=0;
       _snd.wrong();
       _prepUpdateHud();
       const wrap=document.querySelector('.algo-vert-wrap');
@@ -20310,7 +20311,7 @@ function _combSubmitStep(){
       _combSt.sel=sel;
       _prep.retryLock=true;
       _prep.lives=Math.max(0,(_prep.lives??3)-1);
-      _prep.streak=0;
+      _prep.streak=0; _prep.streakBonusAccum=0;
       _snd.wrong();
       _prepUpdateHud();
       const wrapW=document.querySelector('.algo-vert-wrap');
@@ -20328,6 +20329,14 @@ function _combSubmitStep(){
     _prep.answered=true;
     _prep.answers.push({correct:true,given:q.a,q:q.q||'',a:q.a,_src:q._src||null,timeSec:Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000)});
     if(typeof _prep.streak==='number') _prep.streak++;
+    // Bonus de tiempo por racha
+    if (_prep.timeLeft > 0) {
+      const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
+      const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
+      _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
+      const _bWhole = Math.floor(_prep.streakBonusAccum);
+      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; }
+    }
     _snd.correct();
     const wrapC=document.querySelector('.algo-vert-wrap');
     if(wrapC){wrapC.classList.add('algo-correct');_algoMarkPerBox(q);}
@@ -20642,7 +20651,7 @@ function _prepDesafioExam(retoLbl,nivel,skills,uIdx){
   _prep.isUnitExam=true; _prep.examUnitSkills=[...(skills||[])];
   _prep.selectedExamLbl=retoLbl; _prep.desafioNivel=nivel;
   _prep.unitSkillList=[]; _prep.unitDone=[];
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false,lives:3,streak:0,gameStartTime:Date.now(),retryLock:false,gameOver:false,qStartTime:Date.now()});
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,gameOver:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   clearInterval(_prep.gameTimerIntv);_prep.gameTimerIntv=setInterval(_prepGameTimerTick,1000);
   _snd.start();_renderPreparatePane();
@@ -20760,6 +20769,14 @@ function _prepHandleAnswer(correct, correctAns){
   if(correct){
     _prep.answered = true; _prep.selectedOpt = correctAns;
     if(typeof _prep.streak==='number') _prep.streak++;
+    // Bonus de tiempo por racha
+    if (_prep.timeLeft > 0) {
+      const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
+      const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
+      _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
+      const _bWhole = Math.floor(_prep.streakBonusAccum);
+      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; }
+    }
     if(wrap){
       wrap.classList.add('algo-correct');
       _algoMarkPerBox(q);
@@ -21281,7 +21298,7 @@ function _prepExamHtml() {
       <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
     </div>
     <div class="prep-game-hud">
-      <span id="_prep_lives" class="prep-hud-lives">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,3-(_prep.lives??3)))}</span>
+      <span id="_prep_lives" class="prep-hud-lives">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
       <span id="_prep_streak" class="prep-hud-streak">🔥 ${_prep.streak||0}/${total}</span>
       <span id="_prep_timer" class="prep-hud-timer">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
     </div>
