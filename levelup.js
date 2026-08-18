@@ -20359,7 +20359,7 @@ function _combSubmitStep(){
     // Bonus de tiempo por racha
     if (_prep.timeLeft > 0) {
       const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
-      const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
+      const _bRate = _bMode==='exam' ? 1 : _bMode==='quiz' ? 2 : 3;
       _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
       const _bWhole = Math.floor(_prep.streakBonusAccum);
       if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
@@ -20799,7 +20799,7 @@ function _prepHandleAnswer(correct, correctAns){
     // Bonus de tiempo por racha
     if (_prep.timeLeft > 0) {
       const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
-      const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
+      const _bRate = _bMode==='exam' ? 1 : _bMode==='quiz' ? 2 : 3;
       _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
       const _bWhole = Math.floor(_prep.streakBonusAccum);
       if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
@@ -20858,7 +20858,7 @@ function _prepApplyLivesStreak(correct) {
   if (correct) {
     if (typeof _prep.streak === 'number') _prep.streak++;
     if (_prep.timeLeft > 0) {
-      const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
+      const _bRate = _bMode==='exam' ? 1 : _bMode==='quiz' ? 2 : 3;
       _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
       const _bWhole = Math.floor(_prep.streakBonusAccum);
       if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
