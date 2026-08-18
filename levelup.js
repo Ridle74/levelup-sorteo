@@ -12471,8 +12471,8 @@ function _genLi1mU3_B3(){
 }
 _SKILL_META['li1m_u3_b3']={ico:'📐',lbl:'Ecuaciones con propiedad distributiva',qCount:4,gen:_genLi1mU3_B3,plantillas:['a(x+b)=c','a(bx+c)=d (positivos)','a(bx−c)=d','−a(bx+c)=d (exterior negativo)','Más aplicaciones con paréntesis']};
 
-function _genLi1mU3_BQ2(){return _bqSrcPick(['li1m_u3_b2','li1m_u3_b3'],[_genLi1mU3_B2,_genLi1mU3_B3]);}
-_SKILL_META['li1m_u3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – 3 pasos y distributiva',qCount:10,gen:_genLi1mU3_BQ2,quiz:true,srcKeys:['li1m_u3_b2','li1m_u3_b3']};
+function _genLi1mU3_BQ2(){return _bqSrcPick(['li1m_u3_b3','li1m_u3_b4'],[_genLi1mU3_B3,_genLi1mU3_B4]);}
+_SKILL_META['li1m_u3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Distributiva y variable ambos lados',qCount:10,gen:_genLi1mU3_BQ2,quiz:true,srcKeys:['li1m_u3_b3','li1m_u3_b4']};
 
 function _genLi1mU3_B4(){
   return _i4gpick([
@@ -12536,8 +12536,8 @@ function _genLi1mU3_B5(){
 }
 _SKILL_META['li1m_u3_b5']={ico:'📐',lbl:'Traducir enunciados en ecuaciones y resolver',qCount:4,gen:_genLi1mU3_B5,plantillas:['Número misterioso','Números consecutivos','Reparto entre personas','Edades','Compras y vida cotidiana']};
 
-function _genLi1mU3_BQ3(){return _bqSrcPick(['li1m_u3_b4','li1m_u3_b5'],[_genLi1mU3_B4,_genLi1mU3_B5]);}
-_SKILL_META['li1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Variable ambos lados y enunciados',qCount:10,gen:_genLi1mU3_BQ3,quiz:true,srcKeys:['li1m_u3_b4','li1m_u3_b5']};
+function _genLi1mU3_BQ3(){return _bqSrcPick(['li1m_u3_b5','li1m_u3_b6'],[_genLi1mU3_B5,_genLi1mU3_B6]);}
+_SKILL_META['li1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Enunciados y combinado',qCount:10,gen:_genLi1mU3_BQ3,quiz:true,srcKeys:['li1m_u3_b5','li1m_u3_b6']};
 
 function _genLi1mU3_B6(){
   return _i4gpick([
@@ -14503,7 +14503,7 @@ const PREP_CURRICULUM = {
          {lbl:'Geometría Analítica I',            area:'trigonometria',  editorial:'saco_oliveros', skills:['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu']},
          {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']},
-         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_bq2','li1m_u3_b4','li1m_u3_b5','li1m_u3_bq3','li1m_u3_b6','li1m_u3_bpu']},
+         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_bq3','li1m_u3_bpu']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
