@@ -6867,7 +6867,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2','sf6_are_b1','sf6_are_b2','sf6_are_bq1','sf6_are_b3','sf6_are_b4','sf6_are_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu',],
+    grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex'],
       '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex'] },
     areas:[
@@ -10597,6 +10597,324 @@ _SKILL_META['ol1a_pn1_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Aplicaciones y co
 function _genOl1aPn1_BPU(){return _bqSrcPick(['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_b5','ol1a_pn1_b6'],[_genOl1aPn1_B1,_genOl1aPn1_B2,_genOl1aPn1_B3,_genOl1aPn1_B4,_genOl1aPn1_B5,_genOl1aPn1_B6]);}
 _SKILL_META['ol1a_pn1_bpu']={ico:'⚡',lbl:'Examen – Productos Notables I',qCount:30,gen:_genOl1aPn1_BPU,quiz:true,srcKeys:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_b5','ol1a_pn1_b6']};
 
+// ══ Álgebra 1° Secundaria – Saco Oliveros: Productos Notables II (ol1a_pn2) ═══
+// Cap. 14: Diferencia de cuadrados · Binomio al cubo
+
+function _genOl1aPn2_B1(){ return _i4gpick([
+  {_id:1, q:'Efectúa: (x+3)(x−3)', a:'x²−9', opts:_i4gshuf(['x²−9','x²+9','x²−6x+9','2x−6']), mc:true, ste:'(a+b)(a−b)=a²−b²; con a=x, b=3: x²−9.'},
+  {_id:2, q:'Efectúa: (2x+5)(2x−5)', a:'4x²−25', opts:_i4gshuf(['4x²−25','4x²+25','4x²−20x+25','4x²−10']), mc:true, ste:'a=2x, b=5: (2x)²−5²=4x²−25.'},
+  {_id:3, q:'Efectúa: (3a+7)(3a−7)', a:'9a²−49', opts:_i4gshuf(['9a²−49','9a²+49','9a²−42a+49','6a²−49']), mc:true, ste:'a=3a, b=7: (3a)²−7²=9a²−49.'},
+  {_id:4, q:'Efectúa: (4x+y)(4x−y)', a:'16x²−y²', opts:_i4gshuf(['16x²−y²','16x²+y²','16x²−8xy+y²','8x²−y²']), mc:true, ste:'a=4x, b=y: (4x)²−y²=16x²−y².'},
+  {_id:5, q:'Calcula: (√5+1)(√5−1)', a:'4', opts:_i4gshuf(['4','6','√5−1','2']), mc:true, ste:'(√5)²−1²=5−1=4.'},
+  {_id:6, q:'Calcula: (√7+√3)(√7−√3)', a:'4', opts:_i4gshuf(['4','10','√21','2']), mc:true, ste:'(√7)²−(√3)²=7−3=4.'},
+  {_id:7, q:'Calcula: (2√3+3)(2√3−3)', a:'3', opts:_i4gshuf(['3','21','9','15']), mc:true, ste:'(2√3)²−3²=12−9=3.'},
+  {_id:8, q:'Calcula: (√5+√2)(√5−√2)', a:'3', opts:_i4gshuf(['3','7','√10','5']), mc:true, ste:'(√5)²−(√2)²=5−2=3.'},
+  {_id:9, q:'Simplifica: E = (x+8)(x−8) − x²', a:'−64', opts:_i4gshuf(['−64','64','−16','x²−64']), mc:true, ste:'(x²−64)−x²=−64.'},
+  {_id:10, q:'Simplifica: E = (x+5)(x−5) + 25', a:'x²', opts:_i4gshuf(['x²','x²−25','x²+25','25']), mc:true, ste:'(x²−25)+25=x².'},
+  {_id:11, q:'Simplifica: E = (2x+3)(2x−3) − (x²+3)', a:'3x²−12', opts:_i4gshuf(['3x²−12','3x²+12','3x²−6','3x²']), mc:true, ste:'4x²−9−x²−3=3x²−12.'},
+  {_id:12, q:'Simplifica: E = (x+y)(x−y) + (y+z)(y−z)', a:'x²−z²', opts:_i4gshuf(['x²−z²','x²+z²','x²−2y²+z²','2x²−2z²']), mc:true, ste:'(x²−y²)+(y²−z²)=x²−z².'},
+  {_id:13, q:'¿Es verdadero que (x+3)(x−3) = x²−9?', a:'Verdadero', opts:_i4gshuf(['Verdadero','Falso','Solo si x>0','Solo con enteros']), mc:true, ste:'Sí: (a+b)(a−b)=a²−b² con b=3 da x²−9.'},
+  {_id:14, q:'¿Es verdadero que (a−b)(a+b) = a²+b²?', a:'Falso', opts:_i4gshuf(['Falso','Verdadero','Solo si a>b','Solo con positivos']), mc:true, ste:'El resultado correcto es a²−b², no a²+b².'},
+  {_id:15, q:'¿Es verdadero que (√3+1)(√3−1) = 2?', a:'Verdadero', opts:_i4gshuf(['Verdadero','Falso','El resultado es 4','El resultado es √2']), mc:true, ste:'(√3)²−1²=3−1=2. ✓'},
+  {_id:16, q:'¿Es verdadero que (x+2)(x+2) = x²−4?', a:'Falso', opts:_i4gshuf(['Falso','Verdadero','Solo si x=−2','Solo con negativos']), mc:true, ste:'(x+2)²=x²+4x+4 ≠ x²−4. La d.c. requiere (x+2)(x−2).'},
+  {_id:17, q:'Efectúa: (x³+5)(x³−5)', a:'x⁶−25', opts:_i4gshuf(['x⁶−25','x⁶+25','x³−25','x⁶−10x³+25']), mc:true, ste:'a=x³, b=5: (x³)²−5²=x⁶−25.'},
+  {_id:18, q:'Efectúa: (a²+b²)(a²−b²)', a:'a⁴−b⁴', opts:_i4gshuf(['a⁴−b⁴','a⁴+b⁴','a²−b²','a⁴−2a²b²+b⁴']), mc:true, ste:'(a²)²−(b²)²=a⁴−b⁴.'},
+  {_id:19, q:'Efectúa: (x⁴+3y²)(x⁴−3y²)', a:'x⁸−9y⁴', opts:_i4gshuf(['x⁸−9y⁴','x⁸+9y⁴','x⁴−9y²','x⁸−6x⁴y²+9y⁴']), mc:true, ste:'(x⁴)²−(3y²)²=x⁸−9y⁴.'},
+  {_id:20, q:'Efectúa: (2x²+5y³)(2x²−5y³)', a:'4x⁴−25y⁶', opts:_i4gshuf(['4x⁴−25y⁶','4x⁴+25y⁶','4x²−25y³','4x⁴−20x²y³+25y⁶']), mc:true, ste:'(2x²)²−(5y³)²=4x⁴−25y⁶.'},
+]); }
+_SKILL_META['ol1a_pn2_b1']={ico:'📐',lbl:'Diferencia de cuadrados – aplicación directa',qCount:4,gen:_genOl1aPn2_B1,plantillas:['(a+b)(a−b) con álgebra simple','Con radicales numéricos','Simplificar E usando d.c.','V/F sobre la identidad','(a+b)(a−b) con potencias/exponentes']};
+
+function _genOl1aPn2_B2(){ return _i4gpick([
+  {_id:1, q:'Efectúa: (x+1)(x−1)(x²+1)', a:'x⁴−1', opts:_i4gshuf(['x⁴−1','x⁴+1','x²−1','x⁴−2x²+1']), mc:true, ste:'(x+1)(x−1)=x²−1; (x²−1)(x²+1)=x⁴−1.'},
+  {_id:2, q:'Efectúa: (a+2)(a−2)(a²+4)', a:'a⁴−16', opts:_i4gshuf(['a⁴−16','a⁴+16','a²−16','a⁴−4a²+4']), mc:true, ste:'(a²−4)(a²+4)=a⁴−16.'},
+  {_id:3, q:'Efectúa: (x+y)(x−y)(x²+y²)', a:'x⁴−y⁴', opts:_i4gshuf(['x⁴−y⁴','x⁴+y⁴','x²−y²','x⁴−2x²y²+y⁴']), mc:true, ste:'(x²−y²)(x²+y²)=x⁴−y⁴.'},
+  {_id:4, q:'Efectúa: (2+x)(2−x)(4+x²)', a:'16−x⁴', opts:_i4gshuf(['16−x⁴','x⁴−16','4−x²','16+x⁴']), mc:true, ste:'(4−x²)(4+x²)=16−x⁴.'},
+  {_id:5, q:'Calcula: T = (√5+√2)(√5−√2) + (√7+√3)(√7−√3)', a:'7', opts:_i4gshuf(['7','11','3','5']), mc:true, ste:'(5−2)+(7−3)=3+4=7.'},
+  {_id:6, q:'Calcula: T = (√10+√6)(√10−√6) + (√3+√2)(√3−√2)', a:'5', opts:_i4gshuf(['5','9','4','2']), mc:true, ste:'(10−6)+(3−2)=4+1=5.'},
+  {_id:7, q:'Calcula: T = (√11+√5)(√11−√5) + (√8+√3)(√8−√3)', a:'11', opts:_i4gshuf(['11','14','8','6']), mc:true, ste:'(11−5)+(8−3)=6+5=11.'},
+  {_id:8, q:'Calcula: T = (√13+2)(√13−2) + (√6+1)(√6−1)', a:'14', opts:_i4gshuf(['14','18','9','10']), mc:true, ste:'(13−4)+(6−1)=9+5=14.'},
+  {_id:9, q:'Calcula: ⁸√[(2−1)(2+1)(2²+1)(2⁴+1)+1]', a:'2', opts:_i4gshuf(['2','4','8','16']), mc:true, ste:'(2−1)(2+1)(2²+1)(2⁴+1)=2⁸−1=255; +1=256=2⁸; ⁸√(2⁸)=2.'},
+  {_id:10, q:'Calcula: ⁴√[(2−1)(2+1)(2²+1)+1]', a:'2', opts:_i4gshuf(['2','4','8','3']), mc:true, ste:'(2−1)(2+1)(2²+1)=2⁴−1=15; +1=16=2⁴; ⁴√(2⁴)=2.'},
+  {_id:11, q:'Calcula: √[(2−1)(2+1)+1]', a:'2', opts:_i4gshuf(['2','4','√3','1']), mc:true, ste:'(2−1)(2+1)=1×3=3; 3+1=4; √4=2.'},
+  {_id:12, q:'Calcula: ¹⁶√[(3−1)(3+1)(3²+1)(3⁴+1)(3⁸+1)+1]', a:'3', opts:_i4gshuf(['3','6','9','2']), mc:true, ste:'Telescópico: (3−1)(3+1)(3²+1)(3⁴+1)(3⁸+1)=3¹⁶−1; +1=3¹⁶; ¹⁶√(3¹⁶)=3.'},
+  {_id:13, q:'Efectúa: (√a+√b)(√a−√b), con a>b>0', a:'a−b', opts:_i4gshuf(['a−b','√(a−b)','a+b','a²−b²']), mc:true, ste:'(√a)²−(√b)²=a−b.'},
+  {_id:14, q:'Simplifica: (⁴√a+⁴√b)(⁴√a−⁴√b)(√a+√b)', a:'a−b', opts:_i4gshuf(['a−b','a²−b²','⁴√a−⁴√b','√a−√b']), mc:true, ste:'(⁴√a+⁴√b)(⁴√a−⁴√b)=√a−√b; luego (√a−√b)(√a+√b)=a−b.'},
+  {_id:15, q:'Simplifica: T = [(√x+1)(√x−1)+1]', a:'x', opts:_i4gshuf(['x','x−1','√x','x+1']), mc:true, ste:'(√x+1)(√x−1)=x−1; (x−1)+1=x.'},
+  {_id:16, q:'Efectúa: (√(a+1)+√a)(√(a+1)−√a)', a:'1', opts:_i4gshuf(['1','2a+1','√(a+1)−√a','2a']), mc:true, ste:'(a+1)−a=1.'},
+  {_id:17, q:'Calcula: E = (2√3−3)(2√3+3)', a:'3', opts:_i4gshuf(['3','21','15','9']), mc:true, ste:'(2√3)²−3²=12−9=3.'},
+  {_id:18, q:'Calcula: E = (√11+√5)(√11−√5) + (√3+√2)(√3−√2)', a:'7', opts:_i4gshuf(['7','14','8','6']), mc:true, ste:'(11−5)+(3−2)=6+1=7.'},
+  {_id:19, q:'Calcula: E = (√6+√2)²(√6−√2)²', a:'16', opts:_i4gshuf(['16','8','4','32']), mc:true, ste:'[(√6+√2)(√6−√2)]²=(6−2)²=4²=16.'},
+  {_id:20, q:'Simplifica: E = (√n+1)(√n−1)(n+1)', a:'n²−1', opts:_i4gshuf(['n²−1','n²+1','n−1','n²']), mc:true, ste:'(√n+1)(√n−1)=n−1; (n−1)(n+1)=n²−1.'},
+]); }
+_SKILL_META['ol1a_pn2_b2']={ico:'📐',lbl:'Diferencia de cuadrados – telescópica y encadenada',qCount:4,gen:_genOl1aPn2_B2,plantillas:['(a+b)(a−b)(a²+b²) = a⁴−b⁴','Suma de telescópicas con radicales','Cadena de potencias de 2','Raíces anidadas encadenadas','Evaluar numéricamente telescópica']};
+
+function _genOl1aPn2_BQ1(){return _bqSrcPick(['ol1a_pn2_b1','ol1a_pn2_b2'],[_genOl1aPn2_B1,_genOl1aPn2_B2]);}
+_SKILL_META['ol1a_pn2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Diferencia de cuadrados',qCount:10,gen:_genOl1aPn2_BQ1,quiz:true,srcKeys:['ol1a_pn2_b1','ol1a_pn2_b2']};
+
+function _genOl1aPn2_B3(){ return _i4gpick([
+  {_id:1, q:'Desarrolla: (x+1)³', a:'x³+3x²+3x+1', opts:_i4gshuf(['x³+3x²+3x+1','x³+x²+x+1','x³+3x²+x+1','x³+3x²+3x+3']), mc:true, ste:'(a+b)³=a³+3a²b+3ab²+b³; a=x, b=1: x³+3x²+3x+1.'},
+  {_id:2, q:'Desarrolla: (x+2)³', a:'x³+6x²+12x+8', opts:_i4gshuf(['x³+6x²+12x+8','x³+2x²+4x+8','x³+6x²+6x+8','x³+6x²+12x+4']), mc:true, ste:'a=x, b=2: x³+3(2)x²+3(4)x+8=x³+6x²+12x+8.'},
+  {_id:3, q:'Desarrolla: (2x+3)³', a:'8x³+36x²+54x+27', opts:_i4gshuf(['8x³+36x²+54x+27','8x³+12x²+18x+27','8x³+36x²+27x+27','6x³+36x²+54x+27']), mc:true, ste:'a=2x, b=3: 8x³+3(4x²)(3)+3(2x)(9)+27=8x³+36x²+54x+27.'},
+  {_id:4, q:'Desarrolla: (x+y)³', a:'x³+3x²y+3xy²+y³', opts:_i4gshuf(['x³+3x²y+3xy²+y³','x³+x²y+xy²+y³','x³+3xy+y³','x³+3x²y+xy²+y³']), mc:true, ste:'Fórmula general: a³+3a²b+3ab²+b³.'},
+  {_id:5, q:'Efectúa: (x+2)³ − x³ − 6x² − 12x', a:'8', opts:_i4gshuf(['8','4','12','x³+8']), mc:true, ste:'(x+2)³=x³+6x²+12x+8; restando x³+6x²+12x queda 8.'},
+  {_id:6, q:'Efectúa: (x+3)³ − x³ − 9x² − 27x', a:'27', opts:_i4gshuf(['27','9','3','54']), mc:true, ste:'(x+3)³=x³+9x²+27x+27; queda 27.'},
+  {_id:7, q:'Efectúa: (x+4)³ − x³ − 12x² − 48x', a:'64', opts:_i4gshuf(['64','16','48','12']), mc:true, ste:'(x+4)³=x³+12x²+48x+64; queda 4³=64.'},
+  {_id:8, q:'Efectúa: (x+5)³ − x³ − 15x² − 75x', a:'125', opts:_i4gshuf(['125','25','75','15']), mc:true, ste:'(x+5)³=x³+15x²+75x+125; queda 5³=125.'},
+  {_id:9, q:'Simplifica: T = (x+1)³ − 3x² − 3x − 1', a:'x³', opts:_i4gshuf(['x³','x³+1','x³+3x','3x²']), mc:true, ste:'(x+1)³=x³+3x²+3x+1; restando 3x²+3x+1 queda x³.'},
+  {_id:10, q:'Simplifica: (a+b)³ − a³ − b³', a:'3ab(a+b)', opts:_i4gshuf(['3ab(a+b)','3ab','a²b+ab²','3a²b³']), mc:true, ste:'(a+b)³=a³+3a²b+3ab²+b³; restando a³+b³: 3a²b+3ab²=3ab(a+b).'},
+  {_id:11, q:'Efectúa: M = (x+4)³ − x³ − 64 − 48x', a:'12x²', opts:_i4gshuf(['12x²','48x','12x²+64','12']), mc:true, ste:'(x+4)³=x³+12x²+48x+64; queda 12x².'},
+  {_id:12, q:'Efectúa: T = 2(x+1)³ − 2x³ − 6x² − 6x', a:'2', opts:_i4gshuf(['2','0','6','2x']), mc:true, ste:'2(x+1)³=2x³+6x²+6x+2; queda 2.'},
+  {_id:13, q:'El resultado de (a+1)(a−1)(a²+1)+1 es aⁿ. ¿Cuánto vale n?', a:'4', opts:_i4gshuf(['4','2','8','6']), mc:true, ste:'(a+1)(a−1)=a²−1; (a²−1)(a²+1)=a⁴−1; +1=a⁴. Exponente: 4.'},
+  {_id:14, q:'Lesly tiene n hermanos, donde n es el exponente de aⁿ = (a+1)(a−1)(a²+1)+1. ¿Cuántos hermanos tiene?', a:'4', opts:_i4gshuf(['4','6','8','10']), mc:true, ste:'(a⁴−1)+1=a⁴; exponente = 4 hermanos.'},
+  {_id:15, q:'En (x+3)³ = x³+Ax²+Bx+27, ¿cuánto vale A+B?', a:'36', opts:_i4gshuf(['36','27','9','18']), mc:true, ste:'(x+3)³=x³+9x²+27x+27; A=9, B=27; A+B=36.'},
+  {_id:16, q:'La suma de coeficientes de (x+3)³ es:', a:'64', opts:_i4gshuf(['64','27','36','54']), mc:true, ste:'Sustituir x=1: (1+3)³=4³=64.'},
+  {_id:17, q:'¿Cuánto vale la suma de coeficientes de (x+2)³?', a:'27', opts:_i4gshuf(['27','8','18','12']), mc:true, ste:'x=1: (1+2)³=3³=27.'},
+  {_id:18, q:'¿Cuánto vale la suma de coeficientes de (2x+1)³?', a:'27', opts:_i4gshuf(['27','8','6','12']), mc:true, ste:'x=1: (2+1)³=3³=27.'},
+  {_id:19, q:'¿Cuánto vale la suma de coeficientes de (x+4)³?', a:'125', opts:_i4gshuf(['125','64','27','216']), mc:true, ste:'x=1: (1+4)³=5³=125.'},
+  {_id:20, q:'La suma de coeficientes de (x+a)³ es 64. ¿Cuánto vale a?', a:'3', opts:_i4gshuf(['3','4','7','2']), mc:true, ste:'(1+a)³=64=4³; 1+a=4; a=3.'},
+]); }
+_SKILL_META['ol1a_pn2_b3']={ico:'📐',lbl:'Binomio suma al cubo (a+b)³',qCount:4,gen:_genOl1aPn2_B3,plantillas:['Desarrollar (a+b)³ directamente','(x+a)³−x³−3ax²−3a²x = a³','Simplificar T con cubo + otros términos','Exponente final / contexto hermanos','Suma de coeficientes de (a+b)³']};
+
+function _genOl1aPn2_B4(){ return _i4gpick([
+  {_id:1, q:'Desarrolla: (x−1)³', a:'x³−3x²+3x−1', opts:_i4gshuf(['x³−3x²+3x−1','x³+3x²+3x+1','x³−x²+x−1','x³−3x²−3x+1']), mc:true, ste:'(a−b)³=a³−3a²b+3ab²−b³; a=x, b=1: x³−3x²+3x−1.'},
+  {_id:2, q:'Desarrolla: (x−2)³', a:'x³−6x²+12x−8', opts:_i4gshuf(['x³−6x²+12x−8','x³−2x²+4x−8','x³+6x²−12x+8','x³−6x²+12x+8']), mc:true, ste:'a=x, b=2: x³−6x²+12x−8.'},
+  {_id:3, q:'Desarrolla: (2x−3)³', a:'8x³−36x²+54x−27', opts:_i4gshuf(['8x³−36x²+54x−27','8x³+36x²−54x+27','8x³−12x²+18x−27','8x³−36x²+27x−27']), mc:true, ste:'a=2x, b=3: 8x³−36x²+54x−27.'},
+  {_id:4, q:'Efectúa: (a+b)³ + (a−b)³', a:'2a³+6ab²', opts:_i4gshuf(['2a³+6ab²','2b³+6a²b','2a³','8a³']), mc:true, ste:'Suma: los términos de signo opuesto se cancelan; queda 2a³+6ab².'},
+  {_id:5, q:'Efectúa: (x−2)³ + 6x² − 12x', a:'x³−8', opts:_i4gshuf(['x³−8','x³+8','x³−2','8']), mc:true, ste:'(x−2)³=x³−6x²+12x−8; +6x²−12x=x³−8.'},
+  {_id:6, q:'Efectúa: (x−3)³ + 9x² − 27x', a:'x³−27', opts:_i4gshuf(['x³−27','x³+27','x³−9','27']), mc:true, ste:'(x−3)³=x³−9x²+27x−27; +9x²−27x=x³−27.'},
+  {_id:7, q:'Efectúa: (x−4)³ + 12x² − 48x', a:'x³−64', opts:_i4gshuf(['x³−64','x³+64','x³−16','64']), mc:true, ste:'(x−4)³=x³−12x²+48x−64; +12x²−48x=x³−64.'},
+  {_id:8, q:'Efectúa: (x−5)³ + 15x² − 75x', a:'x³−125', opts:_i4gshuf(['x³−125','x³+125','x³−25','125']), mc:true, ste:'(x−5)³=x³−15x²+75x−125; +15x²−75x=x³−125.'},
+  {_id:9, q:'Efectúa: M = (x+4)³ − x³ − 64 − 48x', a:'12x²', opts:_i4gshuf(['12x²','48x','12x²+64','12']), mc:true, ste:'(x+4)³=x³+12x²+48x+64; queda 12x².'},
+  {_id:10, q:'Efectúa: M = (x+3)³ − x³ − 27 − 27x', a:'9x²', opts:_i4gshuf(['9x²','27x','9x²+27','9']), mc:true, ste:'(x+3)³=x³+9x²+27x+27; queda 9x².'},
+  {_id:11, q:'Efectúa: M = (x+5)³ − x³ − 125 − 75x', a:'15x²', opts:_i4gshuf(['15x²','75x','15x²+125','15']), mc:true, ste:'(x+5)³=x³+15x²+75x+125; queda 15x².'},
+  {_id:12, q:'Efectúa: M = (x+2)³ − x³ − 8 − 12x', a:'6x²', opts:_i4gshuf(['6x²','12x','6x²+8','6']), mc:true, ste:'(x+2)³=x³+6x²+12x+8; queda 6x².'},
+  {_id:13, q:'Halla el menor coeficiente de R = (4x+1)³ + (x−2)(x+2) + 9', a:'6', opts:_i4gshuf(['6','12','48','49']), mc:true, ste:'(4x+1)³=64x³+48x²+12x+1; (x−2)(x+2)=x²−4; R=64x³+49x²+12x+6. Menor: 6.'},
+  {_id:14, q:'Halla el término independiente de (2x−1)³', a:'−1', opts:_i4gshuf(['−1','1','−6','−3']), mc:true, ste:'(2x−1)³=8x³−12x²+6x−1. Término independiente = −1.'},
+  {_id:15, q:'En (x−3)³, la suma de los exponentes de x en todos los términos es:', a:'6', opts:_i4gshuf(['6','3','9','12']), mc:true, ste:'x³ (exp 3), −9x² (exp 2), 27x (exp 1), −27 (exp 0). Suma: 3+2+1+0=6.'},
+  {_id:16, q:'Josefina le debe a Eulogio el menor coeficiente de R = (4x+1)³+(x−2)(x+2)+9 soles. ¿Cuánto le debe?', a:'6', opts:_i4gshuf(['6','12','49','64']), mc:true, ste:'R=64x³+49x²+12x+6. Menor coeficiente = 6 soles.'},
+  {_id:17, q:'Simplifica: (x−1)³ + 3x² + 1', a:'x³+3x', opts:_i4gshuf(['x³+3x','x³−3x','x³+1','x³−1']), mc:true, ste:'(x−1)³=x³−3x²+3x−1; +3x²+1=x³+3x.'},
+  {_id:18, q:'A = (x+2)³ − 5 desarrollado tiene ___ términos', a:'4', opts:_i4gshuf(['4','3','5','2']), mc:true, ste:'(x+2)³=x³+6x²+12x+8; −5: x³+6x²+12x+3. Cuatro términos.'},
+  {_id:19, q:'Un chef agrega tantos ingredientes como términos del resultado de A = (x+3)³ − x³ − 9x². ¿Cuántos ingredientes agrega?', a:'2', opts:_i4gshuf(['2','3','4','1']), mc:true, ste:'A=x³+9x²+27x+27−x³−9x²=27x+27. Dos términos → 2 ingredientes.'},
+  {_id:20, q:'Efectúa: F = (x+5)³ − x³ − 15x² − 75x', a:'125', opts:_i4gshuf(['125','25','75','5']), mc:true, ste:'(x+5)³=x³+15x²+75x+125; queda 5³=125.'},
+]); }
+_SKILL_META['ol1a_pn2_b4']={ico:'📐',lbl:'Binomio diferencia al cubo (a−b)³',qCount:4,gen:_genOl1aPn2_B4,plantillas:['Desarrollar (a−b)³ directamente','(x−a)³+3ax²−3a²x = x³−a³','Efectúe M=(x+a)³−expr y simplificar','Hallar menor coeficiente','Problema de contexto (términos, soles)']};
+
+function _genOl1aPn2_BQ2(){return _bqSrcPick(['ol1a_pn2_b3','ol1a_pn2_b4'],[_genOl1aPn2_B3,_genOl1aPn2_B4]);}
+_SKILL_META['ol1a_pn2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Binomio al cubo',qCount:10,gen:_genOl1aPn2_BQ2,quiz:true,srcKeys:['ol1a_pn2_b3','ol1a_pn2_b4']};
+
+function _genOl1aPn2_B5(){ return _i4gpick([
+  {_id:1, q:'Si x=1, calcula: E = (x+1)(x−1)(x²+1) + (x+1)³', a:'8', opts:_i4gshuf(['8','0','15','17']), mc:true, ste:'x=1: (2)(0)(2)+(2)³=0+8=8.'},
+  {_id:2, q:'Si x=2, calcula: E = (x+1)(x−1)(x²+1) − (x−1)³', a:'14', opts:_i4gshuf(['14','16','8','1']), mc:true, ste:'x=2: (3)(1)(5)−(1)³=15−1=14.'},
+  {_id:3, q:'Si a=2, b=1, calcula: M = (a+b)³ − (a+b)(a−b)', a:'24', opts:_i4gshuf(['24','27','30','33']), mc:true, ste:'a=2, b=1: (a+b)³=(3)³=27; (a+b)(a−b)=(3)(1)=3; M=27−3=24.'},
+  {_id:4, q:'Si x=2, calcula: T = (x−1)(x+1)(x²+1) + (x−2)³', a:'15', opts:_i4gshuf(['15','16','14','0']), mc:true, ste:'x=2: (1)(3)(5)+(0)³=15+0=15.'},
+  {_id:5, q:'Desarrolla: (√2+1)³', a:'5√2+7', opts:_i4gshuf(['5√2+7','5√2−7','3√2+7','5√2+1']), mc:true, ste:'(√2)³=2√2; 3(2)(1)=6; 3(√2)(1)=3√2; +1: total 5√2+7.'},
+  {_id:6, q:'Desarrolla: (√3−1)³', a:'6√3−10', opts:_i4gshuf(['6√3−10','6√3+10','3√3−1','6√3−1']), mc:true, ste:'(√3)³=3√3; −3(3)=−9; +3√3; −1: total 6√3−10.'},
+  {_id:7, q:'Calcula: (1+√5)³ − (1−√5)³', a:'16√5', opts:_i4gshuf(['16√5','8√5','10√5','2√5']), mc:true, ste:'(a+b)³−(a−b)³=2(3a²b+b³)=2√5(3+5)=16√5 con a=1, b=√5.'},
+  {_id:8, q:'Simplifica: (√a+√b)³ − 3√(ab)(√a+√b)', a:'a√a+b√b', opts:_i4gshuf(['a√a+b√b','a+b','(√a+√b)³','a²+b²']), mc:true, ste:'Identidad (p+q)³−3pq(p+q)=p³+q³ con p=√a, q=√b: a√a+b√b.'},
+  {_id:9, q:'Simplifica: E = [(x+1)(x−1)]³', a:'x⁶−3x⁴+3x²−1', opts:_i4gshuf(['x⁶−3x⁴+3x²−1','x⁶+3x⁴+3x²+1','x⁶−1','x³−1']), mc:true, ste:'(x²−1)³=x⁶−3x⁴+3x²−1.'},
+  {_id:10, q:'Simplifica: E = [(√3+1)(√3−1)]³', a:'8', opts:_i4gshuf(['8','4','2','16']), mc:true, ste:'(√3+1)(√3−1)=3−1=2; 2³=8.'},
+  {_id:11, q:'Simplifica: E = [(2+√3)(2−√3)]³', a:'1', opts:_i4gshuf(['1','3','4','8']), mc:true, ste:'(2+√3)(2−√3)=4−3=1; 1³=1.'},
+  {_id:12, q:'Calcula: E = (√6+√2)³(√6−√2)³', a:'64', opts:_i4gshuf(['64','16','8','4']), mc:true, ste:'[(√6+√2)(√6−√2)]³=(6−2)³=4³=64.'},
+  {_id:13, q:'Si x=2: E = (x+1)³ + (x+1)(x−1)(x²+1)', a:'42', opts:_i4gshuf(['42','27','15','54']), mc:true, ste:'(3)³+(3)(1)(5)=27+15=42.'},
+  {_id:14, q:'Si x=1: T = (x+3)(x−3) + (x+2)³ + (x−2)³', a:'18', opts:_i4gshuf(['18','19','17','−8']), mc:true, ste:'(4)(−2)+(3)³+(−1)³=−8+27−1=18.'},
+  {_id:15, q:'Si x=2: T = (x−1)(x+1)(x²+1) − [(x+1)³−3x²−3x−1]', a:'7', opts:_i4gshuf(['7','15','8','−7']), mc:true, ste:'(1)(3)(5)−x³=15−8=7; pues (x+1)³−3x²−3x−1=x³.'},
+  {_id:16, q:'¿Cuál expresión simplifica a x⁴−y⁴?', a:'(x+y)(x−y)(x²+y²)', opts:_i4gshuf(['(x+y)(x−y)(x²+y²)','(x+y)²(x−y)²','(x²+y²)²','(x+y)⁴−(x−y)⁴']), mc:true, ste:'(x+y)(x−y)=x²−y²; ×(x²+y²)=x⁴−y⁴.'},
+  {_id:17, q:'¿Cuál expresión simplifica a x³?', a:'(x+1)³−3x²−3x−1', opts:_i4gshuf(['(x+1)³−3x²−3x−1','(x+1)³+3x²+3x+1','(x−1)³+3x²+3x−1','(x+1)³−3x²−3x+1']), mc:true, ste:'x³+3x²+3x+1−3x²−3x−1=x³.'},
+  {_id:18, q:'Simplifica: (x+y)³+(x−y)³', a:'2x³+6xy²', opts:_i4gshuf(['2x³+6xy²','2y³+6x²y','2x³','8x³']), mc:true, ste:'Suma: términos con y² y y³ se regularizan: 2x³+6xy².'},
+  {_id:19, q:'Simplifica: (x+y)³−(x−y)³', a:'6x²y+2y³', opts:_i4gshuf(['6x²y+2y³','6xy²+2x³','2y³','6x²y']), mc:true, ste:'Diferencia: términos con x³ se cancelan; queda 6x²y+2y³=2y(3x²+y²).'},
+  {_id:20, q:'Simplifica: (a+b)³+(a−b)³', a:'2a³+6ab²', opts:_i4gshuf(['2a³+6ab²','2b³+6a²b','2(a+b)³','8a³']), mc:true, ste:'(a³+3a²b+3ab²+b³)+(a³−3a²b+3ab²−b³)=2a³+6ab².'},
+]); }
+_SKILL_META['ol1a_pn2_b5']={ico:'📐',lbl:'Combinación d.c. + binomio al cubo',qCount:4,gen:_genOl1aPn2_B5,plantillas:['Expr mixta – evaluación numérica','(a+b)³ con a ó b radicales','d.c. dentro del cubo: [(a+b)(a−b)]³','Evaluación con ambas identidades','Relacionar expresiones con ambas identidades']};
+
+function _genOl1aPn2_B6(){ return _i4gpick([
+  {_id:1, q:'Calcula: (√5+√2)³ − 3√10(√5+√2)', a:'5√5+2√2', opts:_i4gshuf(['5√5+2√2','5√5−2√2','7√7','√5+√2']), mc:true, ste:'Identidad (p+q)³−3pq(p+q)=p³+q³; p=√5, q=√2, pq=√10: (√5)³+(√2)³=5√5+2√2.'},
+  {_id:2, q:'Calcula: (√3+√2)³ − 3√6(√3+√2)', a:'3√3+2√2', opts:_i4gshuf(['3√3+2√2','3√3−2√2','√5+√6','5√5']), mc:true, ste:'p=√3, q=√2: p³+q³=3√3+2√2.'},
+  {_id:3, q:'Calcula: (√7+√3)³ − 3√21(√7+√3)', a:'7√7+3√3', opts:_i4gshuf(['7√7+3√3','7√7−3√3','10√10','√7+√3']), mc:true, ste:'p=√7, q=√3: p³+q³=7√7+3√3.'},
+  {_id:4, q:'Calcula: (2+√3)³ − 6√3(2+√3)', a:'8+3√3', opts:_i4gshuf(['8+3√3','8−3√3','3√3','8']), mc:true, ste:'p=2, q=√3, 3pq=6√3: p³+q³=8+3√3.'},
+  {_id:5, q:'A = (x+2)³ − 5, desarrollado y simplificado, tiene ___ términos', a:'4', opts:_i4gshuf(['4','3','5','2']), mc:true, ste:'x³+6x²+12x+8−5=x³+6x²+12x+3. Cuatro términos.'},
+  {_id:6, q:'Un chef agrega tantos ingredientes como términos del resultado de A = (x+3)³ − x³ − 9x². ¿Cuántos ingredientes?', a:'2', opts:_i4gshuf(['2','3','4','1']), mc:true, ste:'A=27x+27. Dos términos → 2 ingredientes.'},
+  {_id:7, q:'B = (x+1)³ − (x+1)(x−1) tiene ___ términos al simplificar', a:'4', opts:_i4gshuf(['4','3','5','2']), mc:true, ste:'x³+3x²+3x+1−(x²−1)=x³+2x²+3x+2. Cuatro términos.'},
+  {_id:8, q:'C = (x+2)³ + (x−2)³ tiene ___ términos al simplificar', a:'2', opts:_i4gshuf(['2','4','6','3']), mc:true, ste:'Los términos pares se anulan: 2x³+24x. Dos términos.'},
+  {_id:9, q:'Simplifica: T = √(1+(x−1)(x+1)(x²+1))', a:'x²', opts:_i4gshuf(['x²','x⁴','x','x²+1']), mc:true, ste:'(x²−1)(x²+1)=x⁴−1; 1+x⁴−1=x⁴; √(x⁴)=x².'},
+  {_id:10, q:'Simplifica: ∛((x+2)³ − x³ − 6x(x+2))', a:'2', opts:_i4gshuf(['2','8','x+2','4']), mc:true, ste:'(x+2)³−x³−6x²−12x=8; ∛8=2.'},
+  {_id:11, q:'Si T = ∛((x+2)³−x³−6x(x+2)) y 1 kg de uvas cuesta 4T soles, ¿cuánto cuestan 3 kg?', a:'24', opts:_i4gshuf(['24','8','20','16']), mc:true, ste:'T=2; 1kg=4×2=8 soles; 3kg=24 soles.'},
+  {_id:12, q:'Calcula: ∜[(2−1)(2+1)(2²+1)(2⁴+1)+1]', a:'4', opts:_i4gshuf(['4','2','8','16']), mc:true, ste:'Telescópico: producto=255; +1=256=2⁸; ∜(2⁸)=2²=4.'},
+  {_id:13, q:'R = (4x+1)³+(x−2)(x+2)+9. El menor coeficiente de R indica el precio en soles. ¿Cuánto?', a:'6', opts:_i4gshuf(['6','12','49','64']), mc:true, ste:'R=64x³+49x²+12x+6. Menor coeficiente = 6 soles.'},
+  {_id:14, q:'F = (x+5)³−x³−15x²−75x indica las unidades del experimento. ¿Cuántas?', a:'125', opts:_i4gshuf(['125','25','75','5']), mc:true, ste:'(x+5)³=x³+15x²+75x+125; queda 5³=125.'},
+  {_id:15, q:'M = (2x+1)³+(2x−1)³. ¿Cuál es el coeficiente de x en M?', a:'12', opts:_i4gshuf(['12','6','16','24']), mc:true, ste:'(2x+1)³+(2x−1)³=16x³+12x. Coeficiente de x=12.'},
+  {_id:16, q:'N = (x+2)³−(x−2)³. ¿Cuál es el coeficiente de x²?', a:'12', opts:_i4gshuf(['12','16','6','24']), mc:true, ste:'N=12x²+16. Coeficiente de x²=12.'},
+  {_id:17, q:'E = (√5+√2)(√5−√2)+(√5+√2)³−3√10(√5+√2). ¿Cuánto vale E?', a:'3+5√5+2√2', opts:_i4gshuf(['3+5√5+2√2','5√5+2√2','3+√5','7']), mc:true, ste:'d.c.=3; a³+b³=5√5+2√2; total=3+5√5+2√2.'},
+  {_id:18, q:'Si x=1: E = (x+1)(x−1)(x²+1)+(x+1)³', a:'8', opts:_i4gshuf(['8','16','7','0']), mc:true, ste:'x=1: (2)(0)(2)+(2)³=0+8=8.'},
+  {_id:19, q:'Calcula: (√3+1)³ − 3√3(√3+1)', a:'3√3+1', opts:_i4gshuf(['3√3+1','3√3−1','3+√3','3√3']), mc:true, ste:'p=√3, q=1, pq=√3: p³+q³=3√3+1.'},
+  {_id:20, q:'Efectúa: B = (x+3)³ − x³ − 9x² − 27x + (x+1)(x−1)', a:'27+x²−1', opts:_i4gshuf(['27+x²−1','27','x²+26','27−x²']), mc:true, ste:'(x+3)³−x³−9x²−27x=27; +(x²−1)=27+x²−1=x²+26.'},
+]); }
+_SKILL_META['ol1a_pn2_b6']={ico:'📐',lbl:'Aplicaciones y nivel III',qCount:4,gen:_genOl1aPn2_B6,plantillas:['a³+b³=(a+b)³−3ab(a+b) con radicales','Nº de términos del resultado (contexto chef)','Telescópica ∛ y ∜ aplicadas','Menor coeficiente en contexto','Expresión multi-identidad']};
+
+function _genOl1aPn2_BQ3(){return _bqSrcPick(['ol1a_pn2_b5','ol1a_pn2_b6'],[_genOl1aPn2_B5,_genOl1aPn2_B6]);}
+_SKILL_META['ol1a_pn2_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Combinados y aplicaciones',qCount:10,gen:_genOl1aPn2_BQ3,quiz:true,srcKeys:['ol1a_pn2_b5','ol1a_pn2_b6']};
+
+function _genOl1aPn2_BPU(){return _bqSrcPick(['ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_b5','ol1a_pn2_b6'],[_genOl1aPn2_B1,_genOl1aPn2_B2,_genOl1aPn2_B3,_genOl1aPn2_B4,_genOl1aPn2_B5,_genOl1aPn2_B6]);}
+_SKILL_META['ol1a_pn2_bpu']={ico:'⚡',lbl:'Examen – Productos Notables II',qCount:30,gen:_genOl1aPn2_BPU,quiz:true,srcKeys:['ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_b5','ol1a_pn2_b6']};
+
+// ══ Álgebra 1° Secundaria – Saco Oliveros: Productos Notables III (ol1a_pn3) ══
+// Cap. 15: Identidad de Stevin · Identidades de Cauchy
+
+function _genOl1aPn3_B1(){ return _i4gpick([
+  {_id:1, q:'Efectúa: (x+2)(x+1)', a:'x²+3x+2', opts:_i4gshuf(['x²+3x+2','x²+2x+2','x²+3x+1','x²+2x+1']), mc:true, ste:'Stevin: (x+a)(x+b)=x²+(a+b)x+ab; a=2,b=1: x²+3x+2.'},
+  {_id:2, q:'Efectúa: (x+1)(x+3)', a:'x²+4x+3', opts:_i4gshuf(['x²+4x+3','x²+3x+3','x²+4x+1','x²+3x+4']), mc:true, ste:'a=1,b=3: x²+4x+3.'},
+  {_id:3, q:'Efectúa: (x+3)(x+5)', a:'x²+8x+15', opts:_i4gshuf(['x²+8x+15','x²+8x+8','x²+15x+8','x²+8x+5']), mc:true, ste:'a=3,b=5: x²+8x+15.'},
+  {_id:4, q:'Efectúa: (x+6)(x+4)', a:'x²+10x+24', opts:_i4gshuf(['x²+10x+24','x²+10x+10','x²+24x+10','x²+10x+20']), mc:true, ste:'a=6,b=4: x²+10x+24.'},
+  {_id:5, q:'Efectúa: (x+4)(x−1)', a:'x²+3x−4', opts:_i4gshuf(['x²+3x−4','x²−3x−4','x²+3x+4','x²+5x−4']), mc:true, ste:'a=4,b=−1: x²+(4−1)x+(4)(−1)=x²+3x−4.'},
+  {_id:6, q:'Efectúa: (x−5)(x−3)', a:'x²−8x+15', opts:_i4gshuf(['x²−8x+15','x²+8x+15','x²−8x−15','x²−2x+15']), mc:true, ste:'a=−5,b=−3: x²+(−8)x+15=x²−8x+15.'},
+  {_id:7, q:'Efectúa: (x+2)(x−7)', a:'x²−5x−14', opts:_i4gshuf(['x²−5x−14','x²+5x−14','x²−5x+14','x²+5x+14']), mc:true, ste:'a=2,b=−7: x²+(−5)x+(−14)=x²−5x−14.'},
+  {_id:8, q:'Efectúa: (x−3)(x+8)', a:'x²+5x−24', opts:_i4gshuf(['x²+5x−24','x²−5x−24','x²+5x+24','x²+11x−24']), mc:true, ste:'a=−3,b=8: x²+5x−24.'},
+  {_id:9, q:'Efectúa: (x²+1)(x²+5)', a:'x⁴+6x²+5', opts:_i4gshuf(['x⁴+6x²+5','x⁴+5x²+6','x⁴+6x+5','x⁴+6x²+1']), mc:true, ste:'Stevin con base x²: a=1,b=5: x⁴+6x²+5.'},
+  {_id:10, q:'Efectúa: (x²+2)(x²+3)', a:'x⁴+5x²+6', opts:_i4gshuf(['x⁴+5x²+6','x⁴+6x²+5','x⁴+5x+6','x⁴+5x²+2']), mc:true, ste:'a=2,b=3: x⁴+5x²+6.'},
+  {_id:11, q:'Efectúa: (x²+4)(x²−2)', a:'x⁴+2x²−8', opts:_i4gshuf(['x⁴+2x²−8','x⁴−2x²−8','x⁴+2x²+8','x⁴+6x²−8']), mc:true, ste:'a=4,b=−2: x⁴+2x²−8.'},
+  {_id:12, q:'Efectúa: (x²+3)(x²−5)', a:'x⁴−2x²−15', opts:_i4gshuf(['x⁴−2x²−15','x⁴+2x²−15','x⁴−2x²+15','x⁴−8x²−15']), mc:true, ste:'a=3,b=−5: x⁴−2x²−15.'},
+  {_id:13, q:'Efectúa: (2x+3)(2x+1)', a:'4x²+8x+3', opts:_i4gshuf(['4x²+8x+3','4x²+4x+3','4x²+8x+1','4x²+6x+3']), mc:true, ste:'Base 2x: (2x)²+(3+1)(2x)+(3)(1)=4x²+8x+3.'},
+  {_id:14, q:'Efectúa: (2x+5)(2x−2)', a:'4x²+6x−10', opts:_i4gshuf(['4x²+6x−10','4x²−6x−10','4x²+6x+10','4x²+3x−10']), mc:true, ste:'Base 2x, a=5,b=−2: 4x²+6x−10.'},
+  {_id:15, q:'¿Es verdadero que (x+2)(x+3) = x²+5x+6?', a:'Verdadero', opts:_i4gshuf(['Verdadero','Falso','Solo si x>0','Solo con enteros']), mc:true, ste:'a+b=5, ab=6. (x+2)(x+3)=x²+5x+6. ✓'},
+  {_id:16, q:'¿Es verdadero que (x+4)(x−4) = x²+8x−16?', a:'Falso', opts:_i4gshuf(['Falso','Verdadero','Solo si x≠4','Solo con negativos']), mc:true, ste:'(x+4)(x−4) es diferencia de cuadrados = x²−16, no x²+8x−16.'},
+  {_id:17, q:'¿Es verdadero que (x+3)(x−2) = x²+x−6?', a:'Verdadero', opts:_i4gshuf(['Verdadero','Falso','Solo si x>2','Depende de x']), mc:true, ste:'a=3,b=−2: x²+(3−2)x+(3)(−2)=x²+x−6. ✓'},
+  {_id:18, q:'¿Es verdadero que (m+2)(m+8) = m²+10m+16?', a:'Verdadero', opts:_i4gshuf(['Verdadero','Falso','Solo si m>0','El resultado es m²+16m+10']), mc:true, ste:'a+b=10, ab=16: m²+10m+16. ✓'},
+  {_id:19, q:'Efectúa: (x+5)(x−2)', a:'x²+3x−10', opts:_i4gshuf(['x²+3x−10','x²−3x−10','x²+3x+10','x²+7x−10']), mc:true, ste:'a=5,b=−2: x²+3x−10.'},
+  {_id:20, q:'Efectúa: (x−4)(x−6)', a:'x²−10x+24', opts:_i4gshuf(['x²−10x+24','x²+10x+24','x²−10x−24','x²−2x+24']), mc:true, ste:'a=−4,b=−6: x²−10x+24.'},
+]); }
+_SKILL_META['ol1a_pn3_b1']={ico:'📐',lbl:'Identidad de Stevin – aplicación directa',qCount:4,gen:_genOl1aPn3_B1,plantillas:['(x+a)(x+b) con a,b positivos','Con a ó b negativo','(x²+a)(x²+b) tipo potencia','(px+a)(px+b) con coeficiente','V/F sobre Stevin']};
+
+function _genOl1aPn3_B2(){ return _i4gpick([
+  {_id:1, q:'Simplifica: E = (x+2)(x+7) − (x+3)(x−3) − 23', a:'9x', opts:_i4gshuf(['9x','9x+23','9x−23','23']), mc:true, ste:'(x+2)(x+7)=x²+9x+14; (x+3)(x−3)=x²−9; E=9x+14+9−23=9x.'},
+  {_id:2, q:'Simplifica: E = (x+5)(x+7) − (x+2)(x+10)', a:'15', opts:_i4gshuf(['15','−15','5','x+15']), mc:true, ste:'x²+12x+35−(x²+12x+20)=15.'},
+  {_id:3, q:'Simplifica: E = (x+4)(x−7) − (x−1)(x−2)', a:'−30', opts:_i4gshuf(['−30','30','−28','2']), mc:true, ste:'(x²−3x−28)−(x²−3x+2)=−30.'},
+  {_id:4, q:'Simplifica: E = (x+7)² − (x+10)(x+4)', a:'9', opts:_i4gshuf(['9','7','−9','49']), mc:true, ste:'x²+14x+49−(x²+14x+40)=9.'},
+  {_id:5, q:'Simplifica: A = (x+7)(x+4) − 11x − x²', a:'28', opts:_i4gshuf(['28','11','4','x+28']), mc:true, ste:'x²+11x+28−11x−x²=28.'},
+  {_id:6, q:'Simplifica: A = (x+6)(x+3) − 9x − x²', a:'18', opts:_i4gshuf(['18','9','6','x+18']), mc:true, ste:'x²+9x+18−9x−x²=18.'},
+  {_id:7, q:'Simplifica: M = (x+5)² − (x+7)(x+2)', a:'x+11', opts:_i4gshuf(['x+11','x+25','11','x−11']), mc:true, ste:'x²+10x+25−(x²+9x+14)=x+11.'},
+  {_id:8, q:'Simplifica: M = (x+3)² − (x+4)(x+2)', a:'1', opts:_i4gshuf(['1','−1','x+1','9']), mc:true, ste:'x²+6x+9−(x²+6x+8)=1.'},
+  {_id:9, q:'Sabiendo que x²+4x−3=0, halla: M = (x+6)(x−2)+(x+3)(x+1)', a:'−3', opts:_i4gshuf(['−3','3','−2','2']), mc:true, ste:'(x+6)(x−2)=x²+4x−12=−3−12=−15+12... recalc: x²+4x=3; (x+6)(x−2)=x²+4x−12=3−12=−9; (x+3)(x+1)=x²+4x+3=3+3=6; M=−9+6=−3.'},
+  {_id:10, q:'Sabiendo que x²+5x=3, halla: M = (x+3)(x+2)+(x+4)(x+1)', a:'16', opts:_i4gshuf(['16','6','13','10']), mc:true, ste:'(x+3)(x+2)=x²+5x+6=3+6=9; (x+4)(x+1)=x²+5x+4=3+4=7; M=16.'},
+  {_id:11, q:'Sabiendo que x²+8x=7, halla: E = (x+6)(x+2)+(x+5)(x+3)', a:'41', opts:_i4gshuf(['41','14','27','34']), mc:true, ste:'(x+6)(x+2)=x²+8x+12=7+12=19; (x+5)(x+3)=x²+8x+15=7+15=22; E=41.'},
+  {_id:12, q:'Sabiendo que x²+4x−3=0, halla: N = (x+5)(x−1)+(x+2)²', a:'5', opts:_i4gshuf(['5','−3','3','0']), mc:true, ste:'x²+4x=3; (x+5)(x−1)=x²+4x−5=3−5=−2; (x+2)²=x²+4x+4=3+4=7; N=−2+7=5.'},
+  {_id:13, q:'Área de campo eSports con lados (x+6) y (x−10). ¿Cuál es el área?', a:'x²−4x−60', opts:_i4gshuf(['x²−4x−60','x²+4x−60','x²−4x+60','x²+16x−60']), mc:true, ste:'(x+6)(x−10)=x²+(6−10)x+(6)(−10)=x²−4x−60.'},
+  {_id:14, q:'Área de piscina con lados (x+15) y (x−6). ¿Cuál es el área?', a:'x²+9x−90', opts:_i4gshuf(['x²+9x−90','x²−9x−90','x²+9x+90','x²+21x−90']), mc:true, ste:'(x+15)(x−6)=x²+9x−90.'},
+  {_id:15, q:'Relaciona: (x+8)(x+4) = ?', a:'x²+12x+32', opts:_i4gshuf(['x²+12x+32','x²+12x+35','x²−4x²+3','x²−2x−8']), mc:true, ste:'a=8,b=4: x²+12x+32.'},
+  {_id:16, q:'Relaciona: (x+5)(x+7) = ?', a:'x²+12x+35', opts:_i4gshuf(['x²+12x+35','x²+12x+32','x²−4x²+3','x²−2x−8']), mc:true, ste:'a=5,b=7: x²+12x+35.'},
+  {_id:17, q:'Relaciona: (x−3)(x−1) = ?', a:'x²−4x+3', opts:_i4gshuf(['x²−4x+3','x²+12x+32','x²+12x+35','x²−2x−8']), mc:true, ste:'a=−3,b=−1: x²−4x+3.'},
+  {_id:18, q:'Relaciona: (x+2)(x−4) = ?', a:'x²−2x−8', opts:_i4gshuf(['x²−2x−8','x²+12x+32','x²+12x+35','x²−4x+3']), mc:true, ste:'a=2,b=−4: x²−2x−8.'},
+  {_id:19, q:'Simplifica: E = (x+3)(x+7) − x² − 10x', a:'21', opts:_i4gshuf(['21','10','7','x+21']), mc:true, ste:'x²+10x+21−x²−10x=21.'},
+  {_id:20, q:'Simplifica: R = (x+7)² − (x+8)(x+6)', a:'1', opts:_i4gshuf(['1','−1','49','x+1']), mc:true, ste:'x²+14x+49−(x²+14x+48)=1.'},
+]); }
+_SKILL_META['ol1a_pn3_b2']={ico:'📐',lbl:'Identidad de Stevin – simplificación',qCount:4,gen:_genOl1aPn3_B2,plantillas:['Diferencia (x+a)(x+b)−(x+c)(x+d)','(x+a)(x+b)+cx−x²','Siendo x²+px+q=k, hallar (x+a)(x+b)','Área rectangular con Stevin','Matching productos → resultados']};
+
+function _genOl1aPn3_BQ1(){return _bqSrcPick(['ol1a_pn3_b1','ol1a_pn3_b2'],[_genOl1aPn3_B1,_genOl1aPn3_B2]);}
+_SKILL_META['ol1a_pn3_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Identidad de Stevin',qCount:10,gen:_genOl1aPn3_BQ1,quiz:true,srcKeys:['ol1a_pn3_b1','ol1a_pn3_b2']};
+
+function _genOl1aPn3_B3(){ return _i4gpick([
+  {_id:1, q:'Si a+b=2 y ab=5, calcula a³+b³', a:'−22', opts:_i4gshuf(['−22','22','−7','30']), mc:true, ste:'Cauchy: (a+b)³=a³+b³+3ab(a+b); 8=a³+b³+3(5)(2); 8=a³+b³+30; a³+b³=−22.'},
+  {_id:2, q:'Si a+b=3 y ab=4, calcula a³+b³', a:'−9', opts:_i4gshuf(['−9','9','27','3']), mc:true, ste:'27=a³+b³+3(4)(3)=a³+b³+36; a³+b³=−9.'},
+  {_id:3, q:'Si a+b=1 y ab=3, calcula a³+b³', a:'−8', opts:_i4gshuf(['−8','8','1','−2']), mc:true, ste:'1=a³+b³+3(3)(1)=a³+b³+9; a³+b³=−8.'},
+  {_id:4, q:'Si a+b=4 y ab=6, calcula a³+b³', a:'−8', opts:_i4gshuf(['−8','8','64','−56']), mc:true, ste:'64=a³+b³+3(6)(4)=a³+b³+72; a³+b³=−8.'},
+  {_id:5, q:'Si x+1/x=4, calcula x³+1/x³', a:'52', opts:_i4gshuf(['52','64','48','16']), mc:true, ste:'Cauchy: (x+1/x)³=x³+1/x³+3(1)(x+1/x); 64=x³+1/x³+12; x³+1/x³=52.'},
+  {_id:6, q:'Si m+1/m=5, calcula m³+1/m³', a:'110', opts:_i4gshuf(['110','125','115','100']), mc:true, ste:'125=m³+1/m³+3(1)(5)=m³+1/m³+15; m³+1/m³=110.'},
+  {_id:7, q:'Si x+1/x=3, calcula x³+1/x³', a:'18', opts:_i4gshuf(['18','27','21','9']), mc:true, ste:'27=x³+1/x³+3(1)(3)=x³+1/x³+9; x³+1/x³=18.'},
+  {_id:8, q:'Si x+1/x=2, calcula x³+1/x³', a:'2', opts:_i4gshuf(['2','8','6','4']), mc:true, ste:'8=x³+1/x³+3(1)(2)=x³+1/x³+6; x³+1/x³=2.'},
+  {_id:9, q:'Simplifica: (x+y)³ − 3xy(x+y)', a:'x³+y³', opts:_i4gshuf(['x³+y³','x³−y³','3xy(x+y)','(x+y)³']), mc:true, ste:'Por Cauchy suma: (a+b)³=a³+b³+3ab(a+b); despejando: a³+b³=(a+b)³−3ab(a+b).'},
+  {_id:10, q:'Si (a+b)³=27 y 3ab(a+b)=24, calcula a³+b³', a:'3', opts:_i4gshuf(['3','27','24','−3']), mc:true, ste:'a³+b³=(a+b)³−3ab(a+b)=27−24=3.'},
+  {_id:11, q:'Si x+y=5 y x³+y³=35, calcula xy', a:'6', opts:_i4gshuf(['6','5','4','7']), mc:true, ste:'(x+y)³=x³+y³+3xy(x+y); 125=35+15xy; 90=15xy; xy=6.'},
+  {_id:12, q:'Si x+y=4 y x³+y³=40, calcula xy', a:'2', opts:_i4gshuf(['2','4','6','8']), mc:true, ste:'64=40+3xy(4)=40+12xy; 24=12xy; xy=2.'},
+  {_id:13, q:'Si x+y=3 y x³+y³=9, calcula xy', a:'2', opts:_i4gshuf(['2','3','1','6']), mc:true, ste:'27=9+9xy; 18=9xy; xy=2.'},
+  {_id:14, q:'Peter compra verduras. Q=xy soles. Si x+y=5 y x³+y³=35, ¿cuánto gasta Peter?', a:'6', opts:_i4gshuf(['6','5','7','4']), mc:true, ste:'125=35+15Q; Q=6 soles.'},
+  {_id:15, q:'En el laboratorio, M=x³+y³, x+y=4, xy=2. ¿Cuánta energía se libera?', a:'40', opts:_i4gshuf(['40','64','24','44']), mc:true, ste:'64=M+3(2)(4)=M+24; M=40.'},
+  {_id:16, q:'Si a+b=2 y a³+b³=−22, calcula ab', a:'5', opts:_i4gshuf(['5','4','6','3']), mc:true, ste:'8=−22+6ab; 6ab=30; ab=5.'},
+  {_id:17, q:'Si a+b=3 y a³+b³=−9, calcula ab', a:'4', opts:_i4gshuf(['4','3','5','6']), mc:true, ste:'27=−9+9ab; 9ab=36; ab=4.'},
+  {_id:18, q:'Si a+b=1 y a³+b³=−8, calcula ab', a:'3', opts:_i4gshuf(['3','2','4','1']), mc:true, ste:'1=−8+3ab; 3ab=9; ab=3.'},
+  {_id:19, q:'Si x+1/x=6, calcula x³+1/x³', a:'198', opts:_i4gshuf(['198','216','180','162']), mc:true, ste:'216=x³+1/x³+3(1)(6)=x³+1/x³+18; x³+1/x³=198.'},
+  {_id:20, q:'Un científico sabe que (x+y)³=64 y xy=2. Si x+y=4, ¿cuánto vale x³+y³?', a:'40', opts:_i4gshuf(['40','64','24','44']), mc:true, ste:'64=x³+y³+3(2)(4)=x³+y³+24; x³+y³=40.'},
+]); }
+_SKILL_META['ol1a_pn3_b3']={ico:'📐',lbl:'Cauchy suma – a³+b³=(a+b)³−3ab(a+b)',qCount:4,gen:_genOl1aPn3_B3,plantillas:['Dados a+b y ab, hallar a³+b³','Dado x+1/x=k, hallar x³+1/x³','Simplificar con Cauchy suma','Dados a+b y a³+b³, hallar ab','Contexto (mercado, energía)']};
+
+function _genOl1aPn3_B4(){ return _i4gpick([
+  {_id:1, q:'Si a−b=5 y ab=6, calcula a³−b³', a:'215', opts:_i4gshuf(['215','125','90','35']), mc:true, ste:'Cauchy dif: (a−b)³=a³−b³−3ab(a−b); 125=a³−b³−3(6)(5); 125=a³−b³−90; a³−b³=215.'},
+  {_id:2, q:'Si a−b=5 y ab=2, calcula a³−b³', a:'155', opts:_i4gshuf(['155','125','30','25']), mc:true, ste:'125=a³−b³−3(2)(5)=a³−b³−30; a³−b³=155.'},
+  {_id:3, q:'Si a−b=3 y ab=4, calcula a³−b³', a:'63', opts:_i4gshuf(['63','27','36','9']), mc:true, ste:'27=a³−b³−3(4)(3)=a³−b³−36; a³−b³=63.'},
+  {_id:4, q:'Si a−b=2 y ab=3, calcula a³−b³', a:'26', opts:_i4gshuf(['26','8','18','44']), mc:true, ste:'8=a³−b³−3(3)(2)=a³−b³−18; a³−b³=26.'},
+  {_id:5, q:'Si x−1/x=3, calcula x³−1/x³', a:'36', opts:_i4gshuf(['36','27','9','45']), mc:true, ste:'Cauchy: (x−1/x)³=x³−1/x³−3(1)(x−1/x); 27=x³−1/x³−9; x³−1/x³=36.'},
+  {_id:6, q:'Si x−1/x=2, calcula x³−1/x³', a:'14', opts:_i4gshuf(['14','8','6','22']), mc:true, ste:'8=x³−1/x³−3(1)(2)=x³−1/x³−6; x³−1/x³=14.'},
+  {_id:7, q:'Si x−1/x=4, calcula x³−1/x³', a:'76', opts:_i4gshuf(['76','64','12','52']), mc:true, ste:'64=x³−1/x³−3(1)(4)=x³−1/x³−12; x³−1/x³=76.'},
+  {_id:8, q:'Si x−1/x=1, calcula x³−1/x³', a:'4', opts:_i4gshuf(['4','1','3','7']), mc:true, ste:'1=x³−1/x³−3(1)(1)=x³−1/x³−3; x³−1/x³=4.'},
+  {_id:9, q:'Simplifica: (a−b)³+3ab(a−b)', a:'a³−b³', opts:_i4gshuf(['a³−b³','a³+b³','3ab(a−b)','(a−b)³']), mc:true, ste:'Cauchy dif: (a−b)³=a³−b³−3ab(a−b); despejando: a³−b³=(a−b)³+3ab(a−b).'},
+  {_id:10, q:'Si (a−b)³=125 y 3ab(a−b)=90, calcula a³−b³', a:'215', opts:_i4gshuf(['215','125','90','35']), mc:true, ste:'a³−b³=(a−b)³+3ab(a−b)=125+90=215.'},
+  {_id:11, q:'Si a−b=6 y ab=4, calcula a³−b³', a:'288', opts:_i4gshuf(['288','216','72','144']), mc:true, ste:'216=a³−b³−3(4)(6)=a³−b³−72; a³−b³=288.'},
+  {_id:12, q:'Si a−b=4 y ab=5, calcula a³−b³', a:'124', opts:_i4gshuf(['124','64','60','4']), mc:true, ste:'64=a³−b³−3(5)(4)=a³−b³−60; a³−b³=124.'},
+  {_id:13, q:'Si a−b=5 y a³−b³=215, calcula ab', a:'6', opts:_i4gshuf(['6','5','4','7']), mc:true, ste:'125=215−15ab; 15ab=90; ab=6.'},
+  {_id:14, q:'Si a−b=3 y a³−b³=63, calcula ab', a:'4', opts:_i4gshuf(['4','3','5','6']), mc:true, ste:'27=63−9ab; 9ab=36; ab=4.'},
+  {_id:15, q:'Si a−b=2 y a³−b³=26, calcula ab', a:'3', opts:_i4gshuf(['3','2','4','1']), mc:true, ste:'8=26−6ab; 6ab=18; ab=3.'},
+  {_id:16, q:'En un videojuego, descubriste que a−b=2 y ab=2. Halla el valor negativo de a³−b³', a:'−20', opts:_i4gshuf(['−20','20','−8','−12']), mc:true, ste:'8=a³−b³−3(2)(2)=a³−b³−12; a³−b³=20; valor negativo=−20.'},
+  {_id:17, q:'Si a+b=2 y ab=2, halla el valor negativo de a³+b³', a:'−4', opts:_i4gshuf(['−4','4','−8','−20']), mc:true, ste:'8=a³+b³+3(2)(2)=a³+b³+12; a³+b³=−4; valor negativo=−4.'},
+  {_id:18, q:'En videojuego espacial, a+b=2 y ab=2. ¿Cuántos puntos extra (valor negativo de a³+b³)?', a:'−4', opts:_i4gshuf(['−4','4','−8','−12']), mc:true, ste:'8=a³+b³+12; a³+b³=−4.'},
+  {_id:19, q:'Si x−1/x=5, calcula x³−1/x³', a:'140', opts:_i4gshuf(['140','125','15','110']), mc:true, ste:'125=x³−1/x³−3(1)(5)=x³−1/x³−15; x³−1/x³=140.'},
+  {_id:20, q:'Si a−b=6 y a³−b³=288, calcula ab', a:'4', opts:_i4gshuf(['4','6','3','5']), mc:true, ste:'216=288−18ab; 18ab=72; ab=4.'},
+]); }
+_SKILL_META['ol1a_pn3_b4']={ico:'📐',lbl:'Cauchy diferencia – a³−b³=(a−b)³+3ab(a−b)',qCount:4,gen:_genOl1aPn3_B4,plantillas:['Dados a−b y ab, hallar a³−b³','Dado x−1/x=k, hallar x³−1/x³','Simplificar con Cauchy diferencia','Dados a−b y a³−b³, hallar ab','Contexto (videojuego, ciencia)']};
+
+function _genOl1aPn3_BQ2(){return _bqSrcPick(['ol1a_pn3_b3','ol1a_pn3_b4'],[_genOl1aPn3_B3,_genOl1aPn3_B4]);}
+_SKILL_META['ol1a_pn3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Identidades de Cauchy',qCount:10,gen:_genOl1aPn3_BQ2,quiz:true,srcKeys:['ol1a_pn3_b3','ol1a_pn3_b4']};
+
+function _genOl1aPn3_B5(){ return _i4gpick([
+  {_id:1, q:'Simplifica: E = (x+2)(x+7) − (x+3)(x+6)', a:'−4', opts:_i4gshuf(['−4','4','9x','−9x']), mc:true, ste:'x²+9x+14−(x²+9x+18)=−4.'},
+  {_id:2, q:'Simplifica: E = (x+4)(x+8) − (x+5)(x+7)', a:'−3', opts:_i4gshuf(['−3','3','32','35']), mc:true, ste:'x²+12x+32−(x²+12x+35)=−3.'},
+  {_id:3, q:'Sabiendo que x²+4x=3, halla: R = (x+6)(x−2) + (x+3)(x+1)', a:'−3', opts:_i4gshuf(['−3','3','6','0']), mc:true, ste:'(x+6)(x−2)=x²+4x−12=3−12=−9; (x+3)(x+1)=x²+4x+3=3+3=6; R=−3.'},
+  {_id:4, q:'Sabiendo que x²+5x=3, halla: S = (x+4)(x+1) − (x+3)(x+2)', a:'−4', opts:_i4gshuf(['−4','4','−2','2']), mc:true, ste:'(x+4)(x+1)=x²+5x+4=3+4=7; (x+3)(x+2)=x²+5x+6=3+6=9; S=7−9=−2.'},
+  {_id:5, q:'Si a+b=3 y ab=4, halla a³+b³ usando Cauchy', a:'−9', opts:_i4gshuf(['−9','27','9','3']), mc:true, ste:'27=a³+b³+36; a³+b³=−9.'},
+  {_id:6, q:'Si a−b=4 y ab=5, halla a³−b³ usando Cauchy', a:'124', opts:_i4gshuf(['124','64','60','−124']), mc:true, ste:'64=a³−b³−60; a³−b³=124.'},
+  {_id:7, q:'Si m+1/m=3, calcula m³+1/m³', a:'18', opts:_i4gshuf(['18','27','9','21']), mc:true, ste:'27=m³+1/m³+9; m³+1/m³=18.'},
+  {_id:8, q:'Si m−1/m=2, calcula m³−1/m³', a:'14', opts:_i4gshuf(['14','8','6','12']), mc:true, ste:'8=m³−1/m³−6; m³−1/m³=14.'},
+  {_id:9, q:'Si x+y=5 y xy=6, calcula x³+y³', a:'35', opts:_i4gshuf(['35','125','90','5']), mc:true, ste:'125=x³+y³+3(6)(5)=x³+y³+90; x³+y³=35.'},
+  {_id:10, q:'Si x−y=3 y xy=4, calcula x³−y³', a:'63', opts:_i4gshuf(['63','27','36','99']), mc:true, ste:'27=x³−y³−36; x³−y³=63.'},
+  {_id:11, q:'Efectúa: R = (x+7)² − (x+10)(x+4)', a:'9', opts:_i4gshuf(['9','−9','49','40']), mc:true, ste:'x²+14x+49−x²−14x−40=9.'},
+  {_id:12, q:'Efectúa: R = (x+7)² − (x+8)(x+6)', a:'1', opts:_i4gshuf(['1','−1','49','48']), mc:true, ste:'x²+14x+49−x²−14x−48=1.'},
+  {_id:13, q:'Si a+b=4 y ab=2: calcula a³+b³', a:'40', opts:_i4gshuf(['40','64','24','40']), mc:true, ste:'64=a³+b³+24; a³+b³=40.'},
+  {_id:14, q:'Si x+y=6 y xy=3: calcula x³+y³', a:'162', opts:_i4gshuf(['162','216','54','216']), mc:true, ste:'216=x³+y³+3(3)(6)=x³+y³+54; x³+y³=162.'},
+  {_id:15, q:'Siendo x²+3x=5, halla M=(x+5)(x−2)+(x+4)(x−1)', a:'−4', opts:_i4gshuf(['−4','4','−2','8']), mc:true, ste:'x²+3x=5; (x+5)(x−2)=x²+3x−10=5−10=−5; (x+4)(x−1)=x²+3x−4=5−4=1; M=−5+1=−4.'},
+  {_id:16, q:'Siendo x²+6x=4, halla M=(x+7)(x−1)+(x+5)(x+1)', a:'6', opts:_i4gshuf(['6','4','12','−6']), mc:true, ste:'x²+6x=4; (x+7)(x−1)=x²+6x−7=4−7=−3; (x+5)(x+1)=x²+6x+5=4+5=9; M=−3+9=6.'},
+  {_id:17, q:'Si x+1/x=4, calcula x³+1/x³', a:'52', opts:_i4gshuf(['52','64','48','52']), mc:true, ste:'64=x³+1/x³+12; x³+1/x³=52.'},
+  {_id:18, q:'Si x−1/x=3, calcula x³−1/x³', a:'36', opts:_i4gshuf(['36','27','9','36']), mc:true, ste:'27=x³−1/x³−9; x³−1/x³=36.'},
+  {_id:19, q:'Si a+b=2 y ab=5: ¿cuál es el valor de a³+b³?', a:'−22', opts:_i4gshuf(['−22','22','−7','30']), mc:true, ste:'8=a³+b³+30; a³+b³=−22.'},
+  {_id:20, q:'Si a−b=5 y ab=6: ¿cuál es el valor de a³−b³?', a:'215', opts:_i4gshuf(['215','125','90','35']), mc:true, ste:'125=a³−b³−90; a³−b³=215.'},
+]); }
+_SKILL_META['ol1a_pn3_b5']={ico:'📐',lbl:'Stevin + Cauchy combinados',qCount:4,gen:_genOl1aPn3_B5,plantillas:['Stevin que simplifica a constante','Siendo x²+px=k, hallar expr con Stevin','Cauchy con datos a+b y ab','Expr multi-identidad con Cauchy','Racionales tipo m+1/m y m−1/m']};
+
+function _genOl1aPn3_B6(){ return _i4gpick([
+  {_id:1, q:'Una familia gastó 88M, donde M = [(x+3)(x+4)+2x] / [(x+6)(x+2)+x]. ¿Cuánto gastó?', a:'88', opts:_i4gshuf(['88','14','100','176']), mc:true, ste:'Num=(x+3)(x+4)+2x=x²+9x+12; Den=(x+6)(x+2)+x=x²+9x+12; M=1; gasto=88×1=88.'},
+  {_id:2, q:'Halla M = [(x+2)(x+3)+4x] / [(x+1)(x+6)+2x]', a:'1', opts:_i4gshuf(['1','2','x+1','0']), mc:true, ste:'Num=(x+2)(x+3)+4x=x²+9x+6; Den=(x+1)(x+6)+2x=x²+9x+6; M=1.'},
+  {_id:3, q:'Área de campo eSports con lados (x+6) y (x−10): ¿Cuál es el área?', a:'x²−4x−60', opts:_i4gshuf(['x²−4x−60','x²+4x−60','x²+16x−60','x²−60']), mc:true, ste:'(x+6)(x−10)=x²+(6−10)x+(6)(−10)=x²−4x−60.'},
+  {_id:4, q:'Área de piscina con lados (x+15) y (x−6): ¿Cuál es el área?', a:'x²+9x−90', opts:_i4gshuf(['x²+9x−90','x²−9x−90','x²+9x+90','x²+21x−90']), mc:true, ste:'(x+15)(x−6)=x²+9x−90.'},
+  {_id:5, q:'En laboratorio, M=x³+y³, x+y=4, xy=2. ¿Cuánta energía se libera?', a:'40', opts:_i4gshuf(['40','64','24','20']), mc:true, ste:'64=M+3(2)(4)=M+24; M=40.'},
+  {_id:6, q:'Científico mezcla dos sustancias: M=x³+y³, x+y=4, xy=2. ¿Cuánta energía?', a:'40', opts:_i4gshuf(['40','64','24','44']), mc:true, ste:'(x+y)³=M+3xy(x+y): 64=M+24; M=40.'},
+  {_id:7, q:'Peter compra verduras, Q=xy soles, x+y=5, x³+y³=35. ¿Cuánto gasta?', a:'6', opts:_i4gshuf(['6','5','7','8']), mc:true, ste:'125=35+15Q; 15Q=90; Q=6.'},
+  {_id:8, q:'Si x+y=4 y xy=2, halla x³+y³', a:'40', opts:_i4gshuf(['40','64','24','8']), mc:true, ste:'64=x³+y³+24; x³+y³=40.'},
+  {_id:9, q:'Si a+b=2 y ab=2, halla el valor negativo de a³+b³', a:'−4', opts:_i4gshuf(['−4','4','−12','−8']), mc:true, ste:'8=a³+b³+12; a³+b³=−4; valor negativo=−4.'},
+  {_id:10, q:'Videojuego: a+b=2, ab=2. Los puntos extra son el valor negativo de a³+b³. ¿Cuántos puntos?', a:'−4', opts:_i4gshuf(['−4','4','−8','−12']), mc:true, ste:'8=a³+b³+12; a³+b³=−4.'},
+  {_id:11, q:'Si m+1/m=5, calcula m³+1/m³', a:'110', opts:_i4gshuf(['110','125','115','100']), mc:true, ste:'125=m³+1/m³+15; m³+1/m³=110.'},
+  {_id:12, q:'Si m−1/m=3, calcula m³−1/m³', a:'36', opts:_i4gshuf(['36','27','9','45']), mc:true, ste:'27=m³−1/m³−9; m³−1/m³=36.'},
+  {_id:13, q:'Sabiendo x²+4x−3=0, halla M=(x+6)(x−2)+(x+3)(x+1)', a:'−3', opts:_i4gshuf(['−3','3','−9','6']), mc:true, ste:'x²+4x=3; M=(3−12)+(3+3)=−9+6=−3.'},
+  {_id:14, q:'Relaciona: (x+8)(x+4) con su resultado correcto', a:'x²+12x+32', opts:_i4gshuf(['x²+12x+32','x²+12x+35','x²−4x+3','x²−2x−8']), mc:true, ste:'a=8,b=4: a+b=12, ab=32.'},
+  {_id:15, q:'Efectúa: (x+5)(x+7) − (x+2)(x+10)', a:'15', opts:_i4gshuf(['15','−15','5','x+15']), mc:true, ste:'x²+12x+35−x²−12x−20=15.'},
+  {_id:16, q:'Si a+b=6 y a³+b³=162, calcula ab', a:'3', opts:_i4gshuf(['3','6','4','2']), mc:true, ste:'216=162+18ab; 18ab=54; ab=3.'},
+  {_id:17, q:'Si a−b=4 y a³−b³=124, calcula ab', a:'5', opts:_i4gshuf(['5','4','6','3']), mc:true, ste:'64=124−12ab; 12ab=60; ab=5.'},
+  {_id:18, q:'Si x+y=3 y xy=2, calcula x³+y³', a:'9', opts:_i4gshuf(['9','27','18','3']), mc:true, ste:'27=x³+y³+3(2)(3)=x³+y³+18; x³+y³=9.'},
+  {_id:19, q:'Si x−y=2 y xy=3, calcula x³−y³', a:'26', opts:_i4gshuf(['26','8','18','44']), mc:true, ste:'8=x³−y³−18; x³−y³=26.'},
+  {_id:20, q:'Simplifica: E=(x+3)(x+7)−(x+4)(x+6)', a:'−3', opts:_i4gshuf(['−3','3','21','24']), mc:true, ste:'x²+10x+21−(x²+10x+24)=−3.'},
+]); }
+_SKILL_META['ol1a_pn3_b6']={ico:'📐',lbl:'Aplicaciones y nivel III',qCount:4,gen:_genOl1aPn3_B6,plantillas:['M=fracción con Stevin (M=1) → gasto','Área de terreno/campo','Contexto x³+y³ (laboratorio/energía)','Valor negativo de a³+b³ (videojuego)','Nivel III con racionales m³+1/m³']};
+
+function _genOl1aPn3_BQ3(){return _bqSrcPick(['ol1a_pn3_b5','ol1a_pn3_b6'],[_genOl1aPn3_B5,_genOl1aPn3_B6]);}
+_SKILL_META['ol1a_pn3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Combinados y aplicaciones',qCount:10,gen:_genOl1aPn3_BQ3,quiz:true,srcKeys:['ol1a_pn3_b5','ol1a_pn3_b6']};
+
+function _genOl1aPn3_BPU(){return _bqSrcPick(['ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_b5','ol1a_pn3_b6'],[_genOl1aPn3_B1,_genOl1aPn3_B2,_genOl1aPn3_B3,_genOl1aPn3_B4,_genOl1aPn3_B5,_genOl1aPn3_B6]);}
+_SKILL_META['ol1a_pn3_bpu']={ico:'⚡',lbl:'Examen – Productos Notables III',qCount:30,gen:_genOl1aPn3_BPU,quiz:true,srcKeys:['ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_b5','ol1a_pn3_b6']};
+
 // ══ Geometría 1° Secundaria – Saco Oliveros (ol1g) ════════════════════════════
 // Cap. 13: Trapecio · 7 habilidades · 3 grupos · 3 BQs
 
@@ -11352,6 +11670,210 @@ function _genOl1arCrd_BPU(){return _bqSrcPick(['ol1ar_crd_b1','ol1ar_crd_b2','ol
 _SKILL_META['ol1ar_crd_bpu']={ico:'⚡',lbl:'Examen – Criterios de Divisibilidad',qCount:45,gen:_genOl1arCrd_BPU,quiz:true,srcKeys:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_b8','ol1ar_crd_b9']};
 
 
+
+// ══ Aritmética 1° Secundaria – Saco Oliveros: Clasificación NEP I (ol1ar_np) ═══
+// Unidad: Clasificación de los Números Enteros Positivos I
+
+function _genOl1arNp_B1(){
+  return _i4gpick([
+    // P1: Clasificar n directamente (simple, primo o compuesto)
+    {_id:1,q:'¿Cómo se clasifica el número 1?',a:'Simple (1 divisor)',opts:_i4gshuf(['Simple (1 divisor)','Primo','Compuesto','Perfecto']),mc:true,ste:'El 1 tiene un único divisor (él mismo). Es el único número simple.'},
+    {_id:2,q:'¿Cómo se clasifica el número 7?',a:'Primo',opts:_i4gshuf(['Primo','Simple','Compuesto','Par']),mc:true,ste:'7 tiene exactamente 2 divisores: 1 y 7. Es primo.'},
+    {_id:3,q:'¿Cómo se clasifica el número 15?',a:'Compuesto',opts:_i4gshuf(['Compuesto','Primo','Simple','Perfecto']),mc:true,ste:'15 = 3×5. Divisores: 1,3,5,15 → más de 2 divisores → compuesto.'},
+    {_id:4,q:'¿Cómo se clasifica el número 4?',a:'Compuesto',opts:_i4gshuf(['Compuesto','Primo','Simple','Impar']),mc:true,ste:'4 = 2². Divisores: 1, 2, 4 → más de 2 divisores → compuesto.'},
+    // P2: Listar divisores y clasificar
+    {_id:5,q:'Los divisores de 11 son {1, 11}. ¿Cómo se clasifica el 11?',a:'Primo',opts:_i4gshuf(['Primo','Simple','Compuesto','Perfecto']),mc:true,ste:'11 tiene exactamente 2 divisores (1 y él mismo) → es primo.'},
+    {_id:6,q:'Los divisores de 9 son {1, 3, 9}. ¿Cómo se clasifica el 9?',a:'Compuesto',opts:_i4gshuf(['Compuesto','Primo','Simple','Par']),mc:true,ste:'9 = 3². Tiene 3 divisores → más de 2 → es compuesto.'},
+    {_id:7,q:'Los divisores de 13 son {1, 13}. ¿Cómo se clasifica el 13?',a:'Primo',opts:_i4gshuf(['Primo','Simple','Compuesto','Perfecto']),mc:true,ste:'13 tiene exactamente 2 divisores → es primo.'},
+    {_id:8,q:'Los divisores de 22 son {1, 2, 11, 22}. ¿Cómo se clasifica el 22?',a:'Compuesto',opts:_i4gshuf(['Compuesto','Primo','Simple','Impar']),mc:true,ste:'22 = 2×11. Tiene 4 divisores → es compuesto.'},
+    // P3: V/F sobre tipo de número
+    {_id:9,q:'¿Es verdadero que el número 2 es el único número primo par?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Todo número par mayor que 2 es divisible por 2, luego tiene más de 2 divisores. El único primo par es el 2.'},
+    {_id:10,q:'¿Es verdadero que el número 1 es primo?',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El 1 tiene un solo divisor. Los primos tienen exactamente 2. El 1 es simple, no primo.'},
+    {_id:11,q:'¿Es verdadero que todo número primo mayor que 2 es impar?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Si fuera par, sería divisible por 2 además de por 1 y por sí mismo → tendría más de 2 divisores → no sería primo.'},
+    {_id:12,q:'¿Es verdadero que el número 4 es primo?',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'4 = 2². Sus divisores son 1, 2 y 4 → tres divisores → es compuesto, no primo.'},
+    // P4: ¿Cuántos divisores tiene n?
+    {_id:13,q:'¿Cuántos divisores tiene el número 6?',a:'4',opts:_i4gshuf(['4','3','6','2']),mc:true,ste:'Divisores de 6: 1, 2, 3, 6 → 4 divisores.'},
+    {_id:14,q:'¿Cuántos divisores tiene el número 7?',a:'2',opts:_i4gshuf(['2','1','7','4']),mc:true,ste:'7 es primo. Sus únicos divisores son 1 y 7 → 2 divisores.'},
+    {_id:15,q:'¿Cuántos divisores tiene el número 16?',a:'5',opts:_i4gshuf(['5','4','8','6']),mc:true,ste:'16 = 2⁴. Divisores: 1, 2, 4, 8, 16 → 5 divisores.'},
+    {_id:16,q:'¿Cuántos divisores tiene el número 30?',a:'8',opts:_i4gshuf(['8','6','4','10']),mc:true,ste:'30 = 2×3×5. Divisores: 1,2,3,5,6,10,15,30 → 8 divisores.'},
+    // P5: Contar primos en rangos pequeños
+    {_id:17,q:'¿Cuántos números primos hay entre 1 y 10?',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'Primos entre 1 y 10: 2, 3, 5, 7 → 4 primos.'},
+    {_id:18,q:'¿Cuántos números primos hay entre 10 y 20?',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'Primos entre 10 y 20: 11, 13, 17, 19 → 4 primos.'},
+    {_id:19,q:'¿Cuántos números primos hay entre 20 y 30?',a:'2',opts:_i4gshuf(['2','3','4','1']),mc:true,ste:'Primos entre 20 y 30: 23, 29 → 2 primos.'},
+    {_id:20,q:'¿Cuántos números primos hay entre 1 y 20?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'Primos entre 1 y 20: 2,3,5,7,11,13,17,19 → 8 primos.'},
+  ]);
+}
+_SKILL_META['ol1ar_np_b1']={ico:'🔢',lbl:'Clasificar: simple, primo o compuesto',qCount:4,gen:_genOl1arNp_B1,plantillas:['¿Es n simple, primo o compuesto?','Listar divisores y clasificar','V/F sobre tipo de número','¿Cuántos divisores tiene n?','Contar primos en rango pequeño']};
+
+function _genOl1arNp_B2(){
+  return _i4gpick([
+    // P1: ¿Es n primo? (test directo)
+    {_id:1,q:'¿Es el número 17 un número primo?',a:'Sí, es primo',opts:_i4gshuf(['Sí, es primo','No, es divisible por 7','No, es divisible por 3','No, es divisible por 13']),mc:true,ste:'17 no es divisible por 2, 3 ni 5 (únicos primos ≤ √17≈4.1). Por lo tanto, 17 es primo.'},
+    {_id:2,q:'¿Es el número 21 un número primo?',a:'No, 21 = 3 × 7',opts:_i4gshuf(['No, 21 = 3 × 7','Sí, es primo','No, 21 = 2 × 10','No, 21 = 3 × 8']),mc:true,ste:'21 = 3×7. Tiene 4 divisores: 1,3,7,21 → es compuesto.'},
+    {_id:3,q:'¿Es el número 29 un número primo?',a:'Sí, es primo',opts:_i4gshuf(['Sí, es primo','No, es divisible por 7','No, es divisible por 3','No, es divisible por 11']),mc:true,ste:'Primos ≤ √29≈5.4: 2, 3, 5. Ninguno divide a 29 → 29 es primo.'},
+    {_id:4,q:'¿Es el número 51 un número primo?',a:'No, 51 = 3 × 17',opts:_i4gshuf(['No, 51 = 3 × 17','Sí, es primo','No, 51 = 7 × 7','No, 51 = 5 × 10']),mc:true,ste:'51 ÷ 3 = 17 exacto → 51 = 3×17 → compuesto.'},
+    // P2: Cuántos primos de la forma p̄y (números de dos cifras con decena fija)
+    {_id:5,q:'¿Cuántos números primos de la forma 3̄y existen? (del 30 al 39)',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 30 y 39: 31 y 37 → 2 primos.'},
+    {_id:6,q:'¿Cuántos números primos de la forma 4̄y existen? (del 40 al 49)',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'Primos entre 40 y 49: 41, 43 y 47 → 3 primos.'},
+    {_id:7,q:'¿Cuántos números primos de la forma 5̄y existen? (del 50 al 59)',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 50 y 59: 53 y 59 → 2 primos.'},
+    {_id:8,q:'¿Cuántos números primos de la forma 7̄y existen? (del 70 al 79)',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'Primos entre 70 y 79: 71, 73 y 79 → 3 primos.'},
+    // P3: Suma de primos en rangos
+    {_id:9,q:'Calcula la suma de los números primos que se encuentran entre 15 y 35.',a:'119',opts:_i4gshuf(['119','121','120','118']),mc:true,ste:'Primos entre 15 y 35: 17+19+23+29+31 = 119.'},
+    {_id:10,q:'Calcula la suma de los números primos que se encuentran entre 20 y 30.',a:'52',opts:_i4gshuf(['52','51','53','29']),mc:true,ste:'Primos entre 20 y 30: 23+29 = 52.'},
+    {_id:11,q:'Calcula la suma de los números primos que se encuentran entre 40 y 50.',a:'131',opts:_i4gshuf(['131','130','132','41']),mc:true,ste:'Primos entre 40 y 50: 41+43+47 = 131.'},
+    {_id:12,q:'Calcula la suma de los números primos que se encuentran entre 1 y 10.',a:'17',opts:_i4gshuf(['17','16','18','10']),mc:true,ste:'Primos entre 1 y 10: 2+3+5+7 = 17.'},
+    // P4: Cantidad de primos en rangos más amplios
+    {_id:13,q:'¿Cuántos números primos hay entre 30 y 40?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 30 y 40: 31 y 37 → 2 primos.'},
+    {_id:14,q:'¿Cuántos números primos hay entre 40 y 60?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Primos entre 40 y 60: 41, 43, 47, 53, 59 → 5 primos.'},
+    {_id:15,q:'¿Cuántos números primos hay entre 1 y 30?',a:'10',opts:_i4gshuf(['10','9','11','8']),mc:true,ste:'Primos entre 1 y 30: 2,3,5,7,11,13,17,19,23,29 → 10 primos.'},
+    {_id:16,q:'¿Cuántos números primos hay entre 60 y 80?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Primos entre 60 y 80: 61, 67, 71, 73, 79 → 5 primos.'},
+    // P5: V/F sobre propiedades de los primos
+    {_id:17,q:'¿Es verdadero que 2 y 3 son los únicos números primos consecutivos?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Dos enteros consecutivos tienen distinta paridad. Si p y p+1 son primos, uno es 2 (el único par primo). Así p=2, p+1=3. Son los únicos.'},
+    {_id:18,q:'¿Es verdadero que el conjunto de los números primos es infinito?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Euclides demostró que existen infinitos primos (por contradicción). El conjunto de primos es infinito.'},
+    {_id:19,q:'¿Es verdadero que el menor número compuesto es el 4?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'1 es simple, 2 y 3 son primos. El 4 = 2² es el primer número con más de 2 divisores → menor compuesto.'},
+    {_id:20,q:'¿Es verdadero que todo número primo mayor que 3 es de la forma 6k ± 1 para algún entero k?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Todo entero tiene forma 6k+r con r∈{0,1,2,3,4,5}. Las formas 6k, 6k+2, 6k+4 son pares; 6k+3 es múltiplo de 3. Solo 6k+1 y 6k+5=6k−1 pueden ser primos.'},
+  ]);
+}
+_SKILL_META['ol1ar_np_b2']={ico:'🔢',lbl:'Propiedades de los números primos',qCount:4,gen:_genOl1arNp_B2,plantillas:['¿Es n primo? (test directo)','Primos de la forma p̄y (dos cifras)','Suma de primos en un rango','Cantidad de primos en rangos amplios','V/F sobre propiedades de primos']};
+
+function _genOl1arNp_BQ1(){return _bqSrcPick(['ol1ar_np_b1','ol1ar_np_b2'],[_genOl1arNp_B1,_genOl1arNp_B2]);}
+_SKILL_META['ol1ar_np_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Clasificación y Primos',qCount:10,gen:_genOl1arNp_BQ1,quiz:true,srcKeys:['ol1ar_np_b1','ol1ar_np_b2']};
+
+function _genOl1arNp_B3(){
+  return _i4gpick([
+    // P1: ¿Son A y B PESI?
+    {_id:1,q:'¿Son los números 8 y 15 primos entre sí (PESI)?',a:'Sí, son PESI',opts:_i4gshuf(['Sí, son PESI','No, MCD = 2','No, MCD = 3','No, MCD = 5']),mc:true,ste:'8 = 2³; 15 = 3×5. Sin factores comunes → MCD(8,15) = 1 → PESI.'},
+    {_id:2,q:'¿Son los números 6 y 10 primos entre sí (PESI)?',a:'No, MCD = 2',opts:_i4gshuf(['No, MCD = 2','Sí, son PESI','No, MCD = 6','No, MCD = 3']),mc:true,ste:'6 = 2×3; 10 = 2×5. Comparten el factor 2 → MCD = 2 → NO son PESI.'},
+    {_id:3,q:'¿Son los números 4 y 9 primos entre sí (PESI)?',a:'Sí, son PESI',opts:_i4gshuf(['Sí, son PESI','No, MCD = 2','No, MCD = 3','No, MCD = 4']),mc:true,ste:'4 = 2²; 9 = 3². Sin factores comunes → MCD(4,9) = 1 → PESI.'},
+    {_id:4,q:'¿Son los números 12 y 18 primos entre sí (PESI)?',a:'No, MCD = 6',opts:_i4gshuf(['No, MCD = 6','Sí, son PESI','No, MCD = 2','No, MCD = 3']),mc:true,ste:'12 = 2²×3; 18 = 2×3². Comparten 2 y 3 → MCD = 6 → NO son PESI.'},
+    // P2: ¿Cuántas parejas PESI hay en la lista?
+    {_id:5,q:'De las parejas {12;36}, {15;26}, {28;35}, {99;26}, {51;52}, ¿cuántas son PESI?',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'15 y 26: MCD=1✓. 99 y 26: (99=9×11, 26=2×13), MCD=1✓. 51 y 52: consecutivos, MCD=1✓. 12 y 36: MCD=12✗. 28 y 35: MCD=7✗. Total: 3.'},
+    {_id:6,q:'De las parejas {8;9}, {4;6}, {25;7}, {15;21}, ¿cuántas son PESI?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'8 y 9: consecutivos, MCD=1✓. 25 y 7: (25=5², 7 primo), MCD=1✓. 4 y 6: MCD=2✗. 15 y 21: MCD=3✗. Total: 2.'},
+    {_id:7,q:'De las parejas {10;21}, {6;35}, {8;12}, {4;9}, ¿cuántas son PESI?',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'10 y 21: (10=2×5, 21=3×7), MCD=1✓. 6 y 35: (6=2×3, 35=5×7), MCD=1✓. 4 y 9: MCD=1✓. 8 y 12: MCD=4✗. Total: 3.'},
+    {_id:8,q:'De las parejas {9;15}, {4;25}, {7;14}, {11;13}, ¿cuántas son PESI?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'4 y 25: (4=2², 25=5²), MCD=1✓. 11 y 13: ambos primos distintos, MCD=1✓. 9 y 15: MCD=3✗. 7 y 14: MCD=7✗. Total: 2.'},
+    // P3: V/F sobre PESI
+    {_id:9,q:'¿Es verdadero que 8 y 15 son primos entre sí?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'MCD(8,15)=1 → son PESI. Verdadero.'},
+    {_id:10,q:'¿Es verdadero que 6 y 10 son primos entre sí?',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'MCD(6,10)=2 ≠ 1 → NO son PESI. Falso.'},
+    {_id:11,q:'¿Es verdadero que dos números primos distintos siempre son PESI?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Si p y q son primos distintos, sus únicos divisores son 1 y ellos mismos. El único divisor común es 1 → PESI.'},
+    {_id:12,q:'¿Es verdadero que dos números consecutivos siempre son PESI?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Si d | n y d | (n+1), entonces d | 1 → d=1. Luego MCD(n, n+1)=1 siempre.'},
+    // P4: Consecutivos siempre PESI
+    {_id:13,q:'¿Son PESI los números 99 y 100?',a:'Sí, son consecutivos',opts:_i4gshuf(['Sí, son consecutivos','No, MCD = 2','No, MCD = 9','No, MCD = 10']),mc:true,ste:'99 y 100 son consecutivos → MCD(99,100)=1 → PESI.'},
+    {_id:14,q:'¿Son PESI los números 47 y 48?',a:'Sí, son consecutivos',opts:_i4gshuf(['Sí, son consecutivos','No, MCD = 2','No, MCD = 3','No, MCD = 47']),mc:true,ste:'47 y 48 son consecutivos → MCD = 1 → PESI.'},
+    {_id:15,q:'¿Son PESI los números 35 y 36?',a:'Sí, MCD = 1',opts:_i4gshuf(['Sí, MCD = 1','No, MCD = 5','No, MCD = 7','No, MCD = 6']),mc:true,ste:'35 = 5×7; 36 = 2²×3². Sin factores comunes → MCD = 1 → PESI.'},
+    {_id:16,q:'Si m y n son números consecutivos, ¿cuánto vale MCD(m, n)?',a:'1',opts:_i4gshuf(['1','2','0','m']),mc:true,ste:'Dos números consecutivos siempre son primos entre sí → MCD(m, n) = 1.'},
+    // P5: PESI con 3 números / texto
+    {_id:17,q:'¿Son PESI los números 33, 64 y 75?',a:'Sí, su único divisor común es 1',opts:_i4gshuf(['Sí, su único divisor común es 1','No, MCD = 3','No, MCD = 11','No, MCD = 5']),mc:true,ste:'33=3×11; 64=2⁶; 75=3×5². Ningún primo divide a los tres a la vez → MCD(33,64,75)=1 → PESI.'},
+    {_id:18,q:'¿Son PESI los números 77, 91 y 28?',a:'No, todos son divisibles por 7',opts:_i4gshuf(['No, todos son divisibles por 7','Sí, son PESI','No, MCD = 11','No, MCD = 13']),mc:true,ste:'77=7×11; 91=7×13; 28=4×7. Los tres son divisibles por 7 → MCD = 7 ≠ 1 → NO son PESI.'},
+    {_id:19,q:'Sean A = 2³ × 5 y B = 3² × 7. ¿Son A y B PESI?',a:'Sí, no comparten factores primos',opts:_i4gshuf(['Sí, no comparten factores primos','No, MCD = 2','No, MCD = 3','No, MCD = 5']),mc:true,ste:'A tiene factores 2 y 5; B tiene factores 3 y 7. Sin factores comunes → MCD = 1 → PESI.'},
+    {_id:20,q:'Sean A = 2² × 3 y B = 3³ × 5. ¿Son A y B PESI?',a:'No, MCD = 3',opts:_i4gshuf(['No, MCD = 3','Sí, son PESI','No, MCD = 6','No, MCD = 2']),mc:true,ste:'A y B comparten el factor primo 3 → MCD = 3 ≠ 1 → NO son PESI.'},
+  ]);
+}
+_SKILL_META['ol1ar_np_b3']={ico:'🔢',lbl:'Números primos entre sí (PESI)',qCount:4,gen:_genOl1arNp_B3,plantillas:['¿Son A y B PESI?','¿Cuántas parejas PESI hay en la lista?','V/F sobre PESI','Dos consecutivos siempre son PESI','PESI con 3 números y factorización']};
+
+function _genOl1arNp_B4(){
+  return _i4gpick([
+    // P1: Descomposición canónica (DC)
+    {_id:1,q:'Descomponga canónicamente el número 12.',a:'2² × 3',opts:_i4gshuf(['2² × 3','2 × 6','3 × 4','2³ × 3']),mc:true,ste:'12÷2=6; 6÷2=3; 3÷3=1. → 12 = 2² × 3.'},
+    {_id:2,q:'Descomponga canónicamente el número 60.',a:'2² × 3 × 5',opts:_i4gshuf(['2² × 3 × 5','2 × 30','4 × 15','2³ × 3 × 5']),mc:true,ste:'60÷2=30÷2=15÷3=5÷5=1. → 60 = 2²×3×5.'},
+    {_id:3,q:'Descomponga canónicamente el número 36.',a:'2² × 3²',opts:_i4gshuf(['2² × 3²','6²','2³ × 3','2 × 18']),mc:true,ste:'36÷2=18÷2=9÷3=3÷3=1. → 36 = 2²×3².'},
+    {_id:4,q:'Descomponga canónicamente el número 100.',a:'2² × 5²',opts:_i4gshuf(['2² × 5²','10²','4 × 25','2 × 50']),mc:true,ste:'100÷2=50÷2=25÷5=5÷5=1. → 100 = 2²×5².'},
+    // P2: Factores primos distintos y suma de exponentes
+    {_id:5,q:'Si 120 = 2³ × 3 × 5, ¿cuántos factores primos distintos tiene 120?',a:'3',opts:_i4gshuf(['3','4','2','5']),mc:true,ste:'Los factores primos distintos de 120 son 2, 3 y 5 → 3 factores primos distintos.'},
+    {_id:6,q:'Si 72 = 2³ × 3², ¿cuánto vale la suma de los exponentes de su DC?',a:'5',opts:_i4gshuf(['5','6','4','3']),mc:true,ste:'Suma de exponentes: 3 + 2 = 5.'},
+    {_id:7,q:'Si 180 = 2² × 3² × 5, ¿cuánto vale la suma de los exponentes de su DC?',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'Suma de exponentes: 2 + 2 + 1 = 5.'},
+    {_id:8,q:'Si 360 = 2³ × 3² × 5, ¿cuánto vale la suma de los exponentes de su DC?',a:'6',opts:_i4gshuf(['6','5','7','8']),mc:true,ste:'Suma de exponentes: 3 + 2 + 1 = 6.'},
+    // P3: Cantidad de divisores simples
+    {_id:9,q:'Si 120 = 2³ × 3 × 5, ¿cuántos divisores simples tiene 120?',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'Divisores simples de 120: {1, 2, 3, 5} → CD_simples = 3 factores primos + 1 = 4.'},
+    {_id:10,q:'Si 36 = 2² × 3², ¿cuántos divisores simples tiene 36?',a:'3',opts:_i4gshuf(['3','4','2','9']),mc:true,ste:'Divisores simples de 36: {1, 2, 3} → 2 factores primos + 1 = 3.'},
+    {_id:11,q:'Si 60 = 2² × 3 × 5, ¿cuántos divisores simples tiene 60?',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'Divisores simples de 60: {1, 2, 3, 5} → 3 factores primos + 1 = 4.'},
+    {_id:12,q:'Si 14 = 2 × 7, ¿cuántos divisores simples tiene 14?',a:'3',opts:_i4gshuf(['3','2','4','7']),mc:true,ste:'Divisores simples de 14: {1, 2, 7} → 2 factores primos + 1 = 3.'},
+    // P4: Suma de exponentes en DC de productos/potencias
+    {_id:13,q:'Sea N = 20² × 18³. Halle la suma de exponentes de la DC de N.',a:'15',opts:_i4gshuf(['15','12','13','16']),mc:true,ste:'20²=(2²×5)²=2⁴×5². 18³=(2×3²)³=2³×3⁶. N=2⁷×3⁶×5². Suma: 7+6+2=15.'},
+    {_id:14,q:'Sea N = 12³. Halle la suma de exponentes de la DC de N.',a:'9',opts:_i4gshuf(['9','6','8','12']),mc:true,ste:'12=2²×3. N=12³=2⁶×3³. Suma: 6+3=9.'},
+    {_id:15,q:'Sea N = 2⁴ × 3² × 5. Halle la suma de exponentes de la DC de N.',a:'7',opts:_i4gshuf(['7','8','6','5']),mc:true,ste:'Suma de exponentes: 4+2+1=7.'},
+    {_id:16,q:'Sea N = 30³. Halle la suma de exponentes de la DC de N.',a:'9',opts:_i4gshuf(['9','6','12','3']),mc:true,ste:'30=2×3×5. N=30³=2³×3³×5³. Suma: 3+3+3=9.'},
+    // P5: Calcular N desde DC / total de divisores
+    {_id:17,q:'Sea M = a²(a+1)²(a+3) la DC de un número, con a y a+1 primos consecutivos. ¿Cuánto vale M?',a:'180',opts:_i4gshuf(['180','360','72','144']),mc:true,ste:'Solo 2 y 3 son primos consecutivos. a=2: M=2²×3²×5=4×9×5=180.'},
+    {_id:18,q:'Si N = 2³ × 3, ¿cuántos divisores totales tiene N?',a:'8',opts:_i4gshuf(['8','6','4','12']),mc:true,ste:'Número total de divisores = (3+1)(1+1) = 4×2 = 8.'},
+    {_id:19,q:'Si N = p × q² donde p y q son primos distintos, ¿cuántos divisores totales tiene N?',a:'6',opts:_i4gshuf(['6','4','8','3']),mc:true,ste:'Total divisores = (1+1)(2+1) = 2×3 = 6.'},
+    {_id:20,q:'Si N = 2² × 3² × 5, ¿cuántos divisores totales tiene N?',a:'18',opts:_i4gshuf(['18','12','15','24']),mc:true,ste:'Total divisores = (2+1)(2+1)(1+1) = 3×3×2 = 18.'},
+  ]);
+}
+_SKILL_META['ol1ar_np_b4']={ico:'🔢',lbl:'Descomposición canónica (DC)',qCount:4,gen:_genOl1arNp_B4,plantillas:['Descomponer n canónicamente','Factores primos distintos y suma de exponentes','Divisores simples: CD = factores primos + 1','Suma de exponentes en DC de potencias','Calcular M desde DC / total de divisores']};
+
+function _genOl1arNp_BQ2(){return _bqSrcPick(['ol1ar_np_b3','ol1ar_np_b4'],[_genOl1arNp_B3,_genOl1arNp_B4]);}
+_SKILL_META['ol1ar_np_bq2']={ico:'⚡',lbl:'Cuestionario 2 – PESI y Descomposición Canónica',qCount:10,gen:_genOl1arNp_BQ2,quiz:true,srcKeys:['ol1ar_np_b3','ol1ar_np_b4']};
+
+function _genOl1arNp_B5(){
+  return _i4gpick([
+    // P1: ¿Es n primo? usando el criterio de la raíz cuadrada
+    {_id:1,q:'Determine si 157 es un número primo.',a:'Sí, 157 es primo',opts:_i4gshuf(['Sí, 157 es primo','No, es divisible por 7','No, es divisible por 11','No, es divisible por 13']),mc:true,ste:'√157≈12.5. Primos ≤12: 2,3,5,7,11. Ninguno divide a 157 → primo.'},
+    {_id:2,q:'Determine si 221 es un número primo.',a:'No, 221 = 13 × 17',opts:_i4gshuf(['No, 221 = 13 × 17','Sí, 221 es primo','No, 221 = 7 × 31','No, 221 = 11 × 19']),mc:true,ste:'√221≈14.9. Primos ≤14: ..., 13. 221÷13=17 exacto → 221=13×17 → compuesto.'},
+    {_id:3,q:'Determine si 143 es un número primo.',a:'No, 143 = 11 × 13',opts:_i4gshuf(['No, 143 = 11 × 13','Sí, 143 es primo','No, 143 = 7 × 19','No, 143 = 13 × 12']),mc:true,ste:'√143≈11.9. Primos ≤11: 2,3,5,7,11. 143÷11=13 exacto → 143=11×13 → compuesto.'},
+    {_id:4,q:'Determine si 127 es un número primo.',a:'Sí, 127 es primo',opts:_i4gshuf(['Sí, 127 es primo','No, es divisible por 7','No, es divisible por 11','No, es divisible por 13']),mc:true,ste:'√127≈11.3. Primos ≤11: 2,3,5,7,11. Ninguno divide a 127 → primo.'},
+    // P2: ¿Para cuántos dígitos a resulta primo p̄a?
+    {_id:5,q:'Si 1̄a representa un número de dos cifras (10 a 19), ¿para cuántos dígitos a resulta primo?',a:'4',opts:_i4gshuf(['4','3','5','6']),mc:true,ste:'Primos entre 10 y 19: 11,13,17,19 → a puede ser 1,3,7,9 → 4 valores.'},
+    {_id:6,q:'Si 2̄a representa un número de dos cifras (20 a 29), ¿para cuántos dígitos a resulta primo?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 20 y 29: 23,29 → a puede ser 3 y 9 → 2 valores.'},
+    {_id:7,q:'Si 6̄a representa un número de dos cifras (60 a 69), ¿para cuántos dígitos a resulta primo?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 60 y 69: 61,67 → a puede ser 1 y 7 → 2 valores.'},
+    {_id:8,q:'Si 8̄a representa un número de dos cifras (80 a 89), ¿para cuántos dígitos a resulta primo?',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 80 y 89: 83,89 → a puede ser 3 y 9 → 2 valores.'},
+    // P3: Dígito a para que expresión lineal sea prima
+    {_id:9,q:'¿Para cuántos dígitos a (del 0 al 9) resulta que 7a + 2 es primo?',a:'3',opts:_i4gshuf(['3','4','2','5']),mc:true,ste:'7a+2: a=0→2✓, a=3→23✓, a=5→37✓. Las demás dan compuestos. Total: 3.'},
+    {_id:10,q:'¿Cuál es el mayor dígito a (del 1 al 9) tal que 5a + 1 sea primo?',a:'8',opts:_i4gshuf(['8','6','9','7']),mc:true,ste:'5a+1: a=8→41✓, a=9→46✗. El mayor con resultado primo es a=8.'},
+    {_id:11,q:'¿Para cuántos dígitos a (del 0 al 9) resulta que 4a + 3 es primo?',a:'6',opts:_i4gshuf(['6','5','7','4']),mc:true,ste:'4a+3: a=0→3✓, a=1→7✓, a=2→11✓, a=4→19✓, a=5→23✓, a=7→31✓. Total: 6.'},
+    {_id:12,q:'¿Para cuántos dígitos a (del 1 al 9) resulta que 6a + 1 sea primo?',a:'6',opts:_i4gshuf(['6','5','7','4']),mc:true,ste:'6a+1: a=1→7✓, a=2→13✓, a=3→19✓, a=5→31✓, a=6→37✓, a=7→43✓. Total: 6.'},
+    // P4: Año de nacimiento con condición prima
+    {_id:13,q:'Ana cumplió (30+b) años en 2025, donde b es el mayor dígito tal que 3+b sea primo. ¿En qué año nació Ana?',a:'1987',opts:_i4gshuf(['1987','1988','1986','1990']),mc:true,ste:'3+b primo: b=8→11✓ (mayor). Edad=38. Año: 2025−38=1987.'},
+    {_id:14,q:'Carlos cumplió (40+b) años en 2024, donde b es el mayor dígito tal que 2b+1 sea primo. ¿En qué año nació Carlos?',a:'1975',opts:_i4gshuf(['1975','1977','1973','1972']),mc:true,ste:'2b+1 primo: b=9→19✓ (mayor). Edad=49. Año: 2024−49=1975.'},
+    {_id:15,q:'Marco Rivas cumplió (50+b) años en 2025, donde b es el mayor dígito tal que b+4 sea primo. ¿En qué año nació Marco?',a:'1966',opts:_i4gshuf(['1966','1968','1964','1969']),mc:true,ste:'b+4 primo: b=9→13✓ (mayor). Edad=59. Año: 2025−59=1966.'},
+    {_id:16,q:'Sofía López cumplió (60+b) años en 2024, donde b es el menor dígito ≥ 1 tal que 5b+2 sea primo. ¿En qué año nació Sofía?',a:'1963',opts:_i4gshuf(['1963','1969','1961','1965']),mc:true,ste:'5b+2 primo (b≥1): b=1→7✓ (menor). Edad=61. Año: 2024−61=1963.'},
+    // P5: Congreso / suma de primos / calculadora
+    {_id:17,q:'En un congreso de ingenieros se contaron 7̄a participantes. El número es primo y el mayor posible. ¿Cuánto se debe adicionar para llegar a 80?',a:'1',opts:_i4gshuf(['1','3','7','9']),mc:true,ste:'Primos entre 70 y 79: 71,73,79. El mayor es 79. 80−79=1.'},
+    {_id:18,q:'Francisco pagó boletos de viaje cuyo precio es la suma de los primos entre 20 y 30. ¿Cuál fue el precio?',a:'52',opts:_i4gshuf(['52','51','53','58']),mc:true,ste:'Primos entre 20 y 30: 23 y 29. Suma = 23+29 = 52.'},
+    {_id:19,q:'Una calculadora muestra la suma de los primos menores al número ingresado. Al ingresar 20, ¿qué valor muestra?',a:'77',opts:_i4gshuf(['77','75','78','68']),mc:true,ste:'Primos menores que 20: 2,3,5,7,11,13,17,19. Suma = 77.'},
+    {_id:20,q:'Ricardo observa el precio de un pantalón. Carlos le dice que es igual a la suma de los primos entre 30 y 40. ¿Cuál es el precio?',a:'68',opts:_i4gshuf(['68','67','70','31']),mc:true,ste:'Primos entre 30 y 40: 31 y 37. Suma = 31+37 = 68.'},
+  ]);
+}
+_SKILL_META['ol1ar_np_b5']={ico:'🔢',lbl:'Criterio de primalidad y aplicaciones',qCount:4,gen:_genOl1arNp_B5,plantillas:['¿Es n primo? (criterio √n)','¿Para cuántos dígitos p̄a es primo?','Dígito a tal que expresión lineal sea prima','Año de nacimiento con condición prima','Congreso / precio / calculadora con primos']};
+
+function _genOl1arNp_B6(){
+  return _i4gpick([
+    // P1: Suma de primos = precio o valor
+    {_id:1,q:'El precio de un libro es igual a la suma de los 5 primeros números primos. ¿Cuál es el precio?',a:'28',opts:_i4gshuf(['28','27','29','30']),mc:true,ste:'Los 5 primeros primos: 2+3+5+7+11 = 28.'},
+    {_id:2,q:'El precio de una camisa es igual a la suma de los primos entre 10 y 20. ¿Cuánto cuesta?',a:'60',opts:_i4gshuf(['60','58','62','52']),mc:true,ste:'Primos entre 10 y 20: 11+13+17+19 = 60.'},
+    {_id:3,q:'El precio de un reloj es igual a la suma de los 7 primeros números primos. ¿Cuánto vale?',a:'58',opts:_i4gshuf(['58','57','60','56']),mc:true,ste:'Los 7 primeros primos: 2+3+5+7+11+13+17 = 58.'},
+    {_id:4,q:'El precio de unos zapatos es igual a la suma de los primos entre 40 y 50. ¿Cuánto valen?',a:'131',opts:_i4gshuf(['131','130','132','141']),mc:true,ste:'Primos entre 40 y 50: 41+43+47 = 131.'},
+    // P2: Cantidad de primos en rangos amplios
+    {_id:5,q:'¿Cuántos números primos hay entre 40 y 60?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Primos entre 40 y 60: 41, 43, 47, 53, 59 → 5 primos.'},
+    {_id:6,q:'¿Cuántos números primos hay entre 1 y 50?',a:'15',opts:_i4gshuf(['15','14','16','13']),mc:true,ste:'Primos hasta 50: 2,3,5,7,11,13,17,19,23,29,31,37,41,43,47 → 15 primos.'},
+    {_id:7,q:'¿Cuántos números primos hay entre 50 y 100?',a:'10',opts:_i4gshuf(['10','9','11','8']),mc:true,ste:'Primos entre 50 y 100: 53,59,61,67,71,73,79,83,89,97 → 10 primos.'},
+    {_id:8,q:'¿Cuántos números primos hay entre 1 y 100?',a:'25',opts:_i4gshuf(['25','24','26','20']),mc:true,ste:'Existen exactamente 25 números primos entre 1 y 100.'},
+    // P3: Primos terminados en dígito fijo
+    {_id:9,q:'¿Cuántos números primos de la forma ā9 (terminados en 9) existen entre 10 y 99?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Primos terminados en 9 (10-99): 19,29,59,79,89 → 5 primos.'},
+    {_id:10,q:'¿Cuántos números primos de la forma ā1 (terminados en 1) existen entre 10 y 99?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'Primos terminados en 1 (10-99): 11,31,41,61,71 → 5 primos.'},
+    {_id:11,q:'¿Cuántos números primos de la forma 9̄a existen? (del 90 al 99)',a:'1',opts:_i4gshuf(['1','2','3','0']),mc:true,ste:'Primos entre 90 y 99: solo 97 → 1 primo.'},
+    {_id:12,q:'¿Cuántos números primos de la forma 8̄a existen? (del 80 al 89)',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'Primos entre 80 y 89: 83 y 89 → 2 primos.'},
+    // P4: Suma de dígitos o de los propios primos de forma fija
+    {_id:13,q:'Los primos de la forma ā9 entre 10 y 99 son 19,29,59,79,89. Calcula la suma de sus dígitos de decenas.',a:'23',opts:_i4gshuf(['23','22','24','25']),mc:true,ste:'Decenas: 1+2+5+7+8 = 23.'},
+    {_id:14,q:'Los primos de la forma ā1 entre 10 y 99 son 11,31,41,61,71. Calcula la suma de sus dígitos de decenas.',a:'21',opts:_i4gshuf(['21','22','20','23']),mc:true,ste:'Decenas: 1+3+4+6+7 = 21.'},
+    {_id:15,q:'Halla la suma de todos los primos de la forma ā9 entre 10 y 99.',a:'275',opts:_i4gshuf(['275','270','280','265']),mc:true,ste:'19+29+59+79+89 = 275.'},
+    {_id:16,q:'Halla la suma de todos los primos de la forma ā1 entre 10 y 99.',a:'215',opts:_i4gshuf(['215','210','220','225']),mc:true,ste:'11+31+41+61+71 = 215.'},
+    // P5: Problemas mixtos combinados
+    {_id:17,q:'En un congreso de contadores se contaron 9̄a participantes. El número es primo y el menor posible. ¿Cuánto se debe adicionar para llegar a 100?',a:'3',opts:_i4gshuf(['3','7','11','1']),mc:true,ste:'Primos entre 90 y 99: solo 97. 100−97=3.'},
+    {_id:18,q:'El precio de un reloj es la suma de los 7 primeros primos (58) y el de una camisa es la suma de los primos entre 10 y 20 (60). ¿Cuánto más vale la camisa que el reloj?',a:'2',opts:_i4gshuf(['2','1','3','4']),mc:true,ste:'Camisa: 60. Reloj: 58. Diferencia: 60−58=2.'},
+    {_id:19,q:'Sea M = a²(a+1)²(a+3) la DC de un número, con a y a+1 primos consecutivos. ¿Cuántos divisores totales tiene M?',a:'18',opts:_i4gshuf(['18','12','24','9']),mc:true,ste:'a=2: M=2²×3²×5. Divisores=(2+1)(2+1)(1+1)=3×3×2=18.'},
+    {_id:20,q:'Ana propone a Berta calcular la suma de los primos de la forma ā9 entre 10 y 99. ¿Cuál fue la respuesta correcta de Berta?',a:'275',opts:_i4gshuf(['275','270','280','265']),mc:true,ste:'Primos terminados en 9 (10-99): 19+29+59+79+89=275.'},
+  ]);
+}
+_SKILL_META['ol1ar_np_b6']={ico:'🔢',lbl:'Aplicaciones combinadas de primos',qCount:4,gen:_genOl1arNp_B6,plantillas:['Suma de primos = precio o valor','Cantidad de primos en rangos amplios','Primos terminados en dígito fijo (ā9, ā1)','Suma de dígitos o valores de esos primos','Problemas mixtos: DC + primos + rangos']};
+
+function _genOl1arNp_BQ3(){return _bqSrcPick(['ol1ar_np_b5','ol1ar_np_b6'],[_genOl1arNp_B5,_genOl1arNp_B6]);}
+_SKILL_META['ol1ar_np_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Primalidad y Aplicaciones',qCount:10,gen:_genOl1arNp_BQ3,quiz:true,srcKeys:['ol1ar_np_b5','ol1ar_np_b6']};
+
+function _genOl1arNp_BPU(){return _bqSrcPick(['ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_b5','ol1ar_np_b6'],[_genOl1arNp_B1,_genOl1arNp_B2,_genOl1arNp_B3,_genOl1arNp_B4,_genOl1arNp_B5,_genOl1arNp_B6]);}
+_SKILL_META['ol1ar_np_bpu']={ico:'⚡',lbl:'Examen – Clasificación NEP I',qCount:30,gen:_genOl1arNp_BPU,quiz:true,srcKeys:['ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_b5','ol1ar_np_b6']};
+
+
+
 // ══ Trigonometría 1° Secundaria – Saco Oliveros (ol1t) ══════════════════════════
 // Unidad: Geometría Analítica I
 
@@ -11850,6 +12372,206 @@ _SKILL_META['li1m_u2_b4']={ico:'📐',lbl:'Expresiones algebraicas verbales',qCo
 
 function _genLi1mU2_BQ2(){return _bqSrcPick(['li1m_u2_b3','li1m_u2_b4'],[_genLi1mU2_B3,_genLi1mU2_B4]);}
 _SKILL_META['li1m_u2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Fracciones y expresiones verbales',qCount:10,gen:_genLi1mU2_BQ2,quiz:true,srcKeys:['li1m_u2_b3','li1m_u2_b4']};
+
+// ══ Matemática 1° Secundaria – Abraham Lincoln: Ecuaciones de Primer Grado (li1m_u3) ══
+
+function _genLi1mU3_B1(){
+  return _i4gpick([
+    // Plantilla 1 — ax+b=c (positivos, x positivo) [_id 1-4]
+    {_id:1,  q:'Resuelve: 2x + 1 = 5', a:'x = 2', opts:_i4gshuf(['x = 2','x = 3','x = 1','x = 4']), mc:true, ste:'2x = 5 − 1 = 4 → x = 4÷2 = 2'},
+    {_id:2,  q:'Resuelve: 4x + 7 = 27', a:'x = 5', opts:_i4gshuf(['x = 5','x = 4','x = 6','x = 7']), mc:true, ste:'4x = 27 − 7 = 20 → x = 20÷4 = 5'},
+    {_id:3,  q:'Resuelve: 3x + 7 = 19', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 6']), mc:true, ste:'3x = 19 − 7 = 12 → x = 12÷3 = 4'},
+    {_id:4,  q:'Resuelve: 5x + 3 = 28', a:'x = 5', opts:_i4gshuf(['x = 5','x = 4','x = 6','x = 3']), mc:true, ste:'5x = 28 − 3 = 25 → x = 25÷5 = 5'},
+    // Plantilla 2 — ax−b=c [_id 5-8]
+    {_id:5,  q:'Resuelve: 6x − 5 = 19', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'6x = 19 + 5 = 24 → x = 24÷6 = 4'},
+    {_id:6,  q:'Resuelve: 7x − 4 = 31', a:'x = 5', opts:_i4gshuf(['x = 5','x = 4','x = 6','x = 7']), mc:true, ste:'7x = 31 + 4 = 35 → x = 35÷7 = 5'},
+    {_id:7,  q:'Resuelve: 5x − 9 = 11', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'5x = 11 + 9 = 20 → x = 20÷5 = 4'},
+    {_id:8,  q:'Resuelve: 9x − 2 = 25', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 9']), mc:true, ste:'9x = 25 + 2 = 27 → x = 27÷9 = 3'},
+    // Plantilla 3 — ax+b=−c (resultado negativo) [_id 9-12]
+    {_id:9,  q:'Resuelve: 3x + 1 = −23', a:'x = −8', opts:_i4gshuf(['x = −8','x = −7','x = −9','x = −6']), mc:true, ste:'3x = −23 − 1 = −24 → x = −24÷3 = −8'},
+    {_id:10, q:'Resuelve: 4x + 5 = −11', a:'x = −4', opts:_i4gshuf(['x = −4','x = −3','x = −5','x = 4']), mc:true, ste:'4x = −11 − 5 = −16 → x = −16÷4 = −4'},
+    {_id:11, q:'Resuelve: 2x + 13 = 7', a:'x = −3', opts:_i4gshuf(['x = −3','x = 3','x = −6','x = −1']), mc:true, ste:'2x = 7 − 13 = −6 → x = −6÷2 = −3'},
+    {_id:12, q:'Resuelve: 10x + 7 = −13', a:'x = −2', opts:_i4gshuf(['x = −2','x = −3','x = 2','x = −1']), mc:true, ste:'10x = −13 − 7 = −20 → x = −20÷10 = −2'},
+    // Plantilla 4 — ax−b=0 [_id 13-16]
+    {_id:13, q:'Resuelve: 8x − 24 = 0', a:'x = 3', opts:_i4gshuf(['x = 3','x = 4','x = 2','x = 8']), mc:true, ste:'8x = 24 → x = 24÷8 = 3'},
+    {_id:14, q:'Resuelve: 5x − 15 = 0', a:'x = 3', opts:_i4gshuf(['x = 3','x = 5','x = 0','x = 15']), mc:true, ste:'5x = 15 → x = 15÷5 = 3'},
+    {_id:15, q:'Resuelve: 6x − 36 = 0', a:'x = 6', opts:_i4gshuf(['x = 6','x = 5','x = 7','x = 36']), mc:true, ste:'6x = 36 → x = 36÷6 = 6'},
+    {_id:16, q:'Resuelve: 4x − 28 = 0', a:'x = 7', opts:_i4gshuf(['x = 7','x = 6','x = 8','x = 4']), mc:true, ste:'4x = 28 → x = 28÷4 = 7'},
+    // Plantilla 5 — Verificar si un valor es solución [_id 17-20]
+    {_id:17, q:'¿Es x = 5 solución de 2x + 1 = 11?', a:'Sí', opts:_i4gshuf(['Sí','No','Solo si x > 0','No se puede determinar']), mc:true, ste:'2(5) + 1 = 10 + 1 = 11 ✓ → Sí es solución.'},
+    {_id:18, q:'¿Es x = 3 solución de 4x − 7 = 5?', a:'Sí', opts:_i4gshuf(['Sí','No','Solo si x ≥ 0','No se puede determinar']), mc:true, ste:'4(3) − 7 = 12 − 7 = 5 ✓ → Sí es solución.'},
+    {_id:19, q:'¿Es x = 2 solución de 3x + 5 = 13?', a:'No', opts:_i4gshuf(['No','Sí','Solo si x > 0','No se puede determinar']), mc:true, ste:'3(2) + 5 = 6 + 5 = 11 ≠ 13 → No es solución.'},
+    {_id:20, q:'¿Es x = 4 solución de 5x − 2 = 18?', a:'Sí', opts:_i4gshuf(['Sí','No','Solo si x > 0','No se puede determinar']), mc:true, ste:'5(4) − 2 = 20 − 2 = 18 ✓ → Sí es solución.'},
+  ]);
+}
+_SKILL_META['li1m_u3_b1']={ico:'📐',lbl:'Ecuaciones de 2 pasos',qCount:4,gen:_genLi1mU3_B1,plantillas:['ax+b=c (positivos)','ax−b=c','ax+b=−c (resultado negativo)','ax−b=0','Verificar si un valor es solución']};
+
+function _genLi1mU3_B2(){
+  return _i4gpick([
+    // Plantilla 1 — x/n + b = c [_id 1-4]
+    {_id:1,  q:'Resuelve: x/2 + 1 = 3', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 6','x = 2']), mc:true, ste:'x/2 = 3 − 1 = 2 → x = 2 × 2 = 4'},
+    {_id:2,  q:'Resuelve: x/8 + 3 = 5', a:'x = 16', opts:_i4gshuf(['x = 16','x = 8','x = 24','x = 2']), mc:true, ste:'x/8 = 5 − 3 = 2 → x = 2 × 8 = 16'},
+    {_id:3,  q:'Resuelve: x/4 + 3 = 7', a:'x = 16', opts:_i4gshuf(['x = 16','x = 4','x = 12','x = 20']), mc:true, ste:'x/4 = 7 − 3 = 4 → x = 4 × 4 = 16'},
+    {_id:4,  q:'Resuelve: x/5 + 4 = 9', a:'x = 25', opts:_i4gshuf(['x = 25','x = 5','x = 20','x = 30']), mc:true, ste:'x/5 = 9 − 4 = 5 → x = 5 × 5 = 25'},
+    // Plantilla 2 — x/n − b = c [_id 5-8]
+    {_id:5,  q:'Resuelve: x/2 − 5 = 6', a:'x = 22', opts:_i4gshuf(['x = 22','x = 11','x = 10','x = 12']), mc:true, ste:'x/2 = 6 + 5 = 11 → x = 11 × 2 = 22'},
+    {_id:6,  q:'Resuelve: x/3 − 4 = −1', a:'x = 9', opts:_i4gshuf(['x = 9','x = 3','x = 12','x = 6']), mc:true, ste:'x/3 = −1 + 4 = 3 → x = 3 × 3 = 9'},
+    {_id:7,  q:'Resuelve: x/7 − 1 = 6', a:'x = 49', opts:_i4gshuf(['x = 49','x = 7','x = 42','x = 56']), mc:true, ste:'x/7 = 6 + 1 = 7 → x = 7 × 7 = 49'},
+    {_id:8,  q:'Resuelve: x/4 − 3 = 5', a:'x = 32', opts:_i4gshuf(['x = 32','x = 8','x = 28','x = 36']), mc:true, ste:'x/4 = 5 + 3 = 8 → x = 8 × 4 = 32'},
+    // Plantilla 3 — a − bx = c [_id 9-12]
+    {_id:9,  q:'Resuelve: 15 − 2x = 7', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'−2x = 7 − 15 = −8 → x = −8÷(−2) = 4'},
+    {_id:10, q:'Resuelve: 2 − 3x = 8', a:'x = −2', opts:_i4gshuf(['x = −2','x = 2','x = −3','x = −1']), mc:true, ste:'−3x = 8 − 2 = 6 → x = 6÷(−3) = −2'},
+    {_id:11, q:'Resuelve: 1 − 4x = −15', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'−4x = −15 − 1 = −16 → x = −16÷(−4) = 4'},
+    {_id:12, q:'Resuelve: 22 − 3x = 1', a:'x = 7', opts:_i4gshuf(['x = 7','x = 6','x = 8','x = 3']), mc:true, ste:'−3x = 1 − 22 = −21 → x = −21÷(−3) = 7'},
+    // Plantilla 4 — (ax+b)/c = d [_id 13-16]
+    {_id:13, q:'Resuelve: (x + 1)/3 = 4', a:'x = 11', opts:_i4gshuf(['x = 11','x = 10','x = 12','x = 4']), mc:true, ste:'x + 1 = 4 × 3 = 12 → x = 12 − 1 = 11'},
+    {_id:14, q:'Resuelve: (4x − 1)/5 = 7', a:'x = 9', opts:_i4gshuf(['x = 9','x = 8','x = 10','x = 7']), mc:true, ste:'4x − 1 = 7 × 5 = 35 → 4x = 36 → x = 9'},
+    {_id:15, q:'Resuelve: (6x − 3)/3 = 5', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 5']), mc:true, ste:'6x − 3 = 5 × 3 = 15 → 6x = 18 → x = 3'},
+    {_id:16, q:'Resuelve: (x + 8)/4 = 5', a:'x = 12', opts:_i4gshuf(['x = 12','x = 8','x = 16','x = 4']), mc:true, ste:'x + 8 = 5 × 4 = 20 → x = 20 − 8 = 12'},
+    // Plantilla 5 — (ax+b)/(−c) = d [_id 17-20]
+    {_id:17, q:'Resuelve: (3x + 6)/(−3) = 4', a:'x = −6', opts:_i4gshuf(['x = −6','x = 6','x = −4','x = −2']), mc:true, ste:'3x + 6 = 4 × (−3) = −12 → 3x = −18 → x = −6'},
+    {_id:18, q:'Resuelve: (2x + 4)/(−2) = 5', a:'x = −7', opts:_i4gshuf(['x = −7','x = 7','x = −5','x = −3']), mc:true, ste:'2x + 4 = 5 × (−2) = −10 → 2x = −14 → x = −7'},
+    {_id:19, q:'Resuelve: (4x + 8)/(−4) = 3', a:'x = −5', opts:_i4gshuf(['x = −5','x = 5','x = −3','x = −7']), mc:true, ste:'4x + 8 = 3 × (−4) = −12 → 4x = −20 → x = −5'},
+    {_id:20, q:'Resuelve: (5x + 10)/(−5) = 2', a:'x = −4', opts:_i4gshuf(['x = −4','x = 4','x = −2','x = −6']), mc:true, ste:'5x + 10 = 2 × (−5) = −10 → 5x = −20 → x = −4'},
+  ]);
+}
+_SKILL_META['li1m_u3_b2']={ico:'📐',lbl:'Ecuaciones de 3 pasos',qCount:4,gen:_genLi1mU3_B2,plantillas:['x/n + b = c','x/n − b = c','a − bx = c (coef. negativo)','(ax+b)/c = d','(ax+b)/(−c) = d']};
+
+function _genLi1mU3_BQ1(){return _bqSrcPick(['li1m_u3_b1','li1m_u3_b2'],[_genLi1mU3_B1,_genLi1mU3_B2]);}
+_SKILL_META['li1m_u3_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Ecuaciones básicas',qCount:10,gen:_genLi1mU3_BQ1,quiz:true,srcKeys:['li1m_u3_b1','li1m_u3_b2']};
+
+function _genLi1mU3_B3(){
+  return _i4gpick([
+    // Plantilla 1 — a(x+b)=c [_id 1-4]
+    {_id:1,  q:'Resuelve: 3(x + 4) = 21', a:'x = 3', opts:_i4gshuf(['x = 3','x = 4','x = 2','x = 7']), mc:true, ste:'3x + 12 = 21 → 3x = 9 → x = 3'},
+    {_id:2,  q:'Resuelve: 2(x + 5) = 18', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 9']), mc:true, ste:'2x + 10 = 18 → 2x = 8 → x = 4'},
+    {_id:3,  q:'Resuelve: 7(x + 3) = 35', a:'x = 2', opts:_i4gshuf(['x = 2','x = 3','x = 1','x = 7']), mc:true, ste:'7x + 21 = 35 → 7x = 14 → x = 2'},
+    {_id:4,  q:'Resuelve: 4(x + 6) = 28', a:'x = 1', opts:_i4gshuf(['x = 1','x = 4','x = 5','x = 6']), mc:true, ste:'4x + 24 = 28 → 4x = 4 → x = 1'},
+    // Plantilla 2 — a(bx+c)=d (positivos) [_id 5-8]
+    {_id:5,  q:'Resuelve: 3(2x + 1) = 15', a:'x = 2', opts:_i4gshuf(['x = 2','x = 1','x = 3','x = 4']), mc:true, ste:'6x + 3 = 15 → 6x = 12 → x = 2'},
+    {_id:6,  q:'Resuelve: 2(3x + 1) = 20', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 5']), mc:true, ste:'6x + 2 = 20 → 6x = 18 → x = 3'},
+    {_id:7,  q:'Resuelve: 4(2x + 3) = 44', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'8x + 12 = 44 → 8x = 32 → x = 4'},
+    {_id:8,  q:'Resuelve: 5(3x + 2) = 40', a:'x = 2', opts:_i4gshuf(['x = 2','x = 1','x = 3','x = 4']), mc:true, ste:'15x + 10 = 40 → 15x = 30 → x = 2'},
+    // Plantilla 3 — a(bx−c)=d [_id 9-12]
+    {_id:9,  q:'Resuelve: 2(x − 1) = 18', a:'x = 10', opts:_i4gshuf(['x = 10','x = 9','x = 11','x = 8']), mc:true, ste:'2x − 2 = 18 → 2x = 20 → x = 10'},
+    {_id:10, q:'Resuelve: 5(2x − 4) = 10', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 5']), mc:true, ste:'10x − 20 = 10 → 10x = 30 → x = 3'},
+    {_id:11, q:'Resuelve: 3(4x − 2) = 30', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 6']), mc:true, ste:'12x − 6 = 30 → 12x = 36 → x = 3'},
+    {_id:12, q:'Resuelve: 6(x − 2) = 18', a:'x = 5', opts:_i4gshuf(['x = 5','x = 4','x = 6','x = 3']), mc:true, ste:'6x − 12 = 18 → 6x = 30 → x = 5'},
+    // Plantilla 4 — −a(bx+c)=d [_id 13-16]
+    {_id:13, q:'Resuelve: −3(x + 4) = 6', a:'x = −6', opts:_i4gshuf(['x = −6','x = 6','x = −4','x = −2']), mc:true, ste:'−3x − 12 = 6 → −3x = 18 → x = −6'},
+    {_id:14, q:'Resuelve: −4(3x − 2) = 44', a:'x = −3', opts:_i4gshuf(['x = −3','x = 3','x = −4','x = −2']), mc:true, ste:'−12x + 8 = 44 → −12x = 36 → x = −3'},
+    {_id:15, q:'Resuelve: −2(5x − 4) = 28', a:'x = −2', opts:_i4gshuf(['x = −2','x = 2','x = −4','x = −1']), mc:true, ste:'−10x + 8 = 28 → −10x = 20 → x = −2'},
+    {_id:16, q:'Resuelve: −5(x − 3) = 25', a:'x = −2', opts:_i4gshuf(['x = −2','x = 2','x = −5','x = 3']), mc:true, ste:'−5x + 15 = 25 → −5x = 10 → x = −2'},
+    // Plantilla 5 — Más aplicaciones con paréntesis [_id 17-20]
+    {_id:17, q:'Resuelve: 4(x + 5) = 24', a:'x = 1', opts:_i4gshuf(['x = 1','x = 4','x = 5','x = 6']), mc:true, ste:'4x + 20 = 24 → 4x = 4 → x = 1'},
+    {_id:18, q:'Resuelve: 6(n − 2) = 12', a:'n = 4', opts:_i4gshuf(['n = 4','n = 2','n = 6','n = 3']), mc:true, ste:'6n − 12 = 12 → 6n = 24 → n = 4'},
+    {_id:19, q:'Resuelve: 7(3x − 7) = −49', a:'x = 0', opts:_i4gshuf(['x = 0','x = 7','x = −7','x = 1']), mc:true, ste:'21x − 49 = −49 → 21x = 0 → x = 0'},
+    {_id:20, q:'Resuelve: −4(x + 2) = 20', a:'x = −7', opts:_i4gshuf(['x = −7','x = 7','x = −5','x = −3']), mc:true, ste:'−4x − 8 = 20 → −4x = 28 → x = −7'},
+  ]);
+}
+_SKILL_META['li1m_u3_b3']={ico:'📐',lbl:'Ecuaciones con propiedad distributiva',qCount:4,gen:_genLi1mU3_B3,plantillas:['a(x+b)=c','a(bx+c)=d (positivos)','a(bx−c)=d','−a(bx+c)=d (exterior negativo)','Más aplicaciones con paréntesis']};
+
+function _genLi1mU3_BQ2(){return _bqSrcPick(['li1m_u3_b2','li1m_u3_b3'],[_genLi1mU3_B2,_genLi1mU3_B3]);}
+_SKILL_META['li1m_u3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – 3 pasos y distributiva',qCount:10,gen:_genLi1mU3_BQ2,quiz:true,srcKeys:['li1m_u3_b2','li1m_u3_b3']};
+
+function _genLi1mU3_B4(){
+  return _i4gpick([
+    // Plantilla 1 — ax+b=x+c (mover un x) [_id 1-4]
+    {_id:1,  q:'Resuelve: 2x − 1 = 5 + x', a:'x = 6', opts:_i4gshuf(['x = 6','x = 5','x = 7','x = 4']), mc:true, ste:'2x − x = 5 + 1 → x = 6'},
+    {_id:2,  q:'Resuelve: 3x + 1 = x + 5', a:'x = 2', opts:_i4gshuf(['x = 2','x = 1','x = 3','x = 4']), mc:true, ste:'3x − x = 5 − 1 → 2x = 4 → x = 2'},
+    {_id:3,  q:'Resuelve: 5x − 3 = 2x + 9', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'5x − 2x = 9 + 3 → 3x = 12 → x = 4'},
+    {_id:4,  q:'Resuelve: 4x + 2 = x + 11', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 1']), mc:true, ste:'4x − x = 11 − 2 → 3x = 9 → x = 3'},
+    // Plantilla 2 — ax+b=cx+d [_id 5-8]
+    {_id:5,  q:'Resuelve: 4x − 5 = 2x + 1', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 1']), mc:true, ste:'4x − 2x = 1 + 5 → 2x = 6 → x = 3'},
+    {_id:6,  q:'Resuelve: 7x + 7 = 3x + 23', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'7x − 3x = 23 − 7 → 4x = 16 → x = 4'},
+    {_id:7,  q:'Resuelve: 5x + 4 + 3x = −36', a:'x = −5', opts:_i4gshuf(['x = −5','x = 5','x = −4','x = −6']), mc:true, ste:'8x + 4 = −36 → 8x = −40 → x = −5'},
+    {_id:8,  q:'Resuelve: 2x − 6 = 7x + 14', a:'x = −4', opts:_i4gshuf(['x = −4','x = 4','x = −5','x = −3']), mc:true, ste:'2x − 7x = 14 + 6 → −5x = 20 → x = −4'},
+    // Plantilla 3 — a−bx=c−dx [_id 9-12]
+    {_id:9,  q:'Resuelve: x + 2 = 4 − x', a:'x = 1', opts:_i4gshuf(['x = 1','x = 2','x = 0','x = 3']), mc:true, ste:'x + x = 4 − 2 → 2x = 2 → x = 1'},
+    {_id:10, q:'Resuelve: 2x + 5 = 10 − 3x', a:'x = 1', opts:_i4gshuf(['x = 1','x = 0','x = 2','x = 3']), mc:true, ste:'2x + 3x = 10 − 5 → 5x = 5 → x = 1'},
+    {_id:11, q:'Resuelve: 9 − 3x = 3 − 6x', a:'x = −2', opts:_i4gshuf(['x = −2','x = 2','x = −3','x = −1']), mc:true, ste:'6x − 3x = 3 − 9 → 3x = −6 → x = −2'},
+    {_id:12, q:'Resuelve: 3x − 11 = 9 − 2x', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'3x + 2x = 9 + 11 → 5x = 20 → x = 4'},
+    // Plantilla 4 — a(x+b)=cx+d [_id 13-16]
+    {_id:13, q:'Resuelve: 2(x + 1) = x + 5', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 5']), mc:true, ste:'2x + 2 = x + 5 → x = 3'},
+    {_id:14, q:'Resuelve: 3(t − 2) = t + 4', a:'t = 5', opts:_i4gshuf(['t = 5','t = 4','t = 6','t = 2']), mc:true, ste:'3t − 6 = t + 4 → 2t = 10 → t = 5'},
+    {_id:15, q:'Resuelve: 6(2x − 3) = x − 7', a:'x = 1', opts:_i4gshuf(['x = 1','x = 0','x = 2','x = 11']), mc:true, ste:'12x − 18 = x − 7 → 11x = 11 → x = 1'},
+    {_id:16, q:'Resuelve: 3(2y − 1) = 3y + 9', a:'y = 4', opts:_i4gshuf(['y = 4','y = 3','y = 5','y = 2']), mc:true, ste:'6y − 3 = 3y + 9 → 3y = 12 → y = 4'},
+    // Plantilla 5 — Reducir primero, luego despejar [_id 17-20]
+    {_id:17, q:'Resuelve: 4y − 9 + 3y − 5 = −14', a:'y = 0', opts:_i4gshuf(['y = 0','y = 1','y = −1','y = 7']), mc:true, ste:'7y − 14 = −14 → 7y = 0 → y = 0'},
+    {_id:18, q:'Resuelve: 3x − 6 − 2x + 7 = 16', a:'x = 15', opts:_i4gshuf(['x = 15','x = 14','x = 16','x = 1']), mc:true, ste:'x + 1 = 16 → x = 15'},
+    {_id:19, q:'Resuelve: 2(a − 5) = 5 − 3a', a:'a = 3', opts:_i4gshuf(['a = 3','a = 2','a = 4','a = 5']), mc:true, ste:'2a − 10 = 5 − 3a → 5a = 15 → a = 3'},
+    {_id:20, q:'Resuelve: 4(3x − 5) = 2x + 10', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 5']), mc:true, ste:'12x − 20 = 2x + 10 → 10x = 30 → x = 3'},
+  ]);
+}
+_SKILL_META['li1m_u3_b4']={ico:'📐',lbl:'Variable en ambos miembros',qCount:4,gen:_genLi1mU3_B4,plantillas:['ax+b=x+c (mover un x)','ax+b=cx+d','a−bx=c−dx','a(x+b)=cx+d (distributiva + ambos lados)','Reducir primero, luego despejar']};
+
+function _genLi1mU3_B5(){
+  return _i4gpick([
+    // Plantilla 1 — Número misterioso [_id 1-4]
+    {_id:1,  q:'Un número aumentado en 17 es 53. Halla el número.', a:'36', opts:_i4gshuf(['36','35','37','70']), mc:true, ste:'x + 17 = 53 → x = 36'},
+    {_id:2,  q:'El doble de un número más 23 es 75. Halla el número.', a:'26', opts:_i4gshuf(['26','25','27','52']), mc:true, ste:'2x + 23 = 75 → 2x = 52 → x = 26'},
+    {_id:3,  q:'El triple de un número menos 9 es 18. Halla el número.', a:'9', opts:_i4gshuf(['9','8','10','27']), mc:true, ste:'3x − 9 = 18 → 3x = 27 → x = 9'},
+    {_id:4,  q:'Al quíntuple de un número le restamos 8 y obtenemos 22. Halla el número.', a:'6', opts:_i4gshuf(['6','5','7','4']), mc:true, ste:'5x − 8 = 22 → 5x = 30 → x = 6'},
+    // Plantilla 2 — Números consecutivos [_id 5-8]
+    {_id:5,  q:'La suma de dos números enteros consecutivos es 91. Halla el menor.', a:'45', opts:_i4gshuf(['45','46','44','47']), mc:true, ste:'x + (x+1) = 91 → 2x + 1 = 91 → x = 45'},
+    {_id:6,  q:'La suma de dos números enteros consecutivos es 75. Halla el mayor.', a:'38', opts:_i4gshuf(['38','37','39','40']), mc:true, ste:'x + (x+1) = 75 → 2x = 74 → x = 37, mayor = 38'},
+    {_id:7,  q:'La suma de tres números enteros consecutivos es 54. Halla el menor.', a:'17', opts:_i4gshuf(['17','18','16','19']), mc:true, ste:'x + (x+1) + (x+2) = 54 → 3x + 3 = 54 → x = 17'},
+    {_id:8,  q:'La suma de dos números pares consecutivos es 46. Halla el mayor.', a:'24', opts:_i4gshuf(['24','22','23','25']), mc:true, ste:'x + (x+2) = 46 → 2x = 44 → x = 22, mayor = 24'},
+    // Plantilla 3 — Reparto entre personas [_id 9-12]
+    {_id:9,  q:'María reparte $22 000 entre tres hijos. Al primero le da el doble que al segundo y al tercero $2000 más que al segundo. ¿Cuánto le tocó al tercero?', a:'$7000', opts:_i4gshuf(['$7000','$5000','$10000','$2000']), mc:true, ste:'2x + x + (x+2000) = 22000 → 4x = 20000 → x = 5000, 3ro = 7000'},
+    {_id:10, q:'En un salón hay 42 alumnos. Los hombres son el doble que las mujeres. ¿Cuántos hombres hay?', a:'28', opts:_i4gshuf(['28','14','21','42']), mc:true, ste:'x + 2x = 42 → x = 14 (mujeres), hombres = 28'},
+    {_id:11, q:'Tres cestos tienen 575 manzanas. El primero tiene 10 más que el segundo y el tercero tiene 5 menos que el segundo. ¿Cuántas hay en el segundo?', a:'190', opts:_i4gshuf(['190','200','185','570']), mc:true, ste:'(x+10) + x + (x−5) = 575 → 3x + 5 = 575 → x = 190'},
+    {_id:12, q:'Se reparten 85 caramelos entre dos niños; uno recibe 15 más que el otro. ¿Cuántos recibe el que más tiene?', a:'50', opts:_i4gshuf(['50','35','40','85']), mc:true, ste:'x + (x+15) = 85 → 2x = 70 → x = 35, mayor = 50'},
+    // Plantilla 4 — Edades [_id 13-16]
+    {_id:13, q:'La edad de Carla es la tercera parte de la de su mamá. La suma de sus edades es 48. ¿Cuántos años tiene Carla?', a:'12', opts:_i4gshuf(['12','16','36','48']), mc:true, ste:'x + 3x = 48 → 4x = 48 → x = 12 (Carla)'},
+    {_id:14, q:'Juan es 5 años mayor que Pedro. La suma de sus edades es 29. ¿Cuántos años tiene Pedro?', a:'12', opts:_i4gshuf(['12','17','13','14']), mc:true, ste:'x + (x+5) = 29 → 2x = 24 → x = 12 (Pedro)'},
+    {_id:15, q:'Un padre tiene el cuádruple de la edad de su hijo. La diferencia de edades es 36. ¿Cuántos años tiene el hijo?', a:'12', opts:_i4gshuf(['12','36','48','9']), mc:true, ste:'4x − x = 36 → 3x = 36 → x = 12'},
+    {_id:16, q:'Camila tiene el doble de puntos que Leo más 150 extra. Entre los dos suman 1350 puntos. ¿Cuántos puntos tiene Leo?', a:'400', opts:_i4gshuf(['400','600','450','350']), mc:true, ste:'x + (2x+150) = 1350 → 3x = 1200 → x = 400'},
+    // Plantilla 5 — Compras y vida cotidiana [_id 17-20]
+    {_id:17, q:'Sofía compró 4 cuadernos iguales y pagó $50. Le devolvieron $14 de cambio. ¿Cuánto costó cada cuaderno?', a:'$9', opts:_i4gshuf(['$9','$8','$10','$36']), mc:true, ste:'4x + 14 = 50 → 4x = 36 → x = 9'},
+    {_id:18, q:'Mateo pagó $38 por 2 entradas al cine y una bolsa de palomitas de $10. ¿Cuánto costó cada entrada?', a:'$14', opts:_i4gshuf(['$14','$10','$19','$28']), mc:true, ste:'2x + 10 = 38 → 2x = 28 → x = 14'},
+    {_id:19, q:'Valeria tiene $120 ahorrados. Si guarda $15 por semana, ¿cuántas semanas necesita para llegar a $225?', a:'7', opts:_i4gshuf(['7','6','8','15']), mc:true, ste:'120 + 15x = 225 → 15x = 105 → x = 7'},
+    {_id:20, q:'Lucas tiene $250 en billetes de $10 y $20. Tiene 15 billetes de $10. ¿Cuántos billetes de $20 tiene?', a:'5', opts:_i4gshuf(['5','10','15','8']), mc:true, ste:'15×10 + 20x = 250 → 150 + 20x = 250 → x = 5'},
+  ]);
+}
+_SKILL_META['li1m_u3_b5']={ico:'📐',lbl:'Traducir enunciados en ecuaciones y resolver',qCount:4,gen:_genLi1mU3_B5,plantillas:['Número misterioso','Números consecutivos','Reparto entre personas','Edades','Compras y vida cotidiana']};
+
+function _genLi1mU3_BQ3(){return _bqSrcPick(['li1m_u3_b4','li1m_u3_b5'],[_genLi1mU3_B4,_genLi1mU3_B5]);}
+_SKILL_META['li1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Variable ambos lados y enunciados',qCount:10,gen:_genLi1mU3_BQ3,quiz:true,srcKeys:['li1m_u3_b4','li1m_u3_b5']};
+
+function _genLi1mU3_B6(){
+  return _i4gpick([
+    // Plantilla 1 — Mezcla 2 y 3 pasos [_id 1-4]
+    {_id:1,  q:'Resuelve: 11x − 5 = 28', a:'x = 3', opts:_i4gshuf(['x = 3','x = 4','x = 2','x = 11']), mc:true, ste:'11x = 28 + 5 = 33 → x = 3'},
+    {_id:2,  q:'Resuelve: 6x + 4 = 40', a:'x = 6', opts:_i4gshuf(['x = 6','x = 4','x = 5','x = 7']), mc:true, ste:'6x = 40 − 4 = 36 → x = 6'},
+    {_id:3,  q:'Resuelve: x/3 + 6 = 0', a:'x = −18', opts:_i4gshuf(['x = −18','x = −6','x = 18','x = −12']), mc:true, ste:'x/3 = −6 → x = −6 × 3 = −18'},
+    {_id:4,  q:'Resuelve: 20 − 4x = 4', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'−4x = 4 − 20 = −16 → x = 4'},
+    // Plantilla 2 — Mezcla distributiva y variable ambos lados [_id 5-8]
+    {_id:5,  q:'Resuelve: (4x + 8)/2 = 10', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 8']), mc:true, ste:'4x + 8 = 20 → 4x = 12 → x = 3'},
+    {_id:6,  q:'Resuelve: (3x + 9)/(−3) = −6', a:'x = 3', opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 6']), mc:true, ste:'3x + 9 = 18 → 3x = 9 → x = 3'},
+    {_id:7,  q:'Resuelve: 2(3x − 6) = 12', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'6x − 12 = 12 → 6x = 24 → x = 4'},
+    {_id:8,  q:'Resuelve: 5(x − 4) = −10', a:'x = 2', opts:_i4gshuf(['x = 2','x = 1','x = 3','x = −2']), mc:true, ste:'5x − 20 = −10 → 5x = 10 → x = 2'},
+    // Plantilla 3 — Combinación con variable ambos lados [_id 9-12]
+    {_id:9,  q:'Resuelve: 8(p + 2) = 1 + 3p', a:'p = −3', opts:_i4gshuf(['p = −3','p = 3','p = −4','p = −2']), mc:true, ste:'8p + 16 = 1 + 3p → 5p = −15 → p = −3'},
+    {_id:10, q:'Resuelve: x − 6 = 5x − 14', a:'x = 2', opts:_i4gshuf(['x = 2','x = 1','x = 3','x = −2']), mc:true, ste:'x − 5x = −14 + 6 → −4x = −8 → x = 2'},
+    {_id:11, q:'Resuelve: 5a + 9 = −31', a:'a = −8', opts:_i4gshuf(['a = −8','a = 8','a = −4','a = −5']), mc:true, ste:'5a = −31 − 9 = −40 → a = −8'},
+    {_id:12, q:'Resuelve: 3(a + 5) = 2a + 10', a:'a = −5', opts:_i4gshuf(['a = −5','a = 5','a = −3','a = −1']), mc:true, ste:'3a + 15 = 2a + 10 → a = 10 − 15 = −5'},
+    // Plantilla 4 — Ecuaciones más complejas [_id 13-16]
+    {_id:13, q:'Resuelve: 4x − 1 = 15', a:'x = 4', opts:_i4gshuf(['x = 4','x = 3','x = 5','x = 2']), mc:true, ste:'4x = 16 → x = 4'},
+    {_id:14, q:'Resuelve: 16 − 8x = 0', a:'x = 2', opts:_i4gshuf(['x = 2','x = 1','x = 3','x = 4']), mc:true, ste:'8x = 16 → x = 2'},
+    {_id:15, q:'Resuelve: x/3 − 4 = −11', a:'x = −21', opts:_i4gshuf(['x = −21','x = −7','x = 21','x = −14']), mc:true, ste:'x/3 = −11 + 4 = −7 → x = −7 × 3 = −21'},
+    {_id:16, q:'Resuelve: x/6 + 2 = −2', a:'x = −24', opts:_i4gshuf(['x = −24','x = −4','x = 24','x = −12']), mc:true, ste:'x/6 = −4 → x = −4 × 6 = −24'},
+    // Plantilla 5 — Traducir + resolver (combinado) [_id 17-20]
+    {_id:17, q:'El sapito de Vanesa da 4 saltos, cada uno 3 cm más que el anterior. Total: 74 cm. ¿Cuánto recorrió en el segundo salto?', a:'17 cm', opts:_i4gshuf(['17 cm','14 cm','20 cm','11 cm']), mc:true, ste:'x+(x+3)+(x+6)+(x+9)=74 → 4x=56 → x=14, 2do=14+3=17'},
+    {_id:18, q:'Santiago y Andrés tienen 130 canicas. Santiago tiene 20 menos que el doble de Andrés. ¿Cuántas tiene Andrés?', a:'50', opts:_i4gshuf(['50','60','70','40']), mc:true, ste:'(2x−20) + x = 130 → 3x = 150 → x = 50 (Andrés)'},
+    {_id:19, q:'El profesor Julio recibió $4 y tuvo entonces cuatro veces lo que hubiera tenido si hubiera perdido $2. ¿Cuánto tenía al principio?', a:'$4', opts:_i4gshuf(['$4','$8','$2','$6']), mc:true, ste:'(x+4) = 4(x−2) → x+4 = 4x−8 → 12 = 3x → x = 4'},
+    {_id:20, q:'Blas reparte su dinero: la mitad a Fernando, la séptima parte a Alfredo y $2000 a Letty. ¿Cuánto tenía Blas?', a:'$5600', opts:_i4gshuf(['$5600','$2000','$7000','$4200']), mc:true, ste:'x/2 + x/7 + 2000 = x → 9x/14 + 2000 = x → 2000 = 5x/14 → x = 5600'},
+  ]);
+}
+_SKILL_META['li1m_u3_b6']={ico:'📐',lbl:'Combinado – todos los tipos',qCount:4,gen:_genLi1mU3_B6,plantillas:['Mezcla 2 y 3 pasos','Mezcla distributiva y variable ambos lados','Combinación con variable ambos lados','Ecuaciones más complejas','Traducir + resolver (combinado)']};
+
+function _genLi1mU3_BPU(){return _bqSrcPick(['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6'],[_genLi1mU3_B1,_genLi1mU3_B2,_genLi1mU3_B3,_genLi1mU3_B4,_genLi1mU3_B5,_genLi1mU3_B6]);}
+_SKILL_META['li1m_u3_bpu']={ico:'⚡',lbl:'Examen – Ecuaciones de Primer Grado',qCount:30,gen:_genLi1mU3_BPU,quiz:true,srcKeys:['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6']};
 
 // ══ Geometría Básica 1° Secundaria – San Ignacio de Recalde (sir1m) ═══════════
 
@@ -13772,12 +14494,16 @@ const PREP_CURRICULUM = {
          {lbl:'Funciones',                       area:'algebra', editorial:'intelectum', skills:['i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2'], locked:true},
          {lbl:'Progresiones',                    area:'algebra', editorial:'intelectum', skills:['i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2'], locked:true},
          {lbl:'Productos Notables I',            area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu']},
+         {lbl:'Productos Notables II',           area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu']},
+         {lbl:'Productos Notables III',          area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu']},
          {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu']},
          {lbl:'Divisibilidad',                   area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu']},
          {lbl:'Criterios de Divisibilidad',        area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu']},
+         {lbl:'Clasificación NEP I',               area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu']},
          {lbl:'Geometría Analítica I',            area:'trigonometria',  editorial:'saco_oliveros', skills:['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu']},
          {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']},
+         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_bq2','li1m_u3_b4','li1m_u3_b5','li1m_u3_bq3','li1m_u3_b6','li1m_u3_bpu']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
