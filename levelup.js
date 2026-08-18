@@ -18086,6 +18086,33 @@ function _prepUpdateHud(){
   const streakEl=document.getElementById('_prep_streak');
   if(streakEl) streakEl.textContent='🔥 '+(_prep.streak||0)+'/'+_prep.questions.length;
 }
+let _prepNotifTimer=null;
+function _prepStreakNotif(msg, type='streak'){
+  let el=document.getElementById('_prep_streak_notif');
+  if(!el){
+    el=document.createElement('div');
+    el.id='_prep_streak_notif';
+    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.6);z-index:99999;padding:14px 28px;border-radius:16px;font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:900;letter-spacing:0.05em;text-align:center;pointer-events:none;opacity:0;transition:opacity 0.18s ease,transform 0.18s ease;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.45)';
+    document.body.appendChild(el);
+  }
+  if(type==='lose'){
+    el.style.background='linear-gradient(135deg,#ef4444,#b91c1c)';
+    el.style.color='#fff';
+    el.style.border='2px solid rgba(255,255,255,0.2)';
+  } else if(type==='streak'){
+    el.style.background='linear-gradient(135deg,#f97316,#eab308)';
+    el.style.color='#fff';
+    el.style.border='2px solid rgba(255,255,255,0.3)';
+  }
+  el.textContent=msg;
+  el.style.opacity='1';
+  el.style.transform='translate(-50%,-50%) scale(1)';
+  clearTimeout(_prepNotifTimer);
+  _prepNotifTimer=setTimeout(()=>{
+    el.style.opacity='0';
+    el.style.transform='translate(-50%,-50%) scale(0.7)';
+  },1400);
+}
 function _algoMarkPerBox(q){
   const mark=(el,expected)=>{
     el.classList.remove('algo-dbox-correct','algo-dbox-wrong');
@@ -18456,7 +18483,7 @@ function _combOpPrecedenceOK(idx){
 function _combWrongOrderFeedback(){
   _prep.retryLock=true;
   _prep.lives=Math.max(0,(_prep.lives??3)-1);
-  _prep.streak=0; _prep.streakBonusAccum=0;
+  _prep.streak=0; _prep.streakBonusAccum=0; if(_prep.lives>0) _prepStreakNotif('💔 Racha perdida','lose');
   _snd.wrong();
   _prepUpdateHud();
   const wrap=document.querySelector('.algo-vert-wrap');
@@ -20269,7 +20296,7 @@ function _combSubmitStep(){
       // Final step (Verificar) wrong: shake + lives--
       _prep.retryLock=true;
       _prep.lives=Math.max(0,(_prep.lives??3)-1);
-      _prep.streak=0; _prep.streakBonusAccum=0;
+      _prep.streak=0; _prep.streakBonusAccum=0; if(_prep.lives>0) _prepStreakNotif('💔 Racha perdida','lose');
       _snd.wrong();
       _prepUpdateHud();
       const wrap=document.querySelector('.algo-vert-wrap');
@@ -20311,7 +20338,7 @@ function _combSubmitStep(){
       _combSt.sel=sel;
       _prep.retryLock=true;
       _prep.lives=Math.max(0,(_prep.lives??3)-1);
-      _prep.streak=0; _prep.streakBonusAccum=0;
+      _prep.streak=0; _prep.streakBonusAccum=0; if(_prep.lives>0) _prepStreakNotif('💔 Racha perdida','lose');
       _snd.wrong();
       _prepUpdateHud();
       const wrapW=document.querySelector('.algo-vert-wrap');
@@ -20335,7 +20362,7 @@ function _combSubmitStep(){
       const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
       _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
       const _bWhole = Math.floor(_prep.streakBonusAccum);
-      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; }
+      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
     }
     _snd.correct();
     const wrapC=document.querySelector('.algo-vert-wrap');
@@ -20775,7 +20802,7 @@ function _prepHandleAnswer(correct, correctAns){
       const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
       _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
       const _bWhole = Math.floor(_prep.streakBonusAccum);
-      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; }
+      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
     }
     if(wrap){
       wrap.classList.add('algo-correct');
@@ -20789,7 +20816,7 @@ function _prepHandleAnswer(correct, correctAns){
     // Fallo: quitar vida, feedback por caja, permitir reintento
     _prep.retryLock = true;
     _prep.lives = Math.max(0, (_prep.lives||1)-1);
-    _prep.streak = 0;
+    _prep.streak = 0; _prep.streakBonusAccum=0; if(_prep.lives>0) _prepStreakNotif('💔 Racha perdida','lose');
     if(wrap){
       wrap.classList.add('algo-shake');
       _algoMarkPerBox(q);
@@ -20826,6 +20853,24 @@ if (!window._prepKbBound) {
   window._prepKbBound = true;
 }
 
+function _prepApplyLivesStreak(correct) {
+  const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
+  if (correct) {
+    if (typeof _prep.streak === 'number') _prep.streak++;
+    if (_prep.timeLeft > 0) {
+      const _bRate = _bMode==='exam' ? 5 : _bMode==='quiz' ? 7.5 : 10;
+      _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
+      const _bWhole = Math.floor(_prep.streakBonusAccum);
+      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+    }
+  } else {
+    _prep.lives = Math.max(0, (_prep.lives??1)-1);
+    _prep.streak = 0; _prep.streakBonusAccum = 0;
+    if (_prep.lives > 0) _prepStreakNotif('💔 Racha perdida','lose');
+    if (_prep.lives <= 0) { _prep.gameOver = true; }
+  }
+  _prepUpdateHud();
+}
 function _prepSelectOpt(opt) {
   if (_prep.answered) return;
   _prep.selectedOpt = opt;
@@ -20834,7 +20879,9 @@ function _prepSelectOpt(opt) {
   const correct = String(q.a).toLowerCase()===String(opt).toLowerCase();
   const _qt = Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000);
   _prep.answers.push({ given:opt, correct, q:q.q, a:q.a, opts:q.opts, mc:true, _src:q._src||null, timeSec:_qt });
+  _prepApplyLivesStreak(correct);
   correct ? _snd.correct() : _snd.wrong();
+  if (_prep.gameOver) { _renderPreparatePane(); setTimeout(()=>_prepFinish(), 1200); return; }
   _renderPreparatePane();
 }
 function _prepSubmitText() {
@@ -20846,7 +20893,9 @@ function _prepSubmitText() {
   const correct = parseFloat(val) === parseFloat(q.a) || String(val).toLowerCase() === String(q.a).toLowerCase();
   const _qt = Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000);
   _prep.answers.push({ given:val, correct, q:q.q, a:q.a, mc:false, _src:q._src||null, timeSec:_qt });
+  _prepApplyLivesStreak(correct);
   correct ? _snd.correct() : _snd.wrong();
+  if (_prep.gameOver) { _renderPreparatePane(); setTimeout(()=>_prepFinish(), 1200); return; }
   _renderPreparatePane();
 }
 function _prepNextQ() {
