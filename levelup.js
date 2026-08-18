@@ -8629,7 +8629,7 @@ function _genI1A_EX1_B9(){
     {_id:16,q:'Reduce: (2<sup>n</sup>+2<sup>n−1</sup>) ÷ (2<sup>n−2</sup>+2<sup>n−3</sup>)',a:'4',opts:_i4gshuf(['4','2','8','16']),mc:true,ste:'Num: 2^(n−1)·3. Den: 2^(n−3)·3. Ratio=2²=4.'},
     // Plantilla 5: Conceptual sobre el proceso (4 qx)
     {_id:17,q:'Para reducir (2<sup>n+1</sup>+2<sup>n+2</sup>)/2<sup>n+3</sup>, el primer paso es:',a:'Factorizar 2<sup>n+1</sup> en el numerador',opts:_i4gshuf(['Factorizar 2<sup>n+1</sup> en el numerador','Dividir término a término','Convertir a base 4','Restar los exponentes directamente']),mc:true,ste:'Se identifica el factor común más pequeño 2^(n+1) y se saca del numerador.'},
-    {_id:18,q:'En (5<sup>n+4</sup>+5<sup>n+3</sup>)/(5<sup>n+3</sup>+5<sup>n+2</sup>), al factorizar ¿qué factor se cancela?',a:'El factor (5+1)=6 aparece en num y den',opts:_i4gshuf(['El factor (5+1)=6 aparece en num y den','Solo el 5^n','El exponente n','Nada se cancela']),mc:true,ste:'Num=5^(n+3)·6, Den=5^(n+2)·6. El 6 se cancela y queda 5^(n+3)/5^(n+2)=5.'},
+    {_id:18,q:'En (5<sup>n+4</sup>+5<sup>n+3</sup>)/(5<sup>n+3</sup>+5<sup>n+2</sup>), al factorizar ¿qué se cancela?',a:'Se cancelan 5^(n+2) y el factor 6; resultado = 5',opts:_i4gshuf(['Se cancelan 5^(n+2) y el factor 6; resultado = 5','Solo el factor (5+1)=6','Solo el 5^n','Nada se cancela']),mc:true,ste:'Num=5^(n+3)·6=5^(n+2)·5·6. Den=5^(n+2)·6. Se cancela 5^(n+2)·6 en ambos. Queda 5^1=5.'},
     {_id:19,q:'¿Qué resultado tiene siempre (a<sup>n+k+1</sup>+a<sup>n+k</sup>) ÷ (a<sup>n+k</sup>+a<sup>n+k−1</sup>)?',a:'a',opts:_i4gshuf(['a','a²','1','2a']),mc:true,ste:'Num: a^(n+k)(a+1). Den: a^(n+k−1)(a+1). El (a+1) se cancela. Ratio=a.'},
     {_id:20,q:'¿Para qué base aplica la técnica de factorizar sumas como (a<sup>n+1</sup>+a<sup>n+2</sup>)/a<sup>n+3</sup>?',a:'Para cualquier base a≠0',opts:_i4gshuf(['Para cualquier base a≠0','Solo para base 2','Solo para bases enteras','Solo cuando n=0']),mc:true,ste:'La propiedad aᵐ·aⁿ=aᵐ⁺ⁿ y el factor común aplican para cualquier a≠0.'},
   ]);
@@ -12287,7 +12287,7 @@ function _genLi1mU2_B2(){
     {_id:7,  q:'Simplifica: 6x/x²', a:'6/x', opts:_i4gshuf(['6/x','6x','6','x/6']), mc:true, ste:'6x/x² = 6/x^(2−1) = 6/x.'},
     {_id:8,  q:'Simplifica: 8x²/(10xy)', a:'4x/(5y)', opts:_i4gshuf(['4x/(5y)','4/(5y)','8x/10y','x²/y']), mc:true, ste:'8x²/(10xy) = (8/10)(x²/x)(1/y) = 4x/(5y).'},
     // Plantilla 3 — Simplificar fracción con polinomio en numerador (4 preguntas)
-    {_id:9,  q:'Simplifica: (4mn − 8m²n − 2mn)/(2mn)', a:'1 − 4m − 1 = −4m', opts:_i4gshuf(['−4m','4m','2 − 4m','−4m + 1']), mc:true, ste:'(4mn)/(2mn) − (8m²n)/(2mn) − (2mn)/(2mn) = 2 − 4m − 1 = 1 − 4m = −4m + 1... hmm, 2−4m−1 = 1−4m. La opción correcta deber ser 1 − 4m.'},
+    {_id:9,  q:'Simplifica: (4mn − 8m²n − 2mn)/(2mn)', a:'1 − 4m', opts:_i4gshuf(['1 − 4m','4m','2 − 4m','−4m']), mc:true, ste:'Dividir cada término entre 2mn: (4mn)/(2mn)=2, (8m²n)/(2mn)=4m, (2mn)/(2mn)=1. Resultado: 2 − 4m − 1 = 1 − 4m.'},
     {_id:10, q:'Simplifica: (18x²y + x²y − 45x³y⁵)/(9xy)', a:'2x + x/9 − 5x²y⁴', opts:_i4gshuf(['2x + x/9 − 5x²y⁴','2x − 5x²y⁴','2x + x − 5x²y','18x + x − 45x²y⁴']), mc:true, ste:'Dividir cada término: 18x²y/9xy=2x, x²y/9xy=x/9, −45x³y⁵/9xy=−5x²y⁴.'},
     {_id:11, q:'Simplifica: (3n − m²n + 2n)/(6n)', a:'(5 − m²)/6', opts:_i4gshuf(['(5 − m²)/6','5/6 − m²','(3 − m²)/6','n(5−m²)/6']), mc:true, ste:'Numerador: 3n − m²n + 2n = n(5 − m²). Dividir por 6n: (5−m²)/6.'},
     {_id:12, q:'Simplifica: (30y − 12x²y + 9y)/(3y)', a:'13 − 4x²', opts:_i4gshuf(['13 − 4x²','10 − 4x²','13 + 4x²','10 − 4x']), mc:true, ste:'30y/3y=10, −12x²y/3y=−4x², 9y/3y=3. Resultado: 10 − 4x² + 3 = 13 − 4x².'},
@@ -12299,7 +12299,7 @@ function _genLi1mU2_B2(){
     // Plantilla 5 — Simplificar fracciones complejas (numerador polinomio, denominador monomio) (4 preguntas)
     {_id:17, q:'Simplifica: (35x⁸ − 14x¹⁰ + 49x¹³)/(7x⁵)', a:'5x³ − 2x⁵ + 7x⁸', opts:_i4gshuf(['5x³ − 2x⁵ + 7x⁸','5x² − 2x⁴ + 7x⁸','35x³ − 14x⁵ + 49x⁸','5x³ + 2x⁵ + 7x⁸']), mc:true, ste:'35/7=5, −14/7=−2, 49/7=7. x⁸/x⁵=x³, x¹⁰/x⁵=x⁵, x¹³/x⁵=x⁸.'},
     {_id:18, q:'Simplifica: (4x⁵ + 8x⁴ + 12x¹⁰)/(2x³)', a:'2x² + 4x + 6x⁷', opts:_i4gshuf(['2x² + 4x + 6x⁷','2x² + 4x⁴ + 6x⁷','4x² + 8x + 12x⁷','2x² + 4x + 6x¹⁰']), mc:true, ste:'4x⁵/2x³=2x², 8x⁴/2x³=4x, 12x¹⁰/2x³=6x⁷.'},
-    {_id:19, q:'Simplifica: (−20x¹⁵y¹⁰ + 30x³y⁷ − 40x⁸y⁷)/(10x⁴y³)', a:'−2x¹¹y⁷ + 3xy⁴ − 4x⁴y⁴', opts:_i4gshuf(['−2x¹¹y⁷ + 3xy⁴ − 4x⁴y⁴','−2x¹¹y⁷ + 3x⁻¹y⁴ − 4x⁴y⁴','2x¹¹y⁷ − 3xy⁴ + 4x⁴y⁴','−2x¹¹y⁷ + 3xy⁴ + 4x⁴y⁴']), mc:true, ste:'−20/10=−2, 30/10=3, −40/10=−4. x¹⁵/x⁴=x¹¹, x³/x⁴=x⁻¹... Hmm, x³/x⁴=1/x. Reconsidero: puede que sea 3·(x³/x⁴) = 3/x. Dejemos esta como más difícil.'},
+    {_id:19, q:'Simplifica: (−20x¹⁵y¹⁰ + 30x³y⁷ − 40x⁸y⁷)/(10x⁴y³)', a:'−2x¹¹y⁷ + 3x⁻¹y⁴ − 4x⁴y⁴', opts:_i4gshuf(['−2x¹¹y⁷ + 3x⁻¹y⁴ − 4x⁴y⁴','−2x¹¹y⁷ + 3xy⁴ − 4x⁴y⁴','2x¹¹y⁷ − 3x⁻¹y⁴ + 4x⁴y⁴','−2x¹¹y⁷ + 3x⁻¹y⁴ + 4x⁴y⁴']), mc:true, ste:'−20x¹⁵y¹⁰/10x⁴y³=−2x¹¹y⁷. 30x³y⁷/10x⁴y³=3x^(3−4)y^(7−3)=3x⁻¹y⁴. −40x⁸y⁷/10x⁴y³=−4x⁴y⁴.'},
     {_id:20, q:'Simplifica: (8p²q + 5p³q − 4pq²)/(pq)', a:'8p + 5p² − 4q', opts:_i4gshuf(['8p + 5p² − 4q','8p + 5p² + 4q','8pq + 5p² − 4','8 + 5p − 4q']), mc:true, ste:'8p²q/pq=8p, 5p³q/pq=5p², −4pq²/pq=−4q.'},
   ]);
 }
@@ -13994,7 +13994,7 @@ function _genHCA5_HOM_B4(){
   {_id:2,q:'V/F: 5/8 + 2/8 = 7/8',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'5+2=7, resultado real = 7/8. La afirmación dice 7/8, por lo tanto es Verdadero.'},
   {_id:3,q:'V/F: 4/10 + 3/10 = 8/10',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'4+3=7, resultado real = 7/10. La afirmación dice 8/10, por lo tanto es Falso.'},
   {_id:4,q:'V/F: 6/11 + 5/11 = 10/11',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'6+5=11, resultado real = 11/11 = 1 (simplificado). La afirmación dice 10/11, por lo tanto es Falso.'},
-  {_id:5,q:'V/F: 8/9 − 5/9 = 3/9',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'8-5=3, resultado real = 3/9 = 1/3 (simplificado). La afirmación dice 3/9, por lo tanto es Falso.'},
+  {_id:5,q:'V/F: 8/9 − 5/9 = 3/9',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'8/9 − 5/9 = (8−5)/9 = 3/9. La igualdad es correcta, aunque 3/9 simplifica a 1/3. La afirmación es Verdadera.'},
   {_id:6,q:'V/F: 9/11 − 4/11 = 5/11',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'9-4=5, resultado real = 5/11. La afirmación dice 5/11, por lo tanto es Verdadero.'},
   {_id:7,q:'V/F: 10/13 − 3/13 = 7/13',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'10-3=7, resultado real = 7/13. La afirmación dice 7/13, por lo tanto es Verdadero.'},
   {_id:8,q:'V/F: 12/15 − 7/15 = 4/15',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'12-7=5, resultado real = 5/15 = 1/3 (simplificado). La afirmación dice 4/15, por lo tanto es Falso.'},
