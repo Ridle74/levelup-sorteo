@@ -20359,10 +20359,19 @@ function _combSubmitStep(){
     // Bonus de tiempo por racha
     if (_prep.timeLeft > 0) {
       const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
-      const _bRate = _bMode==='exam' ? 1 : _bMode==='quiz' ? 2 : 3;
-      _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
-      const _bWhole = Math.floor(_prep.streakBonusAccum);
-      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+      const _bRate = _bMode==='exam' ? 2.5 : _bMode==='quiz' ? 5 : 10;
+      const _maxStreak = _bMode==='exam' ? 5 : _bMode==='quiz' ? 4 : 3;
+      const _isLevelUp = _prep.streak > _maxStreak;
+      if (_isLevelUp) {
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + 60;
+        const _bWhole2 = Math.floor(_prep.streakBonusAccum);
+        if (_bWhole2 > 0) { _prep.timeLeft += _bWhole2; _prep.streakBonusAccum -= _bWhole2; _prepStreakNotif('⬆️ Level UP! +60s','streak'); }
+      } else {
+        const _bStreakCapped = Math.min(_prep.streak, _maxStreak);
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _bStreakCapped - 1);
+        const _bWhole = Math.floor(_prep.streakBonusAccum);
+        if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+      }
     }
     _snd.correct();
     const wrapC=document.querySelector('.algo-vert-wrap');
@@ -20799,10 +20808,19 @@ function _prepHandleAnswer(correct, correctAns){
     // Bonus de tiempo por racha
     if (_prep.timeLeft > 0) {
       const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
-      const _bRate = _bMode==='exam' ? 1 : _bMode==='quiz' ? 2 : 3;
-      _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
-      const _bWhole = Math.floor(_prep.streakBonusAccum);
-      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+      const _bRate = _bMode==='exam' ? 2.5 : _bMode==='quiz' ? 5 : 10;
+      const _maxStreak = _bMode==='exam' ? 5 : _bMode==='quiz' ? 4 : 3;
+      const _isLevelUp = _prep.streak > _maxStreak;
+      if (_isLevelUp) {
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + 60;
+        const _bWhole2 = Math.floor(_prep.streakBonusAccum);
+        if (_bWhole2 > 0) { _prep.timeLeft += _bWhole2; _prep.streakBonusAccum -= _bWhole2; _prepStreakNotif('⬆️ Level UP! +60s','streak'); }
+      } else {
+        const _bStreakCapped = Math.min(_prep.streak, _maxStreak);
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _bStreakCapped - 1);
+        const _bWhole = Math.floor(_prep.streakBonusAccum);
+        if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+      }
     }
     if(wrap){
       wrap.classList.add('algo-correct');
@@ -20858,10 +20876,19 @@ function _prepApplyLivesStreak(correct) {
   if (correct) {
     if (typeof _prep.streak === 'number') _prep.streak++;
     if (_prep.timeLeft > 0) {
-      const _bRate = _bMode==='exam' ? 1 : _bMode==='quiz' ? 2 : 3;
-      _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _prep.streak * _bRate;
-      const _bWhole = Math.floor(_prep.streakBonusAccum);
-      if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+      const _bRate = _bMode==='exam' ? 2.5 : _bMode==='quiz' ? 5 : 10;
+      const _maxStreak = _bMode==='exam' ? 5 : _bMode==='quiz' ? 4 : 3;
+      const _isLevelUp = _prep.streak > _maxStreak;
+      if (_isLevelUp) {
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + 60;
+        const _bWhole2 = Math.floor(_prep.streakBonusAccum);
+        if (_bWhole2 > 0) { _prep.timeLeft += _bWhole2; _prep.streakBonusAccum -= _bWhole2; _prepStreakNotif('⬆️ Level UP! +60s','streak'); }
+      } else {
+        const _bStreakCapped = Math.min(_prep.streak, _maxStreak);
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _bStreakCapped - 1);
+        const _bWhole = Math.floor(_prep.streakBonusAccum);
+        if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
+      }
     }
   } else {
     _prep.lives = Math.max(0, (_prep.lives??1)-1);
