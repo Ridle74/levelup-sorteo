@@ -86,12 +86,15 @@ let _prepWeeklyReportPhone = '';
 let _prepWeeklyReportPhoneLoading = false;
 let _prepWeeklyReportSiblings = []; // [{uid, name}] hermanos inscritos
 let _prepWeeklyReportFamilyLastName = 'Familia'; // apellido más frecuente del grupo
+let _prepWeeklyReportPdfTarget = null; // null | 'self' | sibUid | 'family' — sub-opción seleccionada
 // Reportes de errores en ejercicios de Level Up
 let _prepReportModalOpen = false;
 let _prepReportPinErr    = false;
 let _prepTaskModalOpen   = false;
 let _prepTaskPinErr      = false;
 let _prepTaskInfo        = null; // { topic } | { exam:true, skills:[], label:'' }
+let _prepTaskDeleteMode  = false; // true = modal en modo eliminar tarea existente
+let _prepConfirmAction = null; // { type:'task'|'course'|'unit', uid, idx, skillsCsv, lbl } modal de confirmación
 let _prepAdminReportsData = null;
 let _prepAdminReportsLoading = false;
 let _prepAdminShowReports = false;
@@ -14598,6 +14601,7 @@ function _renderPreparatePane() {
   } catch(e) {}
 }
 function _preparatePaneHtml() {
+  const _isImpersonating = typeof _isTeacher === 'function' && _isTeacher();
   let _paneHtml = '';
   if (_prep.state === 'config') _paneHtml = _prepConfigHtml();
   else if (_prep.state === 'unit')   _paneHtml = _prepUnitPaneHtml();
@@ -14607,9 +14611,20 @@ function _preparatePaneHtml() {
     const _taskLbl = _prepTaskInfo.exam
       ? `Examen: ${_prepTaskInfo.label}`
       : _cleanLbl((BINGO_TOPICS[_prepTaskInfo.topic]||{}).lbl, _prepTaskInfo.topic);
-    const _now = new Date(); const _due7 = new Date(Date.now()+7*86400000);
+    const _now = new Date();
     const _p2 = n => String(n).padStart(2,'0');
     const _dateFmt = d => `${d.getFullYear()}-${_p2(d.getMonth()+1)}-${_p2(d.getDate())}`;
+    // Fecha de vencimiento: próxima clase del alumno actual, o +7 días si no hay horario
+    const _due7 = (() => {
+      try {
+        if (typeof _nextClassDateForStudent === 'function' && typeof getStudents === 'function') {
+          const _uid = String(typeof getLoggedId==='function' ? getLoggedId() : '');
+          const _st = getStudents().find(s => String(s.id) === _uid);
+          if (_st) { const _nc = _nextClassDateForStudent(_st.name); if (_nc) return new Date(_nc.date+'T'+(_nc.time||'00:00')+':00'); }
+        }
+      } catch(e){}
+      return new Date(Date.now()+7*86400000);
+    })();
     const _dtSpinner = (prefix, dateVal, hVal, mVal) => {
       const _inp = `style="width:32px;text-align:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#fff;font-size:14px;font-weight:700;padding:4px 0;outline:none;font-family:'Lato',sans-serif"`;
       const _btn = `style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:5px;color:rgba(255,255,255,0.65);font-size:9px;cursor:pointer;padding:3px 7px;line-height:1;width:100%"`;
@@ -14634,6 +14649,29 @@ function _preparatePaneHtml() {
         </div>
       </div>`;
     };
+    if (_prepTaskDeleteMode) {
+      _paneHtml += `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepTaskModal()" style="z-index:9999">
+        <div class="prep-report-modal-box" style="max-width:420px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#f87171;letter-spacing:0.05em">🗑️ ELIMINAR TAREA</span>
+            <button onclick="closePrepTaskModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
+          </div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;margin-bottom:14px">${_taskLbl}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:14px">Esta actividad ya está asignada como tarea. ¿Deseas eliminarla?</div>
+          ${_isImpersonating ? '' : `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="prep-task-pin-inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')deletePrepTask()" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid ${_prepTaskPinErr?'rgba(248,113,113,0.7)':'rgba(255,255,255,0.15)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
+            <button onclick="deletePrepTask()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.15);color:#fca5a5;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Eliminar →</button>
+          </div>
+          ${_prepTaskPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}`}
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button onclick="closePrepTaskModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+            <button onclick="_prepTaskDeleteMode=false;_prepTaskPinErr=false;_renderPreparatePane()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(139,92,246,0.12);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Reasignar</button>
+            ${_isImpersonating ? `<button onclick="deletePrepTask()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.15);color:#fca5a5;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">🗑️ Eliminar</button>` : ''}
+          </div>
+        </div>
+      </div>`;
+    } else {
     _paneHtml += `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepTaskModal()" style="z-index:9999">
       <div class="prep-report-modal-box" style="max-width:520px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
@@ -14651,24 +14689,36 @@ function _preparatePaneHtml() {
             ${_dtSpinner('prep-task-due', _dateFmt(_due7), _due7.getHours(), _due7.getMinutes())}
           </div>
         </div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor</div>
+        ${_isImpersonating ? '' : `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor</div>
         <div style="display:flex;gap:8px;align-items:center">
           <input id="prep-task-pin-inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')confirmPrepTask()" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid ${_prepTaskPinErr?'rgba(248,113,113,0.7)':'rgba(255,255,255,0.15)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
           <button onclick="confirmPrepTask()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.15);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;cursor:pointer;white-space:nowrap">Asignar →</button>
         </div>
-        ${_prepTaskPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}
-        <div style="margin-top:14px">
-          <button onclick="closePrepTaskModal()" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+        ${_prepTaskPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}`}
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <button onclick="closePrepTaskModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+          ${_isImpersonating ? `<button onclick="confirmPrepTask()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.2);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">📌 Asignar</button>` : ''}
         </div>
       </div>
     </div>`;
+    }
   }
   if (_prepDesafioModalOpen && _prep.selectedExamLbl) {
     const _dNivelLbls = ['','Básico','Intermedio','Avanzado'];
     const _dLbl = `${_prep.selectedExamLbl} — ${_dNivelLbls[_prep.desafioNivel||1]}`;
-    const _now2 = new Date(); const _due7d = new Date(Date.now()+7*86400000);
+    const _now2 = new Date();
     const _p2d = n => String(n).padStart(2,'0');
     const _dateFmtD = d => `${d.getFullYear()}-${_p2d(d.getMonth()+1)}-${_p2d(d.getDate())}`;
+    const _due7d = (() => {
+      try {
+        if (typeof _nextClassDateForStudent === 'function' && typeof getStudents === 'function') {
+          const _uid = String(typeof getLoggedId==='function' ? getLoggedId() : '');
+          const _st = getStudents().find(s => String(s.id) === _uid);
+          if (_st) { const _nc = _nextClassDateForStudent(_st.name); if (_nc) return new Date(_nc.date+'T'+(_nc.time||'00:00')+':00'); }
+        }
+      } catch(e){}
+      return new Date(Date.now()+7*86400000);
+    })();
     const _dtSpinnerD = (prefix, dateVal, hVal, mVal) => {
       const _inp = `style="width:32px;text-align:center;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#fff;font-size:14px;font-weight:700;padding:4px 0;outline:none;font-family:'Lato',sans-serif"`;
       const _btn = `style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:5px;color:rgba(255,255,255,0.65);font-size:9px;cursor:pointer;padding:3px 7px;line-height:1;width:100%"`;
@@ -14718,6 +14768,26 @@ function _preparatePaneHtml() {
         ${_prepDesafioModalErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}
         <div style="margin-top:14px">
           <button onclick="closeDesafioModal()" style="width:100%;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (_prepConfirmAction) {
+    const _ca = _prepConfirmAction;
+    const _caTitle = _ca.type==='course' ? '🗑️ QUITAR CURSO' : _ca.type==='unit' ? '🚫 EXCLUIR UNIDAD' : '🗑️ ELIMINAR TAREA';
+    const _caMsg   = _ca.type==='course' ? '¿Seguro que deseas quitar este curso del alumno?' : _ca.type==='unit' ? '¿Seguro que deseas excluir esta unidad? El alumno no verá sus habilidades en práctica.' : '¿Seguro que deseas eliminar esta tarea? Esta acción no se puede deshacer.';
+    const _caBtn   = _ca.type==='course' ? '🗑️ Quitar' : _ca.type==='unit' ? '🚫 Excluir' : '🗑️ Eliminar';
+    _paneHtml += `<div class="prep-report-modal-ov" onclick="if(event.target===this)_prepCancelAction()" style="z-index:9999">
+      <div class="prep-report-modal-box" style="max-width:380px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#f87171;letter-spacing:0.05em">${_caTitle}</span>
+          <button onclick="_prepCancelAction()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.75);background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;margin-bottom:14px">${_ca.lbl}</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px">${_caMsg}</div>
+        <div style="display:flex;gap:8px">
+          <button onclick="_prepCancelAction()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
+          <button onclick="_prepDoConfirmAction()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.15);color:#fca5a5;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">${_caBtn}</button>
         </div>
       </div>
     </div>`;
@@ -14984,14 +15054,101 @@ function _prepCursosClickOutside() {
   }, 0);
 }
 function _prepRemoveCourse(uid, courseIdx) {
-  const dd = document.getElementById('prep-cursos-dd');
-  const scroll = dd ? dd.scrollTop : 0;
   const key = String(uid);
   if (!overrides[key] || !Array.isArray(overrides[key].courses)) return;
-  overrides[key].courses.splice(courseIdx, 1);
+  const c = overrides[key].courses[courseIdx];
+  if (!c) return;
+  const lv = (PREP_LEVELS[c.level]||{}).lbl || c.level || '';
+  const lbl = `${lv}${c.grade?' · '+c.grade+'° Grado':''}${c.editorial?' · '+(PREP_EDITORIALS[c.editorial]?.lbl||c.editorial):''}${c.area?' · '+c.area:''}`.replace(/^·\s*/,'');
+  _prepConfirmAction = { type:'course', uid, idx:courseIdx, lbl: lbl||'Curso' };
+  _renderPreparatePane();
+}
+function _prepPosMisAlumnos(scrollTop) {
+  requestAnimationFrame(function() {
+    const btn = document.getElementById('prep-misalumnos-btn');
+    const dd  = document.getElementById('prep-misalumnos-dd');
+    if (!btn || !dd) return;
+    const r = btn.getBoundingClientRect();
+    dd.style.top  = (r.bottom + 6) + 'px';
+    // Ajustar si se sale por la derecha
+    const ddW = dd.offsetWidth || 300;
+    const left = Math.min(r.left, window.innerWidth - ddW - 8);
+    dd.style.left = Math.max(8, left) + 'px';
+    if (scrollTop) dd.scrollTop = scrollTop;
+  });
+}
+function _prepMisAlumnosClickOutside() {
+  setTimeout(function() {
+    function _handler(e) {
+      const dd  = document.getElementById('prep-misalumnos-dd');
+      const btn = document.getElementById('prep-misalumnos-btn');
+      if ((dd && dd.contains(e.target)) || (btn && btn.contains(e.target))) return;
+      _prep.openSelector = null;
+      _renderPreparatePane();
+      document.removeEventListener('click', _handler, true);
+    }
+    document.addEventListener('click', _handler, true);
+  }, 0);
+}
+function _prepRemoveTask(uid, taskIdx) {
+  const key = String(uid);
+  if (!overrides[key] || !Array.isArray(overrides[key].prepTasks)) return;
+  const t = overrides[key].prepTasks[taskIdx];
+  if (!t) return;
+  const lbl = t.exam ? (t.label||'Examen de unidad') : ((BINGO_TOPICS[t.topic]||{}).lbl || t.topic || 'Tarea');
+  _prepConfirmAction = { type:'task', uid, idx:taskIdx, lbl };
+  _renderPreparatePane();
+}
+function _prepCancelAction() {
+  _prepConfirmAction = null;
+  _renderPreparatePane();
+}
+function _prepDoConfirmAction() {
+  if (!_prepConfirmAction) return;
+  const { type, uid, idx, skillsCsv } = _prepConfirmAction;
+  _prepConfirmAction = null;
+  const key = String(uid);
+  if (type === 'task') {
+    if (!overrides[key] || !Array.isArray(overrides[key].prepTasks)) return;
+    overrides[key].prepTasks.splice(idx, 1);
+  } else if (type === 'course') {
+    if (!overrides[key] || !Array.isArray(overrides[key].courses)) return;
+    overrides[key].courses.splice(idx, 1);
+  } else if (type === 'unit') {
+    if (!overrides[key]) overrides[key] = {};
+    if (!Array.isArray(overrides[key].excludedTopics)) overrides[key].excludedTopics = [];
+    const unitSkills = String(skillsCsv).split(',').filter(Boolean);
+    unitSkills.forEach(sk => { if (!overrides[key].excludedTopics.includes(sk)) overrides[key].excludedTopics.push(sk); });
+  }
   saveMeta();
   _renderPreparatePane();
-  _prepPosCursos(scroll);
+}
+function _prepToggleExcludedSkill(uid, topicKey) {
+  const key = String(uid);
+  if (!overrides[key]) overrides[key] = {};
+  if (!Array.isArray(overrides[key].excludedTopics)) overrides[key].excludedTopics = [];
+  const idx = overrides[key].excludedTopics.indexOf(topicKey);
+  if (idx >= 0) overrides[key].excludedTopics.splice(idx, 1);
+  else overrides[key].excludedTopics.push(topicKey);
+  saveMeta();
+  _renderPreparatePane();
+}
+function _prepToggleExcludedUnit(uid, skillsCsv, unitLbl) {
+  const key = String(uid);
+  if (!overrides[key]) overrides[key] = {};
+  if (!Array.isArray(overrides[key].excludedTopics)) overrides[key].excludedTopics = [];
+  const unitSkills = String(skillsCsv).split(',').filter(Boolean);
+  const allExcl = unitSkills.every(sk => overrides[key].excludedTopics.includes(sk));
+  if (allExcl) {
+    // Restaurar: directo, sin confirmación
+    overrides[key].excludedTopics = overrides[key].excludedTopics.filter(t => !unitSkills.includes(t));
+    saveMeta();
+    _renderPreparatePane();
+  } else {
+    // Excluir: abre modal de confirmación
+    _prepConfirmAction = { type:'unit', uid, skillsCsv, lbl: unitLbl || 'Unidad' };
+    _renderPreparatePane();
+  }
 }
 function _prepAsignarClickOutside() {
   setTimeout(function() {
@@ -15083,11 +15240,22 @@ function _prepConfigHtml() {
     if (_prep.area && u.area !== _prep.area) return false;
     return true;
   });
-  const allTopicKeys = units.flatMap(u=>u.skills||[]);
+  const _excludedTopics = !isAdmin() ? ((overrides[String(getLoggedId())]||{}).excludedTopics||[]) : [];
+  const allTopicKeys = units.flatMap(u=>u.skills||[]).filter(k => !_excludedTopics.includes(k));
   const masLoading = !Array.isArray(_prepHistoryData);
   const coursePct = _prepCourseScore(allTopicKeys);
   const shown = _prep.editorialChosen || isHiddenLevel;
 
+  // ── Auto-abrir Mis Cursos en pestaña Tareas si el alumno tiene tareas activas (solo una vez) ──
+  if (!isAdmin() && _prep.openSelector === null && !_prep._autoOpened) {
+    const _autoUid = String(typeof getLoggedId === 'function' ? getLoggedId() : '');
+    const _autoTasks = (overrides[_autoUid]?.prepTasks||[]).length + (overrides[_autoUid]?.prepDesafios||[]).length;
+    if (_autoTasks > 0) {
+      _prep.openSelector = 'miscursos';
+      _prep.misCursosTab = 'tareas';
+      _prep._autoOpened = true;
+    }
+  }
   // ── Selector desplegable: Nivel · Grado · Área · Colegio ────────────────────
   const openSel = _prep.openSelector;
   const areaOpts = lvDef.areas || [];
@@ -15120,7 +15288,7 @@ function _prepConfigHtml() {
     const _isAsignarOpen = openSel === 'asignar';
     const _cur = { level:_prep.level, grade:_prep.grade||'', editorial:_prep.editorial||null, area:_prep.area||null };
     // Botón va dentro del filter row
-    _asignarBtn = `${dot}<button id="prep-asignar-btn" class="prep-sel-btn${_isAsignarOpen?' sel':''}" onclick="_prepOpen('asignar');if(_prep.openSelector==='asignar'){_prepPosAsignar();_prepAsignarClickOutside();}" style="background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.5);color:#fbbf24;flex-shrink:0">📌 Asignar ${_isAsignarOpen?'▴':'▾'}</button>`;
+    _asignarBtn = `${dot}<button id="prep-asignar-btn" class="prep-sel-btn${_isAsignarOpen?' sel':''}" onclick="_prepOpen('asignar');if(_prep.openSelector==='asignar'){_prepPosAsignar();_prepAsignarClickOutside();}" style="flex-shrink:0${_isAsignarOpen?';background:rgba(251,191,36,0.35);border-color:rgba(251,191,36,0.5);color:#fbbf24':''}">📌 Asignar ${_isAsignarOpen?'▴':'▾'}</button>`;
     // Dropdown fuera del filter row (evita clipping por overflow-x:auto)
     if (_isAsignarOpen) {
       window._prepAssignCourseRef = _cur;
@@ -15135,36 +15303,170 @@ function _prepConfigHtml() {
     }
   }
 
-  // Botón admin para ver todos los cursos asignados
-  let _cursosBtn = '';
-  let _cursosDropHtml = '';
+  // Botón admin "Mis Alumnos" (Tareas · Cursos · Habilidades) — vista completa como "Mis Cursos"
+  let _misAlumnosBtn = '';
+  let _misAlumnosView = '';
   if (isAdmin()) {
-    const _isCursosOpen = openSel === 'cursos';
-    const _totalAssigned = getStudents().reduce((n,s)=>n+(_prepMyCourses(s.id).length),0);
-    _cursosBtn = `<button id="prep-cursos-btn" class="prep-sel-btn${_isCursosOpen?' sel':''}" onclick="_prepOpen('cursos');if(_prep.openSelector==='cursos'){_prepPosCursos();_prepCursosClickOutside();}" style="background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.5);color:#a78bfa;flex-shrink:0">📋 Cursos${_totalAssigned?' ('+_totalAssigned+')':''} ${_isCursosOpen?'▴':'▾'}</button>${dot}`;
-    if (_isCursosOpen) {
-      const students = getStudents().slice().sort((a,b)=>a.name.localeCompare(b.name,'es'));
-      const rows = students.map(s => {
-        const cs = _prepMyCourses(s.id);
-        if (!cs.length) return '';
-        const courseRows = cs.map((c,ci) => {
-          const lbl = _prepCourseLbl(c);
-          return `<div style="display:flex;align-items:center;gap:6px;padding:3px 12px 3px 28px">
-            <span style="font-size:12px;color:rgba(255,255,255,0.75);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${lbl}</span>
-            <button onclick="event.stopPropagation();_prepRemoveCourse(${s.id},${ci})" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.35);font-size:13px;padding:0 2px;line-height:1;flex-shrink:0" title="Quitar curso" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='rgba(255,255,255,0.35)'">✕</button>
-          </div>`;
-        }).join('');
-        return `<div style="padding:6px 0 2px">
-          <div style="padding:4px 12px;font-size:11px;color:rgba(255,255,255,0.45);font-weight:500;display:flex;align-items:center;gap:4px">
-            <span style="color:#a78bfa">${s.name}</span><span>(${cs.length})</span>
+    const _isMisAlumnosOpen = openSel === 'misalumnos';
+    const _allStudents = getStudents();
+    const _totalTareas  = _allStudents.reduce((n,s)=>n+((overrides[String(s.id)]||{}).prepTasks||[]).length, 0);
+    const _totalCursos  = _allStudents.reduce((n,s)=>n+_prepMyCourses(s.id).length, 0);
+    const _totalBadge   = _totalTareas + _totalCursos;
+    _misAlumnosBtn = `<button class="prep-sel-btn${_isMisAlumnosOpen?' sel':''}" onclick="_prepOpen('misalumnos')" style="flex-shrink:0">👥 Mis Alumnos${_totalBadge?' ('+_totalBadge+')':''} ▾</button>${dot}`;
+    if (_isMisAlumnosOpen) {
+      if (!_prep.misAlumnosTab || _prep.misAlumnosTab === 'habilidades') _prep.misAlumnosTab = 'tareas';
+      const _maTab = _prep.misAlumnosTab;
+      const _sortedSt = _allStudents.slice().sort((a,b)=>a.name.localeCompare(b.name,'es'));
+      // Tab buttons
+      const _tabBtn = (key, lbl, n) => `<button onclick="_prep.misAlumnosTab='${key}';_renderPreparatePane()" class="prep-sel-btn${_maTab===key?' sel':''}">${lbl}${n?` (${n})`:''}</button>`;
+      const _tabHdr = `<div style="display:flex;gap:6px;padding:16px 0 12px;border-bottom:1px solid rgba(255,255,255,0.08)">
+        ${_tabBtn('tareas','📌 Tareas',_totalTareas)}
+        ${_tabBtn('cursos','📋 Cursos',_totalCursos)}
+        ${_tabBtn('unidades','📚 Unidades','')}
+      </div>`;
+      // Helpers — mismo estilo que Mis Cursos
+      const _vivid2 = ['#6d28d9','#2563eb','#0e7490','#be185d','#b45309','#15803d','#c2410c','#0f766e','#7e22ce','#1d4ed8','#b91c1c','#0369a1'];
+      const _secHdrMA = lbl => `<div style="font-size:10px;font-weight:700;color:#fff;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;margin-top:4px">${lbl}</div>`;
+      const _rmBtnMA = (onclick) => `<button onclick="${onclick}" style="background:none;border:none;color:rgba(255,255,255,0.22);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='rgba(248,113,113,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.22)'">✕</button>`;
+      const _restoreBtnMA = (onclick) => `<button onclick="${onclick}" style="background:none;border:none;color:rgba(139,92,246,0.4);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='rgba(139,92,246,0.4)'">↺</button>`;
+      let _maColorIdx = 0;
+      const _W = {dominado:100,competente:75,familiar:50,intentado:25,pendiente:0,unknown:0};
+      const _histSt = (uid) => Array.isArray(_prepAdminHistData) ? _prepAdminHistData.filter(h=>String(h.uid)===String(uid)) : null;
+      const _skillsScore = (skills, hist) => {
+        if (!skills.length || !hist) return null;
+        const pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
+        const pure = skills.filter(pf);
+        if (!pure.length) return null;
+        const dom = pure.filter(k=>_prepMasteryLevelH(k,hist)==='dominado').length;
+        const pct = Math.round(pure.map(k=>_W[_prepMasteryLevelH(k,hist)]||0).reduce((a,b)=>a+b,0)/pure.length);
+        return {pct, dom, total: pure.length};
+      };
+      const _cardMA = (ico, subtitle, title, extra, pctData, actionBtn) => {
+        const bg = _vivid2[_maColorIdx++ % _vivid2.length];
+        const barHtml = pctData
+          ? `<div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+               <div style="flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pctData.pct}%;background:#7c3aed;border-radius:3px"></div></div>
+               <span style="font-size:13px;color:#a78bfa;font-weight:600;flex-shrink:0">${pctData.pct}%</span>
+               ${actionBtn}
+             </div>
+             <div style="font-size:11px;color:rgba(255,255,255,0.32);margin-top:2px">${pctData.dom} dominadas / ${pctData.total} habilidades</div>`
+          : `<div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+               ${extra ? `<div style="font-size:11px;color:rgba(255,255,255,0.38);flex:1">${extra}</div>` : '<div style="flex:1"></div>'}
+               ${actionBtn}
+             </div>`;
+        return `<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px">
+          <div style="width:44px;height:44px;border-radius:10px;background:${bg};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${ico}</div>
+          <div style="flex:1;min-width:0">
+            ${subtitle?`<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px">${subtitle}</div>`:''}
+            <div style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div>
+            ${barHtml}
           </div>
-          ${courseRows}
         </div>`;
-      }).filter(Boolean);
-      const inner = rows.length
-        ? rows.join('<div style="border-top:1px solid rgba(255,255,255,0.07);margin:2px 8px"></div>')
-        : `<div style="padding:16px 12px;font-size:13px;color:rgba(255,255,255,0.35);text-align:center">Sin cursos asignados</div>`;
-      _cursosDropHtml = `<div id="prep-cursos-dd" style="position:fixed;top:-999px;left:0;z-index:9999;background:#1a1f2e;border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 0;min-width:260px;box-shadow:0 8px 24px rgba(0,0,0,0.5);max-height:320px;overflow-y:auto">${inner}</div>`;
+      };
+      let innerContent = '';
+      if (_maTab === 'tareas') {
+        const sections = _sortedSt.map(s => {
+          const tasks = (overrides[String(s.id)]||{}).prepTasks || [];
+          if (!tasks.length) return '';
+          const _sHist = _histSt(s.id);
+          const cards = tasks.map((t, ti) => {
+            const _isExamT = !!t.exam;
+            const _def2 = BINGO_TOPICS[t.topic]||{};
+            const lbl = _isExamT ? (t.label||'Examen') : (_def2.lbl || t.topic || '—');
+            const ico = _isExamT ? '★' : (_def2.ico || '⚡');
+            const skills = _isExamT ? (t.skills||[]) : (t.topic ? [t.topic] : []);
+            const pctData = _skillsScore(skills, _sHist);
+            const _pct2 = pctData ? pctData.pct : 0;
+            const _done2 = _pct2 >= 100;
+            const _barColor2 = _done2 ? '#f59e0b' : (_isExamT ? '#f59e0b' : '#7c3aed');
+            const _cardBg2 = _done2 ? 'rgba(251,191,36,0.60)' : 'rgba(250,204,21,0.50)';
+            const _cardBgHov2 = _done2 ? 'rgba(251,191,36,0.70)' : 'rgba(250,204,21,0.60)';
+            const _cardBdr2 = 'rgba(250,204,21,0.45)';
+            const _iconBg2 = _done2 ? 'rgba(251,191,36,0.4)' : (_isExamT ? 'rgba(251,191,36,0.35)' : 'rgba(139,92,246,0.35)');
+            const _subtitle2 = _isExamT ? 'Examen de unidad' : (_def2.quiz ? 'Cuestionario' : 'Habilidad');
+            const _bottomTxt2 = pctData ? `${pctData.dom} dominadas / ${pctData.total} habilidades` : 'Sin intentos';
+            const _completedBadge2 = _done2 ? `<span style="font-size:10px;color:#fbbf24;font-weight:700;letter-spacing:.03em;margin-left:6px">✓ Completado</span>` : '';
+            const _dueLbl2 = t.dueAt ? (() => {
+              const _d2 = new Date(t.dueAt * 1000);
+              const _now2 = Date.now() / 1000;
+              const _overdue2 = !_done2 && t.dueAt < _now2;
+              const _ds2 = _d2.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) + ' ' + _d2.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+              return `<span style="font-size:10px;font-weight:700;margin-left:8px;color:${_overdue2?'#f87171':'rgba(255,255,255,0.3)'}">· Vence ${_ds2}${_overdue2?' ⚠️':''}</span>`;
+            })() : '';
+            return `<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:${_cardBg2};border:1px solid ${_cardBdr2};border-radius:12px;transition:background 0.15s" onmouseover="this.style.background='${_cardBgHov2}'" onmouseout="this.style.background='${_cardBg2}'">
+              <div style="width:44px;height:44px;border-radius:10px;background:${_iconBg2};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${ico}</div>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px">${_subtitle2}</div>
+                <div style="font-size:14px;font-weight:600;color:#fff;margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${lbl}</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="flex:1;height:6px;background:rgba(255,255,255,0.5);border-radius:3px;overflow:hidden">
+                    <div style="height:100%;width:${_pct2}%;background:${_barColor2};border-radius:3px"></div>
+                  </div>
+                  <span style="font-size:13px;color:rgba(255,255,255,0.9);font-weight:600;flex-shrink:0">${_pct2}%</span>
+                  <button onclick="event.stopPropagation();_prepRemoveTask(${s.id},${ti})" style="background:none;border:none;color:rgba(255,255,255,0.22);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='rgba(248,113,113,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.22)'">✕</button>
+                </div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:4px">${_bottomTxt2}${_completedBadge2}${_dueLbl2}</div>
+              </div>
+            </div>`;
+          }).join('');
+          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''))}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+        }).filter(Boolean);
+        innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin tareas asignadas</div>`;
+      } else if (_maTab === 'cursos') {
+        const sections = _sortedSt.map(s => {
+          const cs = _prepMyCourses(s.id);
+          if (!cs.length) return '';
+          const _sHist2 = _histSt(s.id);
+          const cards = cs.map((c,ci) => {
+            const lv2 = PREP_LEVELS[c.level]||{};
+            const areaLbl = c.area ? ((lv2.areas||[]).find(a=>a.key===c.area)?.lbl||'') : '';
+            const edLbl  = c.editorial ? (PREP_EDITORIALS[c.editorial]?.lbl||c.editorial) : '';
+            const name = areaLbl || edLbl || 'Curso completo';
+            const sub  = `${lv2.lbl||''}${c.grade?' · '+c.grade+'° Grado':''}`;
+            const skills = ((PREP_CURRICULUM[c.level]||{})[c.grade]||[])
+              .filter(u=>(!c.editorial||u.editorial===c.editorial)&&(!c.area||u.area===c.area))
+              .flatMap(u=>u.skills||[]);
+            const pctData = _skillsScore(skills, _sHist2);
+            return _cardMA('📚', sub, name, '', pctData, _rmBtnMA(`_prepRemoveCourse(${s.id},${ci})`));
+          }).join('');
+          return `${_secHdrMA(s.name+' · '+cs.length+' curso'+(cs.length!==1?'s':''))}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+        }).filter(Boolean);
+        innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin cursos asignados</div>`;
+      } else {
+        // Unidades: unidades del currículo de los cursos asignados
+        const sections = _sortedSt.map(s => {
+          const cs = _prepMyCourses(s.id);
+          if (!cs.length) return '';
+          const excl = (overrides[String(s.id)]||{}).excludedTopics || [];
+          const _sHist3 = _histSt(s.id);
+          // Recopilar unidades únicas de todos los cursos asignados
+          const seenSkillSets = new Set();
+          const unitCards = cs.flatMap(c => {
+            const lv3 = PREP_LEVELS[c.level]||{};
+            const gradeLbl = c.grade ? `${lv3.lbl||''} · ${c.grade}° Grado` : (lv3.lbl||'');
+            return ((PREP_CURRICULUM[c.level]||{})[c.grade]||[])
+              .filter(u => (!c.editorial || u.editorial===c.editorial) && (!c.area || u.area===c.area))
+              .filter(u => { const key = (u.skills||[]).join(','); if (seenSkillSets.has(key)) return false; seenSkillSets.add(key); return true; })
+              .map(u => {
+                const unitSkills = (u.skills||[]).filter(sk => sk in BINGO_TOPICS);
+                if (!unitSkills.length) return '';
+                const allExcl = unitSkills.length > 0 && unitSkills.every(sk => excl.includes(sk));
+                const pctData = _skillsScore(unitSkills, _sHist3);
+                const skillsCsv = unitSkills.join(',').replace(/'/g,"\\'");
+                const unitLblEsc = (u.lbl||'Unidad').replace(/'/g,"\\'");
+                const ico = allExcl ? '🚫' : '📖';
+                return _cardMA(ico, gradeLbl, u.lbl||'Unidad', allExcl?'Excluida':'', pctData,
+                  allExcl
+                    ? _restoreBtnMA(`_prepToggleExcludedUnit(${s.id},'${skillsCsv}','${unitLblEsc}')`)
+                    : _rmBtnMA(`_prepToggleExcludedUnit(${s.id},'${skillsCsv}','${unitLblEsc}')`));
+              });
+          }).filter(Boolean).join('');
+          if (!unitCards) return '';
+          return `${_secHdrMA(s.name)}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>`;
+        }).filter(Boolean);
+        innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin cursos asignados</div>`;
+      }
+      _misAlumnosView = `<div style="padding:0 0 24px;overflow-y:auto;flex:1">${_tabHdr}<div style="padding:4px 0">${innerContent}</div></div>`;
     }
   }
 
@@ -15232,7 +15534,7 @@ function _prepConfigHtml() {
   const _dis = lbl => `<button class="prep-sel-btn" style="flex-shrink:0;opacity:.35;cursor:default;pointer-events:none">${lbl}</button>`;
   const selectorRow = isHiddenLevel
     ? `<div class="prep-mob-filter-row" style="${_rowStyle};margin:0 0 4px">${_dis('Nivel')}${dot}${_dis('Grado ▾')}${dot}${_dis('🏫 Colegio')}${dot}${_dis('Área')}${dot}${_volverBtn}</div>`
-    : `<div class="prep-mob-filter-row" style="${_rowStyle};margin:0 0 4px">${_misCursosBtn}${_cursosBtn}${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${dot}${areaSel}${_resetBtn}${_asignarBtn}</div>${_asignarDropHtml}${_cursosDropHtml}${_optsRow}`;
+    : `<div class="prep-mob-filter-row" style="${_rowStyle};margin:0 0 4px">${_misCursosBtn}${_misAlumnosBtn}${nivelSel}${dot}${gradeSel}${dot}${colegioSel}${dot}${areaSel}${_resetBtn}${_asignarBtn}</div>${_asignarDropHtml}${_optsRow}`;
   // Botón desafío de dominio: siempre visible, deshabilitado si no hay curso seleccionado
   const _challengeBtn = isHiddenLevel ? '' : `<button class="prep-kh-btn-challenge" onclick="_prepOpenDesafio()">🎯 Desafío de Dominio</button>`;
 
@@ -15548,6 +15850,23 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     };
+  // Helper: ¿ya está asignada esta actividad como tarea?
+  const _taskAssigned = (taskId) => {
+    const _uid = String(getLoggedId());
+    return ((overrides[_uid]||{}).prepTasks||[]).some(t => {
+      const tid = t.exam ? 'exam:'+(t.skills||[]).join(',') : t.topic;
+      return tid === taskId;
+    });
+  };
+  const _taskBtnHtml = (taskId, onclickArg, baseStyle='') => {
+    const assigned = _taskAssigned(taskId);
+    const style = assigned
+      ? `flex-shrink:0;font-size:15px;width:36px;height:36px;border-color:#fff;border-width:2px;background:#fff;color:#fff;opacity:1;${baseStyle}`
+      : `flex-shrink:0;font-size:15px;width:36px;height:36px;${baseStyle}`;
+    const title = assigned ? 'Tarea asignada · click para eliminar' : 'Agregar como tarea';
+    const ico = '📌';
+    return `<button class="prep-opt-sq" onclick="${onclickArg}" title="${title}" style="${style}">${ico}</button>`;
+  };
   // Panel de inicio para la habilidad seleccionada (se inyecta inline en el grid)
   let startPanel = '';
   if (_prep.topic && allTopicKeys.includes(_prep.topic)) {
@@ -15574,7 +15893,7 @@ function _prepConfigHtml() {
       </div>` : '';
     const _gearStyle = _isQT ? 'flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(255,255,255,0.25);color:#fff;border-color:rgba(255,255,255,0.25)' : 'flex-shrink:0;font-size:15px;width:36px;height:36px';
     const _gearBtn = (_isAdminMode||_isImpersonating) ? `<button class="prep-opt-sq" onclick="_prepToggleConfig()" title="${_prep.showConfig?'Cerrar configuración':'Configurar sesión'}" style="${_gearStyle}">${_prep.showConfig?'✕':'⚙'}</button>` : '';
-    const _taskBtn = !_isAdminMode ? `<button class="prep-opt-sq" onclick="openPrepTaskModal(_prep.topic)" title="Agregar como tarea" style="flex-shrink:0;font-size:15px;width:36px;height:36px">📌</button>` : '';
+    const _taskBtn = !_isAdminMode ? _taskBtnHtml(_prep.topic, `openPrepTaskModal(_prep.topic)`) : '';
     const _barStyle = _isQT ? 'border-color:rgba(200,200,220,0.45);background:rgba(200,200,220,0.50)' : 'border-color:rgba(139,92,246,0.7);background:linear-gradient(135deg,rgba(109,40,217,0.22),rgba(139,92,246,0.14));box-shadow:0 0 18px rgba(139,92,246,0.18)';
     const _btnStyle = _isQT ? 'background:rgba(255,255,255,0.25);border:none' : '';
     const _boltIco = `<svg width="11" height="13" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="#fff"/></svg>`;
@@ -15619,7 +15938,7 @@ function _prepConfigHtml() {
     const _examPreviewTime = _examTotalQ ? ` · ${Math.floor(_examPreviewSecs/60)}:${String(_examPreviewSecs%60).padStart(2,'0')}` : '';
     const _examSkillsArg = _prep.selectedExamSkills.map(s=>`'${s}'`).join(',');
     const _adminQBtnEx = isAdmin() ? `<button class="prep-opt-sq" onclick="openQuestionsModal([${_examSkillsArg}],'${_prep.selectedExamLbl}')" title="Ver preguntas de este examen" style="flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.5);color:#fbbf24">📚</button>` : '';
-    const _taskBtnEx = !_isAdminMode ? `<button class="prep-opt-sq" onclick="openPrepTaskModal(null,'${_prep.selectedExamLbl.replace(/'/g,"\\'")}', [${_examSkillsArg}])" title="Agregar como tarea" style="flex-shrink:0;font-size:15px;width:36px;height:36px">📌</button>` : '';
+    const _taskBtnEx = !_isAdminMode ? _taskBtnHtml('exam:'+_prep.selectedExamSkills.join(','), `openPrepTaskModal(null,'${_prep.selectedExamLbl.replace(/'/g,"\\'")}', [${_examSkillsArg}])`) : '';
     // Topic para leaderboard = primer skill no-quiz del examen (igual que _prepUnitExam)
     const _examLbTopic = _prep.selectedExamSkills.find(sk=>BINGO_TOPICS[sk]&&!BINGO_TOPICS[sk].quiz) || _prep.selectedExamSkills[0];
     startPanel = `<div class="prep-kh-start-bar" style="border-color:rgba(250,204,21,0.45);background:rgba(250,204,21,0.50)">
@@ -15662,7 +15981,7 @@ function _prepConfigHtml() {
           if (isSel) {
             const _startBtn3 = `<button class="prep-start-btn" style="width:36px;height:36px;margin-top:0;padding:0;border-radius:8px;font-size:15px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.25);border:none;flex-shrink:0" onclick="_prepStart()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 386.11 481.84" width="14" height="17"><path fill="#fff" d="M1211.86,759.88,973,927.35c-48.77,34.2-116-.56-116-60V532.48c0-59.43,67.2-94.18,116-60L1211.86,640C1253.52,669.17,1253.52,730.67,1211.86,759.88Z" transform="translate(-857 -459)"/></svg></button>`;
             const _adminQBtn3 = isAdmin() ? `<button class="prep-opt-sq" onclick="openQuestionsModal(_prep.topic)" title="Ver preguntas" style="flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.5);color:#fbbf24">📚</button>` : '';
-            const _taskBtn3 = !_isAdminMode ? `<button class="prep-opt-sq" onclick="openPrepTaskModal('${sk}')" title="Agregar como tarea" style="flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.25)">📌</button>` : '';
+            const _taskBtn3 = !_isAdminMode ? _taskBtnHtml(sk, `openPrepTaskModal('${sk}')`, 'background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.25)') : '';
             return `<div id="prep-row-${sk}" class="prep-kh-quiz-card done selected" style="cursor:pointer" onclick="_snd.click();_prep.topic='';_renderPreparatePane()">
               <div class="prep-kh-quiz-info">
                 <div class="prep-kh-quiz-tag">Cuestionario ${quizCount}</div>
@@ -15685,7 +16004,7 @@ function _prepConfigHtml() {
         if (isSel) {
           const _adminQBtn2 = isAdmin() ? `<button class="prep-opt-sq" onclick="openQuestionsModal(_prep.topic)" title="Ver preguntas" style="flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.5);color:#fbbf24">📚</button>` : '';
           const _gearBtn2 = (_isAdminMode||_isImpersonating) ? `<button class="prep-opt-sq" onclick="_prepToggleConfig()" title="${_prep.showConfig?'Cerrar':'Configurar'}" style="flex-shrink:0;font-size:15px;width:36px;height:36px${def.quiz?';background:rgba(255,255,255,0.25);color:#fff;border-color:rgba(255,255,255,0.25)':''}">⚙</button>` : '';
-          const _taskBtn2 = !_isAdminMode ? `<button class="prep-opt-sq" onclick="openPrepTaskModal('${sk}')" title="Agregar como tarea" style="flex-shrink:0;font-size:15px;width:36px;height:36px">📌</button>` : '';
+          const _taskBtn2 = !_isAdminMode ? _taskBtnHtml(sk, `openPrepTaskModal('${sk}')`) : '';
           const _startBtn2 = `<button class="prep-start-btn" style="width:36px;height:36px;margin-top:0;padding:0;border-radius:8px;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;${def.quiz?'background:rgba(255,255,255,0.25);border:none':''}" onclick="_prepStart()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 386.11 481.84" width="14" height="17"><path fill="#fff" d="M1211.86,759.88,973,927.35c-48.77,34.2-116-.56-116-60V532.48c0-59.43,67.2-94.18,116-60L1211.86,640C1253.52,669.17,1253.52,730.67,1211.86,759.88Z" transform="translate(-857 -459)"/></svg></button>`;
           return `<div id="prep-row-${sk}" class="prep-kh-sk-row selected" style="cursor:pointer" onclick="_snd.click();_prep.topic='';_renderPreparatePane()">
             <div class="prep-kh-sk-info">
@@ -15735,11 +16054,11 @@ function _prepConfigHtml() {
           const qPct=_prepLastPct(sk);
           const qTip=`Cuestionario ${_qn3}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane();setTimeout(()=>document.getElementById('prep-row-${sk}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane();setTimeout(()=>document.getElementById('prep-row-${sk}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
       }).join('');
       const _starSvgExp=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
       const expExamSq=`<div class="prep-kh-sq exam-sq${_examDom?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui});setTimeout(()=>document.getElementById('prep-exam-${ui}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
@@ -15787,7 +16106,7 @@ function _prepConfigHtml() {
   if (openSel === 'miscursos' && !isAdmin() && _myCourses.length) {
     const _pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
     const _vivid = ['#6d28d9','#2563eb','#0e7490','#be185d','#b45309','#15803d','#c2410c','#0f766e','#7e22ce','#1d4ed8','#b91c1c','#0369a1'];
-    const _card = (ico, subtitle, name, dom, total, bg, onclick) => {
+    const _card = (ico, subtitle, name, dom, total, bg, onclick, unitsSub) => {
       const pct = total ? Math.round(dom/total*100) : 0;
       return `<div onclick="${onclick}" style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">
         <div style="width:44px;height:44px;border-radius:10px;background:${bg};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${ico}</div>
@@ -15801,7 +16120,7 @@ function _prepConfigHtml() {
             <span style="font-size:13px;color:#a78bfa;font-weight:600;flex-shrink:0">${pct}%</span>
             <span style="color:rgba(255,255,255,0.2);font-size:16px;flex-shrink:0;line-height:1;margin-bottom:3px">›</span>
           </div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.32);margin-top:4px">${dom} dominadas / ${total} habilidades</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.32);margin-top:4px">${unitsSub || dom + ' dominadas / ' + total + ' habilidades'}</div>
         </div>
       </div>`;
     };
@@ -15810,12 +16129,15 @@ function _prepConfigHtml() {
       const courseUnits = ((PREP_CURRICULUM[c.level]||{})[c.grade]||[]).filter(u => (!c.editorial||u.editorial===c.editorial) && (!c.area||u.area===c.area));
       const skills = courseUnits.flatMap(u=>(u.skills||[]).filter(_pf));
       const dom = masLoading ? 0 : skills.filter(k=>_prepMasteryLevel(k)==='dominado').length;
+      const totalUnits = courseUnits.length;
+      const domUnits = masLoading ? 0 : courseUnits.filter(u => { const us=(u.skills||[]).filter(_pf); return us.length>0 && us.every(k=>_prepMasteryLevel(k)==='dominado'); }).length;
+      const unitsSub = `${domUnits} unidades dominadas / ${totalUnits} unidades totales`;
       const areaLbl = c.area ? ((lv2.areas||[]).find(a=>a.key===c.area)?.lbl||'') : '';
       const edLbl  = c.editorial ? (PREP_EDITORIALS[c.editorial]?.lbl||c.editorial) : '';
       const name = areaLbl || edLbl || 'Curso completo';
       const sub  = `${lv2.lbl||''}${c.grade?' · '+c.grade+'° Grado':''}`;
       const _navC = `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${c.editorial?`'${c.editorial}'`:'null'};_prep.area=${c.area?`'${c.area}'`:'null'};_prep.editorialChosen=${!!c.editorial};_prep.topic='';_prep.selectedUnit=null;_prep.openSelector=null;_renderPreparatePane()`;
-      return _card('📚', sub, name, dom, skills.length, _vivid[ci % _vivid.length], _navC);
+      return _card('📚', sub, name, dom, skills.length, _vivid[ci % _vivid.length], _navC, unitsSub);
     }).join('');
     let _uGlobalIdx = 0;
     const unitCards = _myCourses.flatMap(c => {
@@ -15844,7 +16166,7 @@ function _prepConfigHtml() {
               const _ed = c.editorial ? `'${c.editorial}'` : 'null';
               const _ar = c.area ? `'${c.area}'` : 'null';
               const _sa = (t.skills||[]).map(s=>`'${s}'`).join(',');
-              return `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${_ed};_prep.area=${_ar};_prep.editorialChosen=${!!c.editorial};_prep.openSelector=null;_prepSelectExam([${_sa}],${_ui})`;
+              return `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${_ed};_prep.area=${_ar};_prep.editorialChosen=${!!c.editorial};_prep.openSelector=null;_prepUnitExam([${_sa}],${_ui})`;
             }
           }
         }
@@ -15856,7 +16178,7 @@ function _prepConfigHtml() {
             if ((_cUnits[_ui].skills||[]).includes(t.topic)) {
               const _ed = c.editorial ? `'${c.editorial}'` : 'null';
               const _ar = c.area ? `'${c.area}'` : 'null';
-              return `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${_ed};_prep.area=${_ar};_prep.editorialChosen=${!!c.editorial};_prep.topic='${t.topic}';_prep.selectedUnit=${_ui};_prep.openSelector=null;_renderPreparatePane();setTimeout(()=>document.getElementById('prep-row-${t.topic}')?.scrollIntoView({behavior:'smooth',block:'center'}),60)`;
+              return `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${_ed};_prep.area=${_ar};_prep.editorialChosen=${!!c.editorial};_prep.topic='${t.topic}';_prep.selectedUnit=${_ui};_prep.openSelector=null;_prepStart()`;
             }
           }
         }
@@ -16006,12 +16328,24 @@ function _prepConfigHtml() {
       </div>`;
     }).join('');
     const _desafioSection = _myDesafios.length ? `${_secHdr('Desafío de Dominio')}<div style="display:flex;flex-direction:column;gap:7px">${_desafioCards}</div>` : '';
-    _misCursosView = `<div style="padding:8px 0;display:flex;flex-direction:column;gap:14px">
-      ${_tasksSection}
-      ${_desafioSection}
-      ${_secHdr('Dominio de curso')}<div style="display:flex;flex-direction:column;gap:8px">${courseCards}</div>
-      ${_secHdr('Dominio de unidad')}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>
+    const _hasTareas = !!(_myTasks.length || _myDesafios.length);
+    if (!_prep.misCursosTab || (_prep.misCursosTab==='tareas' && !_hasTareas)) _prep.misCursosTab = _hasTareas ? 'tareas' : 'cursos';
+    const _mcTab = _prep.misCursosTab;
+    const _mcTabBtn = (key,lbl,n) => `<button onclick="_prep.misCursosTab='${key}';_renderPreparatePane()" class="prep-sel-btn${_mcTab===key?' sel':''}">${lbl}${n?` (${n})`:''}</button>`;
+    const _mcTabHdr = `<div style="display:flex;gap:6px;padding:0 0 12px">
+      ${_hasTareas ? _mcTabBtn('tareas','📌 Tareas', _myTasks.length+_myDesafios.length) : ''}
+      ${_mcTabBtn('cursos','📋 Cursos','')}
+      ${_mcTabBtn('unidades','📚 Unidades','')}
     </div>`;
+    let _mcInner = '';
+    if (_mcTab === 'tareas') {
+      _mcInner = _tasksSection + _desafioSection || '<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin tareas asignadas</div>';
+    } else if (_mcTab === 'cursos') {
+      _mcInner = `${_secHdr('Dominio de curso')}<div style="display:flex;flex-direction:column;gap:8px">${courseCards}</div>`;
+    } else {
+      _mcInner = `${_secHdr('Dominio de unidad')}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>`;
+    }
+    _misCursosView = `<div style="padding:8px 0;display:flex;flex-direction:column;gap:14px">${_mcTabHdr}${_mcInner}</div>`;
   }
 
   const contentArea = `<div class="prep-kh-content">
@@ -16020,7 +16354,7 @@ function _prepConfigHtml() {
       <div style="flex:1;min-width:0">${selectorRow}</div>
       ${_misCursosView ? '' : _challengeBtn}
     </div>
-    ${_misCursosView || (_mobIndexPanel + courseHeader + legend + unitsHtml + (isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()))}
+    ${_misAlumnosView || _misCursosView || (_mobIndexPanel + courseHeader + legend + unitsHtml + (isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()))}
   </div>`;
 
   return `<div class="prep-wrap" style="padding-bottom:8px">
@@ -16683,6 +17017,7 @@ async function _prepOpenWeeklyReport(uid) {
   _renderPreparatePane();
 }
 function closeWeeklyReport() {
+  _prepWeeklyReportPdfTarget = null;
   _prepWeeklyReportOpen = false;
   _renderPreparatePane();
 }
@@ -16726,14 +17061,16 @@ function _prepReportTextToHtml(text) {
 // semana" — a diferencia del texto plano de WhatsApp/copiar (_prepBuildWeeklyReportText), que no
 // se toca y sigue mostrando solo íconos + nombres. Reutiliza la misma lógica de agrupación por
 // curso/unidad que _prepBuildWeeklyReportText.
-function _prepBuildWeeklyReportPdfHtml(uid, hist) {
+function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
+  days = days || 7;
+  const _rTitleLbl = days === 1 ? 'DIARIO' : 'SEMANAL';
   const students = getStudents();
   const stu = students.find(s=>String(s.id)===String(uid));
   const name = stu ? stu.name : 'Alumno';
   hist = Array.isArray(hist) ? hist : [];
   const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const nowSec = Math.floor(Date.now()/1000);
-  const weekAgoSec = nowSec - 7*86400;
+  const weekAgoSec = nowSec - days*86400;
   const last7 = hist.filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec);
   const _myCoursesP = _prepMyCourses(uid);
   const _isAssignedCourseP = h => {
@@ -16754,7 +17091,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist) {
   const weekAgoStr = new Date(weekAgoSec*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
 
   if (!direct7.length) {
-    return `<div style="font-size:19px;font-weight:900;color:#7c3aed;margin-bottom:2px">📊 REPORTE SEMANAL - ${esc(name.toUpperCase())}</div>`
+    return `<div style="font-size:19px;font-weight:900;color:#7c3aed;margin-bottom:2px">📊 REPORTE ${_rTitleLbl} - ${esc(name.toUpperCase())}</div>`
       + `<div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:12px">📅 ${weekAgoStr} al ${todayStr}</div>`
       + `<div style="font-size:13px;color:#222;line-height:1.55">${esc(name)} no registró actividad en Level Up esta semana.</div>`;
   }
@@ -16837,7 +17174,8 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist) {
     const skills = u.skills.filter(_pureSkillFilter);
     if (!skills.length) return null;
     const counts = {};
-    skills.forEach(sk => { const lvl = _prepMasteryLevelH(sk, hist); counts[lvl] = (counts[lvl]||0)+1; });
+    // Skills no practicadas cuentan como 'pendiente'
+    skills.forEach(sk => { const lvl = _prepMasteryLevelH(sk, hist) || 'pendiente'; counts[lvl] = (counts[lvl]||0)+1; });
     let best = null, bestCount = -1;
     Object.keys(counts).forEach(lvl => {
       const c = counts[lvl];
@@ -16848,27 +17186,29 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist) {
   const _prepUnitAvgPct = (u) => {
     const skills = Array.from(u.skills).filter(_pureSkillFilter);
     if (!skills.length) return null;
-    const pcts = skills.map(sk=>_prepLastPctH(sk, hist)).filter(p=>p!==null && p!==undefined);
-    if (!pcts.length) return null;
-    return Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length);
+    // Dividir entre el TOTAL de skills de la unidad, no solo las practicadas
+    const sum = skills.reduce((a,sk)=>{ const p=_prepLastPctH(sk,hist); return a+(p!=null?p:0); },0);
+    return Math.round(sum / skills.length);
   };
   const unitTables = Object.values(unitGroups).map(g=>{
     const rows = Object.entries(g.units)
       .filter(([,u])=>u.skills.size>0)
       .sort((a,b)=>a[1].unitIdx-b[1].unitIdx)
       .map(([lbl,u])=>{
-        const lvl = _prepUnitPredominantLvl(u.unitObj);
+        // Habilidades dominadas vs total puro de la unidad
+        const _pureUnitSkills = (u.unitObj.skills||[]).filter(_pureSkillFilter);
+        const _domCount = _pureUnitSkills.filter(sk=>_prepMasteryLevelH(sk,hist)==='dominado').length;
+        const _totalPure = _pureUnitSkills.length;
+        const pct = _totalPure ? Math.round(_domCount/_totalPure*100) : null;
+        // Dominio basado en % real (dominadas/total), no en mayoría
+        const lvl = pct !== null ? lvlFromPct(pct) : null;
         const ico = lvl ? (_lvlIco[lvl]||'') : '';
-        const pct = _prepUnitAvgPct(u.unitObj);
-        // Unidad/Nombre/Dominio/Habilidades en columnas separadas (mismo criterio que la tabla de
-        // Actividades): Unidad = "U04"; Nombre = nombre de la unidad; Dominio = ícono predominante;
-        // Habilidades = solo la fracción "X/Y" (sin la palabra "habilidades", ya la dice el encabezado).
         const unitNumStr = u.unitIdx!==999 ? String(u.unitIdx+1).padStart(2,'0') : '';
         return {
           unidadCol: unitNumStr ? `U${unitNumStr}` : '—',
           nombreCol: lbl,
           dominioIco: ico,
-          habilidadesCol: `${u.skills.size}${u.total!==null?'/'+u.total:''}`,
+          habilidadesCol: `${_domCount}/${_totalPure}`,
           exercises: `${u.exCorrect}/${u.exTotal}`,
           pct: pct===null ? '—' : `${pct}%`,
           lastDate: fmtDate(u.lastSec),
@@ -16970,7 +17310,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist) {
         dateStr: fmtDate(sec), hourStr: fmtHour(sec),
         exercises: isAuto ? '—' : `${h.correct||0}/${h.total||0}`,
         pct: pctOf(h),
-        timeStr: isAuto ? '—' : fmtTime(h.timeSec)
+        timeStr: isAuto ? '—' : fmtTime(touched7.filter(h2=>h2.topic===h.topic&&!h2.autoFromExam&&!h2.autoFromQuiz).reduce((a,h2)=>a+(h2.timeSec||0),0))
       });
       touchedUnits.add(u);
     }
@@ -17028,7 +17368,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist) {
         hourStr: fmtHour(_lSec),
         exercises: _lastSess ? `${_lastSess.correct||0}/${_lastSess.total||0}` : '—',
         pct: _lPctNum !== null ? `${_lPctNum}%` : '—',
-        timeStr: fmtTime(_lastSess?.timeSec),
+        timeStr: fmtTime(hist.filter(h2=>h2.topic===sk&&!h2.autoFromExam&&!h2.autoFromQuiz).reduce((a,h2)=>a+(h2.timeSec||0),0)),
         unitIdx: unitIdx>=0?unitIdx:999, sIdx
       });
       reforzar.push({ sk, lbl, lvl, pct });
@@ -17087,7 +17427,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist) {
   };
 
   let html = '';
-  html += `<div style="font-size:19px;font-weight:900;color:#7c3aed;margin-bottom:2px;text-align:center">📊 REPORTE SEMANAL - ${esc(name.toUpperCase())}</div>`;
+  html += `<div style="font-size:19px;font-weight:900;color:#7c3aed;margin-bottom:2px;text-align:center">📊 REPORTE ${_rTitleLbl} - ${esc(name.toUpperCase())}</div>`;
   html += `<div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:12px;text-align:center">📅 ${weekAgoStr} al ${todayStr}</div>`;
 
   const _lvlKeys = Object.keys(_lvlIco);
@@ -17459,6 +17799,109 @@ async function _prepDownloadFamilyWeeklyReportPDF() {
     document.body.removeChild(holder);
   }
 }
+function _prepWeeklyReportModalBtns(name, hasSiblings, familyLastName, btnStyle) {
+  const t = _prepWeeklyReportPdfTarget;
+  const _subBtns = (onSem, onDay) => `
+    <div style="display:flex;gap:8px;padding:4px 0 4px 12px;border-left:3px solid rgba(139,92,246,0.5)">
+      <button onclick="${onSem}" style="${btnStyle};flex:1">📅 Semanal</button>
+      <button onclick="${onDay}" style="${btnStyle};flex:1;background:linear-gradient(135deg,#f59e0b,#d97706)">📆 Diario</button>
+    </div>`;
+  let html = `<button onclick="_prepWeeklyReportPdfTarget=(_prepWeeklyReportPdfTarget==='self'?null:'self');_renderPreparatePane()" style="${btnStyle}${t==='self'?';outline:3px solid #a78bfa':''}">📄 Descargar PDF — ${name}</button>`;
+  if (t === 'self') html += _subBtns('_prepDownloadWeeklyReportPDF()', '_prepDownloadDailyReportPDF()');
+  if (hasSiblings) {
+    _prepWeeklyReportSiblings.forEach(sib => {
+      const sf = sib.name.split(' ')[0];
+      const tid = 'sib_'+sib.uid;
+      html += `<button onclick="_prepWeeklyReportPdfTarget=(_prepWeeklyReportPdfTarget==='${tid}'?null:'${tid}');_renderPreparatePane()" style="${btnStyle}${t===tid?';outline:3px solid #a78bfa':''}">📄 Descargar PDF — ${sf}</button>`;
+      if (t === tid) html += _subBtns(`_prepDownloadSiblingWeeklyReportPDF('${sib.uid}')`, `_prepDownloadSiblingDailyReportPDF('${sib.uid}')`);
+    });
+    html += `<button onclick="_prepWeeklyReportPdfTarget=(_prepWeeklyReportPdfTarget==='family'?null:'family');_renderPreparatePane()" style="${btnStyle}${t==='family'?';outline:3px solid #a78bfa':''}">👨‍👩‍👧‍👦 Descargar ${familyLastName} PDF</button>`;
+    if (t === 'family') html += _subBtns('_prepDownloadFamilyWeeklyReportPDF()', '_prepDownloadFamilyDailyReportPDF()');
+  }
+  return html;
+}
+async function _prepDownloadDailyReportPDF() {
+  await _prepDownloadReportPDFForUid(_prepWeeklyReportUid, _prepWeeklyReportHist, 1);
+}
+async function _prepDownloadSiblingDailyReportPDF(sibUid) {
+  if (typeof html2canvas === 'undefined' || !(window.jspdf && window.jspdf.jsPDF)) { if (typeof showToast==='function') showToast('No se pudo generar el PDF (falta librería)','error'); return; }
+  const students = getStudents();
+  const stu = students.find(s=>String(s.id)===String(sibUid));
+  const name = stu ? stu.name : 'Hermano';
+  const hist = _prepWeeklyReportSiblings.find(s=>String(s.uid)===String(sibUid))?.hist || [];
+  await _prepDownloadReportPDFForUid(sibUid, hist, 1);
+}
+async function _prepDownloadFamilyDailyReportPDF() {
+  if (typeof html2canvas === 'undefined' || !(window.jspdf && window.jspdf.jsPDF)) { if (typeof showToast==='function') showToast('No se pudo generar el PDF (falta librería)','error'); return; }
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ unit:'pt', format:'a4' });
+  const members = [{uid:_prepWeeklyReportUid, hist:_prepWeeklyReportHist}, ..._prepWeeklyReportSiblings.map(s=>({uid:s.uid,hist:s.hist||[]}))];
+  // reuse weekly family logic but with days=1 — simplified: just call individual daily for each
+  // For now: generate combined daily the same way as weekly family but days=1
+  const margin=28; let first=true;
+  for (const m of members) {
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:-9999px;top:0;width:600px;background:#ffffff;padding:28px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif';
+    holder.innerHTML = '<div style="font-size:12px;font-weight:900;color:#a855f7;letter-spacing:0.1em;margin-bottom:14px;text-align:center">MATHS LEVEL UP</div>' + _prepBuildWeeklyReportPdfHtml(m.uid, m.hist, 1);
+    document.body.appendChild(holder);
+    try {
+      const canvas = await html2canvas(holder, { scale:2, backgroundColor:'#ffffff' });
+      const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight();
+      const imgW = pageW - margin*2;
+      const pxPerPt = canvas.width / imgW;
+      if (!first) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/png'), 'PNG', margin, margin, imgW, canvas.height/pxPerPt);
+      first = false;
+    } finally { document.body.removeChild(holder); }
+  }
+  const dateStr = new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');
+  const fn = (_prepWeeklyReportFamilyLastName||'Familia').replace(/[^a-z0-9]+/gi,'_');
+  pdf.save(`Reporte_Diario_${fn}_${dateStr}.pdf`);
+}
+async function _prepDownloadReportPDFForUid(uid, hist, days) {
+  if (typeof html2canvas === 'undefined' || !(window.jspdf && window.jspdf.jsPDF)) { if (typeof showToast==='function') showToast('No se pudo generar el PDF (falta librería)','error'); return; }
+  const students = getStudents();
+  const stu = students.find(s=>String(s.id)===String(uid));
+  const name = stu ? stu.name : 'Alumno';
+  const holder = document.createElement('div');
+  holder.style.cssText = 'position:fixed;left:-9999px;top:0;width:600px;background:#ffffff;padding:28px;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif';
+  holder.innerHTML = '<div style="font-size:12px;font-weight:900;color:#a855f7;letter-spacing:0.1em;margin-bottom:14px;text-align:center">MATHS LEVEL UP</div>' + _prepBuildWeeklyReportPdfHtml(uid, hist, days);
+  document.body.appendChild(holder);
+  try {
+    const canvas = await html2canvas(holder, { scale:2, backgroundColor:'#ffffff' });
+    const holderRect = holder.getBoundingClientRect();
+    const scaleX = canvas.width / holderRect.width;
+    const breakPoints = [];
+    const addBreak = function(el){ const r=el.getBoundingClientRect(); const bottom=Math.round((r.bottom-holderRect.top)*scaleX); if(bottom>0) breakPoints.push(bottom); };
+    Array.prototype.forEach.call(holder.children, addBreak);
+    Array.prototype.forEach.call(holder.querySelectorAll('tr'), addBreak);
+    breakPoints.push(canvas.height);
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit:'pt', format:'a4' });
+    const pageW=pdf.internal.pageSize.getWidth(), pageH=pdf.internal.pageSize.getHeight();
+    const margin=28, imgW=pageW-margin*2, pxPerPt=canvas.width/imgW;
+    const pageContentPx=Math.max(1,Math.floor((pageH-margin*2)*pxPerPt));
+    let y=0, first=true;
+    while(y<canvas.height){
+      const maxEnd=Math.min(y+pageContentPx,canvas.height);
+      let sliceEnd=null;
+      for(let i=0;i<breakPoints.length;i++){ const bp=breakPoints[i]; if(bp>y&&bp<=maxEnd) sliceEnd=bp; }
+      if(sliceEnd===null) sliceEnd=maxEnd;
+      const sliceH=sliceEnd-y;
+      const pc=document.createElement('canvas'); pc.width=canvas.width; pc.height=sliceH;
+      const ctx=pc.getContext('2d'); ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,pc.width,pc.height);
+      ctx.drawImage(canvas,0,y,canvas.width,sliceH,0,0,canvas.width,sliceH);
+      if(!first) pdf.addPage();
+      pdf.addImage(pc.toDataURL('image/png'),'PNG',margin,margin,imgW,sliceH/pxPerPt);
+      first=false; y=sliceEnd;
+    }
+    const safeName=(name||'Alumno').replace(/[^a-z0-9]+/gi,'_');
+    const dateStr=new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'-');
+    const lbl=days===1?'Diario':'Semanal';
+    pdf.save(`Reporte_${lbl}_${safeName}_${dateStr}.pdf`);
+  } catch(e){ console.error('report pdf',e); if(typeof showToast==='function') showToast('No se pudo generar el PDF','error'); }
+  finally { document.body.removeChild(holder); }
+}
 function _prepWeeklyReportModalHtml() {
   if (!_prepWeeklyReportOpen) return '';
   const students = getStudents();
@@ -17474,11 +17917,7 @@ function _prepWeeklyReportModalHtml() {
         <button onclick="closeWeeklyReport()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px">
-        <button onclick="_prepDownloadWeeklyReportPDF()" style="${_btnStylePrimary}">📄 Descargar PDF — ${name}</button>
-        ${hasSiblings ? (_prepWeeklyReportSiblings.map(sib => {
-          const sibFirst = sib.name.split(' ')[0];
-          return `<button onclick="_prepDownloadSiblingWeeklyReportPDF('${sib.uid}')" style="${_btnStylePrimary}">📄 Descargar PDF — ${sibFirst}</button>`;
-        }).join('') + `<button onclick="_prepDownloadFamilyWeeklyReportPDF()" style="${_btnStylePrimary}">👨‍👩‍👧‍👦 Descargar ${_familyLastName} PDF</button>`) : ''}
+        ${_prepWeeklyReportModalBtns(name, hasSiblings, _familyLastName, _btnStylePrimary)}
       </div>
     </div>
   </div>`;
@@ -17555,7 +17994,7 @@ function _prepStartFromUnit(sk) {
   } else {
     qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
   }
-  const _autoTime2 = (def.quiz ? 45 : 60) * qs.length;
+  const _autoTime2 = def.quiz ? 300 : 600;
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_autoTime2>0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -17650,7 +18089,7 @@ function _prepUnitExam(skills, unitIdx) {
   _prep.topic = valid[0];
   _prep.isUnitExam = true;
   _prep.examUnitSkills = [...valid];
-  const _examTime = qs.length * 30;
+  const _examTime = 150;
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_examTime > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -17713,7 +18152,7 @@ function _prepStart() {
     } else {
       qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
     }
-    const _autoTime = (def.quiz ? 45 : 60) * qs.length;
+    const _autoTime = def.quiz ? 300 : 600;
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, showReview:false, lives:def.quiz?4:5, maxLives:def.quiz?4:5, streak:0, streakBonusAccum:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now() });
     clearInterval(_prepTimerIntv);
     if (_autoTime > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -18078,13 +18517,31 @@ function _prepGameTimerTick(){
     el.textContent='⏱️ '+Math.floor(left/60).toString().padStart(2,'0')+':'+(left%60).toString().padStart(2,'0');
   }
 }
+function _prepStreakHudHtml(){
+  const s=_prep.streak||0;
+  const _bMode=_prep.isUnitExam?'exam':((BINGO_TOPICS[_prep.topic]||{}).quiz?'quiz':'skill');
+  const _maxS=_bMode==='exam'?5:_bMode==='quiz'?4:3;
+  let filt,tc;
+  if(s===0){filt='grayscale(1) opacity(0.35)';tc='rgba(255,255,255,0.3)';}
+  else if(s>_maxS){filt='hue-rotate(220deg) saturate(3) brightness(1.3)';tc='#c084fc';}
+  else{
+    const prog=_maxS>1?(s-1)/(_maxS-1):0;
+    const hr=Math.round(30-55*prog);
+    const sat=(1.8+0.4*prog).toFixed(2);
+    const bri=(1.2-0.15*prog).toFixed(2);
+    filt=`hue-rotate(${hr}deg) saturate(${sat}) brightness(${bri})`;
+    const th=Math.round(50*(1-prog));
+    tc=`hsl(${th},90%,60%)`;
+  }
+  return `<span style="font-size:1.1em;filter:${filt}">🔥</span><span style="color:${tc};font-weight:900"> ×${s}</span>`;
+}
 function _prepUpdateHud(){
   const l=(_prep.lives??3);
   const mx=(_prep.maxLives??3);
   const livesEl=document.getElementById('_prep_lives');
   if(livesEl) livesEl.textContent='❤️'.repeat(Math.max(0,l))+'🖤'.repeat(Math.max(0,mx-l));
   const streakEl=document.getElementById('_prep_streak');
-  if(streakEl) streakEl.textContent='🔥 '+(_prep.streak||0)+'/'+_prep.questions.length;
+  if(streakEl) streakEl.innerHTML=_prepStreakHudHtml();
 }
 let _prepNotifTimer=null;
 function _prepStreakNotif(msg, type='streak'){
@@ -18092,26 +18549,30 @@ function _prepStreakNotif(msg, type='streak'){
   if(!el){
     el=document.createElement('div');
     el.id='_prep_streak_notif';
-    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.6);z-index:99999;padding:14px 28px;border-radius:16px;font-family:"Barlow Condensed",sans-serif;font-size:22px;font-weight:900;letter-spacing:0.05em;text-align:center;pointer-events:none;opacity:0;transition:opacity 0.18s ease,transform 0.18s ease;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.45)';
+    el.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%) scale(0.7);z-index:99999;padding:12px 32px;border-radius:20px;font-family:"Barlow Condensed",sans-serif;font-size:26px;font-weight:900;letter-spacing:0.06em;text-align:center;pointer-events:none;opacity:0;transition:opacity 0.15s ease,transform 0.15s ease;white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,0.6)';
     document.body.appendChild(el);
   }
   if(type==='lose'){
     el.style.background='linear-gradient(135deg,#ef4444,#b91c1c)';
     el.style.color='#fff';
-    el.style.border='2px solid rgba(255,255,255,0.2)';
-  } else if(type==='streak'){
+    el.style.border='2px solid rgba(255,100,100,0.4)';
+  } else if(type==='levelup'){
+    el.style.background='linear-gradient(135deg,#7c3aed,#4f46e5)';
+    el.style.color='#fff';
+    el.style.border='2px solid rgba(167,139,250,0.5)';
+  } else {
     el.style.background='linear-gradient(135deg,#f97316,#eab308)';
     el.style.color='#fff';
     el.style.border='2px solid rgba(255,255,255,0.3)';
   }
   el.textContent=msg;
   el.style.opacity='1';
-  el.style.transform='translate(-50%,-50%) scale(1)';
+  el.style.transform='translateX(-50%) scale(1)';
   clearTimeout(_prepNotifTimer);
   _prepNotifTimer=setTimeout(()=>{
     el.style.opacity='0';
-    el.style.transform='translate(-50%,-50%) scale(0.7)';
-  },1400);
+    el.style.transform='translateX(-50%) scale(0.8)';
+  },2200);
 }
 function _algoMarkPerBox(q){
   const mark=(el,expected)=>{
@@ -20364,11 +20825,10 @@ function _combSubmitStep(){
       const _isLevelUp = _prep.streak > _maxStreak;
       if (_isLevelUp) {
         _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + 60;
-        const _bWhole2 = Math.floor(_prep.streakBonusAccum);
-        if (_bWhole2 > 0) { _prep.timeLeft += _bWhole2; _prep.streakBonusAccum -= _bWhole2; _prepStreakNotif('⬆️ Level UP! +60s','streak'); }
+        const _bW2 = Math.floor(_prep.streakBonusAccum);
+        if (_bW2 > 0) { _prep.timeLeft += _bW2; _prep.streakBonusAccum -= _bW2; _prepStreakNotif('⬆️ Level UP! +60s','levelup'); }
       } else {
-        const _bStreakCapped = Math.min(_prep.streak, _maxStreak);
-        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _bStreakCapped - 1);
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _prep.streak - 1);
         const _bWhole = Math.floor(_prep.streakBonusAccum);
         if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
       }
@@ -20813,11 +21273,10 @@ function _prepHandleAnswer(correct, correctAns){
       const _isLevelUp = _prep.streak > _maxStreak;
       if (_isLevelUp) {
         _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + 60;
-        const _bWhole2 = Math.floor(_prep.streakBonusAccum);
-        if (_bWhole2 > 0) { _prep.timeLeft += _bWhole2; _prep.streakBonusAccum -= _bWhole2; _prepStreakNotif('⬆️ Level UP! +60s','streak'); }
+        const _bW2 = Math.floor(_prep.streakBonusAccum);
+        if (_bW2 > 0) { _prep.timeLeft += _bW2; _prep.streakBonusAccum -= _bW2; _prepStreakNotif('⬆️ Level UP! +60s','levelup'); }
       } else {
-        const _bStreakCapped = Math.min(_prep.streak, _maxStreak);
-        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _bStreakCapped - 1);
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _prep.streak - 1);
         const _bWhole = Math.floor(_prep.streakBonusAccum);
         if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
       }
@@ -20881,11 +21340,10 @@ function _prepApplyLivesStreak(correct) {
       const _isLevelUp = _prep.streak > _maxStreak;
       if (_isLevelUp) {
         _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + 60;
-        const _bWhole2 = Math.floor(_prep.streakBonusAccum);
-        if (_bWhole2 > 0) { _prep.timeLeft += _bWhole2; _prep.streakBonusAccum -= _bWhole2; _prepStreakNotif('⬆️ Level UP! +60s','streak'); }
+        const _bW2 = Math.floor(_prep.streakBonusAccum);
+        if (_bW2 > 0) { _prep.timeLeft += _bW2; _prep.streakBonusAccum -= _bW2; _prepStreakNotif('⬆️ Level UP! +60s','levelup'); }
       } else {
-        const _bStreakCapped = Math.min(_prep.streak, _maxStreak);
-        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _bStreakCapped - 1);
+        _prep.streakBonusAccum = (_prep.streakBonusAccum||0) + _bRate * Math.pow(2, _prep.streak - 1);
         const _bWhole = Math.floor(_prep.streakBonusAccum);
         if (_bWhole > 0) { _prep.timeLeft += _bWhole; _prep.streakBonusAccum -= _bWhole; _prepStreakNotif('🔥 Racha ×'+_prep.streak+'  +'+_bWhole+'s','streak'); }
       }
@@ -21375,7 +21833,7 @@ function _prepExamHtml() {
     </div>
     <div class="prep-game-hud">
       <span id="_prep_lives" class="prep-hud-lives">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
-      <span id="_prep_streak" class="prep-hud-streak">🔥 ${_prep.streak||0}/${total}</span>
+      <span id="_prep_streak" class="prep-hud-streak">${_prepStreakHudHtml()}</span>
       <span id="_prep_timer" class="prep-hud-timer">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
     </div>
     ${q.algo ? '' : `<div class="prep-question-card"><span>${_fmtMath(q.q)}</span></div>`}
@@ -21501,11 +21959,11 @@ function removeDesafio(retoLbl, nivel) {
 function removePrepTask(taskId) {
   const uid = String(typeof getLoggedId === 'function' ? getLoggedId() : null);
   if (!overrides[uid] || !Array.isArray(overrides[uid].prepTasks)) return;
-  overrides[uid].prepTasks = overrides[uid].prepTasks.filter(t => {
-    const tid = t.exam ? 'exam:'+(t.skills||[]).join(',') : t.topic;
-    return tid !== taskId;
-  });
-  if (typeof saveMeta === 'function') saveMeta();
+  const t = overrides[uid].prepTasks.find(t => (t.exam ? 'exam:'+(t.skills||[]).join(',') : t.topic) === taskId);
+  if (!t) return;
+  const lbl = t.exam ? (t.label||'Examen de unidad') : ((BINGO_TOPICS[t.topic]||{}).lbl || t.topic || 'Tarea');
+  const taskIdx = overrides[uid].prepTasks.indexOf(t);
+  _prepConfirmAction = { type:'task', uid, idx:taskIdx, lbl };
   _renderPreparatePane();
 }
 function openDesafioModal() {
@@ -21552,23 +22010,34 @@ function confirmDesafioAssign() {
 }
 function openPrepTaskModal(topic, examLabel, examSkills) {
   _prepTaskInfo = examSkills ? { exam:true, skills:examSkills, label:examLabel } : { topic: topic };
-  _prepTaskModalOpen = true;
   _prepTaskPinErr = false;
+  // Detectar si ya existe como tarea asignada
+  const _uid = String(getLoggedId());
+  const _taskId = examSkills ? 'exam:'+(examSkills||[]).join(',') : topic;
+  const _exists = ((overrides[_uid]||{}).prepTasks||[]).some(t => {
+    const tid = t.exam ? 'exam:'+(t.skills||[]).join(',') : t.topic;
+    return tid === _taskId;
+  });
+  _prepTaskDeleteMode = _exists;
+  _prepTaskModalOpen = true;
   _renderPreparatePane();
   setTimeout(()=>{ const inp=document.getElementById('prep-task-pin-inp'); if(inp)inp.focus(); }, 80);
 }
 function closePrepTaskModal() {
   _prepTaskModalOpen = false;
   _prepTaskPinErr    = false;
+  _prepTaskDeleteMode = false;
   _renderPreparatePane();
 }
 function confirmPrepTask() {
-  const inp = document.getElementById('prep-task-pin-inp');
-  if (!inp) return;
-  if (String(inp.value) !== String(ADMIN && ADMIN.pin)) {
-    _prepTaskPinErr = true;
-    _renderPreparatePane();
-    return;
+  const _imp = typeof _isTeacher === 'function' && _isTeacher();
+  if (!_imp) {
+    const inp = document.getElementById('prep-task-pin-inp');
+    if (!inp || String(inp.value) !== String(ADMIN && ADMIN.pin)) {
+      _prepTaskPinErr = true;
+      _renderPreparatePane();
+      return;
+    }
   }
   const uid = String(getLoggedId());
   if (!overrides[uid]) overrides[uid] = {};
@@ -21594,8 +22063,30 @@ function confirmPrepTask() {
   if (typeof saveMeta === 'function') saveMeta();
   _prepTaskModalOpen = false;
   _prepTaskPinErr    = false;
+  _prepTaskDeleteMode = false;
   _renderPreparatePane();
   if (typeof showToast === 'function') showToast('✅ Tarea asignada', 'success');
+}
+function deletePrepTask() {
+  const _imp = typeof _isTeacher === 'function' && _isTeacher();
+  if (!_imp) {
+    const inp = document.getElementById('prep-task-pin-inp');
+    if (!inp || String(inp.value) !== String(ADMIN && ADMIN.pin)) {
+      _prepTaskPinErr = true; _renderPreparatePane(); return;
+    }
+  }
+  const uid = String(getLoggedId());
+  const taskId = _prepTaskInfo.exam ? 'exam:'+(_prepTaskInfo.skills||[]).join(',') : _prepTaskInfo.topic;
+  if (overrides[uid]?.prepTasks) {
+    overrides[uid].prepTasks = overrides[uid].prepTasks.filter(t => {
+      const tid = t.exam ? 'exam:'+(t.skills||[]).join(',') : t.topic;
+      return tid !== taskId;
+    });
+  }
+  if (typeof saveMeta === 'function') saveMeta();
+  _prepTaskModalOpen = false; _prepTaskPinErr = false; _prepTaskDeleteMode = false;
+  _renderPreparatePane();
+  if (typeof showToast === 'function') showToast('🗑️ Tarea eliminada', 'success');
 }
 function skipQWithTeacherPin() {
   const inp = document.getElementById('prep-report-pin-inp');

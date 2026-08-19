@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260818i"></script>
+  <script src="/levelup.js?v=20260820g"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -657,7 +657,7 @@ textarea.fsm { resize:none; height:64px; }
 .prep-opt-sq.active{background:rgba(124,58,237,0.45);border-color:rgba(124,58,237,0.85);color:#e0aaff}
 .prep-sel-btn{height:32px;min-width:52px;padding:0 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-family:'Lato',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:4px;transition:background .15s,border-color .15s}
 .prep-sel-btn:hover{background:rgba(255,255,255,0.11)}
-.prep-sel-btn.sel{background:rgba(255,255,255,0.18);border-color:rgba(255,255,255,0.38);color:#fff}
+.prep-sel-btn.sel{background:rgba(139,92,246,0.35);border-color:rgba(139,92,246,0.5);color:#c4b5fd}
 .prep-start-btn{width:100%;margin-top:18px;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.04em;cursor:pointer;box-shadow:0 4px 20px -5px rgba(124,58,237,0.6);transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),opacity .15s,box-shadow .25s cubic-bezier(0.25,0.46,0.45,0.94)}
 .prep-start-btn:hover{transform:scale(1.04);box-shadow:0 6px 28px -5px rgba(124,58,237,0.75)}
 .prep-start-btn:active{transform:scale(0.96);transition-duration:.08s}
@@ -9791,6 +9791,7 @@ function toggleTaskAssignCheck(sid) {
   sid = String(sid);
   if (taskAssignChecked.has(sid)) taskAssignChecked.delete(sid); else taskAssignChecked.add(sid);
   refreshTaskAssignList();
+  _autofillDueFromNextClass();
 }
 function selectAllTaskAssign() {
   taskAssignChecked = new Set();
@@ -10081,6 +10082,49 @@ function syncDueTimeUI(){
   if (due) { due.classList.toggle('dt-has-value', !!due.value); if (duePh) duePh.style.display = due.value ? 'none' : 'flex'; }
   const time = document.getElementById('t-time'), timePh = document.getElementById('t-time-ph');
   if (time) { time.classList.toggle('dt-has-value', !!time.value); if (timePh) timePh.style.display = time.value ? 'none' : 'flex'; }
+}
+function _nextClassDateForStudent(studentName) {
+  const nn = normName(studentName);
+  const mySessions = classSessByName[nn] || [];
+  if (!mySessions.length) return null;
+  const now = new Date();
+  const nowTimeStr = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  for (let offset = 0; offset < 14; offset++) {
+    const dt = new Date(now.getFullYear(), now.getMonth(), now.getDate() + offset);
+    const key = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+    const todays = mySessions.filter(s => {
+      const isOneTime = s.recurring === false && s.date;
+      if (isOneTime) return s.date === key && isSessionActive(s, dt, key);
+      if (Array.isArray(s.skipDates) && s.skipDates.includes(key)) return false;
+      const daysArr = Array.isArray(s.days) && s.days.length ? s.days : [Number(s.day)];
+      if (!daysArr.includes(dt.getDay())) return false;
+      return isSessionActive(s, dt, key);
+    });
+    if (!todays.length) continue;
+    const sorted = todays.filter(s=>s.start).sort((a,b)=>a.start.localeCompare(b.start));
+    if (offset === 0) {
+      const upcoming = sorted.filter(s => s.start > nowTimeStr);
+      if (!upcoming.length) continue;
+      return { date: key, time: upcoming[0].start };
+    }
+    const first = sorted[0] || todays[0];
+    return { date: key, time: first?.start || '' };
+  }
+  return null;
+}
+function _autofillDueFromNextClass() {
+  if (taskAssignChecked.size !== 1) return;
+  const dueEl = document.getElementById('t-due');
+  if (!dueEl || dueEl.value) return;
+  const sid = [...taskAssignChecked][0];
+  const st = getStudents().find(s => String(s.id) === String(sid));
+  if (!st) return;
+  const next = _nextClassDateForStudent(st.name);
+  if (!next) return;
+  dueEl.value = next.date;
+  const timeEl = document.getElementById('t-time');
+  if (timeEl && next.time) timeEl.value = next.time;
+  syncDueTimeUI();
 }
 function onTaskFileSelect(input){ if (!input.files?.[0]) return; _taskFileObj=input.files[0]; const n=document.getElementById('task-file-name'); if(n){ n.textContent=_taskFileObj.name; n.style.color='#fff'; } }
 function cancelTaskFile(){ _taskFileObj=null; const n=document.getElementById('task-file-name'); if(n){ n.textContent='Subir archivo...'; n.style.color='rgba(255,255,255,0.4)'; } const i=document.getElementById('task-file-input'); if(i) i.value=''; const r=document.getElementById('task-file-row'); if(r) r.dataset.url=''; }
