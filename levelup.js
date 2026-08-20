@@ -15553,10 +15553,11 @@ function _prepConfigHtml() {
   const _crownSvg = `<svg width="6" height="4" viewBox="0 0 20 13" fill="white"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
   const legend = `<div class="prep-kh-legend">
     <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(109,40,217,0.92);${_legBorder};display:flex;align-items:center;justify-content:center">${_crownSvg}</div>Dominado</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(146,94,227,0.91);${_legBorder}"></div>Competente</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(182,148,236,0.90);${_legBorder}"></div>Familiar</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(219,201,246,0.89);${_legBorder}"></div>Intentado</div>
-    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:rgba(255,255,255,0.88);${_legBorder}"></div>No empezado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:#9333ea;${_legBorder}"></div>Competente</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:#c084fc;${_legBorder}"></div>Familiar</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:#e9d5ff;${_legBorder}"></div>Intentado</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:#fdf4ff;${_legBorder}"></div>Pendiente</div>
+    <div class="prep-kh-leg-item"><div class="prep-kh-leg-sq" style="background:#94a3b8;${_legBorder}"></div>Sin intentos</div>
   </div>`;
 
   // Sidebar con lista de unidades
@@ -15644,7 +15645,7 @@ function _prepConfigHtml() {
       const top1 = _allSk.filter(k => _prepSideRanks[k] === 1);
       const top2 = _allSk.filter(k => _prepSideRanks[k] === 2);
       const top3 = _allSk.filter(k => _prepSideRanks[k] === 3);
-      const _playedLevels = new Set(['dominado','competente','familiar','intentado']);
+      const _playedLevels = new Set(['dominado','competente','familiar','intentado','pendiente']);
       const demas = _allSk.filter(k => (!_prepSideRanks[k] || _prepSideRanks[k] > 3) && _playedLevels.has(_prepMasteryLevel(k)));
       const _body = _dGrp('🥇','Top 1',top1.length,'rgba(251,191,36,0.15)','#fbbf24','#fbbf24',top1)
         + _dGrp('🥈','Top 2',top2.length,'rgba(148,163,184,0.15)','#94a3b8','#94a3b8',top2)
@@ -15820,18 +15821,22 @@ function _prepConfigHtml() {
         const isSel=_prep.topic===sk;
         const isQuiz=!!def.quiz;
         const nextIsEx=si<unit.skills.length-1&&!BINGO_TOPICS[unit.skills[si+1]]?.quiz;
-        const _lvlLbl={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
+        const _lvlLbl={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'Pendiente','sinIntentos':'Sin intentos'};
         const _lvlSuffix=_lvlLbl[lvl]?' · Nivel: '+_lvlLbl[lvl]:'';
         if(isQuiz){
           _qn2++;
           const qPct=_prepLastPct(sk);
-          const qTip=`Cuestionario ${_qn2}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
+          const qDate=_prepLastDate(sk);
+          const qName=('Cuestionario '+_qn2+': '+_cleanLbl(def.lbl,sk)).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+          const _qEnter=`window._showSkTip(event,'${qName}','${_lvlLbl[lvl]||''}',${qPct!==null?qPct:'null'},'${qDate||''}')`;
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.quizNum=_prep.topic==='${sk}'?${_qn2}:0;_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.quizNum=_prep.topic==='${sk}'?${_qn2}:0;_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" onmouseenter="${_qEnter}" onmouseleave="window._hideSkTip()" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
-        const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
+        const skDate=_prepLastDate(sk);
+        const skName=_cleanLbl(def.lbl,sk).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+        const _skEnter=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}')`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='sinIntentos'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" onmouseenter="${_skEnter}" onmouseleave="window._hideSkTip()">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
       }).join('');
       const _nc=['c','p','y','v'][ui%4];
       const _showLbl=_prep.showUnitLabels;
@@ -15957,12 +15962,12 @@ function _prepConfigHtml() {
       const unit = units[_prep.selectedUnit];
       const ui = _prep.selectedUnit;
       const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
-      const _lvlLbl2={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
+      const _lvlLbl2={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'Pendiente','sinIntentos':'Sin intentos'};
       const _crownSvg2=`<svg width="14" height="10" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`;
       const _boltSvg2=`<svg width="14" height="16" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
       // Badge por nivel
       const _badge=(lvl)=>{
-        const sqLvl=lvl==='pendiente'||lvl==='unknown'?'':lvl;
+        const sqLvl=lvl==='sinIntentos'||lvl==='unknown'?'':lvl;
         return `<div class="prep-kh-sq prep-kh-sk-badge${sqLvl?' '+sqLvl:''}">${lvl==='dominado'?_crownSvg2:''}</div>`;
       };
       // Separar skills normales de quizzes
@@ -16000,7 +16005,7 @@ function _prepConfigHtml() {
             <div class="prep-kh-quiz-ico">${_boltSvg2}</div>
           </div>`;
         }
-        const cta = lvl==='competente'?'¡Bien! Estás listo para avanzar':lvl==='pendiente'||lvl==='unknown'?'Practica para subir de nivel':null;
+        const cta = lvl==='competente'?'¡Bien! Estás listo para avanzar':lvl==='sinIntentos'||lvl==='pendiente'||lvl==='unknown'?'Practica para subir de nivel':null;
         if (isSel) {
           const _adminQBtn2 = isAdmin() ? `<button class="prep-opt-sq" onclick="openQuestionsModal(_prep.topic)" title="Ver preguntas" style="flex-shrink:0;font-size:15px;width:36px;height:36px;background:rgba(251,191,36,0.18);border-color:rgba(251,191,36,0.5);color:#fbbf24">📚</button>` : '';
           const _gearBtn2 = (_isAdminMode||_isImpersonating) ? `<button class="prep-opt-sq" onclick="_prepToggleConfig()" title="${_prep.showConfig?'Cerrar':'Configurar'}" style="flex-shrink:0;font-size:15px;width:36px;height:36px${def.quiz?';background:rgba(255,255,255,0.25);color:#fff;border-color:rgba(255,255,255,0.25)':''}">⚙</button>` : '';
@@ -16009,7 +16014,7 @@ function _prepConfigHtml() {
           return `<div id="prep-row-${sk}" class="prep-kh-sk-row selected" style="cursor:pointer" onclick="_snd.click();_prep.topic='';_renderPreparatePane()">
             <div class="prep-kh-sk-info">
               <div class="prep-kh-sk-name">${_cleanLbl(def.lbl,sk)}</div>
-              <div class="prep-kh-sk-lvl ${lvl==='unknown'?'pendiente':lvl}">${lvlText}</div>
+              <div class="prep-kh-sk-lvl ${lvl==='unknown'?'sinIntentos':lvl}">${lvlText}</div>
               ${cta?`<div class="prep-kh-sk-cta">${cta}</div>`:''}
             </div>
             <div style="display:flex;gap:6px;flex-shrink:0" onclick="event.stopPropagation()">${_startBtn2}${_adminQBtn2}${_gearBtn2}${_taskBtn2}</div>
@@ -16023,10 +16028,10 @@ function _prepConfigHtml() {
         return `<div id="prep-row-${sk}" class="prep-kh-sk-row" onclick="_snd.click();_prep.topic='${sk}';_renderPreparatePane()">
           <div class="prep-kh-sk-info">
             <div class="prep-kh-sk-name">${_cleanLbl(def.lbl,sk)}</div>
-            <div class="prep-kh-sk-lvl ${lvl==='unknown'?'pendiente':lvl}">${lvlText}</div>
+            <div class="prep-kh-sk-lvl ${lvl==='unknown'?'sinIntentos':lvl}">${lvlText}</div>
             ${cta?`<div class="prep-kh-sk-cta">${cta}</div>`:''}
           </div>
-          ${_badge(lvl==='unknown'?'pendiente':lvl)}
+          ${_badge(lvl==='unknown'?'sinIntentos':lvl)}
         </div>`;
       }).join('');
       const sc=_prepLastUnitExamPct(unit.skills[0]);
@@ -16047,18 +16052,22 @@ function _prepConfigHtml() {
         const lvl=_prepMasteryLevel(sk);
         const isSel=_prep.topic===sk;
         const isQuiz=!!def.quiz;
-        const _lvlLbl={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'No empezado'};
+        const _lvlLbl={'dominado':'Dominado','competente':'Competente','familiar':'Familiar','intentado':'Intentado','pendiente':'Pendiente','sinIntentos':'Sin intentos'};
         const _lvlSuffix=_lvlLbl[lvl]?' · Nivel: '+_lvlLbl[lvl]:'';
         if(isQuiz){
           _qn3++;
           const qPct=_prepLastPct(sk);
-          const qTip=`Cuestionario ${_qn3}: `+_cleanLbl(def.lbl,sk)+_lvlSuffix+(qPct!==null?' · Último: '+qPct+'%':'');
+          const qDate=_prepLastDate(sk);
+          const qName=('Cuestionario '+_qn3+': '+_cleanLbl(def.lbl,sk)).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+          const _qEnter3=`window._showSkTip(event,'${qName}','${_lvlLbl[lvl]||''}',${qPct!==null?qPct:'null'},'${qDate||''}')`;
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
-          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" title="${qTip}" style="cursor:pointer">${_bolt(16,18)}</div>`;
+          return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" onmouseenter="${_qEnter3}" onmouseleave="window._hideSkTip()" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
-        const skTip=_cleanLbl(def.lbl,sk)+_lvlSuffix+(skPct!==null?' · Último: '+skPct+'%':'');
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='pendiente'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" title="${skTip}">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
+        const skDate=_prepLastDate(sk);
+        const skName=_cleanLbl(def.lbl,sk).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+        const _skEnter3=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}')`;
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='sinIntentos'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" onmouseenter="${_skEnter3}" onmouseleave="window._hideSkTip()">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
       }).join('');
       const _starSvgExp=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
       const expExamSq=`<div class="prep-kh-sq exam-sq${_examDom?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui});setTimeout(()=>document.getElementById('prep-exam-${ui}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
@@ -16501,19 +16510,19 @@ function _prepReEvalPct(h) {
 function _prepMasteryLevel(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return 'unknown';
   const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
-  if (!sessions.length) return 'pendiente';
+  if (!sessions.length) return 'sinIntentos';
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
   const directSessions = sessions.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
   if (isQuiz) {
     // Los cuestionarios solo cuentan si el alumno los hizo directamente.
     // Entradas autoFromExam/autoFromQuiz en cuestionarios se ignoran completamente.
-    if (!directSessions.length) return 'pendiente';
+    if (!directSessions.length) return 'sinIntentos';
     const pct = _prepReEvalPct(directSessions[0]);
     if (pct>=100) return 'dominado';
     if (pct>=75)  return 'competente';
     if (pct>=50)  return 'familiar';
     if (pct>=25)  return 'intentado';
-    return 'intentado';
+    return 'pendiente';
   }
   // Habilidades normales: usar la sesión más reciente (directa o propagada).
   // El nivel puede subir o bajar según el último resultado del cuestionario.
@@ -16522,7 +16531,7 @@ function _prepMasteryLevel(topicKey) {
   if (pct>=75)  return 'competente';
   if (pct>=50)  return 'familiar';
   if (pct>=25)  return 'intentado';
-  return 'intentado';
+  return 'pendiente';
 }
 function _prepLastPct(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return null;
@@ -16532,6 +16541,70 @@ function _prepLastPct(topicKey) {
   if (!sessions.length) return null;
   return _prepReEvalPct(sessions[0]);
 }
+function _prepLastDate(topicKey) {
+  if (!Array.isArray(_prepHistoryData)) return null;
+  const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || (!h.autoFromExam && !h.autoFromQuiz)));
+  if (!sessions.length) return null;
+  const sec = sessions[0]?.completedAt?.seconds;
+  if (!sec) return null;
+  const d = new Date(sec*1000);
+  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return d.getDate()+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+}
+function _initSkTip() {
+  if (document.getElementById('_skTip')) return;
+  const d = document.createElement('div');
+  d.id = '_skTip';
+  d.style.cssText = 'display:none;position:fixed;z-index:99999;background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);border-radius:10px;padding:12px 14px;font-size:12px;color:#1e293b;pointer-events:none;min-width:185px;max-width:240px;box-shadow:0 4px 20px rgba(0,0,0,0.18);font-family:inherit;';
+  document.body.appendChild(d);
+  document.addEventListener('mousemove', function(e) {
+    const t = document.getElementById('_skTip');
+    if (t && t.style.display !== 'none') {
+      const tw = t.offsetWidth, th = t.offsetHeight;
+      let lx = e.clientX + 14, ly = e.clientY - th - 10;
+      if (lx + tw > window.innerWidth - 8) lx = e.clientX - tw - 14;
+      if (ly < 4) ly = e.clientY + 16;
+      t.style.left = lx + 'px';
+      t.style.top = ly + 'px';
+    }
+  });
+}
+window._showSkTip = function(e, name, lvlLbl, pct, date) {
+  _initSkTip();
+  const t = document.getElementById('_skTip');
+  const _lvlIcoMap = {Dominado:{ico:'A+',bg:'#7c3aed',fs:'12px'},Competente:{ico:'A',bg:'#9333ea',fs:'13px'},Familiar:{ico:'B',bg:'#c084fc',fs:'13px',fc:'#581c87'},Intentado:{ico:'C',bg:'#e9d5ff',fs:'13px',fc:'#6d28d9'},Pendiente:{ico:'D',bg:'#fdf4ff',fs:'13px',fc:'#9333ea'},'Sin intentos':{ico:'—',bg:'#94a3b8',fs:'13px',fc:'#fff'}};
+  const _barColor = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#c084fc',Intentado:'#d8b4fe',Pendiente:'#f3e8ff','Sin intentos':'#94a3b8'};
+  const _lvlColor = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#a855f7',Intentado:'#c084fc',Pendiente:'#d8b4fe','Sin intentos':'#94a3b8'};
+  const info = _lvlIcoMap[lvlLbl] || {ico:'—',bg:'#334155'};
+  const barW = (pct !== null && pct !== undefined) ? Math.max(0,Math.min(100,pct)) : 0;
+  const barColor = _barColor[lvlLbl] || '#334155';
+  const lvlColor = _lvlColor[lvlLbl] || '#94a3b8';
+  const metaRight = [(pct !== null && pct !== undefined ? pct+'%' : null), date].filter(Boolean).join(' · ');
+  t.innerHTML =
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      +'<div style="width:28px;height:28px;border-radius:6px;background:'+info.bg+';display:flex;align-items:center;justify-content:center;font-size:'+(info.fs||'12px')+';font-weight:900;color:'+(info.fc||'#fff')+';letter-spacing:-0.5px;flex-shrink:0">'+info.ico+'</div>'
+      +'<div style="font-size:12px;font-weight:700;color:#1e293b;line-height:1.3">'+name+'</div>'
+    +'</div>'
+    +'<div style="height:4px;background:#f1f5f9;border-radius:4px;margin-bottom:6px">'
+      +'<div style="height:4px;border-radius:4px;background:'+barColor+';width:'+barW+'%"></div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b">'
+      +'<b style="color:'+lvlColor+'">'+(lvlLbl||'—')+'</b>'
+      +'<b style="color:#475569">'+metaRight+'</b>'
+    +'</div>';
+  t.style.display = 'block';
+  const tw = t.offsetWidth, th = t.offsetHeight;
+  let lx = e.clientX + 14, ly = e.clientY - th - 10;
+  if (lx + tw > window.innerWidth - 8) lx = e.clientX - tw - 14;
+  if (ly < 4) ly = e.clientY + 16;
+  t.style.left = lx + 'px';
+  t.style.top = ly + 'px';
+};
+window._hideSkTip = function() {
+  const t = document.getElementById('_skTip');
+  if (t) t.style.display = 'none';
+};
 // Retorna el pct del último examen de unidad para el primer skill de esa unidad.
 // Se usa en el tooltip de la estrella ★ para mostrar el resultado real del examen, no el promedio de habilidades.
 function _prepTopicMeta(topic, level) {
@@ -16591,29 +16664,35 @@ function _prepCourseScore(topicKeys) {
 function _prepMasteryLevelH(topicKey, hist) {
   if (!Array.isArray(hist)) return 'unknown';
   const sessions = hist.filter(h=>h.topic===topicKey);
-  if (!sessions.length) return 'pendiente';
+  if (!sessions.length) return 'sinIntentos';
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
   const directSessions = sessions.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
   if (isQuiz) {
-    if (!directSessions.length) return 'pendiente';
+    if (!directSessions.length) return 'sinIntentos';
     const pct = _prepReEvalPct(directSessions[0]);
     if (pct>=100) return 'dominado';
     if (pct>=75)  return 'competente';
     if (pct>=50)  return 'familiar';
-    return 'intentado';
+    if (pct>=25)  return 'intentado';
+    return 'pendiente';
   }
-  const pct = _prepReEvalPct(sessions[0]);
+  const refH = directSessions.length ? directSessions[0] : sessions[0];
+  const pct = _prepReEvalPct(refH);
   if (pct>=100) return 'dominado';
   if (pct>=75)  return 'competente';
   if (pct>=50)  return 'familiar';
-  return 'intentado';
+  if (pct>=25)  return 'intentado';
+  return 'pendiente';
 }
 function _prepLastPctH(topicKey, hist) {
   if (!Array.isArray(hist)) return null;
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  const sessions = hist.filter(h=>h.topic===topicKey && (!isQuiz || (!h.autoFromExam && !h.autoFromQuiz)));
-  if (!sessions.length) return null;
-  return _prepReEvalPct(sessions[0]);
+  const allSess = hist.filter(h=>h.topic===topicKey);
+  const directSess = allSess.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
+  if (isQuiz) { if (!directSess.length) return null; return _prepReEvalPct(directSess[0]); }
+  const ref = directSess.length ? directSess[0] : allSess[0];
+  if (!ref) return null;
+  return _prepReEvalPct(ref);
 }
 function _prepCalcStreakH(hist) {
   if (!Array.isArray(hist) || !hist.length) return 0;
@@ -16727,7 +16806,7 @@ function _prepBuildWeeklyReportText(uid, hist) {
   // intentado/pendiente) que más se repite entre TODAS las habilidades de la unidad (incluyendo las
   // que el alumno nunca tocó, que cuentan como "pendiente"), calculado sobre TODO el historial del
   // alumno. En caso de empate, gana el nivel más alto.
-  const _lvlRank = {dominado:4, competente:3, familiar:2, intentado:1, pendiente:0};
+  const _lvlRank = {dominado:5, competente:4, familiar:3, intentado:2, pendiente:1, sinIntentos:0};
   const _prepUnitPredominantIco = (u) => {
     const skills = u.skills.filter(_pureSkillFilter);
     if (!skills.length) return '';
@@ -16858,7 +16937,7 @@ function _prepBuildWeeklyReportText(uid, hist) {
     });
   });
   const reforzarLines = reforzar.slice(0,6).map(r=>
-    `⚠️ ${r.lbl}${r.lvl==='pendiente' ? ' (sin empezar)' : ' ('+r.pct+'%)'}`
+    `⚠️ ${r.lbl}${(r.lvl==='sinIntentos'||r.lvl==='pendiente') ? ' (sin empezar)' : ' ('+r.pct+'%)'}`
   ).join('\n');
 
   const streak = _prepCalcStreakH(hist);
@@ -16963,7 +17042,7 @@ async function _prepOpenWeeklyReport(uid) {
   // sin orden por fecha) — así el reporte de este alumno no pierde sesiones por actividad de otros.
   let hist = [];
   try {
-    const snap = await db.collection('prepHistory').where('uid','==',String(uid)).limit(300).get();
+    const snap = await db.collection('prepHistory').where('uid','==',String(uid)).get();
     snap.forEach(doc => hist.push({ id:doc.id, ...doc.data() }));
     hist.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   } catch(e) { console.error('weekly report history load', e); hist = []; }
@@ -17099,7 +17178,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
 
   const _pureSkillFilter = k => !/_bq\d/.test(k) && !k.includes('_bpu');
   const _lvlIco = {dominado:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#7c3aed;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">A+</span>', competente:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#1d9e75;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">A</span>', familiar:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#ba7517;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">B</span>', intentado:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#d85a30;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">C</span>', pendiente:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#e5e7eb;font-size:10px;font-weight:700;color:#9ca3af;font-family:sans-serif">—</span>'};
-  const _lvlRank = {dominado:4, competente:3, familiar:2, intentado:1, pendiente:0};
+  const _lvlRank = {dominado:5, competente:4, familiar:3, intentado:2, pendiente:1, sinIntentos:0};
   const fmtTime = sec => {
     sec = Math.max(0, Math.round(sec||0));
     const m = Math.floor(sec/60), s = sec%60;
@@ -17673,7 +17752,7 @@ async function _prepDownloadSiblingWeeklyReportPDF(sibUid) {
   const name = stu ? stu.name : 'Hermano';
   let hist = [];
   try {
-    const snap = await db.collection('prepHistory').where('uid','==',String(sibUid)).limit(300).get();
+    const snap = await db.collection('prepHistory').where('uid','==',String(sibUid)).get();
     snap.forEach(doc => hist.push({ id:doc.id, ...doc.data() }));
     hist.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   } catch(e) { console.error('sibling pdf hist', e); }
@@ -17733,7 +17812,7 @@ async function _prepDownloadFamilyWeeklyReportPDF() {
   for (const sib of (_prepWeeklyReportSiblings||[])) {
     let sibHist = [];
     try {
-      const snap = await db.collection('prepHistory').where('uid','==',String(sib.uid)).limit(300).get();
+      const snap = await db.collection('prepHistory').where('uid','==',String(sib.uid)).get();
       snap.forEach(doc => sibHist.push({ id:doc.id, ...doc.data() }));
       sibHist.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
     } catch(e) { console.error('family pdf sibling hist', e); }
