@@ -17423,7 +17423,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   const tableHtml = (cols, rows) => {
     if (!rows.length) return '<div style="font-size:13px;color:rgba(0,0,0,0.5)">—</div>';
     const thead = `<tr>${cols.map(c=>`<th style="text-align:center;font-size:10px;color:#7c3aed;padding:4px 6px;border-bottom:1.5px solid #e9d5ff;white-space:nowrap">${esc(c.label)}</th>`).join('')}</tr>`;
-    const tbody = rows.map((r,i)=>`<tr style="background:${i%2?'#faf5ff':'#ffffff'}">${cols.map(c=>`<td style="text-align:center;font-size:11px;color:#222;padding:4px 6px;border-bottom:1px solid #f1eafe;${c.nowrap?'white-space:nowrap':''}">${esc(c.get(r))}</td>`).join('')}</tr>`).join('');
+    const tbody = rows.map((r,i)=>`<tr style="background:${i%2?'#faf5ff':'#ffffff'}">${cols.map(c=>`<td style="text-align:center;font-size:11px;color:#222;padding:4px 6px;border-bottom:1px solid #f1eafe;${c.nowrap?'white-space:nowrap':''}">${c.raw?c.get(r):esc(c.get(r))}</td>`).join('')}</tr>`).join('');
     return `<table style="width:100%;border-collapse:collapse;margin:4px 0 10px">${thead}${tbody}</table>`;
   };
 
@@ -17442,7 +17442,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     html += tableHtml([
       { label:'Unidad',     get:r=>r.unidadCol,      nowrap:true },
       { label:'Habilidad',  get:r=>r.habilidadesCol, nowrap:true },
-      { label:'Dominio',    get:r=>r.dominioIco,     nowrap:true },
+      { label:'Dominio',    get:r=>r.dominioIco,     nowrap:true, raw:true },
       { label:'Nombre',     get:r=>r.nombreCol },
       { label:'Fecha',      get:r=>r.lastDate,        nowrap:true },
       { label:'Hora',       get:r=>r.lastHour,        nowrap:true },
@@ -17460,7 +17460,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     html += tableHtml([
       { label:'Unidad',     get:r=>r.unidadCol,    nowrap:true },
       { label:'Intentos',   get:r=>r.intentosCol,  nowrap:true },
-      { label:'Dominio',    get:r=>r.dominioIco,   nowrap:true },
+      { label:'Dominio',    get:r=>r.dominioIco,   nowrap:true, raw:true },
       { label:'Nombre',     get:r=>r.nombreCol },
       { label:'Fecha',      get:r=>r.dateStr,      nowrap:true },
       { label:'Hora',       get:r=>r.hourStr,      nowrap:true },
@@ -17479,7 +17479,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
       html += tableHtml([
         { label:'Unidad',     get:r=>r.unidadCol,    nowrap:true },
         { label:'Intentos',   get:r=>r.intentosCol,  nowrap:true },
-        { label:'Dominio',    get:r=>r.dominioIco,   nowrap:true },
+        { label:'Dominio',    get:r=>r.dominioIco,   nowrap:true, raw:true },
         { label:'Nombre',     get:r=>r.nombreCol },
         { label:'Fecha',      get:r=>r.dateStr,      nowrap:true },
         { label:'Hora',       get:r=>r.hourStr,      nowrap:true },
@@ -17544,7 +17544,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     html += tableHtml([
       { label:'Nivel',      get:r=>r.nivelCol,     nowrap:true },
       { label:'Intentos',   get:r=>r.intentosCol,  nowrap:true },
-      { label:'Dominio',    get:r=>r.dominioIco,   nowrap:true },
+      { label:'Dominio',    get:r=>r.dominioIco,   nowrap:true, raw:true },
       { label:'Nombre',     get:r=>r.nombre },
       { label:'Fecha',      get:r=>r.dateStr,      nowrap:true },
       { label:'Hora',       get:r=>r.hourStr,      nowrap:true },
