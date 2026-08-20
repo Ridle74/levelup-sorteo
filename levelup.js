@@ -17090,7 +17090,8 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   const todayStr = new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
   const weekAgoStr = new Date(weekAgoSec*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
 
-  if (!direct7.length) {
+  const _desafio7Early = last7.filter(h => h.level === 'especial' && !h.autoFromExam && !h.autoFromQuiz);
+  if (!direct7.length && !_desafio7Early.length) {
     return `<div style="font-size:19px;font-weight:900;color:#7c3aed;margin-bottom:2px">📊 REPORTE ${_rTitleLbl} - ${esc(name.toUpperCase())}</div>`
       + `<div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:12px">📅 ${weekAgoStr} al ${todayStr}</div>`
       + `<div style="font-size:13px;color:#222;line-height:1.55">${esc(name)} no registró actividad en Level Up esta semana.</div>`;
