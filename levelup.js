@@ -15814,6 +15814,16 @@ function _prepConfigHtml() {
       const _isLockedUnit = !!unit.locked;
       const _blockUnitClicks = _isLockedUnit && !isAdmin();
       const unitDone2 = !masLoading && unit.skills.length && unit.skills.every(sk=>_prepMasteryLevel(sk)==='dominado');
+      const _quizKeysU = unit.skills.filter(sk=>BINGO_TOPICS[sk]?.quiz);
+      const _quizAllDomU = !_quizKeysU.length || _quizKeysU.every(sk=>_prepMasteryLevel(sk)==='dominado');
+      const _scU = _prepLastUnitExamPct(unit.skills[0]);
+      const _examDomU = _prep.editorial==='intelectum' ? _scU===100 : unitDone2;
+      const _fullyDoneU = unitDone2 && _quizAllDomU && _examDomU;
+      const _ncU=['c','p','y','v'][ui%4];
+      const _e1Style={c:'background:#0e7490;border:2px solid #22d3ee;color:#fff',p:'background:#9d174d;border:2px solid #ec4899;color:#fff',y:'background:#92400e;border:2px solid #fbbf24;color:#fff',v:'background:#6b21a8;border:2px solid #a855f7;color:#fff'};
+      const _e2Style={c:'background:#0e7490;border:2px solid #67e8f9;color:#fff;font-size:18px',p:'background:#9d174d;border:2px solid #f9a8d4;color:#fff;font-size:18px',y:'background:#92400e;border:2px solid #fcd34d;color:#fff;font-size:18px',v:'background:#6b21a8;border:2px solid #d8b4fe;color:#fff;font-size:18px'};
+      const _unitNumStyle = _fullyDoneU ? (_e2Style[_ncU]||'') : (unitDone2 ? (_e1Style[_ncU]||'') : '');
+      const _unitNumContent = _fullyDoneU ? '★' : 'U'+String(ui+1).padStart(2,'0');
       let _qn2 = 0;
       const skillsHtml = unit.skills.map((sk,si)=>{
         const def=BINGO_TOPICS[sk]||{};
@@ -15847,7 +15857,7 @@ function _prepConfigHtml() {
       return `<div class="prep-kh-unit${_blockUnitClicks?' prep-kh-unit-locked':''}" id="prep-unit-${ui}" data-nc="${_nc}" title="${_isLockedUnit?_lockTip:''}" style="position:relative;${_isLockedUnit?'opacity:0.5;filter:grayscale(0.4);':''}${_blockUnitClicks?'pointer-events:none;cursor:not-allowed;':''}">
         ${_lockBadge}
         <div class="prep-kh-skills"${_showLbl?' style="display:flex;align-items:center;gap:8px"':''}>
-          <span class="prep-kh-unit-num" title="${unit.lbl}" style="cursor:pointer" onclick="_snd.click();_prep.showUnitLabels=!_prep.showUnitLabels;_renderPreparatePane()">U${String(ui+1).padStart(2,'0')}</span>
+          <span class="prep-kh-unit-num" title="${unit.lbl}" style="cursor:pointer;${_unitNumStyle}" onclick="_snd.click();_prep.showUnitLabels=!_prep.showUnitLabels;_renderPreparatePane()">${_unitNumContent}</span>
           ${_showLbl
             ? `<div style="flex:1;height:38px;border-radius:8px;border:2px solid ${_lc};background:rgba(0,0,0,0.2);display:flex;align-items:center;padding:0 12px;font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);box-shadow:0 0 8px ${_lc}55;overflow:hidden;white-space:nowrap">${unit.lbl}</div>`
             : skillsHtml + _examSq}
@@ -16036,6 +16046,14 @@ function _prepConfigHtml() {
       }).join('');
       const sc=_prepLastUnitExamPct(unit.skills[0]);
       const _examDom=_prep.editorial==='intelectum'?sc===100:unitDone2;
+      const _quizKeysExp=unit.skills.filter(sk=>BINGO_TOPICS[sk]?.quiz);
+      const _quizAllDomExp=!_quizKeysExp.length||_quizKeysExp.every(sk=>_prepMasteryLevel(sk)==='dominado');
+      const _fullyDoneExp=unitDone2&&_quizAllDomExp&&_examDom;
+      const _ncExp2=['c','p','y','v'][ui%4];
+      const _e1StyleExp={c:'background:#0e7490;border:2px solid #22d3ee;color:#fff',p:'background:#9d174d;border:2px solid #ec4899;color:#fff',y:'background:#92400e;border:2px solid #fbbf24;color:#fff',v:'background:#6b21a8;border:2px solid #a855f7;color:#fff'};
+      const _e2StyleExp={c:'background:#0e7490;border:2px solid #67e8f9;color:#fff;font-size:18px',p:'background:#9d174d;border:2px solid #f9a8d4;color:#fff;font-size:18px',y:'background:#92400e;border:2px solid #fcd34d;color:#fff;font-size:18px',v:'background:#6b21a8;border:2px solid #d8b4fe;color:#fff;font-size:18px'};
+      const _unitNumStyleExp=_fullyDoneExp?(_e2StyleExp[_ncExp2]||''):(unitDone2?(_e1StyleExp[_ncExp2]||''):'');
+      const _unitNumContentExp=_fullyDoneExp?'★':'U'+String(ui+1).padStart(2,'0');
       const examLvl=_examDom?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;
       const examDesc=examLvl?`Nivel: ${examLvl}${!_examDom&&sc!==null&&sc>0?' · Último: '+sc+'%':''}`:'Sube de nivel en todas las habilidades de esta unidad.';
       const _examSelInExp = _prep.selectedExamUnitIdx===ui;
@@ -16074,7 +16092,7 @@ function _prepConfigHtml() {
       const _ncExp=['c','p','y','v'][ui%4];
       unitsHtml = `<div class="prep-kh-unit-exp" data-nc="${_ncExp}">
         <div class="prep-kh-unit-exp-hdr">
-          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num">U${String(ui+1).padStart(2,'0')}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Salir" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1);transform:scaleX(-1)"></button></div>
+          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num" style="${_unitNumStyleExp}">${_unitNumContentExp}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Salir" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1);transform:scaleX(-1)"></button></div>
         </div>
         <div class="prep-kh-unit-title"><span class="prep-kh-unit-title-num">U${String(ui+1).padStart(2,'0')}</span>${unit.lbl}</div>
         ${rowsHtml}
@@ -16571,6 +16589,7 @@ function _initSkTip() {
   });
 }
 window._showSkTip = function(e, name, lvlLbl, pct, date) {
+  if (typeof _prep !== 'undefined' && _prep.state === 'exam') return;
   _initSkTip();
   const t = document.getElementById('_skTip');
   const _lvlIcoMap = {Dominado:{ico:'A+',bg:'#7c3aed',fs:'12px'},Competente:{ico:'A',bg:'#9333ea',fs:'13px'},Familiar:{ico:'B',bg:'#c084fc',fs:'13px',fc:'#581c87'},Intentado:{ico:'C',bg:'#e9d5ff',fs:'13px',fc:'#6d28d9'},Pendiente:{ico:'D',bg:'#fdf4ff',fs:'13px',fc:'#9333ea'},'Sin intentos':{ico:'—',bg:'#94a3b8',fs:'13px',fc:'#fff'}};
@@ -17275,12 +17294,13 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
       .filter(([,u])=>u.skills.size>0)
       .sort((a,b)=>a[1].unitIdx-b[1].unitIdx)
       .map(([lbl,u])=>{
-        // Habilidades dominadas vs total puro de la unidad
+        // Promedio del % individual de cada habilidad (igual que los popups)
         const _pureUnitSkills = (u.unitObj.skills||[]).filter(_pureSkillFilter);
         const _domCount = _pureUnitSkills.filter(sk=>_prepMasteryLevelH(sk,hist)==='dominado').length;
         const _totalPure = _pureUnitSkills.length;
-        const pct = _totalPure ? Math.round(_domCount/_totalPure*100) : null;
-        // Dominio basado en % real (dominadas/total), no en mayoría
+        const _avgPct = _totalPure ? Math.round(_pureUnitSkills.reduce((a,sk)=>{ const p=_prepLastPctH(sk,hist); return a+(p!=null?p:0); },0)/_totalPure) : null;
+        const pct = _avgPct;
+        // Nivel basado en promedio de % de habilidades (mismo criterio que popup)
         const lvl = pct !== null ? lvlFromPct(pct) : null;
         const ico = lvl ? (_lvlIco[lvl]||'') : '';
         const unitNumStr = u.unitIdx!==999 ? String(u.unitIdx+1).padStart(2,'0') : '';
