@@ -100,6 +100,16 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .cal-slot .cs-time { font-family:'Barlow',sans-serif; font-weight:700; font-size:15px; }
 .cs-meta { font-family:'Barlow',sans-serif; font-size:12px; font-weight:600; color:rgba(0,0,0,0.5); margin-top:3px; line-height:1.5; }
 
+/* Familias: grilla de 3 columnas donde toda celda usa el mismo "control" (píldora) */
+.fam-grid { display:grid; grid-template-columns:1fr 1fr 1fr; grid-auto-rows:minmax(34px,auto); gap:6px 8px; }
+.fam-pill { display:flex; align-items:center; justify-content:center; text-align:center; font-family:'Barlow',sans-serif; font-size:11px; font-weight:700; padding:0 10px; min-height:34px; border-radius:12px; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.15); color:rgba(0,0,0,0.75); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; }
+.fam-pill-btn { display:flex; align-items:center; justify-content:center; text-align:center; width:100%; min-height:34px; margin-top:0; padding:0 10px; font-family:'Barlow',sans-serif; font-weight:700; font-size:11px; text-transform:none; letter-spacing:normal; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; }
+.fam-pill-btn-danger { background:rgba(193,39,45,0.08); border-color:rgba(193,39,45,0.35); color:#c1272d; }
+.fam-input, .fam-select { width:100%; height:34px; padding:0 8px; border-radius:12px; border:1px solid rgba(0,0,0,0.15); background:#fff; color:#111; font-family:'Barlow',sans-serif; font-size:11px; font-weight:700; text-align:center; box-sizing:border-box; margin-bottom:0; }
+.fam-select { font-size:10px; padding:0 4px; }
+.fam-combo { display:flex; gap:4px; min-height:34px; box-sizing:border-box; }
+.fam-combo .fam-select { flex:1; min-width:0; }
+
 /* Request card */
 .req-card { background:#fff; border:1px solid rgba(0,0,0,0.1); border-radius:16px; padding:16px; margin-top:14px; }
 .req-row { display:flex; gap:8px; margin-bottom:8px; }
@@ -138,7 +148,7 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 .sm-seg button { flex:1; border:none; background:transparent; color:rgba(0,0,0,0.4); font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; padding:0 8px; cursor:pointer; transition:all 0.15s; height:100%; display:flex; align-items:center; justify-content:center; }
 .sm-seg button.on { background:#111; color:#fff; }
 .sm-del-btn { width:100%; border:1px solid rgba(0,0,0,0.15); border-radius:12px; padding:11px; cursor:pointer; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; background:#fff; color:rgba(0,0,0,0.45); margin-top:8px; }
-#sm-del-popup { position:fixed; inset:0; z-index:700; display:flex; align-items:center; justify-content:center; padding:20px; }
+#sm-del-popup, #fam-del-popup { position:fixed; inset:0; z-index:700; display:flex; align-items:center; justify-content:center; padding:20px; }
 .sm-del-popup-bg { position:absolute; inset:0; background:rgba(0,0,0,0.18); }
 .sm-del-popup-card { position:relative; z-index:1; background:#fff; border-radius:16px; padding:18px 20px 16px; width:calc((100vw - 60px) / 3); min-width:200px; box-shadow:0 8px 32px rgba(0,0,0,0.22); }
 .sm-del-popup-title { font-size:11px; font-weight:700; color:rgba(0,0,0,0.45); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
@@ -221,7 +231,7 @@ textarea.fsm { height:auto; min-height:40px; padding:11px 12px; display:block; }
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="calendar-utils.js"></script>
+<script src="/calendar-utils.js"></script>
 <script>
 // ════════════════════════════════════════════════════════
 // FIREBASE  (mismo proyecto que /student)
@@ -321,7 +331,7 @@ function syncNameToStudent(oldName, newName) {
 // modality 'One to One' → Virtual y 'One to Family' → Domicilio.
 const SEED = {
   // Ciclos del curso — cada uno con nombre propio, fecha de inicio y fecha de fin. El admin
-  // puede editarlos/renombrarlos libremente desde el panel (Cuentas → Ciclos del curso). El
+  // puede editarlos/renombrarlos libremente desde el panel (Configuración → Ciclos del curso). El
   // horario semanal recurrente solo se muestra hasta el final del ciclo más lejano definido
   // aquí (ver getCycleHorizon()); start=null significa "sin límite inferior".
   cycles: [
@@ -458,12 +468,135 @@ let selectedChild = null;      // studentId actualmente mostrado en calendario
 let currentView = 'login';
 let navHistory = [];   // pila de vistas visitadas, para los botones atrás/adelante
 let navIndex = -1;     // posición actual dentro de navHistory
+
+// ── Router: URL propia por pestaña (/parents/<slug>) ──────────────────────
+// Los slugs "inicio"/"calendario" son compartidos entre admin y padre — el rol activo
+// (adminMode) decide a qué vista interna corresponde cada uno.
+const VIEW_SLUGS = {
+  'a-inicio':'inicio', 'a-calendario':'calendario', 'a-solicitudes':'solicitudes',
+  'a-familias':'familias', 'a-config':'config',
+  'inicio':'inicio', 'calendario':'calendario', 'solicitar':'solicitar', 'perfil':'perfil'
+};
+const SLUG_TO_VIEW_ADMIN  = { inicio:'a-inicio', calendario:'a-calendario', solicitudes:'a-solicitudes', familias:'a-familias', config:'a-config' };
+const SLUG_TO_VIEW_PARENT = { inicio:'inicio', calendario:'calendario', solicitar:'solicitar', perfil:'perfil' };
+// Sub-pestañas dentro de Solicitudes (4 bandejas: cuentas nuevas, hijos adicionales,
+// clases adicionales, cotizaciones), cada una con su propio sub-segmento de URL,
+// ej. /parents/solicitudes/cotizaciones.
+let solicitudesSubTab = 'cuentas'; // 'cuentas' | 'hijos' | 'clases' | 'cotizaciones'
+const SOLIC_SUBTAB_SLUGS = { cuentas:'cuentas', hijos:'hijos', clases:'clases', cotizaciones:'cotizaciones' };
+// Sub-pestañas dentro de Configuración (clave del admin, ciclos del curso, plantillas de
+// disponibilidad), cada una con su propio sub-segmento de URL, ej. /parents/config/plantillas.
+let configSubTab = 'ciclo'; // 'clave' | 'ciclo' | 'plantillas'
+const CONFIG_SUBTAB_SLUGS = { clave:'clave', ciclo:'ciclo', plantillas:'plantillas' };
+// Sub-pestañas dentro de Familias (todas las familias, incompletas y completas según sus
+// datos de Nivel/Grado, Colegio y Teléfono, y "Nueva cuenta" para crear una manualmente),
+// cada una con su propio sub-segmento de URL, ej. /parents/familias/incompletas.
+// Nota: la clave interna de cada sub-pestaña coincide siempre con su slug de URL (igual que
+// en Solicitudes/Config) — resolveFamiliasSubTab() hace `FAMILIAS_SUBTAB_SLUGS[sub]` con el
+// slug tal cual viene de la URL, así que una clave distinta al slug (ej. 'nueva' → 'nueva-cuenta')
+// nunca resolvería de vuelta y la sub-pestaña se perdería siempre al recargar /parents/familias/nueva-cuenta.
+let familiasSubTab = 'todas'; // 'todas' | 'incompletas' | 'completas' | 'nueva-cuenta'
+const FAMILIAS_SUBTAB_SLUGS = { todas:'todas', incompletas:'incompletas', completas:'completas', 'nueva-cuenta':'nueva-cuenta' };
+function viewToPath(view) {
+  const slug = VIEW_SLUGS[view];
+  if (!slug) return '/parents';
+  if (view === 'a-solicitudes') {
+    const sub = SOLIC_SUBTAB_SLUGS[solicitudesSubTab] || 'cuentas';
+    return '/parents/' + slug + '/' + sub;
+  }
+  if (view === 'a-config') {
+    const sub = CONFIG_SUBTAB_SLUGS[configSubTab] || 'ciclo';
+    return '/parents/' + slug + '/' + sub;
+  }
+  if (view === 'a-familias') {
+    const sub = FAMILIAS_SUBTAB_SLUGS[familiasSubTab] || 'todas';
+    return '/parents/' + slug + '/' + sub;
+  }
+  return '/parents/' + slug;
+}
+function slugToView(slug, adminMode) {
+  if (!slug) return null;
+  return (adminMode ? SLUG_TO_VIEW_ADMIN : SLUG_TO_VIEW_PARENT)[slug] || null;
+}
+function currentSlugFromLocation() {
+  const m = window.location.pathname.replace(/\/+$/, '').match(/^\/parents\/([a-z-]+)(?:\/[a-z-]+)?$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+// Sub-slug de Solicitudes en la URL actual (ej. /parents/solicitudes/cotizaciones → 'cotizaciones').
+function currentSolicSubSlugFromLocation() {
+  const m = window.location.pathname.replace(/\/+$/, '').match(/^\/parents\/solicitudes\/([a-z-]+)$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+function resolveSolicitudesSubTab() {
+  const sub = currentSolicSubSlugFromLocation();
+  return (sub && SOLIC_SUBTAB_SLUGS[sub]) ? sub : 'cuentas';
+}
+// Sub-slug de Configuración en la URL actual (ej. /parents/config/plantillas → 'plantillas').
+function currentConfigSubSlugFromLocation() {
+  const m = window.location.pathname.replace(/\/+$/, '').match(/^\/parents\/config\/([a-z-]+)$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+function resolveConfigSubTab() {
+  const sub = currentConfigSubSlugFromLocation();
+  return (sub && CONFIG_SUBTAB_SLUGS[sub]) ? sub : 'ciclo';
+}
+// Sub-slug de Familias en la URL actual (ej. /parents/familias/incompletas → 'incompletas').
+function currentFamiliasSubSlugFromLocation() {
+  const m = window.location.pathname.replace(/\/+$/, '').match(/^\/parents\/familias\/([a-z-]+)$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+function resolveFamiliasSubTab() {
+  const sub = currentFamiliasSubSlugFromLocation();
+  return (sub && FAMILIAS_SUBTAB_SLUGS[sub]) ? sub : 'todas';
+}
+// Slug pedido por la URL al cargar la página (deep link, ej. abrir /parents/familias de
+// un enlace o al refrescar). Si en ese momento todavía no hay sesión iniciada, se guarda
+// aquí para usarlo justo después de un login exitoso (ver _afterLogin); se consume una
+// sola vez y luego se descarta para no interferir con la navegación normal ya en sesión.
+let _pendingDeepLinkSlug = currentSlugFromLocation();
+function _syncUrl(view) {
+  const path = viewToPath(view);
+  if (window.location.pathname !== path) {
+    history.pushState({ view }, '', path);
+  }
+}
+// Cambia la bandeja activa dentro de Solicitudes y sincroniza la URL (ej. al hacer clic
+// en un acceso directo desde Inicio, o en las sub-pestañas dentro de la propia vista).
+function goSolicitudes(tab) {
+  solicitudesSubTab = tab || 'cuentas';
+  go('a-solicitudes');
+}
+// Cambia la sub-pestaña activa dentro de Configuración y sincroniza la URL.
+function goConfig(tab) {
+  configSubTab = tab || 'ciclo';
+  go('a-config');
+}
+// Cambia la sub-pestaña activa dentro de Familias y sincroniza la URL.
+function goFamilias(tab) {
+  familiasSubTab = tab || 'todas';
+  go('a-familias');
+}
+// Tras un login exitoso: si la URL con la que se llegó pedía una pestaña específica
+// (deep link, ej. /parents/familias), aterriza ahí en vez de en Inicio. Se usa replaceState
+// (no pushState) porque la pantalla de login y la vista destino son, de cara al usuario,
+// un solo paso — no debería quedar una entrada de "login" intermedia en el historial.
+function _afterLogin(adminMode) {
+  const target = _pendingDeepLinkSlug ? slugToView(_pendingDeepLinkSlug, adminMode) : null;
+  currentView = target || (adminMode ? 'a-inicio' : 'inicio');
+  if (currentView === 'a-solicitudes') solicitudesSubTab = resolveSolicitudesSubTab();
+  if (currentView === 'a-config') configSubTab = resolveConfigSubTab();
+  if (currentView === 'a-familias') familiasSubTab = resolveFamiliasSubTab();
+  _pendingDeepLinkSlug = null;
+  history.replaceState({ view: currentView }, '', viewToPath(currentView));
+  render();
+}
 let loginTab = 'familia';      // 'familia' | 'crear'  (pestañas de la pantalla de login)
 let editingParentId = null;    // id de padre cuyo PIN se está editando en el panel admin
 let editingNamesId  = null;    // id de familia cuyos nombres (padre/hijos) se están editando en el panel admin
 let editingCycleId  = null;    // id del ciclo que se está editando en el panel admin (null=ninguno, 'new'=nuevo ciclo sin guardar)
 let editingTemplateId = null; // id de la plantilla de disponibilidad que se está editando (null=ninguna, 'new'=nueva)
 let addingChildParentId  = null;  // admin: id de la familia con el panel "agregar hijo" abierto
+let showManualCreateForm = false; // admin: si el panel "crear cuenta manualmente" está abierto en Solicitudes
 let addingChildForParent = false; // padre: si el formulario "solicitar hijo adicional" está visible
 let calEditMode = false;       // admin: modo edición del calendario
 let smEditId    = null;        // id del session/freeslot en edición (null=nuevo)
@@ -724,23 +857,53 @@ function go(view) {
     navIndex = navHistory.length - 1;
   }
   currentView = view;
+  _syncUrl(view);
   render();
 }
 function navBack() {
   if (navIndex <= 0) return;
   navIndex--;
   currentView = navHistory[navIndex];
+  _syncUrl(currentView);
   render();
 }
 function navForward() {
   if (navIndex >= navHistory.length - 1) return;
   navIndex++;
   currentView = navHistory[navIndex];
+  _syncUrl(currentView);
   render();
 }
 function navHome() {
   go(isLoggedAdmin() ? 'a-inicio' : 'inicio');
 }
+// Botones atrás/adelante REALES del navegador: cuando el usuario los usa, la URL ya
+// cambió sola (el navegador la restauró); solo hace falta releer qué pestaña le
+// corresponde y renderizarla. render() se encarga de mantener navHistory/navIndex en
+// sincronía automáticamente (ver más abajo), así que no hace falta tocarlos aquí.
+window.addEventListener('popstate', () => {
+  if (!appReady) return;
+  const adminMode = isLoggedAdmin();
+  const loggedIn  = adminMode || getLoggedParent() !== null;
+  if (!loggedIn) return;
+  const slug = currentSlugFromLocation();
+  const view = slug ? slugToView(slug, adminMode) : (adminMode ? 'a-inicio' : 'inicio');
+  let changed = false;
+  if (view && view !== currentView) { currentView = view; changed = true; }
+  if (currentView === 'a-solicitudes') {
+    const sub = resolveSolicitudesSubTab();
+    if (sub !== solicitudesSubTab) { solicitudesSubTab = sub; changed = true; }
+  }
+  if (currentView === 'a-config') {
+    const sub = resolveConfigSubTab();
+    if (sub !== configSubTab) { configSubTab = sub; changed = true; }
+  }
+  if (currentView === 'a-familias') {
+    const sub = resolveFamiliasSubTab();
+    if (sub !== familiasSubTab) { familiasSubTab = sub; changed = true; }
+  }
+  if (changed) render();
+});
 
 function render() {
   if (!appReady) return;
@@ -774,7 +937,7 @@ function render() {
   }
 
   const views = adminMode
-    ? { 'a-inicio': vAdminInicio, 'a-cuentas': vAdminCuentas, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario, 'a-cotizaciones': vAdminCotizaciones }
+    ? { 'a-inicio': vAdminInicio, 'a-familias': vAdminFamilias, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario, 'a-config': vAdminConfig }
     : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar, perfil: vPerfil };
   app.innerHTML = `<div class="vw">${(views[currentView]||(adminMode?vAdminInicio:vLogin))()}</div>`;
 
@@ -786,8 +949,8 @@ function render() {
           {r:'a-inicio',       i:'🛠️', l:'Inicio'},
           {r:'a-calendario',   i:'📅', l:'Calendario'},
           {r:'a-solicitudes',  i:'📥', l:'Solicitudes'},
-          {r:'a-cotizaciones', i:'🧾', l:'Cotizaciones'},
-          {r:'a-cuentas',      i:'🔑', l:'Cuentas'}
+          {r:'a-familias',     i:'👨‍👩‍👧', l:'Familias'},
+          {r:'a-config',       i:'⚙️', l:'Config'}
         ]
       : [
           {r:'inicio',     i:'🏠', l:'Inicio'},
@@ -832,19 +995,17 @@ function bindView() {
         const parentId = selEl ? selEl.value : '';
         if (pin === DATA.adminPin) {
           setLoggedAdmin(true);
-          currentView = 'a-inicio';
-          render();
+          _afterLogin(true);
           return;
         }
         if (parentId === '__admin__' && pin === DATA.adminPin) {
-          setLoggedAdmin(true); currentView = 'a-inicio'; render(); return;
+          setLoggedAdmin(true); _afterLogin(true); return;
         }
         const parent = parentId ? DATA.parents[parentId] : null;
         if (parent && parent.pin === pin) {
           setLoggedParent(parentId);
           selectedChild = null;
-          currentView = 'inicio';
-          render();
+          _afterLogin(false);
         } else {
           document.getElementById('login-err').style.display = 'block';
         }
@@ -883,6 +1044,7 @@ function logout() {
   editingParentId = null;
   currentView = 'login';
   navHistory = []; navIndex = -1;
+  history.pushState({ view: 'login' }, '', '/parents');
   render();
 }
 function selectChild(id) { selectedChild = id === null ? null : Number(id); render(); }
@@ -1541,7 +1703,13 @@ function approveAccountRequest(reqId) {
     studentId = nextStudentId();
     DATA.students[studentId] = {
       name: `${reg.childFirstName} ${reg.childFirstSurname}`.trim(),
-      color: '#888', icon: '👤', modality: 'Virtual'
+      color: '#888', icon: '👤', modality: 'Virtual',
+      // nivel/grado/colegio solo vienen presentes cuando la solicitud se originó desde
+      // "Crear cuenta manualmente" (createManualAccount) — las solicitudes de auto-registro
+      // normales no los piden, así que se omiten si no están.
+      ...(reg.nivel ? { nivel: reg.nivel } : {}),
+      ...(reg.grado ? { grado: Number(reg.grado) } : {}),
+      ...(reg.colegio ? { colegio: reg.colegio } : {})
     };
     createdNew = true;
   }
@@ -1560,6 +1728,57 @@ function approveAccountRequest(reqId) {
     .then(() => showToast(`Cuenta creada. Clave para ${reg.parentName}: ${pin}${createdNew?' (se creó un nuevo alumno en la lista)':''}`, 'success'))
     .catch(e => { console.error(e); showToast('Error al crear la cuenta.'); });
   render();
+}
+function toggleManualCreateForm() {
+  showManualCreateForm = !showManualCreateForm;
+  render();
+}
+function _mcUpdateGrado() {
+  const nivelSel = document.getElementById('mc-nivel');
+  const gradoSel = document.getElementById('mc-grado');
+  if (!nivelSel || !gradoSel) return;
+  const nivel = nivelSel.value;
+  const max   = nivel === 'secundaria' ? 5 : nivel === 'preuni' ? 2 : 6;
+  gradoSel.innerHTML = '<option value="">— Grado —</option>'
+    + Array.from({length: max}, function(_, i){ const g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
+}
+// Admin: crea una cuenta de padre/madre + alumno directamente, sin depender de que la
+// familia haya enviado antes una solicitud de auto-registro. Reutiliza el mismo flujo de
+// approveAccountRequest (misma generación de PIN, mismo alumno nuevo, mismo guardado) —
+// simplemente se registra una "solicitud" ya con status 'pendiente' y se aprueba al toque,
+// para que quede en el mismo historial de "Solicitudes de cuenta" con su clave asignada.
+function createManualAccount() {
+  const parentName = document.getElementById('mc-parent').value.trim();
+  const phone = document.getElementById('mc-phone').value.trim();
+  const childFirstName = document.getElementById('mc-cname').value.trim();
+  const childFirstSurname = document.getElementById('mc-csurname').value.trim();
+  const note = document.getElementById('mc-note').value.trim();
+  const nivel = document.getElementById('mc-nivel').value;
+  const grado = document.getElementById('mc-grado').value;
+  const colegio = document.getElementById('mc-colegio').value.trim();
+  if (!parentName || !childFirstName || !childFirstSurname) {
+    showToast('Completa el nombre del padre/madre y el nombre y apellido del alumno.');
+    return;
+  }
+  if (!nivel || !grado) {
+    showToast('Completa nivel y grado del alumno.');
+    return;
+  }
+  const reg = {
+    id: Date.now(),
+    parentName, phone, childFirstName, childFirstSurname, note,
+    nivel, grado: Number(grado), colegio,
+    status: 'pendiente',
+    createdAt: new Date().toISOString(),
+    source: 'manual'
+  };
+  DATA.accountRequests.push(reg);
+  showManualCreateForm = false;
+  // Tras crear la cuenta, regresa a la pestaña "Todas" (en vez de dejar la pestaña
+  // "Nueva cuenta" abierta con el formulario ya vacío) y sincroniza la URL.
+  familiasSubTab = 'todas';
+  if (currentView === 'a-familias') history.replaceState({ view: currentView }, '', viewToPath(currentView));
+  approveAccountRequest(reg.id);
 }
 function rejectAccountRequest(reqId) {
   const reg = DATA.accountRequests.find(r => r.id === reqId);
@@ -1615,10 +1834,12 @@ function confirmAdminAddChild(parentId) {
     const nameEl = document.getElementById('add-child-newname-' + parentId);
     const name   = nameEl ? nameEl.value.trim() : '';
     if (!name) { showToast('Escribe el nombre del alumno'); return; }
-    const nivel  = (document.getElementById('add-child-nivel-' + parentId)||{}).value || '';
-    const grado  = (document.getElementById('add-child-grado-' + parentId)||{}).value || '';
+    const nivel   = (document.getElementById('add-child-nivel-' + parentId)||{}).value || '';
+    const grado   = (document.getElementById('add-child-grado-' + parentId)||{}).value || '';
+    const colegio = (document.getElementById('add-child-colegio-' + parentId)||{}).value.trim() || '';
+    if (!nivel || !grado) { showToast('Completa nivel y grado del alumno.'); return; }
     studentId = nextStudentId();
-    DATA.students[studentId] = { name, color: '#888', icon: '👤', nivel, grado: grado ? Number(grado) : '' };
+    DATA.students[studentId] = { name, color: '#888', icon: '👤', nivel, grado: Number(grado), colegio };
   } else {
     studentId = Number(val);
   }
@@ -1703,6 +1924,67 @@ function saveParentPin(id) {
   render();
 }
 function startEditNames(id) { editingNamesId = id; render(); }
+// Recalcula al instante (sin necesidad de guardar) el estado de la familia mostrado en la
+// Fila 1 del formulario de edición, leyendo los valores que el usuario está escribiendo
+// en ese momento en los campos de teléfono, nivel, grado y colegio de cada hijo/a.
+function _updateEditStatus(famId) {
+  const p = DATA.parents[famId];
+  if (!p) return;
+  const phoneInput = document.getElementById('edit-pphone-' + famId);
+  const tempP = { phone: phoneInput ? phoneInput.value.trim() : (p.phone || '') };
+  const kids = (p.children || []).map(cid => ({ cid, s: DATA.students[cid] })).filter(x => x.s);
+  const tempKids = kids.map(({ cid, s }) => {
+    const nivelSel = document.getElementById('edit-nivel-' + famId + '-' + cid);
+    const gradoSel = document.getElementById('edit-grado-' + famId + '-' + cid);
+    const colegioInput = document.getElementById('edit-colegio-' + famId + '-' + cid);
+    return { s: {
+      nivel: nivelSel ? nivelSel.value : s.nivel,
+      grado: gradoSel ? gradoSel.value : s.grado,
+      colegio: colegioInput ? colegioInput.value.trim() : s.colegio
+    } };
+  });
+  const el = document.getElementById('edit-status-' + famId);
+  if (el) el.outerHTML = familyStatusBadgeHtml(tempP, tempKids, 'edit-status-' + famId);
+}
+// Ventana emergente para confirmar "Eliminar familia", reutilizando el mismo diseño de
+// popup que ya se usa en la página para eliminar un horario (fondo oscuro + tarjeta
+// blanca centrada: #sm-del-popup / .sm-del-popup-bg / .sm-del-popup-card / etc.).
+function startDeleteFamily(id) {
+  const p = DATA.parents[id];
+  if (!p) return;
+  const existing = document.getElementById('fam-del-popup');
+  if (existing) existing.remove();
+  const popup = document.createElement('div');
+  popup.id = 'fam-del-popup';
+  popup.innerHTML =
+      '<div class="sm-del-popup-bg" onclick="cancelDeleteFamily()"></div>'
+    + '<div class="sm-del-popup-card">'
+    + '<div class="sm-del-popup-title">¿Eliminar familia?</div>'
+    + '<button class="sm-del-popup-btn" onclick="confirmDeleteFamily(\'' + id + '\')">Sí, eliminar</button>'
+    + '<button class="sm-del-popup-cancel" onclick="cancelDeleteFamily()">Cancelar</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+}
+function cancelDeleteFamily() {
+  const el = document.getElementById('fam-del-popup');
+  if (el) el.remove();
+}
+function confirmDeleteFamily(id) {
+  const p = DATA.parents[id];
+  if (!p) return;
+  const childIds = (p.children || []).slice();
+  const delFields = {};
+  delFields['parents.' + id] = firebase.firestore.FieldValue.delete();
+  childIds.forEach(cid => { delFields['students.' + cid] = firebase.firestore.FieldValue.delete(); });
+  REF.update(delFields).catch(e => { console.error(e); });
+  delete DATA.parents[id];
+  childIds.forEach(cid => { delete DATA.students[cid]; });
+  cancelDeleteFamily();
+  if (editingNamesId === id) editingNamesId = null;
+  if (editingParentId === id) editingParentId = null;
+  showToast('Familia eliminada.', 'success');
+  render();
+}
 function _updateGradoOpts(famId, cid) {
   const nivelSel = document.getElementById('edit-nivel-' + famId + '-' + cid);
   const gradoSel = document.getElementById('edit-grado-' + famId + '-' + cid);
@@ -1722,6 +2004,10 @@ function saveFamilyNames(id) {
   if (!nameInput) return;
   const newParentName = nameInput.value.trim();
   if (!newParentName) { showToast('El nombre del padre/madre no puede estar vacío.'); return; }
+  // El teléfono es opcional aquí (igual que el colegio de cada hijo/a): puede quedar vacío
+  // para no bloquear una simple corrección de nombre en familias que aún no lo tienen.
+  const phoneInput = document.getElementById('edit-pphone-' + id);
+  const newPhone = phoneInput ? phoneInput.value.trim() : (p.phone || '');
   const kids = (p.children||[]).map(cid => ({ cid, s: DATA.students[cid] })).filter(x => x.s);
   const kidUpdates = [];
   for (const { cid, s } of kids) {
@@ -1731,16 +2017,23 @@ function saveFamilyNames(id) {
     if (!newName) { showToast('El nombre de ' + s.name + ' no puede estar vacío.'); return; }
     const nivelSel = document.getElementById('edit-nivel-' + id + '-' + cid);
     const gradoSel = document.getElementById('edit-grado-' + id + '-' + cid);
+    const colegioInput = document.getElementById('edit-colegio-' + id + '-' + cid);
     const newNivel = nivelSel ? (nivelSel.value || null) : (s.nivel || null);
     const newGrado = gradoSel && gradoSel.value ? Number(gradoSel.value) : (s.grado || null);
-    kidUpdates.push({ cid, oldName: s.name, newName, newNivel, newGrado });
+    // Colegio no es obligatorio aquí (a diferencia de crear cuenta/agregar hijo/a): puede
+    // quedar vacío para no bloquear una simple corrección de nombre en alumnos antiguos
+    // que nunca tuvieron este dato guardado.
+    const newColegio = colegioInput ? (colegioInput.value.trim() || null) : (s.colegio || null);
+    kidUpdates.push({ cid, oldName: s.name, newName, newNivel, newGrado, newColegio });
   }
   p.name = newParentName;
+  p.phone = newPhone;
   saveParents();
-  kidUpdates.forEach(({ cid, oldName, newName, newNivel, newGrado }) => {
+  kidUpdates.forEach(({ cid, oldName, newName, newNivel, newGrado, newColegio }) => {
     DATA.students[cid].name = newName;
     DATA.students[cid].nivel = newNivel;
     DATA.students[cid].grado = newGrado;
+    DATA.students[cid].colegio = newColegio;
     if (oldName !== newName) syncNameToStudent(oldName, newName);
   });
   if (kidUpdates.length) {
@@ -2147,10 +2440,11 @@ function vAdminInicio() {
 
     <div class="sec-lbl">Pendientes por revisar</div>
     <div class="dash-link" onclick="go('a-calendario')"><span class="dl-ico">📅</span>Calendario de todos los alumnos<span class="dl-arr">›</span></div>
-    <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">📝</span>Solicitudes de cuenta nuevas<span class="req-status pend" style="margin-left:auto">${pendCuentas}</span></div>
-    <div class="dash-link" onclick="go('a-solicitudes')"><span class="dl-ico">🗓️</span>Solicitudes de clase adicional<span class="req-status pend" style="margin-left:auto">${pendClases}</span></div>
-    <div class="dash-link" onclick="go('a-cotizaciones')"><span class="dl-ico">🧾</span>Cotizaciones para reservar<span class="req-status pend" style="margin-left:auto">${pendCotiz}</span></div>
-    <div class="dash-link" onclick="go('a-cuentas')"><span class="dl-ico">🔑</span>Cuentas, claves y contraseñas<span class="dl-arr">›</span></div>
+    <div class="dash-link" onclick="goSolicitudes('cuentas')"><span class="dl-ico">📝</span>Solicitudes de cuenta nuevas<span class="req-status pend" style="margin-left:auto">${pendCuentas}</span></div>
+    <div class="dash-link" onclick="goSolicitudes('clases')"><span class="dl-ico">🗓️</span>Solicitudes de clase adicional<span class="req-status pend" style="margin-left:auto">${pendClases}</span></div>
+    <div class="dash-link" onclick="goSolicitudes('cotizaciones')"><span class="dl-ico">🧾</span>Cotizaciones para reservar<span class="req-status pend" style="margin-left:auto">${pendCotiz}</span></div>
+    <div class="dash-link" onclick="go('a-familias')"><span class="dl-ico">👨‍👩‍👧</span>Familias registradas<span class="dl-arr">›</span></div>
+    <div class="dash-link" onclick="go('a-config')"><span class="dl-ico">⚙️</span>Configuración del curso<span class="dl-arr">›</span></div>
     <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
   </div>`;
 }
@@ -2162,13 +2456,20 @@ function vAdminSolicitudes() {
   const cuentas = allAccountReqs.filter(function(r){ return r.type !== 'add-child'; });
   const addChildReqs = allAccountReqs.filter(function(r){ return r.type === 'add-child'; });
   const clases  = DATA.requests.slice().reverse();
-  // build orphan list for approve dropdown
-  const _assignedIds = new Set();
-  Object.values(DATA.parents).forEach(function(p){ (p.children||[]).forEach(function(cid){ _assignedIds.add(String(cid)); }); });
+  const cotizList = (DATA.quoteRequests||[]).slice().reverse();
   const _allStudents = Object.entries(DATA.students);
+  const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
+  const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
+  const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
 
-  return `
-  <div style="padding:16px;max-width:640px;margin:0 auto">
+  const pendCuentas = cuentas.filter(function(r){ return r.status==='pendiente'; }).length;
+  const pendHijos   = addChildReqs.filter(function(r){ return r.status==='pendiente'; }).length;
+  const pendClases  = clases.filter(function(r){ return r.status==='pendiente'; }).length;
+  const pendCotiz   = cotizList.filter(function(r){ return r.status==='pendiente'; }).length;
+
+  const tab = solicitudesSubTab || 'cuentas';
+
+  const bodyCuentas = `
     <div class="sec-lbl">Solicitudes de cuenta (auto-registro de padres)</div>
     ${cuentas.length ? cuentas.map(r => `
       <div class="req-list-item" style="align-items:flex-start">
@@ -2185,10 +2486,11 @@ function vAdminSolicitudes() {
         </div>
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`).join('') : `<div class="cal-empty">No hay solicitudes de cuenta.</div>`}
+  `;
 
-    <div class="sec-lbl" style="margin-top:22px">Solicitudes de hijo/a adicional</div>
+  const bodyHijos = `
+    <div class="sec-lbl">Solicitudes de hijo/a adicional</div>
     ${addChildReqs.length ? addChildReqs.map(r => {
-      const par = DATA.parents[r.parentId];
       return `<div class="req-list-item" style="align-items:flex-start">
         <div style="flex:1">
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${r.parentName||''} · solicita agregar: ${r.childName}</div>
@@ -2209,8 +2511,10 @@ function vAdminSolicitudes() {
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`;
     }).join('') : `<div class="cal-empty">No hay solicitudes de hijo/a adicional.</div>`}
+  `;
 
-    <div class="sec-lbl" style="margin-top:22px">Solicitudes de clase adicional</div>
+  const bodyClases = `
+    <div class="sec-lbl">Solicitudes de clase adicional</div>
     ${clases.length ? clases.map(r => {
       const st = DATA.students[r.studentId];
       const par = DATA.parents[r.parentId];
@@ -2227,21 +2531,11 @@ function vAdminSolicitudes() {
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`;
     }).join('') : `<div class="cal-empty">No hay solicitudes de clase.</div>`}
-  </div>`;
-}
+  `;
 
-function vAdminCotizaciones() {
-  const statusLabel = { pendiente:'Pendiente', aprobada:'Aprobada', rechazada:'Rechazada' };
-  const statusClass = { pendiente:'pend', aprobada:'appr', rechazada:'rej' };
-  const tipoLbl  = { virtual:'Virtual', presencial:'Domicilio' };
-  const nLbl     = { 1:'Individual', 2:'Dúo', 3:'Trío' };
-  const nivelLbl = { primaria:'Primaria', secundaria:'Secundaria', preuni:'Pre-Uni' };
-  const list = (DATA.quoteRequests||[]).slice().reverse();
-
-  return `
-  <div style="padding:16px;max-width:640px;margin:0 auto">
+  const bodyCotizaciones = `
     <div class="sec-lbl">Cotizaciones para reservar (desde /cotiza)</div>
-    ${list.length ? list.map(r => {
+    ${cotizList.length ? cotizList.map(r => {
       // students[] (nuevo formato, varios alumnos por solicitud) — con fallback
       // al formato anterior (studentId/newChildName, un solo alumno) por si
       // quedó alguna solicitud vieja guardada antes de este cambio.
@@ -2273,17 +2567,27 @@ function vAdminCotizaciones() {
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
       </div>`;
     }).join('') : `<div class="cal-empty">No hay cotizaciones enviadas.</div>`}
+  `;
+
+  const bodies = { cuentas: bodyCuentas, hijos: bodyHijos, clases: bodyClases, cotizaciones: bodyCotizaciones };
+
+  return `
+  <div style="padding:16px;max-width:640px;margin:0 auto">
+    <div class="tab-row" style="flex-wrap:wrap">
+      <button class="${tab==='cuentas'?'on':''}" onclick="goSolicitudes('cuentas')">Cuentas${pendCuentas?' ('+pendCuentas+')':''}</button>
+      <button class="${tab==='hijos'?'on':''}" onclick="goSolicitudes('hijos')">Hijos${pendHijos?' ('+pendHijos+')':''}</button>
+      <button class="${tab==='clases'?'on':''}" onclick="goSolicitudes('clases')">Clases${pendClases?' ('+pendClases+')':''}</button>
+      <button class="${tab==='cotizaciones'?'on':''}" onclick="goSolicitudes('cotizaciones')">Cotiz.${pendCotiz?' ('+pendCotiz+')':''}</button>
+    </div>
+    ${bodies[tab] || bodyCuentas}
   </div>`;
 }
 
-function vAdminCuentas() {
-  const parents = Object.entries(DATA.parents);
-  const assignedIds = new Set();
-  parents.forEach(([, p]) => (p.children||[]).forEach(cid => assignedIds.add(String(cid))));
-  const orphanStudents = Object.entries(DATA.students).filter(([sid]) => !assignedIds.has(String(sid)));
+function vAdminConfig() {
   const cycles = (DATA.cycles||[]).slice().sort((a,b) => (a.start||'').localeCompare(b.start||''));
-  return `
-  <div style="padding:16px;max-width:640px;margin:0 auto">
+  const tab = configSubTab || 'ciclo';
+
+  const bodyClave = `
     <div class="sec-lbl">Clave del administrador</div>
     <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.2)">
       <p style="font-size:11px;color:rgba(0,0,0,0.45);line-height:1.6;margin:0 0 10px">
@@ -2294,8 +2598,10 @@ function vAdminCuentas() {
         <button class="btn-grn" style="width:auto;padding:11px 18px" onclick="changeAdminPin()">Guardar</button>
       </div>
     </div>
+  `;
 
-    <div class="sec-lbl" style="margin-top:20px">Ciclos del curso (${cycles.length})</div>
+  const bodyCiclo = `
+    <div class="sec-lbl">Ciclos del curso (${cycles.length})</div>
     <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.2)">
       <p style="font-size:11px;color:rgba(0,0,0,0.45);line-height:1.6;margin:0 0 10px">
         Define el nombre y las fechas (inicio y fin) de cada ciclo o preciclo. El horario semanal recurrente se muestra hasta el fin del ciclo más lejano que definas aquí.
@@ -2351,9 +2657,10 @@ function vAdminCuentas() {
       </div>` : `
       <button class="btn-ghost" style="margin-top:4px" onclick="startEditCycle('new')">+ Agregar ciclo</button>`}
     </div>
+  `;
 
-    <!-- ── Plantillas de disponibilidad ── -->
-    <div class="sec-lbl" style="margin-top:20px">Plantillas de disponibilidad</div>
+  const bodyPlantillas = `
+    <div class="sec-lbl">Plantillas de disponibilidad</div>
     <div class="req-card" style="padding:0;overflow:hidden">
       ${(DATA.templates||[]).length === 0 && editingTemplateId !== 'new' ? `
       <p style="font-size:12px;color:rgba(0,0,0,0.45);padding:14px 16px;margin:0">Sin plantillas configuradas. Agrega una para generar horarios libres automáticamente.</p>` : ''}
@@ -2488,64 +2795,203 @@ function vAdminCuentas() {
         return html;
       })()}
     </div>
+  `;
 
-    ${orphanStudents.length ? `
-    <div class="sec-lbl" style="margin-top:20px;color:rgba(0,0,0,0.5)">Alumnos sin padre/madre asignado (${orphanStudents.length})</div>
-    <div class="req-card" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3)">
-      <p style="font-size:11px;color:rgba(0,0,0,0.5);line-height:1.6;margin:0 0 8px">
-        Estos alumnos no aparecen en la lista de hijos de ninguna cuenta — revisa si falta crear o vincular su cuenta de padre/madre.
-      </p>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        ${orphanStudents.map(([sid, s]) => `<span class="child-chip" style="border-color:${s.color}55;color:${s.color}">${s.icon} ${s.name}</span>`).join('')}
+  const bodies = { clave: bodyClave, ciclo: bodyCiclo, plantillas: bodyPlantillas };
+
+  return `
+  <div style="padding:16px;max-width:640px;margin:0 auto">
+    <div class="tab-row" style="flex-wrap:wrap">
+      <button class="${tab==='clave'?'on':''}" onclick="goConfig('clave')">Clave</button>
+      <button class="${tab==='ciclo'?'on':''}" onclick="goConfig('ciclo')">Ciclo del curso</button>
+      <button class="${tab==='plantillas'?'on':''}" onclick="goConfig('plantillas')">Plantillas</button>
+    </div>
+    ${bodies[tab] || bodyCiclo}
+    <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
+  </div>`;
+}
+
+// Abrevia el nombre de un colegio para que quepa en la píldora de ancho fijo de
+// vAdminFamilias(). Los colegios ya revisados usan la abreviatura exacta acordada;
+// cualquier colegio nuevo que no esté en esta lista se abrevia automáticamente con el
+// mismo criterio: se toma la inicial de cada palabra salvo la última (que queda completa),
+// y las palabras de enlace ("de", "del", "la", "las", "los", "y") se omiten.
+const COLEGIO_ABBREV = {
+  'San Francisco de Asís': 'S. F. Asís',
+  'Saco Oliveros': 'S. Oliveros',
+  'San Ignacio de Recalde': 'S. I. Recalde',
+  'San Agustín': 'San Agustín',
+  'Santísima Trinidad': 'S. Trinidad',
+  'Abraham Lincoln': 'Abraham Lincoln',
+  'San Norberto': 'San Norberto',
+  'Sagrados Corazones Belén': 'S. C. Belén',
+  'Hans Christian Andersen': 'H. C. Andersen',
+  'Jorge Basadre': 'Jorge Basadre',
+  "St. George's": "St. George's",
+  'Innova School': 'Innova School',
+  'Arte Creative': 'Arte Creative'
+};
+const COLEGIO_STOPWORDS = ['de', 'del', 'la', 'las', 'los', 'y'];
+function abbreviateColegio(name) {
+  if (!name) return name;
+  if (COLEGIO_ABBREV[name]) return COLEGIO_ABBREV[name];
+  const words = name.trim().split(/\s+/);
+  if (words.length <= 1) return name;
+  if (words.length === 2) {
+    // Con dos palabras, solo se abrevia si la primera tiene más de 7 letras
+    // (ej. "Santísima Trinidad" → "S. Trinidad"); si es corta se deja igual
+    // (ej. "Abraham Lincoln" no se toca).
+    if (words[0].length > 7) return words[0].charAt(0).toUpperCase() + '. ' + words[1];
+    return name;
+  }
+  const last = words[words.length - 1];
+  const initials = words.slice(0, -1)
+    .filter(w => !COLEGIO_STOPWORDS.includes(w.toLowerCase()))
+    .map(w => w.charAt(0).toUpperCase() + '.');
+  return initials.length ? (initials.join(' ') + ' ' + last) : last;
+}
+
+// Etiqueta de estado de datos de la familia (Nivel/Grado, Colegio y Teléfono),
+// o "Ningún hijo asignado" si la cuenta todavía no tiene hijos/as vinculados. Usada en
+// vAdminFamilias() junto al nombre de cada familia para detectar cuentas incompletas.
+function familyStatusBadgeHtml(p, kids, id) {
+  let text, bg, border, color;
+  if (!kids.length) {
+    text = 'Ningún hijo asignado';
+    bg = 'rgba(0,0,0,0.06)'; border = 'rgba(0,0,0,0.15)'; color = 'rgba(0,0,0,0.55)';
+  } else {
+    const missing = [];
+    if (kids.some(({s}) => !s.nivel || !s.grado)) missing.push('Nivel y Grado');
+    if (kids.some(({s}) => !s.colegio)) missing.push('Colegio');
+    if (!p.phone) missing.push('Teléfono');
+    if (!missing.length) {
+      text = 'Todo completo';
+      bg = 'rgba(34,197,94,0.15)'; border = 'rgba(34,197,94,0.35)'; color = '#16a34a';
+    } else {
+      text = 'Falta ' + (missing.length === 1 ? missing[0]
+        : missing.slice(0, -1).join(', ') + ' y ' + missing[missing.length - 1]);
+      bg = 'rgba(239,68,68,0.12)'; border = 'rgba(239,68,68,0.32)'; color = '#dc2626';
+    }
+  }
+  return `<div class="fam-pill"${id ? ' id="'+id+'"' : ''} style="background:${bg};border:1px solid ${border};color:${color}">${text}</div>`;
+}
+
+// true si a la familia le falta Nivel/Grado o Colegio en algún hijo/a, el Teléfono del
+// padre/madre, o si todavía no tiene ningún hijo/a asignado. Usada para filtrar las
+// sub-pestañas Incompletas/Completas de vAdminFamilias().
+function isFamilyIncomplete(p, kids) {
+  if (!kids.length) return true;
+  if (kids.some(({s}) => !s.nivel || !s.grado)) return true;
+  if (kids.some(({s}) => !s.colegio)) return true;
+  if (!p.phone) return true;
+  return false;
+}
+
+function vAdminFamilias() {
+  const parents = Object.entries(DATA.parents);
+  const assignedIds = new Set();
+  parents.forEach(([, p]) => (p.children||[]).forEach(cid => assignedIds.add(String(cid))));
+  const orphanStudents = Object.entries(DATA.students).filter(([sid]) => !assignedIds.has(String(sid)));
+
+  const allFamilies = parents.map(([id, p]) => ({
+    id, p,
+    kids: (p.children||[]).map(cid => ({ cid, s: DATA.students[cid] })).filter(x => x.s)
+  }));
+  const incompleteCount = allFamilies.filter(f => isFamilyIncomplete(f.p, f.kids)).length;
+  const completeCount = allFamilies.length - incompleteCount;
+  const famTab = familiasSubTab || 'todas';
+  const families = allFamilies.filter(f => {
+    if (famTab === 'incompletas') return isFamilyIncomplete(f.p, f.kids);
+    if (famTab === 'completas') return !isFamilyIncomplete(f.p, f.kids);
+    return true;
+  }).sort((a, b) => a.kids.length - b.kids.length || a.p.name.localeCompare(b.p.name));
+
+  const bodyNuevaCuenta = `
+    <div class="sec-lbl" style="margin-top:20px">Crear cuenta nueva</div>
+    <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.22)">
+      <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:6px">Crear cuenta manualmente (sin solicitud previa)</div>
+      <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del padre/madre" style="margin-bottom:6px">
+      <input class="fsm" id="mc-phone" type="text" placeholder="Teléfono (opcional)" style="margin-bottom:6px">
+      <div style="display:flex;gap:8px">
+        <input class="fsm" id="mc-cname" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:6px;flex:1">
+        <input class="fsm" id="mc-csurname" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:6px;flex:1">
       </div>
-    </div>` : ''}
+      <div style="display:flex;gap:8px">
+        <select class="fsm" id="mc-nivel" style="margin-bottom:6px;flex:1" onchange="_mcUpdateGrado()">
+          <option value="">— Nivel —</option>
+          <option value="primaria">Primaria</option>
+          <option value="secundaria">Secundaria</option>
+          <option value="preuni">Pre-Universitario</option>
+        </select>
+        <select class="fsm" id="mc-grado" style="margin-bottom:6px;flex:1">
+          <option value="">— Grado —</option>
+          ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
+        </select>
+      </div>
+      <input class="fsm" id="mc-colegio" type="text" placeholder="Nombre del colegio (opcional)" style="margin-bottom:6px">
+      <input class="fsm" id="mc-note" type="text" placeholder="Nota (opcional)" style="margin-bottom:6px">
+      <div style="display:flex;gap:8px">
+        <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="createManualAccount()">Crear cuenta</button>
+        <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="goFamilias('todas')">Cancelar</button>
+      </div>
+    </div>
+  `;
 
-    <div class="sec-lbl" style="margin-top:20px">Familias registradas (${parents.length})</div>
-    ${parents.map(([id, p]) => {
-      const kids = (p.children||[]).map(cid => ({ cid, s: DATA.students[cid] })).filter(x => x.s);
+  const bodyFamiliasList = `
+    <div class="sec-lbl" style="margin-top:20px">Familias registradas (${allFamilies.length})</div>
+    ${!families.length ? `
+    <p style="font-size:11px;color:rgba(0,0,0,0.4);padding:8px 2px">No hay familias en esta categoría.</p>` : ''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    ${families.map(({id, p, kids}) => {
       const editing = editingParentId === id;
       const editingNames = editingNamesId === id;
-      return `<div class="req-list-item" style="align-items:flex-start">
+      return `<div class="req-list-item" style="align-items:flex-start;margin-bottom:0">
         <div style="flex:1">
+          <div class="fam-grid">
           ${editingNames ? `
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <input class="fsm" id="edit-pname-${id}" type="text" value="${p.name}" placeholder="Nombre del padre/madre" style="margin-bottom:0">
-              ${kids.map(({cid, s}) => '<div style="display:flex;flex-direction:column;gap:4px">'
-                +'<input class="fsm" id="edit-cname-'+id+'-'+cid+'" type="text" value="'+(s.name||'')+'" placeholder="Nombre del hijo/a" style="margin-bottom:0">'
-                +'<div style="display:flex;gap:6px">'
-                +'<select class="fsm" id="edit-nivel-'+id+'-'+cid+'" style="margin-bottom:0;flex:1" onchange="_updateGradoOpts(\''+id+'\',\''+cid+'\')">'
-                +'<option value="">— Nivel —</option>'
-                +'<option value="primaria"'+(s.nivel==='primaria'?' selected':'')+'>Primaria</option>'
-                +'<option value="secundaria"'+(s.nivel==='secundaria'?' selected':'')+'>Secundaria</option>'
-                +'<option value="preuni"'+(s.nivel==='preuni'?' selected':'')+'>Pre-Universitario</option>'
-                +'</select>'
-                +(function(){var _gMax=s.nivel==='secundaria'?5:s.nivel==='preuni'?2:6;var _gopts='<option value="">— Grado —</option>';for(var _gi=1;_gi<=_gMax;_gi++)_gopts+='<option value="'+_gi+'"'+(s.grado==_gi?' selected':'')+'>'+_gi+'°</option>';return '<select class="fsm" id="edit-grado-'+id+'-'+cid+'" style="margin-bottom:0;flex:1">'+_gopts+'</select>';})()
-                +''
-                +'</div>'
-                +'</div>'
-              ).join('')}
-              <div style="display:flex;gap:8px">
-                <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveFamilyNames('${id}')">Guardar nombres</button>
-                <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditNames()">Cancelar</button>
-              </div>
-            </div>` : `
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-              <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${p.name}</div>
-              <button class="btn-ghost" style="margin-top:0;width:auto;padding:5px 12px;font-size:10px" onclick="startEditNames('${id}')">✏️ Editar nombres</button>
-            </div>
-            <div class="cs-meta" style="margin-top:3px">${kids.map(({s})=>{const _nlb={primaria:'Primaria',secundaria:'Secundaria',preuni:'Pre-Uni'};const _badge=(s.nivel||s.grado)?'<span style="font-size:9px;background:rgba(124,58,237,0.22);border:1px solid rgba(124,58,237,0.38);border-radius:8px;padding:1px 5px;color:#a78bfa;margin-left:3px">'+(_nlb[s.nivel]||s.nivel||'')+(s.grado?(s.nivel?' ':'')+s.grado+'°':'')+'</span>':'';return s.icon+' '+s.name+_badge;}).join(' · ')||'Sin hijos asignados'}${p.phone?' · 📱 '+p.phone:''}</div>`}
+            <input class="fam-input" id="edit-pname-${id}" type="text" value="${p.name}" placeholder="Nombre del padre/madre">
+            <input class="fam-input" id="edit-pphone-${id}" type="text" value="${p.phone||''}" placeholder="Teléfono (opcional)" oninput="_updateEditStatus('${id}')">
+            ${familyStatusBadgeHtml(p, kids, 'edit-status-'+id)}
+            ${kids.map(({cid, s}) => ''
+              +'<input class="fam-input" id="edit-cname-'+id+'-'+cid+'" type="text" value="'+(s.name||'')+'" placeholder="Nombre del hijo/a">'
+              +'<div class="fam-combo">'
+              +'<select class="fam-select" id="edit-nivel-'+id+'-'+cid+'" onchange="_updateGradoOpts(\''+id+'\',\''+cid+'\');_updateEditStatus(\''+id+'\')">'
+              +'<option value="">— Nivel —</option>'
+              +'<option value="primaria"'+(s.nivel==='primaria'?' selected':'')+'>Primaria</option>'
+              +'<option value="secundaria"'+(s.nivel==='secundaria'?' selected':'')+'>Secundaria</option>'
+              +'<option value="preuni"'+(s.nivel==='preuni'?' selected':'')+'>Pre-Universitario</option>'
+              +'</select>'
+              +(function(){var _gMax=s.nivel==='secundaria'?5:s.nivel==='preuni'?2:6;var _gopts='<option value="">— Grado —</option>';for(var _gi=1;_gi<=_gMax;_gi++)_gopts+='<option value="'+_gi+'"'+(s.grado==_gi?' selected':'')+'>'+_gi+'°</option>';return '<select class="fam-select" id="edit-grado-'+id+'-'+cid+'" onchange="_updateEditStatus(\''+id+'\')">'+_gopts+'</select>';})()
+              +'</div>'
+              +'<input class="fam-input" id="edit-colegio-'+id+'-'+cid+'" type="text" value="'+(s.colegio||'')+'" placeholder="Colegio" oninput="_updateEditStatus(\''+id+'\')">'
+            ).join('')}
+            <button class="btn-ghost fam-pill-btn fam-pill-btn-danger" onclick="startDeleteFamily('${id}')">🗑️ Eliminar familia</button>
+            <button class="btn-grn fam-pill-btn" onclick="saveFamilyNames('${id}')">Guardar nombres</button>
+            <button class="btn-ghost fam-pill-btn" onclick="cancelEditNames()">Cancelar</button>
+            ` : `
+            <div class="fam-pill">${p.name}</div>
+            ${familyStatusBadgeHtml(p, kids)}
+            <button class="btn-ghost fam-pill-btn" onclick="startEditNames('${id}')">✏️ Editar nombres</button>
+            ${kids.length ? kids.map(({s}) => {
+              const _nlb = {primaria:'Primaria',secundaria:'Secundaria',preuni:'Pre-Uni'};
+              const nivelTxt = (s.nivel||s.grado) ? (_nlb[s.nivel]||s.nivel||'')+(s.grado?((s.nivel?' ':'')+s.grado+'°'):'') : '—';
+              const colegioTxt = s.colegio ? ('🏫 '+abbreviateColegio(s.colegio)) : '—';
+              return `<div class="fam-pill">${s.icon} ${s.name}</div><div class="fam-pill">${nivelTxt}</div><div class="fam-pill">${colegioTxt}</div>`;
+            }).join('') : `<div class="fam-pill" style="grid-column:1/-1">Sin hijos asignados</div>`}
+            `}
           ${editing ? `
-            <div style="display:flex;gap:8px;margin-top:10px">
+            <div style="grid-column:1/-1;display:flex;gap:8px">
               <input class="fsm" id="edit-pin-${id}" type="text" inputmode="numeric" maxlength="6" value="${p.pin}" style="margin-bottom:0">
               <button class="btn-grn" style="width:auto;padding:11px 16px" onclick="saveParentPin('${id}')">Guardar</button>
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:11px 16px" onclick="cancelEditParentPin()">Cancelar</button>
             </div>` : `
-            <div style="margin-top:8px;display:flex;align-items:center;gap:10px">
-              <span class="cs-meta">Clave actual: <strong style="color:rgba(0,0,0,0.6)">${p.pin}</strong></span>
-              <button class="btn-ghost" style="margin-top:0;width:auto;padding:7px 14px;font-size:10px" onclick="startEditParentPin('${id}')">✏️ Cambiar clave</button>
-            </div>`}
+            ${addingChildParentId === id ? `<div></div>` : `<button class="btn-ghost fam-pill-btn" onclick="startAddChildPanel('${id}')">➕ Agregar hijo/a</button>`}
+            <div class="fam-pill">Clave actual: ${p.pin}</div>
+            <button class="btn-ghost fam-pill-btn" onclick="startEditParentPin('${id}')">✏️ Cambiar clave</button>
+            `}
+          </div>
           ${addingChildParentId === id ? `
-          <div style="margin-top:10px;padding:12px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.22);border-radius:12px">
+          <div style="margin-top:8px;padding:12px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.22);border-radius:12px">
             <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:8px">Agregar hijo/a a esta cuenta</div>
             <select class="fsm" id="add-child-sel-${id}" style="margin-bottom:8px" onchange="_acToggleNewFields('${id}')">
               <option value="">— Selecciona un alumno existente —</option>
@@ -2566,16 +3012,39 @@ function vAdminCuentas() {
                   ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
                 </select>
               </div>
+              <input class="fsm" id="add-child-colegio-${id}" type="text" placeholder="Nombre del colegio (opcional)" style="margin-bottom:8px">
             </div>
             <div style="display:flex;gap:8px">
               <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="confirmAdminAddChild('${id}')">Vincular</button>
               <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="cancelAddChildPanel()">Cancelar</button>
             </div>
-          </div>` : `
-          <button class="btn-ghost" style="margin-top:8px;padding:5px 12px;font-size:10px;width:auto" onclick="startAddChildPanel('${id}')">➕ Agregar hijo/a</button>`}
+          </div>` : ``}
         </div>
       </div>`;
     }).join('')}
+    </div>
+  `;
+
+  return `
+  <div style="padding:16px;max-width:960px;margin:0 auto">
+    ${orphanStudents.length ? `
+    <div class="sec-lbl" style="color:rgba(0,0,0,0.5)">Alumnos sin padre/madre asignado (${orphanStudents.length})</div>
+    <div class="req-card" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.3)">
+      <p style="font-size:11px;color:rgba(0,0,0,0.5);line-height:1.6;margin:0 0 8px">
+        Estos alumnos no aparecen en la lista de hijos de ninguna cuenta — revisa si falta crear o vincular su cuenta de padre/madre.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${orphanStudents.map(([sid, s]) => `<span class="child-chip" style="border-color:${s.color}55;color:${s.color}">${s.icon} ${s.name}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <div class="tab-row" style="flex-wrap:wrap">
+      <button class="${famTab==='todas'?'on':''}" onclick="goFamilias('todas')">Todas</button>
+      <button class="${famTab==='incompletas'?'on':''}" onclick="goFamilias('incompletas')">Incompletas${incompleteCount?' ('+incompleteCount+')':''}</button>
+      <button class="${famTab==='completas'?'on':''}" onclick="goFamilias('completas')">Completas${completeCount?' ('+completeCount+')':''}</button>
+      <button class="${famTab==='nueva-cuenta'?'on':''}" onclick="goFamilias('nueva-cuenta')">➕ Nueva cuenta</button>
+    </div>
+    ${famTab === 'nueva-cuenta' ? bodyNuevaCuenta : bodyFamiliasList}
     <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
   </div>`;
 }
@@ -3692,11 +4161,19 @@ function bookFreeSlot(fsId) {
 // ════════════════════════════════════════════════════════
 function boot() {
   document.getElementById('initial-loading').classList.add('hidden');
-  const parentId = getLoggedParent();
-  const parent = parentId !== null ? DATA.parents[parentId] : null;
-  if (parent) {
-    selectedChild = (parent.children||[])[0] || null;
-    currentView = 'inicio';
+  const parentId  = getLoggedParent();
+  const parent    = parentId !== null ? DATA.parents[parentId] : null;
+  const adminMode = isLoggedAdmin();
+  if (parent || adminMode) {
+    if (parent) selectedChild = (parent.children||[])[0] || null;
+    // Deep link (ej. se abrió /parents/familias ya con sesión iniciada, por bookmark o
+    // recarga): aterrizar directo en esa pestaña en vez de siempre en Inicio.
+    const target = _pendingDeepLinkSlug ? slugToView(_pendingDeepLinkSlug, adminMode) : null;
+    currentView = target || (adminMode ? 'a-inicio' : 'inicio');
+    if (currentView === 'a-solicitudes') solicitudesSubTab = resolveSolicitudesSubTab();
+    if (currentView === 'a-config') configSubTab = resolveConfigSubTab();
+    if (currentView === 'a-familias') familiasSubTab = resolveFamiliasSubTab();
+    _pendingDeepLinkSlug = null;
   } else {
     currentView = 'login';
   }
