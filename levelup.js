@@ -6871,7 +6871,7 @@ const PREP_LEVELS = {
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_bq1','i1tr_ang_b3','i1tr_ang_b4','i1tr_ang_bq2','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_b7','i1tr_ang_bq3','i1tr_ang_bpu','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu',],
-      '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex','jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_aex_bpu','jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_lnt_bpu','jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2','jb2g_rep_bpu'],
+      '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex','jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2'],
       '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex','inn5m_np_b1','inn5m_np_b2','inn5m_np_bq1','inn5m_np_b3','inn5m_np_b4','inn5m_np_b5','inn5m_np_bq2','inn5m_dv_b1','inn5m_dv_b2','inn5m_dv_bq1','inn5m_dv_b3','inn5m_dv_b4','inn5m_dv_b5','inn5m_dv_bq2'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
@@ -14795,9 +14795,6 @@ _SKILL_META['jb2g_aex_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Ángulo Exterior:
 function _genJB2gAEX_BQ2(){return _bqSrcPick(['jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5'],[_genJB2gAEX_B3,_genJB2gAEX_B4,_genJB2gAEX_B5]);}
 _SKILL_META['jb2g_aex_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Ángulo Exterior: Figuras Compuestas, Bisectriz y Repaso',qCount:15,gen:_genJB2gAEX_BQ2,quiz:true,srcKeys:['jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5']};
 
-function _genJB2gAEX_BPU(){return _bqSrcPick(['jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5'],[_genJB2gAEX_B1,_genJB2gAEX_B2,_genJB2gAEX_B3,_genJB2gAEX_B4,_genJB2gAEX_B5]);}
-_SKILL_META['jb2g_aex_bpu']={ico:'🏆',lbl:'Examen General – Ángulo Exterior del Triángulo',qCount:25,gen:_genJB2gAEX_BPU,quiz:true,srcKeys:['jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5']};
-
 // ===== Jorge Basadre - 2do Secundaria - Geometría: Bisectriz, Mediana y Mediatriz del Triángulo =====
 
 function _genJB2gLNT_B1(){
@@ -14936,9 +14933,6 @@ _SKILL_META['jb2g_lnt_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Bisectriz Interio
 function _genJB2gLNT_BQ2(){return _bqSrcPick(['jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5'],[_genJB2gLNT_B3,_genJB2gLNT_B4,_genJB2gLNT_B5]);}
 _SKILL_META['jb2g_lnt_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Mediana, Mediatriz e Identificación',qCount:15,gen:_genJB2gLNT_BQ2,quiz:true,srcKeys:['jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5']};
 
-function _genJB2gLNT_BPU(){return _bqSrcPick(['jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5'],[_genJB2gLNT_B1,_genJB2gLNT_B2,_genJB2gLNT_B3,_genJB2gLNT_B4,_genJB2gLNT_B5]);}
-_SKILL_META['jb2g_lnt_bpu']={ico:'🏆',lbl:'Examen General – Bisectriz, Mediana y Mediatriz',qCount:25,gen:_genJB2gLNT_BPU,quiz:true,srcKeys:['jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5']};
-
 // ===== Jorge Basadre - 2do Secundaria - Geometría: Repaso de Ángulos y Segmentos =====
 
 function _genJB2gREP_B1(){
@@ -15076,9 +15070,6 @@ _SKILL_META['jb2g_rep_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Punto Medio y Com
 
 function _genJB2gREP_BQ2(){return _bqSrcPick(['jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5'],[_genJB2gREP_B3,_genJB2gREP_B4,_genJB2gREP_B5]);}
 _SKILL_META['jb2g_rep_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Sexagesimal, Paralelas y Repaso',qCount:15,gen:_genJB2gREP_BQ2,quiz:true,srcKeys:['jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5']};
-
-function _genJB2gREP_BPU(){return _bqSrcPick(['jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5'],[_genJB2gREP_B1,_genJB2gREP_B2,_genJB2gREP_B3,_genJB2gREP_B4,_genJB2gREP_B5]);}
-_SKILL_META['jb2g_rep_bpu']={ico:'🏆',lbl:'Examen General – Repaso de Ángulos y Segmentos',qCount:25,gen:_genJB2gREP_BPU,quiz:true,srcKeys:['jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5']};
 
 
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
@@ -15220,9 +15211,9 @@ const PREP_CURRICULUM = {
       {lbl:'Ángulos y Bisectriz',       area:'geometria',  editorial:'san_agustin', skills:['sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3']},
       {lbl:'Rectas Paralelas y Secante',area:'geometria',  editorial:'san_agustin', skills:['sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3']},
       {lbl:'Examen General – Geometría',area:'geometria',  editorial:'san_agustin', skills:['sa2_geom_ex']},
-      {lbl:'Ángulo Exterior del Triángulo',              area:'geometria', editorial:'jorge_basadre', skills:['jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_aex_bpu']},
-      {lbl:'Bisectriz, Mediana y Mediatriz del Triángulo',area:'geometria', editorial:'jorge_basadre', skills:['jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_lnt_bpu']},
-      {lbl:'Repaso de Ángulos y Segmentos',              area:'geometria', editorial:'jorge_basadre', skills:['jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2','jb2g_rep_bpu']},
+      {lbl:'Ángulo Exterior del Triángulo',              area:'geometria', editorial:'jorge_basadre', skills:['jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2']},
+      {lbl:'Bisectriz, Mediana y Mediatriz del Triángulo',area:'geometria', editorial:'jorge_basadre', skills:['jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2']},
+      {lbl:'Repaso de Ángulos y Segmentos',              area:'geometria', editorial:'jorge_basadre', skills:['jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2']},
     ], '4':[], '5':[],
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']},
          {lbl:'Relaciones y Funciones',                area:'matematica',     editorial:'st_georges',   skills:['sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4']}],
@@ -18897,6 +18888,7 @@ function _prepUnitExam(skills, unitIdx) {
   _prep.topic = valid[0];
   _prep.isUnitExam = true;
   _prep.examUnitSkills = [...valid];
+  _prep.unitSkillList = []; _prep.unitDone = [];
   const _examTime = 150;
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
@@ -22715,6 +22707,17 @@ function _prepResultHtml() {
         const _dsSkillsArg=(_prep.examUnitSkills||[]).map(s=>`'${s}'`).join(',');
         return `<div class="prep-result-row">
           <button class="prep-result-btn primary" onclick="_prepDesafioExam('${_prep.selectedExamLbl}',${_prep.desafioNivel||1},[${_dsSkillsArg}],${_prep.selectedExamUnitIdx})">↺ Repetir</button>
+          <button class="prep-result-btn" onclick="_snd.click();_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Volver</button>
+        </div>`;
+      }
+      if (_prep.isUnitExam) {
+        // Examen de unidad normal (no especial): repetir debe volver a armar EL MISMO examen
+        // (todas las habilidades base de la unidad), no caer en el flujo de "siguiente habilidad
+        // de la lista" — de lo contrario, si _prep.unitSkillList quedó con datos de una navegación
+        // anterior por la unidad, "Repetir" terminaba abriendo una habilidad/cuestionario distinto.
+        const _examSkillsArg=(_prep.examUnitSkills||[]).map(s=>`'${s}'`).join(',');
+        return `<div class="prep-result-row">
+          <button class="prep-result-btn primary" onclick="_prepUnitExam([${_examSkillsArg}],${_prep.selectedExamUnitIdx})">↺ Repetir</button>
           <button class="prep-result-btn" onclick="_snd.click();_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Volver</button>
         </div>`;
       }
