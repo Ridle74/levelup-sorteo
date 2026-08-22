@@ -1,0 +1,11 @@
+--- padres.orig.html	2026-08-22 13:59:19.173387023 +0000
++++ padres.html	2026-08-22 13:59:23.801755781 +0000
+@@ -3121,7 +3121,7 @@
+       <div id="mc-children-container">${_mcChildBlockHtml(1)}</div>
+ 
+       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+-        <button type="button" class="btn-ghost" style="margin-top:0;padding:9px 16px;border-style:dashed" onclick="addManualChildBlock()">+ Agregar hijo/a</button>
++        <button type="button" class="btn-ghost" style="margin-top:0;padding:9px 16px" onclick="addManualChildBlock()">+ Agregar hijo/a</button>
+         <button class="btn-grn" style="margin-top:0;padding:9px 16px" onclick="createManualAccount()">Crear cuenta</button>
+         <button class="btn-ghost" style="margin-top:0;padding:9px 16px" onclick="goFamilias('todas')">Cancelar</button>
+       </div>

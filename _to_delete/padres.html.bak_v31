@@ -1853,28 +1853,28 @@ function _mcChildBlockHtml(idx) {
     ? `<button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:#e0455a;border-color:rgba(224,69,90,0.35);background:rgba(224,69,90,0.06)" onclick="removeManualChildBlock(${idx})">Quitar</button>`
     : `<button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('child',${idx})">Limpiar</button>`;
   return `
-    <div class="mc-block" id="mc-child-block-${idx}" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px;margin-bottom:8px">
+    <div class="mc-block" id="mc-child-block-${idx}" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px 10px 4px;margin-bottom:8px">
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
         <div class="fsm" style="margin-bottom:0;justify-content:center;text-align:center;font-weight:700">Hijo/a ${idx}</div>
         ${actionBtn}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-        <input class="fsm" id="mc-cname-${idx}" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:0;text-align:center">
-        <input class="fsm" id="mc-csurname-${idx}" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:0;text-align:center">
-        <input class="fsm" id="mc-colegio-${idx}" type="text" placeholder="Colegio (opcional)" style="margin-bottom:0;text-align:center">
+        <input class="fsm" id="mc-cname-${idx}" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:0">
+        <input class="fsm" id="mc-csurname-${idx}" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:0">
+        <input class="fsm" id="mc-colegio-${idx}" type="text" placeholder="Colegio (opcional)" style="margin-bottom:0">
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <select class="fsm" id="mc-nivel-${idx}" style="margin-bottom:0;text-align:center" onchange="_mcUpdateGrado(${idx})">
+        <select class="fsm" id="mc-nivel-${idx}" style="margin-bottom:0" onchange="_mcUpdateGrado(${idx})">
           <option value="">Nivel</option>
           <option value="primaria">Primaria</option>
           <option value="secundaria">Secundaria</option>
           <option value="preuni">Pre-Universitario</option>
         </select>
-        <select class="fsm" id="mc-grado-${idx}" style="margin-bottom:0;text-align:center">
+        <select class="fsm" id="mc-grado-${idx}" style="margin-bottom:0">
           <option value="">Grado</option>
           ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
         </select>
-        <input class="fsm" id="mc-password-${idx}" type="text" maxlength="10" placeholder="Contraseña" style="margin-bottom:0;text-align:center">
+        <input class="fsm" id="mc-password-${idx}" type="text" maxlength="10" placeholder="Contraseña" style="margin-bottom:0">
       </div>
     </div>
   `;
@@ -3106,22 +3106,22 @@ function vAdminFamilias() {
     <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.22)">
       <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:10px">Crear cuenta manualmente (sin solicitud previa)</div>
 
-      <div class="mc-block" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px;margin-bottom:8px">
+      <div class="mc-block" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px 10px 4px;margin-bottom:8px">
         <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
           <div class="fsm" style="margin-bottom:0;justify-content:center;text-align:center;font-weight:700">Apoderado</div>
           <button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('parent')">Limpiar</button>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-          <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del apoderado" style="margin-bottom:0;text-align:center">
-          <input class="fsm" id="mc-psurname" type="text" placeholder="Apellido del apoderado" style="margin-bottom:0;text-align:center">
-          <input class="fsm" id="mc-phone" type="text" placeholder="Celular (opcional)" style="margin-bottom:0;text-align:center">
+          <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del apoderado" style="margin-bottom:0">
+          <input class="fsm" id="mc-psurname" type="text" placeholder="Apellido del apoderado" style="margin-bottom:0">
+          <input class="fsm" id="mc-phone" type="text" placeholder="Celular (opcional)" style="margin-bottom:0">
         </div>
       </div>
 
       <div id="mc-children-container">${_mcChildBlockHtml(1)}</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <button type="button" class="btn-ghost" style="margin-top:0;padding:9px 16px" onclick="addManualChildBlock()">+ Agregar hijo/a</button>
+        <button type="button" class="btn-ghost" style="margin-top:0;padding:9px 16px;border-style:dashed" onclick="addManualChildBlock()">+ Agregar hijo/a</button>
         <button class="btn-grn" style="margin-top:0;padding:9px 16px" onclick="createManualAccount()">Crear cuenta</button>
         <button class="btn-ghost" style="margin-top:0;padding:9px 16px" onclick="goFamilias('todas')">Cancelar</button>
       </div>

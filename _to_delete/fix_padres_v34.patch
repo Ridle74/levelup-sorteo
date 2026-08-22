@@ -1,0 +1,20 @@
+--- padres.orig.html	2026-08-22 14:01:40.726429536 +0000
++++ padres.html	2026-08-22 14:01:48.645754339 +0000
+@@ -1853,7 +1853,7 @@
+     ? `<button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:#e0455a;border-color:rgba(224,69,90,0.35);background:rgba(224,69,90,0.06)" onclick="removeManualChildBlock(${idx})">Quitar</button>`
+     : `<button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('child',${idx})">Limpiar</button>`;
+   return `
+-    <div class="mc-block" id="mc-child-block-${idx}" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px 10px 4px;margin-bottom:8px">
++    <div class="mc-block" id="mc-child-block-${idx}" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px;margin-bottom:8px">
+       <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
+         <div class="fsm" style="margin-bottom:0;justify-content:center;text-align:center;font-weight:700">Hijo/a ${idx}</div>
+         ${actionBtn}
+@@ -3106,7 +3106,7 @@
+     <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.22)">
+       <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:10px">Crear cuenta manualmente (sin solicitud previa)</div>
+ 
+-      <div class="mc-block" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px 10px 4px;margin-bottom:8px">
++      <div class="mc-block" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px;margin-bottom:8px">
+         <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
+           <div class="fsm" style="margin-bottom:0;justify-content:center;text-align:center;font-weight:700">Apoderado</div>
+           <button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('parent')">Limpiar</button>

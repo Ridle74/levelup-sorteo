@@ -583,9 +583,6 @@ function goConfig(tab) {
 // Cambia la sub-pestaña activa dentro de Familias y sincroniza la URL.
 function goFamilias(tab) {
   familiasSubTab = tab || 'todas';
-  // Cada vez que se entra a "Nueva cuenta" se reinicia el contador de tarjetas de hijo/a,
-  // para que el formulario siempre empiece con una sola tarjeta (Hijo/a 1) vacía.
-  if (familiasSubTab === 'nueva') mcChildIdxCounter = 1;
   go('a-familias');
 }
 // Tras un login exitoso: si la URL con la que se llegó pedía una pestaña específica
@@ -1756,79 +1753,35 @@ function approveAccountRequest(reqId) {
   const reg = DATA.accountRequests.find(r => r.id === reqId);
   if (!reg || reg.status !== 'pendiente') return;
 
-  // "Crear cuenta manualmente" (createManualAccount) puede traer varios hijos/as en
-  // reg.children (uno por tarjeta agregada con "+ Agregar hijo/a"). Las solicitudes de
-  // auto-registro normales (formulario público) siguen trayendo un solo alumno en los
-  // campos sueltos reg.childFirstName/reg.childFirstSurname — se normalizan aquí a la
-  // misma forma de arreglo para procesarlas con el mismo código.
-  const isManual = Array.isArray(reg.children);
-  const childRegs = isManual ? reg.children : [{
-    childFirstName: reg.childFirstName,
-    childFirstSurname: reg.childFirstSurname,
-    nivel: reg.nivel, grado: reg.grado, colegio: reg.colegio
-  }];
-
-  const studentIds = [];
-  const childPins = [];       // { name, pin } por cada alumno/a — solo se llena si isManual
-  let createdAny = false;
-
-  for (const c of childRegs) {
-    let studentId = findStudentByName(c.childFirstName, c.childFirstSurname);
-    let createdNew = false;
-    if (!studentId) {
-      studentId = nextStudentId();
-      DATA.students[studentId] = {
-        name: `${c.childFirstName} ${c.childFirstSurname}`.trim(),
-        color: '#888', icon: '👤', modality: 'Virtual',
-        // nivel/grado/colegio solo vienen presentes cuando la solicitud se originó desde
-        // "Crear cuenta manualmente" (createManualAccount) — las solicitudes de auto-registro
-        // normales no los piden, así que se omiten si no están.
-        ...(c.nivel ? { nivel: c.nivel } : {}),
-        ...(c.grado ? { grado: Number(c.grado) } : {}),
-        ...(c.colegio ? { colegio: c.colegio } : {})
-      };
-      createdNew = true;
-    }
-    createdAny = createdAny || createdNew;
-    studentIds.push(studentId);
-
-    // La Contraseña de cada alumno/a (solo existe en "Crear cuenta manualmente") es su
-    // PIN propio para entrar a student.html/LEVEL ZONE — es independiente del PIN del
-    // apoderado, que es solo para entrar a padres.html. Si se dejó vacía, se genera una
-    // clave automática de 4 dígitos, igual que antes se hacía con la del apoderado.
-    if (isManual) {
-      if (c.password || !DATA.students[studentId].pin) {
-        DATA.students[studentId].pin = c.password || genPin(4);
-      }
-      childPins.push({ name: DATA.students[studentId].name, pin: DATA.students[studentId].pin });
-    }
+  let studentId = findStudentByName(reg.childFirstName, reg.childFirstSurname);
+  let createdNew = false;
+  if (!studentId) {
+    studentId = nextStudentId();
+    DATA.students[studentId] = {
+      name: `${reg.childFirstName} ${reg.childFirstSurname}`.trim(),
+      color: '#888', icon: '👤', modality: 'Virtual',
+      // nivel/grado/colegio solo vienen presentes cuando la solicitud se originó desde
+      // "Crear cuenta manualmente" (createManualAccount) — las solicitudes de auto-registro
+      // normales no los piden, así que se omiten si no están.
+      ...(reg.nivel ? { nivel: reg.nivel } : {}),
+      ...(reg.grado ? { grado: Number(reg.grado) } : {}),
+      ...(reg.colegio ? { colegio: reg.colegio } : {})
+    };
+    createdNew = true;
   }
 
-  // El PIN del apoderado para entrar a padres.html siempre se autogenera: nunca se elige
-  // a mano desde este formulario (eso quedó reservado para la Contraseña del alumno/a).
   const pin = genPin(4);
   const parentId = 'fam_' + reg.id;
-  const existingChildren = (DATA.parents[parentId] && DATA.parents[parentId].children) || [];
-  DATA.parents[parentId] = {
-    name: reg.parentName, pin, phone: reg.phone || '',
-    children: Array.from(new Set([...existingChildren, ...studentIds]))
-  };
+  DATA.parents[parentId] = { name: reg.parentName, pin, phone: reg.phone || '', children: [studentId] };
 
   reg.status = 'aprobada';
   reg.assignedParentId = parentId;
-  reg.assignedStudentId = studentIds[0];
-  reg.assignedStudentIds = studentIds;
+  reg.assignedStudentId = studentId;
   reg.assignedPin = pin;
-  if (isManual) reg.assignedStudentPins = childPins;
   reg.resolvedAt = new Date().toISOString();
 
-  const childrenMsg = childPins.map(cp => `${cp.name.split(' ')[0]}: ${cp.pin}`).join(' · ');
-  const successMsg = isManual
-    ? `Cuenta creada. Clave del apoderado: ${pin}. ${childrenMsg}${createdAny?' (se creó alumno/a nuevo en la lista)':''}`
-    : `Cuenta creada. Clave para ${reg.parentName}: ${pin}${createdAny?' (se creó un nuevo alumno en la lista)':''}`;
-
   REF.set({ parents: DATA.parents, students: DATA.students, accountRequests: DATA.accountRequests }, { merge:true })
-    .then(() => showToast(successMsg, 'success'))
+    .then(() => showToast(`Cuenta creada. Clave para ${reg.parentName}: ${pin}${createdNew?' (se creó un nuevo alumno en la lista)':''}`, 'success'))
     .catch(e => { console.error(e); showToast('Error al crear la cuenta.'); });
   render();
 }
@@ -1836,74 +1789,14 @@ function toggleManualCreateForm() {
   showManualCreateForm = !showManualCreateForm;
   render();
 }
-function _mcUpdateGrado(idx) {
-  const nivelSel = document.getElementById('mc-nivel-' + idx);
-  const gradoSel = document.getElementById('mc-grado-' + idx);
+function _mcUpdateGrado() {
+  const nivelSel = document.getElementById('mc-nivel');
+  const gradoSel = document.getElementById('mc-grado');
   if (!nivelSel || !gradoSel) return;
   const nivel = nivelSel.value;
   const max   = nivel === 'secundaria' ? 5 : nivel === 'preuni' ? 2 : 6;
-  gradoSel.innerHTML = '<option value="">Grado</option>'
+  gradoSel.innerHTML = '<option value="">— Grado —</option>'
     + Array.from({length: max}, function(_, i){ const g=i+1; return '<option value="'+g+'">'+g+'°</option>'; }).join('');
-}
-// Devuelve el HTML de una tarjeta de hijo/a (Hijo/a 1 siempre presente y no se puede quitar,
-// solo "Limpiar"; los agregados con "+ Agregar hijo/a" sí llevan "Quitar" para eliminarlos).
-function _mcChildBlockHtml(idx) {
-  const removable = idx > 1;
-  const actionBtn = removable
-    ? `<button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:#e0455a;border-color:rgba(224,69,90,0.35);background:rgba(224,69,90,0.06)" onclick="removeManualChildBlock(${idx})">Quitar</button>`
-    : `<button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('child',${idx})">Limpiar</button>`;
-  return `
-    <div class="mc-block" id="mc-child-block-${idx}" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px;margin-bottom:8px">
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
-        <div class="fsm" style="margin-bottom:0;justify-content:center;text-align:center;font-weight:700">Hijo/a ${idx}</div>
-        ${actionBtn}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
-        <input class="fsm" id="mc-cname-${idx}" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:0;text-align:center">
-        <input class="fsm" id="mc-csurname-${idx}" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:0;text-align:center">
-        <input class="fsm" id="mc-colegio-${idx}" type="text" placeholder="Colegio (opcional)" style="margin-bottom:0;text-align:center">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <select class="fsm" id="mc-nivel-${idx}" style="margin-bottom:0;text-align:center" onchange="_mcUpdateGrado(${idx})">
-          <option value="">Nivel</option>
-          <option value="primaria">Primaria</option>
-          <option value="secundaria">Secundaria</option>
-          <option value="preuni">Pre-Universitario</option>
-        </select>
-        <select class="fsm" id="mc-grado-${idx}" style="margin-bottom:0;text-align:center">
-          <option value="">Grado</option>
-          ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
-        </select>
-        <input class="fsm" id="mc-password-${idx}" type="text" maxlength="10" placeholder="Contraseña" style="margin-bottom:0;text-align:center">
-      </div>
-    </div>
-  `;
-}
-// Cuenta cuántas tarjetas de hijo/a se han agregado en total (para asignar el próximo
-// índice sin repetir uno ya usado); se reinicia cada vez que se abre la pestaña "Nueva cuenta".
-let mcChildIdxCounter = 1;
-function addManualChildBlock() {
-  mcChildIdxCounter++;
-  const container = document.getElementById('mc-children-container');
-  if (container) container.insertAdjacentHTML('beforeend', _mcChildBlockHtml(mcChildIdxCounter));
-}
-// Quita del DOM la tarjeta de un hijo/a agregado (no aplica a Hijo/a 1, que no es removible).
-function removeManualChildBlock(idx) {
-  const el = document.getElementById('mc-child-block-' + idx);
-  if (el) el.remove();
-}
-// Vacía los campos de una tarjeta (Apoderado o un hijo/a específico) sin eliminarla ni
-// afectar a las demás tarjetas ya llenadas.
-function clearManualBlock(type, idx) {
-  const ids = type === 'parent'
-    ? ['mc-parent', 'mc-psurname', 'mc-phone']
-    : ['mc-cname-' + idx, 'mc-csurname-' + idx, 'mc-colegio-' + idx, 'mc-nivel-' + idx, 'mc-grado-' + idx, 'mc-password-' + idx];
-  ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  if (type === 'child') {
-    const gradoSel = document.getElementById('mc-grado-' + idx);
-    if (gradoSel) gradoSel.innerHTML = '<option value="">Grado</option>'
-      + [1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('');
-  }
 }
 // Admin: crea una cuenta de padre/madre + alumno directamente, sin depender de que la
 // familia haya enviado antes una solicitud de auto-registro. Reutiliza el mismo flujo de
@@ -1911,46 +1804,26 @@ function clearManualBlock(type, idx) {
 // simplemente se registra una "solicitud" ya con status 'pendiente' y se aprueba al toque,
 // para que quede en el mismo historial de "Solicitudes de cuenta" con su clave asignada.
 function createManualAccount() {
-  const parentFirstName = document.getElementById('mc-parent').value.trim();
-  const parentSurname = document.getElementById('mc-psurname').value.trim();
-  const parentName = `${parentFirstName} ${parentSurname}`.trim();
+  const parentName = document.getElementById('mc-parent').value.trim();
   const phone = document.getElementById('mc-phone').value.trim();
-
-  // Recolecta todas las tarjetas de hijo/a presentes en el DOM. Hijo/a 1 siempre existe;
-  // las agregadas con "+ Agregar hijo/a" pueden no ser consecutivas si se quitó alguna con
-  // "Quitar" (p.ej. quedan solo los índices 1 y 3) — por eso se leen por id en vez de asumir
-  // un rango fijo.
-  const childIdxs = Array.from(document.querySelectorAll('[id^="mc-child-block-"]'))
-    .map(el => Number(el.id.slice('mc-child-block-'.length)))
-    .sort((a, b) => a - b);
-  const children = childIdxs.map(idx => ({
-    childFirstName: document.getElementById('mc-cname-' + idx).value.trim(),
-    childFirstSurname: document.getElementById('mc-csurname-' + idx).value.trim(),
-    nivel: document.getElementById('mc-nivel-' + idx).value,
-    grado: document.getElementById('mc-grado-' + idx).value,
-    colegio: document.getElementById('mc-colegio-' + idx).value.trim(),
-    // Contraseña manual del alumno/a (opcional, hasta 10 caracteres): es su PIN propio para
-    // entrar a student.html/LEVEL ZONE. Si se deja vacía, approveAccountRequest genera una
-    // clave automática de 4 dígitos, igual que antes.
-    password: document.getElementById('mc-password-' + idx).value.trim().slice(0, 10)
-  }));
-
-  if (!parentFirstName || !parentSurname) {
-    showToast('Completa el nombre y apellido del apoderado.');
+  const childFirstName = document.getElementById('mc-cname').value.trim();
+  const childFirstSurname = document.getElementById('mc-csurname').value.trim();
+  const note = document.getElementById('mc-note').value.trim();
+  const nivel = document.getElementById('mc-nivel').value;
+  const grado = document.getElementById('mc-grado').value;
+  const colegio = document.getElementById('mc-colegio').value.trim();
+  if (!parentName || !childFirstName || !childFirstSurname) {
+    showToast('Completa el nombre del padre/madre y el nombre y apellido del alumno.');
     return;
   }
-  if (!children.length || children.some(c => !c.childFirstName || !c.childFirstSurname)) {
-    showToast('Completa el nombre y apellido de cada hijo/a.');
-    return;
-  }
-  if (children.some(c => !c.nivel || !c.grado)) {
-    showToast('Completa nivel y grado de cada hijo/a.');
+  if (!nivel || !grado) {
+    showToast('Completa nivel y grado del alumno.');
     return;
   }
   const reg = {
     id: Date.now(),
-    parentName, phone,
-    children: children.map(c => ({ ...c, grado: Number(c.grado) })),
+    parentName, phone, childFirstName, childFirstSurname, note,
+    nivel, grado: Number(grado), colegio,
     status: 'pendiente',
     createdAt: new Date().toISOString(),
     source: 'manual'
@@ -1960,7 +1833,6 @@ function createManualAccount() {
   // Tras crear la cuenta, regresa a la pestaña "Todas" (en vez de dejar la pestaña
   // "Nueva cuenta" abierta con el formulario ya vacío) y sincroniza la URL.
   familiasSubTab = 'todas';
-  mcChildIdxCounter = 1;
   if (currentView === 'a-familias') history.replaceState({ view: currentView }, '', viewToPath(currentView));
   approveAccountRequest(reg.id);
 }
@@ -2655,23 +2527,13 @@ function vAdminSolicitudes() {
 
   const bodyCuentas = `
     <div class="sec-lbl">Solicitudes de cuenta (auto-registro de padres)</div>
-    ${cuentas.length ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">` + cuentas.map(r => {
-      // Las solicitudes creadas desde "Crear cuenta manualmente" pueden traer varios
-      // hijos/as en r.children; el auto-registro público sigue trayendo uno solo en los
-      // campos sueltos r.childFirstName/r.childFirstSurname.
-      const childLabel = Array.isArray(r.children)
-        ? r.children.map(c => `${c.childFirstName} ${c.childFirstSurname}`).join(', ')
-        : `${r.childFirstName} ${r.childFirstSurname}`;
-      const pinLine = r.status !== 'aprobada' ? '' : (Array.isArray(r.assignedStudentPins) && r.assignedStudentPins.length
-        ? `Clave del apoderado: <strong>${r.assignedPin}</strong> · ${r.assignedStudentPins.map(sp => `${sp.name.split(' ')[0]}: <strong>${sp.pin}</strong>`).join(' · ')}`
-        : `Clave asignada: <strong>${r.assignedPin}</strong>`);
-      return `
+    ${cuentas.length ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">` + cuentas.map(r => `
       <div class="req-list-item" style="align-items:flex-start;margin-bottom:0">
         <div>
           <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px">${r.parentName}</div>
-          <div class="cs-meta" style="margin-top:3px">Hijo(a): ${childLabel}${r.phone?' · 📱 '+r.phone:''}</div>
+          <div class="cs-meta" style="margin-top:3px">Hijo(a): ${r.childFirstName} ${r.childFirstSurname}${r.phone?' · 📱 '+r.phone:''}</div>
           ${r.note?`<div class="cs-meta" style="margin-top:2px;color:rgba(0,0,0,0.4)">"${r.note}"</div>`:''}
-          ${pinLine ? `<div class="cs-meta" style="margin-top:4px;color:rgba(0,0,0,0.6)">${pinLine}</div>` : ''}
+          ${r.status==='aprobada' ? `<div class="cs-meta" style="margin-top:4px;color:rgba(0,0,0,0.6)">Clave asignada: <strong>${r.assignedPin}</strong></div>` : ''}
           ${r.status==='pendiente' ? `
             <div style="display:flex;gap:8px;margin-top:10px">
               <button class="btn-grn" style="padding:8px 14px;font-size:11px" onclick="approveAccountRequest(${r.id})">✓ Aprobar y crear cuenta</button>
@@ -2679,8 +2541,7 @@ function vAdminSolicitudes() {
             </div>` : ''}
         </div>
         <span class="req-status ${statusClass[r.status]||'pend'}">${statusLabel[r.status]||'Pendiente'}</span>
-      </div>`;
-    }).join('') + `</div>` : `<div class="cal-empty">No hay solicitudes de cuenta.</div>`}
+      </div>`).join('') + `</div>` : `<div class="cal-empty">No hay solicitudes de cuenta.</div>`}
   `;
 
   const bodyHijos = `
@@ -3104,26 +2965,30 @@ function vAdminFamilias() {
   const bodyNuevaCuenta = `
     <div class="sec-lbl" style="margin-top:20px">Crear cuenta nueva</div>
     <div class="req-card" style="background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.22)">
-      <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:10px">Crear cuenta manualmente (sin solicitud previa)</div>
-
-      <div class="mc-block" style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-left:4px solid rgba(99,102,241,0.4);border-radius:10px;padding:10px;margin-bottom:8px">
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-bottom:8px">
-          <div class="fsm" style="margin-bottom:0;justify-content:center;text-align:center;font-weight:700">Apoderado</div>
-          <button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('parent')">Limpiar</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-          <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del apoderado" style="margin-bottom:0;text-align:center">
-          <input class="fsm" id="mc-psurname" type="text" placeholder="Apellido del apoderado" style="margin-bottom:0;text-align:center">
-          <input class="fsm" id="mc-phone" type="text" placeholder="Celular (opcional)" style="margin-bottom:0;text-align:center">
-        </div>
+      <div style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);margin-bottom:6px">Crear cuenta manualmente (sin solicitud previa)</div>
+      <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del padre/madre" style="margin-bottom:6px">
+      <input class="fsm" id="mc-phone" type="text" placeholder="Teléfono (opcional)" style="margin-bottom:6px">
+      <div style="display:flex;gap:8px">
+        <input class="fsm" id="mc-cname" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:6px;flex:1">
+        <input class="fsm" id="mc-csurname" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:6px;flex:1">
       </div>
-
-      <div id="mc-children-container">${_mcChildBlockHtml(1)}</div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-        <button type="button" class="btn-ghost" style="margin-top:0;padding:9px 16px" onclick="addManualChildBlock()">+ Agregar hijo/a</button>
-        <button class="btn-grn" style="margin-top:0;padding:9px 16px" onclick="createManualAccount()">Crear cuenta</button>
-        <button class="btn-ghost" style="margin-top:0;padding:9px 16px" onclick="goFamilias('todas')">Cancelar</button>
+      <div style="display:flex;gap:8px">
+        <select class="fsm" id="mc-nivel" style="margin-bottom:6px;flex:1" onchange="_mcUpdateGrado()">
+          <option value="">— Nivel —</option>
+          <option value="primaria">Primaria</option>
+          <option value="secundaria">Secundaria</option>
+          <option value="preuni">Pre-Universitario</option>
+        </select>
+        <select class="fsm" id="mc-grado" style="margin-bottom:6px;flex:1">
+          <option value="">— Grado —</option>
+          ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
+        </select>
+      </div>
+      <input class="fsm" id="mc-colegio" type="text" placeholder="Nombre del colegio (opcional)" style="margin-bottom:6px">
+      <input class="fsm" id="mc-note" type="text" placeholder="Nota (opcional)" style="margin-bottom:6px">
+      <div style="display:flex;gap:8px">
+        <button class="btn-grn" style="width:auto;padding:9px 16px" onclick="createManualAccount()">Crear cuenta</button>
+        <button class="btn-ghost" style="margin-top:0;width:auto;padding:9px 16px" onclick="goFamilias('todas')">Cancelar</button>
       </div>
     </div>
   `;

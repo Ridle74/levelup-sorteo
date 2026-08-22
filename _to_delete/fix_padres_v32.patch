@@ -1,0 +1,44 @@
+--- padres.orig.html	2026-08-22 13:54:38.134127148 +0000
++++ padres.html	2026-08-22 13:54:57.737758430 +0000
+@@ -1859,22 +1859,22 @@
+         ${actionBtn}
+       </div>
+       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+-        <input class="fsm" id="mc-cname-${idx}" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:0">
+-        <input class="fsm" id="mc-csurname-${idx}" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:0">
+-        <input class="fsm" id="mc-colegio-${idx}" type="text" placeholder="Colegio (opcional)" style="margin-bottom:0">
++        <input class="fsm" id="mc-cname-${idx}" type="text" placeholder="Nombre del alumno/a" style="margin-bottom:0;text-align:center">
++        <input class="fsm" id="mc-csurname-${idx}" type="text" placeholder="Apellido del alumno/a" style="margin-bottom:0;text-align:center">
++        <input class="fsm" id="mc-colegio-${idx}" type="text" placeholder="Colegio (opcional)" style="margin-bottom:0;text-align:center">
+       </div>
+       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+-        <select class="fsm" id="mc-nivel-${idx}" style="margin-bottom:0" onchange="_mcUpdateGrado(${idx})">
++        <select class="fsm" id="mc-nivel-${idx}" style="margin-bottom:0;text-align:center" onchange="_mcUpdateGrado(${idx})">
+           <option value="">Nivel</option>
+           <option value="primaria">Primaria</option>
+           <option value="secundaria">Secundaria</option>
+           <option value="preuni">Pre-Universitario</option>
+         </select>
+-        <select class="fsm" id="mc-grado-${idx}" style="margin-bottom:0">
++        <select class="fsm" id="mc-grado-${idx}" style="margin-bottom:0;text-align:center">
+           <option value="">Grado</option>
+           ${[1,2,3,4,5,6].map(g => `<option value="${g}">${g}°</option>`).join('')}
+         </select>
+-        <input class="fsm" id="mc-password-${idx}" type="text" maxlength="10" placeholder="Contraseña" style="margin-bottom:0">
++        <input class="fsm" id="mc-password-${idx}" type="text" maxlength="10" placeholder="Contraseña" style="margin-bottom:0;text-align:center">
+       </div>
+     </div>
+   `;
+@@ -3112,9 +3112,9 @@
+           <button type="button" class="fsm" style="margin-bottom:0;cursor:pointer;justify-content:center;font-weight:600;color:rgba(0,0,0,0.55)" onclick="clearManualBlock('parent')">Limpiar</button>
+         </div>
+         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+-          <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del apoderado" style="margin-bottom:0">
+-          <input class="fsm" id="mc-psurname" type="text" placeholder="Apellido del apoderado" style="margin-bottom:0">
+-          <input class="fsm" id="mc-phone" type="text" placeholder="Celular (opcional)" style="margin-bottom:0">
++          <input class="fsm" id="mc-parent" type="text" placeholder="Nombre del apoderado" style="margin-bottom:0;text-align:center">
++          <input class="fsm" id="mc-psurname" type="text" placeholder="Apellido del apoderado" style="margin-bottom:0;text-align:center">
++          <input class="fsm" id="mc-phone" type="text" placeholder="Celular (opcional)" style="margin-bottom:0;text-align:center">
+         </div>
+       </div>
+ 
