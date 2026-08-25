@@ -1,0 +1,25 @@
+--- levelup.orig.js	2026-08-25 10:19:05.152188005 +0000
++++ levelup.js	2026-08-25 10:19:16.988187734 +0000
+@@ -19672,13 +19672,19 @@
+       .filter(([,u])=>u.skills.size>0)
+       .sort((a,b)=>a[1].unitIdx-b[1].unitIdx)
+       .map(([lbl,u])=>{
+-        // Promedio del % individual de cada habilidad (igual que los popups)
++        // "Habilidades" (columna X/Y) sigue contando sobre TODAS las habilidades de la unidad,
++        // practicadas o no — es el progreso real de la unidad.
+         const _pureUnitSkills = (u.unitObj.skills||[]).filter(_pureSkillFilter);
+         const _domCount = _pureUnitSkills.filter(sk=>_prepMasteryLevelH(sk,hist)==='dominado').length;
+         const _totalPure = _pureUnitSkills.length;
+-        const _avgPct = _totalPure ? Math.round(_pureUnitSkills.reduce((a,sk)=>{ const p=_prepLastPctH(sk,hist); return a+(p!=null?p:0); },0)/_totalPure) : null;
++        // "Dominio" en cambio es el promedio SOLO de las habilidades ya practicadas al menos una
++        // vez: antes se promediaba sobre TODAS las habilidades de la unidad contando las no
++        // practicadas como 0%, así que una unidad con 1 de 6 habilidades practicadas al 18% caía a
++        // ~3% de promedio y mostraba el nivel más bajo aunque esa habilidad estuviera bien lograda.
++        const _practicedUnitSkills = _pureUnitSkills.filter(sk=>_prepLastPctH(sk,hist)!=null);
++        const _avgPct = _practicedUnitSkills.length ? Math.round(_practicedUnitSkills.reduce((a,sk)=>a+_prepLastPctH(sk,hist),0)/_practicedUnitSkills.length) : null;
+         const pct = _avgPct;
+-        // Nivel basado en promedio de % de habilidades (mismo criterio que popup)
++        // Nivel basado en el promedio de las habilidades practicadas (ver nota arriba)
+         const lvl = pct !== null ? lvlFromPct(pct) : null;
+         const ico = lvl ? (_lvlIco[lvl]||'') : '';
+         const unitNumStr = u.unitIdx!==999 ? String(u.unitIdx+1).padStart(2,'0') : '';

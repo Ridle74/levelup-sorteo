@@ -19574,7 +19574,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   }
 
   const _pureSkillFilter = k => !/_bq\d/.test(k) && !k.includes('_bpu');
-  const _lvlIco = {dominado:'<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#7c3aed;font-size:12px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">A+</span>', competente:'<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#9333ea;font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">A</span>', familiar:'<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#c084fc;font-size:13px;font-weight:900;color:#581c87;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">B</span>', intentado:'<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#e9d5ff;font-size:13px;font-weight:900;color:#6d28d9;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">C</span>', pendiente:'<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#fdf4ff;font-size:13px;font-weight:900;color:#9333ea;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">D</span>'};
+  const _lvlIco = {dominado:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#7c3aed;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">A+</span>', competente:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#1d9e75;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">A</span>', familiar:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#ba7517;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">B</span>', intentado:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#d85a30;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">C</span>', pendiente:'<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#e5e7eb;font-size:10px;font-weight:700;color:#9ca3af;font-family:sans-serif">—</span>'};
   const _lvlRank = {dominado:5, competente:4, familiar:3, intentado:2, pendiente:1, sinIntentos:0};
   const fmtTime = sec => {
     sec = Math.max(0, Math.round(sec||0));
@@ -19672,19 +19672,13 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
       .filter(([,u])=>u.skills.size>0)
       .sort((a,b)=>a[1].unitIdx-b[1].unitIdx)
       .map(([lbl,u])=>{
-        // "Habilidades" (columna X/Y) sigue contando sobre TODAS las habilidades de la unidad,
-        // practicadas o no — es el progreso real de la unidad.
+        // Promedio del % individual de cada habilidad (igual que los popups)
         const _pureUnitSkills = (u.unitObj.skills||[]).filter(_pureSkillFilter);
         const _domCount = _pureUnitSkills.filter(sk=>_prepMasteryLevelH(sk,hist)==='dominado').length;
         const _totalPure = _pureUnitSkills.length;
-        // "Dominio" en cambio es el promedio SOLO de las habilidades ya practicadas al menos una
-        // vez: antes se promediaba sobre TODAS las habilidades de la unidad contando las no
-        // practicadas como 0%, así que una unidad con 1 de 6 habilidades practicadas al 18% caía a
-        // ~3% de promedio y mostraba el nivel más bajo aunque esa habilidad estuviera bien lograda.
-        const _practicedUnitSkills = _pureUnitSkills.filter(sk=>_prepLastPctH(sk,hist)!=null);
-        const _avgPct = _practicedUnitSkills.length ? Math.round(_practicedUnitSkills.reduce((a,sk)=>a+_prepLastPctH(sk,hist),0)/_practicedUnitSkills.length) : null;
+        const _avgPct = _totalPure ? Math.round(_pureUnitSkills.reduce((a,sk)=>{ const p=_prepLastPctH(sk,hist); return a+(p!=null?p:0); },0)/_totalPure) : null;
         const pct = _avgPct;
-        // Nivel basado en el promedio de las habilidades practicadas (ver nota arriba)
+        // Nivel basado en promedio de % de habilidades (mismo criterio que popup)
         const lvl = pct !== null ? lvlFromPct(pct) : null;
         const ico = lvl ? (_lvlIco[lvl]||'') : '';
         const unitNumStr = u.unitIdx!==999 ? String(u.unitIdx+1).padStart(2,'0') : '';
@@ -19901,6 +19895,8 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     ? `Se sugiere ${recPartsP.join(', y también ')} esta semana.`
     : `¡Felicitaciones! ¡Buen avance esta semana! Sigue practicando para mantener el nivel.`;
 
+  const _lvlNombre = {dominado:'Dominado (100%)', competente:'Competente (99%-75%)', familiar:'Familiar (74%-50%)', intentado:'Intentado (49%-25%)', pendiente:'Pendiente (24%-0%)'};
+
   const tableHtml = (cols, rows) => {
     if (!rows.length) return '<div style="font-size:13px;color:rgba(0,0,0,0.5)">—</div>';
     const thead = `<tr>${cols.map(c=>`<th style="text-align:center;font-size:10px;color:#7c3aed;padding:4px 6px;border-bottom:1.5px solid #e9d5ff;white-space:nowrap">${esc(c.label)}</th>`).join('')}</tr>`;
@@ -19911,6 +19907,10 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   let html = '';
   html += `<div style="font-size:19px;font-weight:900;color:#7c3aed;margin-bottom:2px;text-align:center">📊 REPORTE ${_rTitleLbl} - ${esc(name.toUpperCase())}</div>`;
   html += `<div style="font-size:13px;color:rgba(0,0,0,0.55);margin-bottom:12px;text-align:center">📅 ${weekAgoStr} al ${todayStr}</div>`;
+
+  const _lvlKeys = Object.keys(_lvlIco);
+  const _leyendaRow = items => `<div style="text-align:center;font-size:11px;color:#222;line-height:1.8">${items.map(k=>`${_lvlIco[k]} ${esc(_lvlNombre[k])}`).join('&nbsp;&nbsp;&nbsp;')}</div>`;
+  const _leyendaHtml = `<div style="margin:8px 0 12px">${_leyendaRow(_lvlKeys.slice(0,3))}${_leyendaRow(_lvlKeys.slice(3))}</div>`;
 
   html += `<div style="font-size:14px;font-weight:900;color:#7c3aed;margin:14px 0 6px">I. Cursos y unidades practicadas</div>`;
   if (!unitTables.length) html += '<div style="font-size:13px;color:rgba(0,0,0,0.5)">—</div>';
@@ -19928,6 +19928,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
       { label:'Tiempo',     get:r=>r.timeStr,         nowrap:true },
     ], t.rows);
   });
+  html += _leyendaHtml;
 
   html += `<div style="font-size:14px;font-weight:900;color:#7c3aed;margin:14px 0 6px">II. Actividades practicadas esta semana</div>`;
   if (!activityTables.length) html += '<div style="font-size:13px;color:rgba(0,0,0,0.5)">—</div>';
@@ -19945,6 +19946,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
       { label:'Tiempo',     get:r=>r.timeStr,      nowrap:true },
     ], t.rows);
   });
+  html += _leyendaHtml;
 
   const _reforzarGroups = Object.values(reforzarCourseGroups).filter(g=>g.rows.length);
   if (_reforzarGroups.length) {
@@ -19999,7 +20001,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     const _dNivelStr = h.desafioNivel ? (_nivelLblDP[h.desafioNivel]||'') : '';
     const _dKey = _dRetoP + '|' + (h.desafioNivel||1);
     const rowPctNum = h.pct != null ? Math.round(h.pct) : (h.total ? Math.round((h.correct||0)/h.total*100) : null);
-    const dominioIco = rowPctNum === null ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#94a3b8;font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">—</span>' : rowPctNum >= 100 ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#7c3aed;font-size:12px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">A+</span>' : rowPctNum >= 75 ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#9333ea;font-size:13px;font-weight:900;color:#fff;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">A</span>' : rowPctNum >= 50 ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#c084fc;font-size:13px;font-weight:900;color:#581c87;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">B</span>' : rowPctNum >= 25 ? '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#e9d5ff;font-size:13px;font-weight:900;color:#6d28d9;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">C</span>' : '<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:#fdf4ff;font-size:13px;font-weight:900;color:#9333ea;letter-spacing:-0.5px;font-family:sans-serif;flex-shrink:0">D</span>';
+    const dominioIco = rowPctNum === null ? '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#e5e7eb;font-size:10px;font-weight:700;color:#9ca3af;font-family:sans-serif">—</span>' : rowPctNum >= 100 ? '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#7c3aed;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">A+</span>' : rowPctNum >= 75 ? '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#1d9e75;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">A</span>' : rowPctNum >= 50 ? '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#ba7517;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">B</span>' : rowPctNum >= 25 ? '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#d85a30;font-size:10px;font-weight:700;color:#fff;font-family:sans-serif">C</span>' : '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:20px;padding:0 5px;border-radius:5px;background:#e5e7eb;font-size:10px;font-weight:700;color:#9ca3af;font-family:sans-serif">—</span>';
     const sec = h.completedAt?.seconds || 0;
     return {
       nivelCol: _dNivelStr || '—',
