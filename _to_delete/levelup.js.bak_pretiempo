@@ -20568,10 +20568,7 @@ function _prepUnitExam(skills, unitIdx) {
   _prep.isUnitExam = true;
   _prep.examUnitSkills = [...valid];
   _prep.unitSkillList = []; _prep.unitDone = [];
-  // El tiempo del examen escala con la cantidad de preguntas (30s por pregunta) en vez de
-  // ser un tope fijo — antes 150s alcanzaba para menos de 10s por pregunta cuando la unidad
-  // tenía muchas habilidades (5 preguntas por habilidad), dejando muy poco tiempo real.
-  const _examTime = qs.length * 30;
+  const _examTime = 150;
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_examTime > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -20634,9 +20631,7 @@ function _prepStart() {
     } else {
       qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
     }
-    // El tiempo escala con la cantidad de preguntas en vez de ser un tope fijo: 45s por
-    // pregunta en cuestionarios, 60s por pregunta en práctica de habilidad individual.
-    const _autoTime = qs.length * (def.quiz ? 45 : 60);
+    const _autoTime = def.quiz ? 300 : 600;
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, showReview:false, lives:def.quiz?4:5, maxLives:def.quiz?4:5, streak:0, streakBonusAccum:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now() });
     clearInterval(_prepTimerIntv);
     if (_autoTime > 0) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
