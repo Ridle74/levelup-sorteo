@@ -1818,6 +1818,7 @@ function getStudents() {
       color: ov.color !== undefined ? ov.color : base.color,
       padresId,
       linkBroken,
+      blocked: !!ov.blocked,
       nivel: pStudent ? (pStudent.nivel || null) : null,
       grado: pStudent ? (pStudent.grado || null) : null,
     });
@@ -2450,8 +2451,16 @@ function doLogin() {
   const err   = document.getElementById('login-err');
   const s     = getFullList().find(s => String(s.id) === selId);
   if (!s || String(s.pin) !== pin) {
+    err.textContent = 'PIN incorrecto';
     err.style.display = 'block';
     setTimeout(() => err.style.display='none', 2500); return;
+  }
+  // Cuenta bloqueada por el profesor: no se deja entrar ni a Level Zone ni a Level Up (mismo
+  // login para toda la app), aunque el PIN sea correcto.
+  if (s.blocked) {
+    err.textContent = 'Tu cuenta ha sido bloqueada por tu profesor. Contáctalo para más información.';
+    err.style.display = 'block';
+    setTimeout(() => err.style.display='none', 4500); return;
   }
   setLoggedId(s.id);
   go('dashboard');
@@ -7925,6 +7934,7 @@ function renderStudentList() {
   getStudents().forEach((s,idx) => {
     const row=document.createElement('div');
     row.className='student-row';
+    if (s.blocked) { row.style.opacity = '0.55'; }
     const linkedOk = s.padresId !== undefined && s.padresId !== null && !s.linkBroken;
     const nameTitle = linkedOk
       ? 'El nombre se edita desde emaths.me/parents'
@@ -7933,6 +7943,7 @@ function renderStudentList() {
       <div class="student-row-top">
         <div style="display:flex;align-items:center;gap:6px">
           <span class="pos-label">POS. ${idx+1}</span>
+          ${s.blocked ? '<span style="background:rgba(239,68,68,0.22);color:#ff5c7a;font-size:9px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;padding:3px 7px;border-radius:6px">Bloqueado</span>' : ''}
           <button class="msg-btn" title="Inicio de selección" onclick="copyMsg(${s.id},1)">📩</button>
           <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">📢</button>
           <button class="msg-btn" title="Detalles de Next Up" onclick="copyMsg(${s.id},3)">🔴</button>
@@ -7944,6 +7955,8 @@ function renderStudentList() {
               ${COLOR_PALETTE.map(c=>`<div class="color-swatch${s.color===c?' selected':''}" style="background:${c}" onclick="pickColor(event,${s.id},'${c}')"></div>`).join('')}
             </div>
           </div>
+          <button title="${s.blocked ? 'Desbloquear cuenta' : 'Bloquear cuenta'}" onclick="setOverride(${s.id},'blocked',${s.blocked?'false':'true'});renderStudentList();renderAll(getLoggedId())"
+            style="background:${s.blocked?'rgba(34,197,94,0.2)':'rgba(239,68,68,0.2)'};border:none;border-radius:6px;padding:5px 7px;color:${s.blocked?'#4ade80':'#ff5c7a'};cursor:pointer;font-size:12px">${s.blocked?'🔓':'🔒'}</button>
           <button onclick="setOverride(${s.id},'deleted',true);renderStudentList();renderAll(getLoggedId())"
             style="background:rgba(239,68,68,0.2);border:none;border-radius:6px;padding:5px 7px;color:#ff5c7a;cursor:pointer;font-size:12px">🗑️</button>
 

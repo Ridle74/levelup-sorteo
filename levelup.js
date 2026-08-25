@@ -19004,7 +19004,13 @@ function _prepConfigHtml() {
       </div>`;
       // Helpers — mismo estilo que Mis Cursos
       const _vivid2 = ['#6d28d9','#2563eb','#0e7490','#be185d','#b45309','#15803d','#c2410c','#0f766e','#7e22ce','#1d4ed8','#b91c1c','#0369a1'];
-      const _secHdrMA = lbl => `<div style="font-size:10px;font-weight:700;color:#fff;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;margin-top:4px">${lbl}</div>`;
+      // sId/blocked opcionales: cuando se pasan, el encabezado de sección lleva un botón para
+      // bloquear/desbloquear la cuenta del alumno (mismo campo overrides[id].blocked que usa el
+      // login único de student.html — bloquear aquí bloquea tanto Level Zone como Level Up).
+      const _secHdrMA = (lbl, sId, blocked) => `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;margin-top:4px">
+        <div style="font-size:10px;font-weight:700;color:#fff;letter-spacing:0.8px;text-transform:uppercase;${blocked?'opacity:.55':''}">${lbl}${blocked?' <span style="background:rgba(239,68,68,0.22);color:#ff5c7a;font-size:8px;font-weight:900;letter-spacing:0.06em;padding:2px 6px;border-radius:5px;margin-left:6px;text-transform:none">Bloqueado</span>':''}</div>
+        ${sId!=null ? `<button title="${blocked?'Desbloquear cuenta':'Bloquear cuenta'}" onclick="event.stopPropagation();setOverride(${sId},'blocked',${blocked?'false':'true'});_renderPreparatePane()" style="background:${blocked?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'};border:none;border-radius:6px;padding:3px 7px;color:${blocked?'#4ade80':'#ff5c7a'};cursor:pointer;font-size:11px;flex-shrink:0">${blocked?'🔓':'🔒'}</button>` : ''}
+      </div>`;
       const _rmBtnMA = (onclick) => `<button onclick="event.stopPropagation();${onclick}" style="background:none;border:none;color:rgba(255,255,255,0.22);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='rgba(248,113,113,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.22)'">✕</button>`;
       const _restoreBtnMA = (onclick) => `<button onclick="event.stopPropagation();${onclick}" style="background:none;border:none;color:rgba(139,92,246,0.4);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='rgba(139,92,246,0.4)'">↺</button>`;
       let _maColorIdx = 0;
@@ -19088,7 +19094,7 @@ function _prepConfigHtml() {
               </div>
             </div>`;
           }).join('');
-          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''))}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''), s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
         }).filter(Boolean);
         innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin tareas asignadas</div>`;
       } else if (_maTab === 'cursos') {
@@ -19109,7 +19115,7 @@ function _prepConfigHtml() {
             const _navCMA = `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${c.editorial?`'${c.editorial}'`:'null'};_prep.area=${c.area?`'${c.area}'`:'null'};_prep.editorialChosen=${!!c.editorial};_prep.topic='';_prep.selectedUnit=null;_prep.openSelector=null;_renderPreparatePane()`;
             return _cardMA('📚', sub, name, '', pctData, _rmBtnMA(`_prepRemoveCourse(${s.id},${ci})`), _navCMA);
           }).join('');
-          return `${_secHdrMA(s.name+' · '+cs.length+' curso'+(cs.length!==1?'s':''))}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+          return `${_secHdrMA(s.name+' · '+cs.length+' curso'+(cs.length!==1?'s':''), s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
         }).filter(Boolean);
         innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin cursos asignados</div>`;
       } else {
@@ -19145,7 +19151,7 @@ function _prepConfigHtml() {
               });
           }).filter(Boolean).join('');
           if (!unitCards) return '';
-          return `${_secHdrMA(s.name)}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>`;
+          return `${_secHdrMA(s.name, s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>`;
         }).filter(Boolean);
         innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin cursos asignados</div>`;
       }
