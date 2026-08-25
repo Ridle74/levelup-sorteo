@@ -12251,6 +12251,20 @@ REF.onSnapshot(doc => {
     router();
     _showSorteoNotice();
   } else {
+    // Si el alumno con la sesión activa fue bloqueado (por ejemplo, el profesor lo bloqueó
+    // mientras el alumno ya estaba adentro, sin volver a poner su PIN), se le expulsa apenas
+    // llega esta actualización de overrides — no basta con revisar el bloqueo solo al momento
+    // de iniciar sesión, porque una sesión ya abierta nunca vuelve a pasar por doLogin().
+    const _loggedIdNow = getLoggedId();
+    if (_loggedIdNow !== null && !isAdmin()) {
+      const _loggedStudent = getStudents().find(s => s.id === _loggedIdNow);
+      if (_loggedStudent && _loggedStudent.blocked) {
+        setLoggedId(null);
+        go('login');
+        showToast('Tu cuenta ha sido bloqueada por tu profesor.', 'error');
+        return;
+      }
+    }
     // Live-update tablero if it's open
     const hash = currentView;
     if (hash === 'tablero') {
