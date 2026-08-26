@@ -6870,7 +6870,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2','sf6_are_b1','sf6_are_b2','sf6_are_bq1','sf6_are_b3','sf6_are_b4','sf6_are_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_ang_b9','i1tr_ang_b10','i1tr_ang_bq4','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2',],
+    grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_ang_b9','i1tr_ang_b10','i1tr_ang_bq4','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex','jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2'],
       '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4','sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2','svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','hca9_b1','hca9_b2','hca9_b3','hca9_bq1','hca9_b4','hca9_b5','hca9_b6','hca9_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex','inn5m_np_b1','inn5m_np_b2','inn5m_np_bq1','inn5m_np_b3','inn5m_np_b4','inn5m_np_b5','inn5m_np_bq2','inn5m_dv_b1','inn5m_dv_b2','inn5m_dv_bq1','inn5m_dv_b3','inn5m_dv_b4','inn5m_dv_b5','inn5m_dv_bq2'] },
     areas:[
@@ -8426,7 +8426,7 @@ function _genI1A_EX1_B9(){
     {_id:16,q:'Reduce: (2<sup>n</sup>+2<sup>n−1</sup>) ÷ (2<sup>n−2</sup>+2<sup>n−3</sup>)',a:'4',opts:_i4gshuf(['4','2','8','16']),mc:true,ste:'Num: 2^(n−1)·3. Den: 2^(n−3)·3. Ratio=2²=4.'},
     // Plantilla 5: Conceptual sobre el proceso (4 qx)
     {_id:17,q:'Para reducir (2<sup>n+1</sup>+2<sup>n+2</sup>)/2<sup>n+3</sup>, el primer paso es:',a:'Factorizar 2<sup>n+1</sup> en el numerador',opts:_i4gshuf(['Factorizar 2<sup>n+1</sup> en el numerador','Dividir término a término','Convertir a base 4','Restar los exponentes directamente']),mc:true,ste:'Se identifica el factor común más pequeño 2^(n+1) y se saca del numerador.'},
-    {_id:18,q:'En (5<sup>n+4</sup>+5<sup>n+3</sup>)/(5<sup>n+3</sup>+5<sup>n+2</sup>), al factorizar ¿qué se cancela?',a:'Se cancelan 5^(n+2) y el factor 6; resultado = 5',opts:_i4gshuf(['Se cancelan 5^(n+2) y el factor 6; resultado = 5','Solo el factor (5+1)=6','Solo el 5^n','Nada se cancela']),mc:true,ste:'Num=5^(n+3)·6=5^(n+2)·5·6. Den=5^(n+2)·6. Se cancela 5^(n+2)·6 en ambos. Queda 5^1=5.'},
+    {_id:18,q:'En (5<sup>n+4</sup>+5<sup>n+3</sup>)/(5<sup>n+3</sup>+5<sup>n+2</sup>), al factorizar ¿qué se cancela?',a:'Se cancelan 5<sup>n+2</sup> y el factor 6; resultado = 5',opts:_i4gshuf(['Se cancelan 5<sup>n+2</sup> y el factor 6; resultado = 5','Solo el factor (5+1)=6','Solo el 5<sup>n</sup>','Nada se cancela']),mc:true,ste:'Num=5^(n+3)·6=5^(n+2)·5·6. Den=5^(n+2)·6. Se cancela 5^(n+2)·6 en ambos. Queda 5^1=5.'},
     {_id:19,q:'¿Qué resultado tiene siempre (a<sup>n+k+1</sup>+a<sup>n+k</sup>) ÷ (a<sup>n+k</sup>+a<sup>n+k−1</sup>)?',a:'a',opts:_i4gshuf(['a','a²','1','2a']),mc:true,ste:'Num: a^(n+k)(a+1). Den: a^(n+k−1)(a+1). El (a+1) se cancela. Ratio=a.'},
     {_id:20,q:'¿Para qué base aplica la técnica de factorizar sumas como (a<sup>n+1</sup>+a<sup>n+2</sup>)/a<sup>n+3</sup>?',a:'Para cualquier base a≠0',opts:_i4gshuf(['Para cualquier base a≠0','Solo para base 2','Solo para bases enteras','Solo cuando n=0']),mc:true,ste:'La propiedad aᵐ·aⁿ=aᵐ⁺ⁿ y el factor común aplican para cualquier a≠0.'},
   ]);
@@ -8490,7 +8490,7 @@ function _genI1A_EX2_B2(){
     {_id:15,q:'x<sup>1/n</sup> es equivalente a...',a:'ⁿ√x',opts:_i4gshuf(['ⁿ√x','x/n','n√x','xⁿ']),mc:true,ste:'Definición: x^(1/n) = ⁿ√x.'},
     {_id:16,q:'¿Cuál es la forma radical de x<sup>3/4</sup>?',a:'⁴√(x³)',opts:_i4gshuf(['⁴√(x³)','³√(x⁴)','√(x³)','x³/4']),mc:true,ste:'a^(m/n) = ⁿ√(aᵐ). Aquí m=3, n=4 → ⁴√(x³).'},
     {_id:17,q:'Halla n: 16ⁿ = 2',a:'1/4',opts:_i4gshuf(['1/4','1/2','2','4']),mc:true,ste:'16^(1/4)=⁴√16=2. Luego n=1/4.'},
-    {_id:18,q:'¿Son iguales 8<sup>1/3</sup> y 4<sup>1/2</sup>?',a:'Sí, ambos valen 2',opts:_i4gshuf(['Sí, ambos valen 2','No, 8^(1/3)=4 y 4^(1/2)=2','No, son 4 y 2 respectivamente','Sí, ambos valen 4']),mc:true,ste:'∛8=2 y √4=2. Son iguales.'},
+    {_id:18,q:'¿Son iguales 8<sup>1/3</sup> y 4<sup>1/2</sup>?',a:'Sí, ambos valen 2',opts:_i4gshuf(['Sí, ambos valen 2','No, 8<sup>1/3</sup>=4 y 4<sup>1/2</sup>=2','No, son 4 y 2 respectivamente','Sí, ambos valen 4']),mc:true,ste:'∛8=2 y √4=2. Son iguales.'},
     {_id:19,q:'¿Cuál de estas expresiones es equivalente a ∛(x²)?',a:'x<sup>2/3</sup>',opts:_i4gshuf(['x<sup>2/3</sup>','x<sup>3/2</sup>','x<sup>1/3</sup>','x²']),mc:true,ste:'³√(x²)=x^(2/3) por definición de exponente fraccionario.'},
     {_id:20,q:'¿Es verdadero que (−27)<sup>1/3</sup> = −3?',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'(−3)³=−27. Luego ∛(−27)=−3. Verdadero.'},
   ]);
@@ -8682,7 +8682,7 @@ function _genI1A_ETR_B4(){
     {_id:15,q:'Halla x: (4²)<sup>x</sup> = 4<sup>10</sup>',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'(4²)^x=4^(2x). 2x=10 → x=5.'},
     {_id:16,q:'Calcula n: (2³)<sup>n</sup> = 2<sup>12</sup>',a:'4',opts:_i4gshuf(['4','3','6','2']),mc:true,ste:'(2³)ⁿ=2^(3n). 3n=12 → n=4.'},
     {_id:17,q:'Calcula n: (5²)<sup>n+1</sup> = 5<sup>8</sup>',a:'3',opts:_i4gshuf(['3','4','2','5']),mc:true,ste:'5^(2(n+1))=5^8. 2n+2=8 → n=3.'},
-    {_id:18,q:'¿Qué propiedad se usa para resolver (a³)<sup>x</sup> = a<sup>15</sup>?',a:'Potencia de potencia: se multiplican exponentes → 3x=15 → x=5',opts:_i4gshuf(['Potencia de potencia: se multiplican exponentes → 3x=15 → x=5','Suma de exponentes: 3+x=15','Se multiplican las bases: a³ˣ=a^15','Se divide: x=15÷3']),mc:true,ste:'(a³)^x=a^(3·x). Se igualan exponentes: 3x=15 → x=5.'},
+    {_id:18,q:'¿Qué propiedad se usa para resolver (a³)<sup>x</sup> = a<sup>15</sup>?',a:'Potencia de potencia: se multiplican exponentes → 3x=15 → x=5',opts:_i4gshuf(['Potencia de potencia: se multiplican exponentes → 3x=15 → x=5','Suma de exponentes: 3+x=15','Se multiplican las bases: a<sup>3x</sup>=a<sup>15</sup>','Se divide: x=15÷3']),mc:true,ste:'(a³)^x=a^(3·x). Se igualan exponentes: 3x=15 → x=5.'},
     {_id:19,q:'¿Cuál es el razonamiento clave para resolver (x+2)<sup>x+2</sup>=5⁵?',a:'Base y exponente son iguales en ambos lados: x+2=5 → x=3',opts:_i4gshuf(['Base y exponente son iguales en ambos lados: x+2=5 → x=3','Se aplican logaritmos a ambos lados','Se resta el exponente: x=5⁵−2','Se eleva al cuadrado ambos lados']),mc:true,ste:'En (x+2)^(x+2)=5⁵, la base y el exponente de cada lado son iguales entre sí: x+2=5 → x=3.'},
     {_id:20,q:'¿Cuál es el paso correcto para resolver a<sup>3x</sup>·a<sup>x+2</sup>=a<sup>14</sup>?',a:'Sumar exponentes: 4x+2=14 → x=3',opts:_i4gshuf(['Sumar exponentes: 4x+2=14 → x=3','Multiplicar exponentes: 3x(x+2)=14','Restar exponentes: 2x−2=14','Dividir: 3x=14÷(x+2)']),mc:true,ste:'Propiedad aᵐ·aⁿ=aᵐ⁺ⁿ: sumar exponentes → 3x+(x+2)=14 → 4x+2=14 → x=3.'},
   ]);
@@ -8891,113 +8891,168 @@ _SKILL_META['i1a_mon_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Monomios: Semejant
 // ─── U5: Polinomios ───────────────────────────────────────────────────────────
 function _genI1A_POL_B1(){
   return _i4gpick([
-    {_id:1,q:'P(x)=x³+ax+b, suma de coeficientes=10, término ind.=4. Halla ab',a:'20',opts:_i4gshuf(['20','30','40','50']),mc:true,ste:'SC: 1+a+b=10→a+b=9. TI=b=4→a=5. ab=20.'},
-    {_id:2,q:'Si M(x)=(3x⁵+8)·(4x<sup>2a−4</sup>) y GA(M)=2a−4, calcula GA cuando a=4',a:'4',opts:_i4gshuf(['4','8','6','2']),mc:true,ste:'GA=2(4)−4=4.'},
-    {_id:3,q:'P(x)=x<sup>a−4</sup>+x<sup>2a−3</sup>−x<sup>2a−4</sup>, calcula GA(P)',a:'2a−3',opts:_i4gshuf(['2a−3','a−4','2a−4','a']),mc:true,ste:'El mayor exponente es 2a−3.'},
-    {_id:4,q:'Si P(x)=8x⁸−7x⁶+10x¹²−7, calcula GA(P)',a:'12',opts:_i4gshuf(['12','8','6','14']),mc:true,ste:'El mayor exponente es 12.'},
-    {_id:5,q:'Calcula mn si en R(x;y)=5x<sup>m+1</sup>y<sup>n−2</sup>+4x<sup>m+3</sup>y<sup>n−3</sup>−6x<sup>m+1</sup>y<sup>n−1</sup> el GR(x)=5 y GR(y)=8',a:'12',opts:_i4gshuf(['12','5','8','40']),mc:true,ste:'m+3=5→m=2. n−1=8→n=9. mn=18... Clave PDF: 12.'},
-    {_id:6,q:'P(x)=(3x−1)<sup>n</sup>+5x+1, suma coef.=70. Halla n+2',a:'8',opts:_i4gshuf(['8','10','6','4']),mc:true,ste:'SC: con x=1: (2)^n+6=70→2^n=64→n=6. n+2=8.'},
-    {_id:7,q:'Sea P(x)=x<sup>a</sup>+x²+x+1 de tercer grado. Calcula a',a:'3',opts:_i4gshuf(['3','4','2','1']),mc:true,ste:'Tercer grado → a=3.'},
-    {_id:8,q:'En M(x;y)=5x<sup>m</sup>·y<sup>n+2</sup>, el grado relativo a x es 5. Si m=5, calcula el grado relativo a y cuando n=4',a:'6',opts:_i4gshuf(['6','4','8','5']),mc:true,ste:'n+2=4+2=6.'},
-    {_id:9,q:'P(x)=5x³−2x+7. Halla la suma de coeficientes.',a:'10',opts:_i4gshuf(['10','5','0','12']),mc:true,ste:'P(1)=5−2+7=10.'},
-    {_id:10,q:'El GA de P(x)=4x⁵−3x²+1 es:',a:'5',opts:_i4gshuf(['5','4','2','3']),mc:true,ste:'Mayor exponente es 5.'},
-    {_id:11,q:'Si P(x)=x<sup>a</sup>−x²+1 es de 4° grado, halla a',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'a=4.'},
-    {_id:12,q:'P(x)=3x²+5x−2. Término independiente:',a:'−2',opts:_i4gshuf(['−2','3','5','0']),mc:true,ste:'Coeficiente sin variable.'},
-    {_id:13,q:'P(x)=2x⁴−x³+x−5. Número de términos:',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'Hay 4 términos.'},
-    {_id:14,q:'Si SC de P(x)=ax²+bx+3 es 10, halla a+b',a:'7',opts:_i4gshuf(['7','10','3','13']),mc:true,ste:'P(1)=a+b+3=10 → a+b=7.'},
-    {_id:15,q:'P(x)=x⁴−3x²+2x+5. Halla la suma de coeficientes',a:'5',opts:_i4gshuf(['5','7','3','9']),mc:true,ste:'P(1)=1−3+2+5=5.'},
-    {_id:16,q:'P(x)=3x³+2x²−x+7. Número de términos:',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'Hay 4 términos: 3x³, 2x², −x, 7.'},
-    {_id:17,q:'P(x)=5x²−3x+8. Término independiente:',a:'8',opts:_i4gshuf(['8','5','−3','0']),mc:true,ste:'El término sin variable es 8.'},
-    {_id:18,q:'En R(x;y)=4x³y²+x²y³, el GR respecto a x del primer término es:',a:'3',opts:_i4gshuf(['3','2','5','4']),mc:true,ste:'En 4x³y², el exponente de x es 3.'},
-    {_id:19,q:'En P(x;y)=5x³y²+2xy, el GR respecto a y es:',a:'2',opts:_i4gshuf(['2','3','1','5']),mc:true,ste:'Mayor exponente de y en cualquier término: 2.'},
-    {_id:20,q:'Si la SC de P(x)=2x²−3x+k es 6, halla k',a:'7',opts:_i4gshuf(['7','6','5','8']),mc:true,ste:'P(1)=2−3+k=k−1=6 → k=7.'},
+  {_id:1,q:'Si P(x)=2x² − 3x + 1, halla P(3)',a:'10',opts:_i4gshuf(['10','11','9','-10']),mc:true,ste:'Sustituyendo x=3 en P(x)=2x² − 3x + 1: P(3)=10.'},
+  {_id:2,q:'Si P(x)=x³ − 2x + 5, halla P(-2)',a:'1',opts:_i4gshuf(['1','2','0','-1']),mc:true,ste:'Sustituyendo x=-2 en P(x)=x³ − 2x + 5: P(-2)=1.'},
+  {_id:3,q:'Si P(x)=4x² − x + 2, halla P(2)',a:'16',opts:_i4gshuf(['16','17','15','-16']),mc:true,ste:'Sustituyendo x=2 en P(x)=4x² − x + 2: P(2)=16.'},
+  {_id:4,q:'Si P(x)=x³ + 3x² − x, halla P(1)',a:'3',opts:_i4gshuf(['3','4','2','-3']),mc:true,ste:'Sustituyendo x=1 en P(x)=x³ + 3x² − x: P(1)=3.'},
+  {_id:5,q:'Si P(x)=x² − 3, halla P(2) + P(3)',a:'7',opts:_i4gshuf(['7','-5','9','4']),mc:true,ste:'P(2)=1, P(3)=6. P(2)+P(3) = 1 + 6 = 7.'},
+  {_id:6,q:'Si P(x)=x² + 2x − 1, halla P(1) - P(-1)',a:'4',opts:_i4gshuf(['4','0','6','1']),mc:true,ste:'P(1)=2, P(-1)=-2. P(1)−P(-1) = 2 − (-2) = 4.'},
+  {_id:7,q:'Si P(x)=x³ + 2, halla P(-1) + P(2)',a:'11',opts:_i4gshuf(['11','-9','13','8']),mc:true,ste:'P(-1)=1, P(2)=10. P(-1)+P(2) = 1 + 10 = 11.'},
+  {_id:8,q:'Si P(x)=2x² − x + 3, halla P(0) - P(2)',a:'-6',opts:_i4gshuf(['-6','12','-4','-9']),mc:true,ste:'P(0)=3, P(2)=9. P(0)−P(2) = 3 − (9) = -6.'},
+  {_id:9,q:'Si P(x)=x² + 4x + 5, calcula S = √(P(3) − 1)',a:'5',opts:_i4gshuf(['5','6','4','25']),mc:true,ste:'P(3)=26. S=√(26−1)=√25=5.'},
+  {_id:10,q:'Si P(x)=x³ + 2x + 1, calcula S = √(P(2) − 4)',a:'3',opts:_i4gshuf(['3','4','2','9']),mc:true,ste:'P(2)=13. S=√(13−4)=√9=3.'},
+  {_id:11,q:'Si P(x)=2x² − 3x + 4, calcula S = √(P(-1) − 5)',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'P(-1)=9. S=√(9−5)=√4=2.'},
+  {_id:12,q:'Si P(x)=x² − 5, calcula S = √(P(5) − 4)',a:'4',opts:_i4gshuf(['4','5','3','16']),mc:true,ste:'P(5)=20. S=√(20−4)=√16=4.'},
+  {_id:13,q:'V/F: Evaluar P(x) en x=a consiste en sustituir cada \'x\' del polinomio por el valor de a y luego operar.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: eso es exactamente la definición de evaluar un polinomio en un punto.'},
+  {_id:14,q:'V/F: Si P(x)=x²+1, entonces P(2) es igual a x²+1 con x reemplazado por 2, es decir 5.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: P(2)=2²+1=4+1=5.'},
+  {_id:15,q:'V/F: El resultado de evaluar un polinomio P(x) en un valor numérico siempre es otro polinomio.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: al sustituir un número y operar, el resultado es un número, no un polinomio.'},
+  {_id:16,q:'V/F: Para hallar P(a)+P(b) es válido sustituir primero a+b como si fuera un solo valor dentro de P(x).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: hay que evaluar P(a) y P(b) por separado y luego sumar los resultados; sustituir (a+b) directamente da, en general, un valor distinto.'},
+  {_id:17,q:'Si P(x)=3x² − 2x + 4, halla P(2)',a:'12',opts:_i4gshuf(['12','13','10','-12']),mc:true,ste:'P(2) = 12, sustituyendo x=2 en P(x)=3x² − 2x + 4.'},
+  {_id:18,q:'Si P(x)=x³ − x² + 3, halla P(-1) + P(2)',a:'8',opts:_i4gshuf(['8','-6','11','4']),mc:true,ste:'P(-1)=1, P(2)=7. Resultado = 8.'},
+  {_id:19,q:'Si P(x)=x² + 5x − 2, halla P(1)',a:'4',opts:_i4gshuf(['4','5','2','-4']),mc:true,ste:'P(1) = 4, sustituyendo x=1 en P(x)=x² + 5x − 2.'},
+  {_id:20,q:'Si P(x)=2x² − 7, halla P(3) - P(1)',a:'16',opts:_i4gshuf(['16','6','19','12']),mc:true,ste:'P(3)=11, P(1)=-5. Resultado = 16.'},
   ]);
 }
-_SKILL_META['i1a_pol_b1']={ico:'📐',lbl:'Grado y suma de coeficientes de polinomios',qCount:4,gen:_genI1A_POL_B1};
+_SKILL_META['i1a_pol_b1']={ico:'📐',lbl:'Evaluación directa de polinomios',qCount:4,gen:_genI1A_POL_B1,plantillas:['Evaluar P(a) sustituyendo directamente','Evaluar y combinar dos evaluaciones: P(a)+P(b) o P(a)−P(b)','Evaluar dentro de otra operación: √(P(a)−k)','V/F sobre el concepto de evaluar un polinomio','Variante numérica mixta de evaluación simple/combinada']};
 
 function _genI1A_POL_B2(){
   return _i4gpick([
-    {_id:1,q:'Si P(x+3)=x, halla P(4)+P(5)',a:'3',opts:_i4gshuf(['3','-3','2','9']),mc:true,ste:'P(t)=t−3. P(4)=1, P(5)=2. Suma=3.'},
-    {_id:2,q:'Sea P(x)=2x+1. Halla P(P(x))',a:'4x+3',opts:_i4gshuf(['4x+3','2x+3','4x+1','2x+1']),mc:true,ste:'P(2x+1)=2(2x+1)+1=4x+3.'},
-    {_id:3,q:'Si P(x)=2x+4 y P(F(x))=8x+10, halla F(9)',a:'30',opts:_i4gshuf(['30','28','36','39']),mc:true,ste:'F(x)=4x+1. F(9)=37... Clave PDF: 30.'},
-    {_id:4,q:'Calcula: 2P(x−1)+P(2x−1)=3x+P(x+1)+P(x−2) → término ind.',a:'18',opts:_i4gshuf(['18','12','10','16']),mc:true,ste:'Clave PDF: 18.'},
-    {_id:5,q:'En el polinomio M(x)=(x−3)(x+3)(x²−4), indica el término independiente',a:'36',opts:_i4gshuf(['36','−36','9','12']),mc:true,ste:'(x²−9)(x²−4)=x⁴−13x²+36. TI=36.'},
-    {_id:6,q:'Calcula la suma de coeficientes de R(x)=(2x+3)(4−x)+2x²',a:'16',opts:_i4gshuf(['16','13','12','17']),mc:true,ste:'=8x−2x²+12−3x+2x²=5x+12. SC=5+12=17... Clave PDF: 16.'},
-    {_id:7,q:'Al efectuar (x+2)(x+3)(x+4), uno de sus términos es:',a:'9x²',opts:_i4gshuf(['9x²','8x²','26x','24x']),mc:true,ste:'=x³+9x²+26x+24. Un término es 9x².'},
-    {_id:8,q:'Si P(x)=x<sup>a−4</sup>+x<sup>2a−3</sup>−x<sup>2a−4</sup> tiene GA=13, halla a',a:'8',opts:_i4gshuf(['8','6','10','13']),mc:true,ste:'2a−3=13 → a=8.'},
-    {_id:9,q:'Si P(x)=x²+3, halla P(2)',a:'7',opts:_i4gshuf(['7','4','5','11']),mc:true,ste:'4+3=7.'},
-    {_id:10,q:'Sea P(x)=x+5. Halla P(P(0))',a:'10',opts:_i4gshuf(['10','5','6','11']),mc:true,ste:'P(0)=5. P(5)=10.'},
-    {_id:11,q:'Si P(x+1)=2x, halla P(3)',a:'4',opts:_i4gshuf(['4','6','3','2']),mc:true,ste:'P(3)=P(2+1)=2·2=4.'},
-    {_id:12,q:'Calcula: (x+3)(x−3) e indica el término independiente',a:'−9',opts:_i4gshuf(['−9','9','0','3']),mc:true,ste:'x²−9. TI=−9.'},
-    {_id:13,q:'P(x)=3x−2. Halla P(−1)',a:'−5',opts:_i4gshuf(['−5','5','−3','1']),mc:true,ste:'3(−1)−2=−5.'},
-    {_id:14,q:'Si F(x+2)=x²−1, halla F(3)',a:'0',opts:_i4gshuf(['0','3','1','−1']),mc:true,ste:'F(3)=F(1+2)=1²−1=0.'},
-    {_id:15,q:'Si P(x)=2x−4, halla x tal que P(x)=6',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'2x−4=6 → 2x=10 → x=5.'},
-    {_id:16,q:'P(x)=x+3. Halla P(P(P(1)))',a:'10',opts:_i4gshuf(['10','7','4','13']),mc:true,ste:'P(1)=4, P(4)=7, P(7)=10.'},
-    {_id:17,q:'Si P(2x−1)=4x−5, halla P(7)',a:'11',opts:_i4gshuf(['11','9','13','7']),mc:true,ste:'2x−1=7 → x=4. P(7)=4(4)−5=11.'},
-    {_id:18,q:'Si F(x)=5x−10, halla x tal que F(x)=0',a:'2',opts:_i4gshuf(['2','0','10','−2']),mc:true,ste:'5x−10=0 → x=2.'},
-    {_id:19,q:'Si P(x)=3x−3, halla x tal que P(x)=P(4)+3',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'P(4)=9. P(x)=12 → 3x−3=12 → x=5.'},
-    {_id:20,q:'P(x)=x−1. Halla P(P(P(4)))',a:'1',opts:_i4gshuf(['1','2','3','0']),mc:true,ste:'P(4)=3, P(3)=2, P(2)=1.'},
+  {_id:1,q:'Si P(x+3)=x, halla P(4)',a:'1',opts:_i4gshuf(['1','2','0','4']),mc:true,ste:'Si t=x+3, entonces x=t−3. Para t=4: x=1. Sustituyendo en la expresión: P(4)=(1) = 1.'},
+  {_id:2,q:'Si P(x+2)=3x + 1, halla P(6)',a:'13',opts:_i4gshuf(['13','14','12','19']),mc:true,ste:'Si t=x+2, entonces x=t−2. Para t=6: x=4. Sustituyendo en la expresión: P(6)=3(4) + 1 = 13.'},
+  {_id:3,q:'Si P(x+1)=2x − 3, halla P(5)',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'Si t=x+1, entonces x=t−1. Para t=5: x=4. Sustituyendo en la expresión: P(5)=2(4) − 3 = 5.'},
+  {_id:4,q:'Si P(x+4)=-x + 2, halla P(6)',a:'0',opts:_i4gshuf(['0','1','-1','-4']),mc:true,ste:'Si t=x+4, entonces x=t−4. Para t=6: x=2. Sustituyendo en la expresión: P(6)=-(2) + 2 = 0.'},
+  {_id:5,q:'Si P(x)=2x+4 y P(F(x))=8x+10, halla F(9)',a:'39',opts:_i4gshuf(['39','40','37','82']),mc:true,ste:'De P(F(x))=8x+10 y P(x)=2x+4: despejando, F(x)=4x+3. F(9)=4(9)+3=39.'},
+  {_id:6,q:'Si P(x)=3x+1 y P(F(x))=6x+4, halla F(5)',a:'11',opts:_i4gshuf(['11','12','9','34']),mc:true,ste:'De P(F(x))=6x+4 y P(x)=3x+1: despejando, F(x)=2x+1. F(5)=2(5)+1=11.'},
+  {_id:7,q:'Si P(x)=x-2 y P(F(x))=5x+3, halla F(4)',a:'25',opts:_i4gshuf(['25','26','23','28']),mc:true,ste:'De P(F(x))=5x+3 y P(x)=x-2: despejando, F(x)=5x+5. F(4)=5(4)+5=25.'},
+  {_id:8,q:'Si P(x)=5x y P(F(x))=10x+15, halla F(2)',a:'7',opts:_i4gshuf(['7','8','5','35']),mc:true,ste:'De P(F(x))=10x+15 y P(x)=5x: despejando, F(x)=2x+3. F(2)=2(2)+3=7.'},
+  {_id:9,q:'Si P(x)=x+3 cumple 2P(x−1)+P(x+1)=3x+8, halla la suma de coeficientes de P',a:'4',opts:_i4gshuf(['4','-2','3','1']),mc:true,ste:'P(x)=x+3, entonces la suma de coeficientes es P(1)=1 + 3 = 4. (Verificación: 2P(x−1)+P(x+1) da efectivamente 3x+8, consistente con el dato.)'},
+  {_id:10,q:'Si P(x)=2x+1 cumple 2P(x−1)+P(x+1)=6x+1, halla la suma de coeficientes de P',a:'3',opts:_i4gshuf(['3','1','2','7']),mc:true,ste:'P(x)=2x+1, entonces la suma de coeficientes es P(1)=2 + 1 = 3. (Verificación: 2P(x−1)+P(x+1) da efectivamente 6x+1, consistente con el dato.)'},
+  {_id:11,q:'Si P(x)=x+5 cumple 2P(x−1)+P(x+1)=3x+14, halla la suma de coeficientes de P',a:'6',opts:_i4gshuf(['6','-4','5','1']),mc:true,ste:'P(x)=x+5, entonces la suma de coeficientes es P(1)=1 + 5 = 6. (Verificación: 2P(x−1)+P(x+1) da efectivamente 3x+14, consistente con el dato.)'},
+  {_id:12,q:'Si P(x)=3x−1 cumple 2P(x−1)+P(x+1)=9x−6, halla la suma de coeficientes de P',a:'2',opts:_i4gshuf(['2','4','-1','3']),mc:true,ste:'P(x)=3x−1, entonces la suma de coeficientes es P(1)=3 − 1 = 2. (Verificación: 2P(x−1)+P(x+1) da efectivamente 9x−6, consistente con el dato.)'},
+  {_id:13,q:'V/F: Si P(x+3)=x, para hallar P(4) hay que resolver x+3=4, es decir usar x=1, y luego P(4)=1.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: se iguala el argumento x+3 al valor pedido (4), se despeja x=1, y ese x=1 es el que se sustituye en el lado derecho (x), dando P(4)=1.'},
+  {_id:14,q:'V/F: Si P(x+3)=x, entonces P(4) se calcula sustituyendo directamente x=4 en el lado derecho, es decir P(4)=4.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: no se sustituye el valor pedido directamente como x; primero hay que igualar el argumento x+3 al valor deseado y despejar x.'},
+  {_id:15,q:'V/F: En una relación como P(F(x))=8x+10, la función F(x) es la que se debe sustituir dentro de P para obtener el resultado dado.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: P(F(x)) significa evaluar P en el valor F(x), así que F(x) actúa como el argumento de P.'},
+  {_id:16,q:'V/F: Dos ecuaciones funcionales distintas para el mismo P(x) siempre llevan a valores de P(a) diferentes entre sí.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: si ambas ecuaciones son consistentes con el mismo polinomio P(x), deben producir el mismo valor de P(a); si no coinciden, alguna de las relaciones está mal planteada.'},
+  {_id:17,q:'Si P(x+2)=x + 3, halla P(7)',a:'8',opts:_i4gshuf(['8','9','7','10']),mc:true,ste:'Con t=x+2, x=t−2; para t=7, x=5. P(7)=8.'},
+  {_id:18,q:'Si P(x)=4x − 1, halla P(3)',a:'11',opts:_i4gshuf(['11','12','10','13']),mc:true,ste:'Sustituyendo x=3 en P(x): P(3)=11.'},
+  {_id:19,q:'Si P(x)=3x-2 y P(F(x))=9x+1, halla F(4)',a:'13',opts:_i4gshuf(['13','15','10','37']),mc:true,ste:'Despejando de P(F(x)): F(x)=3x+1. F(4)=13.'},
+  {_id:20,q:'Si P(x)=2x+5 y P(F(x))=6x+3, halla F(3)',a:'8',opts:_i4gshuf(['8','10','5','21']),mc:true,ste:'Despejando de P(F(x)): F(x)=3x-1. F(3)=8.'},
   ]);
 }
-_SKILL_META['i1a_pol_b2']={ico:'📐',lbl:'Evaluación y operaciones entre polinomios',qCount:4,gen:_genI1A_POL_B2};
+_SKILL_META['i1a_pol_b2']={ico:'📐',lbl:'Ecuaciones funcionales de polinomios',qCount:4,gen:_genI1A_POL_B2,plantillas:['Dado P(x+k)=expresión, hallar P(a) despejando x','Dado F(x) y P(F(x)), hallar F(valor) despejando','Dada una relación entre evaluaciones de P, hallar la suma de coeficientes','V/F sobre el razonamiento de ecuaciones funcionales','Variante numérica mixta de las plantillas anteriores']};
 
 function _genI1A_POL_BQ1(){return _bqSrcPick(['i1a_pol_b1','i1a_pol_b2'],[_genI1A_POL_B1,_genI1A_POL_B2]);}
-_SKILL_META['i1a_pol_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Polinomios',qCount:5,gen:_genI1A_POL_BQ1,quiz:true,srcKeys:['i1a_pol_b1','i1a_pol_b2']};
+_SKILL_META['i1a_pol_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Evaluación y Ecuaciones Funcionales',qCount:10,gen:_genI1A_POL_BQ1,quiz:true,srcKeys:['i1a_pol_b1','i1a_pol_b2']};
 
 function _genI1A_POL_B3(){
   return _i4gpick([
-    {_id:1,q:'Calcula F(P(4)) si P(x)=2x+1 y F(x)=x+1',a:'10',opts:_i4gshuf(['10','8','12','9']),mc:true,ste:'P(4)=9. F(9)=10.'},
-    {_id:2,q:'Si P(x)=x<sup>a−4</sup>+x<sup>2a−3</sup>, calcula P(2) cuando a=4',a:'1',opts:_i4gshuf(['1','3','2','4']),mc:true,ste:'2⁰+2⁵=1+32=33... Clave PDF: 1.'},
-    {_id:3,q:'Sea P(x)=2x+1. Halla P(x+1)',a:'2x+3',opts:_i4gshuf(['2x+3','2x+2','2x+1','4x+3']),mc:true,ste:'P(x+1)=2(x+1)+1=2x+3.'},
-    {_id:4,q:'Calcula el producto de los coeficientes del polinomio (x+2)(x+3)',a:'6',opts:_i4gshuf(['6','5','2','3']),mc:true,ste:'x²+5x+6. Coef: 1,5,6. Producto=30... Clave: TI=6.'},
-    {_id:5,q:'Si P(x)=x³+ax+b con P(1)=5 y P(−1)=−3, halla a−b',a:'2',opts:_i4gshuf(['2','-2','4','0']),mc:true,ste:'1+a+b=5 y −1−a+b=−3. Sumando: 2b=0→b=0? Clave PDF: 2.'},
-    {_id:6,q:'En M(x)=(3x⁵+8)·(4x<sup>2a−4</sup>)+x²−6, si a=4, calcula GA',a:'9',opts:_i4gshuf(['9','10','8','7']),mc:true,ste:'Exp más alto: 5+(2·4−4)=5+4=9.'},
-    {_id:7,q:'Calcula P(3) si P(x)=x²−5x+3',a:'−3',opts:_i4gshuf(['−3','3','0','6']),mc:true,ste:'9−15+3=−3.'},
-    {_id:8,q:'Sea P(x)=x²+3x−4. Halla P(P(1))',a:'0',opts:_i4gshuf(['0','−4','2','6']),mc:true,ste:'P(1)=1+3−4=0. P(0)=−4... Clave: 0.'},
-    {_id:9,q:'Calcula P(−2) si P(x)=x³−x',a:'−6',opts:_i4gshuf(['−6','6','2','−2']),mc:true,ste:'−8+2=−6.'},
-    {_id:10,q:'Sea P(x)=x²−1. Halla P(P(2))',a:'8',opts:_i4gshuf(['8','3','0','15']),mc:true,ste:'P(2)=3. P(3)=8.'},
-    {_id:11,q:'Si P(x)=2x+1 y Q(x)=x−3, halla P(Q(5))',a:'5',opts:_i4gshuf(['5','3','7','1']),mc:true,ste:'Q(5)=2. P(2)=5.'},
-    {_id:12,q:'La suma de coef. de (x+1)(x−2) es:',a:'0',opts:_i4gshuf(['0','−2','2','1']),mc:true,ste:'P(1)=(2)(−1)=−2... P(1)=1+1−2=0.'},
-    {_id:13,q:'P(x)=x⁴−x²+1. Calcula P(1)',a:'1',opts:_i4gshuf(['1','0','3','2']),mc:true,ste:'1−1+1=1.'},
-    {_id:14,q:'Si P(x)=x+a y P(P(2))=8, halla a',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'P(2)=2+a. P(2+a)=2+a+a=2+2a=8 → a=3.'},
-    {_id:15,q:'Calcula P(−1) si P(x)=x³+2x−1',a:'−4',opts:_i4gshuf(['−4','2','−2','4']),mc:true,ste:'(−1)³+2(−1)−1=−1−2−1=−4.'},
-    {_id:16,q:'La SC de P(x)=(x+2)(x−1) es:',a:'0',opts:_i4gshuf(['0','2','−2','1']),mc:true,ste:'P(1)=(3)(0)=0.'},
-    {_id:17,q:'Si P(x)=ax+b con P(0)=3 y P(1)=7, halla P(2)',a:'11',opts:_i4gshuf(['11','7','9','13']),mc:true,ste:'b=3. a+3=7 → a=4. P(2)=8+3=11.'},
-    {_id:18,q:'Si P(x)=x²+bx+c con P(0)=5 y P(1)=8, halla b',a:'2',opts:_i4gshuf(['2','3','1','4']),mc:true,ste:'c=5. 1+b+5=8 → b=2.'},
-    {_id:19,q:'Sea P(x)=3x−2. Halla P(x²)',a:'3x²−2',opts:_i4gshuf(['3x²−2','3x−2','9x²−2','3x²+2']),mc:true,ste:'P(x²)=3(x²)−2=3x²−2.'},
-    {_id:20,q:'Si P(x)=x+2, halla P(2x−1)',a:'2x+1',opts:_i4gshuf(['2x+1','2x−1','2x+3','x+1']),mc:true,ste:'P(2x−1)=(2x−1)+2=2x+1.'},
+  {_id:1,q:'Sea P(x)=2x+1. Halla P(P(x)) y evalúa el resultado en x=3',a:'15',opts:_i4gshuf(['15','16','13','7']),mc:true,ste:'P(P(x))=P(2x+1)=2(2x+1)+1 = 4x+3. En x=3: P(P(3))=4(3)+3 = 15.'},
+  {_id:2,q:'Sea P(x)=3x-2. Halla P(P(x)) y evalúa el resultado en x=1',a:'1',opts:_i4gshuf(['1','2','-1','8']),mc:true,ste:'P(P(x))=P(3x-2)=3(3x-2)-2 = 9x-8. En x=1: P(P(1))=9(1)-8 = 1.'},
+  {_id:3,q:'Sea P(x)=x+4. Halla P(P(x)) y evalúa el resultado en x=2',a:'10',opts:_i4gshuf(['10','11','8','6']),mc:true,ste:'P(P(x))=P(x+4)=1(x+4)+4 = x+8. En x=2: P(P(2))=1(2)+8 = 10.'},
+  {_id:4,q:'Sea P(x)=-2x+5. Halla P(P(x)) y evalúa el resultado en x=1',a:'-1',opts:_i4gshuf(['-1','0','-3','3']),mc:true,ste:'P(P(x))=P(-2x+5)=-2(-2x+5)+5 = 4x-5. En x=1: P(P(1))=4(1)-5 = -1.'},
+  {_id:5,q:'Si P(x)=2x+1 y F(x)=x+1, halla P(F(4))',a:'11',opts:_i4gshuf(['11','13','8','9']),mc:true,ste:'F(4)=5. P(5)=11.'},
+  {_id:6,q:'Si P(x)=3x-1 y F(x)=2x, halla P(F(3))',a:'17',opts:_i4gshuf(['17','19','14','8']),mc:true,ste:'F(3)=6. P(6)=17.'},
+  {_id:7,q:'Si P(x)=x-4 y F(x)=-x+3, halla P(F(2))',a:'-3',opts:_i4gshuf(['-3','-1','-6','-2']),mc:true,ste:'F(2)=1. P(1)=-3.'},
+  {_id:8,q:'Si P(x)=2x y F(x)=x-2, halla P(F(5))',a:'6',opts:_i4gshuf(['6','8','3','10']),mc:true,ste:'F(5)=3. P(3)=6.'},
+  {_id:9,q:'Si P(x)=2x+3 y F(x)=4x+1, ¿cuál es la expresión de F(P(x))?',a:'8x+13',opts:_i4gshuf(['8x+13','8x+5','8x-13','6x+13']),mc:true,ste:'F(P(x))=F(2x+3)=4(2x+3)+1=8x+13.'},
+  {_id:10,q:'Si P(x)=x-2 y F(x)=3x+5, ¿cuál es la expresión de F(P(x))?',a:'3x-1',opts:_i4gshuf(['3x-1','3x+3','3x+1','4x-1']),mc:true,ste:'F(P(x))=F(x-2)=3(x-2)+5=3x-1.'},
+  {_id:11,q:'Si P(x)=3x y F(x)=2x-4, ¿cuál es la expresión de F(P(x))?',a:'6x-4',opts:_i4gshuf(['6x-4','6x-12','6x+4','5x-4']),mc:true,ste:'F(P(x))=F(3x)=2(3x)-4=6x-4.'},
+  {_id:12,q:'Si P(x)=-x+2 y F(x)=5x+3, ¿cuál es la expresión de F(P(x))?',a:'-5x+13',opts:_i4gshuf(['-5x+13','-5x-1','-5x-13','4x+13']),mc:true,ste:'F(P(x))=F(-x+2)=5(-x+2)+3=-5x+13.'},
+  {_id:13,q:'V/F: Si P(x)=2x+1 y F(x)=x+1, entonces P(F(x)) es en general distinto de F(P(x)).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: P(F(x))=2(x+1)+1=2x+3, mientras que F(P(x))=(2x+1)+1=2x+2; son distintos, por lo tanto el orden de la composición sí importa.'},
+  {_id:14,q:'V/F: P(F(x)) significa evaluar la función P usando F(x) como argumento (reemplazando la x de P por toda la expresión F(x)).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: esa es la definición de composición de funciones.'},
+  {_id:15,q:'V/F: Para cualquier par de polinomios P(x) y F(x), siempre se cumple que P(F(x)) = F(P(x)).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: la composición de funciones no es conmutativa en general; solo coincide en casos particulares.'},
+  {_id:16,q:'V/F: Si P(x)=x+c (una traslación), entonces P(P(x)) también es una traslación, es decir, tiene la forma x+k para algún número k.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: P(P(x))=P(x+c)=(x+c)+c=x+2c, que sigue siendo de la forma x+k con k=2c.'},
+  {_id:17,q:'Sea P(x)=x+3. Halla P(P(x)) y evalúa el resultado en x=5',a:'11',opts:_i4gshuf(['11','13','10','8']),mc:true,ste:'P(P(x))=x+6. En x=5: resultado=11.'},
+  {_id:18,q:'Si P(x)=2x+1 y F(x)=-x+2, halla P(F(3))',a:'-1',opts:_i4gshuf(['-1','2','-3','7']),mc:true,ste:'F(3)=-1. P(-1)=-1.'},
+  {_id:19,q:'Sea P(x)=-x+4. Halla P(P(x)) y evalúa el resultado en x=2',a:'2',opts:_i4gshuf(['2','4','1','10']),mc:true,ste:'P(P(x))=x. En x=2: resultado=2.'},
+  {_id:20,q:'Si P(x)=3x-2 y F(x)=x+1, halla P(F(4))',a:'13',opts:_i4gshuf(['13','16','11','10']),mc:true,ste:'F(4)=5. P(5)=13.'},
   ]);
 }
-_SKILL_META['i1a_pol_b3']={ico:'📐',lbl:'Composición y evaluación avanzada de polinomios',qCount:4,gen:_genI1A_POL_B3};
+_SKILL_META['i1a_pol_b3']={ico:'📐',lbl:'Composición de polinomios',qCount:4,gen:_genI1A_POL_B3,plantillas:['P(x) lineal: hallar P(P(x)) y evaluarlo en un punto','Dado P(x) y F(x), hallar P(F(a)) numérico','Identificar la expresión resultante de F(P(x))','V/F sobre el orden y el significado de la composición','Variante numérica mixta de las plantillas anteriores']};
 
 function _genI1A_POL_B4(){
   return _i4gpick([
-    {_id:1,q:'Halla la suma de coeficientes de P(x)=(x−3)(x+3)(x²−4)',a:'−18',opts:_i4gshuf(['−18','0','36','−36']),mc:true,ste:'P(1)=(1−3)(1+3)(1−4)=(−2)(4)(−3)=24... Clave PDF: −18.'},
-    {_id:2,q:'Si 2P(x−1)+P(2x−1)=3x+P(x+1)+P(x−2), halla la suma de coef. de P',a:'3',opts:_i4gshuf(['3','2','4','1']),mc:true,ste:'Clave PDF: 3.'},
-    {_id:3,q:'Calcula mn si GA(R;x)=5 y GA(R;y)=8 en R(x;y)=5x<sup>m+1</sup>y<sup>n−2</sup>',a:'24',opts:_i4gshuf(['24','12','40','36']),mc:true,ste:'m+1=5→m=4. n−2=8→n=10. mn=40... Clave PDF: 24.'},
-    {_id:4,q:'Efectúa: (x+2)(x+3)(x+4) e indica el coeficiente del término lineal',a:'26',opts:_i4gshuf(['26','24','9','4']),mc:true,ste:'Expandiendo: coef de x es 2·3+2·4+3·4=6+8+12=26.'},
-    {_id:5,q:'Si P(x)=(2x+3)⁴+5x+1 y SC=70, halla n+1',a:'7',opts:_i4gshuf(['7','5','9','3']),mc:true,ste:'Clave PDF: n=6, n+1=7.'},
-    {_id:6,q:'P(x)=2x+4. Calcula P(F(9)) si F(x)=4x+1',a:'78',opts:_i4gshuf(['78','74','80','76']),mc:true,ste:'F(9)=37. P(37)=78.'},
-    {_id:7,q:'Calcula el GA de M(x)=(3x⁵+8)·(4x²) + x²−6',a:'7',opts:_i4gshuf(['7','5','9','11']),mc:true,ste:'12x⁷+32x²+x²−6. GA=7.'},
-    {_id:8,q:'Sea P(x)=x<sup>a</sup>+x²+x+1 de tercer grado. Calcula P(2)',a:'15',opts:_i4gshuf(['15','7','8','14']),mc:true,ste:'a=3. P(2)=8+4+2+1=15.'},
-    {_id:9,q:'Halla el coeficiente del término x² en (x+2)(x+3)(x−1)',a:'4',opts:_i4gshuf(['4','5','6','3']),mc:true,ste:'Expandir: coef de x²= 2+3−1−1·2... Clave: 4.'},
-    {_id:10,q:'P(x)=x³−6x²+11x−6. Halla P(1)',a:'0',opts:_i4gshuf(['0','1','−6','6']),mc:true,ste:'1−6+11−6=0.'},
-    {_id:11,q:'Si P(x)=x²+bx+c con P(1)=4 y P(−1)=2, halla b',a:'1',opts:_i4gshuf(['1','−1','2','0']),mc:true,ste:'1+b+c=4 y 1−b+c=2. Restando: 2b=2 → b=1.'},
-    {_id:12,q:'Calcula el GA de (2x²+1)(3x³−x)',a:'5',opts:_i4gshuf(['5','6','4','3']),mc:true,ste:'Mayor término: 2x²·3x³=6x⁵. GA=5.'},
-    {_id:13,q:'El término independiente de (x−1)(x+2)(x−3) es:',a:'6',opts:_i4gshuf(['6','−6','3','−3']),mc:true,ste:'(−1)(2)(−3)=6.'},
-    {_id:14,q:'Si P(x)=ax³+bx y SC=6, calcula a+b',a:'6',opts:_i4gshuf(['6','3','9','0']),mc:true,ste:'P(1)=a+b=6.'},
-    {_id:15,q:'Término independiente de (x+2)(x−3)(x+1):',a:'−6',opts:_i4gshuf(['−6','6','−3','3']),mc:true,ste:'TI=(2)(−3)(1)=−6.'},
-    {_id:16,q:'GA de (x³+2x)(x²−x+1):',a:'5',opts:_i4gshuf(['5','6','4','3']),mc:true,ste:'Término de mayor grado: x³·x²=x⁵. GA=5.'},
-    {_id:17,q:'P(x)=x²−2x+3. Calcula P(−2)',a:'11',opts:_i4gshuf(['11','7','3','15']),mc:true,ste:'4+4+3=11.'},
-    {_id:18,q:'Si P(x)=2x²+ax+1 con SC=7, halla a',a:'4',opts:_i4gshuf(['4','3','5','2']),mc:true,ste:'P(1)=2+a+1=7 → a=4.'},
-    {_id:19,q:'SC de P(x)=(2x−1)⁴:',a:'1',opts:_i4gshuf(['1','16','0','81']),mc:true,ste:'P(1)=(2−1)⁴=1⁴=1.'},
-    {_id:20,q:'Si P(x)=x³+x y Q(x)=x²−1, halla SC de P(x)+Q(x)',a:'2',opts:_i4gshuf(['2','0','4','1']),mc:true,ste:'(P+Q)(1)=P(1)+Q(1)=(1+1)+(1−1)=2+0=2.'},
+  {_id:1,q:'P(x)=5x⁸−7x⁶+10x¹²−7. Calcula GA(P)',a:'12',opts:_i4gshuf(['12','11','10','13']),mc:true,ste:'El grado absoluto de un polinomio de una variable es el mayor exponente presente. Aquí el mayor exponente es 12, por lo tanto GA(P)=12.'},
+  {_id:2,q:'P(x)=4x⁵−3x²+x−9. Calcula GA(P)',a:'5',opts:_i4gshuf(['5','4','3','6']),mc:true,ste:'El grado absoluto de un polinomio de una variable es el mayor exponente presente. Aquí el mayor exponente es 5, por lo tanto GA(P)=5.'},
+  {_id:3,q:'P(x)=2x³+8x⁷−x⁴+1. Calcula GA(P)',a:'7',opts:_i4gshuf(['7','6','5','8']),mc:true,ste:'El grado absoluto de un polinomio de una variable es el mayor exponente presente. Aquí el mayor exponente es 7, por lo tanto GA(P)=7.'},
+  {_id:4,q:'P(x)=x⁹−6x²+3x⁵−2. Calcula GA(P)',a:'9',opts:_i4gshuf(['9','8','7','10']),mc:true,ste:'El grado absoluto de un polinomio de una variable es el mayor exponente presente. Aquí el mayor exponente es 9, por lo tanto GA(P)=9.'},
+  {_id:5,q:'Si P(x)=x<sup>a−4</sup>+x<sup>2a−3</sup>−x<sup>2a−4</sup> tiene GA(P)=13, halla el valor de a',a:'8',opts:_i4gshuf(['8','9','7','10']),mc:true,ste:'El GA es el mayor de los exponentes. Probando a=8: los exponentes dan un máximo de 13, que coincide con el dato, por lo tanto a=8.'},
+  {_id:6,q:'Si P(x)=x<sup>a+2</sup>+x<sup>3a−1</sup> tiene GA(P)=14, halla el valor de a',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'El GA es el mayor de los exponentes. Probando a=5: los exponentes dan un máximo de 14, que coincide con el dato, por lo tanto a=5.'},
+  {_id:7,q:'Si P(x)=x<sup>2a</sup>−x<sup>a+5</sup> tiene GA(P)=16, halla el valor de a',a:'8',opts:_i4gshuf(['8','9','7','10']),mc:true,ste:'El GA es el mayor de los exponentes. Probando a=8: los exponentes dan un máximo de 16, que coincide con el dato, por lo tanto a=8.'},
+  {_id:8,q:'Si P(x)=x<sup>a−1</sup>+x<sup>2a+3</sup>−x<sup>a</sup> tiene GA(P)=17, halla el valor de a',a:'7',opts:_i4gshuf(['7','8','6','9']),mc:true,ste:'El GA es el mayor de los exponentes. Probando a=7: los exponentes dan un máximo de 17, que coincide con el dato, por lo tanto a=7.'},
+  {_id:9,q:'Calcula mn si en R(x;y)=5x<sup>m+1</sup>y<sup>n−2</sup>+4x<sup>m+3</sup>y<sup>n−3</sup>−6x<sup>m+1</sup>y<sup>n−1</sup> el grado relativo a x es 5 y el grado relativo a y es 8',a:'18',opts:_i4gshuf(['18','11','20','9']),mc:true,ste:'GR(x): el mayor exponente de x es (equivale a 5) → m=2. GR(y): el mayor exponente de y es (equivale a 8) → n=9. mn=2×9=18.'},
+  {_id:10,q:'Calcula pq si en S(x;y)=7x<sup>p+2</sup>y<sup>q+1</sup>+2x<sup>p</sup>y<sup>q+4</sup> el grado relativo a x es 6 y el grado relativo a y es 9',a:'20',opts:_i4gshuf(['20','9','22','15']),mc:true,ste:'GR(x): el mayor exponente de x es (equivale a 6) → p=4. GR(y): el mayor exponente de y es (equivale a 9) → q=5. pq=4×5=20.'},
+  {_id:11,q:'Calcula kj si en T(x;y)=3x<sup>k+1</sup>y<sup>j</sup>−x<sup>k</sup>y<sup>j+3</sup>+5x<sup>k−1</sup>y<sup>j+1</sup> el grado relativo a x es 7 y el grado relativo a y es 10',a:'42',opts:_i4gshuf(['42','13','44','35']),mc:true,ste:'GR(x): el mayor exponente de x es (equivale a 7) → k=6. GR(y): el mayor exponente de y es (equivale a 10) → j=7. kj=6×7=42.'},
+  {_id:12,q:'Calcula ht si en U(x;y)=4x<sup>h+3</sup>y<sup>t</sup>+x<sup>h</sup>y<sup>t+5</sup> el grado relativo a x es 9 y el grado relativo a y es 15',a:'60',opts:_i4gshuf(['60','16','62','50']),mc:true,ste:'GR(x): el mayor exponente de x es (equivale a 9) → h=6. GR(y): el mayor exponente de y es (equivale a 15) → t=10. ht=6×10=60.'},
+  {_id:13,q:'V/F: El grado absoluto (GA) de un polinomio con varias variables es la mayor suma de los exponentes de las variables en un mismo término.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: GA se calcula sumando los exponentes de todas las variables en cada término y tomando el mayor resultado.'},
+  {_id:14,q:'V/F: El grado relativo a una variable (GR) es el mayor exponente que tiene esa variable específica, considerando todos los términos del polinomio.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: GR(x), por ejemplo, es el mayor exponente de x entre todos los términos.'},
+  {_id:15,q:'V/F: En un polinomio de una sola variable, el GA y el GR respecto a esa variable son siempre diferentes.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: en un polinomio de una sola variable, el GA coincide con el GR respecto a esa variable, pues solo hay una variable presente.'},
+  {_id:16,q:'V/F: Si un término tiene exponente literal (como x^(a+2)), no es posible calcular su grado sin conocer o despejar el valor de la letra a.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: mientras \'a\' no tenga un valor numérico conocido o despejado a partir de un dato, el exponente a+2 no representa un grado numérico concreto.'},
+  {_id:17,q:'Si M(x;y)=5x<sup>a</sup>y<sup>b+2</sup>, con GR(x)=5 y GA(M)=9, halla a+b',a:'7',opts:_i4gshuf(['7','8','3','2']),mc:true,ste:'GR(x)=a=5. GA(M)=a+(b+2)=9 → 5+b+2=9 → b=2. a+b=7.'},
+  {_id:18,q:'Si N(x;y)=3x<sup>c+1</sup>y<sup>d</sup>, con GR(y)=4 y GA(N)=8, halla c+d',a:'7',opts:_i4gshuf(['7','9','-1','4']),mc:true,ste:'GR(y)=d=4. GA(N)=(c+1)+d=8 → c+1+4=8 → c=3. c+d=7.'},
+  {_id:19,q:'Si Q(x;y)=2x<sup>e</sup>y<sup>f+1</sup>, con GR(x)=6 y GA(Q)=11, halla e+f',a:'10',opts:_i4gshuf(['10','13','2','4']),mc:true,ste:'GR(x)=e=6. GA(Q)=e+(f+1)=11 → 6+f+1=11 → f=4. e+f=10.'},
+  {_id:20,q:'Si W(x;y)=4x<sup>g+2</sup>y<sup>h</sup>, con GR(y)=3 y GA(W)=10, halla g+h',a:'8',opts:_i4gshuf(['8','10','2','5']),mc:true,ste:'GR(y)=h=3. GA(W)=(g+2)+h=10 → g+2+3=10 → g=5. g+h=8.'},
   ]);
 }
-_SKILL_META['i1a_pol_b4']={ico:'📐',lbl:'Operaciones y propiedades avanzadas de polinomios',qCount:4,gen:_genI1A_POL_B4};
+_SKILL_META['i1a_pol_b4']={ico:'📐',lbl:'Grado absoluto y grado relativo',qCount:4,gen:_genI1A_POL_B4,plantillas:['GA con exponentes numéricos','GA con exponentes literales: despejar un parámetro','Polinomio en 2 variables: GR(x)/GR(y), despejar parámetros','V/F sobre las definiciones de GA y GR','Variante combinada: GA y GR simultáneos, hallar un parámetro']};
 
 function _genI1A_POL_BQ2(){return _bqSrcPick(['i1a_pol_b3','i1a_pol_b4'],[_genI1A_POL_B3,_genI1A_POL_B4]);}
-_SKILL_META['i1a_pol_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Polinomios',qCount:5,gen:_genI1A_POL_BQ2,quiz:true,srcKeys:['i1a_pol_b3','i1a_pol_b4']};
+_SKILL_META['i1a_pol_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Composición y Grados',qCount:10,gen:_genI1A_POL_BQ2,quiz:true,srcKeys:['i1a_pol_b3','i1a_pol_b4']};
+
+function _genI1A_POL_B5(){
+  return _i4gpick([
+  {_id:1,q:'Halla la suma de coeficientes de P(x)=x³ − 2x + 7',a:'6',opts:_i4gshuf(['6','7','5','8']),mc:true,ste:'La suma de coeficientes se obtiene evaluando P(1). P(1)=6.'},
+  {_id:2,q:'Halla la suma de coeficientes de P(x)=5x² − 2',a:'3',opts:_i4gshuf(['3','4','2','5']),mc:true,ste:'La suma de coeficientes se obtiene evaluando P(1). P(1)=3.'},
+  {_id:3,q:'Halla la suma de coeficientes de P(x)=x² + 3x − 4',a:'0',opts:_i4gshuf(['0','1','-1','2']),mc:true,ste:'La suma de coeficientes se obtiene evaluando P(1). P(1)=0.'},
+  {_id:4,q:'Halla la suma de coeficientes de P(x)=2x³ − x² + x + 5',a:'7',opts:_i4gshuf(['7','8','6','9']),mc:true,ste:'La suma de coeficientes se obtiene evaluando P(1). P(1)=7.'},
+  {_id:5,q:'Halla el término independiente de P(x)=x³ − 4x² + 2x + 9',a:'9',opts:_i4gshuf(['9','11','6','-9']),mc:true,ste:'El término independiente es el término sin variable (coeficiente de x⁰). Aquí es 9.'},
+  {_id:6,q:'Halla el término independiente de P(x)=3x² − 5x − 6',a:'-6',opts:_i4gshuf(['-6','-4','-9','6']),mc:true,ste:'El término independiente es el término sin variable (coeficiente de x⁰). Aquí es -6.'},
+  {_id:7,q:'Halla el término independiente de P(x)=x⁴ + 2x²',a:'0',opts:_i4gshuf(['0','2','-3','4']),mc:true,ste:'El término independiente es el término sin variable (coeficiente de x⁰). Aquí es 0.'},
+  {_id:8,q:'Halla el término independiente de P(x)=2x³ + 7x + 15',a:'15',opts:_i4gshuf(['15','17','12','-15']),mc:true,ste:'El término independiente es el término sin variable (coeficiente de x⁰). Aquí es 15.'},
+  {_id:9,q:'Si P(x)=ax²+bx+3 y la suma de coeficientes de P es 10, halla a+b',a:'7',opts:_i4gshuf(['7','10','3','13']),mc:true,ste:'SC = P(1) = a+b+3 = 10, entonces a+b = 10−3 = 7.'},
+  {_id:10,q:'Si P(x)=x³+ax+b, la suma de coeficientes de P es 10 y su término independiente es 4, halla ab',a:'20',opts:_i4gshuf(['20','9','30','10']),mc:true,ste:'TI=b=4. SC=P(1)=1+a+b=10 → a+b=9 → a=9−4=5. ab=5×4=20.'},
+  {_id:11,q:'Si P(x)=2x²+ax−3 y la suma de coeficientes de P es 6, halla a',a:'7',opts:_i4gshuf(['7','9','4','12']),mc:true,ste:'SC=P(1)=2+a−3=6 → a−1=6 → a=7.'},
+  {_id:12,q:'Si P(x)=x²+x+k y la suma de coeficientes de P es 6, halla el término independiente de P',a:'4',opts:_i4gshuf(['4','5','2','7']),mc:true,ste:'SC=P(1)=1+1+k=6 → k=4. Como el término independiente ES k, el término independiente es 4.'},
+  {_id:13,q:'V/F: La suma de coeficientes de un polinomio P(x) se obtiene calculando P(1).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al sustituir x=1, cada término queda igual a su coeficiente (porque 1 elevado a cualquier potencia es 1), así que sumarlos todos da la suma de coeficientes.'},
+  {_id:14,q:'V/F: El término independiente de un polinomio P(x) se obtiene calculando P(0).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al sustituir x=0, todos los términos con variable se anulan y solo queda el término constante, que es el término independiente.'},
+  {_id:15,q:'V/F: La suma de coeficientes y el término independiente de un polinomio siempre son iguales entre sí.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: solo coinciden en polinomios particulares (por ejemplo si todos los demás coeficientes suman cero); en general P(1) y P(0) son valores distintos.'},
+  {_id:16,q:'V/F: Si se conoce la suma de coeficientes de P(x)=ax+b (es decir P(1)) y también su término independiente b, entonces se puede hallar el valor de a.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: de P(1)=a+b se despeja a=P(1)−b, usando el valor conocido de b.'},
+  {_id:17,q:'Si P(x)=(3x−1)<sup>n</sup>+5x+1 y la suma de coeficientes de P es 70, halla n+2',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'SC=P(1)=(3−1)^n+5+1=2^n+6=70 → 2^n=64 → n=6. n+2=8.'},
+  {_id:18,q:'Si P(x)=(4x−1)<sup>n</sup>+2x+1 y la suma de coeficientes de P es 246, halla n+1',a:'6',opts:_i4gshuf(['6','7','4','5']),mc:true,ste:'SC=P(1)=(4−1)^n+2+1=3^n+3=246 → 3^n=243 → n=5. n+1=6.'},
+  {_id:19,q:'Halla el término independiente de P(x)=(2x+3)<sup>3</sup>',a:'27',opts:_i4gshuf(['27','30','24','9']),mc:true,ste:'El término independiente es P(0)=(3)^3=27, ya que al sustituir x=0 solo queda la constante elevada a la 3.'},
+  {_id:20,q:'Halla el término independiente de P(x)=(x+2)<sup>4</sup>',a:'16',opts:_i4gshuf(['16','18','14','8']),mc:true,ste:'El término independiente es P(0)=(2)^4=16, ya que al sustituir x=0 solo queda la constante elevada a la 4.'},
+  ]);
+}
+_SKILL_META['i1a_pol_b5']={ico:'📐',lbl:'Suma de coeficientes y término independiente',qCount:4,gen:_genI1A_POL_B5,plantillas:['Calcular la suma de coeficientes = P(1)','Calcular el término independiente = P(0)','Dada la suma de coeficientes o el TI, despejar un parámetro','V/F sobre los "trucos" P(1) y P(0)','Variante con potencia/parámetro más compleja, tipo (mx+n)ⁿ']};
+
+function _genI1A_POL_B6(){
+  return _i4gpick([
+  {_id:1,q:'Al efectuar (x+2)(x+3)(x+4), el coeficiente del término en x² es:',a:'9',opts:_i4gshuf(['9','10','8','12']),mc:true,ste:'Expandiendo (x+2)(x+3)(x+4) se obtiene un polinomio cuyo coeficiente en x² es 9 (desarrollo completo por grado: 1·x^3, 9·x^2, 26·x^1, 24·x^0).'},
+  {_id:2,q:'Al efectuar (x+1)(x−2)(x+3), el coeficiente del término en x² es:',a:'2',opts:_i4gshuf(['2','3','1','5']),mc:true,ste:'Expandiendo (x+1)(x−2)(x+3) se obtiene un polinomio cuyo coeficiente en x² es 2 (desarrollo completo por grado: 1·x^3, 2·x^2, -5·x^1, -6·x^0).'},
+  {_id:3,q:'Al efectuar (x−1)(x−3)(x+2), el coeficiente del término en x² es:',a:'-2',opts:_i4gshuf(['-2','-1','-3','1']),mc:true,ste:'Expandiendo (x−1)(x−3)(x+2) se obtiene un polinomio cuyo coeficiente en x² es -2 (desarrollo completo por grado: 1·x^3, -2·x^2, -5·x^1, 6·x^0).'},
+  {_id:4,q:'Al efectuar (x+5)(x−1), el coeficiente del término en x es:',a:'4',opts:_i4gshuf(['4','5','3','7']),mc:true,ste:'Expandiendo (x+5)(x−1) se obtiene un polinomio cuyo coeficiente en x es 4 (desarrollo completo por grado: 1·x^2, 4·x^1, -5·x^0).'},
+  {_id:5,q:'Dados R(x)=2x² − 5x + 1, P(x)=−x² + 2, T(x)=6x − 4, calcula (2R − P + T) evaluado en x=2',a:'8',opts:_i4gshuf(['8','10','5','17']),mc:true,ste:'R(2)=-1, P(2)=-2, T(2)=8. 2R − P + T = 2(-1)−(-2)+(8) = 8.'},
+  {_id:6,q:'Dados R(x)=3x − 2, P(x)=x² − x, T(x)=5, calcula (R + 2P − T) evaluado en x=3',a:'14',opts:_i4gshuf(['14','16','11','18']),mc:true,ste:'R(3)=7, P(3)=6, T(3)=5. R + 2P − T = 1(7)+2(6)−(5) = 14.'},
+  {_id:7,q:'Dados R(x)=x² + 4, P(x)=2x − 1, T(x)=−3x + 6, calcula (3R − 2P + T) evaluado en x=1',a:'16',opts:_i4gshuf(['16','18','13','9']),mc:true,ste:'R(1)=5, P(1)=1, T(1)=3. 3R − 2P + T = 3(5)−2(1)+(3) = 16.'},
+  {_id:8,q:'Dados R(x)=4x + 1, P(x)=x² + x, T(x)=−2, calcula (2R + P − 3T) evaluado en x=-1',a:'0',opts:_i4gshuf(['0','2','-3','-5']),mc:true,ste:'R(-1)=-3, P(-1)=0, T(-1)=-2. 2R + P − 3T = 2(-3)+(0)−3(-2) = 0.'},
+  {_id:9,q:'V/F: Si F(x)=3x−1, entonces F(F(4))=32.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'F(4)=3(4)−1=11. F(11)=3(11)−1=32. Como el enunciado dice 32 y en efecto F(F(4))=32, la proposición es verdadera.'},
+  {_id:10,q:'V/F: Si F(x)=3x−1, entonces F(F(4))=37.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'F(4)=3(4)−1=11. F(11)=3(11)−1=32≠37, por lo tanto la proposición es falsa.'},
+  {_id:11,q:'V/F: Dado F(x)=2(x²−x)+x−1, se cumple que F(F(−1))=5.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'F(−1)=2(1−(−1))+(−1)−1=2(2)−2=2. F(2)=2(4−2)+2−1=4+1=5. Como F(F(−1))=5, la proposición es verdadera.'},
+  {_id:12,q:'V/F: Dado F(x)=2(x²−x)+x−1, se cumple que F(F(−1))=8.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'F(−1)=2, F(2)=5≠8, por lo tanto la proposición es falsa.'},
+  {_id:13,q:'¿Cuál de las siguientes operaciones da como resultado x²+5x+6?',a:'(x+2)(x+3)',opts:_i4gshuf(['(x+2)(x+3)','(x+1)(x+6)','(x−2)(x+3)','(x+2)(x−3)']),mc:true,ste:'Verificado directamente desarrollando/evaluando cada opción; solo la respuesta marcada produce el resultado pedido.'},
+  {_id:14,q:'¿Cuál de las siguientes operaciones da como resultado x²−x−6?',a:'(x−3)(x+2)',opts:_i4gshuf(['(x−3)(x+2)','(x+3)(x−2)','(x−3)(x−2)','(x+3)(x+2)']),mc:true,ste:'Verificado directamente desarrollando/evaluando cada opción; solo la respuesta marcada produce el resultado pedido.'},
+  {_id:15,q:'¿Cuál de las siguientes evaluaciones da como resultado 7, si F(x)=2x+1?',a:'F(3)',opts:_i4gshuf(['F(3)','F(4)','F(2)','F(1)']),mc:true,ste:'Verificado directamente desarrollando/evaluando cada opción; solo la respuesta marcada produce el resultado pedido.'},
+  {_id:16,q:'¿Cuál de los siguientes polinomios tiene grado absoluto 5?',a:'3x⁵−2x²+1',opts:_i4gshuf(['3x⁵−2x²+1','4x⁴+x³−2','x²+x³+x⁴','5x⁴−3x+1']),mc:true,ste:'Verificado directamente desarrollando/evaluando cada opción; solo la respuesta marcada produce el resultado pedido.'},
+  {_id:17,q:'Al efectuar (x+1)(x+1)(x+2), el coeficiente del término en x² es:',a:'4',opts:_i4gshuf(['4','6','3','8']),mc:true,ste:'Desarrollando (x+1)(x+1)(x+2), el coeficiente del término en x² es 4.'},
+  {_id:18,q:'Al efectuar (x−2)(x+4), el coeficiente del término en x es:',a:'2',opts:_i4gshuf(['2','4','1','6']),mc:true,ste:'Desarrollando (x−2)(x+4), el coeficiente del término en x es 2.'},
+  {_id:19,q:'V/F: Si F(x)=x²−2x+1, entonces F(3)=4.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'F(3)=9−6+1=4. Como el enunciado afirma 4, la proposición es verdadera.'},
+  {_id:20,q:'V/F: Si F(x)=x²−2x+1, entonces F(3)=6.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'F(3)=9−6+1=4≠6, por lo tanto la proposición es falsa.'},
+  ]);
+}
+_SKILL_META['i1a_pol_b6']={ico:'📐',lbl:'Operaciones y proposiciones sobre polinomios',qCount:4,gen:_genI1A_POL_B6,plantillas:['Producto de binomios/trinomios: identificar un coeficiente del desarrollo','Operación combinada entre varios polinomios evaluada en un punto','V/F sobre una proposición concreta (evaluación específica)','Identificar qué operación/polinomio genera un resultado dado','Variante mixta de las plantillas anteriores']};
+
+function _genI1A_POL_BQ3(){return _bqSrcPick(['i1a_pol_b5','i1a_pol_b6'],[_genI1A_POL_B5,_genI1A_POL_B6]);}
+_SKILL_META['i1a_pol_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Coeficientes y Operaciones',qCount:10,gen:_genI1A_POL_BQ3,quiz:true,srcKeys:['i1a_pol_b5','i1a_pol_b6']};
 
 // ─── U6: Productos Notables ───────────────────────────────────────────────────
 function _genI1A_PNO_B1(){
@@ -18036,7 +18091,7 @@ const PREP_CURRICULUM = {
          {lbl:'Leyes de Exponentes II',         area:'algebra', editorial:'intelectum', skills:['i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3a','i1a_ex2_b3b','i1a_ex2_b4','i1a_ex2_bq2']},
          {lbl:'Ecuaciones Trascendentes',        area:'algebra', editorial:'intelectum', skills:['i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2']},
          {lbl:'Monomios',                        area:'algebra', editorial:'intelectum', skills:['i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3']},
-         {lbl:'Polinomios',                      area:'algebra', editorial:'intelectum', skills:['i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2']},
+         {lbl:'Polinomios',                      area:'algebra', editorial:'intelectum', skills:['i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3']},
          {lbl:'Productos Notables',              area:'algebra', editorial:'intelectum', skills:['i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2'], locked:true},
          {lbl:'División de Polinomios',          area:'algebra', editorial:'intelectum', skills:['i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2'], locked:true},
          {lbl:'Factorización',                   area:'algebra', editorial:'intelectum', skills:['i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2'], locked:true},
@@ -18896,7 +18951,13 @@ function _prepConfigHtml() {
       </div>`;
       // Helpers — mismo estilo que Mis Cursos
       const _vivid2 = ['#6d28d9','#2563eb','#0e7490','#be185d','#b45309','#15803d','#c2410c','#0f766e','#7e22ce','#1d4ed8','#b91c1c','#0369a1'];
-      const _secHdrMA = lbl => `<div style="font-size:10px;font-weight:700;color:#fff;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;margin-top:4px">${lbl}</div>`;
+      // sId/blocked opcionales: cuando se pasan, el encabezado de sección lleva un botón para
+      // bloquear/desbloquear la cuenta del alumno (mismo campo overrides[id].blocked que usa el
+      // login único de student.html — bloquear aquí bloquea tanto Level Zone como Level Up).
+      const _secHdrMA = (lbl, sId, blocked) => `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;margin-top:4px">
+        <div style="font-size:10px;font-weight:700;color:#fff;letter-spacing:0.8px;text-transform:uppercase;${blocked?'opacity:.55':''}">${lbl}${blocked?' <span style="background:rgba(239,68,68,0.22);color:#ff5c7a;font-size:8px;font-weight:900;letter-spacing:0.06em;padding:2px 6px;border-radius:5px;margin-left:6px;text-transform:none">Bloqueado</span>':''}</div>
+        ${sId!=null ? `<button title="${blocked?'Desbloquear cuenta':'Bloquear cuenta'}" onclick="event.stopPropagation();setOverride(${sId},'blocked',${blocked?'false':'true'});_renderPreparatePane()" style="background:${blocked?'rgba(34,197,94,0.18)':'rgba(239,68,68,0.18)'};border:none;border-radius:6px;padding:3px 7px;color:${blocked?'#4ade80':'#ff5c7a'};cursor:pointer;font-size:11px;flex-shrink:0">${blocked?'🔓':'🔒'}</button>` : ''}
+      </div>`;
       const _rmBtnMA = (onclick) => `<button onclick="event.stopPropagation();${onclick}" style="background:none;border:none;color:rgba(255,255,255,0.22);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='rgba(248,113,113,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.22)'">✕</button>`;
       const _restoreBtnMA = (onclick) => `<button onclick="event.stopPropagation();${onclick}" style="background:none;border:none;color:rgba(139,92,246,0.4);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='rgba(139,92,246,0.4)'">↺</button>`;
       let _maColorIdx = 0;
@@ -18980,7 +19041,7 @@ function _prepConfigHtml() {
               </div>
             </div>`;
           }).join('');
-          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''))}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''), s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
         }).filter(Boolean);
         innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin tareas asignadas</div>`;
       } else if (_maTab === 'cursos') {
@@ -19001,7 +19062,7 @@ function _prepConfigHtml() {
             const _navCMA = `_snd.click();_prep.level='${c.level}';_prep.grade='${c.grade||''}';_prep.editorial=${c.editorial?`'${c.editorial}'`:'null'};_prep.area=${c.area?`'${c.area}'`:'null'};_prep.editorialChosen=${!!c.editorial};_prep.topic='';_prep.selectedUnit=null;_prep.openSelector=null;_renderPreparatePane()`;
             return _cardMA('📚', sub, name, '', pctData, _rmBtnMA(`_prepRemoveCourse(${s.id},${ci})`), _navCMA);
           }).join('');
-          return `${_secHdrMA(s.name+' · '+cs.length+' curso'+(cs.length!==1?'s':''))}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+          return `${_secHdrMA(s.name+' · '+cs.length+' curso'+(cs.length!==1?'s':''), s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
         }).filter(Boolean);
         innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin cursos asignados</div>`;
       } else {
@@ -19037,7 +19098,7 @@ function _prepConfigHtml() {
               });
           }).filter(Boolean).join('');
           if (!unitCards) return '';
-          return `${_secHdrMA(s.name)}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>`;
+          return `${_secHdrMA(s.name, s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${unitCards}</div>`;
         }).filter(Boolean);
         innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin cursos asignados</div>`;
       }
@@ -19470,18 +19531,28 @@ function _prepConfigHtml() {
     // generación en _prepStart() la respeta (repartida entre las habilidades del grupo).
     const _srcN = def.srcKeys ? def.srcKeys.length : 0;
     const _naturalQCount = _srcN ? _srcN * 5 : null;
-    if (_naturalQCount != null && _prep._qCountTopic !== _prep.topic) {
-      _prep.qCount = _naturalQCount;
+    // Al cambiar de tema (cualquier tema, no solo cuestionarios de grupo) se sincroniza el
+    // selector de Preguntas: cuestionarios de grupo usan su cantidad natural (5 por habilidad
+    // fuente); todo lo demás (habilidad suelta o cuestionario simple) vuelve al valor por
+    // defecto de 10, en vez de arrastrar silenciosamente lo último elegido en una actividad
+    // completamente distinta.
+    if (_prep._qCountTopic !== _prep.topic) {
+      _prep.qCount = _naturalQCount != null ? _naturalQCount : 10;
       _prep._qCountTopic = _prep.topic;
     }
     const _isQT=!!def.quiz, _qnLbl=_prep.isUnitExam?`Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}`:_isQT&&_prep.quizNum?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
     // Para cuestionarios armados por grupo, las opciones del selector de Preguntas escalan según
     // la cantidad natural del grupo (50%/100%/150%/200% de "5 por habilidad"), en vez de ser
-    // siempre 5/10/15/20 fijos — así un grupo de 3 habilidades ofrece 8/15/23/30 (redondeado),
-    // no las mismas 4 opciones que un grupo de 2. Las habilidades sueltas (sin grupo) mantienen
-    // las 4 opciones fijas de siempre.
+    // siempre 5/10/15/20 fijos — así un grupo de 3 habilidades ofrece 9/15/24/30, no las mismas
+    // 4 opciones que un grupo de 2. Las habilidades sueltas (sin grupo) mantienen las 4 opciones
+    // fijas de siempre.
+    // IMPORTANTE: cada opción se redondea POR HABILIDAD (no el total) y luego se multiplica de
+    // vuelta por la cantidad de habilidades del grupo — así el número que ve el alumno en el botón
+    // (ej. "9") es exactamente el mismo reparto exacto (3+3+3) que _prepStart() va a generar,
+    // nunca un total distinto al mostrado. Redondear el total primero y repartirlo después (como
+    // se hacía antes) podía mostrar "8" y generar 9 preguntas reales.
     const qOpts = _naturalQCount != null
-      ? [0.5, 1, 1.5, 2].map(m => Math.max(1, Math.round(_naturalQCount * m)))
+      ? [0.5, 1, 1.5, 2].map(m => Math.max(1, Math.round(5 * m)) * _srcN)
       : [5,10,15,20];
     const tOpts=[[null,'Tiempo regular','⏱'],[0,'Sin límite','∞']];
     const _cfgPanel = (_isAdminMode||_isImpersonating) && _prep.showConfig ? `<div class="prep-kh-panel-opts">
@@ -19563,7 +19634,7 @@ function _prepConfigHtml() {
         ${_taskBtnEx}
       </div>
     </div>
-    ${_prepLeaderboardHtml(_examLbTopic, true)}`;
+    ${_prepLeaderboardHtml(_examLbTopic, true, true)}`;
   }
 
 
@@ -20167,7 +20238,12 @@ function _prepLastDate(topicKey) {
   if (!sec) return null;
   const d = new Date(sec*1000);
   const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  return d.getDate()+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+  const dateStr = d.getDate()+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+  let h = d.getHours();
+  const mins = String(d.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'p. m.' : 'a. m.';
+  h = h % 12; if (h === 0) h = 12;
+  return dateStr+' · '+h+':'+mins+' '+ampm;
 }
 function _initSkTip() {
   if (document.getElementById('_skTip')) return;
@@ -22638,9 +22714,15 @@ async function _prepLoadSideRanks(skillKeys) {
   _renderPreparatePane();
 }
 
-async function _prepLoadLeaderboard(topic){
-  if(_prepLeaderboardLoading||_prepLeaderboardTopic===topic) return;
-  _prepLeaderboardTopic=topic; _prepLeaderboardLoading=true; _prepLeaderboard=null;
+async function _prepLoadLeaderboard(topic,isExam){
+  // Un examen de unidad y la habilidad H01 de esa misma unidad pueden compartir el mismo valor
+  // de "topic" (el examen usa como topic el primer skill no-quiz de la unidad), así que el
+  // ranking de uno y otro NO se puede distinguir solo por topic — hay que filtrar también por
+  // el flag isUnitExam guardado en cada registro, o ambos rankings salen idénticos.
+  isExam=!!isExam;
+  const cacheKey=topic+'|'+(isExam?'exam':'skill');
+  if(_prepLeaderboardLoading||_prepLeaderboardTopic===cacheKey) return;
+  _prepLeaderboardTopic=cacheKey; _prepLeaderboardLoading=true; _prepLeaderboard=null;
   try{
     const snap=await db.collection('prepLeaderboard').where('topic','==',topic).limit(200).get();
     const _lbScore = e => {
@@ -22652,7 +22734,7 @@ async function _prepLoadLeaderboard(topic){
       return Math.round((Math.round(pct*1000)+ts)*tm);
     };
     const _lbSort  = (a,b) => { const d=_lbScore(b)-_lbScore(a); return d!==0?d:(a.timeSecs||0)-(b.timeSecs||0); };
-    const all=snap.docs.map(d=>({id:d.id,...d.data()})).sort(_lbSort);
+    const all=snap.docs.map(d=>({id:d.id,...d.data()})).filter(e=>!!e.isUnitExam===isExam).sort(_lbSort);
     // Solo el mejor resultado por uid (fallback a nombre)
     const byUid={};
     all.forEach(e=>{
@@ -22666,7 +22748,12 @@ async function _prepLoadLeaderboard(topic){
 }
 async function _prepDeleteLeaderboardEntry(id){
   if(!id||!isAdmin()) return;
-  await db.collection('prepLeaderboard').doc(id).delete().catch(e=>console.error(e));
+  let ok=true;
+  await db.collection('prepLeaderboard').doc(id).delete().catch(e=>{console.error(e);ok=false;});
+  if(!ok){
+    alert('No se pudo eliminar la partida (error de conexión o permisos). Vuelve a intentarlo.');
+    return;
+  }
   _prepLeaderboard=(_prepLeaderboard||[]).filter(e=>e.id!==id);
   _prepDesafioLb=(_prepDesafioLb||[]).filter(e=>e.id!==id);
   _renderPreparatePane();
@@ -25127,13 +25214,15 @@ function _prepDesafioExam(retoLbl,nivel,skills,uIdx){
   clearInterval(_prep.gameTimerIntv);_prep.gameTimerIntv=setInterval(_prepGameTimerTick,1000);
   _snd.start();_renderPreparatePane();
 }
-function _prepLeaderboardHtml(topic,compact){
+function _prepLeaderboardHtml(topic,compact,isExam){
   if(!topic) return '';
-  if(_prepLeaderboardTopic!==topic&&!_prepLeaderboardLoading){
+  isExam=!!isExam;
+  const _cacheKey=topic+'|'+(isExam?'exam':'skill');
+  if(_prepLeaderboardTopic!==_cacheKey&&!_prepLeaderboardLoading){
     _prepLeaderboard=null; _prepLeaderboardTopic=null;
   }
   if(_prepLeaderboard===null&&!_prepLeaderboardLoading){
-    _prepLoadLeaderboard(topic);
+    _prepLoadLeaderboard(topic,isExam);
     return '<div style="text-align:center;padding:10px;color:rgba(255,255,255,0.35);font-size:12px">Cargando leaderboard...</div>';
   }
   if(_prepLeaderboardLoading) return '<div style="text-align:center;padding:10px;color:rgba(255,255,255,0.35);font-size:12px">Cargando...</div>';
@@ -25167,7 +25256,7 @@ function _prepLeaderboardHtml(topic,compact){
       ${delBtn}
     </div>`;
   }).join('');
-  const reloadBtn=isAdmin()?`<button onclick="_prepLeaderboardTopic=null;_prepLeaderboard=null;_prepLoadLeaderboard('${topic}')" style="background:none;border:none;color:rgba(255,255,255,0.28);font-size:11px;cursor:pointer;padding:4px 0">↺ Recargar</button>`:'';
+  const reloadBtn=isAdmin()?`<button onclick="_prepLeaderboardTopic=null;_prepLeaderboard=null;_prepLoadLeaderboard('${topic}',${isExam})" style="background:none;border:none;color:rgba(255,255,255,0.28);font-size:11px;cursor:pointer;padding:4px 0">↺ Recargar</button>`:'';
   return `<div style="margin-top:0;border-top:1px solid rgba(255,255,255,0.07);padding-top:5px">
     <div style="font-family:'Orbitron',monospace;font-size:11px;color:#fbbf24;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">🏆 Top Jugadores</div>
     ${rows}${reloadBtn}
@@ -25450,7 +25539,7 @@ function _prepFinish() {
           .then(()=>{
             _prepLeaderboardTopic=null;_prepLeaderboard=null;
             if(_isDesafio){_prepDesafioLb=null;_prepLoadDesafioLeaderboard();}
-            else{_prepLoadLeaderboard(_prep.topic);}
+            else{_prepLoadLeaderboard(_prep.topic,!!_prep.isUnitExam);}
           })
           .catch(e=>console.error('leaderboard save',e));
       }
@@ -25614,10 +25703,30 @@ async function loadPrepHistory() {
     // uid: admin → 'teacher', loggeado → String(id), invitado → _bingoGuestUid
     const uid = isAdmin() ? 'teacher' : (getLoggedId() !== null ? String(getLoggedId()) : (_bingoGuestUid || null));
     if (!uid) { _prepHistoryData = []; _prepHistoryLoading = false; if (dashGamingMode==='preparate'||document.getElementById('preparate-pane')) _renderPreparatePane(); return; }
-    const snap = await db.collection('prepHistory').where('uid','==',uid).limit(200).get();
+    // IMPORTANTE: antes se pedía .limit(200) SIN ordenar en el servidor ("para evitar índice
+    // compuesto"), confiando en ordenar recién en el cliente después de traer los 200. Eso es
+    // incorrecto: sin orderBy, Firestore devuelve un subconjunto arbitrario de hasta 200
+    // documentos, no necesariamente los 200 más recientes. Para el uid 'teacher' (compartido
+    // por TODO admin/profesor de toda la plataforma) el historial real supera largamente 200
+    // registros, así que sesiones recién completadas podían quedar fuera de ese subconjunto
+    // arbitrario, y entonces habilidades/cuestionarios seguían mostrando nivel y fecha de una
+    // sesión vieja que sí entró en el lote, como si la nueva nunca se hubiera guardado.
+    // Ahora se pide orderBy+limit al servidor, que sí garantiza traer los 200 MÁS RECIENTES.
+    // Si el índice compuesto (uid ASC, completedAt DESC) todavía no existe en Firestore, esta
+    // consulta falla con 'failed-precondition' — se cae de vuelta a la consulta anterior sin
+    // romper la app mientras se crea el índice (Firestore imprime en consola un link para
+    // crearlo con un clic).
+    let snap;
+    try {
+      snap = await db.collection('prepHistory').where('uid','==',uid).orderBy('completedAt','desc').limit(1000).get();
+    } catch(idxErr) {
+      console.error('prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
+      snap = await db.collection('prepHistory').where('uid','==',uid).limit(1000).get();
+    }
     _prepHistoryData = [];
     snap.forEach(doc => _prepHistoryData.push({ id:doc.id, ...doc.data() }));
-    // Ordenar por fecha desc en cliente (evita índice compuesto)
+    // Se mantiene el sort en cliente como red de seguridad (por si se usó el fallback, o por
+    // documentos con completedAt aún no resuelto por el servidor).
     _prepHistoryData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   } catch(e) { _prepHistoryData = []; console.error('prep history load', e); }
   _prepHistoryLoading = false;
@@ -25850,10 +25959,14 @@ function _prepExamHtml() {
   </div>` : ''}`;
 }
 function _prepResultHtml() {
-  // Cargar leaderboard si no está cacheado para este topic
-  if(_prep.topic && _prepLeaderboardTopic!==_prep.topic && !_prepLeaderboardLoading){
+  // Cargar leaderboard si no está cacheado para este topic. Un examen de unidad y la habilidad
+  // H01 de esa unidad pueden compartir el mismo "topic" (ver _prepLoadLeaderboard), así que la
+  // cache key debe incluir también si estamos viendo el ranking del examen o el de la habilidad.
+  const _resultIsExam=!!_prep.isUnitExam;
+  const _resultCacheKey=_prep.topic+'|'+(_resultIsExam?'exam':'skill');
+  if(_prep.topic && _prepLeaderboardTopic!==_resultCacheKey && !_prepLeaderboardLoading){
     _prepLeaderboardTopic=null; _prepLeaderboard=null;
-    _prepLoadLeaderboard(_prep.topic);
+    _prepLoadLeaderboard(_prep.topic,_resultIsExam);
   }
   const total = _prep.questions.length;
   const correct = _prep.answers.filter(a=>a.correct).length;
@@ -25917,7 +26030,7 @@ function _prepResultHtml() {
         <button class="prep-result-btn" onclick="_snd.click();_prep.state='config';_prep.showReview=false;_renderPreparatePane()">← Cambiar tema</button>
       </div>`;
     })()}
-    ${_prep.level==='especial'&&_prep.isUnitExam ? _prepDesafioLbHtml(_prep.selectedExamLbl,_prep.desafioNivel||1) : _prepLeaderboardHtml(_prep.topic,false)}
+    ${_prep.level==='especial'&&_prep.isUnitExam ? _prepDesafioLbHtml(_prep.selectedExamLbl,_prep.desafioNivel||1) : _prepLeaderboardHtml(_prep.topic,false,!!_prep.isUnitExam)}
     <button class="prep-result-btn" style="width:100%;margin-top:8px" onclick="_prep.showReview=!_prep.showReview;_renderPreparatePane()">
       ${_prep.showReview?'▲ Ocultar revisión':'▼ Revisar respuestas'}
     </button>
