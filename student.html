@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260826e"></script>
+  <script src="/levelup.js?v=20260826i"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -770,6 +770,14 @@ textarea.fsm { resize:none; height:64px; }
 [data-nc="y"] .prep-kh-unit-num:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(251,191,36,0.6)!important;color:#fbbf24!important;text-shadow:0 0 8px rgba(251,191,36,0.8)!important}
 [data-nc="v"] .prep-kh-unit-num,[data-nc="v"] .prep-kh-unit-exp-num{color:#fff!important;text-shadow:none;border:1px solid rgba(168,85,247,0.4)!important;background:rgba(168,85,247,0.08)!important;transition:box-shadow .2s,color .2s,text-shadow .2s}
 [data-nc="v"] .prep-kh-unit-num:hover{transform:scale(1.13);box-shadow:0 0 14px rgba(168,85,247,0.6)!important;color:#a855f7!important;text-shadow:0 0 8px rgba(168,85,247,0.8)!important}
+/* Unidad 100% dominada (habilidades + cuestionarios + examen): el fondo/borde deben verse
+   sólidos como en la propuesta aprobada, no con la opacidad tenue de arriba (que es el estado
+   "algo dominado"/idle). Se necesita !important + una clase extra para ganarle en especificidad
+   a las reglas [data-nc] de arriba, que también usan !important. */
+[data-nc="c"] .prep-kh-unit-num.prep-kh-unit-full,[data-nc="c"] .prep-kh-unit-exp-num.prep-kh-unit-full{background:#0e7490!important;border:2px solid #67e8f9!important}
+[data-nc="p"] .prep-kh-unit-num.prep-kh-unit-full,[data-nc="p"] .prep-kh-unit-exp-num.prep-kh-unit-full{background:#9d174d!important;border:2px solid #f9a8d4!important}
+[data-nc="y"] .prep-kh-unit-num.prep-kh-unit-full,[data-nc="y"] .prep-kh-unit-exp-num.prep-kh-unit-full{background:#92400e!important;border:2px solid #fcd34d!important}
+[data-nc="v"] .prep-kh-unit-num.prep-kh-unit-full,[data-nc="v"] .prep-kh-unit-exp-num.prep-kh-unit-full{background:#6b21a8!important;border:2px solid #d8b4fe!important}
 [data-nc="c"] .prep-kh-unit-enter,[data-nc="c"] .prep-kh-unit-exp-back{border:1px solid rgba(34,211,238,0.5)!important;background:rgba(34,211,238,0.08)!important}
 [data-nc="c"] .prep-kh-unit-enter:hover,[data-nc="c"] .prep-kh-unit-exp-back:hover{transform:scale(1.13);background:rgba(34,211,238,0.2)!important;box-shadow:0 0 14px rgba(34,211,238,0.5)!important}
 [data-nc="p"] .prep-kh-unit-enter,[data-nc="p"] .prep-kh-unit-exp-back{border:1px solid rgba(236,72,153,0.5)!important;background:rgba(236,72,153,0.08)!important}

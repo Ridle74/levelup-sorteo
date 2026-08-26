@@ -18181,6 +18181,27 @@ const PREP_EDITORIALS = {
 };
 // ── Funciones de Level Up ───────────────────────────────────────────────────────
 
+// Ícono de "unidad 100% dominada" (todas las habilidades, cuestionarios y el examen en
+// Dominado): laurel enmarcando una estrella, en blanco, centrado dentro del cuadradito de
+// 38px que normalmente muestra "U01". Reemplaza al carácter de texto "★" usado antes.
+function _unitDoneIcon() {
+  return '<svg viewBox="0 0 100 100" style="width:25px;height:25px">'
+    + '<g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round">'
+    + '<path d="M50 84 C 30 74, 18 56, 22 26"/>'
+    + '<path d="M50 84 C 70 74, 82 56, 78 26"/>'
+    + '</g>'
+    + '<g fill="#fff">'
+    + '<ellipse cx="24" cy="30" rx="5.5" ry="9.5" transform="rotate(-25 24 30)"/>'
+    + '<ellipse cx="20" cy="46" rx="5.5" ry="9.5" transform="rotate(-8 20 46)"/>'
+    + '<ellipse cx="24" cy="62" rx="5.5" ry="9.5" transform="rotate(15 24 62)"/>'
+    + '<ellipse cx="76" cy="30" rx="5.5" ry="9.5" transform="rotate(25 76 30)"/>'
+    + '<ellipse cx="80" cy="46" rx="5.5" ry="9.5" transform="rotate(8 80 46)"/>'
+    + '<ellipse cx="76" cy="62" rx="5.5" ry="9.5" transform="rotate(-15 76 62)"/>'
+    + '</g>'
+    + '<polygon points="50.0,34.0 55.6,45.6 68.4,46.3 58.6,54.7 62.4,67.0 50.0,59.6 37.6,67.0 41.4,54.7 31.6,46.3 44.4,45.6" fill="#fff"/>'
+    + '</svg>';
+}
+
 function _renderPreparatePane() {
   const el = document.getElementById('preparate-pane');
   if (!el) return;
@@ -19459,7 +19480,7 @@ function _prepConfigHtml() {
       const _e1Style={c:'background:#0e7490;border:2px solid #22d3ee;color:#fff',p:'background:#9d174d;border:2px solid #ec4899;color:#fff',y:'background:#92400e;border:2px solid #fbbf24;color:#fff',v:'background:#6b21a8;border:2px solid #a855f7;color:#fff'};
       const _e2Style={c:'background:#0e7490;border:2px solid #67e8f9;color:#fff;font-size:18px',p:'background:#9d174d;border:2px solid #f9a8d4;color:#fff;font-size:18px',y:'background:#92400e;border:2px solid #fcd34d;color:#fff;font-size:18px',v:'background:#6b21a8;border:2px solid #d8b4fe;color:#fff;font-size:18px'};
       const _unitNumStyle = _fullyDoneU ? (_e2Style[_ncU]||'') : (unitDone2 ? (_e1Style[_ncU]||'') : '');
-      const _unitNumContent = _fullyDoneU ? '★' : 'U'+String(ui+1).padStart(2,'0');
+      const _unitNumContent = _fullyDoneU ? _unitDoneIcon() : 'U'+String(ui+1).padStart(2,'0');
       let _qn2 = 0;
       const skillsHtml = unit.skills.map((sk,si)=>{
         const def=BINGO_TOPICS[sk]||{};
@@ -19493,7 +19514,7 @@ function _prepConfigHtml() {
       return `<div class="prep-kh-unit${_blockUnitClicks?' prep-kh-unit-locked':''}" id="prep-unit-${ui}" data-nc="${_nc}" title="${_isLockedUnit?_lockTip:''}" style="position:relative;${_isLockedUnit?'opacity:0.5;filter:grayscale(0.4);':''}${_blockUnitClicks?'pointer-events:none;cursor:not-allowed;':''}">
         ${_lockBadge}
         <div class="prep-kh-skills"${_showLbl?' style="display:flex;align-items:center;gap:8px"':''}>
-          <span class="prep-kh-unit-num" title="${unit.lbl}" style="cursor:pointer;${_unitNumStyle}" onclick="_snd.click();_prep.showUnitLabels=!_prep.showUnitLabels;_renderPreparatePane()">${_unitNumContent}</span>
+          <span class="prep-kh-unit-num${_fullyDoneU?' prep-kh-unit-full':''}" title="${unit.lbl}" style="cursor:pointer;${_unitNumStyle}" onclick="_snd.click();_prep.showUnitLabels=!_prep.showUnitLabels;_renderPreparatePane()">${_unitNumContent}</span>
           ${_showLbl
             ? `<div style="flex:1;height:38px;border-radius:8px;border:2px solid ${_lc};background:rgba(0,0,0,0.2);display:flex;align-items:center;padding:0 12px;font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);box-shadow:0 0 8px ${_lc}55;overflow:hidden;white-space:nowrap">${unit.lbl}</div>`
             : skillsHtml + _examSq}
@@ -19723,7 +19744,7 @@ function _prepConfigHtml() {
       const _e1StyleExp={c:'background:#0e7490;border:2px solid #22d3ee;color:#fff',p:'background:#9d174d;border:2px solid #ec4899;color:#fff',y:'background:#92400e;border:2px solid #fbbf24;color:#fff',v:'background:#6b21a8;border:2px solid #a855f7;color:#fff'};
       const _e2StyleExp={c:'background:#0e7490;border:2px solid #67e8f9;color:#fff;font-size:18px',p:'background:#9d174d;border:2px solid #f9a8d4;color:#fff;font-size:18px',y:'background:#92400e;border:2px solid #fcd34d;color:#fff;font-size:18px',v:'background:#6b21a8;border:2px solid #d8b4fe;color:#fff;font-size:18px'};
       const _unitNumStyleExp=_fullyDoneExp?(_e2StyleExp[_ncExp2]||''):(unitDone2?(_e1StyleExp[_ncExp2]||''):'');
-      const _unitNumContentExp=_fullyDoneExp?'★':'U'+String(ui+1).padStart(2,'0');
+      const _unitNumContentExp=_fullyDoneExp?_unitDoneIcon():'U'+String(ui+1).padStart(2,'0');
       const examLvl=_examDom?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;
       const examDesc=examLvl?`Nivel: ${examLvl}${!_examDom&&sc!==null&&sc>0?' · Último: '+sc+'%':''}`:'Sube de nivel en todas las habilidades de esta unidad.';
       const _examSelInExp = _prep.selectedExamUnitIdx===ui;
@@ -19762,7 +19783,7 @@ function _prepConfigHtml() {
       const _ncExp=['c','p','y','v'][ui%4];
       unitsHtml = `<div class="prep-kh-unit-exp" data-nc="${_ncExp}">
         <div class="prep-kh-unit-exp-hdr">
-          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num" style="${_unitNumStyleExp}">${_unitNumContentExp}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Salir" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1);transform:scaleX(-1)"></button></div>
+          <div class="prep-kh-skills" style="flex:1"><span class="prep-kh-unit-exp-num${_fullyDoneExp?' prep-kh-unit-full':''}" style="${_unitNumStyleExp}">${_unitNumContentExp}</span>${expSquaresHtml}${expExamSq}<button class="prep-kh-unit-exp-back" title="Salir" onclick="_snd.click();_prep.selectedUnit=null;_renderPreparatePane()"><img src="/flecha-back.svg" style="height:13px;width:auto;display:block;filter:brightness(0) invert(1);transform:scaleX(-1)"></button></div>
         </div>
         <div class="prep-kh-unit-title"><span class="prep-kh-unit-title-num">U${String(ui+1).padStart(2,'0')}</span>${unit.lbl}</div>
         ${rowsHtml}
@@ -20237,6 +20258,17 @@ function _prepLastDate(topicKey) {
   const sec = sessions[0]?.completedAt?.seconds;
   if (!sec) return null;
   const d = new Date(sec*1000);
+  // Menos de 24h: se muestra como tiempo relativo ("Resuelto hace X"), más legible que una
+  // fecha/hora exacta para algo tan reciente. Math.max(0,...) cubre pequeños desfases de reloj
+  // (el completedAt es un serverTimestamp que puede llegar unos milisegundos "en el futuro"
+  // respecto al reloj local del navegador).
+  const diffMs = Math.max(0, Date.now() - d.getTime());
+  const diffMin = Math.floor(diffMs/60000);
+  const diffH = Math.floor(diffMs/3600000);
+  if (diffMin < 1) return 'Resuelto justo ahora';
+  if (diffMin < 60) return 'Resuelto hace unos minutos';
+  if (diffH < 24) return diffH===1 ? 'Resuelto hace una hora' : `Resuelto hace ${diffH} horas`;
+  // 24h o más: se vuelve a la fecha y hora exactas (dd-mmm-aaaa · h:mm a.m./p.m.)
   const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   const dateStr = d.getDate()+'-'+months[d.getMonth()]+'-'+d.getFullYear();
   let h = d.getHours();
@@ -25463,6 +25495,18 @@ function _prepExitSave() {
   if (_prep.answers.length > 0) {
     _prep.endTime = Date.now();
     _prepSaveHistoryPartial();
+  }
+  // Si se estaba resolviendo un examen de unidad, _prep.topic quedó apuntando internamente a
+  // la primera habilidad válida del examen (ver _prepUnitExam) — solo para el cálculo de
+  // puntaje/leaderboard, no como una habilidad "seleccionada" de verdad. Si no se limpia acá,
+  // al volver al catálogo esa habilidad aparece marcada como seleccionada A LA VEZ que el
+  // examen (selectedExamSkills/selectedExamUnitIdx siguen intactos desde antes de empezar), y
+  // el panel de inicio de abajo termina mostrando la habilidad en vez del examen que en
+  // realidad se estaba resolviendo.
+  if (_prep.isUnitExam) {
+    _prep.topic = '';
+    _prep.isUnitExam = false;
+    _prep.examUnitSkills = [];
   }
   _prep.state = 'config';
   _renderPreparatePane();
