@@ -79,6 +79,7 @@ let _prepAdminFilterUid = null;  // null = todos
 let _prepAdminExpandedId = null;
 let _prepAdminReassignOpenId = null; // id de partida (prepHistory) con el selector de "asignar a alumno" abierto
 let _prepAdminReassignBusyId = null; // id de partida cuya reasignación está en curso (evita doble click)
+let _prepBackfillBusy = false; // evita doble click en "Corregir cuestionarios/exámenes ya asignados"
 // Reporte semanal de progreso (para enviar a los padres por WhatsApp)
 let _prepWeeklyReportOpen = false;
 let _prepWeeklyReportUid = null;
@@ -19567,7 +19568,11 @@ function _prepConfigHtml() {
       const _quizKeysU = unit.skills.filter(sk=>BINGO_TOPICS[sk]?.quiz);
       const _quizAllDomU = !_quizKeysU.length || _quizKeysU.every(sk=>_prepMasteryLevel(sk)==='dominado');
       const _scU = _prepLastUnitExamPct(unit.skills[0]);
-      const _examDomU = _prep.editorial==='intelectum' ? _scU===100 : unitDone2;
+      // El examen de la unidad solo cuenta como "dominado" si el alumno REALMENTE lo rindió y
+      // sacó 100% — antes, para editoriales distintas de "intelectum", bastaba con tener todas
+      // las habilidades sueltas dominadas (sin haber tocado el examen), lo que hacía que el
+      // cuadradito y el popup dijeran "Dominado" sin fecha ni % de un intento real.
+      const _examDomU = _scU===100;
       const _fullyDoneU = unitDone2 && _quizAllDomU && _examDomU;
       const _ncU=['c','p','y','v'][ui%4];
       const _e1Style={c:'background:#0e7490;border:2px solid #22d3ee;color:#fff',p:'background:#9d174d;border:2px solid #ec4899;color:#fff',y:'background:#92400e;border:2px solid #fbbf24;color:#fff',v:'background:#6b21a8;border:2px solid #a855f7;color:#fff'};
@@ -19587,20 +19592,22 @@ function _prepConfigHtml() {
           _qn2++;
           const qPct=_prepLastPct(sk);
           const qDate=_prepLastDate(sk);
+          const qSource=(_prepLastSource(sk)||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
           const qName=('Cuestionario '+_qn2+': '+_cleanLbl(def.lbl,sk)).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
-          const _qEnter=`window._showSkTip(event,'${qName}','${_lvlLbl[lvl]||''}',${qPct!==null?qPct:'null'},'${qDate||''}')`;
+          const _qEnter=`window._showSkTip(event,'${qName}','${_lvlLbl[lvl]||''}',${qPct!==null?qPct:'null'},'${qDate||''}','${qSource}','cuestionario')`;
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
           return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.quizNum=_prep.topic==='${sk}'?${_qn2}:0;_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" onmouseenter="${_qEnter}" onmouseleave="window._hideSkTip()" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skDate=_prepLastDate(sk);
+        const skSource=(_prepLastSource(sk)||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
         const skName=_cleanLbl(def.lbl,sk).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
-        const _skEnter=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}')`;
+        const _skEnter=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}','${skSource}','habilidad')`;
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='sinIntentos'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" onmouseenter="${_skEnter}" onmouseleave="window._hideSkTip()">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
       }).join('');
       const _nc=['c','p','y','v'][ui%4];
       const _showLbl=_prep.showUnitLabels;
-      const _examSq=(()=>{const sc=_prepLastUnitExamPct(unit.skills[0]);const _examDom=_prep.editorial==='intelectum'?sc===100:unitDone2;const el=_examDom?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;const et=`Examen: ${unit.lbl}`+(el?` · Nivel: ${el}`:'')+(!_examDom&&sc!==null&&sc>0?` · Último: ${sc}%`:'')+(  _examDom?' · ¡Completado!':'');const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${_examDom?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" title="${et}" style="cursor:pointer">${_starSvg}</div>`;})();
+      const _examSq=(()=>{const sc=_prepLastUnitExamPct(unit.skills[0]);const _examDom=(sc===100);const el=_examDom?'Dominado':sc!==null&&sc>=75?'Competente':sc!==null&&sc>=50?'Familiar':sc!==null&&sc>0?'Intentado':null;const examDate=_prepLastUnitExamDate(unit.skills[0]);const examName=('Examen: '+unit.lbl).replace(/'/g,'&#39;').replace(/"/g,'&quot;');const _examEnter=`window._showSkTip(event,'${examName}','${el||''}',${sc!==null?sc:'null'},'${examDate||''}','','examen')`;const _starSvg=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;return `<div class="prep-kh-sq exam-sq${_examDom?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui})" onmouseenter="${_examEnter}" onmouseleave="window._hideSkTip()" style="cursor:pointer">${_starSvg}</div>`;})();
       const _lc={c:'#22d3ee',p:'#ec4899',y:'#fbbf24',v:'#a855f7'}[_nc];
       const _lockTip='🔒 Unidad en reconstrucción: aún no tiene sus 5 plantillas × 4 preguntas completas.'+(isAdmin()?' (Solo tú puedes entrar a revisarla; los alumnos no la ven habilitada)':'');
       const _lockBadge=_isLockedUnit?`<span class="prep-kh-unit-lock" title="${_lockTip}" style="position:absolute;top:-6px;right:-6px;font-size:13px;background:#111827;border:1px solid rgba(250,204,21,0.5);border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 6px rgba(0,0,0,0.5);z-index:2">🔒</span>`:'';
@@ -19829,7 +19836,7 @@ function _prepConfigHtml() {
         </div>`;
       }).join('');
       const sc=_prepLastUnitExamPct(unit.skills[0]);
-      const _examDom=_prep.editorial==='intelectum'?sc===100:unitDone2;
+      const _examDom=sc===100; // solo cuenta como dominado si el examen se rindió realmente y se sacó 100%
       const _quizKeysExp=unit.skills.filter(sk=>BINGO_TOPICS[sk]?.quiz);
       const _quizAllDomExp=!_quizKeysExp.length||_quizKeysExp.every(sk=>_prepMasteryLevel(sk)==='dominado');
       const _fullyDoneExp=unitDone2&&_quizAllDomExp&&_examDom;
@@ -19860,19 +19867,24 @@ function _prepConfigHtml() {
           _qn3++;
           const qPct=_prepLastPct(sk);
           const qDate=_prepLastDate(sk);
+          const qSource=(_prepLastSource(sk)||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
           const qName=('Cuestionario '+_qn3+': '+_cleanLbl(def.lbl,sk)).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
-          const _qEnter3=`window._showSkTip(event,'${qName}','${_lvlLbl[lvl]||''}',${qPct!==null?qPct:'null'},'${qDate||''}')`;
+          const _qEnter3=`window._showSkTip(event,'${qName}','${_lvlLbl[lvl]||''}',${qPct!==null?qPct:'null'},'${qDate||''}','${qSource}','cuestionario')`;
           const _bolt=(w,h)=>`<svg width="${w}" height="${h}" viewBox="0 0 652.27 754.35" xmlns="http://www.w3.org/2000/svg"><polygon points="350.4,302.44 442.81,0 0,460.48 302.02,460.76 212.32,754.35 652.27,302.08" fill="currentColor"/></svg>`;
           return `<div class="prep-kh-sq quiz-sq${lvl==='dominado'?' dominado':''}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.quizNum=${_qn3};_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" onmouseenter="${_qEnter3}" onmouseleave="window._hideSkTip()" style="cursor:pointer">${_bolt(16,18)}</div>`;
         }
         const skPct=_prepLastPct(sk);
         const skDate=_prepLastDate(sk);
+        const skSource=(_prepLastSource(sk)||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
         const skName=_cleanLbl(def.lbl,sk).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
-        const _skEnter3=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}')`;
+        const _skEnter3=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}','${skSource}','habilidad')`;
         return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='sinIntentos'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic='${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_prepStart()" onmouseenter="${_skEnter3}" onmouseleave="window._hideSkTip()">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
       }).join('');
       const _starSvgExp=`<svg width="20" height="19" viewBox="0 0 481.09 461.6" xmlns="http://www.w3.org/2000/svg"><path d="M984,788.39l54.73,103.08,115,20.21c32.69,5.74,45.68,45.7,22.6,69.56l-81.12,83.92,16.31,115.57c4.63,32.87-29.35,57.56-59.18,43L947.45,1172.5l-104.87,51.22c-29.83,14.57-63.82-10.12-59.18-43l16.31-115.57-81.12-83.92c-23.08-23.86-10.1-63.82,22.6-69.56l114.95-20.21,54.74-103.08C926.45,759.07,968.46,759.07,984,788.39Z" transform="translate(-706.91 -766.4)" fill="currentColor"/></svg>`;
-      const expExamSq=`<div class="prep-kh-sq exam-sq${_examDom?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui});setTimeout(()=>document.getElementById('prep-exam-${ui}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" style="cursor:pointer" title="Examen: ${unit.lbl}">${_starSvgExp}</div>`;
+      const examDate2=_prepLastUnitExamDate(unit.skills[0]);
+      const examName2=('Examen: '+unit.lbl).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
+      const _examEnter2=`window._showSkTip(event,'${examName2}','${examLvl||''}',${sc!==null?sc:'null'},'${examDate2||''}','','examen')`;
+      const expExamSq=`<div class="prep-kh-sq exam-sq${_examDom?' dominado':''}${_prep.selectedExamUnitIdx===ui?' selected':''}" onclick="_snd.click();_prepSelectExam(['${unit.skills.join("','")}'],${ui});setTimeout(()=>document.getElementById('prep-exam-${ui}')?.scrollIntoView({behavior:'smooth',block:'center'}),50)" onmouseenter="${_examEnter2}" onmouseleave="window._hideSkTip()" style="cursor:pointer">${_starSvgExp}</div>`;
       const _ncExp=['c','p','y','v'][ui%4];
       unitsHtml = `<div class="prep-kh-unit-exp" data-nc="${_ncExp}">
         <div class="prep-kh-unit-exp-hdr">
@@ -20314,12 +20326,13 @@ function _prepMasteryLevel(topicKey) {
   const sessions = _prepHistoryData.filter(h=>h.topic===topicKey);
   if (!sessions.length) return 'sinIntentos';
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  const directSessions = sessions.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
   if (isQuiz) {
-    // Los cuestionarios solo cuentan si el alumno los hizo directamente.
-    // Entradas autoFromExam/autoFromQuiz en cuestionarios se ignoran completamente.
-    if (!directSessions.length) return 'sinIntentos';
-    const pct = _prepReEvalPct(directSessions[0]);
+    // Un cuestionario cuenta si el alumno lo hizo directamente, O si un examen de unidad
+    // perfecto (100%) lo propagó como dominado (autoFromExam). Nunca cuenta una propagación
+    // desde OTRO cuestionario (autoFromQuiz no aplica a una clave de cuestionario en sí).
+    const quizSessions = sessions.filter(h=>!h.autoFromQuiz);
+    if (!quizSessions.length) return 'sinIntentos';
+    const pct = _prepReEvalPct(quizSessions[0]);
     if (pct>=100) return 'dominado';
     if (pct>=75)  return 'competente';
     if (pct>=50)  return 'familiar';
@@ -20338,15 +20351,17 @@ function _prepMasteryLevel(topicKey) {
 function _prepLastPct(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return null;
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  // Para cuestionarios: ignorar entradas propagadas (autoFromExam/autoFromQuiz)
-  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || (!h.autoFromExam && !h.autoFromQuiz)));
+  // Para cuestionarios: aceptar directo o propagado por un examen de unidad perfecto
+  // (autoFromExam); ignorar solo autoFromQuiz (propagación desde otro cuestionario, que no
+  // aplica a una clave de cuestionario en sí).
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || !h.autoFromQuiz));
   if (!sessions.length) return null;
   return _prepReEvalPct(sessions[0]);
 }
 function _prepLastDate(topicKey) {
   if (!Array.isArray(_prepHistoryData)) return null;
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || (!h.autoFromExam && !h.autoFromQuiz)));
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || !h.autoFromQuiz));
   if (!sessions.length) return null;
   const sec = sessions[0]?.completedAt?.seconds;
   if (!sec) return null;
@@ -20370,11 +20385,37 @@ function _prepLastDate(topicKey) {
   h = h % 12; if (h === 0) h = 12;
   return dateStr+' · '+h+':'+mins+' '+ampm;
 }
+// Si el registro que gobierna el nivel de dominio actual de una habilidad o cuestionario (el
+// mismo que usan _prepLastPct/_prepLastDate) es una propagación automática de un cuestionario
+// o examen —no un intento directo del alumno—, devuelve una etiqueta tipo "Vía Cuestionario:
+// ..." / "Vía Examen de unidad" para mostrar en el tooltip en vez de (o junto a) la fecha. Un
+// cuestionario nunca se propaga desde OTRO cuestionario (autoFromQuiz no le aplica a una clave
+// de cuestionario en sí) — solo puede llegar dominado directo o por un examen de unidad perfecto.
+function _prepLastSource(topicKey) {
+  if (!Array.isArray(_prepHistoryData)) return '';
+  const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
+  const sessions = _prepHistoryData.filter(h=>h.topic===topicKey && (!isQuiz || !h.autoFromQuiz));
+  if (!sessions.length) return '';
+  const h = sessions[0];
+  if (isQuiz) return h.autoFromExam ? 'Vía Examen de unidad' : '';
+  if (h.autoFromQuiz) {
+    // No mostramos el nombre completo del cuestionario (puede ser largo) — solo un
+    // número de referencia corto, tomado del propio topic key (ej. "conj4_bq2" -> "02").
+    const m = /_bq(\d+)/.exec(h.autoFromQuiz);
+    const num = m ? String(m[1]).padStart(2, '0') : '';
+    return 'Vía Cuestionario' + (num ? ' ' + num : '');
+  }
+  if (h.autoFromExam) return 'Vía Examen de unidad';
+  return '';
+}
 function _initSkTip() {
   if (document.getElementById('_skTip')) return;
   const d = document.createElement('div');
   d.id = '_skTip';
-  d.style.cssText = 'display:none;position:fixed;z-index:99999;background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);border-radius:10px;padding:12px 14px;font-size:12px;color:#1e293b;pointer-events:none;min-width:185px;max-width:240px;box-shadow:0 4px 20px rgba(0,0,0,0.18);font-family:inherit;';
+  // Ancho y alto fijos (mismas dimensiones sin importar nivel o actividad): la línea de
+  // fecha se reserva siempre en _showSkTip aunque no haya fecha, así que min-height alcanza
+  // para que el pop up nunca "salte" de tamaño entre niveles.
+  d.style.cssText = 'display:none;position:fixed;z-index:99999;background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);border-radius:10px;padding:12px 14px;font-size:12px;color:#1e293b;pointer-events:none;width:236px;min-height:96px;box-sizing:border-box;box-shadow:0 4px 20px rgba(0,0,0,0.18);font-family:inherit;';
   document.body.appendChild(d);
   document.addEventListener('mousemove', function(e) {
     const t = document.getElementById('_skTip');
@@ -20396,30 +20437,85 @@ function _initSkTip() {
     }
   });
 }
-window._showSkTip = function(e, name, lvlLbl, pct, date) {
+window._showSkTip = function(e, name, lvlLbl, pct, date, source, actType) {
   if (typeof _prep !== 'undefined' && _prep.state === 'exam') return;
   _initSkTip();
   const t = document.getElementById('_skTip');
-  const _lvlIcoMap = {Dominado:{ico:'A+',bg:'#7c3aed',fs:'12px'},Competente:{ico:'A',bg:'#9333ea',fs:'13px'},Familiar:{ico:'B',bg:'#c084fc',fs:'13px',fc:'#581c87'},Intentado:{ico:'C',bg:'#e9d5ff',fs:'13px',fc:'#6d28d9'},Pendiente:{ico:'D',bg:'#fdf4ff',fs:'13px',fc:'#9333ea'},'Sin intentos':{ico:'—',bg:'#94a3b8',fs:'13px',fc:'#fff'}};
-  const _barColor = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#c084fc',Intentado:'#d8b4fe',Pendiente:'#f3e8ff','Sin intentos':'#94a3b8'};
-  const _lvlColor = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#a855f7',Intentado:'#c084fc',Pendiente:'#d8b4fe','Sin intentos':'#94a3b8'};
-  const info = _lvlIcoMap[lvlLbl] || {ico:'—',bg:'#334155'};
+
+  // Letra/ícono del nivel: común a las 3 actividades.
+  const _icoMap = {Dominado:{ico:'A+',fs:'12px'},Competente:{ico:'A',fs:'13px'},Familiar:{ico:'B',fs:'13px'},Intentado:{ico:'C',fs:'13px'},Pendiente:{ico:'D',fs:'13px'},'Sin intentos':{ico:'—',fs:'13px'}};
+
+  // Habilidad: ramp violeta de siempre, sin cambios.
+  const _hBg = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#c084fc',Intentado:'#e9d5ff',Pendiente:'#fdf4ff','Sin intentos':'#94a3b8'};
+  const _hFc = {Familiar:'#581c87',Intentado:'#6d28d9',Pendiente:'#9333ea','Sin intentos':'#fff'};
+  const _hBar = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#c084fc',Intentado:'#d8b4fe',Pendiente:'#f3e8ff','Sin intentos':'#94a3b8'};
+  const _hText = {Dominado:'#7c3aed',Competente:'#9333ea',Familiar:'#a855f7',Intentado:'#c084fc',Pendiente:'#d8b4fe','Sin intentos':'#94a3b8'};
+  const H_DOM = '#7c3aed';
+
+  // Cuestionario y examen: parten del color de su propio "Dominado" (gris plateado / dorado
+  // #E6AC00) y avanzan por opacidad — antes iban hacia un tono cada vez más pálido que en
+  // Pendiente casi desaparecía contra la tarjeta.
+  const GRAY_DOM = '#52525b';
+  const GOLD_DOM = '#E6AC00';
+  const _rampOpacity = {Dominado:1,Competente:0.82,Familiar:0.64,Intentado:0.46,Pendiente:0.30};
+  const _textOpacity = {Dominado:1,Competente:0.88,Familiar:0.76,Intentado:0.64,Pendiente:0.52};
+  const _alpha = (hex,o) => hex + Math.round(o*255).toString(16).padStart(2,'0');
+  const _rampColor = (base,lvl) => lvl==='Sin intentos' ? '#94a3b8' : _alpha(base, _rampOpacity[lvl]!==undefined?_rampOpacity[lvl]:0);
+  const _rampText  = (base,lvl) => lvl==='Sin intentos' ? '#94a3b8' : _alpha(base, _textOpacity[lvl]!==undefined?_textOpacity[lvl]:0.52);
+
+  // Título: una sola regla para las 3 actividades — parte del color de Dominado de esa
+  // actividad y se mezcla progresivamente hacia el mismo gris neutro de "Sin intentos" a
+  // medida que baja el nivel (dorado→gris en examen, gris oscuro→gris en cuestionario,
+  // morado→gris en habilidad).
+  const _lvlOrder = ['Dominado','Competente','Familiar','Intentado','Pendiente','Sin intentos'];
+  const _hexRgb = h => { h=h.replace('#',''); const n=parseInt(h,16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+  const _rgbHex = (r,g,b) => '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+  const _mixHex = (a,b,tt) => { const A=_hexRgb(a),B=_hexRgb(b); return _rgbHex(A[0]+(B[0]-A[0])*tt, A[1]+(B[1]-A[1])*tt, A[2]+(B[2]-A[2])*tt); };
+  const _titleFor = (base,lvl) => { const idx=_lvlOrder.indexOf(lvl); const tt = idx<0 ? 1 : idx/(_lvlOrder.length-1); return _mixHex(base,'#94a3b8',tt); };
+
+  const ico = _icoMap[lvlLbl] || {ico:'—',fs:'13px'};
+  let badgeBg, badgeFc, barColor, lvlColor, titleColor, dateColor;
+  if (actType === 'cuestionario') {
+    badgeBg = _rampColor(GRAY_DOM, lvlLbl); badgeFc = '#fff';
+    barColor = badgeBg;
+    lvlColor = _rampText(GRAY_DOM, lvlLbl);
+    titleColor = _titleFor(GRAY_DOM, lvlLbl);
+    dateColor = '#9ca3af';
+  } else if (actType === 'examen') {
+    badgeBg = _rampColor(GOLD_DOM, lvlLbl); badgeFc = '#fff';
+    barColor = badgeBg;
+    lvlColor = _rampText(GOLD_DOM, lvlLbl);
+    titleColor = _titleFor(GOLD_DOM, lvlLbl);
+    dateColor = '#9ca3af';
+  } else {
+    badgeBg = _hBg[lvlLbl] || '#334155'; badgeFc = _hFc[lvlLbl] || '#fff';
+    barColor = _hBar[lvlLbl] || '#334155';
+    lvlColor = _hText[lvlLbl] || '#94a3b8';
+    titleColor = _titleFor(H_DOM, lvlLbl);
+    dateColor = '#9ca3af';
+  }
+
   const barW = (pct !== null && pct !== undefined) ? Math.max(0,Math.min(100,pct)) : 0;
-  const barColor = _barColor[lvlLbl] || '#334155';
-  const lvlColor = _lvlColor[lvlLbl] || '#94a3b8';
-  const metaRight = [(pct !== null && pct !== undefined ? pct+'%' : null), date].filter(Boolean).join(' · ');
+  // Estructura homogénea (mismo ancho y misma forma de 2 líneas siempre, con la línea de
+  // fecha reservada incluso cuando no hay fecha, para que el pop up mida siempre lo mismo):
+  // línea 1 = nivel + % (+ "· Vía Cuestionario/Examen" si el dominio viene de ahí, pintado
+  // exactamente del mismo color que el nivel, sin negrita); línea 2 = la fecha real del
+  // intento, siempre en el mismo gris neutro #9ca3af — igual en las 3 actividades y en
+  // cualquier nivel de dominio.
+  const pctStr = (pct !== null && pct !== undefined) ? pct+'%' : '';
+  const line1 = '<span style="color:'+lvlColor+'">'+[(lvlLbl||'—'), pctStr].filter(Boolean).join(' ')+'</span>'
+    + (source ? ' <span style="color:'+lvlColor+'">· '+source+'</span>' : '');
+  const line2 = '<div style="font-size:9.5px;color:'+dateColor+';margin-top:2px">'+(date||'&nbsp;')+'</div>';
   t.innerHTML =
     '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-      +'<div style="width:28px;height:28px;border-radius:6px;background:'+info.bg+';display:flex;align-items:center;justify-content:center;font-size:'+(info.fs||'12px')+';font-weight:900;color:'+(info.fc||'#fff')+';letter-spacing:-0.5px;flex-shrink:0">'+info.ico+'</div>'
-      +'<div style="font-size:12px;font-weight:700;color:#1e293b;line-height:1.3">'+name+'</div>'
+      +'<div style="width:28px;height:28px;border-radius:6px;background:'+badgeBg+';display:flex;align-items:center;justify-content:center;font-size:'+(ico.fs||'12px')+';font-weight:900;color:'+badgeFc+';letter-spacing:-0.5px;flex-shrink:0">'+ico.ico+'</div>'
+      +'<div style="font-size:12px;font-weight:700;color:'+titleColor+';line-height:1.3">'+name+'</div>'
     +'</div>'
-    +'<div style="height:4px;background:#f1f5f9;border-radius:4px;margin-bottom:6px">'
+    +'<div style="height:4px;background:#f1f5f9;border-radius:4px;margin-bottom:8px">'
       +'<div style="height:4px;border-radius:4px;background:'+barColor+';width:'+barW+'%"></div>'
     +'</div>'
-    +'<div style="display:flex;justify-content:space-between;font-size:10px;color:#64748b">'
-      +'<b style="color:'+lvlColor+'">'+(lvlLbl||'—')+'</b>'
-      +'<b style="color:#475569">'+metaRight+'</b>'
-    +'</div>';
+    +'<div style="font-size:11px;font-weight:500">'+line1+'</div>'
+    +line2;
   t.style.display = 'block';
   const tw = t.offsetWidth, th = t.offsetHeight;
   let lx = e.clientX + 14, ly = e.clientY - th - 10;
@@ -20464,6 +20560,29 @@ function _prepLastUnitExamPct(firstSkill) {
   if (!entries.length) return null;
   return _prepReEvalPct(entries[0]);
 }
+// Misma lógica de formato que _prepLastDate, pero para el ÚLTIMO intento directo del examen de
+// unidad (igual filtro que _prepLastUnitExamPct) — usado en el popup del cuadradito ★.
+function _prepLastUnitExamDate(firstSkill) {
+  if (!Array.isArray(_prepHistoryData) || !firstSkill) return null;
+  const entries = _prepHistoryData.filter(h => h.isUnitExam && h.topic === firstSkill && !h.autoFromExam && !h.autoFromQuiz);
+  if (!entries.length) return null;
+  const sec = entries[0]?.completedAt?.seconds;
+  if (!sec) return null;
+  const d = new Date(sec*1000);
+  const diffMs = Math.max(0, Date.now() - d.getTime());
+  const diffMin = Math.floor(diffMs/60000);
+  const diffH = Math.floor(diffMs/3600000);
+  if (diffMin < 1) return 'Resuelto justo ahora';
+  if (diffMin < 60) return 'Resuelto hace unos minutos';
+  if (diffH < 24) return diffH===1 ? 'Resuelto hace una hora' : `Resuelto hace ${diffH} horas`;
+  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const dateStr = d.getDate()+'-'+months[d.getMonth()]+'-'+d.getFullYear();
+  let h = d.getHours();
+  const mins = String(d.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'p. m.' : 'a. m.';
+  h = h % 12; if (h === 0) h = 12;
+  return dateStr+' · '+h+':'+mins+' '+ampm;
+}
 function _prepCalcStreak() {
   if (!Array.isArray(_prepHistoryData) || !_prepHistoryData.length) return 0;
   const DAY = 86400000;
@@ -20493,18 +20612,26 @@ function _prepMasteryLevelH(topicKey, hist) {
   const sessions = hist.filter(h=>h.topic===topicKey);
   if (!sessions.length) return 'sinIntentos';
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  const directSessions = sessions.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
   if (isQuiz) {
-    if (!directSessions.length) return 'sinIntentos';
-    const pct = _prepReEvalPct(directSessions[0]);
+    // Un cuestionario cuenta si el alumno lo hizo directamente, O si un examen de unidad
+    // perfecto (100%) lo propagó como dominado (autoFromExam) — igual criterio que
+    // _prepMasteryLevel en producción. Nunca cuenta una propagación desde OTRO cuestionario.
+    const quizSessions = sessions.filter(h=>!h.autoFromQuiz);
+    if (!quizSessions.length) return 'sinIntentos';
+    const pct = _prepReEvalPct(quizSessions[0]);
     if (pct>=100) return 'dominado';
     if (pct>=75)  return 'competente';
     if (pct>=50)  return 'familiar';
     if (pct>=25)  return 'intentado';
     return 'pendiente';
   }
-  const refH = directSessions.length ? directSessions[0] : sessions[0];
-  const pct = _prepReEvalPct(refH);
+  // Habilidades normales: usar la sesión más reciente (directa o propagada por examen/
+  // cuestionario) — igual criterio que _prepMasteryLevel en producción. Antes esta versión
+  // del reporte priorizaba cualquier sesión DIRECTA aunque fuera más antigua que una
+  // propagación reciente, así que una habilidad recién dominada por el examen de unidad
+  // seguía contando con su nivel viejo (más bajo) y el reporte mostraba, p.ej., "8/9" en
+  // Habilidades cuando en realidad ya eran 9/9.
+  const pct = _prepReEvalPct(sessions[0]);
   if (pct>=100) return 'dominado';
   if (pct>=75)  return 'competente';
   if (pct>=50)  return 'familiar';
@@ -20515,11 +20642,15 @@ function _prepLastPctH(topicKey, hist) {
   if (!Array.isArray(hist)) return null;
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
   const allSess = hist.filter(h=>h.topic===topicKey);
-  const directSess = allSess.filter(h=>!h.autoFromExam && !h.autoFromQuiz);
-  if (isQuiz) { if (!directSess.length) return null; return _prepReEvalPct(directSess[0]); }
-  const ref = directSess.length ? directSess[0] : allSess[0];
-  if (!ref) return null;
-  return _prepReEvalPct(ref);
+  if (!allSess.length) return null;
+  if (isQuiz) {
+    const quizSess = allSess.filter(h=>!h.autoFromQuiz);
+    if (!quizSess.length) return null;
+    return _prepReEvalPct(quizSess[0]);
+  }
+  // Habilidades normales: mismo criterio que _prepMasteryLevelH — la sesión más reciente,
+  // directa o propagada.
+  return _prepReEvalPct(allSess[0]);
 }
 function _prepCalcStreakH(hist) {
   if (!Array.isArray(hist) || !hist.length) return 0;
@@ -21166,17 +21297,6 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
         const _pureUnitSkills = (u.unitObj.skills||[]).filter(_pureSkillFilter);
         const _domCount = _pureUnitSkills.filter(sk=>_prepMasteryLevelH(sk,hist)==='dominado').length;
         const _totalPure = _pureUnitSkills.length;
-        // "Dominio" en cambio es el promedio SOLO de las habilidades ya practicadas al menos una
-        // vez: antes se promediaba sobre TODAS las habilidades de la unidad contando las no
-        // practicadas como 0%, así que una unidad con 1 de 6 habilidades practicadas al 18% caía a
-        // ~3% de promedio y mostraba el nivel más bajo aunque esa habilidad estuviera bien lograda.
-        const _practicedUnitSkills = _pureUnitSkills.filter(sk=>_prepLastPctH(sk,hist)!=null);
-        const _avgPct = _practicedUnitSkills.length ? Math.round(_practicedUnitSkills.reduce((a,sk)=>a+_prepLastPctH(sk,hist),0)/_practicedUnitSkills.length) : null;
-        const pct = _avgPct;
-        // Nivel basado en el promedio de las habilidades practicadas (ver nota arriba)
-        const lvl = pct !== null ? lvlFromPct(pct) : null;
-        const dominioBadgeHtml = _domBadgeHtml(lvl, pct);
-        const unitNumStr = u.unitIdx!==999 ? String(u.unitIdx+1).padStart(2,'0') : '';
         // "Cuestionario X/Y": cuenta sobre TODAS las claves de cuestionario (_bq#) que tiene la
         // unidad en el currículo (Y), y cuántas de esas el alumno ya domina al 100% (X) — mismo
         // criterio "dominado" que la columna Habilidad. Si la unidad no tiene cuestionarios, Y=0
@@ -21189,6 +21309,29 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
         const _examInfo = _prepUnitExamInfo(u.unitObj, hist);
         const _examDomCount = _examInfo.hasExam && _examInfo.lvl==='dominado' ? 1 : 0;
         const _examTotal = _examInfo.hasExam ? 1 : 0;
+        // "Dominio" (letra + %) ahora se calcula sobre las 3 actividades juntas (habilidad +
+        // cuestionario + examen), no solo sobre habilidades sueltas — antes una unidad podía
+        // mostrar "A+ 100%" con todas sus habilidades dominadas aunque el examen real de la
+        // unidad estuviera sin dominar (columna Examen en 0/1), lo cual era engañoso.
+        // - LETRA: promedio del nivel de las actividades que YA se intentaron al menos una vez
+        //   (cualquier nivel menos "sin intentos"); si nada se ha intentado, no hay letra.
+        // - %: sobre el TOTAL de actividades de la unidad (se hayan intentado o no), cuenta
+        //   cuántas están dominadas al 100% — igual criterio que las columnas X/Y de arriba.
+        const _allActLevels = [
+          ..._pureUnitSkills.map(sk => _prepMasteryLevelH(sk, hist)),
+          ..._quizUnitSkills.map(sk => _prepMasteryLevelH(sk, hist)),
+          ...(_examInfo.hasExam ? [_examInfo.lvl || 'sinIntentos'] : []),
+        ];
+        const _attemptedActLevels = _allActLevels.filter(l => l !== 'sinIntentos');
+        const _rankToLvl = {5:'dominado',4:'competente',3:'familiar',2:'intentado',1:'pendiente'};
+        const lvl = _attemptedActLevels.length
+          ? _rankToLvl[Math.max(1, Math.min(5, Math.round(_attemptedActLevels.reduce((a,l)=>a+(_lvlRank[l]||0),0)/_attemptedActLevels.length)))]
+          : null;
+        const pct = _allActLevels.length
+          ? Math.round(_allActLevels.filter(l=>l==='dominado').length / _allActLevels.length * 100)
+          : null;
+        const dominioBadgeHtml = _domBadgeHtml(lvl, pct);
+        const unitNumStr = u.unitIdx!==999 ? String(u.unitIdx+1).padStart(2,'0') : '';
         return {
           unidadCol: unitNumStr ? `U${unitNumStr}` : '—',
           nombreCol: lbl,
@@ -25727,14 +25870,18 @@ async function _prepSaveHistory() {
     const pct = total>0 ? Math.round((correct/total)*100) : 0;
     // Actualización optimista: insertar resultado localmente de inmediato
     // para que los colores de dominio se refresquen sin esperar a Firestore
-    // Para examen de unidad, usar la etiqueta de la unidad (no la del primer skill)
-    const _examUnitLabel = _prep.isUnitExam && (_prep.examUnitSkills||[]).length
+    // Para examen de unidad, usar la etiqueta de la unidad (no la del primer skill) — y de paso
+    // guardar el objeto de la unidad completa (con sus cuestionarios incluidos) para reusarlo
+    // más abajo al propagar un examen perfecto.
+    const _examUnitObj = _prep.isUnitExam && (_prep.examUnitSkills||[]).length
       ? (() => {
           const levelData = PREP_CURRICULUM[_prep.level] || {};
           const allUnits = Object.values(levelData).flat();
-          const unit = allUnits.find(u=>Array.isArray(u.skills)&&u.skills.includes(_prep.examUnitSkills[0]));
-          return unit ? unit.lbl : _cleanLbl(def.lbl||_prep.topic);
+          return allUnits.find(u=>Array.isArray(u.skills)&&u.skills.includes(_prep.examUnitSkills[0])) || null;
         })()
+      : null;
+    const _examUnitLabel = _prep.isUnitExam && (_prep.examUnitSkills||[]).length
+      ? (_examUnitObj ? _examUnitObj.lbl : _cleanLbl(def.lbl||_prep.topic))
       : null;
     const _isDesafioSave = _prep.level === 'especial';
     const localEntry = {
@@ -25751,11 +25898,21 @@ async function _prepSaveHistory() {
     // También actualizar el historial del panel admin para que el profesor vea su propio resultado al instante
     if (Array.isArray(_prepAdminHistData)) _prepAdminHistData.unshift(localEntry);
     if (pct === 100) setTimeout(()=>_snd.dominate(), 400);
-    // Si examen de unidad al 100%: marcar habilidades (no cuestionarios) de la unidad como dominado
+    // Si examen de unidad al 100%: marcar como dominadas TODAS las habilidades Y cuestionarios
+    // de la unidad que aún no lo estén — un examen perfecto certifica que el alumno domina todo
+    // el tema completo, incluidos sus cuestionarios (antes esto solo pasaba con habilidades
+    // sueltas; un cuestionario solo se dominaba resolviéndolo directo). Esto es "solo para
+    // bien": si algo ya estaba dominado se deja tal cual, y un examen que NO sale perfecto
+    // nunca hace bajar el nivel de nada (ver el otro bloque de propagación más abajo, que sigue
+    // sin tocar los cuestionarios cuando el examen es parcial).
     if (pct === 100 && _prep.isUnitExam && (_prep.examUnitSkills||[]).length) {
       const now = Math.floor(Date.now()/1000);
-      for (const sk of _prep.examUnitSkills) {
-        if (BINGO_TOPICS[sk]?.quiz) continue; // los cuestionarios solo se dominan al completarlos directamente
+      // _prep.examUnitSkills solo trae las habilidades (los cuestionarios de la unidad se
+      // excluyen al armar el examen para no duplicar preguntas — ver _prepUnitExam), así que
+      // para también dominar sus cuestionarios hay que tomarlos aparte del objeto de unidad.
+      const _examQuizSkills = (_examUnitObj?.skills||[]).filter(sk=>BINGO_TOPICS[sk]?.quiz);
+      const _examAllSkills = [...(_prep.examUnitSkills||[]), ..._examQuizSkills];
+      for (const sk of _examAllSkills) {
         if (_prepMasteryLevel(sk)==='dominado') continue;
         const skDef=BINGO_TOPICS[sk]||{};
         const skE={uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:{seconds:now}};
@@ -25955,15 +26112,118 @@ async function _prepDoReassignHistoryToStudent(histId, studentId, studentName) {
   _prepAdminReassignBusyId = histId;
   _renderPreparatePane();
   try {
-    await db.collection('prepHistory').doc(histId).update({ uid: String(studentId), name: studentName, reassignedFromTeacher: true });
     const rec = (_prepAdminHistData||[]).find(h => h.id === histId);
+    const originalUid = rec ? String(rec.uid) : null;
+    await db.collection('prepHistory').doc(histId).update({ uid: String(studentId), name: studentName, reassignedFromTeacher: true });
     if (rec) { rec.uid = String(studentId); rec.name = studentName; rec.reassignedFromTeacher = true; }
+
+    // Si lo reasignado es un cuestionario o un examen de unidad, también hay que reasignar los
+    // registros de habilidad que ese cuestionario/examen generó automáticamente al completarse
+    // (autoFromQuiz/autoFromExam — ver _prepSaveHistory), para que influyan en el dominio de esas
+    // habilidades exactamente igual que cuando el alumno lo completa él mismo. Sin esto, esos
+    // registros quedaban con el uid del profesor y el alumno nunca recibía ese avance, aunque el
+    // cuestionario/examen en sí ya apareciera bien asignado.
+    if (rec && originalUid) {
+      const isQuizTopic = /_bq\d/.test(rec.topic || '');
+      const isExamRec = !!rec.isUnitExam;
+      if (isQuizTopic || isExamRec) {
+        try {
+          const snap = await db.collection('prepHistory').where('uid', '==', originalUid).get();
+          const recSec = rec.completedAt?.seconds || 0;
+          const unit = isExamRec ? _prepTopicUnit(rec.topic, rec.level) : null;
+          const linkedIds = [];
+          snap.forEach(doc => {
+            const d = doc.data();
+            if (String(d.level || '') !== String(rec.level || '')) return;
+            if (String(d.grade || '') !== String(rec.grade || '')) return;
+            const sec = d.completedAt?.seconds || 0;
+            // Misma "tanda" de guardado que el cuestionario/examen reasignado, no una coincidencia
+            // lejana en el tiempo con otra actividad distinta.
+            if (Math.abs(sec - recSec) > 120) return;
+            if (isQuizTopic && d.autoFromQuiz === rec.topic) { linkedIds.push(doc.id); return; }
+            if (isExamRec && (d.autoFromExam === true || d.autoFromExam === rec.topic)) {
+              // La habilidad propagada debe pertenecer a la misma unidad que el examen reasignado
+              // (evita arrastrar de un examen distinto completado casi al mismo tiempo).
+              if (unit && _prepTopicUnit(d.topic, d.level) === unit) linkedIds.push(doc.id);
+            }
+          });
+          if (linkedIds.length) {
+            await Promise.all(linkedIds.map(id =>
+              db.collection('prepHistory').doc(id).update({ uid: String(studentId), name: studentName, reassignedFromTeacher: true })
+            ));
+            (_prepAdminHistData || []).forEach(h => {
+              if (linkedIds.includes(h.id)) { h.uid = String(studentId); h.name = studentName; h.reassignedFromTeacher = true; }
+            });
+          }
+        } catch (e2) { console.error('reasignar habilidades vinculadas al cuestionario/examen', e2); }
+      }
+    }
     _prepAdminReassignOpenId = null;
   } catch(e) {
     console.error('reasignar partida a alumno', e);
     alert('No se pudo asignar la partida. Intenta de nuevo.');
   }
   _prepAdminReassignBusyId = null;
+  _renderPreparatePane();
+}
+// Corrección de una sola vez para cuestionarios/exámenes que ya se habían reasignado a un alumno
+// ANTES de que _prepDoReassignHistoryToStudent empezara también a reasignar las habilidades que
+// generaron automáticamente (autoFromQuiz/autoFromExam). Esas reasignaciones viejas solo movieron
+// el cuestionario/examen en sí, así que las habilidades vinculadas seguían con uid:'teacher' y no
+// influían en el dominio del alumno. Este botón recorre todo lo ya reasignado y aplica el mismo
+// criterio de "misma tanda de guardado" que usa la reasignación en vivo, ahora en retrospectiva.
+// Es seguro ejecutarlo varias veces: una vez corregida una habilidad, ya no vuelve a aparecer en
+// la búsqueda (su uid ya no es 'teacher').
+async function _prepBackfillReassignedPropagation() {
+  if (!isAdmin() || _prepBackfillBusy) return;
+  _prepBackfillBusy = true;
+  _renderPreparatePane();
+  let checkedRecords = 0, fixedSkills = 0;
+  try {
+    const [snapReassigned, snapTeacher] = await Promise.all([
+      db.collection('prepHistory').where('reassignedFromTeacher', '==', true).get(),
+      db.collection('prepHistory').where('uid', '==', 'teacher').get(),
+    ]);
+    const candidates = [];
+    snapReassigned.forEach(doc => {
+      const d = doc.data();
+      if (/_bq\d/.test(d.topic || '') || d.isUnitExam) candidates.push({ id: doc.id, ...d });
+    });
+    const teacherDocs = [];
+    snapTeacher.forEach(doc => teacherDocs.push({ id: doc.id, ...doc.data() }));
+
+    for (const rec of candidates) {
+      checkedRecords++;
+      const isQuizTopic = /_bq\d/.test(rec.topic || '');
+      const isExamRec = !!rec.isUnitExam;
+      const recSec = rec.completedAt?.seconds || 0;
+      const unit = isExamRec ? _prepTopicUnit(rec.topic, rec.level) : null;
+      const linkedIds = [];
+      teacherDocs.forEach(d => {
+        if (String(d.level || '') !== String(rec.level || '')) return;
+        if (String(d.grade || '') !== String(rec.grade || '')) return;
+        const sec = d.completedAt?.seconds || 0;
+        if (Math.abs(sec - recSec) > 120) return;
+        if (isQuizTopic && d.autoFromQuiz === rec.topic) { linkedIds.push(d.id); return; }
+        if (isExamRec && (d.autoFromExam === true || d.autoFromExam === rec.topic)) {
+          if (unit && _prepTopicUnit(d.topic, d.level) === unit) linkedIds.push(d.id);
+        }
+      });
+      if (linkedIds.length) {
+        await Promise.all(linkedIds.map(id =>
+          db.collection('prepHistory').doc(id).update({ uid: rec.uid, name: rec.name, reassignedFromTeacher: true })
+        ));
+        fixedSkills += linkedIds.length;
+      }
+    }
+    alert('Listo: revisé ' + checkedRecords + ' cuestionario(s)/examen(es) ya asignados y corregí ' + fixedSkills + ' registro(s) de habilidad vinculados.');
+    _prepAdminHistData = null; // forzar recarga para reflejar los cambios ya en esta sesión
+    loadPrepHistoryAdmin();
+  } catch(e) {
+    console.error('backfill reasignación de habilidades vinculadas', e);
+    alert('Ocurrió un error al corregir. Revisa la consola.');
+  }
+  _prepBackfillBusy = false;
   _renderPreparatePane();
 }
 function _prepAdminHistoryHtml() {
@@ -26061,6 +26321,7 @@ function _prepAdminHistoryHtml() {
     ${_prepAdminShowHist ? `<div style="margin-top:10px">
       ${uidsWithData.length > 1 ? `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${studentPills}</div>` : ''}
       ${(_prepAdminFilterUid && _prepAdminFilterUid !== 'teacher') ? `<button onclick="_prepOpenWeeklyReport('${_prepAdminFilterUid}')" style="display:block;width:100%;margin-bottom:10px;padding:9px;border-radius:10px;border:1px solid rgba(37,211,102,0.4);background:rgba(37,211,102,0.1);color:#25d366;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer">📲 Reporte semanal WhatsApp</button>` : ''}
+      <button ${_prepBackfillBusy?'disabled ':''}onclick="_prepBackfillReassignedPropagation()" style="display:block;width:100%;margin-bottom:10px;padding:9px;border-radius:10px;border:1px solid rgba(99,102,241,0.35);background:rgba(99,102,241,0.1);color:#a5b4fc;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer" title="Corrige cuestionarios/exámenes que asignaste a un alumno ANTES de que esto también reasignara las habilidades vinculadas">${_prepBackfillBusy?'Corrigiendo…':'🔧 Corregir cuestionarios/exámenes ya asignados'}</button>
       ${cardsHtml}
     </div>` : ''}
   </div>`;
