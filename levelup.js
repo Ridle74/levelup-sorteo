@@ -20625,9 +20625,15 @@ function _prepBuildWeeklyReportText(uid, hist) {
     const unitLbl = u.lbl || h.topicLabel || h.topic;
     if (!g.units[unitLbl]) {
       const total = u.skills.filter(_pureSkillFilter).length;
-      g.units[unitLbl] = { skills:new Set(), total, unitCode, unitIdx: unitIdx>=0?unitIdx:999, unitObj:u };
+      g.units[unitLbl] = { skills:new Set(), total, unitCode, unitIdx: unitIdx>=0?unitIdx:999, unitObj:u, touched:false, quizOrExam:false };
     }
+    // "touched": la unidad cuenta como practicada si el alumno hizo AL MENOS una habilidad suelta,
+    // un cuestionario o un examen de esa unidad — antes solo se consideraban las habilidades sueltas,
+    // así que una unidad donde solo se hizo el cuestionario/examen (ej. una partida reasignada por el
+    // profesor) desaparecía por completo de esta sección aunque sí aparecía en "Actividades practicadas".
+    g.units[unitLbl].touched = true;
     if (_pureSkillFilter(h.topic)) g.units[unitLbl].skills.add(h.topic);
+    else g.units[unitLbl].quizOrExam = true;
   });
   // Nivel predominante de la unidad: el ícono del nivel de dominio (dominado/competente/familiar/
   // intentado/pendiente) que más se repite entre TODAS las habilidades de la unidad (incluyendo las
@@ -20648,9 +20654,14 @@ function _prepBuildWeeklyReportText(uid, hist) {
   };
   const unitsLines = Object.values(unitGroups).map(g=>{
     const unitLines = Object.entries(g.units)
-      .filter(([,u])=>u.skills.size>0) // no listar una unidad si lo único tocado fue un cuestionario (no cuenta como "habilidad")
+      .filter(([,u])=>u.touched) // se lista si tocó al menos una habilidad, un cuestionario o un examen de la unidad
       .sort((a,b)=>a[1].unitIdx-b[1].unitIdx) // de menor a mayor por número de unidad
-      .map(([lbl,u])=>`${_prepUnitPredominantIco(u.unitObj)} ${u.unitCode||''}${lbl} (${u.skills.size}${u.total!==null?'/'+u.total:''} habilidad${u.skills.size===1?'':'es'})`)
+      .map(([lbl,u])=>{
+        const frac = u.skills.size>0
+          ? ` (${u.skills.size}${u.total!==null?'/'+u.total:''} habilidad${u.skills.size===1?'':'es'})`
+          : (u.quizOrExam ? ' (cuestionario/examen practicado)' : '');
+        return `${_prepUnitPredominantIco(u.unitObj)} ${u.unitCode||''}${lbl}${frac}`;
+      })
       .join('\n');
     return unitLines ? `${g.header}\n${unitLines}` : '';
   }).filter(Boolean).join('\n\n');
@@ -21106,9 +21117,13 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     if (!g.units[unitLbl]) {
       const total = u.skills.filter(_pureSkillFilter).length;
       g.units[unitLbl] = { skills:new Set(), total, unitCode, unitIdx: unitIdx>=0?unitIdx:999, unitObj:u,
-        exCorrect:0, exTotal:0, timeSec:0, lastSec:0 };
+        exCorrect:0, exTotal:0, timeSec:0, lastSec:0, touched:false };
     }
     const eu = g.units[unitLbl];
+    // "touched": igual que en _prepBuildWeeklyReportText — la unidad cuenta como practicada con solo
+    // habilidades sueltas, cuestionario o examen (antes se exigía al menos una habilidad suelta, y una
+    // unidad con solo cuestionario/examen —p.ej. una partida reasignada por el profesor— desaparecía).
+    eu.touched = true;
     if (_pureSkillFilter(h.topic)) eu.skills.add(h.topic);
     // Ejercicios/tiempo/última práctica solo de sesiones DIRECTAS (hechas por el alumno) — igual
     // criterio que el resto del reporte; las auto-completadas por examen/cuestionario no suman
@@ -21143,7 +21158,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   };
   const unitTables = Object.values(unitGroups).map(g=>{
     const rows = Object.entries(g.units)
-      .filter(([,u])=>u.skills.size>0)
+      .filter(([,u])=>u.touched)
       .sort((a,b)=>a[1].unitIdx-b[1].unitIdx)
       .map(([lbl,u])=>{
         // "Habilidades" (columna X/Y) sigue contando sobre TODAS las habilidades de la unidad,
