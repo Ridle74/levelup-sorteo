@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260827j"></script>
+  <script src="/levelup.js?v=20260827k"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -12574,6 +12574,8 @@ var _qmSubMap = {'₀':'0','₁':'1','₂':'2','₃':'3','₄':'4','₅':'5','�
 function _qmFmt(text) {
   if (!text) return text;
   var s = String(text);
+  // Escapa '<' pegado a una letra (ej. "3<n<4") antes de seguir — ver _escStrayLt en levelup.js.
+  if (typeof _escStrayLt === 'function') s = _escStrayLt(s);
   // Normalizar símbolos de raíz Unicode a forma ⁿ√ para que el vinculum funcione
   s = s.replace(/∛/g, '³√').replace(/∜/g, '⁴√');
   // Vinculum: línea superior sobre el radicando (igual que en el examen)

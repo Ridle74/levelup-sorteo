@@ -9770,7 +9770,7 @@ function _genI1A_INE_B1(){
     {_id:10,q:'Resuelve: −x+4≤2',a:'x≥2',opts:_i4gshuf(['x≥2','x≤2','x≥6','x≤6']),mc:true,ste:'−x≤−2 → x≥2.'},
     {_id:11,q:'El conjunto solución de 2x−1<5 es:',a:'(−∞,3)',opts:_i4gshuf(['(−∞,3)','(3,+∞)','[3,+∞)','(−∞,3]']),mc:true,ste:'2x<6 → x<3.'},
     {_id:12,q:'Resuelve: 3(x−1)>2(x+1)',a:'x>5',opts:_i4gshuf(['x>5','x<5','x>2','x>1']),mc:true,ste:'3x−3>2x+2 → x>5.'},
-    {_id:13,q:'Si −3&lt;x≤5, la longitud del intervalo es:',a:'8',opts:_i4gshuf(['8','2','5','3']),mc:true,ste:'5−(−3)=8.'},
+    {_id:13,q:'Si −3<x≤5, la longitud del intervalo es:',a:'8',opts:_i4gshuf(['8','2','5','3']),mc:true,ste:'5−(−3)=8.'},
     {_id:14,q:'Resuelve: x/2+3≥7',a:'x≥8',opts:_i4gshuf(['x≥8','x≤8','x≥4','x≥2']),mc:true,ste:'x/2≥4 → x≥8.'},
   ]);
 }
@@ -9778,20 +9778,20 @@ _SKILL_META['i1a_ine_b1']={ico:'📐',lbl:'Desigualdades lineales e intervalos',
 
 function _genI1A_INE_B2(){
   return _i4gpick([
-    {_id:1,q:'Resuelve: x²−4>0',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','−2&lt;x<2','x>2','x<−2']),mc:true,ste:'(x−2)(x+2)>0. Fuera del intervalo [−2,2].'},
+    {_id:1,q:'Resuelve: x²−4>0',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','−2<x<2','x>2','x<−2']),mc:true,ste:'(x−2)(x+2)>0. Fuera del intervalo [−2,2].'},
     {_id:2,q:'Resuelve: x²−x−6≤0',a:'−2≤x≤3',opts:_i4gshuf(['−2≤x≤3','x≤−2 ó x≥3','−3≤x≤2','x≤−3 ó x≥2']),mc:true,ste:'(x+2)(x−3)≤0. Dentro.'},
-    {_id:3,q:'Resuelve: x²−5x+6<0',a:'2&lt;x<3',opts:_i4gshuf(['2&lt;x<3','x<2 ó x>3','1&lt;x<6','x<1 ó x>6']),mc:true,ste:'(x−2)(x−3)<0.'},
+    {_id:3,q:'Resuelve: x²−5x+6<0',a:'2<x<3',opts:_i4gshuf(['2<x<3','x<2 ó x>3','1<x<6','x<1 ó x>6']),mc:true,ste:'(x−2)(x−3)<0.'},
     {_id:4,q:'Resuelve: x²+1>0',a:'para todo x real',opts:_i4gshuf(['para todo x real','x>0','x<−1 ó x>1','∅']),mc:true,ste:'x²≥0, x²+1≥1>0. Siempre.'},
     {_id:5,q:'Resuelve: 2x²−7x+3≥0',a:'x≤1/2 ó x≥3',opts:_i4gshuf(['x≤1/2 ó x≥3','1/2≤x≤3','x≥3','x≤1/2']),mc:true,ste:'(2x−1)(x−3)≥0. Fuera.'},
-    {_id:6,q:'La solución de x²<16 es:',a:'−4&lt;x<4',opts:_i4gshuf(['−4&lt;x<4','x<4','x>−4','x≤4']),mc:true,ste:'|x|<4 → −4&lt;x<4.'},
-    {_id:7,q:'Resuelve: (x−1)(x+3)<0',a:'−3&lt;x<1',opts:_i4gshuf(['−3&lt;x<1','x<−3 ó x>1','x>1','x<−3']),mc:true,ste:'Entre raíces −3 y 1.'},
+    {_id:6,q:'La solución de x²<16 es:',a:'−4<x<4',opts:_i4gshuf(['−4<x<4','x<4','x>−4','x≤4']),mc:true,ste:'|x|<4 → −4<x<4.'},
+    {_id:7,q:'Resuelve: (x−1)(x+3)<0',a:'−3<x<1',opts:_i4gshuf(['−3<x<1','x<−3 ó x>1','x>1','x<−3']),mc:true,ste:'Entre raíces −3 y 1.'},
     {_id:8,q:'La desigualdad x²≥0 tiene solución:',a:'todo x real',opts:_i4gshuf(['todo x real','x>0','x=0','x≠0']),mc:true,ste:'Cuadrado siempre ≥0.'},
-    {_id:9,q:'Resuelve: x²−x−2>0',a:'x<−1 ó x>2',opts:_i4gshuf(['x<−1 ó x>2','−1&lt;x<2','x>2','x<−1']),mc:true,ste:'(x+1)(x−2)>0. Fuera del intervalo.'},
+    {_id:9,q:'Resuelve: x²−x−2>0',a:'x<−1 ó x>2',opts:_i4gshuf(['x<−1 ó x>2','−1<x<2','x>2','x<−1']),mc:true,ste:'(x+1)(x−2)>0. Fuera del intervalo.'},
     {_id:10,q:'Resuelve: x²+3x≤0',a:'−3≤x≤0',opts:_i4gshuf(['−3≤x≤0','x≤−3 ó x≥0','x≤0','0≤x≤3']),mc:true,ste:'x(x+3)≤0. Entre raíces.'},
-    {_id:11,q:'Resuelve: x²−9>0',a:'x<−3 ó x>3',opts:_i4gshuf(['x<−3 ó x>3','−3&lt;x<3','x>3','x>9']),mc:true,ste:'(x+3)(x−3)>0.'},
+    {_id:11,q:'Resuelve: x²−9>0',a:'x<−3 ó x>3',opts:_i4gshuf(['x<−3 ó x>3','−3<x<3','x>3','x>9']),mc:true,ste:'(x+3)(x−3)>0.'},
     {_id:12,q:'¿Para qué x es x²≤25?',a:'−5≤x≤5',opts:_i4gshuf(['−5≤x≤5','x≤5','x≥−5','x=±5']),mc:true,ste:'|x|≤5.'},
-    {_id:13,q:'Resuelve: x²+2x−8<0',a:'−4&lt;x<2',opts:_i4gshuf(['−4&lt;x<2','x<−4 ó x>2','x>2','x<−4']),mc:true,ste:'(x+4)(x−2)<0.'},
-    {_id:14,q:'¿Para qué valores de x es x²>4x?',a:'x<0 ó x>4',opts:_i4gshuf(['x<0 ó x>4','0&lt;x<4','x>4','x<0']),mc:true,ste:'x²−4x>0 → x(x−4)>0.'},
+    {_id:13,q:'Resuelve: x²+2x−8<0',a:'−4<x<2',opts:_i4gshuf(['−4<x<2','x<−4 ó x>2','x>2','x<−4']),mc:true,ste:'(x+4)(x−2)<0.'},
+    {_id:14,q:'¿Para qué valores de x es x²>4x?',a:'x<0 ó x>4',opts:_i4gshuf(['x<0 ó x>4','0<x<4','x>4','x<0']),mc:true,ste:'x²−4x>0 → x(x−4)>0.'},
   ]);
 }
 _SKILL_META['i1a_ine_b2']={ico:'📐',lbl:'Desigualdades cuadráticas',qCount:4,gen:_genI1A_INE_B2};
@@ -9801,39 +9801,39 @@ _SKILL_META['i1a_ine_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Desigualdades',qCo
 
 function _genI1A_INE_B3(){
   return _i4gpick([
-    {_id:1,q:'Resuelve el sistema: {x>2, x<5}',a:'2&lt;x<5',opts:_i4gshuf(['2&lt;x<5','x>5','x<2','x=2 ó x=5']),mc:true,ste:'Intersección: (2,5).'},
-    {_id:2,q:'La unión de x<1 y x>4 es:',a:'x<1 ó x>4',opts:_i4gshuf(['x<1 ó x>4','1&lt;x<4','todo R','∅']),mc:true,ste:'Unión de dos intervalos disjuntos.'},
-    {_id:3,q:'Resuelve: −1<2x+1<5',a:'−1&lt;x<2',opts:_i4gshuf(['−1&lt;x<2','0&lt;x<2','−2&lt;x<4','−1&lt;x<3']),mc:true,ste:'−1−1<2x<5−1 → −2<2x<4 → −1&lt;x<2.'},
+    {_id:1,q:'Resuelve el sistema: {x>2, x<5}',a:'2<x<5',opts:_i4gshuf(['2<x<5','x>5','x<2','x=2 ó x=5']),mc:true,ste:'Intersección: (2,5).'},
+    {_id:2,q:'La unión de x<1 y x>4 es:',a:'x<1 ó x>4',opts:_i4gshuf(['x<1 ó x>4','1<x<4','todo R','∅']),mc:true,ste:'Unión de dos intervalos disjuntos.'},
+    {_id:3,q:'Resuelve: −1<2x+1<5',a:'−1<x<2',opts:_i4gshuf(['−1<x<2','0<x<2','−2<x<4','−1<x<3']),mc:true,ste:'−1−1<2x<5−1 → −2<2x<4 → −1<x<2.'},
     {_id:4,q:'El complemento de x≥3 es:',a:'x<3',opts:_i4gshuf(['x<3','x>3','x≤3','x=3']),mc:true,ste:'Complemento de [3,+∞) es (−∞,3).'},
-    {_id:5,q:'Resuelve: |x|≤4 e intersécalo con x>0',a:'0&lt;x≤4',opts:_i4gshuf(['0&lt;x≤4','x≤4','0≤x≤4','x>0']),mc:true,ste:'|x|≤4 → −4≤x≤4. Intersec. x>0 → 0&lt;x≤4.'},
-    {_id:6,q:'Resuelve la doble desigualdad: 1≤3x−2<7',a:'1≤x<3',opts:_i4gshuf(['1≤x<3','3≤x<9','0≤x<5','1&lt;x≤3']),mc:true,ste:'3≤3x<9 → 1≤x<3.'},
-    {_id:7,q:'Si 2&lt;x<6 y 4&lt;y<8, entonces x+y está en:',a:'(6,14)',opts:_i4gshuf(['(6,14)','(8,14)','(6,8)','(2,8)']),mc:true,ste:'Sumas de extremos: (2+4, 6+8)=(6,14).'},
-    {_id:8,q:'Resuelve: (x+1)/(x−2)>0',a:'x<−1 ó x>2',opts:_i4gshuf(['x<−1 ó x>2','−1&lt;x<2','x>2','x<−1']),mc:true,ste:'Mismos signos: ambos + (x>2) o ambos − (x<−1).'},
-    {_id:9,q:'La intersección de x>−2 y x<5 es:',a:'(−2,5)',opts:_i4gshuf(['(−2,5)','(−∞,5)','(−2,+∞)','[−2,5]']),mc:true,ste:'Conjunto de x con −2&lt;x<5.'},
-    {_id:10,q:'Resuelve: −3<5x+2<7',a:'−1&lt;x<1',opts:_i4gshuf(['−1&lt;x<1','−5&lt;x<5','−3&lt;x<7','0&lt;x<1']),mc:true,ste:'−5<5x<5 → −1&lt;x<1.'},
+    {_id:5,q:'Resuelve: |x|≤4 e intersécalo con x>0',a:'0<x≤4',opts:_i4gshuf(['0<x≤4','x≤4','0≤x≤4','x>0']),mc:true,ste:'|x|≤4 → −4≤x≤4. Intersec. x>0 → 0<x≤4.'},
+    {_id:6,q:'Resuelve la doble desigualdad: 1≤3x−2<7',a:'1≤x<3',opts:_i4gshuf(['1≤x<3','3≤x<9','0≤x<5','1<x≤3']),mc:true,ste:'3≤3x<9 → 1≤x<3.'},
+    {_id:7,q:'Si 2<x<6 y 4<y<8, entonces x+y está en:',a:'(6,14)',opts:_i4gshuf(['(6,14)','(8,14)','(6,8)','(2,8)']),mc:true,ste:'Sumas de extremos: (2+4, 6+8)=(6,14).'},
+    {_id:8,q:'Resuelve: (x+1)/(x−2)>0',a:'x<−1 ó x>2',opts:_i4gshuf(['x<−1 ó x>2','−1<x<2','x>2','x<−1']),mc:true,ste:'Mismos signos: ambos + (x>2) o ambos − (x<−1).'},
+    {_id:9,q:'La intersección de x>−2 y x<5 es:',a:'(−2,5)',opts:_i4gshuf(['(−2,5)','(−∞,5)','(−2,+∞)','[−2,5]']),mc:true,ste:'Conjunto de x con −2<x<5.'},
+    {_id:10,q:'Resuelve: −3<5x+2<7',a:'−1<x<1',opts:_i4gshuf(['−1<x<1','−5<x<5','−3<x<7','0<x<1']),mc:true,ste:'−5<5x<5 → −1<x<1.'},
     {_id:11,q:'¿Cuántos enteros satisfacen −2≤x<3?',a:'5',opts:_i4gshuf(['5','4','6','3']),mc:true,ste:'x=−2,−1,0,1,2 → 5 enteros.'},
-    {_id:12,q:'Resuelve: |x+2|<3',a:'−5&lt;x<1',opts:_i4gshuf(['−5&lt;x<1','x<1','x>−5','−3&lt;x<3']),mc:true,ste:'−3&lt;x+2<3 → −5&lt;x<1.'},
+    {_id:12,q:'Resuelve: |x+2|<3',a:'−5<x<1',opts:_i4gshuf(['−5<x<1','x<1','x>−5','−3<x<3']),mc:true,ste:'−3<x+2<3 → −5<x<1.'},
     {_id:13,q:'La unión de (−∞,3] y [5,+∞) es:',a:'x≤3 ó x≥5',opts:_i4gshuf(['x≤3 ó x≥5','3≤x≤5','todo R','(3,5)']),mc:true,ste:'Dos intervalos separados.'},
-    {_id:14,q:'Resuelve: 2x−1>3 y x+4<10',a:'2&lt;x<6',opts:_i4gshuf(['2&lt;x<6','x>2','x<6','x<2 ó x>6']),mc:true,ste:'x>2 y x<6.'},
+    {_id:14,q:'Resuelve: 2x−1>3 y x+4<10',a:'2<x<6',opts:_i4gshuf(['2<x<6','x>2','x<6','x<2 ó x>6']),mc:true,ste:'x>2 y x<6.'},
   ]);
 }
 _SKILL_META['i1a_ine_b3']={ico:'📐',lbl:'Sistemas de desigualdades e intervalos combinados',qCount:4,gen:_genI1A_INE_B3};
 
 function _genI1A_INE_B4(){
   return _i4gpick([
-    {_id:1,q:'¿Cuántos enteros satisfacen 2&lt;x²<10?',a:'4',opts:_i4gshuf(['4','2','6','8']),mc:true,ste:'x=±2, ±3 → 4 enteros (|x|: 2 y 3, cada uno ±).'},
+    {_id:1,q:'¿Cuántos enteros satisfacen 2<x²<10?',a:'4',opts:_i4gshuf(['4','2','6','8']),mc:true,ste:'x=±2, ±3 → 4 enteros (|x|: 2 y 3, cada uno ±).'},
     {_id:2,q:'Halla los enteros que satisfacen: x²−2x−3≤0',a:'−1,0,1,2,3',opts:_i4gshuf(['−1,0,1,2,3','0,1,2','−1,0,1','0,1,2,3']),mc:true,ste:'(x+1)(x−3)≤0 → −1≤x≤3. Enteros: −1,0,1,2,3.'},
     {_id:3,q:'Resuelve: x/(x+1)<1',a:'x>−1',opts:_i4gshuf(['x>−1','x<−1','x<0','x>0']),mc:true,ste:'x/(x+1)−1<0 → −1/(x+1)<0 → x+1>0 → x>−1.'},
-    {_id:4,q:'La desigualdad 2x+3>x+5 y 3x−1<2x+4 tiene solución:',a:'2&lt;x<5',opts:_i4gshuf(['2&lt;x<5','x>2','x<5','∅']),mc:true,ste:'x>2 y x<5 → 2&lt;x<5.'},
-    {_id:5,q:'Halla k tal que x²+kx+4>0 para todo x.',a:'−4&lt;k<4',opts:_i4gshuf(['−4&lt;k<4','k>4','k<−4','k=±4']),mc:true,ste:'Δ<0: k²−16<0 → |k|<4.'},
-    {_id:6,q:'Resuelve: 3/(x−1)≥1',a:'1&lt;x≤4',opts:_i4gshuf(['1&lt;x≤4','x≥4','x≤4','x≥1']),mc:true,ste:'3/(x−1)−1≥0 → (4−x)/(x−1)≥0 → 1&lt;x≤4.'},
+    {_id:4,q:'La desigualdad 2x+3>x+5 y 3x−1<2x+4 tiene solución:',a:'2<x<5',opts:_i4gshuf(['2<x<5','x>2','x<5','∅']),mc:true,ste:'x>2 y x<5 → 2<x<5.'},
+    {_id:5,q:'Halla k tal que x²+kx+4>0 para todo x.',a:'−4<k<4',opts:_i4gshuf(['−4<k<4','k>4','k<−4','k=±4']),mc:true,ste:'Δ<0: k²−16<0 → |k|<4.'},
+    {_id:6,q:'Resuelve: 3/(x−1)≥1',a:'1<x≤4',opts:_i4gshuf(['1<x≤4','x≥4','x≤4','x≥1']),mc:true,ste:'3/(x−1)−1≥0 → (4−x)/(x−1)≥0 → 1<x≤4.'},
     {_id:7,q:'Resuelve: x²+2x+5>0',a:'todo x real',opts:_i4gshuf(['todo x real','x>−1','x<−5','∅']),mc:true,ste:'Δ=4−20<0 y a>0. Siempre positiva.'},
     {_id:8,q:'El número de enteros solución de x²≤9 es:',a:'7',opts:_i4gshuf(['7','6','9','4']),mc:true,ste:'−3≤x≤3 → enteros: −3,−2,−1,0,1,2,3 = 7.'},
-    {_id:9,q:'¿Cuántos enteros satisfacen x²<25?',a:'9',opts:_i4gshuf(['9','10','5','4']),mc:true,ste:'−5&lt;x<5 → x=−4,...,4 → 9 enteros.'},
-    {_id:10,q:'Resuelve: (x+2)/(x−1)>0',a:'x<−2 ó x>1',opts:_i4gshuf(['x<−2 ó x>1','−2&lt;x<1','x>1','x<−2']),mc:true,ste:'Mismos signos: ambos + ó ambos −.'},
+    {_id:9,q:'¿Cuántos enteros satisfacen x²<25?',a:'9',opts:_i4gshuf(['9','10','5','4']),mc:true,ste:'−5<x<5 → x=−4,...,4 → 9 enteros.'},
+    {_id:10,q:'Resuelve: (x+2)/(x−1)>0',a:'x<−2 ó x>1',opts:_i4gshuf(['x<−2 ó x>1','−2<x<1','x>1','x<−2']),mc:true,ste:'Mismos signos: ambos + ó ambos −.'},
     {_id:11,q:'Halla k tal que x²+2x+k>0 para todo x',a:'k>1',opts:_i4gshuf(['k>1','k>0','k<1','k=1']),mc:true,ste:'Δ<0: 4−4k<0 → k>1.'},
-    {_id:12,q:'La desigualdad |2x−4|>6 tiene solución:',a:'x<−1 ó x>5',opts:_i4gshuf(['x<−1 ó x>5','−1&lt;x<5','x>5','x<−1']),mc:true,ste:'2x−4<−6→x<−1; 2x−4>6→x>5.'},
-    {_id:13,q:'¿Para qué enteros positivos se cumple x²−3x<10?',a:'1,2,3,4',opts:_i4gshuf(['1,2,3,4','1,2,3','2,3,4','1,2,3,4,5']),mc:true,ste:'x²−3x−10<0 → (x+2)(x−5)<0 → −2&lt;x<5. Enteros positivos: 1,2,3,4.'},
+    {_id:12,q:'La desigualdad |2x−4|>6 tiene solución:',a:'x<−1 ó x>5',opts:_i4gshuf(['x<−1 ó x>5','−1<x<5','x>5','x<−1']),mc:true,ste:'2x−4<−6→x<−1; 2x−4>6→x>5.'},
+    {_id:13,q:'¿Para qué enteros positivos se cumple x²−3x<10?',a:'1,2,3,4',opts:_i4gshuf(['1,2,3,4','1,2,3','2,3,4','1,2,3,4,5']),mc:true,ste:'x²−3x−10<0 → (x+2)(x−5)<0 → −2<x<5. Enteros positivos: 1,2,3,4.'},
     {_id:14,q:'Resuelve: 2/(x+1)≤1',a:'x≤1 (x≠−1)',opts:_i4gshuf(['x≤1 (x≠−1)','x≥1','x>−1','x<−1 ó x≥1']),mc:true,ste:'2/(x+1)−1≤0 → (1−x)/(x+1)≤0. Solución: x<−1 ó x≥1.'},
   ]);
 }
@@ -9865,19 +9865,19 @@ _SKILL_META['i1a_vab_b1']={ico:'📐',lbl:'Ecuaciones con valor absoluto básico
 
 function _genI1A_VAB_B2(){
   return _i4gpick([
-    {_id:1,q:'Resuelve |x|<3',a:'−3&lt;x<3',opts:_i4gshuf(['−3&lt;x<3','x<3','x>−3','x≤3']),mc:true,ste:'|x|&lt;a → −a&lt;x&lt;a.'},
-    {_id:2,q:'Resuelve |x|>2',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','−2&lt;x<2','x>2','x<2']),mc:true,ste:'|x|>a → x<−a ó x>a.'},
-    {_id:3,q:'Resuelve |2x−1|<5',a:'−2&lt;x<3',opts:_i4gshuf(['−2&lt;x<3','x<3','x>−2','0&lt;x<5']),mc:true,ste:'−5<2x−1<5 → −4<2x<6 → −2&lt;x<3.'},
+    {_id:1,q:'Resuelve |x|<3',a:'−3<x<3',opts:_i4gshuf(['−3<x<3','x<3','x>−3','x≤3']),mc:true,ste:'|x|<a → −a<x<a.'},
+    {_id:2,q:'Resuelve |x|>2',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','−2<x<2','x>2','x<2']),mc:true,ste:'|x|>a → x<−a ó x>a.'},
+    {_id:3,q:'Resuelve |2x−1|<5',a:'−2<x<3',opts:_i4gshuf(['−2<x<3','x<3','x>−2','0<x<5']),mc:true,ste:'−5<2x−1<5 → −4<2x<6 → −2<x<3.'},
     {_id:4,q:'Resuelve |x+3|≥1',a:'x≤−4 ó x≥−2',opts:_i4gshuf(['x≤−4 ó x≥−2','−4≤x≤−2','x≥−2','x≤−4']),mc:true,ste:'x+3≤−1 → x≤−4; x+3≥1 → x≥−2.'},
     {_id:5,q:'Resuelve |3x−6|≤9',a:'−1≤x≤5',opts:_i4gshuf(['−1≤x≤5','x≤5','x≥−1','0≤x≤6']),mc:true,ste:'−9≤3x−6≤9 → −3≤3x≤15 → −1≤x≤5.'},
     {_id:6,q:'La desigualdad |x−2|<0 tiene:',a:'ninguna solución',opts:_i4gshuf(['ninguna solución','x=2','todo x real','x≠2']),mc:true,ste:'|·|≥0 siempre, nunca <0.'},
     {_id:7,q:'Resuelve |x−5|≤3',a:'2≤x≤8',opts:_i4gshuf(['2≤x≤8','x≤8','x≥2','5−3≤x≤5+3']),mc:true,ste:'−3≤x−5≤3 → 2≤x≤8.'},
-    {_id:8,q:'Resuelve |4x|>8',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','|x|>2','x>2','−2&lt;x<2']),mc:true,ste:'4|x|>8 → |x|>2.'},
-    {_id:9,q:'Resuelve |x|<3',a:'−3&lt;x<3',opts:_i4gshuf(['−3&lt;x<3','x<3','x>−3','x<−3 ó x>3']),mc:true,ste:'Definición: −3&lt;x<3.'},
-    {_id:10,q:'Resuelve |x|>2',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','−2&lt;x<2','x>2','x<−2']),mc:true,ste:'Dos ramas opuestas.'},
+    {_id:8,q:'Resuelve |4x|>8',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','|x|>2','x>2','−2<x<2']),mc:true,ste:'4|x|>8 → |x|>2.'},
+    {_id:9,q:'Resuelve |x|<3',a:'−3<x<3',opts:_i4gshuf(['−3<x<3','x<3','x>−3','x<−3 ó x>3']),mc:true,ste:'Definición: −3<x<3.'},
+    {_id:10,q:'Resuelve |x|>2',a:'x<−2 ó x>2',opts:_i4gshuf(['x<−2 ó x>2','−2<x<2','x>2','x<−2']),mc:true,ste:'Dos ramas opuestas.'},
     {_id:11,q:'Resuelve |x−1|≤3',a:'−2≤x≤4',opts:_i4gshuf(['−2≤x≤4','x≤4','x≥−2','1≤x≤3']),mc:true,ste:'−3≤x−1≤3 → −2≤x≤4.'},
-    {_id:12,q:'Resuelve |2x+1|<5',a:'−3&lt;x<2',opts:_i4gshuf(['−3&lt;x<2','x<2','x>−3','−5&lt;x<5']),mc:true,ste:'−5<2x+1<5 → −6<2x<4 → −3&lt;x<2.'},
-    {_id:13,q:'La solución de |x+2|>5 es:',a:'x<−7 ó x>3',opts:_i4gshuf(['x<−7 ó x>3','−7&lt;x<3','x>3','x<−7']),mc:true,ste:'x+2<−5→x<−7; x+2>5→x>3.'},
+    {_id:12,q:'Resuelve |2x+1|<5',a:'−3<x<2',opts:_i4gshuf(['−3<x<2','x<2','x>−3','−5<x<5']),mc:true,ste:'−5<2x+1<5 → −6<2x<4 → −3<x<2.'},
+    {_id:13,q:'La solución de |x+2|>5 es:',a:'x<−7 ó x>3',opts:_i4gshuf(['x<−7 ó x>3','−7<x<3','x>3','x<−7']),mc:true,ste:'x+2<−5→x<−7; x+2>5→x>3.'},
     {_id:14,q:'¿Cuántos enteros satisfacen |x|≤2?',a:'5',opts:_i4gshuf(['5','4','3','6']),mc:true,ste:'x=−2,−1,0,1,2 → 5 enteros.'},
   ]);
 }
@@ -9911,8 +9911,8 @@ function _genI1A_VAB_B4(){
     {_id:1,q:'Resuelve |x−1|+|x+1|≤4',a:'−2≤x≤2',opts:_i4gshuf(['−2≤x≤2','x≤2','x≥−2','todo R']),mc:true,ste:'Analizar casos por signo. Resultado: [−2,2].'},
     {_id:2,q:'Resuelve |x²−x−6|=6',a:'x=3, x=−2, x=0, x=4',opts:_i4gshuf(['x=3, x=−2, x=0, x=4','x=3','x=±2','x=0 ó x=4']),mc:true,ste:'x²−x−6=6→x²−x−12=0→x=4,−3; x²−x−6=−6→x(x−1)=0→x=0,1.'},
     {_id:3,q:'El número de soluciones enteras de |x|+|x−4|=8 es:',a:'2',opts:_i4gshuf(['2','1','∞','0']),mc:true,ste:'x=6 y x=−2. Dos enteros.'},
-    {_id:4,q:'Resuelve |x−2|<|x+4|',a:'x>−1',opts:_i4gshuf(['x>−1','x<−1','−4&lt;x<2','x<2']),mc:true,ste:'(x−2)²<(x+4)² → x²−4x+4&lt;x²+8x+16 → −12x<12 → x>−1.'},
-    {_id:5,q:'|x²−5x+6|≤0 tiene como solución:',a:'x=2 ó x=3',opts:_i4gshuf(['x=2 ó x=3','todo R','∅','2&lt;x<3']),mc:true,ste:'Solo posible si x²−5x+6=0 → x=2 ó x=3.'},
+    {_id:4,q:'Resuelve |x−2|<|x+4|',a:'x>−1',opts:_i4gshuf(['x>−1','x<−1','−4<x<2','x<2']),mc:true,ste:'(x−2)²<(x+4)² → x²−4x+4<x²+8x+16 → −12x<12 → x>−1.'},
+    {_id:5,q:'|x²−5x+6|≤0 tiene como solución:',a:'x=2 ó x=3',opts:_i4gshuf(['x=2 ó x=3','todo R','∅','2<x<3']),mc:true,ste:'Solo posible si x²−5x+6=0 → x=2 ó x=3.'},
     {_id:6,q:'Calcula la distancia entre −3 y 5 en la recta numérica.',a:'8',opts:_i4gshuf(['8','2','−8','15']),mc:true,ste:'|5−(−3)|=|8|=8.'},
     {_id:7,q:'Determina para qué x es |2x+3|=2x+3.',a:'x≥−3/2',opts:_i4gshuf(['x≥−3/2','x≤−3/2','x>0','todo x']),mc:true,ste:'Cuando el argumento ≥0: 2x+3≥0 → x≥−3/2.'},
     {_id:8,q:'Resuelve |x+2|+|x−2|=4',a:'−2≤x≤2',opts:_i4gshuf(['−2≤x≤2','x=0','x=±2','todo R']),mc:true,ste:'Entre −2 y 2 la suma es |x+2|+(2−x)=2x+2+2−x... evaluar: siempre =4.'},
@@ -11089,10 +11089,10 @@ function _genOl1arDiv_B3(){
     {_id:15,q:'Al dividir N entre 6 el cociente es 7 y la división es exacta (R=0). ¿Cuánto vale N?',a:'42',opts:_i4gshuf(['42','43','48','36']),mc:true,ste:'N = 6×7 + 0 = 42.'},
     {_id:16,q:'Si B = 7×q + 0, ¿cuál afirmación es correcta sobre B?',a:'B es múltiplo de 7',opts:_i4gshuf(['B es múltiplo de 7','B tiene residuo 1 al dividirse por 7','B = q','B < 7']),mc:true,ste:'R=0 significa que la división es exacta, es decir B es múltiplo de 7.'},
     // P5: Hallar x+y dados dos ecuaciones de división
-    {_id:17,q:'75 = 9×8 + x y 62 = 8×8 − y (con 0≤x<9, 0&lt;y≤8). Halla x+y.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'75−72=3 → x=3. 64−62=2 → y=2. x+y=5.'},
-    {_id:18,q:'58 = 7×8 + x y 50 = 9×6 − y (con 0≤x<7, 0&lt;y≤9). Halla x+y.',a:'6',opts:_i4gshuf(['6','5','7','8']),mc:true,ste:'58−56=2 → x=2. 54−50=4 → y=4. x+y=6.'},
-    {_id:19,q:'97 = 11×8 + x y 80 = 9×9 − y (con 0≤x<11, 0&lt;y≤9). Halla x+y.',a:'10',opts:_i4gshuf(['10','9','11','12']),mc:true,ste:'97−88=9 → x=9. 81−80=1 → y=1. x+y=10.'},
-    {_id:20,q:'50 = 6×8 + x y 71 = 8×9 − y (con 0≤x<6, 0&lt;y≤8). Halla x+y.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'50−48=2 → x=2. 72−71=1 → y=1. x+y=3.'},
+    {_id:17,q:'75 = 9×8 + x y 62 = 8×8 − y (con 0≤x<9, 0<y≤8). Halla x+y.',a:'5',opts:_i4gshuf(['5','4','6','7']),mc:true,ste:'75−72=3 → x=3. 64−62=2 → y=2. x+y=5.'},
+    {_id:18,q:'58 = 7×8 + x y 50 = 9×6 − y (con 0≤x<7, 0<y≤9). Halla x+y.',a:'6',opts:_i4gshuf(['6','5','7','8']),mc:true,ste:'58−56=2 → x=2. 54−50=4 → y=4. x+y=6.'},
+    {_id:19,q:'97 = 11×8 + x y 80 = 9×9 − y (con 0≤x<11, 0<y≤9). Halla x+y.',a:'10',opts:_i4gshuf(['10','9','11','12']),mc:true,ste:'97−88=9 → x=9. 81−80=1 → y=1. x+y=10.'},
+    {_id:20,q:'50 = 6×8 + x y 71 = 8×9 − y (con 0≤x<6, 0<y≤8). Halla x+y.',a:'3',opts:_i4gshuf(['3','2','4','5']),mc:true,ste:'50−48=2 → x=2. 72−71=1 → y=1. x+y=3.'},
   ]);
 }
 _SKILL_META['ol1ar_div_b3']={ico:'📐',lbl:'División euclidiana: B = Â×q + R',qCount:4,gen:_genOl1arDiv_B3,plantillas:['Dado B y Â, hallar q+R / q×R / q−R','Dado Â, q, R, hallar B; o dado B, q, R, hallar Â','Hallar solo el residuo R','Propiedades de la división aplicadas','Hallar x+y dados dos ecuaciones de división']};
@@ -12586,7 +12586,7 @@ function _genSir1mAre_B2(){var sh=_i4gshuf;return _i4gpick([
   {_id:11,q:'Rectángulo 12×5 cm con trapecio adosado de bases 12 y 6, altura 4. Área total:',a:'96 cm²',opts:sh(['96 cm²','60 cm²','120 cm²','84 cm²']),mc:true,ste:'A=60+(12+6)×4/2=60+36=96 cm².'},
   {_id:12,q:'Rectángulo 10×8 cm con un rectángulo interior 4×3 recortado. Área restante:',a:'68 cm²',opts:sh(['68 cm²','80 cm²','60 cm²','72 cm²']),mc:true,ste:'A=10×8−4×3=80−12=68 cm².'},
   {_id:13,q:'¿Cuál es la fórmula del área del trapecio?',a:'A = (B + b) × h / 2',opts:sh(['A = (B + b) × h / 2','A = B × h','A = (B − b) × h','A = B + b + h']),mc:true,ste:'El área del trapecio usa ambas bases (B y b) y la altura h.'},
-  {_id:14,q:'Un trapecio y un paralelogramo tienen la misma base mayor y la misma altura. ¿Cuál tiene mayor área?',a:'El paralelogramo',opts:sh(['El paralelogramo','El trapecio','Son iguales','Depende de la altura']),mc:true,ste:'A_par=B×h; A_trap=(B+b)×h/2&lt;B×h si b&lt;B.'},
+  {_id:14,q:'Un trapecio y un paralelogramo tienen la misma base mayor y la misma altura. ¿Cuál tiene mayor área?',a:'El paralelogramo',opts:sh(['El paralelogramo','El trapecio','Son iguales','Depende de la altura']),mc:true,ste:'A_par=B×h; A_trap=(B+b)×h/2<B×h si b<B.'},
   {_id:15,q:'Un triángulo tiene base igual a la altura. El área es 32 cm². Halla la base.',a:'8 cm',opts:sh(['8 cm','4 cm','16 cm','6 cm']),mc:true,ste:'A=b²/2=32→b²=64→b=8 cm.'},
   {_id:16,q:'V/F: "El área del trapecio isósceles es siempre mayor que la del triángulo con la misma base mayor y misma altura."',a:'Verdadero',opts:sh(['Verdadero','Falso']),mc:true,ste:'A_trap=(B+b)×h/2>B×h/2=A_tri porque (B+b)>B.'},
   {_id:17,q:'Un triángulo de base 9 cm y altura 6 cm. Su área es...',a:'27 cm²',opts:sh(['27 cm²','54 cm²','18 cm²','45 cm²']),mc:true,ste:'A=9×6/2=27 cm².'},
@@ -16629,7 +16629,7 @@ function _genI1trLar_B8(){
   {_id:10,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="125.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="141.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="125.0" x2="195.1" y2="179.6" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,179.6 184.9,175.5 189.3,170.3" fill="#94a3b8"/><text x="206.6" y="189.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="125.0" x2="215.0" y2="125.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,125.0 204.6,128.4 204.6,121.6" fill="#94a3b8"/><text x="230.0" y="125.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="125.0" x2="195.1" y2="70.4" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,70.4 189.3,79.7 184.9,74.5" fill="#94a3b8"/><text x="206.6" y="60.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M176.0,163.6 A60.0,60.0 0 0 0 190.0,125.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="205.2" y="152.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">L₁</text><path d="M220.0,125.0 A90.0,90.0 0 0 0 198.9,67.1" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="233.4" y="87.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">L₂</text></svg></div>Una pista está formada por dos arcos consecutivos desde un mismo punto O: el primero con radio R₁=9 cm y ángulo central θ₁=π/3 rad, el segundo con radio R₂=12 cm y ángulo central θ₂=π/6 rad. Halla la longitud total de la pista (L₁+L₂).',a:'5π cm',opts:_i4gshuf(['5π cm','6π cm','3π cm','10π cm']),mc:true,ste:'L₁=θ₁R₁=π/3 rad×9 cm=3π cm; L₂=θ₂R₂=π/6 rad×12 cm=2π cm. L₁+L₂=5π cm.'},
   {_id:11,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="125.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="141.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="125.0" x2="195.1" y2="179.6" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,179.6 184.9,175.5 189.3,170.3" fill="#94a3b8"/><text x="206.6" y="189.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="125.0" x2="215.0" y2="125.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,125.0 204.6,128.4 204.6,121.6" fill="#94a3b8"/><text x="230.0" y="125.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="125.0" x2="195.1" y2="70.4" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,70.4 189.3,79.7 184.9,74.5" fill="#94a3b8"/><text x="206.6" y="60.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M176.0,163.6 A60.0,60.0 0 0 0 190.0,125.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="205.2" y="152.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">L₁</text><path d="M220.0,125.0 A90.0,90.0 0 0 0 198.9,67.1" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="233.4" y="87.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">L₂</text></svg></div>Una pista está formada por dos arcos consecutivos desde un mismo punto O: el primero con radio R₁=16 m y ángulo central θ₁=π/4 rad, el segundo con radio R₂=8 m y ángulo central θ₂=π/8 rad. Halla la longitud total de la pista (L₁+L₂).',a:'5π m',opts:_i4gshuf(['5π m','6π m','4π m','10π m']),mc:true,ste:'L₁=θ₁R₁=π/4 rad×16 m=4π m; L₂=θ₂R₂=π/8 rad×8 m=π m. L₁+L₂=5π m.'},
   {_id:12,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="125.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="141.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="125.0" x2="195.1" y2="179.6" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,179.6 184.9,175.5 189.3,170.3" fill="#94a3b8"/><text x="206.6" y="189.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="125.0" x2="215.0" y2="125.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,125.0 204.6,128.4 204.6,121.6" fill="#94a3b8"/><text x="230.0" y="125.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="125.0" x2="195.1" y2="70.4" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,70.4 189.3,79.7 184.9,74.5" fill="#94a3b8"/><text x="206.6" y="60.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M176.0,163.6 A60.0,60.0 0 0 0 190.0,125.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="205.2" y="152.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">L₁</text><path d="M220.0,125.0 A90.0,90.0 0 0 0 198.9,67.1" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="233.4" y="87.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">L₂</text></svg></div>Una pista está formada por dos arcos consecutivos desde un mismo punto O: el primero con radio R₁=15 cm y ángulo central θ₁=π/5 rad, el segundo con radio R₂=20 cm y ángulo central θ₂=π/10 rad. Halla la longitud total de la pista (L₁+L₂).',a:'5π cm',opts:_i4gshuf(['5π cm','6π cm','3π cm','10π cm']),mc:true,ste:'L₁=θ₁R₁=π/5 rad×15 cm=3π cm; L₂=θ₂R₂=π/10 rad×20 cm=2π cm. L₁+L₂=5π cm.'},
-  {_id:13,q:'V/F: En un trapecio circular con radios R₁&lt;R₂ y el mismo ángulo central θ, siempre se cumple L₁R₂=L₂R₁.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: como L₁=θR₁ y L₂=θR₂, se cumple L₁/R₁=L₂/R₂=θ, y al multiplicar en cruz resulta L₁R₂=L₂R₁.'},
+  {_id:13,q:'V/F: En un trapecio circular con radios R₁<R₂ y el mismo ángulo central θ, siempre se cumple L₁R₂=L₂R₁.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: como L₁=θR₁ y L₂=θR₂, se cumple L₁/R₁=L₂/R₂=θ, y al multiplicar en cruz resulta L₁R₂=L₂R₁.'},
   {_id:14,q:'V/F: El ancho h=R₂-R₁ de un trapecio circular se calcula como h=(L₂-L₁)/θ.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: L₂-L₁=θ(R₂-R₁)=θh, por lo tanto h=(L₂-L₁)/θ.'},
   {_id:15,q:'V/F: En un trapecio circular, si el ángulo central θ se duplica manteniendo el mismo ancho h, la diferencia L₂-L₁ se mantiene igual.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: la diferencia L₂-L₁=θh es directamente proporcional a θ; si θ se duplica, la diferencia también se duplica.'},
   {_id:16,q:'V/F: La longitud total de una pista formada por dos arcos consecutivos de distinto radio y ángulo es la suma de cada arco calculado por separado (θ₁R₁+θ₂R₂).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al ser arcos independientes (con su propio radio y ángulo), la longitud total es simplemente la suma de cada L=θR.'},
@@ -17303,10 +17303,10 @@ _SKILL_META['i1ar_cj_b6']={ico:'🖼',lbl:'Diferencia simétrica (A△B)',qCount
 
 function _genI1arCj_B7(){
   return _i4gpick([
-  {_id:1,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {3n / n∈ℕ; 3&lt;n<4}<br>B) {n+1 / n∈ℕ; 0&lt;n<5}<br>C) {4n-2 / n∈ℕ; 1≤n≤4}<br>D) {n² / n∈ℕ; 0&lt;n<4}<br>E) {2n / n∈ℕ; 1&lt;n<6}',a:'{3n / n∈ℕ; 3&lt;n<4}',opts:_i4gshuf(['{3n / n∈ℕ; 3&lt;n<4}','{n+1 / n∈ℕ; 0&lt;n<5}','{4n-2 / n∈ℕ; 1≤n≤4}','{n² / n∈ℕ; 0&lt;n<4}','{2n / n∈ℕ; 1&lt;n<6}']),mc:true,ste:'En la opción A se exige 3&lt;n<4 con n∈ℕ; no existe ningún número natural estrictamente entre 3 y 4, por lo tanto ese conjunto es vacío (las demás opciones sí tienen naturales que cumplen su rango).'},
-  {_id:2,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {3n / n∈ℕ; 2&lt;n<3}<br>B) {n+1 / n∈ℕ; 0&lt;n<5}<br>C) {4n-2 / n∈ℕ; 1≤n≤3}<br>D) {n² / n∈ℕ; 0&lt;n<4}<br>E) {2n / n∈ℕ; 1&lt;n<6}',a:'{3n / n∈ℕ; 2&lt;n<3}',opts:_i4gshuf(['{3n / n∈ℕ; 2&lt;n<3}','{n+1 / n∈ℕ; 0&lt;n<5}','{4n-2 / n∈ℕ; 1≤n≤3}','{n² / n∈ℕ; 0&lt;n<4}','{2n / n∈ℕ; 1&lt;n<6}']),mc:true,ste:'En la opción A se exige 2&lt;n<3 con n∈ℕ; no existe ningún número natural estrictamente entre 2 y 3, por lo tanto ese conjunto es vacío.'},
-  {_id:3,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {n-1 / n∈ℕ; 1≤n≤4}<br>B) {5n / n∈ℕ; 4&lt;n<5}<br>C) {2n+3 / n∈ℕ; 0≤n≤2}<br>D) {n² -1/ n∈ℕ; 1≤n≤3}<br>E) {3n+1 / n∈ℕ; 0≤n≤3}',a:'{5n / n∈ℕ; 4&lt;n<5}',opts:_i4gshuf(['{n-1 / n∈ℕ; 1≤n≤4}','{5n / n∈ℕ; 4&lt;n<5}','{2n+3 / n∈ℕ; 0≤n≤2}','{n² -1/ n∈ℕ; 1≤n≤3}','{3n+1 / n∈ℕ; 0≤n≤3}']),mc:true,ste:'En la opción B se exige 4&lt;n<5 con n∈ℕ; no existe ningún natural estrictamente entre 4 y 5, por lo tanto ese conjunto es vacío.'},
-  {_id:4,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {2n / n∈ℕ; 0≤n≤3}<br>B) {n+5 / n∈ℕ; 1≤n≤2}<br>C) {7n / n∈ℕ; 5&lt;n<6}<br>D) {n² / n∈ℕ; 0≤n≤2}<br>E) {3n-2 / n∈ℕ; 1≤n≤4}',a:'{7n / n∈ℕ; 5&lt;n<6}',opts:_i4gshuf(['{2n / n∈ℕ; 0≤n≤3}','{n+5 / n∈ℕ; 1≤n≤2}','{7n / n∈ℕ; 5&lt;n<6}','{n² / n∈ℕ; 0≤n≤2}','{3n-2 / n∈ℕ; 1≤n≤4}']),mc:true,ste:'En la opción C se exige 5&lt;n<6 con n∈ℕ; no existe ningún natural estrictamente entre 5 y 6, por lo tanto ese conjunto es vacío.'},
+  {_id:1,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {3n / n∈ℕ; 3<n<4}<br>B) {n+1 / n∈ℕ; 0<n<5}<br>C) {4n-2 / n∈ℕ; 1≤n≤4}<br>D) {n² / n∈ℕ; 0<n<4}<br>E) {2n / n∈ℕ; 1<n<6}',a:'{3n / n∈ℕ; 3<n<4}',opts:_i4gshuf(['{3n / n∈ℕ; 3<n<4}','{n+1 / n∈ℕ; 0<n<5}','{4n-2 / n∈ℕ; 1≤n≤4}','{n² / n∈ℕ; 0<n<4}','{2n / n∈ℕ; 1<n<6}']),mc:true,ste:'En la opción A se exige 3<n<4 con n∈ℕ; no existe ningún número natural estrictamente entre 3 y 4, por lo tanto ese conjunto es vacío (las demás opciones sí tienen naturales que cumplen su rango).'},
+  {_id:2,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {3n / n∈ℕ; 2<n<3}<br>B) {n+1 / n∈ℕ; 0<n<5}<br>C) {4n-2 / n∈ℕ; 1≤n≤3}<br>D) {n² / n∈ℕ; 0<n<4}<br>E) {2n / n∈ℕ; 1<n<6}',a:'{3n / n∈ℕ; 2<n<3}',opts:_i4gshuf(['{3n / n∈ℕ; 2<n<3}','{n+1 / n∈ℕ; 0<n<5}','{4n-2 / n∈ℕ; 1≤n≤3}','{n² / n∈ℕ; 0<n<4}','{2n / n∈ℕ; 1<n<6}']),mc:true,ste:'En la opción A se exige 2<n<3 con n∈ℕ; no existe ningún número natural estrictamente entre 2 y 3, por lo tanto ese conjunto es vacío.'},
+  {_id:3,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {n-1 / n∈ℕ; 1≤n≤4}<br>B) {5n / n∈ℕ; 4<n<5}<br>C) {2n+3 / n∈ℕ; 0≤n≤2}<br>D) {n² -1/ n∈ℕ; 1≤n≤3}<br>E) {3n+1 / n∈ℕ; 0≤n≤3}',a:'{5n / n∈ℕ; 4<n<5}',opts:_i4gshuf(['{n-1 / n∈ℕ; 1≤n≤4}','{5n / n∈ℕ; 4<n<5}','{2n+3 / n∈ℕ; 0≤n≤2}','{n² -1/ n∈ℕ; 1≤n≤3}','{3n+1 / n∈ℕ; 0≤n≤3}']),mc:true,ste:'En la opción B se exige 4<n<5 con n∈ℕ; no existe ningún natural estrictamente entre 4 y 5, por lo tanto ese conjunto es vacío.'},
+  {_id:4,q:'Indica cuál de los siguientes conjuntos es un conjunto vacío:<br>A) {2n / n∈ℕ; 0≤n≤3}<br>B) {n+5 / n∈ℕ; 1≤n≤2}<br>C) {7n / n∈ℕ; 5<n<6}<br>D) {n² / n∈ℕ; 0≤n≤2}<br>E) {3n-2 / n∈ℕ; 1≤n≤4}',a:'{7n / n∈ℕ; 5<n<6}',opts:_i4gshuf(['{2n / n∈ℕ; 0≤n≤3}','{n+5 / n∈ℕ; 1≤n≤2}','{7n / n∈ℕ; 5<n<6}','{n² / n∈ℕ; 0≤n≤2}','{3n-2 / n∈ℕ; 1≤n≤4}']),mc:true,ste:'En la opción C se exige 5<n<6 con n∈ℕ; no existe ningún natural estrictamente entre 5 y 6, por lo tanto ese conjunto es vacío.'},
   {_id:5,q:'Sabiendo que el siguiente conjunto es unitario: A = {x+5; 2x−5}. Calcula x².',a:'100',opts:_i4gshuf(['100','102','98','104']),mc:true,ste:'Como A es unitario: x+5 = 2x−5 → x = 10. x² = 10² = 100.'},
   {_id:6,q:'Sabiendo que el siguiente conjunto es unitario: A = {x+5; 2x−7}. Calcula x+5.',a:'17',opts:_i4gshuf(['17','19','15','21']),mc:true,ste:'Como A es unitario: x+5 = 2x−7 → x = 12. x+5 = 17.'},
   {_id:7,q:'Sabiendo que el siguiente conjunto es unitario: A = {x+5; 2x−3}. Calcula x².',a:'64',opts:_i4gshuf(['64','66','62','68']),mc:true,ste:'Como A es unitario: x+5 = 2x−3 → x = 8. x² = 8² = 64.'},
@@ -20222,15 +20222,15 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
       const _tSec = ans.timeSec > 0 ? ans.timeSec : null;
       const _tTag = _tSec ? ' <span style="font-size:10px;color:rgba(255,255,255,0.3);margin-left:6px">⏱ ' + _tSec + 's</span>' : '';
       const ansLine = ans.correct
-        ? '<span style="font-size:11px;color:#39ff7a">Tu respuesta: ' + ans.given + '</span>' + fixedTag + _tTag
-        : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + ans.given + '</span>'
+        ? '<span style="font-size:11px;color:#39ff7a">Tu respuesta: ' + _escStrayLt(ans.given) + '</span>' + fixedTag + _tTag
+        : '<span style="font-size:11px;color:#f87171">Tu respuesta: ' + _escStrayLt(ans.given) + '</span>'
           + ' <span style="font-size:11px;color:rgba(255,255,255,0.4)">·</span>'
-          + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + ans.a + '</span>' + _tTag;
+          + ' <span style="font-size:11px;color:#39ff7a">Correcta: ' + _escStrayLt(ans.a) + '</span>' + _tTag;
       const idTag = '<span style="flex-shrink:0;margin-left:8px;padding-right:22px;font-size:10px;font-family:\'Barlow Condensed\',monospace;font-weight:700;color:rgba(255,255,255,0.22);letter-spacing:0.04em">' + _prepQCode(ans,ans._src||_prep.topic) + '</span>';
       ansRows += '<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start">'
         + '<span style="font-size:14px;flex-shrink:0">' + ico + '</span>'
         + '<div style="flex:1;min-width:0">'
-        + '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px;display:flex;justify-content:space-between;align-items:flex-start"><span style="flex:1">' + (i+1) + '. ' + (ans.q||'') + '</span>' + idTag + '</div>'
+        + '<div style="font-size:12px;color:rgba(255,255,255,0.8);margin-bottom:2px;display:flex;justify-content:space-between;align-items:flex-start"><span style="flex:1">' + (i+1) + '. ' + _escStrayLt(ans.q||'') + '</span>' + idTag + '</div>'
         + ansLine
         + '</div></div>';
     });
@@ -25852,6 +25852,32 @@ function _prepBackFromResult() {
   _renderPreparatePane();
 }
 
+// Escapa '<' cuando queda pegado a una letra/dígito (ej. "3<n<4", "2<x<6") — el navegador lo
+// interpreta como el inicio de una etiqueta HTML rota y trunca todo lo que sigue. Protege las
+// etiquetas HTML reales que sí usamos dentro de q/opts (br, sup, sub, span, div, b, svg y sus
+// hijos, etc.) para no romperlas, y solo escapa el '<' cuando NO es parte de una de ellas.
+// IMPORTANTE: esto es solo para DISPLAY (innerHTML) — nunca debe aplicarse al valor que se
+// compara contra la respuesta guardada (q.a) ni al que se pasa al atributo onclick, porque ahí
+// el '<' crudo es seguro (dentro de un atributo con comillas el navegador no lo interpreta como
+// apertura de etiqueta) y escaparlo desalinearía la comparación de respuesta correcta/incorrecta.
+function _escStrayLt(str) {
+  str = String(str == null ? '' : str);
+  if (str.indexOf('<') === -1) return str;
+  const tagRe = /<\/?(br|sup|sub|b|div|span|svg|rect|circle|path|marker|defs|line|g|table|td|th|tr|script|canvas|input|button|textarea|hr|u|strong|a|base|col|colgroup|clippath|ellipse|img|polygon|polyline|text|tspan|use|style|lineargradient|stop|filter|femerge|femergenode|fegaussianblur|feoffset|animatetransform|animate|symbol|mask|pattern|foreignobject)\b[^>]*\/?>/gi;
+  const protectedRanges = [];
+  let tm;
+  tagRe.lastIndex = 0;
+  while ((tm = tagRe.exec(str))) protectedRanges.push([tm.index, tm.index + tm[0].length]);
+  const isProtected = i => protectedRanges.some(([s, e]) => i >= s && i < e);
+  let out = '';
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (ch === '<' && /[a-zA-Z]/.test(str[i + 1] || '') && !isProtected(i)) out += '&lt;';
+    else out += ch;
+  }
+  return out;
+}
+
 async function _prepSaveHistoryPartial() {
   try {
     const me = _bingoMe();
@@ -26423,7 +26449,7 @@ function _prepExamHtml() {
   const pct = Math.round((idx/total)*100);
   const _fmtMath = s => {
     const _vs = c => `<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">${c}</span>`;
-    s = String(s);
+    s = _escStrayLt(s);
     // Normalizar símbolos de raíz Unicode a forma ⁿ√ para vinculum
     s = s.replace(/∛/g, '³√').replace(/∜/g, '⁴√');
     // Iteratively wrap ⁿ√(expr) innermost-first, removing parens and adding vinculum
@@ -26451,7 +26477,7 @@ function _prepExamHtml() {
     ansHtml = `<div class="prep-vf-row">${(q.opts||[]).map(opt=>{
       let cls='prep-vf-btn';
       if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${opt}</button>`;
+      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${_fmtOpt(opt)}</button>`;
     }).join('')}</div>`;
   } else if (isMC) {
     ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
@@ -26508,9 +26534,9 @@ function _prepExamHtml() {
         <span class="prep-report-tag" style="font-family:'Barlow Condensed',monospace;letter-spacing:0.06em">Ejercicio: ${_prepQCode(q,q._src||_prep.topic)}</span>
       </div>
       <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Ejercicio</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;line-height:1.4">${q.q}</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;line-height:1.4">${_fmtMath(q.q)}</div>
       ${isAdmin() ? `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Respuesta oficial</div>
-      <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${q.a}</div>` : ''}
+      <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${_fmtMath(q.a)}</div>` : ''}
       <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Describe el error <span style="color:rgba(255,255,255,0.3);font-weight:600;text-transform:none;letter-spacing:0">(obligatorio)</span></div>
       <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser 3/4 porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
       <div style="display:flex;gap:8px;margin-top:14px">
@@ -26548,8 +26574,8 @@ function _prepResultHtml() {
   const _resLbl = _prep.isUnitExam ? `Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}` : (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
   const reviewHtml = _prep.showReview ? `<div class="prep-review-list">${_prep.answers.map((ans,i)=>`
     <div class="prep-review-item ${ans.correct?'ok':'fail'}">
-      <div class="prep-review-q">${i+1}. ${ans.q}</div>
-      <div>${ans.correct?`<span class="prep-review-ok">✓ ${ans.given}</span>`:`<span class="prep-review-fail">✗ ${ans.given}</span> · <span class="prep-review-correct">Correcta: ${ans.a}</span>`}</div>
+      <div class="prep-review-q">${i+1}. ${_escStrayLt(ans.q)}</div>
+      <div>${ans.correct?`<span class="prep-review-ok">✓ ${_escStrayLt(ans.given)}</span>`:`<span class="prep-review-fail">✗ ${_escStrayLt(ans.given)}</span> · <span class="prep-review-correct">Correcta: ${_escStrayLt(ans.a)}</span>`}</div>
     </div>`).join('')}</div>` : '';
   return `<div class="prep-wrap">
     <div class="prep-score-wrap">
