@@ -21020,7 +21020,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   const fmtTime = sec => {
     sec = Math.max(0, Math.round(sec||0));
     const m = Math.floor(sec/60), s = sec%60;
-    return `${m}:${String(s).padStart(2,'0')}`;
+    return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   };
   const fmtDate = sec => sec ? new Date(sec*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
   const fmtHour = sec => sec ? new Date(sec*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '—';
