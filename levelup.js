@@ -22365,7 +22365,7 @@ function _prepStartFromUnit(sk) {
   // tope fijo de 300s/600s (5/10 min) sin importar cuántas preguntas hubiera. Ahora usa la misma
   // lógica que las demás pantallas de práctica: escala por pregunta y respeta "Sin límite".
   const _isUnlimited2 = _prep.timeSec === 0;
-  const _autoTime2 = _isUnlimited2 ? 0 : qs.length * (def.quiz ? 45 : 60);
+  const _autoTime2 = _isUnlimited2 ? 0 : qs.length * (def.quiz ? 40 : 60);
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,timeUnlimited:_isUnlimited2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_autoTime2>0 || _isUnlimited2) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -22461,13 +22461,13 @@ function _prepUnitExam(skills, unitIdx) {
   _prep.isUnitExam = true;
   _prep.examUnitSkills = [...valid];
   _prep.unitSkillList = []; _prep.unitDone = [];
-  // El tiempo regular del examen escala con la cantidad de preguntas (30s por pregunta) en vez
+  // El tiempo regular del examen escala con la cantidad de preguntas (20s por pregunta) en vez
   // de ser un tope fijo — antes 150s alcanzaba para menos de 10s por pregunta cuando la unidad
   // tenía muchas habilidades (5 preguntas por habilidad), dejando muy poco tiempo real. Si el
   // alumno eligió "Sin límite" (_prep.timeSec === 0), el cronómetro cuenta hacia arriba y el
   // examen nunca termina por tiempo.
   const _isUnlimitedExam = _prep.timeSec === 0;
-  const _examTime = _isUnlimitedExam ? 0 : qs.length * 30;
+  const _examTime = _isUnlimitedExam ? 0 : qs.length * 20;
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,timeUnlimited:_isUnlimitedExam,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   if (_examTime > 0 || _isUnlimitedExam) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
@@ -22538,12 +22538,12 @@ function _prepStart() {
     } else {
       qs = _prepGenUniqueQs(def.gen.bind(def), _prep.qCount);
     }
-    // El tiempo regular escala con la cantidad de preguntas en vez de ser un tope fijo: 45s por
+    // El tiempo regular escala con la cantidad de preguntas en vez de ser un tope fijo: 40s por
     // pregunta en cuestionarios, 60s por pregunta en práctica de habilidad individual. Si el
     // alumno eligió "Sin límite" en el selector de Configurar sesión (_prep.timeSec === 0), el
     // cronómetro cuenta hacia arriba en vez de hacia abajo y la sesión nunca termina por tiempo.
     const _isUnlimited = _prep.timeSec === 0;
-    const _autoTime = _isUnlimited ? 0 : qs.length * (def.quiz ? 45 : 60);
+    const _autoTime = _isUnlimited ? 0 : qs.length * (def.quiz ? 40 : 60);
     Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, timeUnlimited:_isUnlimited, showReview:false, lives:def.quiz?4:5, maxLives:def.quiz?4:5, streak:0, streakBonusAccum:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now() });
     clearInterval(_prepTimerIntv);
     if (_autoTime > 0 || _isUnlimited) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
