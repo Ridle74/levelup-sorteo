@@ -12121,8 +12121,39 @@ function _genLi1mU1_B5(){
 }
 _SKILL_META['li1m_u1_b5']={ico:'📐',lbl:'Propiedad distributiva (monomio × polinomio)',qCount:4,gen:_genLi1mU1_B5,plantillas:['Distribuir sobre binomio','Distribuir sobre trinomio','Monomio con variable × polinomio','Monomio con potencia × polinomio','Reconocer resultado de distribución']};
 
-function _genLi1mU1_BQ2(){return _bqSrcPick(['li1m_u1_b4','li1m_u1_b5'],[_genLi1mU1_B4,_genLi1mU1_B5]);}
-_SKILL_META['li1m_u1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Producto y distributiva',qCount:10,gen:_genLi1mU1_BQ2,quiz:true,srcKeys:['li1m_u1_b4','li1m_u1_b5']};
+function _genLi1mU1_BQ2(){return _bqSrcPick(['li1m_u1_b4','li1m_u1_b5','li1m_u1_b6'],[_genLi1mU1_B4,_genLi1mU1_B5,_genLi1mU1_B6]);}
+_SKILL_META['li1m_u1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Producto, distributiva y aplicación a áreas',qCount:15,gen:_genLi1mU1_BQ2,quiz:true,srcKeys:['li1m_u1_b4','li1m_u1_b5','li1m_u1_b6']};
+
+function _genLi1mU1_B6(){
+  return _i4gpick([
+  // Plantilla 1 — Sumar áreas de dos zonas y simplificar (4 preguntas)
+  {_id:1,q:'Un terreno tiene una zona Az = 2(3x+4) − (x−1) y una zona Ab = 5x+2. Halla el área total Az+Ab, simplificada.',a:'10x+11',opts:_i4gshuf(['10x+11','10x+9','5x+11','15x+11']),mc:true,ste:'Az = 6x+8−x+1 = 5x+9. Az+Ab = 5x+9+5x+2 = 10x+11.'},
+  {_id:2,q:'Un parque tiene una zona A1 = 3(x+2) y una zona A2 = 2(2x−1)+5. Halla A1+A2, simplificada.',a:'7x+9',opts:_i4gshuf(['7x+9','7x+3','7x+9x','x+9']),mc:true,ste:'A1 = 3x+6. A2 = 4x−2+5 = 4x+3. A1+A2 = 3x+6+4x+3 = 7x+9.'},
+  {_id:3,q:'Una zona verde Av = 4(x+3) − 2x y una zona de juegos Aj = 3x−5. Halla el área total Av+Aj.',a:'5x+7',opts:_i4gshuf(['5x+7','5x+17','2x+7','5x−7']),mc:true,ste:'Av = 4x+12−2x = 2x+12. Av+Aj = 2x+12+3x−5 = 5x+7.'},
+  {_id:4,q:'Una plaza Ap = (1/2)(6x+8) y una zona de mesas Am = 2x+1. Halla Ap+Am, simplificada.',a:'5x+5',opts:_i4gshuf(['5x+5','5x+4','3x+5','5x+1']),mc:true,ste:'Ap = 3x+4. Ap+Am = 3x+4+2x+1 = 5x+5.'},
+  // Plantilla 2 — Hallar el área faltante restando del total (4 preguntas)
+  {_id:5,q:'Un terreno de área total AT = 8x+20 tiene una zona de cultivo Ac = 3x+7 y una zona de descanso Ad = 2x+5. Halla el área restante (zona de juegos) Aj = AT − Ac − Ad.',a:'3x+8',opts:_i4gshuf(['3x+8','3x+32','13x+8','3x+18']),mc:true,ste:'Aj = 8x+20−(3x+7)−(2x+5) = 8x+20−3x−7−2x−5 = 3x+8.'},
+  {_id:6,q:'El área total es AT = 10x+30, con A1 = 4x+10 y A2 = 3x+8. Halla el área restante A3 = AT − A1 − A2.',a:'3x+12',opts:_i4gshuf(['3x+12','3x+48','17x+12','3x+2']),mc:true,ste:'A3 = 10x+30−(4x+10)−(3x+8) = 3x+12.'},
+  {_id:7,q:'El área total de un parque es AT = 6(x+5) y la zona A1 mide 2x+10. Halla el área de la zona restante A2 = AT − A1.',a:'4x+20',opts:_i4gshuf(['4x+20','4x+40','8x+20','4x−20']),mc:true,ste:'AT = 6x+30. A2 = 6x+30−(2x+10) = 4x+20.'},
+  {_id:8,q:'El área total es AT = 9x+18. La plaza ocupa Ap = 3x+6 y el resto es el espejo de agua Aa. Halla Aa = AT − Ap.',a:'6x+12',opts:_i4gshuf(['6x+12','6x+24','3x+12','12x+12']),mc:true,ste:'Aa = 9x+18−(3x+6) = 6x+12.'},
+  // Plantilla 3 — Sustituir un área expresada en función de otra (4 preguntas)
+  {_id:9,q:'La plaza central mide el doble del área verde: Ap = 2Av. Si Av = 3x+5, expresa el área total AT = Av+Ap en función de x.',a:'9x+15',opts:_i4gshuf(['9x+15','9x+10','3x+15','6x+15']),mc:true,ste:'Ap = 2(3x+5) = 6x+10. AT = 3x+5+6x+10 = 9x+15.'},
+  {_id:10,q:'La plaza mide el doble del área verde: Ap = 2Av. Si Av = 4x+2, halla Ap.',a:'8x+4',opts:_i4gshuf(['8x+4','8x+2','4x+4','16x+4']),mc:true,ste:'Ap = 2(4x+2) = 8x+4.'},
+  {_id:11,q:'El espejo de agua mide el triple del área verde: Aa = 3Av. Si Av = x+6, halla el área total AT = Av+Aa.',a:'4x+24',opts:_i4gshuf(['4x+24','4x+18','3x+24','4x+6']),mc:true,ste:'Aa = 3(x+6) = 3x+18. AT = x+6+3x+18 = 4x+24.'},
+  {_id:12,q:'La plaza mide 10 más que el área verde: Ap = Av+10. Si Av = 5x−2, halla el área total AT = Av+Ap.',a:'10x+6',opts:_i4gshuf(['10x+6','5x+6','10x+8','10x−6']),mc:true,ste:'Ap = 5x−2+10 = 5x+8. AT = 5x−2+5x+8 = 10x+6.'},
+  // Plantilla 4 — Evaluar el área total en un valor numérico de x (4 preguntas)
+  {_id:13,q:'Con AT = 6x+23 (parque ecológico), halla el área total cuando x = 4.',a:'47',opts:_i4gshuf(['47','44','29','52']),mc:true,ste:'AT = 6(4)+23 = 24+23 = 47.'},
+  {_id:14,q:'Con AT = 10x+11, halla el área total cuando x = 3.',a:'41',opts:_i4gshuf(['41','33','44','30']),mc:true,ste:'AT = 10(3)+11 = 30+11 = 41.'},
+  {_id:15,q:'Con AT = 7x+9, halla el área total cuando x = 5.',a:'44',opts:_i4gshuf(['44','35','43','54']),mc:true,ste:'AT = 7(5)+9 = 35+9 = 44.'},
+  {_id:16,q:'Con AT = 5x+7, halla el área total cuando x = 6.',a:'37',opts:_i4gshuf(['37','30','36','42']),mc:true,ste:'AT = 5(6)+7 = 30+7 = 37.'},
+  // Plantilla 5 — Conceptual (V/F) y aplicación final (4 preguntas)
+  {_id:17,q:'V/F: Para hallar el área total de varias zonas, se suman las expresiones algebraicas de cada zona y se reducen los términos semejantes.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Sumar las expresiones de cada zona y reducir términos semejantes da el área total simplificada.'},
+  {_id:18,q:'V/F: Si se conoce el área total y el área de todas las zonas menos una, se puede hallar el área faltante restando las conocidas del total.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Área faltante = Área total − suma de las áreas conocidas.'},
+  {_id:19,q:'V/F: Si Av = 2x+23 y Aa = 4x, el resultado de Av+Aa = 6x+23 significa que el área total ya no depende de x.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'6x+23 sigue dependiendo de x: solo se simplificó la suma, la variable no desapareció.'},
+  {_id:20,q:'Un parque ecológico tiene zona verde Av = 2x+23 y espejo de agua Aa = 4x. ¿Cuál es el área total simplificada AT = Av+Aa?',a:'6x+23',opts:_i4gshuf(['6x+23','6x+27','2x+27','8x+23']),mc:true,ste:'AT = 2x+23+4x = 6x+23.'},
+  ]);
+}
+_SKILL_META['li1m_u1_b6']={ico:'📐',lbl:'Aplicación: áreas compuestas con expresiones algebraicas',qCount:4,gen:_genLi1mU1_B6,plantillas:['Sumar áreas de dos zonas y simplificar','Hallar el área faltante restando del total','Sustituir un área expresada en función de otra','Evaluar el área total en un valor de x','Conceptual (V/F) y aplicación final']};
 
 // Unidad 2: Operaciones con Polinomios y Fracciones Algebraicas
 
@@ -12253,8 +12284,39 @@ function _genLi1mU2_B4(){
 }
 _SKILL_META['li1m_u2_b4']={ico:'📐',lbl:'Expresiones algebraicas verbales',qCount:4,gen:_genLi1mU2_B4,plantillas:['Traducir suma y resta','Traducir producto','Traducir cociente','Operaciones combinadas verbales','Identificar enunciado de una expresión']};
 
-function _genLi1mU2_BQ2(){return _bqSrcPick(['li1m_u2_b3','li1m_u2_b4'],[_genLi1mU2_B3,_genLi1mU2_B4]);}
-_SKILL_META['li1m_u2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Fracciones y expresiones verbales',qCount:10,gen:_genLi1mU2_BQ2,quiz:true,srcKeys:['li1m_u2_b3','li1m_u2_b4']};
+function _genLi1mU2_BQ2(){return _bqSrcPick(['li1m_u2_b3','li1m_u2_b4','li1m_u2_b5'],[_genLi1mU2_B3,_genLi1mU2_B4,_genLi1mU2_B5]);}
+_SKILL_META['li1m_u2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Fracciones, expresiones verbales y dominio',qCount:15,gen:_genLi1mU2_BQ2,quiz:true,srcKeys:['li1m_u2_b3','li1m_u2_b4','li1m_u2_b5']};
+
+function _genLi1mU2_B5(){
+  return _i4gpick([
+  // Plantilla 1 — Reducir suma/resta de fracciones con igual denominador (4 preguntas)
+  {_id:1,q:'Reduce a una sola fracción simplificada: (3x+5)/4 + (x−1)/4',a:'x + 1',opts:_i4gshuf(['x + 1','4x + 4','x','x + 4']),mc:true,ste:'(3x+5+x−1)/4 = (4x+4)/4 = x+1.'},
+  {_id:2,q:'Reduce a una sola fracción simplificada: (5x−2)/3 − (2x−2)/3',a:'x',opts:_i4gshuf(['x','x − 4/3','3x','x − 4']),mc:true,ste:'(5x−2−(2x−2))/3 = (5x−2−2x+2)/3 = 3x/3 = x.'},
+  {_id:3,q:'Reduce a una sola fracción: [2(3x+1)]/(2×3) − [3(x−1)]/(3×2)',a:'(3x+5)/6',opts:_i4gshuf(['(3x+5)/6','(3x−1)/6','(9x−1)/6','3x+5']),mc:true,ste:'Ambos denominadores valen 6. Numerador: (6x+2)−(3x−3) = 3x+5. Resultado: (3x+5)/6.'},
+  {_id:4,q:'Reduce a una sola fracción: [5(2p−1)]/(4×5) − [4(p+3)]/(5×4)',a:'(6p−17)/20',opts:_i4gshuf(['(6p−17)/20','(6p+7)/20','(14p+7)/20','(6p−17)']),mc:true,ste:'Ambos denominadores valen 20. Numerador: (10p−5)−(4p+12) = 6p−17. Resultado: (6p−17)/20.'},
+  // Plantilla 2 — Evaluar una función racional en un valor numérico (4 preguntas)
+  {_id:5,q:'Si T(p) = (3p−5)/5, halla T(10).',a:'5',opts:_i4gshuf(['5','25','1','6']),mc:true,ste:'T(10) = (30−5)/5 = 25/5 = 5.'},
+  {_id:6,q:'Si T(p) = (2p+4)/2, halla T(6).',a:'8',opts:_i4gshuf(['8','16','10','4']),mc:true,ste:'T(6) = (12+4)/2 = 16/2 = 8.'},
+  {_id:7,q:'Si T(x) = (4x−3)/(x−1), halla T(4).',a:'13/3',opts:_i4gshuf(['13/3','4','13','3']),mc:true,ste:'T(4) = (16−3)/(4−1) = 13/3.'},
+  {_id:8,q:'La temperatura interna de un prototipo se modela con T(p) = (15p−33)/10. Halla T(15.5)°C.',a:'19.95',opts:_i4gshuf(['19.95','23.25','16.65','21.45']),mc:true,ste:'T(15.5) = (15×15.5−33)/10 = (232.5−33)/10 = 199.5/10 = 19.95.'},
+  // Plantilla 3 — Restricción de dominio (4 preguntas)
+  {_id:9,q:'En T(p) = (3p+2)/(p−4), ¿para qué valor de p la expresión NO está definida?',a:'p = 4',opts:_i4gshuf(['p = 4','p = −4','p = 3','p = 0']),mc:true,ste:'El denominador se anula cuando p−4=0, es decir p=4.'},
+  {_id:10,q:'La función T(p) = 5/(2p) modela un sistema válido solo para p ∈ Z⁺ (enteros positivos). ¿Es válido calcular T(0)?',a:'No, porque 0 no es un entero positivo (y anularía el denominador)',opts:_i4gshuf(['No, porque 0 no es un entero positivo (y anularía el denominador)','Sí, porque 0 es un número entero','Sí, porque el denominador en p=0 no es cero','No, porque el resultado sería negativo']),mc:true,ste:'p=0 no pertenece a Z⁺ y además hace 2p=0, indefiniendo la expresión.'},
+  {_id:11,q:'Si T(p) = (2p−1)/(p−3) representa un modelo válido para p ∈ Z⁺, ¿qué valor de p debe excluirse del dominio?',a:'p = 3',opts:_i4gshuf(['p = 3','p = 1','p = −3','p = 0']),mc:true,ste:'El denominador p−3 se anula cuando p=3.'},
+  {_id:12,q:'Un sistema se rige por T(p) = (5p+10)/(p+2), definida para p ∈ Z⁺. ¿Por qué p=−2 nunca sería un valor válido de todas formas, incluso sin la restricción del denominador?',a:'Porque −2 no es un entero positivo',opts:_i4gshuf(['Porque −2 no es un entero positivo','Porque −2 es par','Porque −2 es mayor que 0','Porque −2 no es un número entero']),mc:true,ste:'La restricción física del problema exige p∈Z⁺, y −2 no cumple eso (además de anular el denominador).'},
+  // Plantilla 4 — Conceptual (V/F) (4 preguntas)
+  {_id:13,q:'V/F: Para sumar o restar fracciones algebraicas que ya tienen el mismo denominador, basta con sumar o restar los numeradores y mantener el denominador.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Con igual denominador, solo se operan los numeradores.'},
+  {_id:14,q:'V/F: Los denominadores 5×2 y 2×5 representan valores distintos, por lo que las fracciones no se pueden combinar directamente.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'5×2=10 y 2×5=10: son el mismo valor, solo escrito en distinto orden. Sí se pueden combinar como igual denominador.'},
+  {_id:15,q:'V/F: El denominador de una fracción algebraica nunca puede tomar el valor que lo haga igual a cero.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La división entre cero no está definida, por eso esos valores se excluyen del dominio.'},
+  {_id:16,q:'V/F: Evaluar una función racional en un valor donde el denominador se hace cero da como resultado 0.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'No da 0: la expresión queda indefinida (no existe) en ese valor.'},
+  // Plantilla 5 — Aplicación combinada: reducir, evaluar y verificar dominio (4 preguntas)
+  {_id:17,q:'Un sensor mide una señal S(p) = [3(2p+4)]/(3×4) + [2(p−2)]/(4×3). Reduce S(p) a una sola fracción simplificada.',a:'(2p+2)/3',opts:_i4gshuf(['(2p+2)/3','(8p+8)/12','(2p+8)/3','(8p+8)']),mc:true,ste:'Ambos denominadores valen 12. Numerador: (6p+12)+(2p−4) = 8p+8. Simplificando entre 4: (2p+2)/3.'},
+  {_id:18,q:'Con S(p) = (2p+2)/3 del ítem anterior, halla S(5).',a:'4',opts:_i4gshuf(['4','12','2','6']),mc:true,ste:'S(5) = (10+2)/3 = 12/3 = 4.'},
+  {_id:19,q:'La temperatura de un prototipo se rige por T(p) = (15p−33)/10, con p ∈ Z⁺. ¿Es válido evaluar T(0)?',a:'No, porque p=0 no pertenece a los enteros positivos',opts:_i4gshuf(['No, porque p=0 no pertenece a los enteros positivos','Sí, T(0) = −3.3 grados válidos','Sí, porque el denominador en p=0 no es cero','No, porque el resultado sería un número negativo']),mc:true,ste:'La restricción del problema exige p∈Z⁺; 0 no es un entero positivo, así que T(0) no debe evaluarse aunque el denominador (10) nunca se anule.'},
+  {_id:20,q:'Reduce a una sola fracción: [4(3p−5)−3(2−4p)]/(5×2) − [2(5p+3)−(p−1)]/(2×5)',a:'(15p−33)/10',opts:_i4gshuf(['(15p−33)/10','(15p−19)/10','(33p−15)/10','(15p−33)']),mc:true,ste:'Ambos denominadores valen 10. Numerador 1: 12p−20−6+12p = 24p−26. Numerador 2: 10p+6−p+1 = 9p+7. Resultado: (24p−26−(9p+7))/10 = (15p−33)/10.'},
+  ]);
+}
+_SKILL_META['li1m_u2_b5']={ico:'📐',lbl:'Fracciones algebraicas: suma/resta, evaluación y dominio',qCount:4,gen:_genLi1mU2_B5,plantillas:['Reducir suma/resta con igual denominador','Evaluar una función racional en un valor','Restricción de dominio','Conceptual (V/F)','Aplicación combinada: reducir, evaluar y verificar dominio']};
 
 // ══ Matemática 1° Secundaria – Abraham Lincoln: Ecuaciones de Primer Grado (li1m_u3) ══
 
@@ -12419,8 +12481,8 @@ function _genLi1mU3_B5(){
 }
 _SKILL_META['li1m_u3_b5']={ico:'📐',lbl:'Traducir enunciados en ecuaciones y resolver',qCount:4,gen:_genLi1mU3_B5,plantillas:['Número misterioso','Números consecutivos','Reparto entre personas','Edades','Compras y vida cotidiana']};
 
-function _genLi1mU3_BQ3(){return _bqSrcPick(['li1m_u3_b5','li1m_u3_b6'],[_genLi1mU3_B5,_genLi1mU3_B6]);}
-_SKILL_META['li1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Enunciados y combinado',qCount:10,gen:_genLi1mU3_BQ3,quiz:true,srcKeys:['li1m_u3_b5','li1m_u3_b6']};
+function _genLi1mU3_BQ3(){return _bqSrcPick(['li1m_u3_b5','li1m_u3_b6','li1m_u3_b7'],[_genLi1mU3_B5,_genLi1mU3_B6,_genLi1mU3_B7]);}
+_SKILL_META['li1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Enunciados, combinado y reparto avanzado',qCount:15,gen:_genLi1mU3_BQ3,quiz:true,srcKeys:['li1m_u3_b5','li1m_u3_b6','li1m_u3_b7']};
 
 function _genLi1mU3_B6(){
   return _i4gpick([
@@ -12453,8 +12515,39 @@ function _genLi1mU3_B6(){
 }
 _SKILL_META['li1m_u3_b6']={ico:'📐',lbl:'Combinado – todos los tipos',qCount:4,gen:_genLi1mU3_B6,plantillas:['Mezcla 2 y 3 pasos','Mezcla distributiva y variable ambos lados','Combinación con variable ambos lados','Ecuaciones más complejas','Traducir + resolver (combinado)']};
 
-function _genLi1mU3_BPU(){return _bqSrcPick(['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6'],[_genLi1mU3_B1,_genLi1mU3_B2,_genLi1mU3_B3,_genLi1mU3_B4,_genLi1mU3_B5,_genLi1mU3_B6]);}
-_SKILL_META['li1m_u3_bpu']={ico:'⚡',lbl:'Examen – Ecuaciones de Primer Grado',qCount:30,gen:_genLi1mU3_BPU,quiz:true,srcKeys:['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6']};
+function _genLi1mU3_B7(){
+  return _i4gpick([
+  // Plantilla 1 — Reparto entre 3 personas con relaciones (dobles/más que) (4 preguntas)
+  {_id:1,q:'Un abuelo reparte $18 000 entre sus tres nietos: al mayor le da el triple de lo que le da al menor, y al mediano le da $1500 más que al menor. ¿Cuánto recibió el mediano?',a:'$4800',opts:_i4gshuf(['$4800','$3300','$9900','$1500']),mc:true,ste:'Menor=x, mayor=3x, mediano=x+1500. x+3x+(x+1500)=18000 → 5x=16500 → x=3300. Mediano=3300+1500=4800.'},
+  {_id:2,q:'Una empresa repartió $37 000 en bonos entre tres empleados (A, B, C): A recibió el doble de lo que recibió B, menos $3000. C recibió $2000 menos que la suma de A y B juntos. ¿Cuánto recibió el empleado A?',a:'$12000',opts:_i4gshuf(['$12000','$7500','$17500','$9000']),mc:true,ste:'B=x, A=2x−3000, C=(A+B)−2000=3x−5000. x+(2x−3000)+(3x−5000)=37000 → 6x=45000 → x=7500. A=2(7500)−3000=12000.'},
+  {_id:3,q:'Un grupo reparte $50 000 en premios entre tres personas X, Y, Z. Y recibe el triple de lo que recibe X. Z recibe $4000 menos que la suma de X y Y. ¿Cuánto recibe Z?',a:'$23000',opts:_i4gshuf(['$23000','$6750','$20250','$27000']),mc:true,ste:'X=a, Y=3a, Z=(a+3a)−4000=4a−4000. a+3a+(4a−4000)=50000 → 8a=54000 → a=6750. Z=4(6750)−4000=23000.'},
+  {_id:4,q:'Se reparten $15 000 entre 3 amigos: el segundo recibe el triple del primero, y el tercero recibe $1000 más que el segundo. ¿Cuánto recibe el primero?',a:'$2000',opts:_i4gshuf(['$2000','$6000','$7000','$1000']),mc:true,ste:'Primero=x, segundo=3x, tercero=3x+1000. x+3x+(3x+1000)=15000 → 7x=14000 → x=2000.'},
+  // Plantilla 2 — Reparto con fracciones y "resto" (4 preguntas)
+  {_id:5,q:'Ana reparte su dinero: a Beto le da un tercio, a Caro un cuarto, y a Dani los $500 restantes. ¿Cuánto tenía Ana?',a:'$1200',opts:_i4gshuf(['$1200','$1000','$1500','$900']),mc:true,ste:'x/3+x/4+500=x → 500 = x(1−1/3−1/4) = 5x/12 → x=1200.'},
+  {_id:6,q:'Pedro reparte sus ahorros: a su hijo mayor le da la mitad, al menor la quinta parte, y a su esposa los $900 restantes. ¿Cuánto tenía ahorrado Pedro?',a:'$3000',opts:_i4gshuf(['$3000','$2700','$1800','$4500']),mc:true,ste:'x/2+x/5+900=x → 900 = x(1−1/2−1/5) = 3x/10 → x=3000.'},
+  {_id:7,q:'Marta gasta la mitad de su dinero en comida, un cuarto en transporte y le quedan $200. ¿Cuánto tenía al inicio?',a:'$800',opts:_i4gshuf(['$800','$600','$1000','$400']),mc:true,ste:'x−x/2−x/4=200 → x/4=200 → x=800.'},
+  {_id:8,q:'Un padre reparte una herencia: a su hija le da dos quintos, a su hijo un tercio, y a una fundación los $8000 restantes. ¿Cuál era el total de la herencia?',a:'$30000',opts:_i4gshuf(['$30000','$20000','$24000','$15000']),mc:true,ste:'2x/5+x/3+8000=x → 8000 = x(1−2/5−1/3) = 4x/15 → x=30000.'},
+  // Plantilla 3 — Reparto con diferencias entre 3+ cantidades (4 preguntas)
+  {_id:9,q:'Tres tanques contienen 900 litros de agua en total. El segundo tanque tiene 8 litros menos que el primero, y el tercero tiene 20 litros más que el primero. Halla los litros del primer tanque.',a:'296 litros',opts:_i4gshuf(['296 litros','288 litros','316 litros','300 litros']),mc:true,ste:'Primero=x, segundo=x−8, tercero=x+20. x+(x−8)+(x+20)=900 → 3x+12=900 → x=296.'},
+  {_id:10,q:'Con los mismos tres tanques (900 litros en total), ¿cuántos litros tiene el segundo tanque?',a:'288 litros',opts:_i4gshuf(['288 litros','296 litros','316 litros','280 litros']),mc:true,ste:'Primero=296 (del ejercicio anterior). Segundo = 296−8 = 288.'},
+  {_id:11,q:'Con los mismos tres tanques (900 litros en total), ¿cuántos litros tiene el tercer tanque?',a:'316 litros',opts:_i4gshuf(['316 litros','296 litros','288 litros','320 litros']),mc:true,ste:'Primero=296, tercero=296+20=316. Verificación: 296+288+316=900.'},
+  {_id:12,q:'Tres estantes tienen 250 libros en total. El primero tiene 20 libros más que el segundo, y el segundo tiene 10 más que el tercero. ¿Cuántos libros hay en el tercero?',a:'70 libros',opts:_i4gshuf(['70 libros','80 libros','100 libros','60 libros']),mc:true,ste:'Tercero=x, segundo=x+10, primero=x+30. x+(x+10)+(x+30)=250 → 3x=210 → x=70.'},
+  // Plantilla 4 — Relaciones de suma/multiplicación (4 preguntas)
+  {_id:13,q:'Hallar el número de pelotas que tiene Mathías, tal que si se multiplican por siete y luego se le agrega 20 resulta el quíntuple de ellas, aumentada en 60.',a:'20 pelotas',opts:_i4gshuf(['20 pelotas','40 pelotas','10 pelotas','8 pelotas']),mc:true,ste:'7x+20 = 5x+60 → 2x=40 → x=20.'},
+  {_id:14,q:'Halla un número tal que si se multiplica por 4 y se le resta 6, resulta el doble del número aumentado en 10.',a:'8',opts:_i4gshuf(['8','16','4','10']),mc:true,ste:'4x−6 = 2x+10 → 2x=16 → x=8.'},
+  {_id:15,q:'Un número aumentado en 5, multiplicado por 3, es igual al mismo número multiplicado por 4, disminuido en 3.',a:'18',opts:_i4gshuf(['18','8','15','21']),mc:true,ste:'3(x+5) = 4x−3 → 3x+15 = 4x−3 → x=18.'},
+  {_id:16,q:'Carla tenía cierta cantidad de dinero. Si hubiera ganado $6, tendría el triple de lo que tendría si hubiera perdido $2. ¿Cuánto tenía?',a:'$6',opts:_i4gshuf(['$6','$4','$8','$12']),mc:true,ste:'(x+6) = 3(x−2) → x+6 = 3x−6 → 2x=12 → x=6.'},
+  // Plantilla 5 — Puntajes/comparaciones y conceptual (4 preguntas)
+  {_id:17,q:'En un torneo, Diego obtuvo el triple de puntos que Elena, menos 50 puntos. Si entre ambos sumaron 950 puntos, ¿cuántos puntos obtuvo Diego?',a:'700 puntos',opts:_i4gshuf(['700 puntos','250 puntos','450 puntos','300 puntos']),mc:true,ste:'Elena=x, Diego=3x−50. x+(3x−50)=950 → 4x=1000 → x=250. Diego=3(250)−50=700.'},
+  {_id:18,q:'Con los mismos datos de Diego y Elena (950 puntos en total, Diego=3×Elena−50), ¿cuántos puntos más que Elena obtuvo Diego?',a:'450 puntos',opts:_i4gshuf(['450 puntos','700 puntos','250 puntos','50 puntos']),mc:true,ste:'Elena=250, Diego=700. Diferencia = 700−250 = 450.'},
+  {_id:19,q:'V/F: En un problema de reparto entre 3 personas, conviene asignar la variable x a la cantidad que sirve de referencia para expresar las otras dos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Elegir como variable la cantidad "de referencia" simplifica escribir las demás en función de ella.'},
+  {_id:20,q:'V/F: En un reparto por fracciones donde se reparte "la mitad, un tercio, y el resto", el resto siempre representa una fracción del total, nunca un valor fijo en dinero.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'En estos problemas el "resto" suele ser un valor fijo dado (por ejemplo $500), no una fracción.'},
+  ]);
+}
+_SKILL_META['li1m_u3_b7']={ico:'📐',lbl:'Problemas verbales avanzados: reparto y relaciones múltiples',qCount:4,gen:_genLi1mU3_B7,plantillas:['Reparto entre 3 personas con relaciones (dobles/más que)','Reparto con fracciones y "resto"','Reparto con diferencias entre 3+ cantidades','Relaciones de suma/multiplicación','Puntajes/comparaciones y conceptual']};
+
+function _genLi1mU3_BPU(){return _bqSrcPick(['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7'],[_genLi1mU3_B1,_genLi1mU3_B2,_genLi1mU3_B3,_genLi1mU3_B4,_genLi1mU3_B5,_genLi1mU3_B6,_genLi1mU3_B7]);}
+_SKILL_META['li1m_u3_bpu']={ico:'⚡',lbl:'Examen – Ecuaciones de Primer Grado',qCount:30,gen:_genLi1mU3_BPU,quiz:true,srcKeys:['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7']};
 
 // ══ Geometría Básica 1° Secundaria – San Ignacio de Recalde (sir1m) ═══════════
 
@@ -18317,9 +18410,9 @@ const PREP_CURRICULUM = {
          {lbl:'Criterios de Divisibilidad',        area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu']},
          {lbl:'Clasificación NEP I',               area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu']},
          {lbl:'Geometría Analítica I',            area:'trigonometria',  editorial:'saco_oliveros', skills:['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu']},
-         {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_bq2']},
-         {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_bq2']},
-         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_bq3','li1m_u3_bpu']},
+         {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_b6','li1m_u1_bq2']},
+         {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_b5','li1m_u2_bq2']},
+         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7','li1m_u3_bq3','li1m_u3_bpu']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
