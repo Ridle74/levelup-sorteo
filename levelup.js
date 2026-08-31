@@ -12151,9 +12151,14 @@ function _genLi1mU1_B6(){
   {_id:18,q:'V/F: Si se conoce el área total y el área de todas las zonas menos una, se puede hallar el área faltante restando las conocidas del total.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Área faltante = Área total − suma de las áreas conocidas.'},
   {_id:19,q:'V/F: Si Av = 2x+23 y Aa = 4x, el resultado de Av+Aa = 6x+23 significa que el área total ya no depende de x.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'6x+23 sigue dependiendo de x: solo se simplificó la suma, la variable no desapareció.'},
   {_id:20,q:'Un parque ecológico tiene zona verde Av = 2x+23 y espejo de agua Aa = 4x. ¿Cuál es el área total simplificada AT = Av+Aa?',a:'6x+23',opts:_i4gshuf(['6x+23','6x+27','2x+27','8x+23']),mc:true,ste:'AT = 2x+23+4x = 6x+23.'},
+  // Plantilla 6 — Plantear y resolver una ecuación (x² = k) a partir de dos áreas relacionadas (4 preguntas)
+  {_id:21,q:'El área de la plaza central es Ap = x²+4x y el área de la zona verde es Av = 2x+23. Si Ap = 2Av+3, plantea la ecuación, halla x∈N y calcula el área de la plaza.',a:'x=7, Ap=77',opts:_i4gshuf(['x=7, Ap=77','x=7, Ap=49','x=9, Ap=117','x=5, Ap=45']),mc:true,ste:'x²+4x = 2(2x+23)+3 = 4x+49 → x² = 49 → x = 7. Ap = 49+28 = 77.'},
+  {_id:22,q:'El área de una plaza es Ap = x²+6x y el área de la zona verde es Av = 3x+5. Si Ap = 2Av+26, plantea la ecuación, halla x∈N y calcula el área de la plaza.',a:'x=6, Ap=72',opts:_i4gshuf(['x=6, Ap=72','x=6, Ap=36','x=8, Ap=112','x=4, Ap=40']),mc:true,ste:'x²+6x = 2(3x+5)+26 = 6x+36 → x² = 36 → x = 6. Ap = 36+36 = 72.'},
+  {_id:23,q:'El área de una plaza es Ap = x²+10x y el área de la zona verde es Av = 5x+2. Si Ap = 2Av+60, plantea la ecuación, halla x∈N y calcula el área de la plaza.',a:'x=8, Ap=144',opts:_i4gshuf(['x=8, Ap=144','x=8, Ap=64','x=10, Ap=200','x=6, Ap=96']),mc:true,ste:'x²+10x = 2(5x+2)+60 = 10x+64 → x² = 64 → x = 8. Ap = 64+80 = 144.'},
+  {_id:24,q:'V/F: Al plantear una ecuación entre dos áreas donde ambas tienen el mismo término lineal en x, ese término suele cancelarse, quedando una ecuación de la forma x² = k, que se resuelve sacando raíz cuadrada.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Al cancelarse los términos lineales iguales de ambos lados, queda x² = k, y como x∈N se toma la raíz cuadrada positiva.'},
   ]);
 }
-_SKILL_META['li1m_u1_b6']={ico:'📐',lbl:'Aplicación: áreas compuestas con expresiones algebraicas',qCount:4,gen:_genLi1mU1_B6,plantillas:['Sumar áreas de dos zonas y simplificar','Hallar el área faltante restando del total','Sustituir un área expresada en función de otra','Evaluar el área total en un valor de x','Conceptual (V/F) y aplicación final']};
+_SKILL_META['li1m_u1_b6']={ico:'📐',lbl:'Aplicación: áreas compuestas con expresiones algebraicas',qCount:4,gen:_genLi1mU1_B6,plantillas:['Sumar áreas de dos zonas y simplificar','Hallar el área faltante restando del total','Sustituir un área expresada en función de otra','Evaluar el área total en un valor de x','Conceptual (V/F) y aplicación final','Plantear y resolver x²=k a partir de dos áreas relacionadas']};
 
 // Unidad 2: Operaciones con Polinomios y Fracciones Algebraicas
 
@@ -12545,9 +12550,6 @@ function _genLi1mU3_B7(){
   ]);
 }
 _SKILL_META['li1m_u3_b7']={ico:'📐',lbl:'Problemas verbales avanzados: reparto y relaciones múltiples',qCount:4,gen:_genLi1mU3_B7,plantillas:['Reparto entre 3 personas con relaciones (dobles/más que)','Reparto con fracciones y "resto"','Reparto con diferencias entre 3+ cantidades','Relaciones de suma/multiplicación','Puntajes/comparaciones y conceptual']};
-
-function _genLi1mU3_BPU(){return _bqSrcPick(['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7'],[_genLi1mU3_B1,_genLi1mU3_B2,_genLi1mU3_B3,_genLi1mU3_B4,_genLi1mU3_B5,_genLi1mU3_B6,_genLi1mU3_B7]);}
-_SKILL_META['li1m_u3_bpu']={ico:'⚡',lbl:'Examen – Ecuaciones de Primer Grado',qCount:30,gen:_genLi1mU3_BPU,quiz:true,srcKeys:['li1m_u3_b1','li1m_u3_b2','li1m_u3_b3','li1m_u3_b4','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7']};
 
 // ══ Geometría Básica 1° Secundaria – San Ignacio de Recalde (sir1m) ═══════════
 
@@ -18412,7 +18414,7 @@ const PREP_CURRICULUM = {
          {lbl:'Geometría Analítica I',            area:'trigonometria',  editorial:'saco_oliveros', skills:['ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu']},
          {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_b6','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_b5','li1m_u2_bq2']},
-         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7','li1m_u3_bq3','li1m_u3_bpu']},
+         {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7','li1m_u3_bq3']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
