@@ -20852,10 +20852,10 @@ function _prepConfigHtml() {
     return `<div style="margin:0 0 10px;padding:10px 12px;border-radius:10px;border:1px solid ${cumple?'rgba(74,222,128,0.35)':'rgba(255,255,255,0.1)'};background:${cumple?'rgba(74,222,128,0.06)':'rgba(255,255,255,0.02)'}">
       <div class="prep-kh-mastery-row" style="justify-content:space-between">
         <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${cumple?'✅ Ya calificas para el Torneo Mensual':'🏆 Requisito del Torneo Mensual'}</span>
-        <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${n}/${TORNEO_MIN_UNIDADES} unidades completas</span>
+        <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${n}/${TORNEO_MIN_UNIDADES} unidades completas este mes</span>
       </div>
       <div class="prep-kh-bar" style="margin-top:6px"><div class="prep-kh-bar-fill" style="width:${pct}%;${cumple?'background:#4ade80':''}"></div></div>
-      ${cumple?'':`<div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:6px;font-family:'Barlow Condensed',sans-serif">Completa habilidades, cuestionarios y el examen de ${TORNEO_MIN_UNIDADES-n} unidad${TORNEO_MIN_UNIDADES-n===1?'':'es'} más para participar en el sorteo del mes.</div>`}
+      ${cumple?'':`<div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:6px;font-family:'Barlow Condensed',sans-serif">Completa habilidades, cuestionarios y el examen de ${TORNEO_MIN_UNIDADES-n} unidad${TORNEO_MIN_UNIDADES-n===1?'':'es'} más ESTE MES para participar en el sorteo (una unidad dominada en un mes anterior no cuenta para el mes actual — rinde de nuevo su examen con 100% para que cuente).</div>`}
     </div>`;
   })() : '';
   // Encabezado con dominio de curso
@@ -22190,10 +22190,18 @@ function _prepLastUnitExamPct(firstSkill) {
 // por alumno (en vez de mezclarlo en el doc compartido "sorteo/main") evita que
 // dos alumnos guardando al mismo tiempo se pisen los datos entre sí.
 const TORNEO_MIN_UNIDADES = 6;
+// La unidad solo cuenta para el torneo del mes EN CURSO si se dominó (habilidades+cuestionarios
+// completos y examen de unidad rendido con 100%) DENTRO de ese mismo mes calendario — pedido
+// explícito: no basta con que la unidad haya quedado dominada en algún momento del pasado y se
+// haya mantenido así. Se usa la fecha del intento de examen que dio 100% (la certificación final
+// de la unidad) como fecha de "cuándo se completó"; si ese intento fue en un mes anterior, la
+// unidad no cuenta para el mes actual aunque siga marcada como dominada.
 function _prepUnitsFullyDoneForMe(uid) {
   if (!Array.isArray(_prepHistoryData)) return 0;
   const courses = _prepMyCourses(uid);
   if (!courses.length) return 0;
+  const _now = new Date();
+  const _curY = _now.getFullYear(), _curM = _now.getMonth();
   let count = 0;
   courses.forEach(c => {
     const levelData = PREP_CURRICULUM[c.level] || {};
@@ -22205,7 +22213,17 @@ function _prepUnitsFullyDoneForMe(uid) {
       const allDominado = u.skills.every(sk => _prepMasteryLevel(sk)==='dominado');
       if (!allDominado) return;
       const firstSk = u.skills.find(sk => BINGO_TOPICS[sk] && !BINGO_TOPICS[sk].quiz);
-      if (!firstSk || _prepLastUnitExamPct(firstSk) !== 100) return;
+      if (!firstSk) return;
+      // Intento DIRECTO más reciente del examen de esta unidad (no propagado) — mismo filtro
+      // que usa _prepLastUnitExamPct, pero aquí también necesitamos su fecha.
+      const examEntries = _prepHistoryData.filter(h => h.isUnitExam && h.topic===firstSk && !h.autoFromExam && !h.autoFromQuiz);
+      if (!examEntries.length) return;
+      const lastExam = examEntries[0]; // _prepHistoryData viene ordenado del más reciente al más antiguo
+      if (_prepReEvalPct(lastExam) !== 100) return;
+      const sec = lastExam.completedAt?.seconds;
+      if (!sec) return;
+      const d = new Date(sec*1000);
+      if (d.getFullYear()!==_curY || d.getMonth()!==_curM) return; // el 100% fue en otro mes: no cuenta este mes
       count++;
     });
   });
