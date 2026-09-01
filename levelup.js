@@ -14777,6 +14777,262 @@ _SKILL_META['sg3m2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Evaluación y Compos
 function _genSG3M2_BQ2(){return _bqSrcPick(['sg3m2_b4','sg3m2_b5','sg3m2_b6'],[_genSG3M2_B4,_genSG3M2_B5,_genSG3M2_B6]);}
 _SKILL_META['sg3m2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Notación de Aplicación y Problemas de Composición',qCount:15,gen:_genSG3M2_BQ2,quiz:true,srcKeys:['sg3m2_b4','sg3m2_b5','sg3m2_b6']};
 
+// ===== St. George's College - 3ro Secundaria (Grado 9) - Matemática: Función Inversa (Unidad 03) =====
+
+function _genSG3M3_B1(){
+  return _i4gpick([
+  // Plantilla 1 — Evaluar g(a) y luego (f∘g)(a) con un par f,g que son inversas (4 preguntas)
+  {_id:1,q:'Dadas f(x) = (x+4)/2 y g(x) = 2x-4, halle g(1) y f(g(1)).',a:'g(1) = -2 y f(g(1)) = 1',opts:_i4gshuf(['g(1) = -2 y f(g(1)) = 1','g(1) = -2 y f(g(1)) = -2','g(1) = 2 y f(g(1)) = 3','g(1) = -6 y f(g(1)) = -1']),mc:true,ste:'g(1) = 2(1) - 4 = -2; f(-2) = (-2+4)/2 = 1. Como f y g son inversas, f(g(1)) siempre regresa a 1.'},
+  {_id:2,q:'Dadas f(x) = 3x+4 y g(x) = (x-4)/3, halle g(1) y f(g(1)).',a:'g(1) = -1 y f(g(1)) = 1',opts:_i4gshuf(['g(1) = -1 y f(g(1)) = 1','g(1) = -1 y f(g(1)) = -1','g(1) = 1 y f(g(1)) = 7','g(1) = -1 y f(g(1)) = 4']),mc:true,ste:'g(1) = (1-4)/3 = -1; f(-1) = 3(-1) + 4 = 1. Como f y g son inversas, se recupera el 1.'},
+  {_id:3,q:'Dadas f(x) = 2x-6 y g(x) = (x+6)/2, halle g(2) y f(g(2)).',a:'g(2) = 4 y f(g(2)) = 2',opts:_i4gshuf(['g(2) = 4 y f(g(2)) = 2','g(2) = 4 y f(g(2)) = 4','g(2) = 2 y f(g(2)) = -2','g(2) = 4 y f(g(2)) = 8']),mc:true,ste:'g(2) = (2+6)/2 = 4; f(4) = 2(4) - 6 = 2. La composición devuelve el valor original.'},
+  {_id:4,q:'Dadas f(x) = 5x+10 y g(x) = (x-10)/5, halle g(0) y f(g(0)).',a:'g(0) = -2 y f(g(0)) = 0',opts:_i4gshuf(['g(0) = -2 y f(g(0)) = 0','g(0) = 2 y f(g(0)) = 0','g(0) = -2 y f(g(0)) = -2','g(0) = -10 y f(g(0)) = -40']),mc:true,ste:'g(0) = (0-10)/5 = -2; f(-2) = 5(-2) + 10 = 0. Se recupera el valor original 0.'},
+  // Plantilla 2 — Evaluar f(a) y luego (g∘f)(a) con el mismo par (4 preguntas)
+  {_id:5,q:'Dadas f(x) = (x+4)/2 y g(x) = 2x-4, halle f(-3) y g(f(-3)).',a:'f(-3) = 1/2 y g(f(-3)) = -3',opts:_i4gshuf(['f(-3) = 1/2 y g(f(-3)) = -3','f(-3) = 1/2 y g(f(-3)) = 1','f(-3) = -1/2 y g(f(-3)) = -5','f(-3) = 1/2 y g(f(-3)) = -1']),mc:true,ste:'f(-3) = (-3+4)/2 = 1/2; g(1/2) = 2(1/2) - 4 = -3. Se recupera el -3, confirmando que f y g son inversas.'},
+  {_id:6,q:'Dadas f(x) = 3x+4 y g(x) = (x-4)/3, halle f(2) y g(f(2)).',a:'f(2) = 10 y g(f(2)) = 2',opts:_i4gshuf(['f(2) = 10 y g(f(2)) = 2','f(2) = 10 y g(f(2)) = 10','f(2) = 6 y g(f(2)) = 2/3','f(2) = 10 y g(f(2)) = 6']),mc:true,ste:'f(2) = 3(2) + 4 = 10; g(10) = (10-4)/3 = 2. Se recupera el 2.'},
+  {_id:7,q:'Dadas f(x) = 2x-6 y g(x) = (x+6)/2, halle f(1) y g(f(1)).',a:'f(1) = -4 y g(f(1)) = 1',opts:_i4gshuf(['f(1) = -4 y g(f(1)) = 1','f(1) = -4 y g(f(1)) = -4','f(1) = -5 y g(f(1)) = 1/2','f(1) = -4 y g(f(1)) = 5']),mc:true,ste:'f(1) = 2(1) - 6 = -4; g(-4) = (-4+6)/2 = 1. Se recupera el 1.'},
+  {_id:8,q:'Dadas f(x) = 5x+10 y g(x) = (x-10)/5, halle f(-1) y g(f(-1)).',a:'f(-1) = 5 y g(f(-1)) = -1',opts:_i4gshuf(['f(-1) = 5 y g(f(-1)) = -1','f(-1) = 5 y g(f(-1)) = 5','f(-1) = -5 y g(f(-1)) = -3','f(-1) = 15 y g(f(-1)) = 1']),mc:true,ste:'f(-1) = 5(-1) + 10 = 5; g(5) = (5-10)/5 = -1. Se recupera el -1.'},
+  // Plantilla 3 — Hallar (f∘g)(x) en forma general y simplificar a x (4 preguntas)
+  {_id:9,q:'Dadas f(x) = 4x-8 y g(x) = (x+8)/4, halle (f∘g)(x) y simplifique.',a:'x',opts:_i4gshuf(['x','x + 8','x - 16','4x - 8']),mc:true,ste:'f(g(x)) = 4·[(x+8)/4] - 8 = (x+8) - 8 = x. Al simplificar queda exactamente x, confirmando que son inversas.'},
+  {_id:10,q:'Dadas f(x) = 2x+8 y g(x) = (x-8)/2, halle (f∘g)(x) y simplifique.',a:'x',opts:_i4gshuf(['x','x - 8','x + 16','2x + 8']),mc:true,ste:'f(g(x)) = 2·[(x-8)/2] + 8 = (x-8) + 8 = x. El resultado simplificado es x.'},
+  {_id:11,q:'Dadas f(x) = 3x-9 y g(x) = (x+9)/3, halle (f∘g)(x) y simplifique.',a:'x',opts:_i4gshuf(['x','x + 9','x - 18','3x - 9']),mc:true,ste:'f(g(x)) = 3·[(x+9)/3] - 9 = (x+9) - 9 = x. Se obtiene x, lo que confirma la relación inversa.'},
+  {_id:12,q:'Dadas f(x) = 6x+12 y g(x) = (x-12)/6, halle (f∘g)(x) y simplifique.',a:'x',opts:_i4gshuf(['x','x - 12','x + 24','6x + 12']),mc:true,ste:'f(g(x)) = 6·[(x-12)/6] + 12 = (x-12) + 12 = x. El resultado se simplifica exactamente a x.'},
+  // Plantilla 4 — V/F: dado un par de funciones, determinar si son inversas según (f∘g)(x)=x (4 preguntas)
+  {_id:13,q:'V/F: Dadas f(x) = (x+4)/2 y g(x) = 2x-4, se cumple que (f∘g)(x) = x, por lo que f y g son funciones inversas entre sí.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: f(g(x)) = (2x-4+4)/2 = x para todo x, así que f y g son inversas.'},
+  {_id:14,q:'V/F: Dadas f(x) = 2x-6 y g(x) = (x+6)/2, se cumple que (f∘g)(x) = x, por lo que f y g son funciones inversas entre sí.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: f(g(x)) = 2·[(x+6)/2] - 6 = (x+6) - 6 = x para todo x.'},
+  {_id:15,q:'V/F: Dadas f(x) = 2x+3 y g(x) = 2x-3, f y g son funciones inversas entre sí.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: por ejemplo, g(2) = 2(2)-3 = 1, y f(1) = 2(1)+3 = 5 ≠ 2, así que (f∘g)(x) no es igual a x.'},
+  {_id:16,q:'V/F: Dadas f(x) = 4x+1 y g(x) = 4x-1, f y g son funciones inversas entre sí.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: por ejemplo, g(2) = 4(2)-1 = 7, y f(7) = 4(7)+1 = 29 ≠ 2, así que no se cumple (f∘g)(x) = x.'},
+  // Plantilla 5 — Razonamiento sobre el criterio de funciones inversas (4 preguntas)
+  {_id:17,q:'V/F: Si (f∘g)(x) = x y (g∘f)(x) = x para todo x del dominio, entonces f y g son funciones inversas entre sí.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: ese es precisamente el criterio que define a dos funciones como inversas entre sí.'},
+  {_id:18,q:'V/F: Para afirmar que f y g son inversas, basta con comprobar que f(g(a)) = a para un único valor de a; no hace falta verificar más valores.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: un solo valor no es suficiente prueba; la igualdad (f∘g)(x) = x debe cumplirse para todo x del dominio.'},
+  {_id:19,q:'V/F: Si f y g son funciones inversas entre sí, entonces las gráficas de f y g son simétricas respecto a la recta y = x.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: esta es una propiedad geométrica fundamental de las funciones inversas.'},
+  {_id:20,q:'V/F: Si f(x) y g(x) son inversas entre sí, entonces también se cumple que g(x) y f(x) son inversas entre sí (la relación es mutua).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: ser función inversa es una relación recíproca — si f es la inversa de g, entonces g es la inversa de f.'},
+  ]);
+}
+_SKILL_META['sg3m3_b1']={ico:'🔗',lbl:'Verificar si dos funciones son inversas mediante composición',qCount:4,gen:_genSG3M3_B1,plantillas:["Evaluar g(a) y luego f(g(a)) con un par de funciones inversas","Evaluar f(a) y luego g(f(a)) con el mismo par","Hallar (f∘g)(x) en forma general y simplificar a x","V/F: determinar si un par de funciones dado es inverso según (f∘g)(x)=x","Razonamiento sobre el criterio general de funciones inversas"]};
+
+function _genSG3M3_B2(){
+  return _i4gpick([
+  // Plantilla 1 — f(x) = ax + b, hallar f^-1(x) (4 preguntas)
+  {_id:1,q:'Halle la inversa de f(x) = 3x - 1.',a:'f⁻¹(x) = (x + 1)/3',opts:_i4gshuf(['f⁻¹(x) = (x + 1)/3','f⁻¹(x) = (x - 1)/3','f⁻¹(x) = 3x + 1','f⁻¹(x) = (x + 3)/1']),mc:true,ste:'y = 3x - 1 → y + 1 = 3x → x = (y+1)/3. Intercambiando, f⁻¹(x) = (x + 1)/3.'},
+  {_id:2,q:'Halle la inversa de f(x) = 2x - 7.',a:'f⁻¹(x) = (x + 7)/2',opts:_i4gshuf(['f⁻¹(x) = (x + 7)/2','f⁻¹(x) = (x - 7)/2','f⁻¹(x) = 2x + 7','f⁻¹(x) = (x + 2)/7']),mc:true,ste:'y = 2x - 7 → y + 7 = 2x → x = (y+7)/2. Entonces f⁻¹(x) = (x + 7)/2.'},
+  {_id:3,q:'Halle la inversa de f(x) = 5x + 3.',a:'f⁻¹(x) = (x - 3)/5',opts:_i4gshuf(['f⁻¹(x) = (x - 3)/5','f⁻¹(x) = (x + 3)/5','f⁻¹(x) = 5x - 3','f⁻¹(x) = (x - 5)/3']),mc:true,ste:'y = 5x + 3 → y - 3 = 5x → x = (y-3)/5. Entonces f⁻¹(x) = (x - 3)/5.'},
+  {_id:4,q:'Halle la inversa de f(x) = 4x - 3.',a:'f⁻¹(x) = (x + 3)/4',opts:_i4gshuf(['f⁻¹(x) = (x + 3)/4','f⁻¹(x) = (x - 3)/4','f⁻¹(x) = 4x + 3','f⁻¹(x) = (x + 4)/3']),mc:true,ste:'y = 4x - 3 → y + 3 = 4x → x = (y+3)/4. Entonces f⁻¹(x) = (x + 3)/4.'},
+  // Plantilla 2 — f(x) = ax + b con b mayor o signos distintos (4 preguntas)
+  {_id:5,q:'Halle la inversa de f(x) = 3x + 6.',a:'f⁻¹(x) = (x - 6)/3',opts:_i4gshuf(['f⁻¹(x) = (x - 6)/3','f⁻¹(x) = (x + 6)/3','f⁻¹(x) = 3x - 6','f⁻¹(x) = (x - 3)/6']),mc:true,ste:'y = 3x + 6 → y - 6 = 3x → x = (y-6)/3. Entonces f⁻¹(x) = (x - 6)/3.'},
+  {_id:6,q:'Halle la inversa de f(x) = 6x - 5.',a:'f⁻¹(x) = (x + 5)/6',opts:_i4gshuf(['f⁻¹(x) = (x + 5)/6','f⁻¹(x) = (x - 5)/6','f⁻¹(x) = 6x + 5','f⁻¹(x) = (x + 6)/5']),mc:true,ste:'y = 6x - 5 → y + 5 = 6x → x = (y+5)/6. Entonces f⁻¹(x) = (x + 5)/6.'},
+  {_id:7,q:'Halle la inversa de f(x) = 3x + 10.',a:'f⁻¹(x) = (x - 10)/3',opts:_i4gshuf(['f⁻¹(x) = (x - 10)/3','f⁻¹(x) = (x + 10)/3','f⁻¹(x) = 3x - 10','f⁻¹(x) = (x - 3)/10']),mc:true,ste:'y = 3x + 10 → y - 10 = 3x → x = (y-10)/3. Entonces f⁻¹(x) = (x - 10)/3.'},
+  {_id:8,q:'Halle la inversa de f(x) = 5x - 8.',a:'f⁻¹(x) = (x + 8)/5',opts:_i4gshuf(['f⁻¹(x) = (x + 8)/5','f⁻¹(x) = (x - 8)/5','f⁻¹(x) = 5x + 8','f⁻¹(x) = (x + 5)/8']),mc:true,ste:'y = 5x - 8 → y + 8 = 5x → x = (y+8)/5. Entonces f⁻¹(x) = (x + 8)/5.'},
+  // Plantilla 3 — h(x) = (1/n)x + b, hallar h^-1(x) (4 preguntas)
+  {_id:9,q:'Halle la inversa de h(x) = (1/4)x + 5.',a:'h⁻¹(x) = 4x - 20',opts:_i4gshuf(['h⁻¹(x) = 4x - 20','h⁻¹(x) = 4x + 20','h⁻¹(x) = (x - 5)/4','h⁻¹(x) = 4x - 5']),mc:true,ste:'y = (1/4)x + 5 → y - 5 = (1/4)x → x = 4(y - 5) = 4y - 20. Entonces h⁻¹(x) = 4x - 20.'},
+  {_id:10,q:'Halle la inversa de h(x) = (1/3)x - 2.',a:'h⁻¹(x) = 3x + 6',opts:_i4gshuf(['h⁻¹(x) = 3x + 6','h⁻¹(x) = 3x - 6','h⁻¹(x) = (x + 2)/3','h⁻¹(x) = 3x + 2']),mc:true,ste:'y = (1/3)x - 2 → y + 2 = (1/3)x → x = 3(y + 2) = 3y + 6. Entonces h⁻¹(x) = 3x + 6.'},
+  {_id:11,q:'Halle la inversa de h(x) = (1/2)x + 4.',a:'h⁻¹(x) = 2x - 8',opts:_i4gshuf(['h⁻¹(x) = 2x - 8','h⁻¹(x) = 2x + 8','h⁻¹(x) = (x - 4)/2','h⁻¹(x) = 2x - 4']),mc:true,ste:'y = (1/2)x + 4 → y - 4 = (1/2)x → x = 2(y - 4) = 2y - 8. Entonces h⁻¹(x) = 2x - 8.'},
+  {_id:12,q:'Halle la inversa de h(x) = (1/5)x - 3.',a:'h⁻¹(x) = 5x + 15',opts:_i4gshuf(['h⁻¹(x) = 5x + 15','h⁻¹(x) = 5x - 15','h⁻¹(x) = (x + 3)/5','h⁻¹(x) = 5x + 3']),mc:true,ste:'y = (1/5)x - 3 → y + 3 = (1/5)x → x = 5(y + 3) = 5y + 15. Entonces h⁻¹(x) = 5x + 15.'},
+  // Plantilla 4 — V/F sobre una inversa propuesta (4 preguntas)
+  {_id:13,q:'V/F: Si f(x) = 3x - 1, entonces f⁻¹(x) = (x + 1)/3.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: intercambiando x con y en y = 3x - 1 y despejando y, se obtiene y = (x+1)/3.'},
+  {_id:14,q:'V/F: Si f(x) = 2x + 9, entonces f⁻¹(x) = (x - 9)/2.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: despejando de y = 2x + 9 se obtiene x = (y-9)/2, por lo que f⁻¹(x) = (x-9)/2.'},
+  {_id:15,q:'V/F: Si f(x) = 4x - 3, entonces f⁻¹(x) = (x - 3)/4.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: al despejar y = 4x - 3 se obtiene x = (y+3)/4, no (y-3)/4. La inversa correcta es f⁻¹(x) = (x+3)/4.'},
+  {_id:16,q:'V/F: Si f(x) = 5x + 3, entonces f⁻¹(x) = (x + 3)/5.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: al despejar y = 5x + 3 se obtiene x = (y-3)/5, no (y+3)/5. La inversa correcta es f⁻¹(x) = (x-3)/5.'},
+  // Plantilla 5 — Variante con otros coeficientes (4 preguntas)
+  {_id:17,q:'Halle la inversa de f(x) = 7x - 2.',a:'f⁻¹(x) = (x + 2)/7',opts:_i4gshuf(['f⁻¹(x) = (x + 2)/7','f⁻¹(x) = (x - 2)/7','f⁻¹(x) = 7x + 2','f⁻¹(x) = (x + 7)/2']),mc:true,ste:'y = 7x - 2 → y + 2 = 7x → x = (y+2)/7. Entonces f⁻¹(x) = (x + 2)/7.'},
+  {_id:18,q:'Halle la inversa de f(x) = 2x + 5.',a:'f⁻¹(x) = (x - 5)/2',opts:_i4gshuf(['f⁻¹(x) = (x - 5)/2','f⁻¹(x) = (x + 5)/2','f⁻¹(x) = 2x - 5','f⁻¹(x) = (x - 2)/5']),mc:true,ste:'y = 2x + 5 → y - 5 = 2x → x = (y-5)/2. Entonces f⁻¹(x) = (x - 5)/2.'},
+  {_id:19,q:'Halle la inversa de f(x) = 6x + 1.',a:'f⁻¹(x) = (x - 1)/6',opts:_i4gshuf(['f⁻¹(x) = (x - 1)/6','f⁻¹(x) = (x + 1)/6','f⁻¹(x) = 6x - 1','f⁻¹(x) = (x - 6)/1']),mc:true,ste:'y = 6x + 1 → y - 1 = 6x → x = (y-1)/6. Entonces f⁻¹(x) = (x - 1)/6.'},
+  {_id:20,q:'Halle la inversa de f(x) = 4x + 7.',a:'f⁻¹(x) = (x - 7)/4',opts:_i4gshuf(['f⁻¹(x) = (x - 7)/4','f⁻¹(x) = (x + 7)/4','f⁻¹(x) = 4x - 7','f⁻¹(x) = (x - 4)/7']),mc:true,ste:'y = 4x + 7 → y - 7 = 4x → x = (y-7)/4. Entonces f⁻¹(x) = (x - 7)/4.'},
+  ]);
+}
+_SKILL_META['sg3m3_b2']={ico:'🔗',lbl:'Hallar la inversa de una función lineal',qCount:4,gen:_genSG3M3_B2,plantillas:["Hallar f⁻¹(x) dada f(x) = ax + b (forma básica)","Hallar f⁻¹(x) dada f(x) = ax + b (coeficientes mayores)","Hallar h⁻¹(x) dada h(x) = (1/n)x + b (pendiente fraccionaria)","V/F sobre si una inversa propuesta es correcta","Variante con otros coeficientes de f(x) = ax + b"]};
+
+function _genSG3M3_B3(){
+  return _i4gpick([
+  // Plantilla 1 — f(x) = ax^3 + b, hallar f^-1(x) en forma de raíz cúbica (4 preguntas)
+  {_id:1,q:'Halle la inversa de f(x) = x³ - 2.',a:'f⁻¹(x) = ∛(x + 2)',opts:_i4gshuf(['f⁻¹(x) = ∛(x + 2)','f⁻¹(x) = ∛(x - 2)','f⁻¹(x) = ∛x + 2','f⁻¹(x) = (x + 2)³']),mc:true,ste:'y = x³ - 2 → y + 2 = x³ → x = ∛(y + 2). Entonces f⁻¹(x) = ∛(x + 2).'},
+  {_id:2,q:'Halle la inversa de f(x) = x³ + 5.',a:'f⁻¹(x) = ∛(x - 5)',opts:_i4gshuf(['f⁻¹(x) = ∛(x - 5)','f⁻¹(x) = ∛(x + 5)','f⁻¹(x) = ∛x - 5','f⁻¹(x) = (x - 5)³']),mc:true,ste:'y = x³ + 5 → y - 5 = x³ → x = ∛(y - 5). Entonces f⁻¹(x) = ∛(x - 5).'},
+  {_id:3,q:'Halle la inversa de f(x) = x³ - 10.',a:'f⁻¹(x) = ∛(x + 10)',opts:_i4gshuf(['f⁻¹(x) = ∛(x + 10)','f⁻¹(x) = ∛(x - 10)','f⁻¹(x) = ∛x + 10','f⁻¹(x) = (x + 10)³']),mc:true,ste:'y = x³ - 10 → y + 10 = x³ → x = ∛(y + 10). Entonces f⁻¹(x) = ∛(x + 10).'},
+  {_id:4,q:'Halle la inversa de f(x) = 3x³ - 4.',a:'f⁻¹(x) = ∛((x + 4)/3)',opts:_i4gshuf(['f⁻¹(x) = ∛((x + 4)/3)','f⁻¹(x) = ∛((x - 4)/3)','f⁻¹(x) = 3∛(x + 4)','f⁻¹(x) = ∛(x + 4)/3']),mc:true,ste:'y = 3x³ - 4 → y + 4 = 3x³ → x³ = (y+4)/3 → x = ∛((y+4)/3). Entonces f⁻¹(x) = ∛((x+4)/3).'},
+  // Plantilla 2 — g(x) = a∛x + b, hallar g^-1(x) en forma cúbica (4 preguntas, mirror de P1)
+  {_id:5,q:'Halle la inversa de g(x) = ∛x - 3.',a:'g⁻¹(x) = (x + 3)³',opts:_i4gshuf(['g⁻¹(x) = (x + 3)³','g⁻¹(x) = (x - 3)³','g⁻¹(x) = ∛x + 3','g⁻¹(x) = ∛(x + 3)']),mc:true,ste:'y = ∛x - 3 → y + 3 = ∛x → x = (y + 3)³. Entonces g⁻¹(x) = (x + 3)³.'},
+  {_id:6,q:'Halle la inversa de g(x) = ∛x + 2.',a:'g⁻¹(x) = (x - 2)³',opts:_i4gshuf(['g⁻¹(x) = (x - 2)³','g⁻¹(x) = (x + 2)³','g⁻¹(x) = ∛x - 2','g⁻¹(x) = ∛(x - 2)']),mc:true,ste:'y = ∛x + 2 → y - 2 = ∛x → x = (y - 2)³. Entonces g⁻¹(x) = (x - 2)³.'},
+  {_id:7,q:'Halle la inversa de g(x) = ∛x - 5.',a:'g⁻¹(x) = (x + 5)³',opts:_i4gshuf(['g⁻¹(x) = (x + 5)³','g⁻¹(x) = (x - 5)³','g⁻¹(x) = ∛x + 5','g⁻¹(x) = ∛(x + 5)']),mc:true,ste:'y = ∛x - 5 → y + 5 = ∛x → x = (y + 5)³. Entonces g⁻¹(x) = (x + 5)³.'},
+  {_id:8,q:'Halle la inversa de g(x) = 2∛x + 1.',a:'g⁻¹(x) = ((x - 1)/2)³',opts:_i4gshuf(['g⁻¹(x) = ((x - 1)/2)³','g⁻¹(x) = ((x + 1)/2)³','g⁻¹(x) = 2(x - 1)³','g⁻¹(x) = (x - 1)³/2']),mc:true,ste:'y = 2∛x + 1 → y - 1 = 2∛x → ∛x = (y-1)/2 → x = ((y-1)/2)³. Entonces g⁻¹(x) = ((x-1)/2)³.'},
+  // Plantilla 3 — variante mixta con coeficientes distintos en ambas direcciones (4 preguntas)
+  {_id:9,q:'Halle la inversa de f(x) = 2x³ - 1.',a:'f⁻¹(x) = ∛((x + 1)/2)',opts:_i4gshuf(['f⁻¹(x) = ∛((x + 1)/2)','f⁻¹(x) = ∛((x - 1)/2)','f⁻¹(x) = 2∛(x + 1)','f⁻¹(x) = ∛(x + 1)/2']),mc:true,ste:'y = 2x³ - 1 → y + 1 = 2x³ → x³ = (y+1)/2 → x = ∛((y+1)/2). Entonces f⁻¹(x) = ∛((x+1)/2).'},
+  {_id:10,q:'Halle la inversa de f(x) = 4x³ + 2.',a:'f⁻¹(x) = ∛((x - 2)/4)',opts:_i4gshuf(['f⁻¹(x) = ∛((x - 2)/4)','f⁻¹(x) = ∛((x + 2)/4)','f⁻¹(x) = 4∛(x - 2)','f⁻¹(x) = ∛(x - 2)/4']),mc:true,ste:'y = 4x³ + 2 → y - 2 = 4x³ → x³ = (y-2)/4 → x = ∛((y-2)/4). Entonces f⁻¹(x) = ∛((x-2)/4).'},
+  {_id:11,q:'Halle la inversa de g(x) = 3∛x - 2.',a:'g⁻¹(x) = ((x + 2)/3)³',opts:_i4gshuf(['g⁻¹(x) = ((x + 2)/3)³','g⁻¹(x) = ((x - 2)/3)³','g⁻¹(x) = 3(x + 2)³','g⁻¹(x) = (x + 2)³/3']),mc:true,ste:'y = 3∛x - 2 → y + 2 = 3∛x → ∛x = (y+2)/3 → x = ((y+2)/3)³. Entonces g⁻¹(x) = ((x+2)/3)³.'},
+  {_id:12,q:'Halle la inversa de h(x) = 2x³ + 3.',a:'h⁻¹(x) = ∛((x - 3)/2)',opts:_i4gshuf(['h⁻¹(x) = ∛((x - 3)/2)','h⁻¹(x) = ∛((x + 3)/2)','h⁻¹(x) = 2∛(x - 3)','h⁻¹(x) = ∛(x - 3)/2']),mc:true,ste:'y = 2x³ + 3 → y - 3 = 2x³ → x³ = (y-3)/2 → x = ∛((y-3)/2). Entonces h⁻¹(x) = ∛((x-3)/2).'},
+  // Plantilla 4 — V/F sobre una inversa propuesta con potencias/raíces (4 preguntas)
+  {_id:13,q:'V/F: Si f(x) = x³ - 2, entonces f⁻¹(x) = ∛(x + 2).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: despejando de y = x³ - 2 se obtiene x = ∛(y+2).'},
+  {_id:14,q:'V/F: Si g(x) = ∛x - 3, entonces g⁻¹(x) = (x + 3)³.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: despejando de y = ∛x - 3 se obtiene x = (y+3)³.'},
+  {_id:15,q:'V/F: Si f(x) = 2x³ + 3, entonces f⁻¹(x) = ∛(x + 3)/2.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: la división entre 2 debe hacerse ANTES de la raíz cúbica. La inversa correcta es f⁻¹(x) = ∛((x-3)/2), no ∛(x+3)/2.'},
+  {_id:16,q:'V/F: Si g(x) = 2∛x + 1, entonces g⁻¹(x) = (2x - 1)³.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: al despejar y = 2∛x + 1 se obtiene ∛x = (y-1)/2, por lo que g⁻¹(x) = ((x-1)/2)³, no (2x-1)³.'},
+  // Plantilla 5 — Evaluar la inversa ya hallada en un valor numérico específico (4 preguntas)
+  {_id:17,q:'Si f(x) = x³ - 2, use su inversa para hallar f⁻¹(25).',a:'3',opts:_i4gshuf(['3','27','23','5']),mc:true,ste:'f⁻¹(x) = ∛(x+2); f⁻¹(25) = ∛(25+2) = ∛27 = 3.'},
+  {_id:18,q:'Si f(x) = x³ + 5, use su inversa para hallar f⁻¹(-3).',a:'-2',opts:_i4gshuf(['-2','-8','2','-3']),mc:true,ste:'f⁻¹(x) = ∛(x-5); f⁻¹(-3) = ∛(-3-5) = ∛(-8) = -2.'},
+  {_id:19,q:'Si g(x) = ∛x - 3, use su inversa para hallar g⁻¹(2).',a:'125',opts:_i4gshuf(['125','25','5','8']),mc:true,ste:'g⁻¹(x) = (x+3)³; g⁻¹(2) = (2+3)³ = 5³ = 125.'},
+  {_id:20,q:'Si g(x) = ∛x + 2, use su inversa para hallar g⁻¹(-1).',a:'-27',opts:_i4gshuf(['-27','27','-9','-3']),mc:true,ste:'g⁻¹(x) = (x-2)³; g⁻¹(-1) = (-1-2)³ = (-3)³ = -27.'},
+  ]);
+}
+_SKILL_META['sg3m3_b3']={ico:'🔗',lbl:'Hallar la inversa de una función con potencias y raíces',qCount:4,gen:_genSG3M3_B3,plantillas:["Hallar f⁻¹(x) dada f(x) = ax³ + b (cúbica → raíz cúbica)","Hallar g⁻¹(x) dada g(x) = a∛x + b (raíz cúbica → cúbica)","Variante mixta con distintos coeficientes en ambas direcciones","V/F sobre si una inversa propuesta con potencias/raíces es correcta","Evaluar numéricamente la inversa ya hallada en un valor específico"]};
+
+function _genSG3M3_B4(){
+  return _i4gpick([
+  // Plantilla 1 — f(x) = 1/x + b, hallar f^-1(x) (4 preguntas)
+  {_id:1,q:'Halle la inversa de f(x) = 1/x - 2.',a:'f⁻¹(x) = 1/(x + 2)',opts:_i4gshuf(['f⁻¹(x) = 1/(x + 2)','f⁻¹(x) = 1/(x - 2)','f⁻¹(x) = 1/x + 2','f⁻¹(x) = x + 2']),mc:true,ste:'y = 1/x - 2 → y + 2 = 1/x → x = 1/(y+2). Entonces f⁻¹(x) = 1/(x+2).'},
+  {_id:2,q:'Halle la inversa de f(x) = 1/x + 3.',a:'f⁻¹(x) = 1/(x - 3)',opts:_i4gshuf(['f⁻¹(x) = 1/(x - 3)','f⁻¹(x) = 1/(x + 3)','f⁻¹(x) = 1/x - 3','f⁻¹(x) = x - 3']),mc:true,ste:'y = 1/x + 3 → y - 3 = 1/x → x = 1/(y-3). Entonces f⁻¹(x) = 1/(x-3).'},
+  {_id:3,q:'Halle la inversa de f(x) = 2/x - 1.',a:'f⁻¹(x) = 2/(x + 1)',opts:_i4gshuf(['f⁻¹(x) = 2/(x + 1)','f⁻¹(x) = 2/(x - 1)','f⁻¹(x) = 2/x + 1','f⁻¹(x) = 1/(2x+1)']),mc:true,ste:'y = 2/x - 1 → y + 1 = 2/x → x = 2/(y+1). Entonces f⁻¹(x) = 2/(x+1).'},
+  {_id:4,q:'Evalúe f⁻¹(5) para f(x) = 10/(x+7).',a:'-5',opts:_i4gshuf(['-5','5','-2','-9']),mc:true,ste:'Se resuelve f(x) = 5: 10/(x+7) = 5 → x + 7 = 2 → x = -5. Entonces f⁻¹(5) = -5.'},
+  // Plantilla 2 — g(x) = ax/(b+x), cross-multiplicar y despejar x (4 preguntas)
+  {_id:5,q:'Halle la inversa de f(x) = x/(3+x), con x ≠ -3.',a:'f⁻¹(x) = 3x/(1-x)',opts:_i4gshuf(['f⁻¹(x) = 3x/(1-x)','f⁻¹(x) = 3x/(1+x)','f⁻¹(x) = (3+x)/x','f⁻¹(x) = x/(3-x)']),mc:true,ste:'y = x/(3+x) → y(3+x) = x → 3y + yx = x → 3y = x - yx = x(1-y) → x = 3y/(1-y). Entonces f⁻¹(x) = 3x/(1-x).'},
+  {_id:6,q:'Halle la inversa de g(x) = 2x/(5-x), con x ≠ 5.',a:'g⁻¹(x) = 5x/(2+x)',opts:_i4gshuf(['g⁻¹(x) = 5x/(2+x)','g⁻¹(x) = 5x/(2-x)','g⁻¹(x) = (5-x)/2x','g⁻¹(x) = 2x/(5+x)']),mc:true,ste:'y = 2x/(5-x) → y(5-x) = 2x → 5y - yx = 2x → 5y = 2x + yx = x(2+y) → x = 5y/(2+y). Entonces g⁻¹(x) = 5x/(2+x).'},
+  {_id:7,q:'Halle la inversa de f(x) = x/(2+x), con x ≠ -2.',a:'f⁻¹(x) = 2x/(1-x)',opts:_i4gshuf(['f⁻¹(x) = 2x/(1-x)','f⁻¹(x) = 2x/(1+x)','f⁻¹(x) = (2+x)/x','f⁻¹(x) = x/(2-x)']),mc:true,ste:'y = x/(2+x) → y(2+x) = x → 2y + yx = x → 2y = x(1-y) → x = 2y/(1-y). Entonces f⁻¹(x) = 2x/(1-x).'},
+  {_id:8,q:'Halle la inversa de f(x) = 3x/(4-x), con x ≠ 4.',a:'f⁻¹(x) = 4x/(3+x)',opts:_i4gshuf(['f⁻¹(x) = 4x/(3+x)','f⁻¹(x) = 4x/(3-x)','f⁻¹(x) = (4-x)/3x','f⁻¹(x) = 3x/(4+x)']),mc:true,ste:'y = 3x/(4-x) → y(4-x) = 3x → 4y - yx = 3x → 4y = x(3+y) → x = 4y/(3+y). Entonces f⁻¹(x) = 4x/(3+x).'},
+  // Plantilla 3 — f(x) = (ax+b)/(cx+d), cross-multiplicar y despejar x (4 preguntas)
+  {_id:9,q:'Si f(x) = (x+1)/(x-2), halle f⁻¹(x).',a:'f⁻¹(x) = (2x+1)/(x-1)',opts:_i4gshuf(['f⁻¹(x) = (2x+1)/(x-1)','f⁻¹(x) = (2x-1)/(x+1)','f⁻¹(x) = (x-1)/(2x+1)','f⁻¹(x) = (x+2)/(x-1)']),mc:true,ste:'y = (x+1)/(x-2) → y(x-2) = x+1 → yx - 2y = x+1 → yx - x = 1+2y → x(y-1) = 1+2y → x = (2y+1)/(y-1). Entonces f⁻¹(x) = (2x+1)/(x-1).'},
+  {_id:10,q:'Halle la inversa de f(x) = (x-1)/(x+3), con x ≠ -3.',a:'f⁻¹(x) = (3x+1)/(1-x)',opts:_i4gshuf(['f⁻¹(x) = (3x+1)/(1-x)','f⁻¹(x) = (3x-1)/(1+x)','f⁻¹(x) = (1-3x)/(x+1)','f⁻¹(x) = (x+1)/(3-x)']),mc:true,ste:'y = (x-1)/(x+3) → y(x+3) = x-1 → yx+3y = x-1 → x(y-1) = -1-3y → x = (1+3y)/(1-y). Entonces f⁻¹(x) = (3x+1)/(1-x).'},
+  {_id:11,q:'Halle la inversa de f(x) = (2x-1)/(x+1), con x ≠ -1.',a:'f⁻¹(x) = (x+1)/(2-x)',opts:_i4gshuf(['f⁻¹(x) = (x+1)/(2-x)','f⁻¹(x) = (x-1)/(2+x)','f⁻¹(x) = (2-x)/(x+1)','f⁻¹(x) = (x+1)/(2+x)']),mc:true,ste:'y = (2x-1)/(x+1) → y(x+1) = 2x-1 → yx+y = 2x-1 → x(y-2) = -1-y → x = (1+y)/(2-y). Entonces f⁻¹(x) = (x+1)/(2-x).'},
+  {_id:12,q:'Evalúe f⁻¹(5) para f(x) = 2/(4x-3).',a:'17/20',opts:_i4gshuf(['17/20','5/4','2/17','20/17']),mc:true,ste:'Se resuelve f(x) = 5: 2/(4x-3) = 5 → 4x-3 = 2/5 → 4x = 17/5 → x = 17/20. Entonces f⁻¹(5) = 17/20.'},
+  // Plantilla 4 — V/F sobre una inversa racional propuesta (4 preguntas)
+  {_id:13,q:'V/F: Si f(x) = 1/x - 2, entonces f⁻¹(x) = 1/(x + 2).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: despejando de y = 1/x - 2 se obtiene x = 1/(y+2).'},
+  {_id:14,q:'V/F: Si f(x) = (x+1)/(x-2), entonces f⁻¹(x) = (2x+1)/(x-1).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al despejar x de y = (x+1)/(x-2) se obtiene x = (2y+1)/(y-1).'},
+  {_id:15,q:'V/F: Si f(x) = x/(3+x), entonces f⁻¹(x) = 3x/(1+x).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: al despejar correctamente de y = x/(3+x) se obtiene x = 3y/(1-y), no 3y/(1+y). Por ejemplo, con x=3, f(3) = 1/2, pero la fórmula propuesta 3(1/2)/(1+1/2) = 1, no 3.'},
+  {_id:16,q:'V/F: Si g(x) = 2x/(5-x), entonces g⁻¹(x) = 5x/(2-x).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: al despejar correctamente de y = 2x/(5-x) se obtiene x = 5y/(2+y), con signo + en el denominador, no −.'},
+  // Plantilla 5 — Evaluar f^-1(a) directamente resolviendo f(x)=a con función racional (4 preguntas)
+  {_id:17,q:'Evalúe f⁻¹(2) para f(x) = 1/x + 3.',a:'-1',opts:_i4gshuf(['-1','1','2','5']),mc:true,ste:'Se resuelve f(x) = 2: 1/x + 3 = 2 → 1/x = 2 - 3 = -1 → x = -1. Entonces f⁻¹(2) = -1.'},
+  {_id:18,q:'Si f(x) = (x+1)/(x-2), use su inversa para hallar f⁻¹(2).',a:'5',opts:_i4gshuf(['5','3','-5','1']),mc:true,ste:'f⁻¹(x) = (2x+1)/(x-1); f⁻¹(2) = (2·2+1)/(2-1) = 5/1 = 5.'},
+  {_id:19,q:'Evalúe f⁻¹(3) para f(x) = 2/x - 1.',a:'1/2',opts:_i4gshuf(['1/2','2','1/4','-1/2']),mc:true,ste:'Se resuelve f(x) = 3: 2/x - 1 = 3 → 2/x = 4 → x = 1/2. Entonces f⁻¹(3) = 1/2.'},
+  {_id:20,q:'Evalúe g⁻¹(1) para g(x) = 2x/(5-x).',a:'5/3',opts:_i4gshuf(['5/3','3/5','1','2']),mc:true,ste:'Se resuelve g(x) = 1: 2x/(5-x) = 1 → 2x = 5-x → 3x = 5 → x = 5/3. Entonces g⁻¹(1) = 5/3.'},
+  ]);
+}
+_SKILL_META['sg3m3_b4']={ico:'🔗',lbl:'Hallar la inversa de una función racional',qCount:4,gen:_genSG3M3_B4,plantillas:["Hallar f⁻¹(x) dada f(x) = a/x + b","Hallar f⁻¹(x) dada f(x) = ax/(b+x) (cruzando términos)","Hallar f⁻¹(x) dada f(x) = (ax+b)/(cx+d) (forma general)","V/F sobre si una inversa racional propuesta es correcta","Evaluar f⁻¹(a) directamente resolviendo f(x)=a con función racional"]};
+
+function _genSG3M3_B5(){
+  return _i4gpick([
+  // Plantilla 1 — Evaluar f^-1(a) resolviendo f(x)=a con f lineal (4 preguntas)
+  {_id:1,q:'Evalúe f⁻¹(5) para f(x) = 6 - x.',a:'1',opts:_i4gshuf(['1','5','11','-1']),mc:true,ste:'Se resuelve 6 - x = 5 → x = 1. Entonces f⁻¹(5) = 1.'},
+  {_id:2,q:'Evalúe f⁻¹(3) para f(x) = 8 - x.',a:'5',opts:_i4gshuf(['5','3','11','-5']),mc:true,ste:'Se resuelve 8 - x = 3 → x = 5. Entonces f⁻¹(3) = 5.'},
+  {_id:3,q:'Evalúe f⁻¹(9) para f(x) = 2x + 1.',a:'4',opts:_i4gshuf(['4','5','19','8']),mc:true,ste:'Se resuelve 2x + 1 = 9 → 2x = 8 → x = 4. Entonces f⁻¹(9) = 4.'},
+  {_id:4,q:'Evalúe f⁻¹(4) para f(x) = 3x - 5.',a:'3',opts:_i4gshuf(['3','7','-3','9']),mc:true,ste:'Se resuelve 3x - 5 = 4 → 3x = 9 → x = 3. Entonces f⁻¹(4) = 3.'},
+  // Plantilla 2 — Evaluar f^-1(a) resolviendo f(x)=a con f racional simple (4 preguntas)
+  {_id:5,q:'Evalúe f⁻¹(5) para f(x) = 10/(x+7).',a:'-5',opts:_i4gshuf(['-5','5','-2','-9']),mc:true,ste:'Se resuelve 10/(x+7) = 5 → x+7 = 2 → x = -5. Entonces f⁻¹(5) = -5.'},
+  {_id:6,q:'Evalúe f⁻¹(3) para f(x) = 12/(x+2).',a:'2',opts:_i4gshuf(['2','4','-2','1']),mc:true,ste:'Se resuelve 12/(x+2) = 3 → x+2 = 4 → x = 2. Entonces f⁻¹(3) = 2.'},
+  {_id:7,q:'Evalúe f⁻¹(2) para f(x) = 6/(2x-1).',a:'2',opts:_i4gshuf(['2','1','3','1/2']),mc:true,ste:'Se resuelve 6/(2x-1) = 2 → 2x-1 = 3 → 2x = 4 → x = 2. Entonces f⁻¹(2) = 2.'},
+  {_id:8,q:'Evalúe f⁻¹(4) para f(x) = 20/(x-3).',a:'8',opts:_i4gshuf(['8','5','-2','7']),mc:true,ste:'Se resuelve 20/(x-3) = 4 → x-3 = 5 → x = 8. Entonces f⁻¹(4) = 8.'},
+  // Plantilla 3 — Evaluar f^-1(a) con f racional más compleja (4 preguntas)
+  {_id:9,q:'Evalúe f⁻¹(5) para f(x) = 2/(4x-3).',a:'17/20',opts:_i4gshuf(['17/20','5/4','2/17','20/17']),mc:true,ste:'Se resuelve 2/(4x-3) = 5 → 4x-3 = 2/5 → 4x = 17/5 → x = 17/20. Entonces f⁻¹(5) = 17/20.'},
+  {_id:10,q:'Evalúe f⁻¹(2) para f(x) = 3/(2x+1).',a:'1/4',opts:_i4gshuf(['1/4','3/2','-1/4','1/2']),mc:true,ste:'Se resuelve 3/(2x+1) = 2 → 2x+1 = 3/2 → 2x = 1/2 → x = 1/4. Entonces f⁻¹(2) = 1/4.'},
+  {_id:11,q:'Evalúe f⁻¹(4) para f(x) = 6/(3x-2).',a:'7/6',opts:_i4gshuf(['7/6','3/2','1/2','5/6']),mc:true,ste:'Se resuelve 6/(3x-2) = 4 → 3x-2 = 6/4 = 3/2 → 3x = 3/2 + 2 = 7/2 → x = 7/6. Entonces f⁻¹(4) = 7/6.'},
+  {_id:12,q:'Evalúe f⁻¹(3) para f(x) = 5/(2x+4).',a:'-7/6',opts:_i4gshuf(['-7/6','7/6','-1/6','1/6']),mc:true,ste:'Se resuelve 5/(2x+4) = 3 → 2x+4 = 5/3 → 2x = 5/3 - 4 = -7/3 → x = -7/6. Entonces f⁻¹(3) = -7/6.'},
+  // Plantilla 4 — Framing en pregunta directa "¿para qué valor de x, f(x)=a?" (4 preguntas)
+  {_id:13,q:'¿Para qué valor de x se cumple que f(x) = 4, si f(x) = 10 - 2x?',a:'3',opts:_i4gshuf(['3','6','-3','7']),mc:true,ste:'10 - 2x = 4 → -2x = -6 → x = 3. Es decir, f⁻¹(4) = 3.'},
+  {_id:14,q:'¿Para qué valor de x se cumple que f(x) = 7, si f(x) = 3x - 2?',a:'3',opts:_i4gshuf(['3','19','-3','5']),mc:true,ste:'3x - 2 = 7 → 3x = 9 → x = 3. Es decir, f⁻¹(7) = 3.'},
+  {_id:15,q:'¿Para qué valor de x se cumple que f(x) = 6, si f(x) = 15/(x+3)?',a:'-1/2',opts:_i4gshuf(['-1/2','1/2','2','-2']),mc:true,ste:'15/(x+3) = 6 → x+3 = 15/6 = 5/2 → x = 5/2 - 3 = -1/2. Es decir, f⁻¹(6) = -1/2.'},
+  {_id:16,q:'¿Para qué valor de x se cumple que f(x) = 8, si f(x) = 4x + 1?',a:'7/4',opts:_i4gshuf(['7/4','9/4','2','1/4']),mc:true,ste:'4x + 1 = 8 → 4x = 7 → x = 7/4. Es decir, f⁻¹(8) = 7/4.'},
+  // Plantilla 5 — V/F sobre el procedimiento de evaluar f^-1(a) directamente (4 preguntas)
+  {_id:17,q:'V/F: Para hallar f⁻¹(5) sin derivar primero la fórmula general de f⁻¹(x), se puede resolver directamente la ecuación f(x) = 5.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: f⁻¹(a) es, por definición, el valor de x tal que f(x) = a, así que resolver esa ecuación es un método válido y directo.'},
+  {_id:18,q:'V/F: Si f(x) = 6 - x, entonces f⁻¹(5) se calcula resolviendo la ecuación 6 - x = 5.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: para hallar f⁻¹(5), se busca el x tal que f(x) = 5, es decir, se resuelve 6 - x = 5.'},
+  {_id:19,q:'V/F: Al evaluar f⁻¹(a) resolviendo f(x) = a directamente, siempre se obtiene un resultado distinto al que se obtendría hallando primero la fórmula general de f⁻¹(x) y evaluándola en a.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: ambos métodos son equivalentes y deben dar exactamente el mismo resultado, solo cambia el orden de los pasos.'},
+  {_id:20,q:'V/F: Si f(x) = 10/(x+7), entonces f⁻¹(5) se halla resolviendo la ecuación 10/(x+7) = 5.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: f⁻¹(5) es el valor de x tal que f(x) = 5, así que se plantea y resuelve esa ecuación directamente.'},
+  ]);
+}
+_SKILL_META['sg3m3_b5']={ico:'🔗',lbl:'Evaluar f⁻¹(a) resolviendo la ecuación f(x)=a',qCount:4,gen:_genSG3M3_B5,plantillas:["Evaluar f⁻¹(a) resolviendo f(x)=a con f(x) lineal","Evaluar f⁻¹(a) resolviendo f(x)=a con f(x) racional simple","Evaluar f⁻¹(a) resolviendo f(x)=a con f(x) racional más compleja","Framing directo: ¿para qué valor de x, f(x)=a?","V/F sobre el procedimiento de evaluar f⁻¹(a) sin hallar la fórmula general"]};
+
+function _genSG3M3_B6(){
+  return _i4gpick([
+  // Plantilla 1 — Evaluar g^-1(a) numérico dado un par f,g en notación de flecha (4 preguntas)
+  {_id:1,q:'Considere f: x ↦ 2x+5 y g: x ↦ (8-x)/2. Halle g⁻¹(4).',a:'0',opts:_i4gshuf(['0','2','4','-4']),mc:true,ste:'Se resuelve g(x) = 4: (8-x)/2 = 4 → 8-x = 8 → x = 0. Entonces g⁻¹(4) = 0.'},
+  {_id:2,q:'Considere f: x ↦ 3x+2 y g: x ↦ (12-x)/3. Halle g⁻¹(4).',a:'0',opts:_i4gshuf(['0','4','3','-4']),mc:true,ste:'Se resuelve g(x) = 4: (12-x)/3 = 4 → 12-x = 12 → x = 0. Entonces g⁻¹(4) = 0.'},
+  {_id:3,q:'Considere f: x ↦ 4x-1 y g: x ↦ (21-x)/4. Halle g⁻¹(5).',a:'1',opts:_i4gshuf(['1','5','4','-1']),mc:true,ste:'Se resuelve g(x) = 5: (21-x)/4 = 5 → 21-x = 20 → x = 1. Entonces g⁻¹(5) = 1.'},
+  {_id:4,q:'Considere f: x ↦ 5x+3 y g: x ↦ (18-x)/5. Halle g⁻¹(3).',a:'3',opts:_i4gshuf(['3','15','0','-3']),mc:true,ste:'Se resuelve g(x) = 3: (18-x)/5 = 3 → 18-x = 15 → x = 3. Entonces g⁻¹(3) = 3.'},
+  // Plantilla 2 — Mostrar que f^-1(a) - g^-1(b) = 0 para un par de funciones relacionadas (4 preguntas)
+  {_id:5,q:'Considere f: x ↦ 2x+5 y g: x ↦ (8-x)/2. Muestre que f⁻¹(9) - g⁻¹(3) = 0.',a:'0',opts:_i4gshuf(['0','2','4','-2']),mc:true,ste:'f⁻¹(9): 2x+5=9 → x=2. g⁻¹(3): (8-x)/2=3 → 8-x=6 → x=2. Entonces f⁻¹(9) - g⁻¹(3) = 2 - 2 = 0.'},
+  {_id:6,q:'Considere f: x ↦ 3x+2 y g: x ↦ (12-x)/3. Muestre que f⁻¹(-1) - g⁻¹(13/3) = 0.',a:'0',opts:_i4gshuf(['0','2','-2','-4']),mc:true,ste:'f⁻¹(-1): 3x+2=-1 → x=-1. g⁻¹(13/3): (12-x)/3=13/3 → 12-x=13 → x=-1. Entonces f⁻¹(-1) - g⁻¹(13/3) = -1 - (-1) = 0.'},
+  {_id:7,q:'Considere f: x ↦ 4x-1 y g: x ↦ (21-x)/4. Muestre que f⁻¹(19) - g⁻¹(4) = 0.',a:'0',opts:_i4gshuf(['0','10','-10','5']),mc:true,ste:'f⁻¹(19): 4x-1=19 → 4x=20 → x=5. g⁻¹(4): (21-x)/4=4 → 21-x=16 → x=5. Entonces f⁻¹(19) - g⁻¹(4) = 5 - 5 = 0.'},
+  {_id:8,q:'Considere f: x ↦ 5x+3 y g: x ↦ (18-x)/5. Muestre que f⁻¹(43) - g⁻¹(2) = 0.',a:'0',opts:_i4gshuf(['0','16','-16','4']),mc:true,ste:'f⁻¹(43): 5x+3=43 → 5x=40 → x=8. g⁻¹(2): (18-x)/5=2 → 18-x=10 → x=8. Entonces f⁻¹(43) - g⁻¹(2) = 8 - 8 = 0.'},
+  // Plantilla 3 — Resolver (f∘g^-1)(x) = k (4 preguntas)
+  {_id:9,q:'Considere f: x ↦ 2x+5 y g: x ↦ (8-x)/2. Halle x, de manera que (f∘g⁻¹)(x) = 13.',a:'2',opts:_i4gshuf(['2','4','13','-2']),mc:true,ste:'f⁻¹(13): 2x+5=13 → x=4. Se necesita g⁻¹(x) = 4, es decir x = g(4) = (8-4)/2 = 2. Entonces x = 2.'},
+  {_id:10,q:'Considere f: x ↦ 3x+2 y g: x ↦ (12-x)/3. Halle x, de manera que (f∘g⁻¹)(x) = 20.',a:'2',opts:_i4gshuf(['2','6','20','-2']),mc:true,ste:'f⁻¹(20): 3x+2=20 → x=6. Se necesita g⁻¹(x) = 6, es decir x = g(6) = (12-6)/3 = 2. Entonces x = 2.'},
+  {_id:11,q:'Considere f: x ↦ 4x-1 y g: x ↦ (21-x)/4. Halle x, de manera que (f∘g⁻¹)(x) = 35.',a:'3',opts:_i4gshuf(['3','9','35','-3']),mc:true,ste:'f⁻¹(35): 4x-1=35 → x=9. Se necesita g⁻¹(x) = 9, es decir x = g(9) = (21-9)/4 = 3. Entonces x = 3.'},
+  {_id:12,q:'Considere f: x ↦ 5x+3 y g: x ↦ (18-x)/5. Halle x, de manera que (f∘g⁻¹)(x) = 68.',a:'1',opts:_i4gshuf(['1','13','68','-1']),mc:true,ste:'f⁻¹(68): 5x+3=68 → x=13. Se necesita g⁻¹(x) = 13, es decir x = g(13) = (18-13)/5 = 1. Entonces x = 1.'},
+  // Plantilla 4 — V/F conceptual sobre composición con inversas (4 preguntas)
+  {_id:13,q:'V/F: (f∘g⁻¹)(x) significa que primero se aplica g⁻¹ a x, y luego se aplica f al resultado.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: en (f∘g⁻¹)(x) = f(g⁻¹(x)), la función más cercana a x, es decir g⁻¹, se aplica primero.'},
+  {_id:14,q:'V/F: Si f y g son funciones inversas entre sí, entonces f⁻¹ es la misma función que g.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: si g es la inversa de f, entonces f⁻¹ = g por definición.'},
+  {_id:15,q:'V/F: Para resolver una ecuación del tipo (f∘g⁻¹)(x) = k, es necesario hallar primero f⁻¹(k) y luego usar ese resultado para hallar x mediante g.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: si f(g⁻¹(x)) = k, entonces g⁻¹(x) = f⁻¹(k); luego se despeja x aplicando g a ambos lados.'},
+  {_id:16,q:'V/F: (f∘g⁻¹)(x) es siempre igual a (f⁻¹∘g)(x), sin importar las funciones que se usen.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: son composiciones distintas en general; el orden y qué función está invertida cambian el resultado.'},
+  // Plantilla 5 — Variante con otro par de funciones (4 preguntas)
+  {_id:17,q:'Considere f: x ↦ 6x-2 y g: x ↦ (10-x)/2. Halle g⁻¹(3).',a:'4',opts:_i4gshuf(['4','3','7','-4']),mc:true,ste:'Se resuelve g(x) = 3: (10-x)/2 = 3 → 10-x = 6 → x = 4. Entonces g⁻¹(3) = 4.'},
+  {_id:18,q:'Considere f: x ↦ 6x-2 y g: x ↦ (10-x)/2. Muestre que f⁻¹(22) - g⁻¹(3) = 0.',a:'0',opts:_i4gshuf(['0','8','-8','4']),mc:true,ste:'f⁻¹(22): 6x-2=22 → 6x=24 → x=4. g⁻¹(3): (10-x)/2=3 → 10-x=6 → x=4. Entonces f⁻¹(22) - g⁻¹(3) = 4 - 4 = 0.'},
+  {_id:19,q:'Considere f: x ↦ 6x-2 y g: x ↦ (10-x)/2. Halle x, de manera que (f∘g⁻¹)(x) = 10.',a:'4',opts:_i4gshuf(['4','2','10','-4']),mc:true,ste:'f⁻¹(10): 6x-2=10 → x=2. Se necesita g⁻¹(x) = 2, es decir x = g(2) = (10-2)/2 = 4. Entonces x = 4.'},
+  {_id:20,q:'V/F: Considere f: x ↦ 6x-2 y g: x ↦ (10-x)/2. Se cumple que f⁻¹(4) = g(4).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'f⁻¹(4): 6x-2=4 → x=1. g(4) = (10-4)/2 = 3. Como f⁻¹(4)=1 y g(4)=3, no son iguales, así que la afirmación es falsa.'},
+  ]);
+}
+_SKILL_META['sg3m3_b6']={ico:'🔗',lbl:'Igualdades y composición con funciones inversas',qCount:4,gen:_genSG3M3_B6,plantillas:["Evaluar g⁻¹(a) numérico dado un par f,g en notación de flecha","Mostrar que f⁻¹(a) − g⁻¹(b) = 0 para un par de funciones relacionadas","Resolver (f∘g⁻¹)(x) = k","V/F conceptual sobre composición con funciones inversas","Variante con otro par de funciones f,g"]};
+
+function _genSG3M3_B7(){
+  return _i4gpick([
+  // Plantilla 1 — Evaluar f(a) con f exponencial (4 preguntas)
+  {_id:1,q:'Considere f: x ↦ 5^x. Halle f(2).',a:'25',opts:_i4gshuf(['25','10','7','32']),mc:true,ste:'f(2) = 5² = 25.'},
+  {_id:2,q:'Considere f: x ↦ 2^x. Halle f(3).',a:'8',opts:_i4gshuf(['8','6','9','16']),mc:true,ste:'f(3) = 2³ = 8.'},
+  {_id:3,q:'Considere f: x ↦ 3^x. Halle f(2).',a:'9',opts:_i4gshuf(['9','6','27','8']),mc:true,ste:'f(2) = 3² = 9.'},
+  {_id:4,q:'Considere f: x ↦ 10^x. Halle f(1).',a:'10',opts:_i4gshuf(['10','1','100','0']),mc:true,ste:'f(1) = 10¹ = 10.'},
+  // Plantilla 2 — Evaluar g^-1(a) con g raíz (g=√x -> g^-1=x², g=∛x -> g^-1=x³) (4 preguntas)
+  {_id:5,q:'Considere g: x ↦ √x. Halle g⁻¹(4).',a:'16',opts:_i4gshuf(['16','2','8','32']),mc:true,ste:'Como g(x) = √x, su inversa es g⁻¹(x) = x² (para x ≥ 0). Entonces g⁻¹(4) = 4² = 16.'},
+  {_id:6,q:'Considere g: x ↦ √x. Halle g⁻¹(5).',a:'25',opts:_i4gshuf(['25','10','2.5','15']),mc:true,ste:'g⁻¹(x) = x² (para x ≥ 0). Entonces g⁻¹(5) = 5² = 25.'},
+  {_id:7,q:'Considere g: x ↦ ∛x. Halle g⁻¹(2).',a:'8',opts:_i4gshuf(['8','6','4','16']),mc:true,ste:'Como g(x) = ∛x, su inversa es g⁻¹(x) = x³. Entonces g⁻¹(2) = 2³ = 8.'},
+  {_id:8,q:'Considere g: x ↦ ∛x. Halle g⁻¹(3).',a:'27',opts:_i4gshuf(['27','9','6','81']),mc:true,ste:'g⁻¹(x) = x³. Entonces g⁻¹(3) = 3³ = 27.'},
+  // Plantilla 3 — Resolver (g^-1∘f)(x)=k con f exponencial y g raíz (4 preguntas)
+  {_id:9,q:'Considere f: x ↦ 5^x y g: x ↦ √x. Resuelva la ecuación (g⁻¹∘f)(x) = 25.',a:'1',opts:_i4gshuf(['1','2','5','25']),mc:true,ste:'(g⁻¹∘f)(x) = (5^x)² = 5^(2x). Se necesita 5^(2x) = 25 = 5² → 2x = 2 → x = 1.'},
+  {_id:10,q:'Considere f: x ↦ 2^x y g: x ↦ √x. Resuelva la ecuación (g⁻¹∘f)(x) = 64.',a:'3',opts:_i4gshuf(['3','6','2','64']),mc:true,ste:'(g⁻¹∘f)(x) = (2^x)² = 2^(2x). Se necesita 2^(2x) = 64 = 2⁶ → 2x = 6 → x = 3.'},
+  {_id:11,q:'Considere f: x ↦ 3^x y g: x ↦ √x. Resuelva la ecuación (g⁻¹∘f)(x) = 81.',a:'2',opts:_i4gshuf(['2','4','9','81']),mc:true,ste:'(g⁻¹∘f)(x) = (3^x)² = 3^(2x). Se necesita 3^(2x) = 81 = 3⁴ → 2x = 4 → x = 2.'},
+  {_id:12,q:'Considere f: x ↦ 2^x y g: x ↦ ∛x. Resuelva la ecuación (g⁻¹∘f)(x) = 64.',a:'2',opts:_i4gshuf(['2','3','6','64']),mc:true,ste:'(g⁻¹∘f)(x) = (2^x)³ = 2^(3x). Se necesita 2^(3x) = 64 = 2⁶ → 3x = 6 → x = 2.'},
+  // Plantilla 4 — V/F conceptual sobre inversas de exponenciales y raíces (4 preguntas)
+  {_id:13,q:'V/F: La inversa de g(x) = √x es g⁻¹(x) = x², considerando x ≥ 0.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: si y = √x, entonces x = y², por lo que g⁻¹(x) = x² (restringiendo a x ≥ 0 para que g⁻¹ sea función).'},
+  {_id:14,q:'V/F: La inversa de f(x) = 5^x es f⁻¹(x) = x^5.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: la inversa de una función exponencial como 5^x es una función logarítmica, no una potencia x^5.'},
+  {_id:15,q:'V/F: La inversa de g(x) = ∛x es g⁻¹(x) = x³.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: si y = ∛x, entonces x = y³, por lo que g⁻¹(x) = x³.'},
+  {_id:16,q:'V/F: Para g(x) = √x con g⁻¹(x) = x², se cumple que g⁻¹(g(9)) = 9.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: g(9) = √9 = 3; g⁻¹(3) = 3² = 9. Se recupera el valor original 9.'},
+  // Plantilla 5 — Variante mixta: otra base exponencial y otro tipo de raíz (4 preguntas)
+  {_id:17,q:'Considere f: x ↦ 3^x. Halle f(3).',a:'27',opts:_i4gshuf(['27','9','12','81']),mc:true,ste:'f(3) = 3³ = 27.'},
+  {_id:18,q:'Considere g: x ↦ ∛x. Halle g⁻¹(4).',a:'64',opts:_i4gshuf(['64','12','16','48']),mc:true,ste:'g⁻¹(x) = x³. Entonces g⁻¹(4) = 4³ = 64.'},
+  {_id:19,q:'Considere f: x ↦ 10^x y g: x ↦ √x. Resuelva la ecuación (g⁻¹∘f)(x) = 100.',a:'1',opts:_i4gshuf(['1','2','10','100']),mc:true,ste:'(g⁻¹∘f)(x) = (10^x)² = 10^(2x). Se necesita 10^(2x) = 100 = 10² → 2x = 2 → x = 1.'},
+  {_id:20,q:'V/F: Considere f: x ↦ 2^x y g: x ↦ √x. Se cumple que (g⁻¹∘f)(2) = 16.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'f(2) = 2² = 4; g⁻¹(4) = 4² = 16. Entonces (g⁻¹∘f)(2) = 16, la afirmación es verdadera.'},
+  ]);
+}
+_SKILL_META['sg3m3_b7']={ico:'🔗',lbl:'Evaluar funciones inversas de potencias, raíces y exponenciales',qCount:4,gen:_genSG3M3_B7,plantillas:["Evaluar f(a) con f(x) exponencial","Evaluar g⁻¹(a) con g(x) raíz cuadrada o cúbica","Resolver (g⁻¹∘f)(x) = k combinando exponencial e inversa de raíz","V/F conceptual sobre inversas de exponenciales y raíces","Variante mixta con otra base exponencial u otro tipo de raíz"]};
+
+function _genSG3M3_B8(){
+  return _i4gpick([
+  // Plantilla 1 — Descuento en tienda: evaluar, resolver y hallar la inversa (4 preguntas)
+  {_id:1,q:'Pedro trabaja en una tienda de celulares. El precio final tras el descuento y un costo fijo de $50 es f(p) = 0.8p + 50, donde p es el precio original. Halle el precio final si el precio original es $100.',a:'$130',opts:_i4gshuf(['$130','$100','$80','$180']),mc:true,ste:'f(100) = 0.8(100) + 50 = 80 + 50 = $130.'},
+  {_id:2,q:'Con f(p) = 0.8p + 50 (precio final tras descuento y costo fijo de $50), un cliente no quiere pagar más de $330. Calcule el precio original p para que el precio final sea exactamente $330.',a:'$350',opts:_i4gshuf(['$350','$330','$280','$400']),mc:true,ste:'Se resuelve 0.8p + 50 = 330 → 0.8p = 280 → p = 350. El precio original debe ser $350.'},
+  {_id:3,q:'Con f(p) = 0.8p + 50, halle la función inversa f⁻¹(y) que permite calcular el precio original p a partir del precio final y.',a:'f⁻¹(y) = (y - 50)/0.8',opts:_i4gshuf(['f⁻¹(y) = (y - 50)/0.8','f⁻¹(y) = (y + 50)/0.8','f⁻¹(y) = 0.8y - 50','f⁻¹(y) = (y - 50)·0.8']),mc:true,ste:'y = 0.8p + 50 → y - 50 = 0.8p → p = (y-50)/0.8. Entonces f⁻¹(y) = (y-50)/0.8.'},
+  {_id:4,q:'Una tienda vecina aplica g(p) = 0.75p + 30 al precio original p. Use la función inversa para hallar qué precio original p produjo un precio final de $300.',a:'$360',opts:_i4gshuf(['$360','$300','$247.50','$400']),mc:true,ste:'g⁻¹(y) = (y-30)/0.75; g⁻¹(300) = (300-30)/0.75 = 270/0.75 = 360. El precio original fue $360.'},
+  // Plantilla 2 — Batería de celular: evaluar y hallar la inversa (4 preguntas)
+  {_id:5,q:'La batería de un celular se descarga según B(t) = 100 - 4t, donde B es el % de batería restante y t las horas transcurridas. Halle B(5) e interprete el resultado.',a:'B(5) = 80: quedará 80% de batería tras 5 horas',opts:_i4gshuf(['B(5) = 80: quedará 80% de batería tras 5 horas','B(5) = 96: quedará 96% de batería tras 5 horas','B(5) = 20: quedará 20% de batería tras 5 horas','B(5) = 84: quedará 84% de batería tras 5 horas']),mc:true,ste:'B(5) = 100 - 4(5) = 100 - 20 = 80. Después de 5 horas quedará el 80% de batería.'},
+  {_id:6,q:'Con B(t) = 100 - 4t, halle la función inversa B⁻¹(y) para saber cuánto tiempo ha pasado dado un % de batería y.',a:'B⁻¹(y) = (100 - y)/4',opts:_i4gshuf(['B⁻¹(y) = (100 - y)/4','B⁻¹(y) = (y - 100)/4','B⁻¹(y) = 4(100 - y)','B⁻¹(y) = (100 + y)/4']),mc:true,ste:'y = 100 - 4t → 4t = 100 - y → t = (100-y)/4. Entonces B⁻¹(y) = (100-y)/4.'},
+  {_id:7,q:'Con B(t) = 100 - 4t y su inversa B⁻¹(y) = (100-y)/4, halle e interprete B⁻¹(20).',a:'B⁻¹(20) = 20: han pasado 20 horas cuando queda 20% de batería',opts:_i4gshuf(['B⁻¹(20) = 20: han pasado 20 horas cuando queda 20% de batería','B⁻¹(20) = 5: han pasado 5 horas cuando queda 20% de batería','B⁻¹(20) = 80: han pasado 80 horas cuando queda 20% de batería','B⁻¹(20) = 30: han pasado 30 horas cuando queda 20% de batería']),mc:true,ste:'B⁻¹(20) = (100-20)/4 = 80/4 = 20. Han transcurrido 20 horas cuando queda el 20% de batería.'},
+  {_id:8,q:'Un modelo distinto de celular se descarga según B2(t) = 100 - 5t. Halle e interprete B2⁻¹(60).',a:'B2⁻¹(60) = 8: han pasado 8 horas cuando queda 60% de batería',opts:_i4gshuf(['B2⁻¹(60) = 8: han pasado 8 horas cuando queda 60% de batería','B2⁻¹(60) = 60: han pasado 60 horas cuando queda 60% de batería','B2⁻¹(60) = 40: han pasado 40 horas cuando queda 60% de batería','B2⁻¹(60) = 12: han pasado 12 horas cuando queda 60% de batería']),mc:true,ste:'B2⁻¹(y) = (100-y)/5; B2⁻¹(60) = (100-60)/5 = 40/5 = 8. Han transcurrido 8 horas cuando queda el 60% de batería.'},
+  // Plantilla 3 — Alquiler de bicicleta: evaluar, invertir e interpretar (4 preguntas)
+  {_id:9,q:'El costo C, en soles, de alquilar una bicicleta durante t horas es C(t) = 12t + 18. Halle C(5) e interprete el resultado en el contexto.',a:'C(5) = 78: alquilar la bicicleta 5 horas cuesta S/78',opts:_i4gshuf(['C(5) = 78: alquilar la bicicleta 5 horas cuesta S/78','C(5) = 60: alquilar la bicicleta 5 horas cuesta S/60','C(5) = 90: alquilar la bicicleta 5 horas cuesta S/90','C(5) = 78: alquilar la bicicleta 78 horas cuesta S/5']),mc:true,ste:'C(5) = 12(5) + 18 = 60 + 18 = 78. Alquilar la bicicleta durante 5 horas cuesta S/78.'},
+  {_id:10,q:'Con C(t) = 12t + 18, halle la función inversa C⁻¹(y).',a:'C⁻¹(y) = (y - 18)/12',opts:_i4gshuf(['C⁻¹(y) = (y - 18)/12','C⁻¹(y) = (y + 18)/12','C⁻¹(y) = 12(y - 18)','C⁻¹(y) = (y - 12)/18']),mc:true,ste:'y = 12t + 18 → y - 18 = 12t → t = (y-18)/12. Entonces C⁻¹(y) = (y-18)/12.'},
+  {_id:11,q:'Con C(t) = 12t + 18 y su inversa C⁻¹(y) = (y-18)/12, halle y explique el significado de C⁻¹(78).',a:'C⁻¹(78) = 5: representa las horas de alquiler cuando el costo es S/78',opts:_i4gshuf(['C⁻¹(78) = 5: representa las horas de alquiler cuando el costo es S/78','C⁻¹(78) = 78: representa las horas de alquiler cuando el costo es S/5','C⁻¹(78) = 96: representa las horas de alquiler cuando el costo es S/78','C⁻¹(78) = 6: representa las horas de alquiler cuando el costo es S/78']),mc:true,ste:'C⁻¹(78) = (78-18)/12 = 60/12 = 5. C⁻¹(78) representa las horas de alquiler cuando el costo es S/78, es decir, 5 horas.'},
+  {_id:12,q:'Otro local alquila bicicletas según C2(t) = 15t + 10. Halle e interprete el significado de C2⁻¹(100).',a:'C2⁻¹(100) = 6: representa las horas de alquiler cuando el costo es S/100',opts:_i4gshuf(['C2⁻¹(100) = 6: representa las horas de alquiler cuando el costo es S/100','C2⁻¹(100) = 100: representa las horas de alquiler cuando el costo es S/6','C2⁻¹(100) = 7: representa las horas de alquiler cuando el costo es S/100','C2⁻¹(100) = 90: representa las horas de alquiler cuando el costo es S/100']),mc:true,ste:'C2⁻¹(y) = (y-10)/15; C2⁻¹(100) = (100-10)/15 = 90/15 = 6. Representa las horas de alquiler cuando el costo es S/100.'},
+  // Plantilla 4 — Depreciación de laptop: pendiente, inversa e interpretación con dominio (4 preguntas)
+  {_id:13,q:'El precio P, en dólares, de una laptop después de t años es P(t) = 5400 - 600t, con 0 ≤ t ≤ 6. Escriba e interprete el significado de la pendiente de P(t) en el contexto.',a:'La pendiente es -600: el precio disminuye $600 por cada año que pasa',opts:_i4gshuf(['La pendiente es -600: el precio disminuye $600 por cada año que pasa','La pendiente es 5400: el precio inicial es $5400','La pendiente es 600: el precio aumenta $600 por cada año que pasa','La pendiente es -600: el precio disminuye $600 en total durante los 6 años']),mc:true,ste:'La pendiente de P(t) = 5400 - 600t es -600, lo que significa que el precio de la laptop disminuye $600 por cada año que transcurre.'},
+  {_id:14,q:'Con P(t) = 5400 - 600t, halle la función inversa de P(t).',a:'P⁻¹(y) = (5400 - y)/600',opts:_i4gshuf(['P⁻¹(y) = (5400 - y)/600','P⁻¹(y) = (y - 5400)/600','P⁻¹(y) = 600(5400 - y)','P⁻¹(y) = (5400 + y)/600']),mc:true,ste:'y = 5400 - 600t → 600t = 5400 - y → t = (5400-y)/600. Entonces P⁻¹(y) = (5400-y)/600.'},
+  {_id:15,q:'Con P⁻¹(y) = (5400-y)/600, halle e interprete el significado de P⁻¹(2400).',a:'P⁻¹(2400) = 5: representa los años que deben pasar para que el precio sea $2400',opts:_i4gshuf(['P⁻¹(2400) = 5: representa los años que deben pasar para que el precio sea $2400','P⁻¹(2400) = 2400: representa los años que deben pasar para que el precio sea $5','P⁻¹(2400) = 4: representa los años que deben pasar para que el precio sea $2400','P⁻¹(2400) = 3000: representa los años que deben pasar para que el precio sea $2400']),mc:true,ste:'P⁻¹(2400) = (5400-2400)/600 = 3000/600 = 5. Representa los años que deben pasar para que el precio de la laptop sea $2400.'},
+  {_id:16,q:'Con P(t) = 5400 - 600t, 0 ≤ t ≤ 6, halle el dominio de la función inversa P⁻¹.',a:'[1800, 5400]',opts:_i4gshuf(['[1800, 5400]','[0, 6]','[0, 5400]','[600, 5400]']),mc:true,ste:'El dominio de P⁻¹ es el rango de P. Como P(0) = 5400 y P(6) = 5400-3600 = 1800, el rango de P (y por tanto el dominio de P⁻¹) es [1800, 5400].'},
+  // Plantilla 5 — Variante mixta: otro contexto lineal con evaluación, inversa e interpretación (4 preguntas)
+  {_id:17,q:'Otra laptop se deprecia según P2(t) = 4800 - 500t, con 0 ≤ t ≤ 8. Halle P2(3) e interprete el resultado.',a:'P2(3) = 3300: el precio de la laptop después de 3 años es $3300',opts:_i4gshuf(['P2(3) = 3300: el precio de la laptop después de 3 años es $3300','P2(3) = 1500: el precio de la laptop después de 3 años es $1500','P2(3) = 4300: el precio de la laptop después de 3 años es $4300','P2(3) = 3300: el precio de la laptop después de 3300 años es $3']),mc:true,ste:'P2(3) = 4800 - 500(3) = 4800 - 1500 = 3300. El precio de la laptop después de 3 años es $3300.'},
+  {_id:18,q:'Con P2(t) = 4800 - 500t, halle e interprete el significado de P2⁻¹(2300).',a:'P2⁻¹(2300) = 5: representa los años que deben pasar para que el precio sea $2300',opts:_i4gshuf(['P2⁻¹(2300) = 5: representa los años que deben pasar para que el precio sea $2300','P2⁻¹(2300) = 2300: representa los años que deben pasar para que el precio sea $5','P2⁻¹(2300) = 4: representa los años que deben pasar para que el precio sea $2300','P2⁻¹(2300) = 2500: representa los años que deben pasar para que el precio sea $2300']),mc:true,ste:'P2⁻¹(y) = (4800-y)/500; P2⁻¹(2300) = (4800-2300)/500 = 2500/500 = 5. Representa los años que deben pasar para que el precio sea $2300.'},
+  {_id:19,q:'Con P2(t) = 4800 - 500t, 0 ≤ t ≤ 8, halle el dominio de la función inversa P2⁻¹.',a:'[800, 4800]',opts:_i4gshuf(['[800, 4800]','[0, 8]','[0, 4800]','[500, 4800]']),mc:true,ste:'El dominio de P2⁻¹ es el rango de P2. Como P2(0) = 4800 y P2(8) = 4800-4000 = 800, el rango de P2 (y dominio de P2⁻¹) es [800, 4800].'},
+  {_id:20,q:'V/F: En un problema de alquiler donde C(t) = 12t + 18, el valor C⁻¹(78) representa el costo en soles de alquilar la bicicleta durante 78 horas.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: C⁻¹(78) = 5 representa las HORAS de alquiler cuando el COSTO es S/78, no lo contrario. C⁻¹ invierte los roles de entrada y salida respecto a C.'},
+  ]);
+}
+_SKILL_META['sg3m3_b8']={ico:'🔗',lbl:'Problemas verbales de función inversa: hallar, evaluar e interpretar',qCount:4,gen:_genSG3M3_B8,plantillas:["Descuento en tienda: evaluar, resolver y hallar la función inversa","Batería de celular: evaluar y hallar la función inversa","Alquiler de bicicleta: evaluar, hallar la inversa e interpretar","Depreciación de laptop: pendiente, inversa e interpretación con dominio","Variante mixta con otro contexto lineal (laptop/alquiler) y su interpretación"]};
+
+function _genSG3M3_BQ1(){return _bqSrcPick(['sg3m3_b1','sg3m3_b2','sg3m3_b3','sg3m3_b4'],[_genSG3M3_B1,_genSG3M3_B2,_genSG3M3_B3,_genSG3M3_B4]);}
+_SKILL_META['sg3m3_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Verificación y Cálculo de Funciones Inversas',qCount:20,gen:_genSG3M3_BQ1,quiz:true,srcKeys:['sg3m3_b1','sg3m3_b2','sg3m3_b3','sg3m3_b4']};
+
+function _genSG3M3_BQ2(){return _bqSrcPick(['sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8'],[_genSG3M3_B5,_genSG3M3_B6,_genSG3M3_B7,_genSG3M3_B8]);}
+_SKILL_META['sg3m3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Evaluación y Aplicación de Funciones Inversas',qCount:20,gen:_genSG3M3_BQ2,quiz:true,srcKeys:['sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8']};
+
 // ===== Colegio San Vicente del Retablo - 3ro Secundaria - Aritmética: Porcentajes (Unidad 01) =====
 
 function _genSVR3AR_B1(){
@@ -19510,6 +19766,7 @@ const PREP_CURRICULUM = {
     '3':[{lbl:'Razones Trigonométricas',          area:'trigonometria', editorial:'intelectum', skills:['trigo','trigvf']},
          {lbl:'Relaciones y Funciones',                area:'matematica',     editorial:'st_georges',   skills:['sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4']},
          {lbl:'Composición de Funciones',            area:'matematica',     editorial:'st_georges',   skills:['sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2']},
+         {lbl:'Función Inversa',                     area:'matematica',     editorial:'st_georges',   skills:['sg3m3_b1','sg3m3_b2','sg3m3_b3','sg3m3_b4','sg3m3_bq1','sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8','sg3m3_bq2']},
          {lbl:'Porcentajes',                       area:'aritmetica',     editorial:'san_vicente_retablo', skills:['svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2']}],
     '5':[
       {lbl:'Números Reales',                              area:'matematica', editorial:'san_norberto', skills:['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2']},
