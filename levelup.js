@@ -15359,71 +15359,264 @@ function _genInn5mECU_BQ2(){return _bqSrcPick(['inn5m_ecu_b3','inn5m_ecu_b4'],[_
 _SKILL_META['inn5m_ecu_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Sistemas de ecuaciones lineales y no lineales',qCount:10,gen:_genInn5mECU_BQ2,quiz:true,srcKeys:['inn5m_ecu_b3','inn5m_ecu_b4']};
 
 
+
 // ===== Catholic High Schools - 1ro Secundaria - Unidad 1: Operaciones Básicas, Fracciones y Ecuaciones Lineales =====
 
 function _genChs1mU1_B1(){
   return _i4gpick([
-  // Plantilla 1 — Adición de números de 3 cifras (4 preguntas)
+  // Plantilla 1 — Adición de dos números de 3 cifras (4 preguntas)
   {_id:1,q:'347 + 289 = ?',a:'636',opts:_i4gshuf(['636','626','646','616']),mc:true,ste:'347+289 = 636.'},
   {_id:2,q:'523 + 178 = ?',a:'701',opts:_i4gshuf(['701','691','711','681']),mc:true,ste:'523+178 = 701.'},
   {_id:3,q:'456 + 367 = ?',a:'823',opts:_i4gshuf(['823','813','833','803']),mc:true,ste:'456+367 = 823.'},
   {_id:4,q:'612 + 289 = ?',a:'901',opts:_i4gshuf(['901','891','911','881']),mc:true,ste:'612+289 = 901.'},
-  // Plantilla 2 — Sustracción de números de 3 cifras (4 preguntas)
-  {_id:5,q:'804 − 356 = ?',a:'448',opts:_i4gshuf(['448','438','468','458']),mc:true,ste:'804−356 = 448.'},
-  {_id:6,q:'725 − 468 = ?',a:'257',opts:_i4gshuf(['257','247','267','277']),mc:true,ste:'725−468 = 257.'},
-  {_id:7,q:'913 − 257 = ?',a:'656',opts:_i4gshuf(['656','646','666','636']),mc:true,ste:'913−257 = 656.'},
-  {_id:8,q:'640 − 385 = ?',a:'255',opts:_i4gshuf(['255','245','265','275']),mc:true,ste:'640−385 = 255.'},
-  // Plantilla 3 — Multiplicación de un número de 2 cifras por otro de 2 cifras (4 preguntas)
-  {_id:9,q:'24 × 16 = ?',a:'384',opts:_i4gshuf(['384','374','364','394']),mc:true,ste:'24×16 = 384.'},
-  {_id:10,q:'32 × 15 = ?',a:'480',opts:_i4gshuf(['480','470','460','490']),mc:true,ste:'32×15 = 480.'},
-  {_id:11,q:'28 × 14 = ?',a:'392',opts:_i4gshuf(['392','382','402','372']),mc:true,ste:'28×14 = 392.'},
-  {_id:12,q:'36 × 12 = ?',a:'432',opts:_i4gshuf(['432','422','442','412']),mc:true,ste:'36×12 = 432.'},
-  // Plantilla 4 — División exacta de un número de 3 cifras entre uno de 2 cifras (4 preguntas)
-  {_id:13,q:'156 ÷ 12 = ?',a:'13',opts:_i4gshuf(['13','12','14','15']),mc:true,ste:'156÷12 = 13 (12×13=156).'},
-  {_id:14,q:'264 ÷ 12 = ?',a:'22',opts:_i4gshuf(['22','21','23','24']),mc:true,ste:'264÷12 = 22 (12×22=264).'},
-  {_id:15,q:'351 ÷ 13 = ?',a:'27',opts:_i4gshuf(['27','26','28','29']),mc:true,ste:'351÷13 = 27 (13×27=351).'},
-  {_id:16,q:'442 ÷ 17 = ?',a:'26',opts:_i4gshuf(['26','25','27','28']),mc:true,ste:'442÷17 = 26 (17×26=442).'},
-  // Plantilla 5 — Operación combinada de dos pasos (4 preguntas)
-  {_id:17,q:'15 + 6 × 4 = ?',a:'39',opts:_i4gshuf(['39','84','35','25']),mc:true,ste:'Primero la multiplicación: 6×4=24. Luego 15+24=39.'},
-  {_id:18,q:'50 − 3 × 8 = ?',a:'26',opts:_i4gshuf(['26','376','47','21']),mc:true,ste:'Primero la multiplicación: 3×8=24. Luego 50−24=26.'},
-  {_id:19,q:'9 × 4 + 7 = ?',a:'43',opts:_i4gshuf(['43','99','36','40']),mc:true,ste:'Primero la multiplicación: 9×4=36. Luego 36+7=43.'},
-  {_id:20,q:'60 − 5 × 9 = ?',a:'15',opts:_i4gshuf(['15','495','25','5']),mc:true,ste:'Primero la multiplicación: 5×9=45. Luego 60−45=15.'},
+  // Plantilla 2 — Adición de dos números de 2 cifras (4 preguntas)
+  {_id:5,q:'24 + 38 = ?',a:'62',opts:_i4gshuf(['62','52','72','58']),mc:true,ste:'24+38 = 62.'},
+  {_id:6,q:'47 + 35 = ?',a:'82',opts:_i4gshuf(['82','72','92','78']),mc:true,ste:'47+35 = 82.'},
+  {_id:7,q:'56 + 29 = ?',a:'85',opts:_i4gshuf(['85','75','95','81']),mc:true,ste:'56+29 = 85.'},
+  {_id:8,q:'68 + 19 = ?',a:'87',opts:_i4gshuf(['87','77','97','83']),mc:true,ste:'68+19 = 87.'},
+  // Plantilla 3 — Adición de tres números (4 preguntas)
+  {_id:9,q:'12 + 25 + 18 = ?',a:'55',opts:_i4gshuf(['55','45','65','50']),mc:true,ste:'12+25+18 = 55.'},
+  {_id:10,q:'30 + 14 + 21 = ?',a:'65',opts:_i4gshuf(['65','55','75','60']),mc:true,ste:'30+14+21 = 65.'},
+  {_id:11,q:'45 + 16 + 9 = ?',a:'70',opts:_i4gshuf(['70','60','80','65']),mc:true,ste:'45+16+9 = 70.'},
+  {_id:12,q:'22 + 33 + 19 = ?',a:'74',opts:_i4gshuf(['74','64','84','69']),mc:true,ste:'22+33+19 = 74.'},
+  // Plantilla 4 — Problema verbal de adición (4 preguntas)
+  {_id:13,q:'Ana tiene 25 lápices y compra 18 más. ¿Cuántos lápices tiene en total?',a:'43',opts:_i4gshuf(['43','33','53','38']),mc:true,ste:'25+18 = 43.'},
+  {_id:14,q:'Un colegio tiene 340 alumnos y se inscriben 65 alumnos más. ¿Cuántos alumnos tiene ahora?',a:'405',opts:_i4gshuf(['405','395','415','400']),mc:true,ste:'340+65 = 405.'},
+  {_id:15,q:'Un negocio vendió 128 productos el lunes y 97 el martes. ¿Cuántos productos vendió en total?',a:'225',opts:_i4gshuf(['225','215','235','220']),mc:true,ste:'128+97 = 225.'},
+  {_id:16,q:'María ahorra 150 soles y luego ahorra 85 soles más. ¿Cuánto ha ahorrado en total?',a:'235',opts:_i4gshuf(['235','225','245','230']),mc:true,ste:'150+85 = 235.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: La suma es conmutativa, es decir, a+b = b+a.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El orden de los sumandos no altera el resultado de la suma.'},
+  {_id:18,q:'V/F: Al sumar tres números, el orden en que se agrupan no afecta el resultado (propiedad asociativa).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'(a+b)+c = a+(b+c), esa es la propiedad asociativa.'},
+  {_id:19,q:'V/F: La suma de dos números pares siempre es impar.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La suma de dos números pares siempre es par (ej. 4+6=10).'},
+  {_id:20,q:'V/F: Sumar cero a cualquier número no cambia su valor.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Cero es el elemento neutro de la suma: a+0 = a.'},
   ]);
 }
-_SKILL_META['chs1m_u1_b1']={ico:'📐',lbl:'Operaciones básicas con números naturales',qCount:4,gen:_genChs1mU1_B1,plantillas:['Adición de números de 3 cifras','Sustracción de números de 3 cifras','Multiplicación de dos números de 2 cifras','División exacta de un número de 3 cifras entre uno de 2 cifras','Operación combinada de dos pasos']};
+_SKILL_META['chs1m_u1_b1']={ico:'📐',lbl:'Adición de números naturales',qCount:4,gen:_genChs1mU1_B1,plantillas:['Adición de dos números de 3 cifras','Adición de dos números de 2 cifras','Adición de tres números','Problema verbal de adición','Conceptual (V/F) sobre la suma']};
 
 function _genChs1mU1_B2(){
   return _i4gpick([
-  // Plantilla 1 — Fracción propia a decimal (4 preguntas)
+  // Plantilla 1 — Sustracción de dos números de 3 cifras (4 preguntas)
+  {_id:1,q:'804 − 356 = ?',a:'448',opts:_i4gshuf(['448','438','468','458']),mc:true,ste:'804−356 = 448.'},
+  {_id:2,q:'725 − 468 = ?',a:'257',opts:_i4gshuf(['257','247','267','277']),mc:true,ste:'725−468 = 257.'},
+  {_id:3,q:'913 − 257 = ?',a:'656',opts:_i4gshuf(['656','646','666','636']),mc:true,ste:'913−257 = 656.'},
+  {_id:4,q:'640 − 385 = ?',a:'255',opts:_i4gshuf(['255','245','265','275']),mc:true,ste:'640−385 = 255.'},
+  // Plantilla 2 — Sustracción de dos números de 2 cifras (4 preguntas)
+  {_id:5,q:'62 − 38 = ?',a:'24',opts:_i4gshuf(['24','14','34','28']),mc:true,ste:'62−38 = 24.'},
+  {_id:6,q:'82 − 35 = ?',a:'47',opts:_i4gshuf(['47','37','57','43']),mc:true,ste:'82−35 = 47.'},
+  {_id:7,q:'85 − 29 = ?',a:'56',opts:_i4gshuf(['56','46','66','52']),mc:true,ste:'85−29 = 56.'},
+  {_id:8,q:'87 − 19 = ?',a:'68',opts:_i4gshuf(['68','58','78','64']),mc:true,ste:'87−19 = 68.'},
+  // Plantilla 3 — Sustracción encadenada (a−b−c) (4 preguntas)
+  {_id:9,q:'70 − 25 − 15 = ?',a:'30',opts:_i4gshuf(['30','20','40','35']),mc:true,ste:'70−25 = 45; 45−15 = 30.'},
+  {_id:10,q:'90 − 32 − 18 = ?',a:'40',opts:_i4gshuf(['40','30','50','45']),mc:true,ste:'90−32 = 58; 58−18 = 40.'},
+  {_id:11,q:'100 − 45 − 20 = ?',a:'35',opts:_i4gshuf(['35','25','45','30']),mc:true,ste:'100−45 = 55; 55−20 = 35.'},
+  {_id:12,q:'120 − 38 − 32 = ?',a:'50',opts:_i4gshuf(['50','40','60','45']),mc:true,ste:'120−38 = 82; 82−32 = 50.'},
+  // Plantilla 4 — Problema verbal de sustracción (4 preguntas)
+  {_id:13,q:'Ana tenía 43 lápices y regaló 18. ¿Cuántos lápices le quedan?',a:'25',opts:_i4gshuf(['25','15','35','20']),mc:true,ste:'43−18 = 25.'},
+  {_id:14,q:'Un colegio tenía 405 alumnos y 65 se retiraron. ¿Cuántos alumnos tiene ahora?',a:'340',opts:_i4gshuf(['340','330','350','335']),mc:true,ste:'405−65 = 340.'},
+  {_id:15,q:'Un negocio tenía 225 productos y vendió 97. ¿Cuántos productos le quedan?',a:'128',opts:_i4gshuf(['128','118','138','123']),mc:true,ste:'225−97 = 128.'},
+  {_id:16,q:'María tenía 235 soles y gastó 85. ¿Cuánto dinero le queda?',a:'150',opts:_i4gshuf(['150','140','160','145']),mc:true,ste:'235−85 = 150.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: La resta es conmutativa, es decir, a−b = b−a.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El orden sí importa en la resta: en general a−b ≠ b−a.'},
+  {_id:18,q:'V/F: Restar cero a un número no cambia su valor.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'a−0 = a, el resultado no cambia.'},
+  {_id:19,q:'V/F: Al restar un número mayor de uno menor, se obtiene un resultado negativo.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ej. 5−8 = −3, un resultado negativo.'},
+  {_id:20,q:'V/F: La resta es la operación inversa de la suma.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Si a+b=c, entonces c−b=a; por eso la resta deshace la suma.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b2']={ico:'📐',lbl:'Sustracción de números naturales',qCount:4,gen:_genChs1mU1_B2,plantillas:['Sustracción de dos números de 3 cifras','Sustracción de dos números de 2 cifras','Sustracción encadenada (a−b−c)','Problema verbal de sustracción','Conceptual (V/F) sobre la resta']};
+
+function _genChs1mU1_B3(){
+  return _i4gpick([
+  // Plantilla 1 — Multiplicación de dos números de 2 cifras (4 preguntas)
+  {_id:1,q:'24 × 16 = ?',a:'384',opts:_i4gshuf(['384','374','364','394']),mc:true,ste:'24×16 = 384.'},
+  {_id:2,q:'32 × 15 = ?',a:'480',opts:_i4gshuf(['480','470','460','490']),mc:true,ste:'32×15 = 480.'},
+  {_id:3,q:'28 × 14 = ?',a:'392',opts:_i4gshuf(['392','382','402','372']),mc:true,ste:'28×14 = 392.'},
+  {_id:4,q:'36 × 12 = ?',a:'432',opts:_i4gshuf(['432','422','442','412']),mc:true,ste:'36×12 = 432.'},
+  // Plantilla 2 — Multiplicación con números más grandes (4 preguntas)
+  {_id:5,q:'45 × 12 = ?',a:'540',opts:_i4gshuf(['540','530','550','520']),mc:true,ste:'45×12 = 540.'},
+  {_id:6,q:'38 × 15 = ?',a:'570',opts:_i4gshuf(['570','560','580','550']),mc:true,ste:'38×15 = 570.'},
+  {_id:7,q:'52 × 13 = ?',a:'676',opts:_i4gshuf(['676','666','686','656']),mc:true,ste:'52×13 = 676.'},
+  {_id:8,q:'27 × 18 = ?',a:'486',opts:_i4gshuf(['486','476','496','466']),mc:true,ste:'27×18 = 486.'},
+  // Plantilla 3 — Multiplicación de tres factores (4 preguntas)
+  {_id:9,q:'4 × 5 × 6 = ?',a:'120',opts:_i4gshuf(['120','100','140','110']),mc:true,ste:'4×5 = 20; 20×6 = 120.'},
+  {_id:10,q:'3 × 7 × 4 = ?',a:'84',opts:_i4gshuf(['84','74','94','80']),mc:true,ste:'3×7 = 21; 21×4 = 84.'},
+  {_id:11,q:'2 × 9 × 5 = ?',a:'90',opts:_i4gshuf(['90','80','100','85']),mc:true,ste:'2×9 = 18; 18×5 = 90.'},
+  {_id:12,q:'6 × 3 × 4 = ?',a:'72',opts:_i4gshuf(['72','62','82','68']),mc:true,ste:'6×3 = 18; 18×4 = 72.'},
+  // Plantilla 4 — Problema verbal de multiplicación (4 preguntas)
+  {_id:13,q:'Una caja tiene 24 lápices. ¿Cuántos lápices hay en 16 cajas iguales?',a:'384',opts:_i4gshuf(['384','374','394','364']),mc:true,ste:'24×16 = 384.'},
+  {_id:14,q:'Un autobús tiene 32 asientos. ¿Cuántos asientos hay en 15 autobuses iguales?',a:'480',opts:_i4gshuf(['480','470','490','460']),mc:true,ste:'32×15 = 480.'},
+  {_id:15,q:'Una caja tiene 28 galletas. ¿Cuántas galletas hay en 14 cajas iguales?',a:'392',opts:_i4gshuf(['392','382','402','372']),mc:true,ste:'28×14 = 392.'},
+  {_id:16,q:'Un salón tiene 36 sillas. ¿Cuántas sillas hay en 12 salones iguales?',a:'432',opts:_i4gshuf(['432','422','442','412']),mc:true,ste:'36×12 = 432.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: La multiplicación es conmutativa, es decir, a×b = b×a.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El orden de los factores no altera el producto.'},
+  {_id:18,q:'V/F: Multiplicar un número por 1 no cambia su valor.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'1 es el elemento neutro de la multiplicación: a×1 = a.'},
+  {_id:19,q:'V/F: Multiplicar un número por 0 da como resultado el mismo número.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Cualquier número multiplicado por 0 da 0, no el mismo número.'},
+  {_id:20,q:'V/F: La multiplicación puede pensarse como una suma repetida.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ej. 4×3 = 3+3+3+3, una suma repetida de 3 cuatro veces.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b3']={ico:'📐',lbl:'Multiplicación de números naturales',qCount:4,gen:_genChs1mU1_B3,plantillas:['Multiplicación de dos números de 2 cifras','Multiplicación con números más grandes','Multiplicación de tres factores','Problema verbal de multiplicación','Conceptual (V/F) sobre la multiplicación']};
+
+function _genChs1mU1_B4(){
+  return _i4gpick([
+  // Plantilla 1 — División exacta de un número de 3 cifras entre uno de 2 cifras (4 preguntas)
+  {_id:1,q:'156 ÷ 12 = ?',a:'13',opts:_i4gshuf(['13','12','14','15']),mc:true,ste:'156÷12 = 13 (12×13=156).'},
+  {_id:2,q:'264 ÷ 12 = ?',a:'22',opts:_i4gshuf(['22','21','23','24']),mc:true,ste:'264÷12 = 22 (12×22=264).'},
+  {_id:3,q:'351 ÷ 13 = ?',a:'27',opts:_i4gshuf(['27','26','28','29']),mc:true,ste:'351÷13 = 27 (13×27=351).'},
+  {_id:4,q:'442 ÷ 17 = ?',a:'26',opts:_i4gshuf(['26','25','27','28']),mc:true,ste:'442÷17 = 26 (17×26=442).'},
+  // Plantilla 2 — División con números más grandes (4 preguntas)
+  {_id:5,q:'540 ÷ 45 = ?',a:'12',opts:_i4gshuf(['12','11','13','10']),mc:true,ste:'540÷45 = 12 (45×12=540).'},
+  {_id:6,q:'570 ÷ 38 = ?',a:'15',opts:_i4gshuf(['15','14','16','13']),mc:true,ste:'570÷38 = 15 (38×15=570).'},
+  {_id:7,q:'676 ÷ 52 = ?',a:'13',opts:_i4gshuf(['13','12','14','11']),mc:true,ste:'676÷52 = 13 (52×13=676).'},
+  {_id:8,q:'486 ÷ 27 = ?',a:'18',opts:_i4gshuf(['18','17','19','16']),mc:true,ste:'486÷27 = 18 (27×18=486).'},
+  // Plantilla 3 — División encadenada (4 preguntas)
+  {_id:9,q:'120 ÷ 5 ÷ 6 = ?',a:'4',opts:_i4gshuf(['4','6','24','3']),mc:true,ste:'120÷5 = 24; 24÷6 = 4.'},
+  {_id:10,q:'84 ÷ 7 ÷ 4 = ?',a:'3',opts:_i4gshuf(['3','4','12','2']),mc:true,ste:'84÷7 = 12; 12÷4 = 3.'},
+  {_id:11,q:'90 ÷ 9 ÷ 5 = ?',a:'2',opts:_i4gshuf(['2','5','10','4']),mc:true,ste:'90÷9 = 10; 10÷5 = 2.'},
+  {_id:12,q:'72 ÷ 6 ÷ 4 = ?',a:'3',opts:_i4gshuf(['3','4','12','2']),mc:true,ste:'72÷6 = 12; 12÷4 = 3.'},
+  // Plantilla 4 — Problema verbal de división (4 preguntas)
+  {_id:13,q:'384 lápices se reparten en partes iguales entre 16 cajas. ¿Cuántos lápices hay en cada caja?',a:'24',opts:_i4gshuf(['24','22','26','20']),mc:true,ste:'384÷16 = 24.'},
+  {_id:14,q:'480 asientos se reparten en partes iguales entre 15 autobuses. ¿Cuántos asientos tiene cada autobús?',a:'32',opts:_i4gshuf(['32','30','34','28']),mc:true,ste:'480÷15 = 32.'},
+  {_id:15,q:'392 galletas se reparten en partes iguales entre 14 cajas. ¿Cuántas galletas hay en cada caja?',a:'28',opts:_i4gshuf(['28','26','30','24']),mc:true,ste:'392÷14 = 28.'},
+  {_id:16,q:'432 sillas se reparten en partes iguales entre 12 salones. ¿Cuántas sillas hay en cada salón?',a:'36',opts:_i4gshuf(['36','34','38','32']),mc:true,ste:'432÷12 = 36.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: La división es conmutativa, es decir, a÷b = b÷a.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El orden sí importa: en general a÷b ≠ b÷a.'},
+  {_id:18,q:'V/F: Dividir un número entre 1 no cambia su valor.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'a÷1 = a, el resultado no cambia.'},
+  {_id:19,q:'V/F: No se puede dividir un número entre 0.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La división entre 0 no está definida en aritmética.'},
+  {_id:20,q:'V/F: La división es la operación inversa de la multiplicación.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Si a×b=c, entonces c÷b=a; por eso la división deshace la multiplicación.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b4']={ico:'📐',lbl:'División de números naturales',qCount:4,gen:_genChs1mU1_B4,plantillas:['División exacta de un número de 3 cifras entre uno de 2 cifras','División con números más grandes','División encadenada','Problema verbal de división','Conceptual (V/F) sobre la división']};
+
+function _genChs1mU1_BQ1(){return _bqSrcPick(['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3','chs1m_u1_b4'],[_genChs1mU1_B1,_genChs1mU1_B2,_genChs1mU1_B3,_genChs1mU1_B4]);}
+_SKILL_META['chs1m_u1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Las cuatro operaciones básicas',qCount:20,gen:_genChs1mU1_BQ1,quiz:true,srcKeys:['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3','chs1m_u1_b4']};
+
+function _genChs1mU1_B5(){
+  return _i4gpick([
+  // Plantilla 1 — Fracción propia a decimal (denominador 4, 8, 20) (4 preguntas)
   {_id:1,q:'¿Qué es 3/4 expresado como decimal?',a:'0.75',opts:_i4gshuf(['0.75','0.34','0.43','1.34']),mc:true,ste:'3÷4 = 0.75.'},
   {_id:2,q:'¿Qué es 1/8 expresado como decimal?',a:'0.125',opts:_i4gshuf(['0.125','0.18','0.8','0.25']),mc:true,ste:'1÷8 = 0.125.'},
   {_id:3,q:'¿Qué es 5/8 expresado como decimal?',a:'0.625',opts:_i4gshuf(['0.625','0.58','0.85','0.16']),mc:true,ste:'5÷8 = 0.625.'},
   {_id:4,q:'¿Qué es 7/20 expresado como decimal?',a:'0.35',opts:_i4gshuf(['0.35','0.72','0.207','2.85']),mc:true,ste:'7÷20 = 0.35.'},
-  // Plantilla 2 — Porcentaje de un número (4 preguntas)
-  {_id:5,q:'¿Qué es 35% de 200?',a:'70',opts:_i4gshuf(['70','60','65','75']),mc:true,ste:'35% de 200 = 0.35×200 = 70.'},
-  {_id:6,q:'¿Qué es 20% de 150?',a:'30',opts:_i4gshuf(['30','20','35','25']),mc:true,ste:'20% de 150 = 0.20×150 = 30.'},
-  {_id:7,q:'¿Qué es 15% de 80?',a:'12',opts:_i4gshuf(['12','8','15','10']),mc:true,ste:'15% de 80 = 0.15×80 = 12.'},
-  {_id:8,q:'¿Qué es 60% de 45?',a:'27',opts:_i4gshuf(['27','25','30','23']),mc:true,ste:'60% de 45 = 0.60×45 = 27.'},
-  // Plantilla 3 — Simplificar una fracción (4 preguntas)
-  {_id:9,q:'Simplifica: 2/6',a:'1/3',opts:_i4gshuf(['1/3','1/2','2/3','1/6']),mc:true,ste:'2/6 = (2÷2)/(6÷2) = 1/3.'},
-  {_id:10,q:'Simplifica: 4/10',a:'2/5',opts:_i4gshuf(['2/5','1/2','4/5','1/5']),mc:true,ste:'4/10 = (4÷2)/(10÷2) = 2/5.'},
-  {_id:11,q:'Simplifica: 6/9',a:'2/3',opts:_i4gshuf(['2/3','1/3','3/6','6/9']),mc:true,ste:'6/9 = (6÷3)/(9÷3) = 2/3.'},
-  {_id:12,q:'Simplifica: 9/15',a:'3/5',opts:_i4gshuf(['3/5','1/3','9/15','3/15']),mc:true,ste:'9/15 = (9÷3)/(15÷3) = 3/5.'},
-  // Plantilla 4 — Fracción de un número (4 preguntas)
-  {_id:13,q:'¿Cuánto es 3/5 de 40?',a:'24',opts:_i4gshuf(['24','20','30','15']),mc:true,ste:'3/5 de 40 = (3×40)/5 = 120/5 = 24.'},
-  {_id:14,q:'¿Cuánto es 2/3 de 27?',a:'18',opts:_i4gshuf(['18','9','20','15']),mc:true,ste:'2/3 de 27 = (2×27)/3 = 54/3 = 18.'},
-  {_id:15,q:'¿Cuánto es 5/8 de 32?',a:'20',opts:_i4gshuf(['20','16','24','25']),mc:true,ste:'5/8 de 32 = (5×32)/8 = 160/8 = 20.'},
-  {_id:16,q:'¿Cuánto es 3/4 de 60?',a:'45',opts:_i4gshuf(['45','40','50','30']),mc:true,ste:'3/4 de 60 = (3×60)/4 = 180/4 = 45.'},
+  // Plantilla 2 — Fracción propia a decimal (denominador 5 o 10) (4 preguntas)
+  {_id:5,q:'¿Qué es 3/5 expresado como decimal?',a:'0.6',opts:_i4gshuf(['0.6','0.35','0.53','1.6']),mc:true,ste:'3÷5 = 0.6.'},
+  {_id:6,q:'¿Qué es 7/10 expresado como decimal?',a:'0.7',opts:_i4gshuf(['0.7','0.17','0.07','7.0']),mc:true,ste:'7÷10 = 0.7.'},
+  {_id:7,q:'¿Qué es 9/10 expresado como decimal?',a:'0.9',opts:_i4gshuf(['0.9','0.19','0.09','9.0']),mc:true,ste:'9÷10 = 0.9.'},
+  {_id:8,q:'¿Qué es 4/5 expresado como decimal?',a:'0.8',opts:_i4gshuf(['0.8','0.45','0.54','1.8']),mc:true,ste:'4÷5 = 0.8.'},
+  // Plantilla 3 — Fracción propia a decimal (denominador 25 o 50) (4 preguntas)
+  {_id:9,q:'¿Qué es 3/25 expresado como decimal?',a:'0.12',opts:_i4gshuf(['0.12','0.325','0.83','1.2']),mc:true,ste:'3÷25 = 0.12.'},
+  {_id:10,q:'¿Qué es 9/50 expresado como decimal?',a:'0.18',opts:_i4gshuf(['0.18','0.95','0.59','1.8']),mc:true,ste:'9÷50 = 0.18.'},
+  {_id:11,q:'¿Qué es 7/25 expresado como decimal?',a:'0.28',opts:_i4gshuf(['0.28','0.725','0.357','2.8']),mc:true,ste:'7÷25 = 0.28.'},
+  {_id:12,q:'¿Qué es 11/50 expresado como decimal?',a:'0.22',opts:_i4gshuf(['0.22','0.115','0.511','2.2']),mc:true,ste:'11÷50 = 0.22.'},
+  // Plantilla 4 — Convertir un decimal a fracción simplificada (4 preguntas)
+  {_id:13,q:'Expresa 0.5 como fracción simplificada.',a:'1/2',opts:_i4gshuf(['1/2','5/10','1/5','2/5']),mc:true,ste:'0.5 = 5/10, que se simplifica a 1/2.'},
+  {_id:14,q:'Expresa 0.25 como fracción simplificada.',a:'1/4',opts:_i4gshuf(['1/4','25/100','1/25','2/5']),mc:true,ste:'0.25 = 25/100, que se simplifica a 1/4.'},
+  {_id:15,q:'Expresa 0.75 como fracción simplificada.',a:'3/4',opts:_i4gshuf(['3/4','75/100','7/5','3/5']),mc:true,ste:'0.75 = 75/100, que se simplifica a 3/4.'},
+  {_id:16,q:'Expresa 0.2 como fracción simplificada.',a:'1/5',opts:_i4gshuf(['1/5','2/10','1/2','2/5']),mc:true,ste:'0.2 = 2/10, que se simplifica a 1/5.'},
   // Plantilla 5 — Conceptual (V/F) (4 preguntas)
-  {_id:17,q:'V/F: Toda fracción se puede expresar como decimal dividiendo el numerador entre el denominador.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de convertir una fracción a decimal.'},
-  {_id:18,q:'V/F: 0.5, 1/2 y 50% representan la misma cantidad.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'1/2 = 0.5 = 50%, son formas equivalentes de la misma cantidad.'},
-  {_id:19,q:'V/F: Para simplificar una fracción, se dividen numerador y denominador entre el mismo número.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Dividir numerador y denominador entre su máximo común divisor da la fracción simplificada.'},
-  {_id:20,q:'V/F: 3/10 es mayor que 35%.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'3/10 = 30%, que es menor que 35%.'},
+  {_id:17,q:'V/F: Toda fracción con denominador que es potencia de 10 (10, 100, ...) se convierte directamente a decimal moviendo el punto decimal.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ej. 7/100 = 0.07, moviendo el punto según los ceros del denominador.'},
+  {_id:18,q:'V/F: 3/4 es igual a 0.75.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'3÷4 = 0.75, ambas formas representan la misma cantidad.'},
+  {_id:19,q:'V/F: Para convertir una fracción a decimal, se divide el denominador entre el numerador.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es al revés: se divide el numerador entre el denominador.'},
+  {_id:20,q:'V/F: Todo número decimal puede expresarse como una fracción.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Cualquier decimal exacto se puede escribir como fracción con denominador potencia de 10.'},
   ]);
 }
-_SKILL_META['chs1m_u1_b2']={ico:'📐',lbl:'Fracciones, decimales y porcentajes',qCount:4,gen:_genChs1mU1_B2,plantillas:['Convertir una fracción a decimal','Calcular el porcentaje de un número','Simplificar una fracción a su mínima expresión','Calcular una fracción de un número','Conceptual (V/F) sobre equivalencias']};
+_SKILL_META['chs1m_u1_b5']={ico:'📐',lbl:'Conversión de fracciones a decimales',qCount:4,gen:_genChs1mU1_B5,plantillas:['Fracción a decimal (denominador 4, 8 o 20)','Fracción a decimal (denominador 5 o 10)','Fracción a decimal (denominador 25 o 50)','Convertir un decimal a fracción simplificada','Conceptual (V/F) sobre la conversión']};
 
-function _genChs1mU1_B3(){
+function _genChs1mU1_B6(){
+  return _i4gpick([
+  // Plantilla 1 — Simplificar dividiendo entre 2 (4 preguntas)
+  {_id:1,q:'Simplifica: 2/6',a:'1/3',opts:_i4gshuf(['1/3','1/2','2/3','1/6']),mc:true,ste:'2/6 = (2÷2)/(6÷2) = 1/3.'},
+  {_id:2,q:'Simplifica: 4/10',a:'2/5',opts:_i4gshuf(['2/5','1/2','4/5','1/5']),mc:true,ste:'4/10 = (4÷2)/(10÷2) = 2/5.'},
+  {_id:3,q:'Simplifica: 6/8',a:'3/4',opts:_i4gshuf(['3/4','1/2','6/8','3/8']),mc:true,ste:'6/8 = (6÷2)/(8÷2) = 3/4.'},
+  {_id:4,q:'Simplifica: 10/14',a:'5/7',opts:_i4gshuf(['5/7','1/2','10/14','5/14']),mc:true,ste:'10/14 = (10÷2)/(14÷2) = 5/7.'},
+  // Plantilla 2 — Simplificar dividiendo entre 3 (4 preguntas)
+  {_id:5,q:'Simplifica: 6/9',a:'2/3',opts:_i4gshuf(['2/3','1/3','3/6','6/9']),mc:true,ste:'6/9 = (6÷3)/(9÷3) = 2/3.'},
+  {_id:6,q:'Simplifica: 9/15',a:'3/5',opts:_i4gshuf(['3/5','1/3','9/15','3/15']),mc:true,ste:'9/15 = (9÷3)/(15÷3) = 3/5.'},
+  {_id:7,q:'Simplifica: 12/18',a:'2/3',opts:_i4gshuf(['2/3','1/3','4/6','12/18']),mc:true,ste:'12/18 = (12÷6)/(18÷6) = 2/3.'},
+  {_id:8,q:'Simplifica: 15/21',a:'5/7',opts:_i4gshuf(['5/7','1/3','15/21','5/21']),mc:true,ste:'15/21 = (15÷3)/(21÷3) = 5/7.'},
+  // Plantilla 3 — Simplificar dividiendo entre un número mayor (4 o más) (4 preguntas)
+  {_id:9,q:'Simplifica: 12/16',a:'3/4',opts:_i4gshuf(['3/4','1/2','6/8','12/16']),mc:true,ste:'12/16 = (12÷4)/(16÷4) = 3/4.'},
+  {_id:10,q:'Simplifica: 20/25',a:'4/5',opts:_i4gshuf(['4/5','1/2','20/25','4/25']),mc:true,ste:'20/25 = (20÷5)/(25÷5) = 4/5.'},
+  {_id:11,q:'Simplifica: 18/30',a:'3/5',opts:_i4gshuf(['3/5','1/2','9/15','18/30']),mc:true,ste:'18/30 = (18÷6)/(30÷6) = 3/5.'},
+  {_id:12,q:'Simplifica: 24/36',a:'2/3',opts:_i4gshuf(['2/3','1/2','12/18','24/36']),mc:true,ste:'24/36 = (24÷12)/(36÷12) = 2/3.'},
+  // Plantilla 4 — Identificar si una fracción ya está en su mínima expresión (4 preguntas)
+  {_id:13,q:'¿La fracción 5/8 está en su mínima expresión?',a:'Sí',opts:_i4gshuf(['Sí','No']),mc:true,ste:'El máximo común divisor de 5 y 8 es 1, así que ya está simplificada.'},
+  {_id:14,q:'¿La fracción 6/9 está en su mínima expresión?',a:'No',opts:_i4gshuf(['Sí','No']),mc:true,ste:'El máximo común divisor de 6 y 9 es 3, así que se puede simplificar a 2/3.'},
+  {_id:15,q:'¿La fracción 7/11 está en su mínima expresión?',a:'Sí',opts:_i4gshuf(['Sí','No']),mc:true,ste:'El máximo común divisor de 7 y 11 es 1, así que ya está simplificada.'},
+  {_id:16,q:'¿La fracción 10/15 está en su mínima expresión?',a:'No',opts:_i4gshuf(['Sí','No']),mc:true,ste:'El máximo común divisor de 10 y 15 es 5, así que se puede simplificar a 2/3.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: Una fracción está en su mínima expresión cuando el máximo común divisor entre numerador y denominador es 1.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de fracción irreducible.'},
+  {_id:18,q:'V/F: 4/8 y 1/2 representan la misma cantidad.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'4/8 se simplifica a 1/2, así que representan la misma cantidad.'},
+  {_id:19,q:'V/F: Toda fracción con numerador par se puede simplificar.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ej. 2/9 tiene numerador par pero no se puede simplificar, pues el MCD de 2 y 9 es 1.'},
+  {_id:20,q:'V/F: Para simplificar una fracción, se divide el numerador y el denominador entre su máximo común divisor.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ese es el procedimiento estándar para simplificar una fracción.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b6']={ico:'📐',lbl:'Simplificación de fracciones',qCount:4,gen:_genChs1mU1_B6,plantillas:['Simplificar dividiendo entre 2','Simplificar dividiendo entre 3','Simplificar dividiendo entre un número mayor','Identificar si una fracción ya está simplificada','Conceptual (V/F) sobre simplificación']};
+
+function _genChs1mU1_B7(){
+  return _i4gpick([
+  // Plantilla 1 — Porcentaje de un número redondo (4 preguntas)
+  {_id:1,q:'¿Qué es 35% de 200?',a:'70',opts:_i4gshuf(['70','60','65','75']),mc:true,ste:'35% de 200 = 0.35×200 = 70.'},
+  {_id:2,q:'¿Qué es 20% de 150?',a:'30',opts:_i4gshuf(['30','20','35','25']),mc:true,ste:'20% de 150 = 0.20×150 = 30.'},
+  {_id:3,q:'¿Qué es 15% de 80?',a:'12',opts:_i4gshuf(['12','8','15','10']),mc:true,ste:'15% de 80 = 0.15×80 = 12.'},
+  {_id:4,q:'¿Qué es 60% de 45?',a:'27',opts:_i4gshuf(['27','25','30','23']),mc:true,ste:'60% de 45 = 0.60×45 = 27.'},
+  // Plantilla 2 — Porcentaje de un número menos redondo (4 preguntas)
+  {_id:5,q:'¿Qué es 25% de 84?',a:'21',opts:_i4gshuf(['21','20','22','19']),mc:true,ste:'25% de 84 = 0.25×84 = 21.'},
+  {_id:6,q:'¿Qué es 40% de 65?',a:'26',opts:_i4gshuf(['26','24','28','22']),mc:true,ste:'40% de 65 = 0.40×65 = 26.'},
+  {_id:7,q:'¿Qué es 70% de 90?',a:'63',opts:_i4gshuf(['63','60','66','58']),mc:true,ste:'70% de 90 = 0.70×90 = 63.'},
+  {_id:8,q:'¿Qué es 45% de 120?',a:'54',opts:_i4gshuf(['54','50','58','48']),mc:true,ste:'45% de 120 = 0.45×120 = 54.'},
+  // Plantilla 3 — Hallar el número dado el porcentaje y el resultado (4 preguntas)
+  {_id:9,q:'El 20% de un número es 15. ¿Cuál es el número?',a:'75',opts:_i4gshuf(['75','60','70','80']),mc:true,ste:'0.20×n=15 → n=15÷0.20 = 75.'},
+  {_id:10,q:'El 40% de un número es 32. ¿Cuál es el número?',a:'80',opts:_i4gshuf(['80','60','70','90']),mc:true,ste:'0.40×n=32 → n=32÷0.40 = 80.'},
+  {_id:11,q:'El 30% de un número es 27. ¿Cuál es el número?',a:'90',opts:_i4gshuf(['90','81','75','100']),mc:true,ste:'0.30×n=27 → n=27÷0.30 = 90.'},
+  {_id:12,q:'El 25% de un número es 18. ¿Cuál es el número?',a:'72',opts:_i4gshuf(['72','60','80','65']),mc:true,ste:'0.25×n=18 → n=18÷0.25 = 72.'},
+  // Plantilla 4 — Aumentar o disminuir un número en un porcentaje (4 preguntas)
+  {_id:13,q:'Un número de 50 aumenta en 20%. ¿Cuál es el nuevo valor?',a:'60',opts:_i4gshuf(['60','55','65','70']),mc:true,ste:'50×1.20 = 60.'},
+  {_id:14,q:'Un número de 80 disminuye en 25%. ¿Cuál es el nuevo valor?',a:'60',opts:_i4gshuf(['60','65','55','70']),mc:true,ste:'80×0.75 = 60.'},
+  {_id:15,q:'Un número de 120 aumenta en 10%. ¿Cuál es el nuevo valor?',a:'132',opts:_i4gshuf(['132','130','128','135']),mc:true,ste:'120×1.10 = 132.'},
+  {_id:16,q:'Un número de 200 disminuye en 15%. ¿Cuál es el nuevo valor?',a:'170',opts:_i4gshuf(['170','175','165','180']),mc:true,ste:'200×0.85 = 170.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: El 50% de un número es la mitad de ese número.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'50% = 1/2, así que el 50% de un número es su mitad.'},
+  {_id:18,q:'V/F: El 10% de un número se halla dividiendo ese número entre 10.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'10% = 1/10, así que equivale a dividir entre 10.'},
+  {_id:19,q:'V/F: El 100% de un número es el doble de ese número.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El 100% de un número es el número mismo, no el doble.'},
+  {_id:20,q:'V/F: Aumentar un número en 100% equivale a duplicarlo.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'n + 100%×n = n + n = 2n, es decir, se duplica.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b7']={ico:'📐',lbl:'Porcentaje de un número',qCount:4,gen:_genChs1mU1_B7,plantillas:['Porcentaje de un número redondo','Porcentaje de un número menos redondo','Hallar el número dado el porcentaje y el resultado','Aumentar o disminuir un número en un porcentaje','Conceptual (V/F) sobre porcentajes']};
+
+function _genChs1mU1_B8(){
+  return _i4gpick([
+  // Plantilla 1 — Fracción simple de un número (4 preguntas)
+  {_id:1,q:'¿Cuánto es 3/5 de 40?',a:'24',opts:_i4gshuf(['24','20','30','15']),mc:true,ste:'3/5 de 40 = (3×40)/5 = 120/5 = 24.'},
+  {_id:2,q:'¿Cuánto es 2/3 de 27?',a:'18',opts:_i4gshuf(['18','9','20','15']),mc:true,ste:'2/3 de 27 = (2×27)/3 = 54/3 = 18.'},
+  {_id:3,q:'¿Cuánto es 5/8 de 32?',a:'20',opts:_i4gshuf(['20','16','24','25']),mc:true,ste:'5/8 de 32 = (5×32)/8 = 160/8 = 20.'},
+  {_id:4,q:'¿Cuánto es 3/4 de 60?',a:'45',opts:_i4gshuf(['45','40','50','30']),mc:true,ste:'3/4 de 60 = (3×60)/4 = 180/4 = 45.'},
+  // Plantilla 2 — Fracción de un número con denominador mayor (4 preguntas)
+  {_id:5,q:'¿Cuánto es 5/6 de 48?',a:'40',opts:_i4gshuf(['40','36','44','32']),mc:true,ste:'5/6 de 48 = (5×48)/6 = 240/6 = 40.'},
+  {_id:6,q:'¿Cuánto es 7/9 de 63?',a:'49',opts:_i4gshuf(['49','45','54','42']),mc:true,ste:'7/9 de 63 = (7×63)/9 = 441/9 = 49.'},
+  {_id:7,q:'¿Cuánto es 3/10 de 90?',a:'27',opts:_i4gshuf(['27','24','30','21']),mc:true,ste:'3/10 de 90 = (3×90)/10 = 270/10 = 27.'},
+  {_id:8,q:'¿Cuánto es 4/7 de 56?',a:'32',opts:_i4gshuf(['32','28','36','24']),mc:true,ste:'4/7 de 56 = (4×56)/7 = 224/7 = 32.'},
+  // Plantilla 3 — Hallar el número dada la fracción y el resultado (4 preguntas)
+  {_id:9,q:'5/8 de un número es 45. ¿Cuál es el número?',a:'72',opts:_i4gshuf(['72','64','80','56']),mc:true,ste:'(5/8)n=45 → n=45×8/5 = 72.'},
+  {_id:10,q:'3/4 de un número es 51. ¿Cuál es el número?',a:'68',opts:_i4gshuf(['68','60','76','64']),mc:true,ste:'(3/4)n=51 → n=51×4/3 = 68.'},
+  {_id:11,q:'2/5 de un número es 26. ¿Cuál es el número?',a:'65',opts:_i4gshuf(['65','60','70','55']),mc:true,ste:'(2/5)n=26 → n=26×5/2 = 65.'},
+  {_id:12,q:'3/5 de un número es 42. ¿Cuál es el número?',a:'70',opts:_i4gshuf(['70','60','80','65']),mc:true,ste:'(3/5)n=42 → n=42×5/3 = 70.'},
+  // Plantilla 4 — Fracción de una cantidad en un contexto (4 preguntas)
+  {_id:13,q:'De los 30 estudiantes de un salón, 2/3 son mujeres. ¿Cuántas mujeres hay?',a:'20',opts:_i4gshuf(['20','15','24','18']),mc:true,ste:'2/3 de 30 = 20.'},
+  {_id:14,q:'En una granja hay 45 animales, y 3/5 son gallinas. ¿Cuántas gallinas hay?',a:'27',opts:_i4gshuf(['27','24','30','21']),mc:true,ste:'3/5 de 45 = 27.'},
+  {_id:15,q:'De los 56 libros de una biblioteca, 3/8 son de matemática. ¿Cuántos libros de matemática hay?',a:'21',opts:_i4gshuf(['21','18','24','16']),mc:true,ste:'3/8 de 56 = 21.'},
+  {_id:16,q:'De un premio de $120, Ana recibe 1/4. ¿Cuánto recibe Ana?',a:'$30',opts:_i4gshuf(['$30','$24','$36','$20']),mc:true,ste:'1/4 de 120 = 30.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: Hallar una fracción de un número equivale a multiplicar el número por esa fracción.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Por ejemplo, 3/5 de 40 es lo mismo que (3/5)×40.'},
+  {_id:18,q:'V/F: 1/2 de un número positivo siempre es menor que ese número.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La mitad de un número positivo es siempre menor que el número original.'},
+  {_id:19,q:'V/F: 3/3 de un número es el triple de ese número.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'3/3 = 1, así que 3/3 de un número es el número mismo, no el triple.'},
+  {_id:20,q:'V/F: Para hallar una fracción de un número, se multiplica el número por el numerador y se divide entre el denominador.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ese es el procedimiento: (numerador×número)÷denominador.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b8']={ico:'📐',lbl:'Fracción de un número',qCount:4,gen:_genChs1mU1_B8,plantillas:['Fracción simple de un número','Fracción de un número con denominador mayor','Hallar el número dada la fracción y el resultado','Fracción de una cantidad en un contexto','Conceptual (V/F) sobre fracción de un número']};
+
+function _genChs1mU1_BQ2(){return _bqSrcPick(['chs1m_u1_b5','chs1m_u1_b6','chs1m_u1_b7','chs1m_u1_b8'],[_genChs1mU1_B5,_genChs1mU1_B6,_genChs1mU1_B7,_genChs1mU1_B8]);}
+_SKILL_META['chs1m_u1_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Fracciones, decimales y porcentajes',qCount:20,gen:_genChs1mU1_BQ2,quiz:true,srcKeys:['chs1m_u1_b5','chs1m_u1_b6','chs1m_u1_b7','chs1m_u1_b8']};
+
+function _genChs1mU1_B9(){
   return _i4gpick([
   // Plantilla 1 — Resolver x+a=b (4 preguntas)
   {_id:1,q:'Resuelve para x: x + 9 = 17',a:'8',opts:_i4gshuf(['8','7','6','9']),mc:true,ste:'x = 17−9 = 8.'},
@@ -15435,127 +15628,303 @@ function _genChs1mU1_B3(){
   {_id:6,q:'Resuelve para x: 6x = 54',a:'9',opts:_i4gshuf(['9','8','10','7']),mc:true,ste:'x = 54÷6 = 9.'},
   {_id:7,q:'Resuelve para x: 5x = 45',a:'9',opts:_i4gshuf(['9','8','10','7']),mc:true,ste:'x = 45÷5 = 9.'},
   {_id:8,q:'Resuelve para x: 8x = 56',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'x = 56÷8 = 7.'},
-  // Plantilla 3 — Resolver ax−b=c (4 preguntas)
-  {_id:9,q:'Resuelve para x: 3x − 5 = 16',a:'7',opts:_i4gshuf(['7','6','8','5']),mc:true,ste:'3x = 16+5 = 21 → x = 21÷3 = 7.'},
-  {_id:10,q:'Resuelve para x: 4x − 7 = 21',a:'7',opts:_i4gshuf(['7','6','8','5']),mc:true,ste:'4x = 21+7 = 28 → x = 28÷4 = 7.'},
-  {_id:11,q:'Resuelve para x: 5x − 6 = 29',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'5x = 29+6 = 35 → x = 35÷5 = 7.'},
-  {_id:12,q:'Resuelve para x: 6x − 11 = 37',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'6x = 37+11 = 48 → x = 48÷6 = 8.'},
-  // Plantilla 4 — Resolver ax+b=c (4 preguntas)
-  {_id:13,q:'Resuelve para x: 3x + 5 = 26',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'3x = 26−5 = 21 → x = 21÷3 = 7.'},
-  {_id:14,q:'Resuelve para x: 4x + 9 = 41',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'4x = 41−9 = 32 → x = 32÷4 = 8.'},
-  {_id:15,q:'Resuelve para x: 5x + 7 = 42',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'5x = 42−7 = 35 → x = 35÷5 = 7.'},
-  {_id:16,q:'Resuelve para x: 6x + 13 = 61',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'6x = 61−13 = 48 → x = 48÷6 = 8.'},
+  // Plantilla 3 — Resolver x−a=b (4 preguntas)
+  {_id:9,q:'Resuelve para x: x − 5 = 12',a:'17',opts:_i4gshuf(['17','16','18','7']),mc:true,ste:'x = 12+5 = 17.'},
+  {_id:10,q:'Resuelve para x: x − 8 = 20',a:'28',opts:_i4gshuf(['28','27','29','12']),mc:true,ste:'x = 20+8 = 28.'},
+  {_id:11,q:'Resuelve para x: x − 11 = 15',a:'26',opts:_i4gshuf(['26','25','27','4']),mc:true,ste:'x = 15+11 = 26.'},
+  {_id:12,q:'Resuelve para x: x − 14 = 22',a:'36',opts:_i4gshuf(['36','35','37','8']),mc:true,ste:'x = 22+14 = 36.'},
+  // Plantilla 4 — Resolver x/a=b (4 preguntas)
+  {_id:13,q:'Resuelve para x: x/4 = 7',a:'28',opts:_i4gshuf(['28','11','3','24']),mc:true,ste:'x = 7×4 = 28.'},
+  {_id:14,q:'Resuelve para x: x/6 = 9',a:'54',opts:_i4gshuf(['54','15','3','48']),mc:true,ste:'x = 9×6 = 54.'},
+  {_id:15,q:'Resuelve para x: x/5 = 8',a:'40',opts:_i4gshuf(['40','13','3','35']),mc:true,ste:'x = 8×5 = 40.'},
+  {_id:16,q:'Resuelve para x: x/8 = 7',a:'56',opts:_i4gshuf(['56','15','1','49']),mc:true,ste:'x = 7×8 = 56.'},
   // Plantilla 5 — Conceptual (V/F) (4 preguntas)
-  {_id:17,q:'V/F: Para resolver x+a=b, se resta a a ambos lados de la ecuación.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x+a=b → x=b−a, restando a a ambos lados.'},
-  {_id:18,q:'V/F: Para resolver ax=b, se multiplica ambos lados por a.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Para despejar x en ax=b se divide entre a, no se multiplica.'},
-  {_id:19,q:'V/F: En ax−b=c, primero se suma b a ambos lados y luego se divide entre a.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'ax−b=c → ax=c+b → x=(c+b)/a. El orden es correcto.'},
-  {_id:20,q:'V/F: En ax+b=c, primero se divide entre a y luego se resta b.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El orden correcto es restar b primero: ax=c−b, y luego dividir entre a.'},
+  {_id:17,q:'V/F: En x+a=b, para despejar x se resta a a ambos lados de la ecuación.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x+a=b → x=b−a, restando a a ambos lados.'},
+  {_id:18,q:'V/F: En ax=b, para despejar x se divide entre a a ambos lados de la ecuación.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'ax=b → x=b/a, dividiendo entre a a ambos lados.'},
+  {_id:19,q:'V/F: En x−a=b, para despejar x se resta a a ambos lados de la ecuación.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'En x−a=b se suma a a ambos lados: x=b+a, no se resta.'},
+  {_id:20,q:'V/F: En x/a=b, para despejar x se multiplica por a a ambos lados de la ecuación.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'x/a=b → x=b×a, multiplicando por a a ambos lados.'},
   ]);
 }
-_SKILL_META['chs1m_u1_b3']={ico:'📐',lbl:'Ecuaciones lineales de un paso',qCount:4,gen:_genChs1mU1_B3,plantillas:['Resolver x+a=b','Resolver ax=b','Resolver ax−b=c','Resolver ax+b=c','Conceptual (V/F) sobre el procedimiento']};
+_SKILL_META['chs1m_u1_b9']={ico:'📐',lbl:'Ecuaciones lineales de un paso (aditivas y multiplicativas)',qCount:4,gen:_genChs1mU1_B9,plantillas:['Resolver x+a=b','Resolver ax=b','Resolver x−a=b','Resolver x/a=b','Conceptual (V/F) sobre el procedimiento']};
 
-function _genChs1mU1_BQ1(){return _bqSrcPick(['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3'],[_genChs1mU1_B1,_genChs1mU1_B2,_genChs1mU1_B3]);}
-_SKILL_META['chs1m_u1_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Operaciones, fracciones y ecuaciones',qCount:15,gen:_genChs1mU1_BQ1,quiz:true,srcKeys:['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3']};
+function _genChs1mU1_B10(){
+  return _i4gpick([
+  // Plantilla 1 — Resolver ax−b=c (4 preguntas)
+  {_id:1,q:'Resuelve para x: 3x − 5 = 16',a:'7',opts:_i4gshuf(['7','6','8','5']),mc:true,ste:'3x = 16+5 = 21 → x = 21÷3 = 7.'},
+  {_id:2,q:'Resuelve para x: 4x − 7 = 21',a:'7',opts:_i4gshuf(['7','6','8','5']),mc:true,ste:'4x = 21+7 = 28 → x = 28÷4 = 7.'},
+  {_id:3,q:'Resuelve para x: 5x − 6 = 29',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'5x = 29+6 = 35 → x = 35÷5 = 7.'},
+  {_id:4,q:'Resuelve para x: 6x − 11 = 37',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'6x = 37+11 = 48 → x = 48÷6 = 8.'},
+  // Plantilla 2 — Resolver ax+b=c (4 preguntas)
+  {_id:5,q:'Resuelve para x: 3x + 5 = 26',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'3x = 26−5 = 21 → x = 21÷3 = 7.'},
+  {_id:6,q:'Resuelve para x: 4x + 9 = 41',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'4x = 41−9 = 32 → x = 32÷4 = 8.'},
+  {_id:7,q:'Resuelve para x: 5x + 7 = 42',a:'7',opts:_i4gshuf(['7','6','8','9']),mc:true,ste:'5x = 42−7 = 35 → x = 35÷5 = 7.'},
+  {_id:8,q:'Resuelve para x: 6x + 13 = 61',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'6x = 61−13 = 48 → x = 48÷6 = 8.'},
+  // Plantilla 3 — Resolver a(x−b)=c (4 preguntas)
+  {_id:9,q:'Resuelve para x: 2(x − 3) = 14',a:'10',opts:_i4gshuf(['10','7','11','8']),mc:true,ste:'x−3 = 14÷2 = 7 → x = 7+3 = 10.'},
+  {_id:10,q:'Resuelve para x: 3(x − 4) = 21',a:'11',opts:_i4gshuf(['11','7','12','9']),mc:true,ste:'x−4 = 21÷3 = 7 → x = 7+4 = 11.'},
+  {_id:11,q:'Resuelve para x: 4(x − 2) = 20',a:'7',opts:_i4gshuf(['7','5','9','6']),mc:true,ste:'x−2 = 20÷4 = 5 → x = 5+2 = 7.'},
+  {_id:12,q:'Resuelve para x: 5(x − 1) = 30',a:'7',opts:_i4gshuf(['7','6','8','5']),mc:true,ste:'x−1 = 30÷5 = 6 → x = 6+1 = 7.'},
+  // Plantilla 4 — Resolver a(x+b)=c (4 preguntas)
+  {_id:13,q:'Resuelve para x: 2(x + 3) = 16',a:'5',opts:_i4gshuf(['5','8','2','11']),mc:true,ste:'x+3 = 16÷2 = 8 → x = 8−3 = 5.'},
+  {_id:14,q:'Resuelve para x: 3(x + 5) = 27',a:'4',opts:_i4gshuf(['4','9','−1','14']),mc:true,ste:'x+5 = 27÷3 = 9 → x = 9−5 = 4.'},
+  {_id:15,q:'Resuelve para x: 4(x + 2) = 32',a:'6',opts:_i4gshuf(['6','8','4','14']),mc:true,ste:'x+2 = 32÷4 = 8 → x = 8−2 = 6.'},
+  {_id:16,q:'Resuelve para x: 5(x + 3) = 40',a:'5',opts:_i4gshuf(['5','8','2','13']),mc:true,ste:'x+3 = 40÷5 = 8 → x = 8−3 = 5.'},
+  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:17,q:'V/F: En ax−b=c, primero se suma b a ambos lados y luego se divide entre a.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'ax−b=c → ax=c+b → x=(c+b)/a. El orden es correcto.'},
+  {_id:18,q:'V/F: En ax+b=c, primero se suma b a ambos lados y luego se divide entre a.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'En ax+b=c se resta b (no se suma): ax=c−b, y luego se divide entre a.'},
+  {_id:19,q:'V/F: En a(x−b)=c, primero se divide entre a y luego se suma b.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'a(x−b)=c → x−b=c/a → x=c/a+b. El orden es correcto.'},
+  {_id:20,q:'V/F: En a(x+b)=c, primero se divide entre a y luego se resta b.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'a(x+b)=c → x+b=c/a → x=c/a−b. El orden es correcto.'},
+  ]);
+}
+_SKILL_META['chs1m_u1_b10']={ico:'📐',lbl:'Ecuaciones lineales de dos pasos',qCount:4,gen:_genChs1mU1_B10,plantillas:['Resolver ax−b=c','Resolver ax+b=c','Resolver a(x−b)=c','Resolver a(x+b)=c','Conceptual (V/F) sobre el orden de los pasos']};
+
+function _genChs1mU1_BQ3(){return _bqSrcPick(['chs1m_u1_b9','chs1m_u1_b10'],[_genChs1mU1_B9,_genChs1mU1_B10]);}
+_SKILL_META['chs1m_u1_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Ecuaciones lineales',qCount:10,gen:_genChs1mU1_BQ3,quiz:true,srcKeys:['chs1m_u1_b9','chs1m_u1_b10']};
 
 // ===== Catholic High Schools - 1ro Secundaria - Unidad 2: Geometría y Medidas =====
 
 function _genChs1mU2_B1(){
   return _i4gpick([
-  // Plantilla 1 — Área de un triángulo (4 preguntas)
-  {_id:1,q:'¿Cuál es el área de un triángulo con base 10 y altura 6?',a:'30',opts:_i4gshuf(['30','60','16','40']),mc:true,ste:'A = ½×10×6 = 30.'},
-  {_id:2,q:'¿Cuál es el área de un triángulo con base 8 y altura 5?',a:'20',opts:_i4gshuf(['20','40','13','25']),mc:true,ste:'A = ½×8×5 = 20.'},
-  {_id:3,q:'¿Cuál es el área de un triángulo con base 12 y altura 9?',a:'54',opts:_i4gshuf(['54','108','21','63']),mc:true,ste:'A = ½×12×9 = 54.'},
-  {_id:4,q:'¿Cuál es el área de un triángulo con base 14 y altura 4?',a:'28',opts:_i4gshuf(['28','56','18','36']),mc:true,ste:'A = ½×14×4 = 28.'},
-  // Plantilla 2 — Área de un cuadrado (4 preguntas)
-  {_id:5,q:'¿Cuál es el área de un cuadrado con lado 7?',a:'49',opts:_i4gshuf(['49','14','28','56']),mc:true,ste:'A = 7² = 49.'},
-  {_id:6,q:'¿Cuál es el área de un cuadrado con lado 9?',a:'81',opts:_i4gshuf(['81','18','36','72']),mc:true,ste:'A = 9² = 81.'},
-  {_id:7,q:'¿Cuál es el área de un cuadrado con lado 11?',a:'121',opts:_i4gshuf(['121','22','44','110']),mc:true,ste:'A = 11² = 121.'},
-  {_id:8,q:'¿Cuál es el área de un cuadrado con lado 6?',a:'36',opts:_i4gshuf(['36','12','24','30']),mc:true,ste:'A = 6² = 36.'},
-  // Plantilla 3 — Área de un rectángulo (4 preguntas)
-  {_id:9,q:'¿Cuál es el área de un rectángulo de base 8 y altura 5?',a:'40',opts:_i4gshuf(['40','26','13','45']),mc:true,ste:'A = 8×5 = 40.'},
-  {_id:10,q:'¿Cuál es el área de un rectángulo de base 12 y altura 7?',a:'84',opts:_i4gshuf(['84','38','19','91']),mc:true,ste:'A = 12×7 = 84.'},
-  {_id:11,q:'¿Cuál es el área de un rectángulo de base 15 y altura 4?',a:'60',opts:_i4gshuf(['60','38','19','64']),mc:true,ste:'A = 15×4 = 60.'},
-  {_id:12,q:'¿Cuál es el área de un rectángulo de base 9 y altura 6?',a:'54',opts:_i4gshuf(['54','30','15','60']),mc:true,ste:'A = 9×6 = 54.'},
-  // Plantilla 4 — Área de un paralelogramo (4 preguntas)
-  {_id:13,q:'¿Cuál es el área de un paralelogramo con base 8 y altura 5?',a:'40',opts:_i4gshuf(['40','26','13','45']),mc:true,ste:'A = base×altura = 8×5 = 40.'},
-  {_id:14,q:'¿Cuál es el área de un paralelogramo con base 10 y altura 6?',a:'60',opts:_i4gshuf(['60','32','16','66']),mc:true,ste:'A = base×altura = 10×6 = 60.'},
-  {_id:15,q:'¿Cuál es el área de un paralelogramo con base 12 y altura 7?',a:'84',opts:_i4gshuf(['84','38','19','91']),mc:true,ste:'A = base×altura = 12×7 = 84.'},
-  {_id:16,q:'¿Cuál es el área de un paralelogramo con base 9 y altura 4?',a:'36',opts:_i4gshuf(['36','26','13','40']),mc:true,ste:'A = base×altura = 9×4 = 36.'},
-  // Plantilla 5 — Área de un trapecio (4 preguntas)
-  {_id:17,q:'¿Cuál es el área de un trapecio con bases 5 y 11, y altura 4?',a:'32',opts:_i4gshuf(['32','16','20','64']),mc:true,ste:'A = ½(5+11)(4) = ½(16)(4) = 32.'},
-  {_id:18,q:'¿Cuál es el área de un trapecio con bases 6 y 10, y altura 5?',a:'40',opts:_i4gshuf(['40','16','20','80']),mc:true,ste:'A = ½(6+10)(5) = ½(16)(5) = 40.'},
-  {_id:19,q:'¿Cuál es el área de un trapecio con bases 7 y 13, y altura 6?',a:'60',opts:_i4gshuf(['60','20','30','120']),mc:true,ste:'A = ½(7+13)(6) = ½(20)(6) = 60.'},
-  {_id:20,q:'¿Cuál es el área de un trapecio con bases 4 y 8, y altura 3?',a:'18',opts:_i4gshuf(['18','12','9','36']),mc:true,ste:'A = ½(4+8)(3) = ½(12)(3) = 18.'},
+  {_id:1,q:'¿Cuál es el área de un triángulo con base 10 y altura 6?',a:'30',opts:_i4gshuf(['30','60','26','36']),mc:true,ste:'A = ½×10×6 = 30.'},
+  {_id:2,q:'¿Cuál es el área de un triángulo con base 8 y altura 5?',a:'20',opts:_i4gshuf(['20','40','16','26']),mc:true,ste:'A = ½×8×5 = 20.'},
+  {_id:3,q:'¿Cuál es el área de un triángulo con base 12 y altura 9?',a:'54',opts:_i4gshuf(['54','108','50','60']),mc:true,ste:'A = ½×12×9 = 54.'},
+  {_id:4,q:'¿Cuál es el área de un triángulo con base 14 y altura 4?',a:'28',opts:_i4gshuf(['28','56','24','34']),mc:true,ste:'A = ½×14×4 = 28.'},
+  {_id:5,q:'Un triángulo tiene área 30 y altura 6. ¿Cuál es su base?',a:'10',opts:_i4gshuf(['10','8','12','20']),mc:true,ste:'base = 2A÷h = 2×30÷6 = 10.'},
+  {_id:6,q:'Un triángulo tiene área 54 y base 9. ¿Cuál es su altura?',a:'12',opts:_i4gshuf(['12','10','14','24']),mc:true,ste:'altura = 2A÷b = 2×54÷9 = 12.'},
+  {_id:7,q:'Un triángulo tiene área 40 y altura 8. ¿Cuál es su base?',a:'10',opts:_i4gshuf(['10','8','12','20']),mc:true,ste:'base = 2A÷h = 2×40÷8 = 10.'},
+  {_id:8,q:'Un triángulo tiene área 63 y base 7. ¿Cuál es su altura?',a:'18',opts:_i4gshuf(['18','16','20','36']),mc:true,ste:'altura = 2A÷b = 2×63÷7 = 18.'},
+  {_id:9,q:'¿Cuál es el área de un triángulo con base 16 y altura 5?',a:'40',opts:_i4gshuf(['40','80','37','45']),mc:true,ste:'A = ½×16×5 = 40.'},
+  {_id:10,q:'¿Cuál es el área de un triángulo con base 20 y altura 7?',a:'70',opts:_i4gshuf(['70','140','67','75']),mc:true,ste:'A = ½×20×7 = 70.'},
+  {_id:11,q:'¿Cuál es el área de un triángulo con base 9 y altura 8?',a:'36',opts:_i4gshuf(['36','72','33','41']),mc:true,ste:'A = ½×9×8 = 36.'},
+  {_id:12,q:'¿Cuál es el área de un triángulo con base 18 y altura 3?',a:'27',opts:_i4gshuf(['27','54','24','32']),mc:true,ste:'A = ½×18×3 = 27.'},
+  {_id:13,q:'Un jardín triangular tiene base 15 m y altura 8 m. ¿Cuál es su área?',a:'60 m²',opts:_i4gshuf(['60 m²','120 m²','56 m²','66 m²']),mc:true,ste:'A = ½×15×8 = 60 m².'},
+  {_id:14,q:'Una vela triangular tiene base 6 m y altura 4 m. ¿Cuál es su área?',a:'12 m²',opts:_i4gshuf(['12 m²','24 m²','8 m²','18 m²']),mc:true,ste:'A = ½×6×4 = 12 m².'},
+  {_id:15,q:'Un terreno con forma de triángulo tiene base 20 m y altura 12 m. ¿Cuál es su área?',a:'120 m²',opts:_i4gshuf(['120 m²','240 m²','116 m²','126 m²']),mc:true,ste:'A = ½×20×12 = 120 m².'},
+  {_id:16,q:'Una bandera triangular tiene base 10 cm y altura 7 cm. ¿Cuál es su área?',a:'35 cm²',opts:_i4gshuf(['35 cm²','70 cm²','31 cm²','41 cm²']),mc:true,ste:'A = ½×10×7 = 35 cm².'},
+  {_id:17,q:'V/F: El área de un triángulo se calcula como ½ × base × altura.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = ½bh es la fórmula estándar del área de un triángulo.'},
+  {_id:18,q:'V/F: Si se duplica la altura de un triángulo manteniendo la base, el área se duplica.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = ½bh es lineal en h, así que duplicar h duplica A.'},
+  {_id:19,q:'V/F: El área de un triángulo con base 10 y altura 4 es 40.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = ½×10×4 = 20, no 40 (40 sería base×altura sin dividir entre 2).'},
+  {_id:20,q:'V/F: La altura de un triángulo siempre es uno de sus lados.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La altura es la distancia perpendicular desde un vértice a su lado opuesto; no siempre coincide con un lado.'},
   ]);
 }
-_SKILL_META['chs1m_u2_b1']={ico:'🖼',lbl:'Área de figuras planas',qCount:4,gen:_genChs1mU2_B1,plantillas:['Área de un triángulo','Área de un cuadrado','Área de un rectángulo','Área de un paralelogramo','Área de un trapecio']};
+_SKILL_META['chs1m_u2_b1']={ico:'🖼',lbl:'Área de triángulo',qCount:4,gen:_genChs1mU2_B1,plantillas:['Dado base y altura, hallar el área','Hallar una dimensión desconocida dada el área','Variante con números distintos (refuerzo)','Aplicación en contexto','Conceptual (V/F) sobre la fórmula']};
 
 function _genChs1mU2_B2(){
   return _i4gpick([
-  // Plantilla 1 — Perímetro de un rectángulo (4 preguntas)
-  {_id:1,q:'¿Cuál es el perímetro de un rectángulo con largo 9 y ancho 4?',a:'26',opts:_i4gshuf(['26','13','36','22']),mc:true,ste:'P = 2(9+4) = 2(13) = 26.'},
-  {_id:2,q:'¿Cuál es el perímetro de un rectángulo con largo 12 y ancho 5?',a:'34',opts:_i4gshuf(['34','17','60','29']),mc:true,ste:'P = 2(12+5) = 2(17) = 34.'},
-  {_id:3,q:'¿Cuál es el perímetro de un rectángulo con largo 15 y ancho 7?',a:'44',opts:_i4gshuf(['44','22','105','38']),mc:true,ste:'P = 2(15+7) = 2(22) = 44.'},
-  {_id:4,q:'¿Cuál es el perímetro de un rectángulo con largo 10 y ancho 6?',a:'32',opts:_i4gshuf(['32','16','60','28']),mc:true,ste:'P = 2(10+6) = 2(16) = 32.'},
-  // Plantilla 2 — Perímetro de un cuadrado (4 preguntas)
-  {_id:5,q:'¿Cuál es el perímetro de un cuadrado con lado 8?',a:'32',opts:_i4gshuf(['32','16','64','24']),mc:true,ste:'P = 4×8 = 32.'},
-  {_id:6,q:'¿Cuál es el perímetro de un cuadrado con lado 12?',a:'48',opts:_i4gshuf(['48','24','144','36']),mc:true,ste:'P = 4×12 = 48.'},
-  {_id:7,q:'¿Cuál es el perímetro de un cuadrado con lado 15?',a:'60',opts:_i4gshuf(['60','30','225','45']),mc:true,ste:'P = 4×15 = 60.'},
-  {_id:8,q:'¿Cuál es el perímetro de un cuadrado con lado 9?',a:'36',opts:_i4gshuf(['36','18','81','27']),mc:true,ste:'P = 4×9 = 36.'},
-  // Plantilla 3 — Perímetro de un triángulo (4 preguntas)
-  {_id:9,q:'¿Cuál es el perímetro de un triángulo con lados 5, 7 y 9?',a:'21',opts:_i4gshuf(['21','16','63','24']),mc:true,ste:'P = 5+7+9 = 21.'},
-  {_id:10,q:'¿Cuál es el perímetro de un triángulo con lados 8, 10 y 12?',a:'30',opts:_i4gshuf(['30','22','80','28']),mc:true,ste:'P = 8+10+12 = 30.'},
-  {_id:11,q:'¿Cuál es el perímetro de un triángulo con lados 6, 9 y 11?',a:'26',opts:_i4gshuf(['26','17','54','24']),mc:true,ste:'P = 6+9+11 = 26.'},
-  {_id:12,q:'¿Cuál es el perímetro de un triángulo con lados 7, 7 y 10?',a:'24',opts:_i4gshuf(['24','17','49','21']),mc:true,ste:'P = 7+7+10 = 24.'},
-  // Plantilla 4 — Hallar un lado desconocido dado el perímetro (4 preguntas)
-  {_id:13,q:'Un rectángulo tiene perímetro 30 y un lado mide 8. ¿Cuánto mide el otro lado?',a:'7',opts:_i4gshuf(['7','15','11','22']),mc:true,ste:'30÷2 = 15 (suma de los dos lados distintos). 15−8 = 7.'},
-  {_id:14,q:'Un triángulo tiene perímetro 24. Dos de sus lados miden 9 y 8. ¿Cuánto mide el tercer lado?',a:'7',opts:_i4gshuf(['7','17','9','15']),mc:true,ste:'24−9−8 = 7.'},
-  {_id:15,q:'Un rectángulo tiene perímetro 40 y un lado mide 12. ¿Cuánto mide el otro lado?',a:'8',opts:_i4gshuf(['8','20','16','28']),mc:true,ste:'40÷2 = 20. 20−12 = 8.'},
-  {_id:16,q:'Un triángulo tiene perímetro 27. Dos de sus lados miden 10 y 9. ¿Cuánto mide el tercer lado?',a:'8',opts:_i4gshuf(['8','19','10','17']),mc:true,ste:'27−10−9 = 8.'},
-  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
-  {_id:17,q:'V/F: El perímetro es la suma de las longitudes de todos los lados de una figura.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de perímetro.'},
-  {_id:18,q:'V/F: El área y el perímetro miden lo mismo, solo con unidades distintas.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El perímetro mide contorno (unidades lineales) y el área mide superficie (unidades cuadradas); son conceptos distintos.'},
-  {_id:19,q:'V/F: Dos rectángulos con el mismo perímetro siempre tienen la misma área.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Rectángulos con igual perímetro pueden tener áreas distintas, según cómo se repartan largo y ancho.'},
-  {_id:20,q:'V/F: Para hallar el perímetro de un cuadrado basta con multiplicar un lado por 4.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un cuadrado tiene 4 lados iguales, así que P = 4×lado.'},
+  {_id:1,q:'¿Cuál es el área de un cuadrado con lado 7?',a:'49',opts:_i4gshuf(['49','28','36','64']),mc:true,ste:'A = 7² = 49.'},
+  {_id:2,q:'¿Cuál es el área de un cuadrado con lado 9?',a:'81',opts:_i4gshuf(['81','36','64','100']),mc:true,ste:'A = 9² = 81.'},
+  {_id:3,q:'¿Cuál es el área de un cuadrado con lado 11?',a:'121',opts:_i4gshuf(['121','44','100','144']),mc:true,ste:'A = 11² = 121.'},
+  {_id:4,q:'¿Cuál es el área de un cuadrado con lado 6?',a:'36',opts:_i4gshuf(['36','24','25','49']),mc:true,ste:'A = 6² = 36.'},
+  {_id:5,q:'Un cuadrado tiene área 64. ¿Cuál es la medida de su lado?',a:'8',opts:_i4gshuf(['8','32','7','9']),mc:true,ste:'lado = √64 = 8 (pues 8²=64).'},
+  {_id:6,q:'Un cuadrado tiene área 100. ¿Cuál es la medida de su lado?',a:'10',opts:_i4gshuf(['10','50','9','11']),mc:true,ste:'lado = √100 = 10 (pues 10²=100).'},
+  {_id:7,q:'Un cuadrado tiene área 144. ¿Cuál es la medida de su lado?',a:'12',opts:_i4gshuf(['12','72','11','13']),mc:true,ste:'lado = √144 = 12 (pues 12²=144).'},
+  {_id:8,q:'Un cuadrado tiene área 81. ¿Cuál es la medida de su lado?',a:'9',opts:_i4gshuf(['9','40','8','10']),mc:true,ste:'lado = √81 = 9 (pues 9²=81).'},
+  {_id:9,q:'¿Cuál es el área de un cuadrado con lado 5?',a:'25',opts:_i4gshuf(['25','20','16','36']),mc:true,ste:'A = 5² = 25.'},
+  {_id:10,q:'¿Cuál es el área de un cuadrado con lado 8?',a:'64',opts:_i4gshuf(['64','32','49','81']),mc:true,ste:'A = 8² = 64.'},
+  {_id:11,q:'¿Cuál es el área de un cuadrado con lado 10?',a:'100',opts:_i4gshuf(['100','40','81','121']),mc:true,ste:'A = 10² = 100.'},
+  {_id:12,q:'¿Cuál es el área de un cuadrado con lado 13?',a:'169',opts:_i4gshuf(['169','52','144','196']),mc:true,ste:'A = 13² = 169.'},
+  {_id:13,q:'Un mantel cuadrado tiene lado 3 m. ¿Cuál es su área?',a:'9 m²',opts:_i4gshuf(['9 m²','12 m²','4 m²','16 m²']),mc:true,ste:'A = 3² = 9 m².'},
+  {_id:14,q:'Una baldosa cuadrada tiene lado 20 cm. ¿Cuál es su área?',a:'400 cm²',opts:_i4gshuf(['400 cm²','80 cm²','361 cm²','441 cm²']),mc:true,ste:'A = 20² = 400 cm².'},
+  {_id:15,q:'Un patio cuadrado tiene lado 15 m. ¿Cuál es su área?',a:'225 m²',opts:_i4gshuf(['225 m²','60 m²','196 m²','256 m²']),mc:true,ste:'A = 15² = 225 m².'},
+  {_id:16,q:'Una servilleta cuadrada tiene lado 25 cm. ¿Cuál es su área?',a:'625 cm²',opts:_i4gshuf(['625 cm²','100 cm²','576 cm²','676 cm²']),mc:true,ste:'A = 25² = 625 cm².'},
+  {_id:17,q:'V/F: El área de un cuadrado se calcula elevando el lado al cuadrado.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = l² es la fórmula del área de un cuadrado.'},
+  {_id:18,q:'V/F: Si se duplica el lado de un cuadrado, su área se duplica.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El área escala con el cuadrado del lado: si el lado se duplica, el área se cuadruplica.'},
+  {_id:19,q:'V/F: Un cuadrado de lado 6 tiene área 24.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = 6² = 36, no 24 (24 sería el perímetro).'},
+  {_id:20,q:'V/F: Todos los lados de un cuadrado miden lo mismo.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Por definición, un cuadrado tiene sus cuatro lados iguales.'},
   ]);
 }
-_SKILL_META['chs1m_u2_b2']={ico:'🖼',lbl:'Perímetro de figuras planas',qCount:4,gen:_genChs1mU2_B2,plantillas:['Perímetro de un rectángulo','Perímetro de un cuadrado','Perímetro de un triángulo','Hallar un lado desconocido dado el perímetro','Conceptual (V/F) perímetro vs área']};
+_SKILL_META['chs1m_u2_b2']={ico:'🖼',lbl:'Área de cuadrado',qCount:4,gen:_genChs1mU2_B2,plantillas:['Dado el lado, hallar el área','Hallar el lado dada el área','Variante con números distintos (refuerzo)','Aplicación en contexto','Conceptual (V/F) sobre la fórmula']};
 
 function _genChs1mU2_B3(){
   return _i4gpick([
-  // Plantilla 1 — Diámetro dado el radio (4 preguntas)
-  {_id:1,q:'Un círculo tiene radio 5. ¿Cuál es su diámetro?',a:'10',opts:_i4gshuf(['10','5','15','25']),mc:true,ste:'d = 2×r = 2×5 = 10.'},
-  {_id:2,q:'Un círculo tiene radio 9. ¿Cuál es su diámetro?',a:'18',opts:_i4gshuf(['18','9','27','81']),mc:true,ste:'d = 2×r = 2×9 = 18.'},
-  {_id:3,q:'Un círculo tiene radio 12. ¿Cuál es su diámetro?',a:'24',opts:_i4gshuf(['24','12','36','144']),mc:true,ste:'d = 2×r = 2×12 = 24.'},
-  {_id:4,q:'Un círculo tiene radio 16. ¿Cuál es su diámetro?',a:'32',opts:_i4gshuf(['32','16','48','256']),mc:true,ste:'d = 2×r = 2×16 = 32.'},
-  // Plantilla 2 — Radio dado el diámetro (4 preguntas)
+  {_id:1,q:'¿Cuál es el área de un rectángulo de base 8 y altura 5?',a:'40',opts:_i4gshuf(['40','26','32','45']),mc:true,ste:'A = 8×5 = 40.'},
+  {_id:2,q:'¿Cuál es el área de un rectángulo de base 12 y altura 7?',a:'84',opts:_i4gshuf(['84','38','72','91']),mc:true,ste:'A = 12×7 = 84.'},
+  {_id:3,q:'¿Cuál es el área de un rectángulo de base 15 y altura 4?',a:'60',opts:_i4gshuf(['60','38','45','64']),mc:true,ste:'A = 15×4 = 60.'},
+  {_id:4,q:'¿Cuál es el área de un rectángulo de base 9 y altura 6?',a:'54',opts:_i4gshuf(['54','30','45','60']),mc:true,ste:'A = 9×6 = 54.'},
+  {_id:5,q:'Un rectángulo tiene área 40 y base 8. ¿Cuál es su altura?',a:'5',opts:_i4gshuf(['5','4','6','8']),mc:true,ste:'altura = A÷base = 40÷8 = 5.'},
+  {_id:6,q:'Un rectángulo tiene área 84 y base 12. ¿Cuál es su altura?',a:'7',opts:_i4gshuf(['7','6','8','10']),mc:true,ste:'altura = A÷base = 84÷12 = 7.'},
+  {_id:7,q:'Un rectángulo tiene área 60 y altura 10. ¿Cuál es su base?',a:'6',opts:_i4gshuf(['6','5','7','9']),mc:true,ste:'base = A÷altura = 60÷10 = 6.'},
+  {_id:8,q:'Un rectángulo tiene área 54 y altura 9. ¿Cuál es su base?',a:'6',opts:_i4gshuf(['6','5','7','9']),mc:true,ste:'base = A÷altura = 54÷9 = 6.'},
+  {_id:9,q:'¿Cuál es el área de un rectángulo de base 11 y altura 6?',a:'66',opts:_i4gshuf(['66','34','55','72']),mc:true,ste:'A = 11×6 = 66.'},
+  {_id:10,q:'¿Cuál es el área de un rectángulo de base 13 y altura 5?',a:'65',opts:_i4gshuf(['65','36','52','70']),mc:true,ste:'A = 13×5 = 65.'},
+  {_id:11,q:'¿Cuál es el área de un rectángulo de base 14 y altura 9?',a:'126',opts:_i4gshuf(['126','46','112','135']),mc:true,ste:'A = 14×9 = 126.'},
+  {_id:12,q:'¿Cuál es el área de un rectángulo de base 16 y altura 3?',a:'48',opts:_i4gshuf(['48','38','32','51']),mc:true,ste:'A = 16×3 = 48.'},
+  {_id:13,q:'Una cancha rectangular mide 30 m de largo y 15 m de ancho. ¿Cuál es su área?',a:'450 m²',opts:_i4gshuf(['450 m²','90 m²','420 m²','465 m²']),mc:true,ste:'A = 30×15 = 450 m².'},
+  {_id:14,q:'Un salón rectangular mide 8 m de largo y 6 m de ancho. ¿Cuál es su área?',a:'48 m²',opts:_i4gshuf(['48 m²','28 m²','40 m²','54 m²']),mc:true,ste:'A = 8×6 = 48 m².'},
+  {_id:15,q:'Un mantel rectangular mide 12 dm de largo y 5 dm de ancho. ¿Cuál es su área?',a:'60 dm²',opts:_i4gshuf(['60 dm²','34 dm²','48 dm²','65 dm²']),mc:true,ste:'A = 12×5 = 60 dm².'},
+  {_id:16,q:'Una piscina rectangular mide 25 m de largo y 10 m de ancho. ¿Cuál es su área?',a:'250 m²',opts:_i4gshuf(['250 m²','70 m²','225 m²','260 m²']),mc:true,ste:'A = 25×10 = 250 m².'},
+  {_id:17,q:'V/F: El área de un rectángulo se calcula multiplicando base por altura.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = b×h es la fórmula del área de un rectángulo.'},
+  {_id:18,q:'V/F: Un cuadrado es un caso particular de rectángulo donde todos los lados son iguales.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un cuadrado cumple la definición de rectángulo (4 ángulos rectos) con lados iguales.'},
+  {_id:19,q:'V/F: Un rectángulo de base 9 y altura 4 tiene área 26.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = 9×4 = 36, no 26.'},
+  {_id:20,q:'V/F: Si se duplica solo la base de un rectángulo, el área se duplica.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = b×h es lineal en b, así que duplicar b duplica A.'},
+  ]);
+}
+_SKILL_META['chs1m_u2_b3']={ico:'🖼',lbl:'Área de rectángulo',qCount:4,gen:_genChs1mU2_B3,plantillas:['Dado base y altura, hallar el área','Hallar una dimensión desconocida dada el área','Variante con números distintos (refuerzo)','Aplicación en contexto','Conceptual (V/F) sobre la fórmula']};
+
+function _genChs1mU2_B4(){
+  return _i4gpick([
+  {_id:1,q:'¿Cuál es el área de un paralelogramo con base 8 y altura 5?',a:'40',opts:_i4gshuf(['40','26','35','48']),mc:true,ste:'A = base×altura = 8×5 = 40.'},
+  {_id:2,q:'¿Cuál es el área de un paralelogramo con base 10 y altura 6?',a:'60',opts:_i4gshuf(['60','32','54','70']),mc:true,ste:'A = base×altura = 10×6 = 60.'},
+  {_id:3,q:'¿Cuál es el área de un paralelogramo con base 12 y altura 7?',a:'84',opts:_i4gshuf(['84','38','77','96']),mc:true,ste:'A = base×altura = 12×7 = 84.'},
+  {_id:4,q:'¿Cuál es el área de un paralelogramo con base 9 y altura 4?',a:'36',opts:_i4gshuf(['36','26','32','45']),mc:true,ste:'A = base×altura = 9×4 = 36.'},
+  {_id:5,q:'Un paralelogramo tiene área 40 y base 8. ¿Cuál es su altura?',a:'5',opts:_i4gshuf(['5','4','6','8']),mc:true,ste:'altura = A÷base = 40÷8 = 5.'},
+  {_id:6,q:'Un paralelogramo tiene área 60 y base 10. ¿Cuál es su altura?',a:'6',opts:_i4gshuf(['6','5','7','9']),mc:true,ste:'altura = A÷base = 60÷10 = 6.'},
+  {_id:7,q:'Un paralelogramo tiene área 84 y altura 12. ¿Cuál es su base?',a:'7',opts:_i4gshuf(['7','6','8','10']),mc:true,ste:'base = A÷altura = 84÷12 = 7.'},
+  {_id:8,q:'Un paralelogramo tiene área 36 y altura 9. ¿Cuál es su base?',a:'4',opts:_i4gshuf(['4','3','5','7']),mc:true,ste:'base = A÷altura = 36÷9 = 4.'},
+  {_id:9,q:'¿Cuál es el área de un paralelogramo con base 14 y altura 3?',a:'42',opts:_i4gshuf(['42','34','39','56']),mc:true,ste:'A = base×altura = 14×3 = 42.'},
+  {_id:10,q:'¿Cuál es el área de un paralelogramo con base 11 y altura 5?',a:'55',opts:_i4gshuf(['55','32','50','66']),mc:true,ste:'A = base×altura = 11×5 = 55.'},
+  {_id:11,q:'¿Cuál es el área de un paralelogramo con base 13 y altura 6?',a:'78',opts:_i4gshuf(['78','38','72','91']),mc:true,ste:'A = base×altura = 13×6 = 78.'},
+  {_id:12,q:'¿Cuál es el área de un paralelogramo con base 15 y altura 4?',a:'60',opts:_i4gshuf(['60','38','56','75']),mc:true,ste:'A = base×altura = 15×4 = 60.'},
+  {_id:13,q:'Un terreno con forma de paralelogramo tiene base 18 m y altura 9 m. ¿Cuál es su área?',a:'162 m²',opts:_i4gshuf(['162 m²','54 m²','153 m²','180 m²']),mc:true,ste:'A = 18×9 = 162 m².'},
+  {_id:14,q:'Una loseta con forma de paralelogramo tiene base 7 cm y altura 5 cm. ¿Cuál es su área?',a:'35 cm²',opts:_i4gshuf(['35 cm²','24 cm²','30 cm²','42 cm²']),mc:true,ste:'A = 7×5 = 35 cm².'},
+  {_id:15,q:'Un techo con forma de paralelogramo tiene base 22 m y altura 8 m. ¿Cuál es su área?',a:'176 m²',opts:_i4gshuf(['176 m²','60 m²','168 m²','198 m²']),mc:true,ste:'A = 22×8 = 176 m².'},
+  {_id:16,q:'Una tela con forma de paralelogramo tiene base 16 dm y altura 6 dm. ¿Cuál es su área?',a:'96 dm²',opts:_i4gshuf(['96 dm²','44 dm²','90 dm²','112 dm²']),mc:true,ste:'A = 16×6 = 96 dm².'},
+  {_id:17,q:'V/F: El área de un paralelogramo se calcula multiplicando base por altura, igual que un rectángulo.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = b×h, la misma fórmula que el rectángulo, usando la altura perpendicular.'},
+  {_id:18,q:'V/F: La altura de un paralelogramo es la longitud de su lado inclinado.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La altura es la distancia perpendicular entre las bases, no la longitud del lado inclinado.'},
+  {_id:19,q:'V/F: Un paralelogramo con base 10 y altura 5 tiene área 30.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = 10×5 = 50, no 30.'},
+  {_id:20,q:'V/F: Un rectángulo es un caso particular de paralelogramo con todos los ángulos rectos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un rectángulo cumple la definición de paralelogramo (lados opuestos paralelos) con ángulos de 90°.'},
+  ]);
+}
+_SKILL_META['chs1m_u2_b4']={ico:'🖼',lbl:'Área de paralelogramo',qCount:4,gen:_genChs1mU2_B4,plantillas:['Dado base y altura, hallar el área','Hallar una dimensión desconocida dada el área','Variante con números distintos (refuerzo)','Aplicación en contexto','Conceptual (V/F) sobre la fórmula']};
+
+function _genChs1mU2_B5(){
+  return _i4gpick([
+  {_id:1,q:'¿Cuál es el área de un trapecio con bases 5 y 11, y altura 4?',a:'32',opts:_i4gshuf(['32','64','28','38']),mc:true,ste:'A = ½(5+11)(4) = ½(16)(4) = 32.'},
+  {_id:2,q:'¿Cuál es el área de un trapecio con bases 6 y 10, y altura 5?',a:'40',opts:_i4gshuf(['40','80','36','46']),mc:true,ste:'A = ½(6+10)(5) = ½(16)(5) = 40.'},
+  {_id:3,q:'¿Cuál es el área de un trapecio con bases 7 y 13, y altura 6?',a:'60',opts:_i4gshuf(['60','120','56','66']),mc:true,ste:'A = ½(7+13)(6) = ½(20)(6) = 60.'},
+  {_id:4,q:'¿Cuál es el área de un trapecio con bases 4 y 8, y altura 3?',a:'18',opts:_i4gshuf(['18','36','14','24']),mc:true,ste:'A = ½(4+8)(3) = ½(12)(3) = 18.'},
+  {_id:5,q:'Un trapecio tiene área 32, y sus bases miden 5 y 11. ¿Cuál es su altura?',a:'4',opts:_i4gshuf(['4','3','5','7']),mc:true,ste:'altura = 2A÷(b1+b2) = 2×32÷16 = 4.'},
+  {_id:6,q:'Un trapecio tiene área 40, y sus bases miden 6 y 10. ¿Cuál es su altura?',a:'5',opts:_i4gshuf(['5','4','6','8']),mc:true,ste:'altura = 2A÷(b1+b2) = 2×40÷16 = 5.'},
+  {_id:7,q:'Un trapecio tiene área 60, y sus bases miden 7 y 13. ¿Cuál es su altura?',a:'6',opts:_i4gshuf(['6','5','7','9']),mc:true,ste:'altura = 2A÷(b1+b2) = 2×60÷20 = 6.'},
+  {_id:8,q:'Un trapecio tiene área 18, y sus bases miden 4 y 8. ¿Cuál es su altura?',a:'3',opts:_i4gshuf(['3','2','4','6']),mc:true,ste:'altura = 2A÷(b1+b2) = 2×18÷12 = 3.'},
+  {_id:9,q:'¿Cuál es el área de un trapecio con bases 8 y 12, y altura 5?',a:'50',opts:_i4gshuf(['50','100','46','56']),mc:true,ste:'A = ½(8+12)(5) = ½(20)(5) = 50.'},
+  {_id:10,q:'¿Cuál es el área de un trapecio con bases 9 y 15, y altura 4?',a:'48',opts:_i4gshuf(['48','96','44','54']),mc:true,ste:'A = ½(9+15)(4) = ½(24)(4) = 48.'},
+  {_id:11,q:'¿Cuál es el área de un trapecio con bases 6 y 14, y altura 7?',a:'70',opts:_i4gshuf(['70','140','66','76']),mc:true,ste:'A = ½(6+14)(7) = ½(20)(7) = 70.'},
+  {_id:12,q:'¿Cuál es el área de un trapecio con bases 5 y 9, y altura 6?',a:'42',opts:_i4gshuf(['42','84','38','48']),mc:true,ste:'A = ½(5+9)(6) = ½(14)(6) = 42.'},
+  {_id:13,q:'Un terreno con forma de trapecio tiene bases de 12 m y 20 m, y altura 8 m. ¿Cuál es su área?',a:'128 m²',opts:_i4gshuf(['128 m²','256 m²','124 m²','134 m²']),mc:true,ste:'A = ½(12+20)(8) = 128 m².'},
+  {_id:14,q:'Una mesa trapezoidal tiene bases de 3 dm y 5 dm, y altura 4 dm. ¿Cuál es su área?',a:'16 dm²',opts:_i4gshuf(['16 dm²','32 dm²','12 dm²','22 dm²']),mc:true,ste:'A = ½(3+5)(4) = 16 dm².'},
+  {_id:15,q:'Un jardín trapezoidal tiene bases de 6 m y 14 m, y altura 5 m. ¿Cuál es su área?',a:'50 m²',opts:_i4gshuf(['50 m²','100 m²','46 m²','56 m²']),mc:true,ste:'A = ½(6+14)(5) = 50 m².'},
+  {_id:16,q:'Una vela trapezoidal tiene bases de 4 cm y 10 cm, y altura 6 cm. ¿Cuál es su área?',a:'42 cm²',opts:_i4gshuf(['42 cm²','84 cm²','38 cm²','48 cm²']),mc:true,ste:'A = ½(4+10)(6) = 42 cm².'},
+  {_id:17,q:'V/F: El área de un trapecio se calcula como la semisuma de las bases multiplicada por la altura.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = ½(b1+b2)h es la fórmula estándar del área del trapecio.'},
+  {_id:18,q:'V/F: Un trapecio con bases 4 y 6 y altura 5 tiene área 50.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = ½(4+6)(5) = ½(10)(5) = 25, no 50.'},
+  {_id:19,q:'V/F: Si un trapecio tiene sus dos bases iguales, se convierte en un paralelogramo.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Cuando b1=b2, la fórmula ½(b1+b2)h se reduce a bh, la del paralelogramo.'},
+  {_id:20,q:'V/F: La altura de un trapecio es la distancia perpendicular entre las dos bases.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de altura en un trapecio.'},
+  ]);
+}
+_SKILL_META['chs1m_u2_b5']={ico:'🖼',lbl:'Área de trapecio',qCount:4,gen:_genChs1mU2_B5,plantillas:['Dadas las bases y la altura, hallar el área','Hallar la altura dada el área y las bases','Variante con números distintos (refuerzo)','Aplicación en contexto','Conceptual (V/F) sobre la fórmula']};
+
+function _genChs1mU2_BQ1(){return _bqSrcPick(['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3','chs1m_u2_b4','chs1m_u2_b5'],[_genChs1mU2_B1,_genChs1mU2_B2,_genChs1mU2_B3,_genChs1mU2_B4,_genChs1mU2_B5]);}
+_SKILL_META['chs1m_u2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Áreas de figuras planas',qCount:25,gen:_genChs1mU2_BQ1,quiz:true,srcKeys:['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3','chs1m_u2_b4','chs1m_u2_b5']};
+function _genChs1mU2_B6(){
+  return _i4gpick([
+  {_id:1,q:'¿Cuál es el perímetro de un rectángulo con largo 9 y ancho 4?',a:'26',opts:_i4gshuf(['26','36','13','30']),mc:true,ste:'P = 2(9+4) = 2(13) = 26.'},
+  {_id:2,q:'¿Cuál es el perímetro de un rectángulo con largo 12 y ancho 5?',a:'34',opts:_i4gshuf(['34','60','17','38']),mc:true,ste:'P = 2(12+5) = 2(17) = 34.'},
+  {_id:3,q:'¿Cuál es el perímetro de un rectángulo con largo 15 y ancho 7?',a:'44',opts:_i4gshuf(['44','105','22','48']),mc:true,ste:'P = 2(15+7) = 2(22) = 44.'},
+  {_id:4,q:'¿Cuál es el perímetro de un rectángulo con largo 10 y ancho 6?',a:'32',opts:_i4gshuf(['32','60','16','36']),mc:true,ste:'P = 2(10+6) = 2(16) = 32.'},
+  {_id:5,q:'¿Cuál es el perímetro de un cuadrado con lado 8?',a:'32',opts:_i4gshuf(['32','16','64','40']),mc:true,ste:'P = 4×8 = 32.'},
+  {_id:6,q:'¿Cuál es el perímetro de un cuadrado con lado 12?',a:'48',opts:_i4gshuf(['48','24','144','56']),mc:true,ste:'P = 4×12 = 48.'},
+  {_id:7,q:'¿Cuál es el perímetro de un cuadrado con lado 15?',a:'60',opts:_i4gshuf(['60','30','225','68']),mc:true,ste:'P = 4×15 = 60.'},
+  {_id:8,q:'¿Cuál es el perímetro de un cuadrado con lado 9?',a:'36',opts:_i4gshuf(['36','18','81','44']),mc:true,ste:'P = 4×9 = 36.'},
+  {_id:9,q:'¿Cuál es el perímetro de un rectángulo con largo 11 y ancho 6?',a:'34',opts:_i4gshuf(['34','66','17','38']),mc:true,ste:'P = 2(11+6) = 2(17) = 34.'},
+  {_id:10,q:'¿Cuál es el perímetro de un rectángulo con largo 14 y ancho 8?',a:'44',opts:_i4gshuf(['44','112','22','48']),mc:true,ste:'P = 2(14+8) = 2(22) = 44.'},
+  {_id:11,q:'¿Cuál es el perímetro de un rectángulo con largo 18 y ancho 7?',a:'50',opts:_i4gshuf(['50','126','25','54']),mc:true,ste:'P = 2(18+7) = 2(25) = 50.'},
+  {_id:12,q:'¿Cuál es el perímetro de un rectángulo con largo 13 y ancho 5?',a:'36',opts:_i4gshuf(['36','65','18','40']),mc:true,ste:'P = 2(13+5) = 2(18) = 36.'},
+  {_id:13,q:'¿Cuál es el perímetro de un cuadrado con lado 6?',a:'24',opts:_i4gshuf(['24','12','36','32']),mc:true,ste:'P = 4×6 = 24.'},
+  {_id:14,q:'¿Cuál es el perímetro de un cuadrado con lado 10?',a:'40',opts:_i4gshuf(['40','20','100','48']),mc:true,ste:'P = 4×10 = 40.'},
+  {_id:15,q:'¿Cuál es el perímetro de un cuadrado con lado 14?',a:'56',opts:_i4gshuf(['56','28','196','64']),mc:true,ste:'P = 4×14 = 56.'},
+  {_id:16,q:'¿Cuál es el perímetro de un cuadrado con lado 20?',a:'80',opts:_i4gshuf(['80','40','400','88']),mc:true,ste:'P = 4×20 = 80.'},
+  {_id:17,q:'V/F: El perímetro de un rectángulo se calcula como 2×(largo+ancho).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'P = 2(L+W) es la fórmula del perímetro de un rectángulo.'},
+  {_id:18,q:'V/F: El perímetro de un cuadrado se calcula multiplicando el lado por 4.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un cuadrado tiene 4 lados iguales, así que P = 4×lado.'},
+  {_id:19,q:'V/F: Un rectángulo de largo 7 y ancho 3 tiene perímetro 21.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'P = 2(7+3) = 20, no 21 (21 sería 7×3, el área).'},
+  {_id:20,q:'V/F: Dos rectángulos con el mismo perímetro siempre tienen las mismas dimensiones.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Pueden tener perímetros iguales con largo y ancho distintos, ej. 2×8 y 4×6 ambos dan P=20.'},
+  ]);
+}
+_SKILL_META['chs1m_u2_b6']={ico:'🖼',lbl:'Perímetro de rectángulos y cuadrados',qCount:4,gen:_genChs1mU2_B6,plantillas:['Perímetro de un rectángulo','Perímetro de un cuadrado','Variante de rectángulo (refuerzo)','Variante de cuadrado (refuerzo)','Conceptual (V/F) sobre la fórmula']};
+
+function _genChs1mU2_B7(){
+  return _i4gpick([
+  {_id:1,q:'¿Cuál es el perímetro de un triángulo con lados 5, 7 y 9?',a:'21',opts:_i4gshuf(['21','35','18','24']),mc:true,ste:'P = 5+7+9 = 21.'},
+  {_id:2,q:'¿Cuál es el perímetro de un triángulo con lados 8, 10 y 12?',a:'30',opts:_i4gshuf(['30','80','27','33']),mc:true,ste:'P = 8+10+12 = 30.'},
+  {_id:3,q:'¿Cuál es el perímetro de un triángulo con lados 6, 9 y 11?',a:'26',opts:_i4gshuf(['26','54','23','29']),mc:true,ste:'P = 6+9+11 = 26.'},
+  {_id:4,q:'¿Cuál es el perímetro de un triángulo con lados 7, 7 y 10?',a:'24',opts:_i4gshuf(['24','49','21','27']),mc:true,ste:'P = 7+7+10 = 24.'},
+  {_id:5,q:'Un rectángulo tiene perímetro 30 y un lado mide 8. ¿Cuánto mide el otro lado?',a:'7',opts:_i4gshuf(['7','17','14','9']),mc:true,ste:'30÷2 = 15 (suma de los dos lados distintos). 15−8 = 7.'},
+  {_id:6,q:'Un triángulo tiene perímetro 24. Dos de sus lados miden 9 y 8. ¿Cuánto mide el tercer lado?',a:'7',opts:_i4gshuf(['7','17','14','9']),mc:true,ste:'24−9−8 = 7.'},
+  {_id:7,q:'Un rectángulo tiene perímetro 40 y un lado mide 12. ¿Cuánto mide el otro lado?',a:'8',opts:_i4gshuf(['8','18','16','10']),mc:true,ste:'40÷2 = 20 (suma de los dos lados distintos). 20−12 = 8.'},
+  {_id:8,q:'Un triángulo tiene perímetro 27. Dos de sus lados miden 10 y 9. ¿Cuánto mide el tercer lado?',a:'8',opts:_i4gshuf(['8','18','16','10']),mc:true,ste:'27−10−9 = 8.'},
+  {_id:9,q:'¿Cuál es el perímetro de un triángulo con lados 4, 6 y 8?',a:'18',opts:_i4gshuf(['18','24','15','21']),mc:true,ste:'P = 4+6+8 = 18.'},
+  {_id:10,q:'¿Cuál es el perímetro de un triángulo con lados 9, 10 y 13?',a:'32',opts:_i4gshuf(['32','90','29','35']),mc:true,ste:'P = 9+10+13 = 32.'},
+  {_id:11,q:'¿Cuál es el perímetro de un triángulo con lados 5, 5 y 6?',a:'16',opts:_i4gshuf(['16','25','13','19']),mc:true,ste:'P = 5+5+6 = 16.'},
+  {_id:12,q:'¿Cuál es el perímetro de un triángulo con lados 7, 8 y 8?',a:'23',opts:_i4gshuf(['23','56','20','26']),mc:true,ste:'P = 7+8+8 = 23.'},
+  {_id:13,q:'Un rectángulo tiene perímetro 50 y un lado mide 15. ¿Cuánto mide el otro lado?',a:'10',opts:_i4gshuf(['10','20','12','15']),mc:true,ste:'50÷2 = 25 (suma de los dos lados distintos). 25−15 = 10.'},
+  {_id:14,q:'Un triángulo tiene perímetro 32. Dos de sus lados miden 12 y 11. ¿Cuánto mide el tercer lado?',a:'9',opts:_i4gshuf(['9','19','18','11']),mc:true,ste:'32−12−11 = 9.'},
+  {_id:15,q:'Un rectángulo tiene perímetro 26 y un lado mide 6. ¿Cuánto mide el otro lado?',a:'7',opts:_i4gshuf(['7','17','14','9']),mc:true,ste:'26÷2 = 13 (suma de los dos lados distintos). 13−6 = 7.'},
+  {_id:16,q:'Un triángulo tiene perímetro 35. Dos de sus lados miden 14 y 12. ¿Cuánto mide el tercer lado?',a:'9',opts:_i4gshuf(['9','19','18','11']),mc:true,ste:'35−14−12 = 9.'},
+  {_id:17,q:'V/F: El perímetro de un triángulo se calcula sumando la medida de sus tres lados.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de perímetro de cualquier polígono, incluido el triángulo.'},
+  {_id:18,q:'V/F: Para hallar un lado desconocido de un triángulo dado el perímetro, se resta la suma de los lados conocidos al perímetro total.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'lado desconocido = P − (suma de los otros lados).'},
+  {_id:19,q:'V/F: Un triángulo equilátero de lado 6 tiene perímetro 24.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'P = 3×6 = 18, no 24 (24 sería 4×6, el perímetro de un cuadrado).'},
+  {_id:20,q:'V/F: El perímetro y el área de una figura siempre aumentan en la misma proporción.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El perímetro es lineal y el área es cuadrática respecto a las dimensiones; no aumentan en la misma proporción.'},
+  ]);
+}
+_SKILL_META['chs1m_u2_b7']={ico:'🖼',lbl:'Perímetro de triángulos y lado desconocido',qCount:4,gen:_genChs1mU2_B7,plantillas:['Perímetro de un triángulo (tres lados dados)','Hallar un lado desconocido dado el perímetro (rectángulo o triángulo)','Perímetro de triángulo, variante (refuerzo)','Hallar un lado desconocido, variante (refuerzo)','Conceptual (V/F) sobre el perímetro']};
+
+function _genChs1mU2_BQ2(){return _bqSrcPick(['chs1m_u2_b6','chs1m_u2_b7'],[_genChs1mU2_B6,_genChs1mU2_B7]);}
+_SKILL_META['chs1m_u2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Perímetro de figuras planas',qCount:10,gen:_genChs1mU2_BQ2,quiz:true,srcKeys:['chs1m_u2_b6','chs1m_u2_b7']};
+
+function _genChs1mU2_B8(){
+  return _i4gpick([
+  {_id:1,q:'Un círculo tiene radio 5. ¿Cuál es su diámetro?',a:'10',opts:_i4gshuf(['10','5','15','8']),mc:true,ste:'d = 2×r = 2×5 = 10.'},
+  {_id:2,q:'Un círculo tiene radio 9. ¿Cuál es su diámetro?',a:'18',opts:_i4gshuf(['18','9','27','16']),mc:true,ste:'d = 2×r = 2×9 = 18.'},
+  {_id:3,q:'Un círculo tiene radio 12. ¿Cuál es su diámetro?',a:'24',opts:_i4gshuf(['24','12','36','22']),mc:true,ste:'d = 2×r = 2×12 = 24.'},
+  {_id:4,q:'Un círculo tiene radio 16. ¿Cuál es su diámetro?',a:'32',opts:_i4gshuf(['32','16','48','30']),mc:true,ste:'d = 2×r = 2×16 = 32.'},
   {_id:5,q:'Un círculo tiene diámetro 14. ¿Cuál es su radio?',a:'7',opts:_i4gshuf(['7','14','28','21']),mc:true,ste:'r = d÷2 = 14÷2 = 7.'},
   {_id:6,q:'Un círculo tiene diámetro 22. ¿Cuál es su radio?',a:'11',opts:_i4gshuf(['11','22','44','33']),mc:true,ste:'r = d÷2 = 22÷2 = 11.'},
   {_id:7,q:'Un círculo tiene diámetro 30. ¿Cuál es su radio?',a:'15',opts:_i4gshuf(['15','30','60','45']),mc:true,ste:'r = d÷2 = 30÷2 = 15.'},
   {_id:8,q:'Un círculo tiene diámetro 8. ¿Cuál es su radio?',a:'4',opts:_i4gshuf(['4','8','16','12']),mc:true,ste:'r = d÷2 = 8÷2 = 4.'},
-  // Plantilla 3 — Circunferencia dado el radio (4 preguntas)
-  {_id:9,q:'Un círculo tiene radio 5. ¿Cuál es su circunferencia (en términos de π)?',a:'10π',opts:_i4gshuf(['10π','5π','25π','20π']),mc:true,ste:'C = 2πr = 2π(5) = 10π.'},
-  {_id:10,q:'Un círculo tiene radio 7. ¿Cuál es su circunferencia (en términos de π)?',a:'14π',opts:_i4gshuf(['14π','7π','49π','28π']),mc:true,ste:'C = 2πr = 2π(7) = 14π.'},
-  {_id:11,q:'Un círculo tiene radio 9. ¿Cuál es su circunferencia (en términos de π)?',a:'18π',opts:_i4gshuf(['18π','9π','81π','36π']),mc:true,ste:'C = 2πr = 2π(9) = 18π.'},
-  {_id:12,q:'Un círculo tiene radio 6. ¿Cuál es su circunferencia (en términos de π)?',a:'12π',opts:_i4gshuf(['12π','6π','36π','24π']),mc:true,ste:'C = 2πr = 2π(6) = 12π.'},
-  // Plantilla 4 — Radio dada la circunferencia (4 preguntas)
-  {_id:13,q:'Un círculo tiene circunferencia 20π. ¿Cuál es su radio?',a:'10',opts:_i4gshuf(['10','20','40','5']),mc:true,ste:'r = C÷(2π) = 20π÷2π = 10.'},
-  {_id:14,q:'Un círculo tiene circunferencia 16π. ¿Cuál es su radio?',a:'8',opts:_i4gshuf(['8','16','32','4']),mc:true,ste:'r = C÷(2π) = 16π÷2π = 8.'},
-  {_id:15,q:'Un círculo tiene circunferencia 24π. ¿Cuál es su radio?',a:'12',opts:_i4gshuf(['12','24','48','6']),mc:true,ste:'r = C÷(2π) = 24π÷2π = 12.'},
-  {_id:16,q:'Un círculo tiene circunferencia 30π. ¿Cuál es su radio?',a:'15',opts:_i4gshuf(['15','30','60','7.5']),mc:true,ste:'r = C÷(2π) = 30π÷2π = 15.'},
-  // Plantilla 5 — Conceptual (V/F) (4 preguntas)
+  {_id:9,q:'Un círculo tiene radio 7. ¿Cuál es su diámetro?',a:'14',opts:_i4gshuf(['14','7','21','16']),mc:true,ste:'d = 2×r = 2×7 = 14.'},
+  {_id:10,q:'Un círculo tiene radio 11. ¿Cuál es su diámetro?',a:'22',opts:_i4gshuf(['22','11','33','24']),mc:true,ste:'d = 2×r = 2×11 = 22.'},
+  {_id:11,q:'Un círculo tiene radio 15. ¿Cuál es su diámetro?',a:'30',opts:_i4gshuf(['30','15','45','32']),mc:true,ste:'d = 2×r = 2×15 = 30.'},
+  {_id:12,q:'Un círculo tiene radio 20. ¿Cuál es su diámetro?',a:'40',opts:_i4gshuf(['40','20','60','42']),mc:true,ste:'d = 2×r = 2×20 = 40.'},
+  {_id:13,q:'Un círculo tiene diámetro 18. ¿Cuál es su radio?',a:'9',opts:_i4gshuf(['9','18','36','27']),mc:true,ste:'r = d÷2 = 18÷2 = 9.'},
+  {_id:14,q:'Un círculo tiene diámetro 26. ¿Cuál es su radio?',a:'13',opts:_i4gshuf(['13','26','52','39']),mc:true,ste:'r = d÷2 = 26÷2 = 13.'},
+  {_id:15,q:'Un círculo tiene diámetro 10. ¿Cuál es su radio?',a:'5',opts:_i4gshuf(['5','10','20','15']),mc:true,ste:'r = d÷2 = 10÷2 = 5.'},
+  {_id:16,q:'Un círculo tiene diámetro 40. ¿Cuál es su radio?',a:'20',opts:_i4gshuf(['20','40','80','60']),mc:true,ste:'r = d÷2 = 40÷2 = 20.'},
   {_id:17,q:'V/F: El diámetro de un círculo siempre es el doble de su radio.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'d = 2r, por definición.'},
-  {_id:18,q:'V/F: La circunferencia se calcula multiplicando el diámetro por π.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'C = πd = 2πr, ambas fórmulas son equivalentes.'},
-  {_id:19,q:'V/F: Si dos círculos tienen el mismo radio, tienen la misma circunferencia.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La circunferencia depende únicamente del radio (C=2πr), así que radios iguales dan circunferencias iguales.'},
-  {_id:20,q:'V/F: El radio es mayor que el diámetro en cualquier círculo.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El radio es la mitad del diámetro, por lo que siempre es menor (para un círculo de tamaño mayor a un punto).'},
+  {_id:18,q:'V/F: El radio es la distancia del centro a cualquier punto de la circunferencia.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de radio.'},
+  {_id:19,q:'V/F: Un círculo con diámetro 16 tiene radio 32.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'r = d÷2 = 16÷2 = 8, no 32.'},
+  {_id:20,q:'V/F: Si dos círculos tienen el mismo diámetro, tienen el mismo radio.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'r=d/2, así que diámetros iguales implican radios iguales.'},
   ]);
 }
-_SKILL_META['chs1m_u2_b3']={ico:'🖼',lbl:'Círculos: radio, diámetro y circunferencia',qCount:4,gen:_genChs1mU2_B3,plantillas:['Hallar el diámetro dado el radio','Hallar el radio dado el diámetro','Hallar la circunferencia dado el radio','Hallar el radio dada la circunferencia','Conceptual (V/F) radio-diámetro-circunferencia']};
+_SKILL_META['chs1m_u2_b8']={ico:'🖼',lbl:'Diámetro y radio de un círculo',qCount:4,gen:_genChs1mU2_B8,plantillas:['Hallar el diámetro dado el radio','Hallar el radio dado el diámetro','Hallar el diámetro dado el radio (variante)','Hallar el radio dado el diámetro (variante)','Conceptual (V/F) sobre radio y diámetro']};
 
-function _genChs1mU2_BQ1(){return _bqSrcPick(['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3'],[_genChs1mU2_B1,_genChs1mU2_B2,_genChs1mU2_B3]);}
-_SKILL_META['chs1m_u2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Área, perímetro y círculos',qCount:15,gen:_genChs1mU2_BQ1,quiz:true,srcKeys:['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3']};
+function _genChs1mU2_B9(){
+  return _i4gpick([
+  {_id:1,q:'Un círculo tiene radio 5. ¿Cuál es su circunferencia (en términos de π)?',a:'10π',opts:_i4gshuf(['10π','5π','25π','12π']),mc:true,ste:'C = 2πr = 2π(5) = 10π.'},
+  {_id:2,q:'Un círculo tiene radio 7. ¿Cuál es su circunferencia (en términos de π)?',a:'14π',opts:_i4gshuf(['14π','7π','49π','16π']),mc:true,ste:'C = 2πr = 2π(7) = 14π.'},
+  {_id:3,q:'Un círculo tiene radio 9. ¿Cuál es su circunferencia (en términos de π)?',a:'18π',opts:_i4gshuf(['18π','9π','81π','20π']),mc:true,ste:'C = 2πr = 2π(9) = 18π.'},
+  {_id:4,q:'Un círculo tiene radio 6. ¿Cuál es su circunferencia (en términos de π)?',a:'12π',opts:_i4gshuf(['12π','6π','36π','14π']),mc:true,ste:'C = 2πr = 2π(6) = 12π.'},
+  {_id:5,q:'Un círculo tiene circunferencia 20π. ¿Cuál es su radio?',a:'10',opts:_i4gshuf(['10','20','40','12']),mc:true,ste:'r = C÷(2π) = 20π÷2π = 10.'},
+  {_id:6,q:'Un círculo tiene circunferencia 16π. ¿Cuál es su radio?',a:'8',opts:_i4gshuf(['8','16','32','10']),mc:true,ste:'r = C÷(2π) = 16π÷2π = 8.'},
+  {_id:7,q:'Un círculo tiene circunferencia 24π. ¿Cuál es su radio?',a:'12',opts:_i4gshuf(['12','24','48','14']),mc:true,ste:'r = C÷(2π) = 24π÷2π = 12.'},
+  {_id:8,q:'Un círculo tiene circunferencia 30π. ¿Cuál es su radio?',a:'15',opts:_i4gshuf(['15','30','60','17']),mc:true,ste:'r = C÷(2π) = 30π÷2π = 15.'},
+  {_id:9,q:'Un círculo tiene radio 8. ¿Cuál es su circunferencia (en términos de π)?',a:'16π',opts:_i4gshuf(['16π','8π','64π','18π']),mc:true,ste:'C = 2πr = 2π(8) = 16π.'},
+  {_id:10,q:'Un círculo tiene radio 10. ¿Cuál es su circunferencia (en términos de π)?',a:'20π',opts:_i4gshuf(['20π','10π','100π','22π']),mc:true,ste:'C = 2πr = 2π(10) = 20π.'},
+  {_id:11,q:'Un círculo tiene radio 11. ¿Cuál es su circunferencia (en términos de π)?',a:'22π',opts:_i4gshuf(['22π','11π','121π','24π']),mc:true,ste:'C = 2πr = 2π(11) = 22π.'},
+  {_id:12,q:'Un círculo tiene radio 4. ¿Cuál es su circunferencia (en términos de π)?',a:'8π',opts:_i4gshuf(['8π','4π','16π','10π']),mc:true,ste:'C = 2πr = 2π(4) = 8π.'},
+  {_id:13,q:'Un círculo tiene circunferencia 18π. ¿Cuál es su radio?',a:'9',opts:_i4gshuf(['9','18','36','11']),mc:true,ste:'r = C÷(2π) = 18π÷2π = 9.'},
+  {_id:14,q:'Un círculo tiene circunferencia 26π. ¿Cuál es su radio?',a:'13',opts:_i4gshuf(['13','26','52','15']),mc:true,ste:'r = C÷(2π) = 26π÷2π = 13.'},
+  {_id:15,q:'Un círculo tiene circunferencia 12π. ¿Cuál es su radio?',a:'6',opts:_i4gshuf(['6','12','24','8']),mc:true,ste:'r = C÷(2π) = 12π÷2π = 6.'},
+  {_id:16,q:'Un círculo tiene circunferencia 36π. ¿Cuál es su radio?',a:'18',opts:_i4gshuf(['18','36','72','20']),mc:true,ste:'r = C÷(2π) = 36π÷2π = 18.'},
+  {_id:17,q:'V/F: La circunferencia de un círculo se calcula multiplicando el radio por 2π.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'C = 2πr es la fórmula estándar de la circunferencia.'},
+  {_id:18,q:'V/F: La circunferencia también puede calcularse como π por el diámetro.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'C = πd = 2πr, ambas fórmulas son equivalentes.'},
+  {_id:19,q:'V/F: Un círculo con radio 5 tiene circunferencia 5π.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'C = 2π(5) = 10π, no 5π.'},
+  {_id:20,q:'V/F: Si se duplica el radio de un círculo, su circunferencia también se duplica.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'C = 2πr es lineal en r, así que duplicar r duplica C.'},
+  ]);
+}
+_SKILL_META['chs1m_u2_b9']={ico:'🖼',lbl:'Circunferencia y radio de un círculo',qCount:4,gen:_genChs1mU2_B9,plantillas:['Hallar la circunferencia dado el radio','Hallar el radio dada la circunferencia','Hallar la circunferencia dado el radio (variante)','Hallar el radio dada la circunferencia (variante)','Conceptual (V/F) sobre circunferencia']};
 
-function _genChs1mU2_B4(){
+function _genChs1mU2_BQ3(){return _bqSrcPick(['chs1m_u2_b8','chs1m_u2_b9'],[_genChs1mU2_B8,_genChs1mU2_B9]);}
+_SKILL_META['chs1m_u2_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Círculos: radio, diámetro y circunferencia',qCount:10,gen:_genChs1mU2_BQ3,quiz:true,srcKeys:['chs1m_u2_b8','chs1m_u2_b9']};
+function _genChs1mU2_B10(){
   return _i4gpick([
   // Plantilla 1 — Ángulo desconocido en un par lineal (4 preguntas)
   {_id:1,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;margin:4px auto;display:block"><line x1="20" y1="110" x2="240" y2="110" stroke="#94a3b8" stroke-width="2"/><line x1="150" y1="20" x2="150" y2="110" stroke="#94a3b8" stroke-width="2"/><text x="60" y="95" text-anchor="middle" font-size="14" fill="#e2e8f0" font-weight="700">x°</text><text x="190" y="95" text-anchor="middle" font-size="14" fill="#60a5fa" font-weight="700">118°</text></svg></div>En una recta, dos ángulos forman un par lineal. Si uno mide 118°, ¿cuánto mide el ángulo x?',a:'62°',opts:_i4gshuf(['62°','58°','72°','118°']),mc:true,ste:'Un par lineal suma 180°: x = 180−118 = 62°.'},
@@ -15584,9 +15953,9 @@ function _genChs1mU2_B4(){
   {_id:20,q:'V/F: El ángulo exterior de un triángulo es igual a la suma de los dos ángulos interiores no adyacentes a él.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esta es la propiedad del ángulo exterior de un triángulo.'},
   ]);
 }
-_SKILL_META['chs1m_u2_b4']={ico:'🖼',lbl:'Ángulos: par lineal y suma angular del triángulo',qCount:4,gen:_genChs1mU2_B4,plantillas:['Ángulo desconocido en un par lineal','Ángulo desconocido en un triángulo','Ángulo desconocido dentro de un ángulo recto','Ángulo exterior de un triángulo','Conceptual (V/F) relaciones angulares']};
+_SKILL_META['chs1m_u2_b10']={ico:'🖼',lbl:'Ángulos: par lineal y suma angular del triángulo',qCount:4,gen:_genChs1mU2_B10,plantillas:['Ángulo desconocido en un par lineal','Ángulo desconocido en un triángulo','Ángulo desconocido dentro de un ángulo recto','Ángulo exterior de un triángulo','Conceptual (V/F) relaciones angulares']};
 
-function _genChs1mU2_B5(){
+function _genChs1mU2_B11(){
   return _i4gpick([
   // Plantilla 1 — Volumen de un prisma rectangular (4 preguntas)
   {_id:1,q:'¿Cuál es el volumen de un prisma rectangular de 3 cm × 4 cm × 5 cm?',a:'60 cm³',opts:_i4gshuf(['60 cm³','12 cm³','47 cm³','120 cm³']),mc:true,ste:'V = 3×4×5 = 60 cm³.'},
@@ -15615,9 +15984,9 @@ function _genChs1mU2_B5(){
   {_id:20,q:'V/F: Dos prismas con el mismo volumen siempre tienen exactamente las mismas tres dimensiones.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Prismas con dimensiones distintas pueden tener el mismo volumen (ej. 2×6×6=72 y 3×4×6=72).'},
   ]);
 }
-_SKILL_META['chs1m_u2_b5']={ico:'🖼',lbl:'Volumen de prismas y cubos',qCount:4,gen:_genChs1mU2_B5,plantillas:['Volumen de un prisma rectangular','Volumen de un cubo','Volumen de otro prisma rectangular (refuerzo)','Hallar una dimensión desconocida dado el volumen','Conceptual (V/F) sobre la fórmula del volumen']};
+_SKILL_META['chs1m_u2_b11']={ico:'🖼',lbl:'Volumen de prismas y cubos',qCount:4,gen:_genChs1mU2_B11,plantillas:['Volumen de un prisma rectangular','Volumen de un cubo','Volumen de otro prisma rectangular (refuerzo)','Hallar una dimensión desconocida dado el volumen','Conceptual (V/F) sobre la fórmula del volumen']};
 
-function _genChs1mU2_B6(){
+function _genChs1mU2_B12(){
   return _i4gpick([
   // Plantilla 1 — Convertir pies a pulgadas (4 preguntas)
   {_id:1,q:'Convierte 3 pies a pulgadas (1 pie = 12 pulgadas).',a:'36',opts:_i4gshuf(['36','24','30','48']),mc:true,ste:'3×12 = 36 pulgadas.'},
@@ -15646,176 +16015,289 @@ function _genChs1mU2_B6(){
   {_id:20,q:'¿Qué cantidad es mayor: 4 pies o 50 pulgadas?',a:'50 pulgadas',opts:_i4gshuf(['50 pulgadas','4 pies','Son iguales','No se puede saber']),mc:true,ste:'4 pies = 48 pulgadas, que es menor que 50 pulgadas.'},
   ]);
 }
-_SKILL_META['chs1m_u2_b6']={ico:'📐',lbl:'Conversión de unidades (longitud y tiempo)',qCount:4,gen:_genChs1mU2_B6,plantillas:['Convertir pies a pulgadas','Convertir horas a minutos','Convertir minutos a segundos','Convertir un valor decimal de horas a minutos','Comparar cantidades en unidades distintas']};
-
-function _genChs1mU2_BQ2(){return _bqSrcPick(['chs1m_u2_b4','chs1m_u2_b5','chs1m_u2_b6'],[_genChs1mU2_B4,_genChs1mU2_B5,_genChs1mU2_B6]);}
-_SKILL_META['chs1m_u2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Ángulos, volumen y conversiones',qCount:15,gen:_genChs1mU2_BQ2,quiz:true,srcKeys:['chs1m_u2_b4','chs1m_u2_b5','chs1m_u2_b6']};
+_SKILL_META['chs1m_u2_b12']={ico:'📐',lbl:'Conversión de unidades (longitud y tiempo)',qCount:4,gen:_genChs1mU2_B12,plantillas:['Convertir pies a pulgadas','Convertir horas a minutos','Convertir minutos a segundos','Convertir un valor decimal de horas a minutos','Comparar cantidades en unidades distintas']};
+function _genChs1mU2_BQ4(){return _bqSrcPick(['chs1m_u2_b10','chs1m_u2_b11','chs1m_u2_b12'],[_genChs1mU2_B10,_genChs1mU2_B11,_genChs1mU2_B12]);}
+_SKILL_META['chs1m_u2_bq4']={ico:'⚡',lbl:'Cuestionario 4 – Ángulos, volumen y conversiones',qCount:15,gen:_genChs1mU2_BQ4,quiz:true,srcKeys:['chs1m_u2_b10','chs1m_u2_b11','chs1m_u2_b12']};
 
 // ===== Catholic High Schools - 1ro Secundaria - Unidad 3: Series Numéricas y Comparaciones Cuantitativas =====
 
 function _genChs1mU3_B1(){
   return _i4gpick([
-  // Plantilla 1 — Serie aritmética: suma o resta constante (4 preguntas)
   {_id:1,q:'5, 10, 15, 20, __',a:'25',opts:_i4gshuf(['25','22','30','24']),mc:true,ste:'Se suma 5 cada vez: 20+5 = 25.'},
-  {_id:2,q:'6, 12, 18, 24, __',a:'30',opts:_i4gshuf(['30','28','36','32']),mc:true,ste:'Se suma 6 cada vez: 24+6 = 30.'},
-  {_id:3,q:'8, 16, 24, 32, __',a:'40',opts:_i4gshuf(['40','36','48','38']),mc:true,ste:'Se suma 8 cada vez: 32+8 = 40.'},
-  {_id:4,q:'90, 82, 74, 66, __',a:'58',opts:_i4gshuf(['58','60','56','54']),mc:true,ste:'Se resta 8 cada vez: 66−8 = 58.'},
-  // Plantilla 2 — Serie geométrica: multiplicar o dividir por una constante (4 preguntas)
-  {_id:5,q:'81, 27, 9, 3, __',a:'1',opts:_i4gshuf(['1','0','2','−3']),mc:true,ste:'Se divide entre 3 cada vez: 3÷3 = 1.'},
-  {_id:6,q:'64, 32, 16, 8, __',a:'4',opts:_i4gshuf(['4','2','6','0']),mc:true,ste:'Se divide entre 2 cada vez: 8÷2 = 4.'},
-  {_id:7,q:'100, 50, 25, __',a:'12.5',opts:_i4gshuf(['12.5','15','10','20']),mc:true,ste:'Se divide entre 2 cada vez: 25÷2 = 12.5.'},
-  {_id:8,q:'3, 9, 27, 81, __',a:'243',opts:_i4gshuf(['243','162','216','324']),mc:true,ste:'Se multiplica por 3 cada vez: 81×3 = 243.'},
-  // Plantilla 3 — Serie alternada: dos operaciones que se turnan (4 preguntas)
-  {_id:9,q:'7, 14, 13, 26, 25, __',a:'50',opts:_i4gshuf(['50','24','13','49']),mc:true,ste:'El patrón alterna ×2, −1: 25×2 = 50.'},
-  {_id:10,q:'3, 6, 5, 10, 9, __',a:'18',opts:_i4gshuf(['18','8','19','17']),mc:true,ste:'El patrón alterna ×2, −1: 9×2 = 18.'},
-  {_id:11,q:'1, 4, 2, 8, 4, __',a:'16',opts:_i4gshuf(['16','8','2','32']),mc:true,ste:'El patrón alterna ×4, ÷2: 4×4 = 16.'},
-  {_id:12,q:'4, 8, 7, 14, 13, __',a:'26',opts:_i4gshuf(['26','12','25','27']),mc:true,ste:'El patrón alterna ×2, −1: 13×2 = 26.'},
-  // Plantilla 4 — Serie con diferencias crecientes (4 preguntas)
-  {_id:13,q:'2, 3, 5, 8, 12, __',a:'17',opts:_i4gshuf(['17','16','15','18']),mc:true,ste:'Las diferencias crecen (+1,+2,+3,+4,+5): 12+5 = 17.'},
-  {_id:14,q:'10, 11, 13, 16, 20, __',a:'25',opts:_i4gshuf(['25','24','23','26']),mc:true,ste:'Las diferencias crecen (+1,+2,+3,+4,+5): 20+5 = 25.'},
-  {_id:15,q:'55, 50, 46, 43, 41, __',a:'40',opts:_i4gshuf(['40','39','38','41']),mc:true,ste:'Las diferencias que se restan disminuyen (−5,−4,−3,−2,−1): 41−1 = 40.'},
-  {_id:16,q:'3, 7, 15, 31, 63, __',a:'127',opts:_i4gshuf(['127','126','128','95']),mc:true,ste:'Cada término duplica al anterior y suma 1: 63×2+1 = 127.'},
-  // Plantilla 5 — Series especiales: cuadrados perfectos o tipo Fibonacci (4 preguntas)
-  {_id:17,q:'1, 4, 9, 16, 25, __',a:'36',opts:_i4gshuf(['36','30','32','40']),mc:true,ste:'Son cuadrados perfectos (1²,2²,3²,4²,5²), el siguiente es 6²=36.'},
-  {_id:18,q:'1, 1, 2, 3, 5, __',a:'8',opts:_i4gshuf(['8','6','7','9']),mc:true,ste:'Cada término es la suma de los dos anteriores: 3+5 = 8.'},
-  {_id:19,q:'4, 9, 16, 25, 36, __',a:'49',opts:_i4gshuf(['49','42','45','56']),mc:true,ste:'Son cuadrados perfectos (2²,3²,4²,5²,6²), el siguiente es 7²=49.'},
-  {_id:20,q:'2, 3, 5, 8, 13, __',a:'21',opts:_i4gshuf(['21','18','19','23']),mc:true,ste:'Cada término es la suma de los dos anteriores: 8+13 = 21.'},
+  {_id:2,q:'6, 12, 18, 24, __',a:'30',opts:_i4gshuf(['30','27','35','29']),mc:true,ste:'Se suma 6 cada vez: 24+6 = 30.'},
+  {_id:3,q:'8, 16, 24, 32, __',a:'40',opts:_i4gshuf(['40','37','45','39']),mc:true,ste:'Se suma 8 cada vez: 32+8 = 40.'},
+  {_id:4,q:'9, 18, 27, 36, __',a:'45',opts:_i4gshuf(['45','42','50','44']),mc:true,ste:'Se suma 9 cada vez: 36+9 = 45.'},
+  {_id:5,q:'90, 82, 74, 66, __',a:'58',opts:_i4gshuf(['58','60','56','66']),mc:true,ste:'Se resta 8 cada vez: 66−8 = 58.'},
+  {_id:6,q:'70, 63, 56, 49, __',a:'42',opts:_i4gshuf(['42','44','40','49']),mc:true,ste:'Se resta 7 cada vez: 49−7 = 42.'},
+  {_id:7,q:'50, 44, 38, 32, __',a:'26',opts:_i4gshuf(['26','28','24','32']),mc:true,ste:'Se resta 6 cada vez: 32−6 = 26.'},
+  {_id:8,q:'100, 91, 82, 73, __',a:'64',opts:_i4gshuf(['64','66','62','73']),mc:true,ste:'Se resta 9 cada vez: 73−9 = 64.'},
+  {_id:9,q:'3, 9, 27, 81, __',a:'243',opts:_i4gshuf(['243','162','324','84']),mc:true,ste:'Se multiplica por 3 cada vez: 81×3 = 243.'},
+  {_id:10,q:'2, 6, 18, 54, __',a:'162',opts:_i4gshuf(['162','108','216','57']),mc:true,ste:'Se multiplica por 3 cada vez: 54×3 = 162.'},
+  {_id:11,q:'4, 8, 16, 32, __',a:'64',opts:_i4gshuf(['64','32','96','34']),mc:true,ste:'Se multiplica por 2 cada vez: 32×2 = 64.'},
+  {_id:12,q:'5, 10, 20, 40, __',a:'80',opts:_i4gshuf(['80','40','120','42']),mc:true,ste:'Se multiplica por 2 cada vez: 40×2 = 80.'},
+  {_id:13,q:'81, 27, 9, 3, __',a:'1',opts:_i4gshuf(['1','9','3.0','0.0']),mc:true,ste:'Se divide entre 3 cada vez: 3÷3 = 1.'},
+  {_id:14,q:'64, 32, 16, 8, __',a:'4',opts:_i4gshuf(['4','16','6.0','3.0']),mc:true,ste:'Se divide entre 2 cada vez: 8÷2 = 4.'},
+  {_id:15,q:'100, 50, 25, 12.5, __',a:'6.25',opts:_i4gshuf(['6.25','25','8.25','5.25']),mc:true,ste:'Se divide entre 2 cada vez: 12.5÷2 = 6.25.'},
+  {_id:16,q:'729, 243, 81, 27, __',a:'9',opts:_i4gshuf(['9','81','11.0','8.0']),mc:true,ste:'Se divide entre 3 cada vez: 27÷3 = 9.'},
+  {_id:17,q:'V/F: En una serie aritmética, la diferencia entre términos consecutivos es siempre constante.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de una serie aritmética.'},
+  {_id:18,q:'V/F: En una serie geométrica, cada término se obtiene sumando una constante al anterior.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'En una serie geométrica cada término se multiplica (o divide) por una constante, no se suma.'},
+  {_id:19,q:'V/F: La serie 4, 8, 16, 32 es geométrica con razón 2.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Cada término se multiplica por 2: 4×2=8, 8×2=16, 16×2=32.'},
+  {_id:20,q:'V/F: La serie 10, 7, 4, 1 es aritmética con diferencia −3.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Cada término disminuye 3 respecto al anterior: 10−3=7, 7−3=4, 4−3=1.'},
   ]);
 }
-_SKILL_META['chs1m_u3_b1']={ico:'📐',lbl:'Series numéricas: patrones y secuencias',qCount:4,gen:_genChs1mU3_B1,plantillas:['Serie aritmética (suma o resta constante)','Serie geométrica (multiplicar o dividir por una constante)','Serie alternada (dos operaciones que se turnan)','Serie con diferencias crecientes','Series especiales (cuadrados perfectos o tipo Fibonacci)']};
+_SKILL_META['chs1m_u3_b1']={ico:'📐',lbl:'Series aritméticas y geométricas',qCount:4,gen:_genChs1mU3_B1,plantillas:['Serie aritmética creciente','Serie aritmética decreciente','Serie geométrica (multiplicar por una constante)','Serie geométrica (dividir entre una constante)','Conceptual (V/F) aritmética vs. geométrica']};
 
 function _genChs1mU3_B2(){
   return _i4gpick([
-  // Plantilla 1 — Comparar porcentajes/fracciones de distintos números (4 preguntas)
-  {_id:1,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 25% de 80  (b) 50% de 40  (c) 10% de 200',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)','(b) > (a) = (c)']),mc:true,ste:'(a)=20, (b)=20, (c)=20. Los tres son iguales.'},
-  {_id:2,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 20% de 50  (b) 40% de 30  (c) 10% de 90',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) > (b) > (c)','(a) = (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=10, (b)=12, (c)=9. Entonces (b) > (a) > (c).'},
-  {_id:3,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 30% de 60  (b) 15% de 100  (c) 50% de 30',a:'(a) > (b) = (c)',opts:_i4gshuf(['(a) > (b) = (c)','(b) > (a) > (c)','(a) = (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=18, (b)=15, (c)=15. Entonces (a) > (b) = (c).'},
-  {_id:4,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 15% de 15% de 400  (b) 3% de 400  (c) 9',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) > (b) > (c)','(a) = (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=0.15×0.15×400=9, (b)=0.03×400=12, (c)=9. Entonces (b) > (a) = (c).'},
-  // Plantilla 2 — Comparar expresiones aritméticas simples (orden de operaciones) (4 preguntas)
-  {_id:5,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 3×4  (b) 2×6  (c) 5+8',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=12, (b)=12, (c)=13. Entonces (c) > (a) = (b).'},
-  {_id:6,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) (4+6)×2  (b) 4+6×2  (c) 4×6−2',a:'(c) > (a) > (b)',opts:_i4gshuf(['(c) > (a) > (b)','(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)']),mc:true,ste:'Orden de operaciones: (a)=20, (b)=4+12=16, (c)=24−2=22. Entonces (c) > (a) > (b).'},
-  {_id:7,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 6×3+4  (b) 4×6−2  (c) 3×8−1',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) > (b) > (c)','(a) = (b) = (c)','(b) > (a) = (c)']),mc:true,ste:'(a)=18+4=22, (b)=24−2=22, (c)=24−1=23. Entonces (c) > (a) = (b).'},
-  {_id:8,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) (5+3)×2  (b) 5+3×2  (c) 5×3−2',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(b) > (a) > (c)','(a) = (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=16, (b)=5+6=11, (c)=15−2=13. Entonces (a) > (c) > (b).'},
-  // Plantilla 3 — Comparar formas equivalentes: decimal, fracción y porcentaje (4 preguntas)
-  {_id:9,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.3  (b) 1/3  (c) 30%',a:'(a) = (c) < (b)',opts:_i4gshuf(['(a) = (c) < (b)','(a) = (b) = (c)','(b) > (a) > (c)','(a) > (b) = (c)']),mc:true,ste:'(a)=0.3, (b)=0.333..., (c)=0.3. Entonces (a) = (c), y ambos son menores que (b).'},
-  {_id:10,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.5  (b) 1/2  (c) 50%',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) = (c)','(c) > (a) = (b)']),mc:true,ste:'Las tres son formas distintas de escribir un medio: 0.5 = 1/2 = 50%.'},
-  {_id:11,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.25  (b) 1/5  (c) 20%',a:'(a) > (b) = (c)',opts:_i4gshuf(['(a) > (b) = (c)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=0.25, (b)=0.2, (c)=0.2. Entonces (a) > (b) = (c).'},
-  {_id:12,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.75  (b) 3/4  (c) 70%',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=0.75, (b)=0.75, (c)=0.70. Entonces (a) = (b), y ambos son mayores que (c).'},
-  // Plantilla 4 — Comparar potencias y raíces (4 preguntas)
-  {_id:13,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2³  (b) 3²  (c) 4²−8',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) > (b) > (c)','(a) = (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=8, (b)=9, (c)=16−8=8. Entonces (b) > (a) = (c).'},
-  {_id:14,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) la raíz cuadrada de 49  (b) 2²+3  (c) 15−9',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=7, (b)=4+3=7, (c)=6. Entonces (a) = (b) > (c).'},
-  {_id:15,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 3²  (b) 2³  (c) 10',a:'(c) > (a) > (b)',opts:_i4gshuf(['(c) > (a) > (b)','(a) > (b) > (c)','(a) = (b) = (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=9, (b)=8, (c)=10. Entonces (c) > (a) > (b).'},
-  {_id:16,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 5²  (b) 3³  (c) 20',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) > (b) > (c)','(a) = (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=25, (b)=27, (c)=20. Entonces (b) > (a) > (c).'},
-  // Plantilla 5 — Sustituir un valor de x, o comparar unidades distintas (4 preguntas)
-  {_id:17,q:'Si x=5, examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2x  (b) x+6  (c) 3x−5',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) > (b) > (c)','(a) = (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=10, (b)=11, (c)=10. Entonces (b) > (a) = (c).'},
-  {_id:18,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) el valor de x si 3x+7=2x+15  (b) el valor de y si 5y−4=3y+10  (c) 8',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'De 3x+7=2x+15 se obtiene x=8. De 5y−4=3y+10 se obtiene y=7. (c)=8. Entonces (a) = (c) > (b).'},
-  {_id:19,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) el número de minutos en 2 horas  (b) el número de segundos en 2 minutos  (c) el número de horas en 5 días',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=120, (b)=120, (c)=5×24=120. Los tres son iguales.'},
-  {_id:20,q:'Si x=6, examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2x  (b) x+8  (c) 3x−4',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) > (b) = (c)','(a) = (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=12, (b)=14, (c)=14. Entonces (b) = (c) > (a).'},
+  {_id:1,q:'7, 14, 13, 26, 25, __',a:'50',opts:_i4gshuf(['50','24','26','52']),mc:true,ste:'El patrón alterna ×2,−1: 25→50.'},
+  {_id:2,q:'3, 6, 5, 10, 9, __',a:'18',opts:_i4gshuf(['18','8','10','20']),mc:true,ste:'El patrón alterna ×2,−1: 9→18.'},
+  {_id:3,q:'1, 4, 2, 8, 4, __',a:'16',opts:_i4gshuf(['16','3','5','18']),mc:true,ste:'El patrón alterna ×4,÷2: 4→16.'},
+  {_id:4,q:'4, 8, 7, 14, 13, __',a:'26',opts:_i4gshuf(['26','12','14','28']),mc:true,ste:'El patrón alterna ×2,−1: 13→26.'},
+  {_id:5,q:'2, 3, 5, 8, 12, __',a:'17',opts:_i4gshuf(['17','16','18','13']),mc:true,ste:'Las diferencias siguen el patrón (+1,+2,+3,+4,+5): 12→17.'},
+  {_id:6,q:'10, 11, 13, 16, 20, __',a:'25',opts:_i4gshuf(['25','24','26','21']),mc:true,ste:'Las diferencias siguen el patrón (+1,+2,+3,+4,+5): 20→25.'},
+  {_id:7,q:'55, 50, 46, 43, 41, __',a:'40',opts:_i4gshuf(['40','39','41','42']),mc:true,ste:'Las diferencias siguen el patrón (−5,−4,−3,−2,−1): 41→40.'},
+  {_id:8,q:'3, 7, 15, 31, 63, __',a:'127',opts:_i4gshuf(['127','126','128','64']),mc:true,ste:'Cada término duplica al anterior y suma 1: 63×2+1 = 127.'},
+  {_id:9,q:'1, 4, 9, 16, 25, __',a:'36',opts:_i4gshuf(['36','30','39','32']),mc:true,ste:'Son cuadrados perfectos, el siguiente es 6²=36.'},
+  {_id:10,q:'4, 9, 16, 25, 36, __',a:'49',opts:_i4gshuf(['49','43','52','45']),mc:true,ste:'Son cuadrados perfectos, el siguiente es 7²=49.'},
+  {_id:11,q:'9, 16, 25, 36, 49, __',a:'64',opts:_i4gshuf(['64','58','67','60']),mc:true,ste:'Son cuadrados perfectos, el siguiente es 8²=64.'},
+  {_id:12,q:'16, 25, 36, 49, 64, __',a:'81',opts:_i4gshuf(['81','75','84','77']),mc:true,ste:'Son cuadrados perfectos, el siguiente es 9²=81.'},
+  {_id:13,q:'1, 1, 2, 3, 5, __',a:'8',opts:_i4gshuf(['8','6','10','7']),mc:true,ste:'Cada término es la suma de los dos anteriores: 3+5 = 8.'},
+  {_id:14,q:'2, 3, 5, 8, 13, __',a:'21',opts:_i4gshuf(['21','19','23','18']),mc:true,ste:'Cada término es la suma de los dos anteriores: 8+13 = 21.'},
+  {_id:15,q:'1, 2, 3, 5, 8, __',a:'13',opts:_i4gshuf(['13','11','15','9']),mc:true,ste:'Cada término es la suma de los dos anteriores: 5+8 = 13.'},
+  {_id:16,q:'3, 5, 8, 13, 21, __',a:'34',opts:_i4gshuf(['34','32','36','29']),mc:true,ste:'Cada término es la suma de los dos anteriores: 13+21 = 34.'},
+  {_id:17,q:'V/F: En una serie alternada, dos operaciones distintas se aplican por turnos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Por ejemplo, ×2 y −1 se alternan en 7,14,13,26,25,...'},
+  {_id:18,q:'V/F: En una serie tipo Fibonacci, cada término es la suma de los dos términos anteriores.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la regla de formación de una serie tipo Fibonacci.'},
+  {_id:19,q:'V/F: La serie de cuadrados perfectos 1, 4, 9, 16 tiene una diferencia constante entre términos.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Las diferencias (3, 5, 7) no son constantes; crecen, no es una serie aritmética.'},
+  {_id:20,q:'V/F: En una serie con diferencias crecientes, la diferencia entre términos consecutivos también forma un patrón.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ej. en 2,3,5,8,12 las diferencias son 1,2,3,4, que también siguen un patrón.'},
   ]);
 }
-_SKILL_META['chs1m_u3_b2']={ico:'📐',lbl:'Comparaciones numéricas (a), (b), (c)',qCount:4,gen:_genChs1mU3_B2,plantillas:['Comparar porcentajes o fracciones de distintos números','Comparar expresiones aritméticas simples (orden de operaciones)','Comparar formas equivalentes (decimal, fracción, porcentaje)','Comparar potencias y raíces','Sustituir un valor de x o comparar unidades distintas']};
+_SKILL_META['chs1m_u3_b2']={ico:'📐',lbl:'Series alternadas, crecientes y especiales',qCount:4,gen:_genChs1mU3_B2,plantillas:['Serie alternada (dos operaciones que se turnan)','Serie con diferencias crecientes','Serie de cuadrados perfectos','Serie tipo Fibonacci','Conceptual (V/F) sobre series especiales']};
+
+function _genChs1mU3_BQ1(){return _bqSrcPick(['chs1m_u3_b1','chs1m_u3_b2'],[_genChs1mU3_B1,_genChs1mU3_B2]);}
+_SKILL_META['chs1m_u3_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Series numéricas',qCount:10,gen:_genChs1mU3_BQ1,quiz:true,srcKeys:['chs1m_u3_b1','chs1m_u3_b2']};
 
 function _genChs1mU3_B3(){
   return _i4gpick([
-  // Plantilla 1 — Comparar áreas de figuras distintas (4 preguntas)
-  {_id:1,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 8 y altura 5<br>(b) área de un trapecio con bases 5 y 11, y altura 4<br>(c) área de un triángulo con base 12 y altura 6',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=8×5=40, (b)=½(5+11)(4)=32, (c)=½(12)(6)=36. Entonces (a) > (c) > (b).'},
-  {_id:2,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 6 y altura 7<br>(b) área de un trapecio con bases 4 y 8, y altura 5<br>(c) área de un triángulo con base 10 y altura 8',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=6×7=42, (b)=½(4+8)(5)=30, (c)=½(10)(8)=40. Entonces (a) > (c) > (b).'},
-  {_id:3,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 9 y altura 4<br>(b) área de un trapecio con bases 6 y 10, y altura 3<br>(c) área de un triángulo con base 14 y altura 5',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=9×4=36, (b)=½(6+10)(3)=24, (c)=½(14)(5)=35. Entonces (a) > (c) > (b).'},
-  {_id:4,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 5 y altura 5<br>(b) área de un trapecio con bases 3 y 7, y altura 4<br>(c) área de un triángulo con base 8 y altura 6',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=5×5=25, (b)=½(3+7)(4)=20, (c)=½(8)(6)=24. Entonces (a) > (c) > (b).'},
-  // Plantilla 2 — Comparar perímetros de figuras distintas (4 preguntas)
-  {_id:5,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 3 cm × 7 cm<br>(b) perímetro de un cuadrado de lado 5 cm<br>(c) perímetro de un triángulo de lados 6, 6 y 7 cm',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=2(3+7)=20, (b)=4(5)=20, (c)=6+6+7=19. Entonces (a) = (b) > (c).'},
-  {_id:6,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 4 cm × 8 cm<br>(b) perímetro de un cuadrado de lado 6 cm<br>(c) perímetro de un triángulo equilátero de lado 7 cm',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=2(4+8)=24, (b)=4(6)=24, (c)=3(7)=21. Entonces (a) = (b) > (c).'},
-  {_id:7,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 5 cm × 9 cm<br>(b) perímetro de un cuadrado de lado 7 cm<br>(c) perímetro de un triángulo de lados 8, 8 y 9 cm',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=2(5+9)=28, (b)=4(7)=28, (c)=8+8+9=25. Entonces (a) = (b) > (c).'},
-  {_id:8,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 2 cm × 10 cm<br>(b) perímetro de un cuadrado de lado 6 cm<br>(c) perímetro de un triángulo equilátero de lado 9 cm',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(a) > (b) = (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=2(2+10)=24, (b)=4(6)=24, (c)=3(9)=27. Entonces (c) > (a) = (b).'},
-  // Plantilla 3 — Comparar ángulos en distintos contextos (4 preguntas)
-  {_id:9,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 120°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 50° y 70°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 30°',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=180−120=60, (b)=180−50−70=60, (c)=90−30=60. Los tres son iguales.'},
-  {_id:10,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 100°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 40° y 50°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 25°',a:'(b) > (c) > (a)',opts:_i4gshuf(['(b) > (c) > (a)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=180−100=80, (b)=180−40−50=90, (c)=90−25=65. Entonces (b) > (c) > (a).'},
-  {_id:11,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 130°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 60° y 70°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 40°',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=180−130=50, (b)=180−60−70=50, (c)=90−40=50. Los tres son iguales.'},
-  {_id:12,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 140°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 55° y 65°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 35°',a:'(b) > (c) > (a)',opts:_i4gshuf(['(b) > (c) > (a)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=180−140=40, (b)=180−55−65=60, (c)=90−35=55. Entonces (b) > (c) > (a).'},
-  // Plantilla 4 — Comparar volúmenes de prismas y cubos (4 preguntas)
-  {_id:13,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 3×4×6 cm<br>(b) volumen de un cubo de lado 4 cm<br>(c) volumen de un prisma de 2×6×6 cm',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=3×4×6=72, (b)=4³=64, (c)=2×6×6=72. Entonces (a) = (c) > (b).'},
-  {_id:14,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 2×5×8 cm<br>(b) volumen de un cubo de lado 5 cm<br>(c) volumen de un prisma de 4×4×5 cm',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=2×5×8=80, (b)=5³=125, (c)=4×4×5=80. Entonces (b) > (a) = (c).'},
-  {_id:15,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 3×3×8 cm<br>(b) volumen de un cubo de lado 4 cm<br>(c) volumen de un prisma de 2×4×9 cm',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=3×3×8=72, (b)=4³=64, (c)=2×4×9=72. Entonces (a) = (c) > (b).'},
-  {_id:16,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 2×3×10 cm<br>(b) volumen de un cubo de lado 4 cm<br>(c) volumen de un prisma de 3×4×5 cm',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=2×3×10=60, (b)=4³=64, (c)=3×4×5=60. Entonces (b) > (a) = (c).'},
-  // Plantilla 5 — Comparar círculos o triángulos semejantes (4 preguntas)
-  {_id:17,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) radio de un círculo con diámetro 20<br>(b) diámetro de un círculo con radio 6<br>(c) radio de un círculo con circunferencia 16π',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=20÷2=10, (b)=6×2=12, (c)=16π÷2π=8. Entonces (b) > (a) > (c).'},
-  {_id:18,q:'Dos triángulos rectángulos son semejantes. El menor tiene catetos 3 cm y 4 cm; el mayor tiene catetos 9 cm y 12 cm.<br>Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área del triángulo menor<br>(b) área del triángulo mayor<br>(c) 9 veces el área del triángulo menor',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=½(3)(4)=6, (b)=½(9)(12)=54, (c)=9×6=54. Como el factor de escala lineal es 3, el área escala por 3²=9, así que (b)=(c)=54 > (a)=6.'},
-  {_id:19,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) radio de un círculo con diámetro 24<br>(b) diámetro de un círculo con radio 7<br>(c) radio de un círculo con circunferencia 24π',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=24÷2=12, (b)=7×2=14, (c)=24π÷2π=12. Entonces (b) > (a) = (c).'},
-  {_id:20,q:'Dos triángulos rectángulos son semejantes. El menor tiene catetos 3 cm y 4 cm; el mayor tiene catetos 6 cm y 8 cm.<br>Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área del triángulo menor<br>(b) área del triángulo mayor<br>(c) 4 veces el área del triángulo menor',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=½(3)(4)=6, (b)=½(6)(8)=24, (c)=4×6=24. Como el factor de escala lineal es 2, el área escala por 2²=4, así que (b)=(c)=24 > (a)=6.'},
+  {_id:1,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 25% de 80  (b) 50% de 40  (c) 10% de 200',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=20, (b)=20, (c)=20. Comparando: (a) = (b) = (c).'},
+  {_id:2,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 20% de 50  (b) 40% de 30  (c) 10% de 90',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=10, (b)=12, (c)=9. Comparando: (b) > (a) > (c).'},
+  {_id:3,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 30% de 60  (b) 15% de 100  (c) 50% de 30',a:'(a) > (b) = (c)',opts:_i4gshuf(['(a) > (b) = (c)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=18, (b)=15, (c)=15. Comparando: (a) > (b) = (c).'},
+  {_id:4,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 15% de 15% de 400  (b) 3% de 400  (c) 9',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=9, (b)=12, (c)=9. Comparando: (b) > (a) = (c).'},
+  {_id:5,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.3  (b) 1/3  (c) 30%',a:'(a) = (c) < (b)',opts:_i4gshuf(['(a) = (c) < (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=0.3, (b)=0.333, (c)=0.3. Comparando: (a) = (c) < (b).'},
+  {_id:6,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.5  (b) 1/2  (c) 50%',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=0.5, (b)=0.5, (c)=0.5. Comparando: (a) = (b) = (c).'},
+  {_id:7,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.25  (b) 1/5  (c) 20%',a:'(a) > (b) = (c)',opts:_i4gshuf(['(a) > (b) = (c)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=0.25, (b)=0.2, (c)=0.2. Comparando: (a) > (b) = (c).'},
+  {_id:8,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.75  (b) 3/4  (c) 70%',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=0.75, (b)=0.75, (c)=0.7. Comparando: (a) = (b) > (c).'},
+  {_id:9,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 40% de 60  (b) 20% de 120  (c) 60% de 40',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=24, (b)=24, (c)=24. Comparando: (a) = (b) = (c).'},
+  {_id:10,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 15% de 200  (b) 25% de 100  (c) 50% de 60',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=30, (b)=25, (c)=30. Comparando: (a) = (c) > (b).'},
+  {_id:11,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 10% de 250  (b) 5% de 400  (c) 20% de 150',a:'(c) > (a) > (b)',opts:_i4gshuf(['(c) > (a) > (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=25, (b)=20, (c)=30. Comparando: (c) > (a) > (b).'},
+  {_id:12,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 75% de 40  (b) 25% de 100  (c) 50% de 50',a:'(a) > (b) = (c)',opts:_i4gshuf(['(a) > (b) = (c)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=30, (b)=25, (c)=25. Comparando: (a) > (b) = (c).'},
+  {_id:13,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.4  (b) 2/5  (c) 40%',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=0.4, (b)=0.4, (c)=0.4. Comparando: (a) = (b) = (c).'},
+  {_id:14,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.6  (b) 5/8  (c) 60%',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=0.6, (b)=0.625, (c)=0.6. Comparando: (b) > (a) = (c).'},
+  {_id:15,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.9  (b) 9/10  (c) 80%',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=0.9, (b)=0.9, (c)=0.8. Comparando: (a) = (b) > (c).'},
+  {_id:16,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 0.2  (b) 1/4  (c) 15%',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=0.2, (b)=0.25, (c)=0.15. Comparando: (b) > (a) > (c).'},
+  {_id:17,q:'V/F: 0.5, 1/2 y 50% representan siempre la misma cantidad.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Son tres formas equivalentes de expresar un medio.'},
+  {_id:18,q:'V/F: Para comparar un porcentaje con una fracción, conviene convertir ambos a la misma forma (decimal, por ejemplo).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Convertir a una forma común facilita la comparación directa.'},
+  {_id:19,q:'V/F: 3/10 es mayor que 35%.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'3/10 = 30%, que es menor que 35%.'},
+  {_id:20,q:'V/F: El 100% de un número siempre es mayor que ese mismo número.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El 100% de un número es igual al número mismo, no mayor.'},
   ]);
 }
-_SKILL_META['chs1m_u3_b3']={ico:'🖼',lbl:'Comparaciones geométricas (a), (b), (c)',qCount:4,gen:_genChs1mU3_B3,plantillas:['Comparar áreas de figuras distintas','Comparar perímetros de figuras distintas','Comparar ángulos en distintos contextos','Comparar volúmenes de prismas y cubos','Comparar círculos o triángulos semejantes']};
+_SKILL_META['chs1m_u3_b3']={ico:'📐',lbl:'Comparar porcentajes, fracciones y formas equivalentes',qCount:4,gen:_genChs1mU3_B3,plantillas:['Comparar porcentajes de distintos números','Comparar formas equivalentes (decimal, fracción, porcentaje)','Comparar porcentajes de distintos números (variante)','Comparar formas equivalentes (variante)','Conceptual (V/F) sobre equivalencias']};
 
-function _genChs1mU3_BQ1(){return _bqSrcPick(['chs1m_u3_b1','chs1m_u3_b2','chs1m_u3_b3'],[_genChs1mU3_B1,_genChs1mU3_B2,_genChs1mU3_B3]);}
-_SKILL_META['chs1m_u3_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Series y comparaciones cuantitativas',qCount:15,gen:_genChs1mU3_BQ1,quiz:true,srcKeys:['chs1m_u3_b1','chs1m_u3_b2','chs1m_u3_b3']};
+function _genChs1mU3_B4(){
+  return _i4gpick([
+  {_id:1,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 3×4  (b) 2×6  (c) 5+8',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'Orden de operaciones: (a)=12, (b)=12, (c)=13. Comparando: (c) > (a) = (b).'},
+  {_id:2,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) (4+6)×2  (b) 4+6×2  (c) 4×6−2',a:'(c) > (a) > (b)',opts:_i4gshuf(['(c) > (a) > (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'Orden de operaciones: (a)=20, (b)=16, (c)=22. Comparando: (c) > (a) > (b).'},
+  {_id:3,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 6×3+4  (b) 4×6−2  (c) 3×8−1',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'Orden de operaciones: (a)=22, (b)=22, (c)=23. Comparando: (c) > (a) = (b).'},
+  {_id:4,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) (5+3)×2  (b) 5+3×2  (c) 5×3−2',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'Orden de operaciones: (a)=16, (b)=11, (c)=13. Comparando: (a) > (c) > (b).'},
+  {_id:5,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2³  (b) 3²  (c) 4²−8',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(c) > (a) = (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=8, (b)=9, (c)=8. Comparando: (b) > (a) = (c).'},
+  {_id:6,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) la raíz cuadrada de 49  (b) 2²+3  (c) 15−9',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=7, (b)=7, (c)=6. Comparando: (a) = (b) > (c).'},
+  {_id:7,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 3²  (b) 2³  (c) 10',a:'(c) > (a) > (b)',opts:_i4gshuf(['(c) > (a) > (b)','(a) = (b) = (c)','(c) > (a) = (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=9, (b)=8, (c)=10. Comparando: (c) > (a) > (b).'},
+  {_id:8,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 5²  (b) 3³  (c) 20',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=25, (b)=27, (c)=20. Comparando: (b) > (a) > (c).'},
+  {_id:9,q:'Si x=5, examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2x  (b) x+6  (c) 3x−5',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=10, (b)=11, (c)=10. Comparando: (b) > (a) = (c).'},
+  {_id:10,q:'Si x=6, examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2x  (b) x+8  (c) 3x−4',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=12, (b)=14, (c)=14. Comparando: (b) = (c) > (a).'},
+  {_id:11,q:'Si x=4, examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 3x  (b) x+10  (c) 2x+5',a:'(b) > (c) > (a)',opts:_i4gshuf(['(b) > (c) > (a)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=12, (b)=14, (c)=13. Comparando: (b) > (c) > (a).'},
+  {_id:12,q:'Si x=7, examina (a), (b) y (c) y elige la comparación correcta.<br>(a) 2x+1  (b) x+8  (c) 3x−6',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=15, (b)=15, (c)=15. Comparando: (a) = (b) = (c).'},
+  {_id:13,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) el valor de x si 3x+7=2x+15  (b) el valor de y si 5y−4=3y+10  (c) 8',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=8, (b)=7, (c)=8. Comparando: (a) = (c) > (b).'},
+  {_id:14,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) el número de minutos en 2 horas  (b) el número de segundos en 2 minutos  (c) el número de horas en 5 días',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=120, (b)=120, (c)=120. Comparando: (a) = (b) = (c).'},
+  {_id:15,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) el valor de x si 4x−3=x+15  (b) el valor de y si 2y+5=y+11  (c) 5',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=6, (b)=6, (c)=5. Comparando: (a) = (b) > (c).'},
+  {_id:16,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) el número de minutos en 3 horas  (b) el número de segundos en 3 minutos  (c) el número de horas en 8 días',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(b) > (a) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=180, (b)=180, (c)=192. Comparando: (c) > (a) = (b).'},
+  {_id:17,q:'V/F: Según el orden de operaciones, la multiplicación se realiza antes que la suma.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es la convención estándar de precedencia de operaciones (PEMDAS).'},
+  {_id:18,q:'V/F: 2³ es igual a 3².',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'2³=8 y 3²=9, no son iguales.'},
+  {_id:19,q:'V/F: Al sustituir x=5 en la expresión 2x+3, se obtiene 13.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'2(5)+3 = 10+3 = 13.'},
+  {_id:20,q:'V/F: Para comparar cantidades en distintas unidades, primero se deben convertir a una unidad común.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Solo así se puede comparar correctamente cantidades expresadas en unidades distintas.'},
+  ]);
+}
+_SKILL_META['chs1m_u3_b4']={ico:'📐',lbl:'Comparar operaciones, potencias y sustituciones algebraicas',qCount:4,gen:_genChs1mU3_B4,plantillas:['Comparar expresiones aritméticas (orden de operaciones)','Comparar potencias y raíces','Sustituir un valor de x en expresiones','Comparar resultados de ecuaciones o unidades distintas','Conceptual (V/F) sobre operaciones y sustituciones']};
+
+function _genChs1mU3_BQ2(){return _bqSrcPick(['chs1m_u3_b3','chs1m_u3_b4'],[_genChs1mU3_B3,_genChs1mU3_B4]);}
+_SKILL_META['chs1m_u3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Comparaciones numéricas',qCount:10,gen:_genChs1mU3_BQ2,quiz:true,srcKeys:['chs1m_u3_b3','chs1m_u3_b4']};
+
+function _genChs1mU3_B5(){
+  return _i4gpick([
+  {_id:1,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 8 y altura 5<br>(b) área de un trapecio con bases 5 y 11, y altura 4<br>(c) área de un triángulo con base 12 y altura 6',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=40, (b)=32, (c)=36. Comparando: (a) > (c) > (b).'},
+  {_id:2,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 6 y altura 7<br>(b) área de un trapecio con bases 4 y 8, y altura 5<br>(c) área de un triángulo con base 10 y altura 8',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=42, (b)=30, (c)=40. Comparando: (a) > (c) > (b).'},
+  {_id:3,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 9 y altura 4<br>(b) área de un trapecio con bases 6 y 10, y altura 3<br>(c) área de un triángulo con base 14 y altura 5',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=36, (b)=24, (c)=35. Comparando: (a) > (c) > (b).'},
+  {_id:4,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un paralelogramo con base 5 y altura 5<br>(b) área de un trapecio con bases 3 y 7, y altura 4<br>(c) área de un triángulo con base 8 y altura 6',a:'(a) > (c) > (b)',opts:_i4gshuf(['(a) > (c) > (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=25, (b)=20, (c)=24. Comparando: (a) > (c) > (b).'},
+  {_id:5,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 3 cm × 7 cm<br>(b) perímetro de un cuadrado de lado 5 cm<br>(c) perímetro de un triángulo de lados 6, 6 y 7 cm',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=20, (b)=20, (c)=19. Comparando: (a) = (b) > (c).'},
+  {_id:6,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 4 cm × 8 cm<br>(b) perímetro de un cuadrado de lado 6 cm<br>(c) perímetro de un triángulo equilátero de lado 7 cm',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=24, (b)=24, (c)=21. Comparando: (a) = (b) > (c).'},
+  {_id:7,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 5 cm × 9 cm<br>(b) perímetro de un cuadrado de lado 7 cm<br>(c) perímetro de un triángulo de lados 8, 8 y 9 cm',a:'(a) = (b) > (c)',opts:_i4gshuf(['(a) = (b) > (c)','(a) = (b) = (c)','(c) > (a) = (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=28, (b)=28, (c)=25. Comparando: (a) = (b) > (c).'},
+  {_id:8,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 2 cm × 10 cm<br>(b) perímetro de un cuadrado de lado 6 cm<br>(c) perímetro de un triángulo equilátero de lado 9 cm',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(a) > (b) = (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=24, (b)=24, (c)=27. Comparando: (c) > (a) = (b).'},
+  {_id:9,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un rectángulo de 6 × 5<br>(b) área de un cuadrado de lado 5<br>(c) área de un triángulo con base 10 y altura 6',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=30, (b)=25, (c)=30. Comparando: (a) = (c) > (b).'},
+  {_id:10,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un rectángulo de 4 × 9<br>(b) área de un cuadrado de lado 6<br>(c) área de un triángulo con base 8 y altura 9',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)','(b) > (a) > (c)']),mc:true,ste:'(a)=36, (b)=36, (c)=36. Comparando: (a) = (b) = (c).'},
+  {_id:11,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un rectángulo de 3 × 8<br>(b) área de un cuadrado de lado 5<br>(c) área de un triángulo con base 12 y altura 4',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=24, (b)=25, (c)=24. Comparando: (b) > (a) = (c).'},
+  {_id:12,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área de un rectángulo de 7 × 4<br>(b) área de un cuadrado de lado 5<br>(c) área de un triángulo con base 14 y altura 4',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=28, (b)=25, (c)=28. Comparando: (a) = (c) > (b).'},
+  {_id:13,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 6 × 4<br>(b) perímetro de un cuadrado de lado 5<br>(c) perímetro de un triángulo de lados 7,7,6',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)','(a) > (b) > (c)']),mc:true,ste:'(a)=20, (b)=20, (c)=20. Comparando: (a) = (b) = (c).'},
+  {_id:14,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 5 × 3<br>(b) perímetro de un cuadrado de lado 4<br>(c) perímetro de un triángulo equilátero de lado 6',a:'(c) > (a) = (b)',opts:_i4gshuf(['(c) > (a) = (b)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=16, (b)=16, (c)=18. Comparando: (c) > (a) = (b).'},
+  {_id:15,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 9 × 2<br>(b) perímetro de un cuadrado de lado 6<br>(c) perímetro de un triángulo de lados 5,6,11',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=22, (b)=24, (c)=22. Comparando: (b) > (a) = (c).'},
+  {_id:16,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) perímetro de un rectángulo de 4 × 5<br>(b) perímetro de un cuadrado de lado 4<br>(c) perímetro de un triángulo equilátero de lado 5',a:'(a) > (b) > (c)',opts:_i4gshuf(['(a) > (b) > (c)','(a) = (b) = (c)','(b) > (a) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=18, (b)=16, (c)=15. Comparando: (a) > (b) > (c).'},
+  {_id:17,q:'V/F: Dos figuras con la misma área siempre tienen el mismo perímetro.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Figuras con áreas iguales pueden tener perímetros distintos, ej. un cuadrado 4×4 y un rectángulo 2×8, ambos área 16 pero perímetros 16 y 20.'},
+  {_id:18,q:'V/F: El área de un triángulo y de un paralelogramo con igual base y altura no son iguales.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El área del triángulo es la mitad del área del paralelogramo con la misma base y altura.'},
+  {_id:19,q:'V/F: Para comparar áreas de figuras distintas, se debe calcular primero el área de cada una usando su fórmula correspondiente.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Solo así se puede hacer una comparación numérica válida.'},
+  {_id:20,q:'V/F: El perímetro de un cuadrado y de un rectángulo con la misma área siempre son iguales.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ej. cuadrado 4×4 (P=16, A=16) y rectángulo 2×8 (P=20, A=16): igual área, distinto perímetro.'},
+  ]);
+}
+_SKILL_META['chs1m_u3_b5']={ico:'🖼',lbl:'Comparar áreas y perímetros de figuras',qCount:4,gen:_genChs1mU3_B5,plantillas:['Comparar áreas de figuras distintas','Comparar perímetros de figuras distintas','Comparar áreas de figuras distintas (variante)','Comparar perímetros de figuras distintas (variante)','Conceptual (V/F) sobre área y perímetro']};
+
+function _genChs1mU3_B6(){
+  return _i4gpick([
+  {_id:1,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 120°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 50° y 70°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 30°',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=60°, (b)=60°, (c)=60°. Comparando: (a) = (b) = (c).'},
+  {_id:2,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 100°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 40° y 50°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 25°',a:'(b) > (c) > (a)',opts:_i4gshuf(['(b) > (c) > (a)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=80°, (b)=90°, (c)=65°. Comparando: (b) > (c) > (a).'},
+  {_id:3,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 130°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 60° y 70°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 40°',a:'(a) = (b) = (c)',opts:_i4gshuf(['(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)','(b) > (a) > (c)']),mc:true,ste:'(a)=50°, (b)=50°, (c)=50°. Comparando: (a) = (b) = (c).'},
+  {_id:4,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) ángulo desconocido en un par lineal, si el otro mide 140°<br>(b) ángulo desconocido en un triángulo, si los otros dos miden 55° y 65°<br>(c) ángulo desconocido dentro de un ángulo recto, si el otro mide 35°',a:'(b) > (c) > (a)',opts:_i4gshuf(['(b) > (c) > (a)','(a) = (b) = (c)','(a) > (b) > (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=40°, (b)=60°, (c)=55°. Comparando: (b) > (c) > (a).'},
+  {_id:5,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 3×4×6 cm<br>(b) volumen de un cubo de lado 4 cm<br>(c) volumen de un prisma de 2×6×6 cm',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=72, (b)=64, (c)=72. Comparando: (a) = (c) > (b).'},
+  {_id:6,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 2×5×8 cm<br>(b) volumen de un cubo de lado 5 cm<br>(c) volumen de un prisma de 4×4×5 cm',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=80, (b)=125, (c)=80. Comparando: (b) > (a) = (c).'},
+  {_id:7,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 3×3×8 cm<br>(b) volumen de un cubo de lado 4 cm<br>(c) volumen de un prisma de 2×4×9 cm',a:'(a) = (c) > (b)',opts:_i4gshuf(['(a) = (c) > (b)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=72, (b)=64, (c)=72. Comparando: (a) = (c) > (b).'},
+  {_id:8,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) volumen de un prisma de 2×3×10 cm<br>(b) volumen de un cubo de lado 4 cm<br>(c) volumen de un prisma de 3×4×5 cm',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (a) > (b)']),mc:true,ste:'(a)=60, (b)=64, (c)=60. Comparando: (b) > (a) = (c).'},
+  {_id:9,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) radio de un círculo con diámetro 20<br>(b) diámetro de un círculo con radio 6<br>(c) radio de un círculo con circunferencia 16π',a:'(b) > (a) > (c)',opts:_i4gshuf(['(b) > (a) > (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=10, (b)=12, (c)=8. Comparando: (b) > (a) > (c).'},
+  {_id:10,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) radio de un círculo con diámetro 24<br>(b) diámetro de un círculo con radio 7<br>(c) radio de un círculo con circunferencia 24π',a:'(b) > (a) = (c)',opts:_i4gshuf(['(b) > (a) = (c)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=12, (b)=14, (c)=12. Comparando: (b) > (a) = (c).'},
+  {_id:11,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) radio de un círculo con diámetro 30<br>(b) diámetro de un círculo con radio 8<br>(c) radio de un círculo con circunferencia 32π',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=15, (b)=16, (c)=16. Comparando: (b) = (c) > (a).'},
+  {_id:12,q:'Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) radio de un círculo con diámetro 18<br>(b) diámetro de un círculo con radio 5<br>(c) radio de un círculo con circunferencia 20π',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=9, (b)=10, (c)=10. Comparando: (b) = (c) > (a).'},
+  {_id:13,q:'Dos triángulos rectángulos son semejantes. El menor tiene catetos 3 cm y 4 cm; el mayor tiene catetos 9 cm y 12 cm.<br>Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área del triángulo menor<br>(b) área del triángulo mayor<br>(c) 9 veces el área del triángulo menor',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=½(3)(4)=6, (b)=½(9)(12)=54, (c)=9×6=54. Como el factor de escala lineal es 3, el área escala por 3²=9, así que (b)=(c)=54 > (a)=6.'},
+  {_id:14,q:'Dos triángulos rectángulos son semejantes. El menor tiene catetos 3 cm y 4 cm; el mayor tiene catetos 6 cm y 8 cm.<br>Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área del triángulo menor<br>(b) área del triángulo mayor<br>(c) 4 veces el área del triángulo menor',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=½(3)(4)=6, (b)=½(6)(8)=24, (c)=4×6=24. Como el factor de escala lineal es 2, el área escala por 2²=4, así que (b)=(c)=24 > (a)=6.'},
+  {_id:15,q:'Dos triángulos rectángulos son semejantes. El menor tiene catetos 2 cm y 3 cm; el mayor tiene catetos 4 cm y 6 cm.<br>Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área del triángulo menor<br>(b) área del triángulo mayor<br>(c) 4 veces el área del triángulo menor',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=½(2)(3)=3, (b)=½(4)(6)=12, (c)=4×3=12. Como el factor de escala lineal es 2, el área escala por 2²=4, así que (b)=(c)=12 > (a)=3.'},
+  {_id:16,q:'Dos triángulos rectángulos son semejantes. El menor tiene catetos 4 cm y 3 cm; el mayor tiene catetos 8 cm y 6 cm.<br>Examina (a), (b) y (c) y elige la comparación correcta.<br>(a) área del triángulo menor<br>(b) área del triángulo mayor<br>(c) 4 veces el área del triángulo menor',a:'(b) = (c) > (a)',opts:_i4gshuf(['(b) = (c) > (a)','(a) = (b) = (c)','(a) > (b) = (c)','(c) > (b) > (a)']),mc:true,ste:'(a)=½(4)(3)=6, (b)=½(8)(6)=24, (c)=4×6=24. Como el factor de escala lineal es 2, el área escala por 2²=4, así que (b)=(c)=24 > (a)=6.'},
+  {_id:17,q:'V/F: Si dos triángulos son semejantes con razón de escala k, sus áreas están en razón k².',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El área escala con el cuadrado del factor de escala lineal.'},
+  {_id:18,q:'V/F: El volumen de un cubo de lado 4 siempre es mayor que el de cualquier prisma rectangular.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un prisma rectangular puede tener mayor volumen, ej. 3×4×6=72 > 4³=64.'},
+  {_id:19,q:'V/F: Dos círculos con el mismo radio siempre tienen el mismo diámetro y la misma circunferencia.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'r determina d=2r y C=2πr, así que radios iguales dan diámetros y circunferencias iguales.'},
+  {_id:20,q:'V/F: Los tres ángulos interiores de un triángulo pueden sumar más de 180°.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La suma de los ángulos interiores de un triángulo siempre es exactamente 180°.'},
+  ]);
+}
+_SKILL_META['chs1m_u3_b6']={ico:'🖼',lbl:'Comparar ángulos, volúmenes y figuras semejantes',qCount:4,gen:_genChs1mU3_B6,plantillas:['Comparar ángulos en distintos contextos','Comparar volúmenes de prismas y cubos','Comparar radios/diámetros/circunferencias de círculos','Comparar áreas de triángulos semejantes','Conceptual (V/F) sobre semejanza y comparaciones']};
+
+function _genChs1mU3_BQ3(){return _bqSrcPick(['chs1m_u3_b5','chs1m_u3_b6'],[_genChs1mU3_B5,_genChs1mU3_B6]);}
+_SKILL_META['chs1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Comparaciones geométricas',qCount:10,gen:_genChs1mU3_BQ3,quiz:true,srcKeys:['chs1m_u3_b5','chs1m_u3_b6']};
 
 // ===== Catholic High Schools - 1ro Secundaria - Unidad 4: Razonamiento Aritmético Aplicado =====
 
 function _genChs1mU4_B1(){
   return _i4gpick([
-  // Plantilla 1 — Suma de dos números, uno conocido (4 preguntas)
   {_id:1,q:'La suma de dos números es 30. Uno de los números es 12. ¿Cuál es el otro número?',a:'18',opts:_i4gshuf(['18','16','20','22']),mc:true,ste:'30−12 = 18.'},
-  {_id:2,q:'La suma de dos números es 45. Uno de los números es 17. ¿Cuál es el otro número?',a:'28',opts:_i4gshuf(['28','27','29','26']),mc:true,ste:'45−17 = 28.'},
-  {_id:3,q:'La suma de dos números es 52. Uno de los números es 25. ¿Cuál es el otro número?',a:'27',opts:_i4gshuf(['27','26','28','25']),mc:true,ste:'52−25 = 27.'},
-  {_id:4,q:'La suma de dos números es 38. Uno de los números es 14. ¿Cuál es el otro número?',a:'24',opts:_i4gshuf(['24','23','25','22']),mc:true,ste:'38−14 = 24.'},
-  // Plantilla 2 — El doble de un número disminuido en una constante (4 preguntas)
-  {_id:5,q:'El doble de un número, disminuido en 4, es 18. ¿Cuál es el número?',a:'11',opts:_i4gshuf(['11','9','10','12']),mc:true,ste:'2n−4=18 → 2n=22 → n=11.'},
-  {_id:6,q:'El doble de un número, disminuido en 6, es 20. ¿Cuál es el número?',a:'13',opts:_i4gshuf(['13','11','12','14']),mc:true,ste:'2n−6=20 → 2n=26 → n=13.'},
-  {_id:7,q:'El doble de un número, disminuido en 3, es 15. ¿Cuál es el número?',a:'9',opts:_i4gshuf(['9','7','8','10']),mc:true,ste:'2n−3=15 → 2n=18 → n=9.'},
-  {_id:8,q:'El doble de un número, disminuido en 7, es 25. ¿Cuál es el número?',a:'16',opts:_i4gshuf(['16','14','15','17']),mc:true,ste:'2n−7=25 → 2n=32 → n=16.'},
-  // Plantilla 3 — Fracción o porcentaje de un número es igual a un valor (4 preguntas)
-  {_id:9,q:'Tres quintos de un número son 24. ¿Cuál es el número?',a:'40',opts:_i4gshuf(['40','36','45','30']),mc:true,ste:'(3/5)n=24 → n=24×5/3 = 40.'},
-  {_id:10,q:'Dos tercios de un número son 30. ¿Cuál es el número?',a:'45',opts:_i4gshuf(['45','40','50','36']),mc:true,ste:'(2/3)n=30 → n=30×3/2 = 45.'},
-  {_id:11,q:'El 20% de un número es 15. ¿Cuál es el número?',a:'75',opts:_i4gshuf(['75','60','70','80']),mc:true,ste:'0.20×n=15 → n=15÷0.20 = 75.'},
-  {_id:12,q:'El 40% de un número es 32. ¿Cuál es el número?',a:'80',opts:_i4gshuf(['80','60','70','90']),mc:true,ste:'0.40×n=32 → n=32÷0.40 = 80.'},
-  // Plantilla 4 — Número dividido entre a, más b, es igual a c (4 preguntas)
-  {_id:13,q:'Un número dividido entre 6, más 3, es igual a 8. ¿Cuál es el número?',a:'30',opts:_i4gshuf(['30','24','36','18']),mc:true,ste:'n/6+3=8 → n/6=5 → n=30.'},
-  {_id:14,q:'Un número dividido entre 4, más 5, es igual a 12. ¿Cuál es el número?',a:'28',opts:_i4gshuf(['28','20','32','24']),mc:true,ste:'n/4+5=12 → n/4=7 → n=28.'},
-  {_id:15,q:'Un número dividido entre 8, más 2, es igual a 9. ¿Cuál es el número?',a:'56',opts:_i4gshuf(['56','48','64','40']),mc:true,ste:'n/8+2=9 → n/8=7 → n=56.'},
-  {_id:16,q:'Un número dividido entre 5, más 6, es igual a 11. ¿Cuál es el número?',a:'25',opts:_i4gshuf(['25','20','30','15']),mc:true,ste:'n/5+6=11 → n/5=5 → n=25.'},
-  // Plantilla 5 — Suma de tres números consecutivos (4 preguntas)
-  {_id:17,q:'Tres números enteros consecutivos suman 45. ¿Cuál es el mayor de los tres?',a:'16',opts:_i4gshuf(['16','15','14','17']),mc:true,ste:'Sean n,n+1,n+2. 3n+3=45 → n=14. Los números son 14,15,16; el mayor es 16.'},
-  {_id:18,q:'Tres números enteros consecutivos suman 63. ¿Cuál es el mayor de los tres?',a:'22',opts:_i4gshuf(['22','21','20','23']),mc:true,ste:'3n+3=63 → n=20. Los números son 20,21,22; el mayor es 22.'},
-  {_id:19,q:'Tres números enteros consecutivos suman 27. ¿Cuál es el mayor de los tres?',a:'10',opts:_i4gshuf(['10','9','8','11']),mc:true,ste:'3n+3=27 → n=8. Los números son 8,9,10; el mayor es 10.'},
-  {_id:20,q:'Tres números enteros consecutivos suman 96. ¿Cuál es el mayor de los tres?',a:'33',opts:_i4gshuf(['33','32','31','34']),mc:true,ste:'3n+3=96 → n=31. Los números son 31,32,33; el mayor es 33.'},
+  {_id:2,q:'La suma de dos números es 45. Uno de los números es 17. ¿Cuál es el otro número?',a:'28',opts:_i4gshuf(['28','26','30','32']),mc:true,ste:'45−17 = 28.'},
+  {_id:3,q:'La suma de dos números es 52. Uno de los números es 25. ¿Cuál es el otro número?',a:'27',opts:_i4gshuf(['27','25','29','31']),mc:true,ste:'52−25 = 27.'},
+  {_id:4,q:'La suma de dos números es 38. Uno de los números es 14. ¿Cuál es el otro número?',a:'24',opts:_i4gshuf(['24','22','26','28']),mc:true,ste:'38−14 = 24.'},
+  {_id:5,q:'El doble de un número, disminuido en 4, es 18. ¿Cuál es el número?',a:'11',opts:_i4gshuf(['11','10','12','13']),mc:true,ste:'2n−4=18 → 2n=22 → n=11.'},
+  {_id:6,q:'El doble de un número, disminuido en 6, es 20. ¿Cuál es el número?',a:'13',opts:_i4gshuf(['13','12','14','15']),mc:true,ste:'2n−6=20 → 2n=26 → n=13.'},
+  {_id:7,q:'El doble de un número, disminuido en 3, es 15. ¿Cuál es el número?',a:'9',opts:_i4gshuf(['9','8','10','11']),mc:true,ste:'2n−3=15 → 2n=18 → n=9.'},
+  {_id:8,q:'El doble de un número, disminuido en 7, es 25. ¿Cuál es el número?',a:'16',opts:_i4gshuf(['16','15','17','18']),mc:true,ste:'2n−7=25 → 2n=32 → n=16.'},
+  {_id:9,q:'La suma de dos números es 60. Uno de los números es 22. ¿Cuál es el otro número?',a:'38',opts:_i4gshuf(['38','35','41','43']),mc:true,ste:'60−22 = 38.'},
+  {_id:10,q:'La suma de dos números es 75. Uno de los números es 31. ¿Cuál es el otro número?',a:'44',opts:_i4gshuf(['44','41','47','49']),mc:true,ste:'75−31 = 44.'},
+  {_id:11,q:'La suma de dos números es 48. Uno de los números es 19. ¿Cuál es el otro número?',a:'29',opts:_i4gshuf(['29','26','32','34']),mc:true,ste:'48−19 = 29.'},
+  {_id:12,q:'La suma de dos números es 90. Uno de los números es 37. ¿Cuál es el otro número?',a:'53',opts:_i4gshuf(['53','50','56','58']),mc:true,ste:'90−37 = 53.'},
+  {_id:13,q:'El triple de un número, disminuido en 5, es 22. ¿Cuál es el número?',a:'9',opts:_i4gshuf(['9','8','10','11']),mc:true,ste:'3n−5=22 → 3n=27 → n=9.'},
+  {_id:14,q:'El doble de un número, aumentado en 4, es 21. ¿Cuál es el número?',a:'8',opts:_i4gshuf(['8','7','9','10']),mc:true,ste:'2n+4=21 → 2n=17 → n=8.'},
+  {_id:15,q:'El triple de un número, aumentado en 2, es 26. ¿Cuál es el número?',a:'8',opts:_i4gshuf(['8','7','9','10']),mc:true,ste:'3n+2=26 → 3n=24 → n=8.'},
+  {_id:16,q:'El doble de un número, disminuido en 9, es 17. ¿Cuál es el número?',a:'13',opts:_i4gshuf(['13','12','14','15']),mc:true,ste:'2n−9=17 → 2n=26 → n=13.'},
+  {_id:17,q:'V/F: La expresión \'la suma de dos números\' se traduce como x+y.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Suma se traduce siempre como una adición: x+y.'},
+  {_id:18,q:'V/F: \'El doble de un número disminuido en 4\' se traduce como 2(n−4).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Se traduce como 2n−4 (primero se duplica, luego se resta), no 2(n−4).'},
+  {_id:19,q:'V/F: \'El triple de un número aumentado en 5\' se traduce como 3n+5.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Primero se triplica el número (3n) y luego se suma 5.'},
+  {_id:20,q:'V/F: Para hallar un número desconocido en una ecuación traducida, se despeja la variable como en cualquier ecuación algebraica.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El procedimiento de resolución es el mismo que para cualquier ecuación lineal.'},
   ]);
 }
-_SKILL_META['chs1m_u4_b1']={ico:'📐',lbl:'Traducción de enunciados a ecuaciones',qCount:4,gen:_genChs1mU4_B1,plantillas:['Suma de dos números, uno conocido','El doble de un número disminuido en una constante','Fracción o porcentaje de un número igual a un valor','Número dividido entre a, más b, igual a c','Suma de tres números consecutivos']};
+_SKILL_META['chs1m_u4_b1']={ico:'📐',lbl:'Traducción de relaciones simples entre números',qCount:4,gen:_genChs1mU4_B1,plantillas:['Suma de dos números, uno conocido','El doble/triple de un número disminuido en una constante','Suma de dos números, uno conocido (variante)','El doble/triple de un número aumentado o disminuido (variante)','Conceptual (V/F) sobre traducción de enunciados']};
 
 function _genChs1mU4_B2(){
   return _i4gpick([
-  // Plantilla 1 — Promedio, hallar el valor faltante (4 preguntas)
-  {_id:1,q:'El promedio de tres calificaciones es 80. Las dos primeras son 75 y 85. ¿Cuál es la tercera?',a:'80',opts:_i4gshuf(['80','75','85','90']),mc:true,ste:'La suma total debe ser 80×3=240. 240−75−85 = 80.'},
-  {_id:2,q:'Sara obtuvo 88, 92 y 84 en tres exámenes. ¿Qué debe obtener en un cuarto examen para promediar exactamente 90?',a:'96',opts:_i4gshuf(['96','94','95','98']),mc:true,ste:'La suma total debe ser 90×4=360. Su suma actual es 264. 360−264 = 96.'},
-  {_id:3,q:'El promedio de tres calificaciones es 70. Las dos primeras son 65 y 72. ¿Cuál es la tercera?',a:'73',opts:_i4gshuf(['73','70','75','68']),mc:true,ste:'La suma total debe ser 70×3=210. 210−65−72 = 73.'},
-  {_id:4,q:'El promedio de cuatro calificaciones es 85. Las tres primeras son 80, 88 y 82. ¿Cuál es la cuarta?',a:'90',opts:_i4gshuf(['90','85','88','92']),mc:true,ste:'La suma total debe ser 85×4=340. 340−80−88−82 = 90.'},
-  // Plantilla 2 — Relación de edades entre dos personas (4 preguntas)
-  {_id:5,q:'Jake tiene 3 años más que el doble de la edad de Ann. Ann tiene 6 años. ¿Cuántos años tiene Jake?',a:'15',opts:_i4gshuf(['15','12','18','9']),mc:true,ste:'El doble de la edad de Ann es 12; 3 años más es 15.'},
-  {_id:6,q:'Diego tiene 2 años más que el doble de la edad de Sofía. Sofía tiene 8 años. ¿Cuántos años tiene Diego?',a:'18',opts:_i4gshuf(['18','16','20','14']),mc:true,ste:'El doble de la edad de Sofía es 16; 2 años más es 18.'},
-  {_id:7,q:'Marco tiene 5 años menos que el triple de la edad de Luis. Luis tiene 7 años. ¿Cuántos años tiene Marco?',a:'16',opts:_i4gshuf(['16','21','11','19']),mc:true,ste:'El triple de la edad de Luis es 21; 5 años menos es 16.'},
-  {_id:8,q:'Elena tiene 4 años más que el doble de la edad de Iván. Iván tiene 9 años. ¿Cuántos años tiene Elena?',a:'22',opts:_i4gshuf(['22','18','26','14']),mc:true,ste:'El doble de la edad de Iván es 18; 4 años más es 22.'},
-  // Plantilla 3 — Costo unitario: cuántas unidades se pueden comprar (4 preguntas)
-  {_id:9,q:'Un lápiz cuesta $0.35. ¿Cuántos lápices se pueden comprar con $2.80?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$2.80 ÷ $0.35 = 8 lápices.'},
-  {_id:10,q:'Un cuaderno cuesta $1.20. ¿Cuántos cuadernos se pueden comprar con $9.60?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$9.60 ÷ $1.20 = 8 cuadernos.'},
-  {_id:11,q:'Una goma cuesta $0.25. ¿Cuántas gomas se pueden comprar con $3.00?',a:'12',opts:_i4gshuf(['12','10','14','11']),mc:true,ste:'$3.00 ÷ $0.25 = 12 gomas.'},
-  {_id:12,q:'Un lapicero cuesta $0.75. ¿Cuántos lapiceros se pueden comprar con $6.00?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$6.00 ÷ $0.75 = 8 lapiceros.'},
-  // Plantilla 4 — Reparto o partición en partes iguales (4 preguntas)
-  {_id:13,q:'Una cuerda de 72 pulgadas se corta en 3 partes iguales. ¿Cuánto mide cada parte?',a:'24 in',opts:_i4gshuf(['24 in','22 in','26 in','18 in']),mc:true,ste:'72÷3 = 24 pulgadas.'},
-  {_id:14,q:'Una cuerda de 96 cm se corta en 4 partes iguales. ¿Cuánto mide cada parte?',a:'24 cm',opts:_i4gshuf(['24 cm','22 cm','26 cm','20 cm']),mc:true,ste:'96÷4 = 24 cm.'},
-  {_id:15,q:'Un tanque está 3/8 lleno. Después de agregar 30 galones, queda 5/8 lleno. ¿Cuál es la capacidad total del tanque?',a:'120 galones',opts:_i4gshuf(['120 galones','150 galones','100 galones','135 galones']),mc:true,ste:'30 galones representan 5/8−3/8=2/8=1/4 de la capacidad. Capacidad total = 30÷(1/4) = 120 galones.'},
-  {_id:16,q:'Un tanque está 1/4 lleno. Después de agregar 40 litros, queda 3/4 lleno. ¿Cuál es la capacidad total del tanque?',a:'80 litros',opts:_i4gshuf(['80 litros','100 litros','60 litros','120 litros']),mc:true,ste:'40 litros representan 3/4−1/4=2/4=1/2 de la capacidad. Capacidad total = 40÷(1/2) = 80 litros.'},
-  // Plantilla 5 — Combinado: aumento y descuento, o velocidad promedio (4 preguntas)
-  {_id:17,q:'Una tienda marca un artículo de $40 con un aumento del 25%, y luego le aplica un descuento del 20% sobre el precio ya aumentado. ¿Cuál es el precio final?',a:'$40',opts:_i4gshuf(['$40','$38','$42','$44']),mc:true,ste:'$40×1.25=$50 (precio marcado). $50×0.80=$40 (precio final). Los factores 1.25×0.80=1.00 se cancelan exactamente.'},
-  {_id:18,q:'Una tienda marca un artículo de $60 con un aumento del 20%, y luego le aplica un descuento del 25% sobre el precio ya aumentado. ¿Cuál es el precio final?',a:'$54',opts:_i4gshuf(['$54','$60','$48','$57']),mc:true,ste:'$60×1.20=$72 (precio marcado). $72×0.75=$54 (precio final).'},
-  {_id:19,q:'Un carro recorre la primera mitad de un viaje a 40 mph y la segunda mitad (misma distancia) a 60 mph. ¿Cuál es la velocidad promedio de todo el viaje?',a:'48 mph',opts:_i4gshuf(['48 mph','50 mph','52 mph','45 mph']),mc:true,ste:'Usando 120 millas en total: la primera mitad (60 mi) toma 1.5 h a 40 mph, la segunda mitad (60 mi) toma 1 h a 60 mph. Velocidad promedio = 120÷2.5 = 48 mph.'},
-  {_id:20,q:'Un carro recorre la primera mitad de un viaje a 30 mph y la segunda mitad (misma distancia) a 60 mph. ¿Cuál es la velocidad promedio de todo el viaje?',a:'40 mph',opts:_i4gshuf(['40 mph','45 mph','50 mph','35 mph']),mc:true,ste:'Usando 120 millas en total: la primera mitad (60 mi) toma 2 h a 30 mph, la segunda mitad (60 mi) toma 1 h a 60 mph. Velocidad promedio = 120÷3 = 40 mph.'},
+  {_id:1,q:'Tres quintos de un número son 24. ¿Cuál es el número?',a:'40',opts:_i4gshuf(['40','35','45','30']),mc:true,ste:'(3/5)n=24 → n=24×5/3 = 40.'},
+  {_id:2,q:'Dos tercios de un número son 30. ¿Cuál es el número?',a:'45',opts:_i4gshuf(['45','40','50','35']),mc:true,ste:'(2/3)n=30 → n=30×3/2 = 45.'},
+  {_id:3,q:'El 20% de un número es 15. ¿Cuál es el número?',a:'75',opts:_i4gshuf(['75','60','65','85']),mc:true,ste:'0.20×n=15 → n=15÷0.20 = 75.'},
+  {_id:4,q:'El 40% de un número es 32. ¿Cuál es el número?',a:'80',opts:_i4gshuf(['80','65','70','90']),mc:true,ste:'0.40×n=32 → n=32÷0.40 = 80.'},
+  {_id:5,q:'Un número dividido entre 6, más 3, es igual a 8. ¿Cuál es el número?',a:'30',opts:_i4gshuf(['30','24','36','22']),mc:true,ste:'n/6+3=8 → n/6=5 → n=30.'},
+  {_id:6,q:'Un número dividido entre 4, más 5, es igual a 12. ¿Cuál es el número?',a:'28',opts:_i4gshuf(['28','22','34','20']),mc:true,ste:'n/4+5=12 → n/4=7 → n=28.'},
+  {_id:7,q:'Un número dividido entre 8, más 2, es igual a 9. ¿Cuál es el número?',a:'56',opts:_i4gshuf(['56','50','62','48']),mc:true,ste:'n/8+2=9 → n/8=7 → n=56.'},
+  {_id:8,q:'Un número dividido entre 5, más 6, es igual a 11. ¿Cuál es el número?',a:'25',opts:_i4gshuf(['25','19','31','17']),mc:true,ste:'n/5+6=11 → n/5=5 → n=25.'},
+  {_id:9,q:'Tres números enteros consecutivos suman 45. ¿Cuál es el mayor de los tres?',a:'16',opts:_i4gshuf(['16','15','14','17']),mc:true,ste:'3n+3=45 → n=14. Los números son 14,15,16; el mayor es 16.'},
+  {_id:10,q:'Tres números enteros consecutivos suman 63. ¿Cuál es el mayor de los tres?',a:'22',opts:_i4gshuf(['22','21','20','23']),mc:true,ste:'3n+3=63 → n=20. Los números son 20,21,22; el mayor es 22.'},
+  {_id:11,q:'Tres números enteros consecutivos suman 27. ¿Cuál es el mayor de los tres?',a:'10',opts:_i4gshuf(['10','9','8','11']),mc:true,ste:'3n+3=27 → n=8. Los números son 8,9,10; el mayor es 10.'},
+  {_id:12,q:'Tres números enteros consecutivos suman 96. ¿Cuál es el mayor de los tres?',a:'33',opts:_i4gshuf(['33','32','31','34']),mc:true,ste:'3n+3=96 → n=31. Los números son 31,32,33; el mayor es 33.'},
+  {_id:13,q:'Tres cuartos de un número son 27. ¿Cuál es el número?',a:'36',opts:_i4gshuf(['36','32','40','28']),mc:true,ste:'(3/4)n=27 → n=27×4/3 = 36.'},
+  {_id:14,q:'Cinco octavos de un número son 45. ¿Cuál es el número?',a:'72',opts:_i4gshuf(['72','68','76','64']),mc:true,ste:'(5/8)n=45 → n=45×8/5 = 72.'},
+  {_id:15,q:'Dos números pares consecutivos suman 54. ¿Cuál es el mayor de los dos?',a:'28',opts:_i4gshuf(['28','26','30','32']),mc:true,ste:'n+(n+2)=54 → 2n+2=54 → n=26. El mayor es 28.'},
+  {_id:16,q:'Dos números pares consecutivos suman 72. ¿Cuál es el mayor de los dos?',a:'37',opts:_i4gshuf(['37','35','39','41']),mc:true,ste:'n+(n+2)=72 → 2n+2=72 → n=35. El mayor es 37.'},
+  {_id:17,q:'V/F: \'Tres quintos de un número\' se traduce como (3/5)n.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La fracción de un número se traduce multiplicando la fracción por el número.'},
+  {_id:18,q:'V/F: \'El 20% de un número es 15\' se traduce como 0.20n=15.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El porcentaje se traduce como su forma decimal multiplicando la variable.'},
+  {_id:19,q:'V/F: Tres números enteros consecutivos siempre se pueden representar como n, n+1, n+2.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la representación algebraica estándar de tres consecutivos.'},
+  {_id:20,q:'V/F: \'Un número dividido entre 4, más 5\' se traduce como (n+5)/4.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Se traduce como n/4+5, no (n+5)/4; el orden de las operaciones importa.'},
   ]);
 }
-_SKILL_META['chs1m_u4_b2']={ico:'📐',lbl:'Problemas de razonamiento aplicado (varios pasos)',qCount:4,gen:_genChs1mU4_B2,plantillas:['Promedio: hallar el valor faltante','Relación de edades entre dos personas','Costo unitario: cuántas unidades se pueden comprar','Reparto o partición en partes iguales','Combinado: porcentajes sucesivos o velocidad promedio']};
+_SKILL_META['chs1m_u4_b2']={ico:'📐',lbl:'Traducción de fracciones, porcentajes y consecutivos',qCount:4,gen:_genChs1mU4_B2,plantillas:['Fracción o porcentaje de un número igual a un valor','Número dividido entre a, más b, igual a c','Suma de tres números consecutivos','Fracción/porcentaje o consecutivos pares (variante)','Conceptual (V/F) sobre traducción de fracciones y consecutivos']};
 
 function _genChs1mU4_BQ1(){return _bqSrcPick(['chs1m_u4_b1','chs1m_u4_b2'],[_genChs1mU4_B1,_genChs1mU4_B2]);}
-_SKILL_META['chs1m_u4_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Traducción y razonamiento aplicado',qCount:10,gen:_genChs1mU4_BQ1,quiz:true,srcKeys:['chs1m_u4_b1','chs1m_u4_b2']};
+_SKILL_META['chs1m_u4_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Traducción de enunciados a ecuaciones',qCount:10,gen:_genChs1mU4_BQ1,quiz:true,srcKeys:['chs1m_u4_b1','chs1m_u4_b2']};
 
+function _genChs1mU4_B3(){
+  return _i4gpick([
+  {_id:1,q:'El promedio de 3 calificaciones es 80. Las dos primeras son 75 y 85. ¿Cuál es la tercera?',a:'80',opts:_i4gshuf(['80','75','85','78']),mc:true,ste:'La suma total debe ser 80×3=240. 240−75−85 = 80.'},
+  {_id:2,q:'El promedio de 4 calificaciones es 90. Las tres primeras son 88, 92 y 84. ¿Cuál es la cuarta?',a:'96',opts:_i4gshuf(['96','91','101','94']),mc:true,ste:'La suma total debe ser 90×4=360. 360−88−92−84 = 96.'},
+  {_id:3,q:'El promedio de 3 calificaciones es 70. Las dos primeras son 65 y 72. ¿Cuál es la tercera?',a:'73',opts:_i4gshuf(['73','68','78','71']),mc:true,ste:'La suma total debe ser 70×3=210. 210−65−72 = 73.'},
+  {_id:4,q:'El promedio de 4 calificaciones es 85. Las tres primeras son 80, 88 y 82. ¿Cuál es la cuarta?',a:'90',opts:_i4gshuf(['90','85','95','88']),mc:true,ste:'La suma total debe ser 85×4=340. 340−80−88−82 = 90.'},
+  {_id:5,q:'Jake tiene 3 años más que el doble de la edad de Ann. Ann tiene 6 años. ¿Cuántos años tiene Jake?',a:'15',opts:_i4gshuf(['15','11','13','19']),mc:true,ste:'El doble de la edad de Ann es 12; 3 años más es 15.'},
+  {_id:6,q:'Diego tiene 2 años más que el doble de la edad de Sofía. Sofía tiene 8 años. ¿Cuántos años tiene Diego?',a:'18',opts:_i4gshuf(['18','14','16','22']),mc:true,ste:'El doble de la edad de Sofía es 16; 2 años más es 18.'},
+  {_id:7,q:'Marco tiene 5 años menos que el triple de la edad de Luis. Luis tiene 7 años. ¿Cuántos años tiene Marco?',a:'16',opts:_i4gshuf(['16','12','14','20']),mc:true,ste:'El triple de la edad de Luis es 21; 5 años menos es 16.'},
+  {_id:8,q:'Elena tiene 4 años más que el doble de la edad de Iván. Iván tiene 9 años. ¿Cuántos años tiene Elena?',a:'22',opts:_i4gshuf(['22','18','20','26']),mc:true,ste:'El doble de la edad de Iván es 18; 4 años más es 22.'},
+  {_id:9,q:'El promedio de 3 calificaciones es 75. Las dos primeras son 70 y 68. ¿Cuál es la tercera?',a:'87',opts:_i4gshuf(['87','82','92','84']),mc:true,ste:'La suma total debe ser 75×3=225. 225−70−68 = 87.'},
+  {_id:10,q:'El promedio de 4 calificaciones es 60. Las tres primeras son 55, 58 y 62. ¿Cuál es la cuarta?',a:'65',opts:_i4gshuf(['65','60','70','62']),mc:true,ste:'La suma total debe ser 60×4=240. 240−55−58−62 = 65.'},
+  {_id:11,q:'El promedio de 3 calificaciones es 88. Las dos primeras son 90 y 84. ¿Cuál es la tercera?',a:'90',opts:_i4gshuf(['90','85','95','87']),mc:true,ste:'La suma total debe ser 88×3=264. 264−90−84 = 90.'},
+  {_id:12,q:'El promedio de 4 calificaciones es 95. Las tres primeras son 92, 98 y 90. ¿Cuál es la cuarta?',a:'100',opts:_i4gshuf(['100','95','105','97']),mc:true,ste:'La suma total debe ser 95×4=380. 380−92−98−90 = 100.'},
+  {_id:13,q:'Ana es 5 años mayor que Beto. Beto tiene 12 años. ¿Cuántos años tiene Ana?',a:'17',opts:_i4gshuf(['17','15','19','12']),mc:true,ste:'Ana = Beto + 5 = 12+5 = 17.'},
+  {_id:14,q:'Carla es 7 años mayor que Dario. Dario tiene 10 años. ¿Cuántos años tiene Carla?',a:'17',opts:_i4gshuf(['17','15','19','10']),mc:true,ste:'Carla = Dario + 7 = 10+7 = 17.'},
+  {_id:15,q:'Elsa es 3 años mayor que Fabio. Fabio tiene 14 años. ¿Cuántos años tiene Elsa?',a:'17',opts:_i4gshuf(['17','15','19','14']),mc:true,ste:'Elsa = Fabio + 3 = 14+3 = 17.'},
+  {_id:16,q:'Gaby es 9 años mayor que Hugo. Hugo tiene 6 años. ¿Cuántos años tiene Gaby?',a:'15',opts:_i4gshuf(['15','13','17','6']),mc:true,ste:'Gaby = Hugo + 9 = 6+9 = 15.'},
+  {_id:17,q:'V/F: El promedio de un conjunto de números se calcula sumando todos los valores y dividiendo entre la cantidad de valores.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición estándar de promedio (media aritmética).'},
+  {_id:18,q:'V/F: Si el promedio de 3 calificaciones es 80, la suma de las tres calificaciones es 240.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'suma = promedio × cantidad = 80×3 = 240.'},
+  {_id:19,q:'V/F: En un problema de edades, \'el doble de la edad de una persona\' se traduce como esa edad más 2.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El doble se traduce multiplicando por 2, no sumando 2.'},
+  {_id:20,q:'V/F: Para hallar el cuarto valor dado el promedio de cuatro números y los otros tres, se resta la suma de los tres conocidos al total (promedio×4).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Ese es el procedimiento estándar para hallar el valor faltante.'},
+  ]);
+}
+_SKILL_META['chs1m_u4_b3']={ico:'📐',lbl:'Problemas de promedio y edades',qCount:4,gen:_genChs1mU4_B3,plantillas:['Promedio: hallar el valor faltante','Relación de edades entre dos personas (múltiplo)','Promedio: hallar el valor faltante (variante)','Relación de edades entre dos personas (diferencia constante)','Conceptual (V/F) sobre promedio y edades']};
+
+function _genChs1mU4_B4(){
+  return _i4gpick([
+  {_id:1,q:'Un lápiz cuesta $0.35. ¿Cuántos lápices se pueden comprar con $2.80?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$2.80 ÷ $0.35 = 8 lápices.'},
+  {_id:2,q:'Un cuaderno cuesta $1.20. ¿Cuántos cuadernos se pueden comprar con $9.60?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$9.60 ÷ $1.20 = 8 cuadernos.'},
+  {_id:3,q:'Un goma cuesta $0.25. ¿Cuántos gomas se pueden comprar con $3.00?',a:'12',opts:_i4gshuf(['12','11','13','10']),mc:true,ste:'$3.00 ÷ $0.25 = 12 gomas.'},
+  {_id:4,q:'Un lapicero cuesta $0.75. ¿Cuántos lapiceros se pueden comprar con $6.00?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$6.00 ÷ $0.75 = 8 lapiceros.'},
+  {_id:5,q:'Una cuerda de 72 in se corta en 3 partes iguales. ¿Cuánto mide cada parte?',a:'24 in',opts:_i4gshuf(['24 in','22 in','26 in','20 in']),mc:true,ste:'72÷3 = 24 in.'},
+  {_id:6,q:'Una cuerda de 96 cm se corta en 4 partes iguales. ¿Cuánto mide cada parte?',a:'24 cm',opts:_i4gshuf(['24 cm','22 cm','26 cm','20 cm']),mc:true,ste:'96÷4 = 24 cm.'},
+  {_id:7,q:'Un tanque está 3/8 lleno. Después de agregar 30 galones, queda 5/8 lleno. ¿Cuál es la capacidad total del tanque?',a:'120 galones',opts:_i4gshuf(['120 galones','150 galones','100 galones','135 galones']),mc:true,ste:'30 galones representan 5/8−3/8=1/4 de la capacidad. Capacidad total = 30÷1/4 = 120 galones.'},
+  {_id:8,q:'Un tanque está 1/4 lleno. Después de agregar 40 litros, queda 3/4 lleno. ¿Cuál es la capacidad total del tanque?',a:'80 litros',opts:_i4gshuf(['80 litros','110 litros','60 litros','95 litros']),mc:true,ste:'40 litros representan 3/4−1/4=1/2 de la capacidad. Capacidad total = 40÷1/2 = 80 litros.'},
+  {_id:9,q:'Un artículo cuesta $1.50. ¿Cuántos artículos se pueden comprar con $12.00?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$12.00 ÷ $1.50 = 8.'},
+  {_id:10,q:'Un artículo cuesta $2.00. ¿Cuántos artículos se pueden comprar con $16.00?',a:'8',opts:_i4gshuf(['8','7','9','6']),mc:true,ste:'$16.00 ÷ $2.00 = 8.'},
+  {_id:11,q:'Un artículo cuesta $0.50. ¿Cuántos artículos se pueden comprar con $6.00?',a:'12',opts:_i4gshuf(['12','11','13','10']),mc:true,ste:'$6.00 ÷ $0.50 = 12.'},
+  {_id:12,q:'Un artículo cuesta $3.00. ¿Cuántos artículos se pueden comprar con $21.00?',a:'7',opts:_i4gshuf(['7','6','8','5']),mc:true,ste:'$21.00 ÷ $3.00 = 7.'},
+  {_id:13,q:'Una tienda marca un artículo de $40 con un aumento del 25%, y luego le aplica un descuento del 20% sobre el precio ya aumentado. ¿Cuál es el precio final?',a:'$40',opts:_i4gshuf(['$40','$36','$44','$34']),mc:true,ste:'$40×1.25=$50 (precio marcado). $50×0.80=$40 (precio final).'},
+  {_id:14,q:'Una tienda marca un artículo de $60 con un aumento del 20%, y luego le aplica un descuento del 25% sobre el precio ya aumentado. ¿Cuál es el precio final?',a:'$54',opts:_i4gshuf(['$54','$60','$50','$58']),mc:true,ste:'$60×1.20=$72 (precio marcado). $72×0.75=$54 (precio final).'},
+  {_id:15,q:'Una tienda marca un artículo de $80 con un aumento del 10%, y luego le aplica un descuento del 10% sobre el precio ya aumentado. ¿Cuál es el precio final?',a:'$79.20',opts:_i4gshuf(['$79.20','$80','$75','$83']),mc:true,ste:'$80×1.10=$88 (precio marcado). $88×0.90=$79.20 (precio final).'},
+  {_id:16,q:'Un carro recorre la primera mitad de un viaje a 40 mph y la segunda mitad (misma distancia) a 60 mph. ¿Cuál es la velocidad promedio de todo el viaje?',a:'48 mph',opts:_i4gshuf(['48 mph','50 mph','53 mph','43 mph']),mc:true,ste:'Usando 4800 millas en total: la primera mitad (2400 mi) toma 60 h a 40 mph, la segunda mitad (2400 mi) toma 40 h a 60 mph. Velocidad promedio = 4800÷1e+02 = 48 mph.'},
+  {_id:17,q:'Un carro recorre la primera mitad de un viaje a 30 mph y la segunda mitad (misma distancia) a 60 mph. ¿Cuál es la velocidad promedio de todo el viaje?',a:'40 mph',opts:_i4gshuf(['40 mph','45 mph','35 mph','48 mph']),mc:true,ste:'Usando 3600 millas en total: la primera mitad (1800 mi) toma 60 h a 30 mph, la segunda mitad (1800 mi) toma 30 h a 60 mph. Velocidad promedio = 3600÷90 = 40 mph.'},
+  {_id:18,q:'V/F: El costo unitario de un artículo se calcula dividiendo el costo total entre la cantidad de artículos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Esa es la definición de costo unitario.'},
+  {_id:19,q:'V/F: Si un tanque pasa de estar 1/4 lleno a 3/4 lleno al agregar cierta cantidad, esa cantidad representa 1/2 de la capacidad total.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'3/4−1/4 = 2/4 = 1/2, esa es la fracción de capacidad agregada.'},
+  {_id:20,q:'V/F: Aumentar un precio en 20% y luego descontarlo en 20% siempre regresa al precio original.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los porcentajes se aplican sobre bases distintas: el descuento se aplica sobre el precio ya aumentado, dando un resultado distinto al original.'},
+  {_id:21,q:'V/F: La velocidad promedio de un viaje con dos tramos de igual distancia es siempre el promedio aritmético simple de las dos velocidades.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es la media armónica (ponderada por el tiempo), no el promedio aritmético simple, ya que los tiempos en cada tramo son distintos.'},
+  ]);
+}
+_SKILL_META['chs1m_u4_b4']={ico:'📐',lbl:'Problemas de costo unitario, reparto y combinados',qCount:4,gen:_genChs1mU4_B4,plantillas:['Costo unitario: cuántas unidades se pueden comprar','Reparto o partición en partes iguales (incluye fracción del total)','Costo unitario (variante)','Combinado: porcentajes sucesivos o velocidad promedio','Conceptual (V/F) sobre costo, reparto y combinados']};
+
+function _genChs1mU4_BQ2(){return _bqSrcPick(['chs1m_u4_b3','chs1m_u4_b4'],[_genChs1mU4_B3,_genChs1mU4_B4]);}
+_SKILL_META['chs1m_u4_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Problemas de razonamiento aplicado',qCount:10,gen:_genChs1mU4_BQ2,quiz:true,srcKeys:['chs1m_u4_b3','chs1m_u4_b4']};
 // ===== Jorge Basadre - 2do Secundaria - Geometría: Ángulo Exterior del Triángulo =====
 
 function _genJB2gAEX_B1(){
@@ -19009,10 +19491,10 @@ const PREP_CURRICULUM = {
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
          {lbl:'Polígonos',                      area:'geometria',     editorial:'san_ignacio', skills:['sir1m_pol_b1','sir1m_pol_b2','sir1m_pol_bq1','sir1m_geo_bpu']},{lbl:'Copias a Escala', area:'matematica', editorial:'arte_creative', skills:['ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3']},
-         {lbl:'Operaciones Básicas, Fracciones y Ecuaciones Lineales', area:'matematica', editorial:'chs', skills:['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3','chs1m_u1_bq1']},
-         {lbl:'Geometría y Medidas',            area:'matematica', editorial:'chs', skills:['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3','chs1m_u2_bq1','chs1m_u2_b4','chs1m_u2_b5','chs1m_u2_b6','chs1m_u2_bq2']},
-         {lbl:'Series Numéricas y Comparaciones Cuantitativas', area:'matematica', editorial:'chs', skills:['chs1m_u3_b1','chs1m_u3_b2','chs1m_u3_b3','chs1m_u3_bq1']},
-         {lbl:'Razonamiento Aritmético Aplicado', area:'matematica', editorial:'chs', skills:['chs1m_u4_b1','chs1m_u4_b2','chs1m_u4_bq1']}],
+         {lbl:'Operaciones Básicas, Fracciones y Ecuaciones Lineales', area:'matematica', editorial:'chs', skills:['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3','chs1m_u1_b4','chs1m_u1_bq1','chs1m_u1_b5','chs1m_u1_b6','chs1m_u1_b7','chs1m_u1_b8','chs1m_u1_bq2','chs1m_u1_b9','chs1m_u1_b10','chs1m_u1_bq3']},
+         {lbl:'Geometría y Medidas',            area:'matematica', editorial:'chs', skills:['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3','chs1m_u2_b4','chs1m_u2_b5','chs1m_u2_bq1','chs1m_u2_b6','chs1m_u2_b7','chs1m_u2_bq2','chs1m_u2_b8','chs1m_u2_b9','chs1m_u2_bq3','chs1m_u2_b10','chs1m_u2_b11','chs1m_u2_b12','chs1m_u2_bq4']},
+         {lbl:'Series Numéricas y Comparaciones Cuantitativas', area:'matematica', editorial:'chs', skills:['chs1m_u3_b1','chs1m_u3_b2','chs1m_u3_bq1','chs1m_u3_b3','chs1m_u3_b4','chs1m_u3_bq2','chs1m_u3_b5','chs1m_u3_b6','chs1m_u3_bq3']},
+         {lbl:'Razonamiento Aritmético Aplicado', area:'matematica', editorial:'chs', skills:['chs1m_u4_b1','chs1m_u4_b2','chs1m_u4_bq1','chs1m_u4_b3','chs1m_u4_b4','chs1m_u4_bq2']}],
     '2':[
       {lbl:'Polígonos',                 area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2']},
       {lbl:'Operaciones con Decimales', area:'matematica', editorial:'hans_christian_andersen', skills:['hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2']},
