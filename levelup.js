@@ -18603,11 +18603,11 @@ function _genI1arCj_B1(){
   {_id:3,q:'Halla la suma de los elementos de: A = {(4x + 3) ∈ ℤ / 1 ≤ x < 5}',a:'52',opts:_i4gshuf(['52','56','48','60']),mc:true,ste:'Para x=1,2,3,4: los elementos son 7; 11; 15; 19. Suma = 52.'},
   {_id:4,q:'Halla la suma de los elementos de: A = {(5x − 1) ∈ ℤ / 2 ≤ x < 6}',a:'66',opts:_i4gshuf(['66','71','61','76']),mc:true,ste:'Para x=2,3,4,5: los elementos son 9; 14; 19; 24. Suma = 66.'},
   {_id:5,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 5 ∧ n ≠ 2}. Da como respuesta la suma de los elementos de A.',a:'21',opts:_i4gshuf(['21','23','19','25']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2. Con n∈{1,3,4,5}, los elementos son 3; 5; 6; 7. Suma = 21.'},
-  {_id:6,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 6 ∧ n ≠ 3}. Da como respuesta la suma de los elementos de A.',a:'24',opts:_i4gshuf(['24','26','22','28']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2. Con n∈{1,4,5,6}, los elementos son 3; 6; 7; 8. Suma = 24.'},
-  {_id:7,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 2 ≤ n ≤ 6 ∧ n ≠ 3}. Da como respuesta la suma de los elementos de A.',a:'21',opts:_i4gshuf(['21','23','19','25']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2. Con n∈{4,5,6}, los elementos son 6; 7; 8. Suma = 21.'},
-  {_id:8,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 7 ∧ n ≠ 4}. Da como respuesta la suma de los elementos de A.',a:'32',opts:_i4gshuf(['32','34','30','36']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2. Con n∈{1,3,5,6,7}, los elementos son 3; 5; 7; 8; 9. Suma = 32.'},
+  {_id:6,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 6 ∧ n ≠ 2 ∧ n ≠ 3}. Da como respuesta la suma de los elementos de A.',a:'24',opts:_i4gshuf(['24','26','22','28']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2 (el valor n=2 se excluye siempre porque ahí la expresión no está definida, 0/0). Con n∈{1,4,5,6}, los elementos son 3; 6; 7; 8. Suma = 24.'},
+  {_id:7,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 2 ≤ n ≤ 6 ∧ n ≠ 2 ∧ n ≠ 3}. Da como respuesta la suma de los elementos de A.',a:'21',opts:_i4gshuf(['21','23','19','25']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2 (el valor n=2 se excluye siempre porque ahí la expresión no está definida, 0/0). Con n∈{4,5,6}, los elementos son 6; 7; 8. Suma = 21.'},
+  {_id:8,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 7 ∧ n ≠ 2 ∧ n ≠ 4}. Da como respuesta la suma de los elementos de A.',a:'32',opts:_i4gshuf(['32','34','30','36']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2 (el valor n=2 se excluye siempre porque ahí la expresión no está definida, 0/0). Con n∈{1,3,5,6,7}, los elementos son 3; 5; 7; 8; 9. Suma = 32.'},
   {_id:9,q:'Halla la suma de los elementos de: A = {x² + 1 / x ∈ ℤ, -2 ≤ x ≤ 3}',a:'18',opts:_i4gshuf(['18','19','17','21']),mc:true,ste:'Para x∈{-2,-1,0,1,2,3}: x²+1 da los valores 1; 2; 5; 10 (sin repetir). Suma = 18.'},
-  {_id:10,q:'Halla la suma de los elementos de: A = {x² + 3 / x ∈ ℤ, -1 ≤ x ≤ 2}',a:'14',opts:_i4gshuf(['14','17','11']),mc:true,ste:'Para x∈{-1,0,1,2}: x²+3 da los valores 3; 4; 7 (sin repetir). Suma = 14.'},
+  {_id:10,q:'Halla la suma de los elementos de: A = {x² + 3 / x ∈ ℤ, -1 ≤ x ≤ 2}',a:'14',opts:_i4gshuf(['14','17','11','19']),mc:true,ste:'Para x∈{-1,0,1,2}: x²+3 da los valores 3; 4; 7 (sin repetir). Suma = 14.'},
   {_id:11,q:'Halla la suma de los elementos de: A = {x² + 5 / x ∈ ℤ, -2 ≤ x ≤ 4}',a:'55',opts:_i4gshuf(['55','60','50','58']),mc:true,ste:'Para x∈{-2,-1,0,1,2,3,4}: x²+5 da los valores 5; 6; 9; 14; 21 (sin repetir). Suma = 55.'},
   {_id:12,q:'Halla la suma de los elementos de: A = {x² + 2 / x ∈ ℤ, -2 ≤ x ≤ 2}',a:'11',opts:_i4gshuf(['11','13','9','14']),mc:true,ste:'Para x∈{-2,-1,0,1,2}: x²+2 da los valores 2; 3; 6 (sin repetir). Suma = 11.'},
   {_id:13,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">2</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">4</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">6</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">8</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">10</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'Los elementos siguen el patrón D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}. Por lo tanto n(D) = 5.'},
@@ -18820,7 +18820,7 @@ function _genI1arCj_B9(){
   {_id:12,q:'De 90 personas encuestadas, a 55 les gusta el producto A, a 40 les gusta el producto B y 12 no gustan de ninguno de los dos. ¿A cuántas personas les gusta solo el producto A?',a:'38',opts:_i4gshuf(['38','40','36','42']),mc:true,ste:'Al menos uno de los dos: 90−12 = 78. Ambos: n(A)+n(B)−(al menos uno) = 55+40−78 = 17. Solo A = n(A)−ambos = 55−17 = 38.'},
   {_id:13,q:'V/F: La fórmula n(A∪B) = n(A) + n(B) − n(A∩B) evita contar dos veces los elementos comunes a A y B.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al sumar n(A)+n(B), los elementos de A∩B se cuentan dos veces, por lo que se resta n(A∩B) una vez para corregir.'},
   {_id:14,q:'V/F: Si A y B son disjuntos (A∩B=∅), entonces n(A∪B) = n(A) + n(B).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: si no hay elementos comunes, n(A∩B)=0 y la fórmula se reduce a la suma simple.'},
-  {_id:15,q:'V/F: El número de personas que «no gustan de ninguno de los dos productos» se suma directamente a n(A∪B) para obtener el total.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: «ninguno de los dos» representa el complemento de A∪B respecto al total; se SUMA n(A∪B) más «ninguno» para obtener el total, no se resta ni se combina de otra forma en la fórmula de unión.'},
+  {_id:15,q:'V/F: El número de personas que «no gustan de ninguno de los dos productos» se suma directamente a n(A∪B) para obtener el total.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: «ninguno de los dos» representa el complemento de A∪B respecto al total, por lo que total = n(A∪B) + «ninguno».'},
   {_id:16,q:'V/F: la región «solo A» (elementos que están en A pero no en B) se calcula como n(A) − n(A∩B).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: los elementos exclusivos de A son los que están en A pero no en la intersección con B.'},
   {_id:17,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="110" cy="100" r="70" fill="none" stroke="#94a3b8" stroke-width="2"/><circle cx="170" cy="100" r="70" fill="none" stroke="#60a5fa" stroke-width="2"/><text x="60.0" y="50.0" text-anchor="middle" font-size="15" fill="#94a3b8" font-weight="700">A</text><text x="220.0" y="50.0" text-anchor="middle" font-size="15" fill="#60a5fa" font-weight="700">B</text></svg></div>Si n(A)=22, n(B)=17 y n(A∩B)=12, ¿cuál es el valor correcto de n(A∪B)?',a:'27',opts:_i4gshuf(['27','29','25','31']),mc:true,ste:'n(A∪B) = n(A)+n(B)−n(A∩B) = 22+17−12 = 27.'},
   {_id:18,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="110" cy="100" r="70" fill="none" stroke="#94a3b8" stroke-width="2"/><circle cx="170" cy="100" r="70" fill="none" stroke="#60a5fa" stroke-width="2"/><text x="60.0" y="50.0" text-anchor="middle" font-size="15" fill="#94a3b8" font-weight="700">A</text><text x="220.0" y="50.0" text-anchor="middle" font-size="15" fill="#60a5fa" font-weight="700">B</text></svg></div>Si n(A)=16, n(B)=13 y n(A∩B)=7, ¿cuál es el valor correcto de n(A∪B)?',a:'22',opts:_i4gshuf(['22','24','20','26']),mc:true,ste:'n(A∪B) = n(A)+n(B)−n(A∩B) = 16+13−7 = 22.'},
@@ -19610,10 +19610,10 @@ _SKILL_META['ac1_esc_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Perímetro y Área
 const PREP_CURRICULUM = {
   primaria: {
     '1':[
-      {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta']},
-      {lbl:'Sumas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2']},
+      {lbl:'Adición y Sustracción',                              area:'matematica',            skills:['suma','suma10','resta','sumabloq','restabloq']},
+      {lbl:'Sumas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rg10_b1','rg10_b2','rg10_bq1','rg10_b3','rg10_b4','rg10_bq2','sumabloq']},
 
-      {lbl:'Restas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rs10_b1','rs10_b2','rs10_bq1','rs10_b3','rs10_b4','rs10_bq2']},
+      {lbl:'Restas con Regletas – Estrategia de la Decena', area:'matematica', editorial:'belen', skills:['rs10_b1','rs10_b2','rs10_bq1','rs10_b3','rs10_b4','rs10_bq2','restabloq']},
       {lbl:'Conjuntos',                         area:'matematica', editorial:'intelectum', skills:['bel1_cj_b1','bel1_cj_b2','bel1_cj_bq1','bel1_cj_b3','bel1_cj_b4','bel1_cj_bq2','bel1_cj_b5','bel1_cj_b6','bel1_cj_bq3']},
       {lbl:'Numeración 0 al 100',               area:'matematica', editorial:'intelectum', skills:['bel1_n1_b1','bel1_n1_b2','bel1_n1_bq1','bel1_n1_b3','bel1_n1_b4','bel1_n1_bq2']},
       {lbl:'La Decena',                         area:'matematica', editorial:'intelectum', skills:['bel1_dec_b1','bel1_dec_b2','bel1_dec_bq1','bel1_dec_b3','bel1_dec_b4','bel1_dec_bq2']},
@@ -20840,6 +20840,24 @@ function _prepConfigHtml() {
   // Botón desafío de dominio: siempre visible, deshabilitado si no hay curso seleccionado
   const _challengeBtn = isHiddenLevel ? '' : `<button class="prep-kh-btn-challenge" onclick="_prepOpenDesafio()">🎯 Desafío de Dominio</button>`;
 
+  // Requisito del torneo mensual: mínimo TORNEO_MIN_UNIDADES unidades 100% completas
+  // (habilidades+cuestionarios+examen) dentro de los cursos asignados al alumno. Solo se
+  // muestra a un alumno logueado real (no admin, no vista sin curso seleccionado).
+  const _torneoLoggedId = typeof getLoggedId === 'function' ? getLoggedId() : null;
+  const _torneoShow = !isHiddenLevel && !(typeof isAdmin === 'function' && isAdmin()) && _torneoLoggedId !== null && _torneoLoggedId !== 0 && !masLoading;
+  const torneoHeader = _torneoShow ? (() => {
+    const n = _prepUnitsFullyDoneForMe(_torneoLoggedId);
+    const cumple = n >= TORNEO_MIN_UNIDADES;
+    const pct = Math.min(100, Math.round((n/TORNEO_MIN_UNIDADES)*100));
+    return `<div style="margin:0 0 10px;padding:10px 12px;border-radius:10px;border:1px solid ${cumple?'rgba(74,222,128,0.35)':'rgba(255,255,255,0.1)'};background:${cumple?'rgba(74,222,128,0.06)':'rgba(255,255,255,0.02)'}">
+      <div class="prep-kh-mastery-row" style="justify-content:space-between">
+        <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${cumple?'✅ Ya calificas para el Torneo Mensual':'🏆 Requisito del Torneo Mensual'}</span>
+        <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${n}/${TORNEO_MIN_UNIDADES} unidades completas</span>
+      </div>
+      <div class="prep-kh-bar" style="margin-top:6px"><div class="prep-kh-bar-fill" style="width:${pct}%;${cumple?'background:#4ade80':''}"></div></div>
+      ${cumple?'':`<div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:6px;font-family:'Barlow Condensed',sans-serif">Completa habilidades, cuestionarios y el examen de ${TORNEO_MIN_UNIDADES-n} unidad${TORNEO_MIN_UNIDADES-n===1?'':'es'} más para participar en el sorteo del mes.</div>`}
+    </div>`;
+  })() : '';
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
     <div class="prep-kh-course-name">${lvDef.lbl||'¿?'}${isHiddenLevel?'':(_prep.grade?' · '+_prep.grade+'° Grado':' · ¿? Grado')}</div>
@@ -20848,7 +20866,7 @@ function _prepConfigHtml() {
       <div class="prep-kh-bar"><div class="prep-kh-bar-fill" style="width:${shown&&!masLoading&&allTopicKeys.length?coursePct:0}%"></div></div>
       <span class="prep-kh-mastery-lbl">${shown&&!masLoading&&allTopicKeys.length?coursePct+'%':'—'}</span>
     </div>
-  </div>`;
+  </div>${torneoHeader}`;
 
   // Leyenda de dominio
   const _legBorder = 'border:1px solid rgba(255,255,255,0.12)';
@@ -21154,7 +21172,9 @@ function _prepConfigHtml() {
         const skSource=(_prepLastSource(sk)||'').replace(/'/g,'&#39;').replace(/"/g,'&quot;');
         const skName=_cleanLbl(def.lbl,sk).replace(/'/g,'&#39;').replace(/"/g,'&quot;');
         const _skEnter=`window._showSkTip(event,'${skName}','${_lvlLbl[lvl]||''}',${skPct!==null?skPct:'null'},'${skDate||''}','${skSource}','habilidad')`;
-        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='sinIntentos'?'':lvl}${isSel?' selected':''}" onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" onmouseenter="${_skEnter}" onmouseleave="window._hideSkTip()">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:''}</div>`;
+        const _visualBadge = def.visual&&lvl!=='dominado' ? `style="box-shadow:0 0 0 2px rgba(34,211,238,0.55) inset"` : '';
+        const _visualIco = def.visual&&lvl!=='dominado'&&def.ico ? `<span style="font-size:16px;line-height:1">${def.ico}</span>` : '';
+        return `<div class="prep-kh-sq ${lvl==='unknown'||lvl==='sinIntentos'?'':lvl}${isSel?' selected':''}" ${_visualBadge} onclick="_snd.click();_prep.topic=_prep.topic==='${sk}'?'':'${sk}';_prep.selectedExamSkills=null;_prep.selectedExamUnitIdx=-1;_renderPreparatePane()" onmouseenter="${_skEnter}" onmouseleave="window._hideSkTip()">${lvl==='dominado'?`<svg width="18" height="13" viewBox="0 0 20 13" fill="currentColor"><polygon points="1,13 1,5 5,8 10,0 15,8 19,5 19,13"/></svg>`:_visualIco}</div>`;
       }).join('');
       const _nc=['c','p','y','v'][ui%4];
       const _showLbl=_prep.showUnitLabels;
@@ -22158,6 +22178,61 @@ function _prepLastUnitExamPct(firstSkill) {
   const entries = _prepHistoryData.filter(h => h.isUnitExam && h.topic === firstSkill && !h.autoFromExam && !h.autoFromQuiz);
   if (!entries.length) return null;
   return _prepReEvalPct(entries[0]);
+}
+// ══════════════════════════════════════════════════════════════════════════════
+// REQUISITO DEL TORNEO MENSUAL — mínimo 6 unidades 100% completas (habilidades +
+// cuestionarios + examen de unidad) dentro de los cursos que el alumno tiene
+// asignados en Level Up. Se calcula con el historial COMPLETO del propio alumno
+// logueado (_prepHistoryData, no el caché compartido/topado _prepAdminHistData),
+// y se sincroniza a Firestore en un documento propio por alumno (torneoElig/{uid})
+// para que el panel de sorteo/bingo (que sí ve a TODOS los alumnos) pueda leer el
+// conteo sin tener que recorrer el historial de cada uno. Escribir un doc propio
+// por alumno (en vez de mezclarlo en el doc compartido "sorteo/main") evita que
+// dos alumnos guardando al mismo tiempo se pisen los datos entre sí.
+const TORNEO_MIN_UNIDADES = 6;
+function _prepUnitsFullyDoneForMe(uid) {
+  if (!Array.isArray(_prepHistoryData)) return 0;
+  const courses = _prepMyCourses(uid);
+  if (!courses.length) return 0;
+  let count = 0;
+  courses.forEach(c => {
+    const levelData = PREP_CURRICULUM[c.level] || {};
+    const units = levelData[c.grade] || [];
+    units.forEach(u => {
+      if ((u.area||null) !== (c.area||null)) return;
+      if ((u.editorial||null) !== (c.editorial||null)) return;
+      if (!Array.isArray(u.skills) || !u.skills.length) return;
+      const allDominado = u.skills.every(sk => _prepMasteryLevel(sk)==='dominado');
+      if (!allDominado) return;
+      const firstSk = u.skills.find(sk => BINGO_TOPICS[sk] && !BINGO_TOPICS[sk].quiz);
+      if (!firstSk || _prepLastUnitExamPct(firstSk) !== 100) return;
+      count++;
+    });
+  });
+  return count;
+}
+let _prepMyUnitsFullyDone = 0;
+let _prepTorneoElig_lastSynced = null;
+// Se llama cada vez que cambia el historial del alumno logueado (carga inicial o al terminar
+// una sesión). Recalcula en memoria SIEMPRE (barato); solo escribe a Firestore si el número
+// realmente cambió, para no generar escrituras de sobra.
+function _prepSyncTorneoElig() {
+  try {
+    if (isAdmin()) return;
+    const uid = getLoggedId();
+    if (uid === null || uid === undefined || uid === 0) return; // invitados no participan del torneo
+    if (!Array.isArray(_prepHistoryData)) return;
+    const n = _prepUnitsFullyDoneForMe(uid);
+    _prepMyUnitsFullyDone = n;
+    if (n === _prepTorneoElig_lastSynced) return;
+    _prepTorneoElig_lastSynced = n;
+    if (typeof db === 'undefined' || !db) return;
+    db.collection('torneoElig').doc(String(uid)).set({
+      units: n,
+      cumple: n >= TORNEO_MIN_UNIDADES,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge:true }).catch(e => console.error('torneoElig sync', e));
+  } catch(e) { console.error('_prepSyncTorneoElig', e); }
 }
 // Misma lógica de formato que _prepLastDate, pero para el ÚLTIMO intento directo del examen de
 // unidad (igual filtro que _prepLastUnitExamPct) — usado en el popup del cuadradito ★.
@@ -24260,6 +24335,44 @@ function _renderAlgo(q, disabled){
     else setTimeout(()=>_combRender(),0);
     return `<div style="display:flex;justify-content:center;padding:16px 8px"><div id="_algo_order" data-ids="" style="display:none"></div><div id="_comb_container" class="algo-vert-wrap" style="min-height:140px;align-items:center;justify-content:center;width:100%"><div style="color:rgba(249,115,22,0.3);font-size:12px;font-family:'Barlow Condensed',sans-serif">Cargando...</div></div></div>`;
   }
+  // ── Suma/Resta con regletas (visual, 1° primaria) ─────
+  if(q.algo==='blocks'){
+    if(_blocksState.qRef!==q){ _blocksState.qRef=q; _blocksState.cur=0; }
+    const cur = _blocksState.cur;
+    const opSym = q.op==='+' ? '+' : '−';
+    const rodHtml = (v,given) => {
+      const bg = _RG_C[v] || '#888';
+      const txt = (v===1||v===5) ? '#333' : '#fff';
+      return `<div class="algo-rod${given?' algo-rod-given':''}" style="width:${v*22}px;background:${bg};color:${txt}">${v}</div>`;
+    };
+    const givenRow = `${rodHtml(q.n1,true)}<span class="algo-rod-op">${opSym}</span>${rodHtml(q.n2,true)}`;
+    let curRow;
+    if(cur<=0){
+      curRow = '<span class="algo-rod-empty">(sin regleta todavía)</span>';
+    } else if(cur<=10){
+      curRow = `<div class="algo-rod-row">${rodHtml(cur)}<span class="algo-rod-tag">regleta ${_RG_N[cur]}</span></div>`;
+    } else {
+      const rest = cur-10;
+      curRow = `<div class="algo-rod-row">${rodHtml(10)}<span class="algo-rod-tag">decena</span></div>
+        <div class="algo-rod-row">${rodHtml(rest)}<span class="algo-rod-tag">regleta ${_RG_N[rest]}</span></div>`;
+    }
+    const btn = (sym,fn) => `<button class="algo-block-btn" ${disabled?'disabled':''} onclick="${fn}()">${sym}</button>`;
+    return `<div style="display:flex;justify-content:center;padding:16px 8px">
+      <div class="algo-vert-wrap" style="flex-direction:column;align-items:center;width:100%;gap:12px">
+        <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff;text-align:center;text-shadow:0 0 14px rgba(16,185,129,0.7)">${q.q} = ?</div>
+        <div class="algo-rod-section-label">${q.op==='+' ? 'Estos son los sumandos:' : 'Este es el número y lo que se quita:'}</div>
+        <div class="algo-given-row">${givenRow}</div>
+        <div class="algo-rod-divider"></div>
+        <div class="algo-rod-section-label">Arma tu respuesta:</div>
+        <div class="algo-rods-box">${curRow}</div>
+        <div style="display:flex;align-items:center;gap:18px">
+          ${btn('−','_prepBlocksDec')}
+          <div style="font-family:'Orbitron',monospace;font-size:34px;font-weight:900;color:#fff;min-width:48px;text-align:center">${cur}</div>
+          ${btn('+','_prepBlocksInc')}
+        </div>
+      </div>
+    </div>`;
+  }
   const s1=String(q.n1), s2=String(q.n2), ans=String(q.algo==='div'?q.cociente:Math.abs(q.n1-(q.algo==='res'?q.n2:0)+(q.algo==='sum'?q.n2:0)+(q.algo==='mul'?q.n1*q.n2-q.n1:0)));
   const ansStr = q.algo==='mul'?String(q.n1*q.n2): q.algo==='sum'?String(q.n1+q.n2): q.algo==='res'?String(q.n1-q.n2): String(q.cociente);
   const w = Math.max(s1.length, s2.length, ansStr.length)+1;
@@ -24542,6 +24655,8 @@ function _algoMarkPerBox(q){
     document.querySelectorAll('[id^="algo_a_"]').forEach(el=>{const i=parseInt(el.id.split('_').pop());if(i<finalS.length)mark(el,finalS[i]);});
   } else if(q.algo==='comb'){
     _combMarkAllBoxes();
+  } else if(q.algo==='blocks'){
+    // Los cuadraditos ya reflejan el estado actual; no hay boxes que marcar.
   } else if(q.algo==='eq'){
     document.querySelectorAll('[id^="algo_a_"]').forEach(el=>{const i=parseInt(el.id.split('_').pop());if(i<q.a.length)mark(el,q.a[i]);});
   } else {
@@ -24648,6 +24763,20 @@ async function _prepDeleteLeaderboardEntry(id){
   }
   _prepLeaderboard=(_prepLeaderboard||[]).filter(e=>e.id!==id);
   _prepDesafioLb=(_prepDesafioLb||[]).filter(e=>e.id!==id);
+  _renderPreparatePane();
+}
+// ══════════════════════════════════════════════════════════════════════════════
+// SUMA/RESTA CON REGLETAS (cuadraditos) — Interactive visual blocks component (1° primaria)
+// ══════════════════════════════════════════════════════════════════════════════
+let _blocksState = { qRef:null, cur:0 };
+function _prepBlocksInc(){
+  if(_prep.answered||_prep.retryLock) return;
+  _blocksState.cur = Math.min(20,(_blocksState.cur||0)+1);
+  _renderPreparatePane();
+}
+function _prepBlocksDec(){
+  if(_prep.answered||_prep.retryLock) return;
+  _blocksState.cur = Math.max(0,(_blocksState.cur||0)-1);
   _renderPreparatePane();
 }
 // ══════════════════════════════════════════════════════════════════════════════
@@ -27204,6 +27333,8 @@ function _prepSubmitAlgo(){
   } else if(q.algo==='comb'){
     _combSubmitStep();
     return;
+  } else if(q.algo==='blocks'){
+    correct = _blocksState.qRef===q && _blocksState.cur===parseInt(q.a,10);
   } else {
     // Solo se verifica la fila de la diferencia/suma; la fila de llevadas es solo ayuda
     const digits = Array.from(document.querySelectorAll('[id^="algo_a_"]')).map(i=>i.value).join('');
@@ -27441,6 +27572,7 @@ async function _prepSaveHistoryPartial() {
     if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(localEntry);
     else _prepHistoryData = [localEntry];
     if (Array.isArray(_prepAdminHistData)) _prepAdminHistData.unshift(localEntry);
+    _prepSyncTorneoElig();
     if (typeof db !== 'undefined' && db) {
       await db.collection('prepHistory').add({
         ...localEntry,
@@ -27659,6 +27791,7 @@ async function _prepSaveHistory() {
     });
     // Actualización optimista ya aplicada arriba — no recargar desde Firestore
     // para evitar race condition con los auto-dominados (fire-and-forget)
+    _prepSyncTorneoElig();
   } catch(e) { console.error('prep history save', e); }
 }
 async function loadPrepHistory() {
@@ -27694,6 +27827,7 @@ async function loadPrepHistory() {
     _prepHistoryData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   } catch(e) { _prepHistoryData = []; console.error('prep history load', e); }
   _prepHistoryLoading = false;
+  _prepSyncTorneoElig();
   // Auto-abrir "Mis Cursos" si el alumno no tiene curso seleccionado y tiene cursos asignados
   if (!isAdmin() && !_prep.level && !_prep.openSelector) {
     const _lid = getLoggedId();

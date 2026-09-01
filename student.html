@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260901d"></script>
+  <script src="/levelup.js?v=20260901j"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -892,6 +892,21 @@ textarea.fsm { resize:none; height:64px; }
 .algo-shake{animation:algo-shake 0.4s ease-in-out}
 .algo-correct{animation:algo-correct 0.45s ease-out}
 .algo-vert-wrap{display:inline-flex;flex-direction:column;align-items:flex-end;gap:2px;margin:16px auto;font-family:'Orbitron','Courier New',monospace}
+.algo-block-sq{width:24px;height:24px;border-radius:5px;box-shadow:0 0 6px rgba(255,255,255,0.25);flex-shrink:0}
+.algo-block-btn{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);color:#fff;font-size:28px;font-weight:900;font-family:'Barlow Condensed',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .12s,background .12s}
+.algo-block-btn:hover:not(:disabled){transform:scale(1.1);background:rgba(255,255,255,0.14)}
+.algo-block-btn:active:not(:disabled){transform:scale(0.92)}
+.algo-block-btn:disabled{opacity:.4;cursor:default}
+.algo-rod-section-label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);align-self:flex-start;font-family:'Barlow Condensed',sans-serif}
+.algo-given-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.algo-rod-op{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:rgba(255,255,255,0.55)}
+.algo-rod-divider{width:100%;height:1px;background:rgba(255,255,255,0.1);margin:2px 0}
+.algo-rods-box{display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-height:70px;justify-content:center;width:100%}
+.algo-rod-row{display:flex;align-items:center;gap:8px}
+.algo-rod{height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.15);flex-shrink:0}
+.algo-rod-given{opacity:.92}
+.algo-rod-tag{font-size:11px;color:rgba(255,255,255,0.3);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-family:'Barlow Condensed',sans-serif}
+.algo-rod-empty{color:rgba(255,255,255,0.3);font-size:13px;font-family:'Barlow Condensed',sans-serif}
 .algo-row{display:flex;align-items:center;gap:4px}
 .algo-row-num{gap:2px}
 .algo-digit{width:38px;height:42px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;font-family:'Orbitron',monospace}
@@ -1590,6 +1605,11 @@ let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... 
 let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progress:[bool],tasks:[bool]} } }
 let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
+// { "<studentId>": {units:N, cumple:bool, updatedAt} } — requisito del torneo mensual (mínimo
+// TORNEO_MIN_UNIDADES unidades 100% completas en Level Up). Cada alumno escribe SU PROPIO doc
+// en la colección torneoElig al practicar (ver _prepSyncTorneoElig en levelup.js); aquí solo se
+// escucha en vivo para poder calcular el cupo del sorteo (ver getStudents()).
+let torneoElig = {};
 let horWeekOffset  = 0;   // 0 = semana actual, ±N = semanas adelante/atrás en la vista de horarios
 let horDayOffset   = 0;   // mobile 3-day view: day offset from start of current week
 // ── MESSAGES ─────────────────────────────────────────────
@@ -1821,7 +1841,13 @@ function getStudents() {
       icon:  ov.icon  !== undefined ? ov.icon  : base.icon,
       // El cupo SIEMPRE es igual a los puntos actuales del mes (getTotalPts) — ya no es un
       // valor editable a mano. Así nunca se puede desincronizar del puntaje real del alumno.
-      max:   getTotalPts(id),
+      // Requisito del torneo mensual (pedido explícito): el alumno necesita al menos
+      // TORNEO_MIN_UNIDADES unidades 100% completas (habilidades+cuestionarios+examen) en su
+      // curso de Level Up para que sus puntos cuenten como cupo. Si no califica, el cupo se
+      // muestra en 0 aunque tenga puntos — apenas complete la 6ª unidad, torneoElig se
+      // actualiza solo (ver _prepSyncTorneoElig en levelup.js) y el cupo se habilita.
+      max:   (torneoElig[String(id)]?.units||0) >= (typeof TORNEO_MIN_UNIDADES!=='undefined'?TORNEO_MIN_UNIDADES:6) ? getTotalPts(id) : 0,
+      torneoUnidades: torneoElig[String(id)]?.units||0,
       pin:   ov.pin   !== undefined ? ov.pin   : base.pin,
       color: ov.color !== undefined ? ov.color : base.color,
       padresId,
@@ -2833,6 +2859,8 @@ const BINGO_TOPICS = {
   suma:     { ico:'＋', lbl:'Suma', maxWrongs:5,        gen:()=>{ const a=_bGetRandomInt(5,40),b=_bGetRandomInt(5,40); return {q:`${a} + ${b} = ?`,a:a+b}; } },
   suma10:   { ico:'＋', lbl:'Suma (10-20)',  maxWrongs:5, qCount:5, qCountRapida:3, gen:()=>{ const tot=_bGetRandomInt(10,20),a=_bGetRandomInt(1,tot-1),b=tot-a; const ws=_bingShufArr([tot-2,tot-1,tot+1,tot+2,tot+3].filter(v=>v!==tot&&v>0)).slice(0,3); return {q:`${a} + ${b} = ?`,a:tot,opts:_bingShufArr([tot,...ws]),mc:true}; } },
   resta:    { ico:'−',  lbl:'Resta',       maxWrongs:5,       gen:()=>{ const a=_bGetRandomInt(10,50),b=_bGetRandomInt(1,Math.min(a,30)); return {q:`${a} − ${b} = ?`,a:a-b}; } },
+  sumabloq: { ico:'🟩', lbl:'Suma con Cuadraditos', maxWrongs:5, visual:true, gen:()=>{ const n1=_bGetRandomInt(1,8), n2=_bGetRandomInt(1,6); return {algo:'blocks', op:'+', n1, n2, a:String(n1+n2), q:`${n1} + ${n2}`}; } },
+  restabloq:{ ico:'🟥', lbl:'Resta con Cuadraditos', maxWrongs:5, visual:true, gen:()=>{ const n1=_bGetRandomInt(3,12), n2=_bGetRandomInt(1,Math.min(n1-1,8)); return {algo:'blocks', op:'-', n1, n2, a:String(n1-n2), q:`${n1} − ${n2}`}; } },
   mult:     { ico:'✕',  lbl:'Multiplicar', maxWrongs:5, gen:()=>{ const a=_bGetRandomInt(3,12),b=_bGetRandomInt(3,12); return {q:`${a} × ${b} = ?`,a:a*b}; } },
   div:      { ico:'÷',  lbl:'División',    maxWrongs:5,    gen:()=>{ const b=_bGetRandomInt(2,12),r=_bGetRandomInt(1,12); return {q:`${b*r} ÷ ${b} = ?`,a:r}; } },
   div5x2:   { ico:'÷', lbl:'División 5÷2 dígitos', maxWrongs:5, qCount:3, qCountRapida:2, gen:()=>{ const d=_bGetRandomInt(10,99),qMin=Math.ceil(10000/d),qMax=Math.min(9999,Math.floor(99999/d)),q=_bGetRandomInt(qMin,qMax),dvd=d*q; const ws=_bingShufArr([q-3,q-2,q-1,q+1,q+2,q+3].filter(v=>v!==q&&v>0)).slice(0,3); return {q:`${dvd} ÷ ${d} = ?`,a:q,opts:_bingShufArr([q,...ws]),mc:true}; } },
@@ -12217,6 +12245,23 @@ function openRestore() {
   }
 }
 // ── FIN BACKUP ───────────────────────────────────────────────
+
+// Requisito del torneo mensual: escucha en vivo la colección torneoElig (un doc por alumno,
+// que cada alumno escribe él mismo al practicar en Level Up — ver _prepSyncTorneoElig).
+db.collection('torneoElig').onSnapshot(snap => {
+  const fresh = {};
+  snap.forEach(doc => { fresh[doc.id] = doc.data(); });
+  torneoElig = fresh;
+  // Si el sorteo/tablero ya está pintado, refrescar cupos en vivo al cambiar la elegibilidad
+  // (mismo patrón de refresco por vista que usa el listener principal de REF más abajo).
+  try {
+    if (typeof appReady !== 'undefined' && appReady) {
+      const hash = currentView;
+      if (hash === 'tablero') { const loggedId = getLoggedId(); if (loggedId !== null) renderAll(loggedId); }
+      if (hash === 'ranking') vRankingSetup();
+    }
+  } catch(e) {}
+}, err => console.error('[Firebase] torneoElig listener', err));
 
 REF.onSnapshot(doc => {
   const data = doc.exists ? doc.data() : {};
