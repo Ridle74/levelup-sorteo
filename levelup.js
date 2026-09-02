@@ -20849,13 +20849,17 @@ function _prepConfigHtml() {
     const n = _prepUnitsFullyDoneForMe(_torneoLoggedId);
     const cumple = n >= TORNEO_MIN_UNIDADES;
     const pct = Math.min(100, Math.round((n/TORNEO_MIN_UNIDADES)*100));
-    return `<div style="margin:0 0 10px;padding:10px 12px;border-radius:10px;border:1px solid ${cumple?'rgba(74,222,128,0.35)':'rgba(255,255,255,0.1)'};background:${cumple?'rgba(74,222,128,0.06)':'rgba(255,255,255,0.02)'}">
+    const _doneBg  = 'linear-gradient(135deg,rgba(74,222,128,0.16),rgba(34,211,238,0.06))';
+    const _pendBg  = 'linear-gradient(135deg,rgba(168,85,247,0.14),rgba(34,211,238,0.06))';
+    const _doneBar = '#4ade80';
+    const _pendBar = 'linear-gradient(90deg,#a855f7,#22d3ee)';
+    return `<div style="margin:0 0 10px;padding:14px 16px;border-radius:14px;border:1px solid ${cumple?'rgba(74,222,128,0.4)':'rgba(168,85,247,0.3)'};background:${cumple?_doneBg:_pendBg}">
       <div class="prep-kh-mastery-row" style="justify-content:space-between">
-        <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${cumple?'✅ Ya calificas para el Torneo Mensual':'🏆 Requisito del Torneo Mensual'}</span>
-        <span class="prep-kh-mastery-lbl" style="color:${cumple?'#4ade80':'rgba(255,255,255,0.75)'}">${n}/${TORNEO_MIN_UNIDADES} unidades completas este mes</span>
+        <span style="color:#fff;font-size:16px;font-weight:800;font-family:'Barlow Condensed',sans-serif">${cumple?'✅ Ya calificas para el Torneo Mensual':'🏆 Requisito del Torneo Mensual'}</span>
+        <span style="background:${cumple?'rgba(74,222,128,0.22)':'rgba(255,255,255,0.12)'};color:${cumple?'#4ade80':'#fff'};padding:4px 10px;border-radius:20px;font-size:13px;font-weight:800;font-family:'Barlow Condensed',sans-serif;white-space:nowrap">${n}/${TORNEO_MIN_UNIDADES} unidades este mes</span>
       </div>
-      <div class="prep-kh-bar" style="margin-top:6px"><div class="prep-kh-bar-fill" style="width:${pct}%;${cumple?'background:#4ade80':''}"></div></div>
-      ${cumple?'':`<div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:6px;font-family:'Barlow Condensed',sans-serif">Completa habilidades, cuestionarios y el examen de ${TORNEO_MIN_UNIDADES-n} unidad${TORNEO_MIN_UNIDADES-n===1?'':'es'} más ESTE MES para participar en el sorteo (una unidad dominada en un mes anterior no cuenta para el mes actual — rinde de nuevo su examen con 100% para que cuente).</div>`}
+      <div class="prep-kh-bar" style="margin-top:8px;height:10px"><div class="prep-kh-bar-fill" style="width:${pct}%;background:${cumple?_doneBar:_pendBar}"></div></div>
+      ${cumple?'':`<div style="font-size:10px;color:rgba(255,255,255,0.68);margin-top:8px;font-family:'Barlow Condensed',sans-serif">Completa habilidades, cuestionarios y el examen de ${TORNEO_MIN_UNIDADES-n} unidad${TORNEO_MIN_UNIDADES-n===1?'':'es'} más ESTE MES para participar en el sorteo (una unidad dominada en un mes anterior no cuenta para el mes actual — rinde de nuevo su examen con 100% para que cuente).</div>`}
     </div>`;
   })() : '';
   // Encabezado con dominio de curso
