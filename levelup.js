@@ -20963,8 +20963,43 @@ function _prepConfigHtml() {
       <div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:${hdrBg};font-size:10px;font-weight:700;color:${hdrColor};letter-spacing:.04em">${ico} ${lbl} · ${count}</div>
       ${items.map(k => _dRow(k, dotColor)).join('')}
     </div>` : '';
+    // Puntos mensuales del alumno (mismo puntaje que usa el sorteo/bingo para el cupo, ver
+    // getTotalPts/getTotalPts2 en student.html) — pedido explícito: antes no se veía en ningún
+    // lado dentro de Level Up. Durante la semana de traslape de mes (ver getCupoMonthOffset —
+    // el sorteo del mes que cierra todavía no se realizó) se muestran AMBOS: el mes "oficial"
+    // (el que sigue vigente para el cupo del sorteo) y el mes calendario actual, ya en curso
+    // pero que todavía no cuenta para el sorteo — mismo criterio que ya usan Ranking y Puntos.
+    const _cupoOffset = (typeof getCupoMonthOffset === 'function') ? getCupoMonthOffset() : 0;
+    const _ptsOficial = (typeof getTotalPts2 === 'function' && _loggedId !== null) ? getTotalPts2(_loggedId, _cupoOffset) : null;
+    const _mesNombre = off => {
+      if (typeof MESES_ES === 'undefined') return '';
+      const d = new Date(); d.setMonth(d.getMonth()+off);
+      const m = MESES_ES[d.getMonth()];
+      return m.charAt(0) + m.slice(1).toLowerCase();
+    };
+    let _ptsBadge = '';
+    if (_ptsOficial !== null) {
+      if (_cupoOffset !== 0) {
+        const _ptsActual = (typeof getTotalPts2 === 'function') ? getTotalPts2(_loggedId, 0) : 0;
+        _ptsBadge = `<div style="margin:0 15px 8px;padding:7px 10px;border-radius:7px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase;white-space:nowrap">🎯 Puntos de ${_mesNombre(_cupoOffset)}</span>
+            <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fbbf24;white-space:nowrap">${_ptsOficial}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+            <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.4);text-transform:uppercase;white-space:nowrap">📅 Puntos de ${_mesNombre(0)}</span>
+            <span style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);white-space:nowrap">${_ptsActual}</span>
+          </div>
+        </div>`;
+      } else {
+        _ptsBadge = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 15px 8px;padding:7px 10px;border-radius:7px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25)">
+          <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase">🎯 Puntos mensuales</span>
+          <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fbbf24">${_ptsOficial}</span>
+        </div>`;
+      }
+    }
     if (_prepSideRanksLoading || !_prepSideRanks) {
-      _sidebarBody = `<div style="padding:20px 8px;text-align:center;font-size:11px;color:rgba(255,255,255,0.3)">Cargando rankings…</div>`;
+      _sidebarBody = _ptsBadge + `<div style="padding:20px 8px;text-align:center;font-size:11px;color:rgba(255,255,255,0.3)">Cargando rankings…</div>`;
     } else {
       const top1 = _allSk.filter(k => _prepSideRanks[k] === 1);
       const top2 = _allSk.filter(k => _prepSideRanks[k] === 2);
@@ -20975,7 +21010,7 @@ function _prepConfigHtml() {
         + _dGrp('🥈','Top 2',top2.length,'rgba(148,163,184,0.15)','#94a3b8','#94a3b8',top2)
         + _dGrp('🥉','Top 3',top3.length,'rgba(249,115,22,0.15)','#f97316','#f97316',top3)
         + _dGrp('—','Demás',demas.length,'rgba(255,255,255,0.06)','rgba(255,255,255,0.35)','rgba(255,255,255,0.3)',demas);
-      _sidebarBody = _body || `<div style="padding:20px 8px;text-align:center;font-size:11px;color:rgba(255,255,255,0.3)">Sin datos aún — ¡practica!</div>`;
+      _sidebarBody = _ptsBadge + (_body || `<div style="padding:20px 8px;text-align:center;font-size:11px;color:rgba(255,255,255,0.3)">Sin datos aún — ¡practica!</div>`);
     }
   } else {
     _sidebarBody = `<div class="prep-kh-sidebar-hdr">
