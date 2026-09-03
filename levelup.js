@@ -6902,7 +6902,7 @@ const PREP_LEVELS = {
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
     grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_ang_b9','i1tr_ang_b10','i1tr_ang_bq4','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex','jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2'],
-      '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4','sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2','svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','hca9_b1','hca9_b2','hca9_b3','hca9_bq1','hca9_b4','hca9_b5','hca9_b6','hca9_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex','inn5m_np_b1','inn5m_np_b2','inn5m_np_bq1','inn5m_np_b3','inn5m_np_b4','inn5m_np_b5','inn5m_np_bq2','inn5m_dv_b1','inn5m_dv_b2','inn5m_dv_bq1','inn5m_dv_b3','inn5m_dv_b4','inn5m_dv_b5','inn5m_dv_bq2','inn5m_ecu_b1','inn5m_ecu_b2','inn5m_ecu_bq1','inn5m_ecu_b3','inn5m_ecu_b4','inn5m_ecu_bq2'] },
+      '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4','sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2','svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2','svr3ar2_b1','svr3ar2_b2','svr3ar2_b3','svr3ar2_bq1','svr3ar2_b4','svr3ar2_b5','svr3ar2_b6','svr3ar2_bq2'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','hca9_b1','hca9_b2','hca9_b3','hca9_bq1','hca9_b4','hca9_b5','hca9_b6','hca9_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex','inn5m_np_b1','inn5m_np_b2','inn5m_np_bq1','inn5m_np_b3','inn5m_np_b4','inn5m_np_b5','inn5m_np_bq2','inn5m_dv_b1','inn5m_dv_b2','inn5m_dv_bq1','inn5m_dv_b3','inn5m_dv_b4','inn5m_dv_b5','inn5m_dv_bq2','inn5m_ecu_b1','inn5m_ecu_b2','inn5m_ecu_bq1','inn5m_ecu_b3','inn5m_ecu_b4','inn5m_ecu_bq2'] },
     areas:[
       {key:'matematica',   lbl:'Matemática',       ico:'🔢'},
       {key:'algebra',      lbl:'Álgebra',           ico:'α'},
@@ -15197,6 +15197,170 @@ _SKILL_META['svr3ar_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Cadenas de Porcenta
 function _genSVR3AR_BQ2(){return _bqSrcPick(['svr3ar_b4','svr3ar_b5','svr3ar_b6'],[_genSVR3AR_B4,_genSVR3AR_B5,_genSVR3AR_B6]);}
 _SKILL_META['svr3ar_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Comparaciones, Problemas Verbales y Áreas',qCount:15,gen:_genSVR3AR_BQ2,quiz:true,srcKeys:['svr3ar_b4','svr3ar_b5','svr3ar_b6']};
 
+// ===== Colegio San Vicente del Retablo - 3ro Secundaria - Aritmética: Reglas de interés (Unidad 02) =====
+
+function _genSVR3AR2_B1(){
+  return _i4gpick([
+  {_id:1,q:'El banco le ofrece a Tito una tasa de 2% mensual. ¿A qué tasa anual equivale?',a:'24%',opts:_i4gshuf(['24%','2%','12%','20%']),mc:true,ste:'2% mensual × 12 = 24% anual.'},
+  {_id:2,q:'Stephany deposita su dinero en una financiera que paga 3% mensual. ¿A qué tasa anual equivale esta tasa?',a:'36%',opts:_i4gshuf(['36%','3%','18%','30%']),mc:true,ste:'3% mensual × 12 = 36% anual.'},
+  {_id:3,q:'Santiago obtiene un préstamo con una tasa de 4% mensual. ¿A qué tasa anual equivale?',a:'48%',opts:_i4gshuf(['48%','4%','24%','40%']),mc:true,ste:'4% mensual × 12 = 48% anual.'},
+  {_id:4,q:'Tania invierte en un fondo que rinde 6% mensual. ¿A qué tasa anual equivale esta tasa?',a:'72%',opts:_i4gshuf(['72%','6%','36%','60%']),mc:true,ste:'6% mensual × 12 = 72% anual.'},
+  {_id:5,q:'Rosa deposita en una caja municipal que paga 5% bimestral. ¿A qué tasa anual equivale?',a:'30%',opts:_i4gshuf(['30%','5%','20%','25%']),mc:true,ste:'5% bimestral × 6 = 30% anual.'},
+  {_id:6,q:'Carlos obtiene una tasa de 8% bimestral en su cuenta de ahorros. ¿A qué tasa anual equivale?',a:'48%',opts:_i4gshuf(['48%','8%','32%','40%']),mc:true,ste:'8% bimestral × 6 = 48% anual.'},
+  {_id:7,q:'Lucía consigue un préstamo bancario a una tasa de 10% bimestral. ¿A qué tasa anual equivale?',a:'60%',opts:_i4gshuf(['60%','10%','40%','50%']),mc:true,ste:'10% bimestral × 6 = 60% anual.'},
+  {_id:8,q:'Miguel ahorra en una entidad que ofrece 12% bimestral. ¿A qué tasa anual equivale esta tasa?',a:'72%',opts:_i4gshuf(['72%','12%','48%','60%']),mc:true,ste:'12% bimestral × 6 = 72% anual.'},
+  {_id:9,q:'Ana coloca su capital en una financiera con tasa de 9% trimestral. ¿A qué tasa anual equivale?',a:'36%',opts:_i4gshuf(['36%','9%','54%','27%']),mc:true,ste:'9% trimestral × 4 = 36% anual.'},
+  {_id:10,q:'Diego obtiene un préstamo con tasa de 15% trimestral. ¿A qué tasa anual equivale?',a:'60%',opts:_i4gshuf(['60%','15%','90%','45%']),mc:true,ste:'15% trimestral × 4 = 60% anual.'},
+  {_id:11,q:'Valeria deposita en un banco que paga 8% cuatrimestral. ¿A qué tasa anual equivale?',a:'24%',opts:_i4gshuf(['24%','8%','32%','16%']),mc:true,ste:'8% cuatrimestral × 3 = 24% anual.'},
+  {_id:12,q:'Bruno invierte a una tasa de 20% cuatrimestral. ¿A qué tasa anual equivale?',a:'60%',opts:_i4gshuf(['60%','20%','80%','40%']),mc:true,ste:'20% cuatrimestral × 3 = 60% anual.'},
+  {_id:13,q:'Camila ahorra en una entidad que paga 18% semestral. ¿A qué tasa anual equivale?',a:'36%',opts:_i4gshuf(['36%','18%','54%','9%']),mc:true,ste:'18% semestral × 2 = 36% anual.'},
+  {_id:14,q:'Renzo obtiene 25% semestral en un depósito a plazo. ¿A qué tasa anual equivale?',a:'50%',opts:_i4gshuf(['50%','25%','75%','12.5%']),mc:true,ste:'25% semestral × 2 = 50% anual.'},
+  {_id:15,q:'Un banco ofrece 48% anual. ¿A qué tasa mensual equivale?',a:'4%',opts:_i4gshuf(['4%','48%','8%','2%']),mc:true,ste:'48% anual ÷ 12 = 4% mensual.'},
+  {_id:16,q:'Una financiera paga 60% anual. ¿A qué tasa mensual equivale esta tasa?',a:'5%',opts:_i4gshuf(['5%','60%','10%','6%']),mc:true,ste:'60% anual ÷ 12 = 5% mensual.'},
+  {_id:17,q:'Un préstamo tiene una tasa de 42% anual. ¿A qué tasa bimestral equivale?',a:'7%',opts:_i4gshuf(['7%','42%','21%','14%']),mc:true,ste:'42% anual ÷ 6 = 7% bimestral.'},
+  {_id:18,q:'Una caja de ahorros paga 32% anual. ¿A qué tasa trimestral equivale?',a:'8%',opts:_i4gshuf(['8%','32%','16%','4%']),mc:true,ste:'32% anual ÷ 4 = 8% trimestral.'},
+  {_id:19,q:'Sofía tiene una tasa de 12% trimestral. ¿A qué tasa bimestral equivale?',a:'8%',opts:_i4gshuf(['8%','12%','18%','6%']),mc:true,ste:'12% trimestral × 4 = 48% anual; 48% anual ÷ 6 = 8% bimestral.'},
+  {_id:20,q:'Un depósito rinde 9% bimestral. ¿A qué tasa cuatrimestral equivale?',a:'18%',opts:_i4gshuf(['18%','9%','27%','13.5%']),mc:true,ste:'9% bimestral × 6 = 54% anual; 54% anual ÷ 3 = 18% cuatrimestral.'},
+  ]);
+}
+_SKILL_META['svr3ar2_b1']={ico:'🔁',lbl:'Tasas equivalentes entre periodos',qCount:4,gen:_genSVR3AR2_B1,plantillas:["Convertir una tasa periódica (mensual, bimestral, trimestral, cuatrimestral, semestral) a su equivalente anual", "Convertir una tasa anual a su equivalente en un periodo menor (mensual, bimestral, trimestral)", "Convertir entre dos periodos no anuales pasando por la tasa anual equivalente", "Variante con otros valores de tasa mensual/bimestral", "Variante con otros valores de tasa trimestral/cuatrimestral/semestral"]};
+
+function _genSVR3AR2_B2(){
+  return _i4gpick([
+  {_id:1,q:'Tito deposita 900 soles en un banco al 12% anual durante 3 años. Determina el interés generado.',a:'324',opts:_i4gshuf(['324','108','216','900']),mc:true,ste:'I = C·r·t/100 = 900 × 12 × 3 / 100 = 324.'},
+  {_id:2,q:'Stephany otorga un préstamo de 1200 soles al 15% anual durante 2 años. Determina el interés generado.',a:'360',opts:_i4gshuf(['360','180','120','1200']),mc:true,ste:'I = C·r·t/100 = 1200 × 15 × 2 / 100 = 360.'},
+  {_id:3,q:'Santiago invierte 2500 soles en una financiera al 8% anual durante 4 años. Determina el interés generado.',a:'800',opts:_i4gshuf(['800','200','400','2500']),mc:true,ste:'I = C·r·t/100 = 2500 × 8 × 4 / 100 = 800.'},
+  {_id:4,q:'Tania ahorra 1800 soles en una caja municipal al 10% anual durante 5 años. Determina el interés generado.',a:'900',opts:_i4gshuf(['900','180','360','1800']),mc:true,ste:'I = C·r·t/100 = 1800 × 10 × 5 / 100 = 900.'},
+  {_id:5,q:'Rosa coloca 3200 soles en un depósito a plazo al 6% anual durante 3 años. Determina el interés generado.',a:'576',opts:_i4gshuf(['576','192','384','3200']),mc:true,ste:'I = C·r·t/100 = 3200 × 6 × 3 / 100 = 576.'},
+  {_id:6,q:'Carlos deposita 1500 soles en un banco al 18% anual durante 2 años. Determina el interés generado.',a:'540',opts:_i4gshuf(['540','270','180','1500']),mc:true,ste:'I = C·r·t/100 = 1500 × 18 × 2 / 100 = 540.'},
+  {_id:7,q:'Lucía invierte 4000 soles en una financiera al 9% anual durante 2 años. Determina el interés generado.',a:'720',opts:_i4gshuf(['720','360','180','4000']),mc:true,ste:'I = C·r·t/100 = 4000 × 9 × 2 / 100 = 720.'},
+  {_id:8,q:'Miguel otorga un préstamo de 2000 soles al 14% anual durante 3 años. Determina el interés generado.',a:'840',opts:_i4gshuf(['840','280','420','2000']),mc:true,ste:'I = C·r·t/100 = 2000 × 14 × 3 / 100 = 840.'},
+  {_id:9,q:'Ana deposita 700 soles en un banco al 16% anual durante un año y medio. Determina el interés generado.',a:'168',opts:_i4gshuf(['168','112','224','700']),mc:true,ste:'Un año y medio = 1.5 años. I = C·r·t/100 = 700 × 16 × 1.5 / 100 = 168.'},
+  {_id:10,q:'Diego coloca 3600 soles en una financiera al 10% anual durante un año y medio. Determina el interés generado.',a:'540',opts:_i4gshuf(['540','360','720','3600']),mc:true,ste:'Un año y medio = 1.5 años. I = C·r·t/100 = 3600 × 10 × 1.5 / 100 = 540.'},
+  {_id:11,q:'Valeria invierte 2400 soles en un banco al 12% anual durante dos años y medio. Determina el interés generado.',a:'720',opts:_i4gshuf(['720','576','288','2400']),mc:true,ste:'Dos años y medio = 2.5 años. I = C·r·t/100 = 2400 × 12 × 2.5 / 100 = 720.'},
+  {_id:12,q:'Bruno deposita 1600 soles en una caja municipal al 20% anual durante dos años y medio. Determina el interés generado.',a:'800',opts:_i4gshuf(['800','640','320','1600']),mc:true,ste:'Dos años y medio = 2.5 años. I = C·r·t/100 = 1600 × 20 × 2.5 / 100 = 800.'},
+  {_id:13,q:'Camila presta 5000 soles al 24% anual durante 8 meses. Determina el interés generado.',a:'800',opts:_i4gshuf(['800','9600','1200','400']),mc:true,ste:'8 meses = 8/12 de año. I = C·r·t/100 = 5000 × 24 × (8/12) / 100 = 800.'},
+  {_id:14,q:'Renzo invierte 3000 soles al 18% anual durante 4 meses. Determina el interés generado.',a:'180',opts:_i4gshuf(['180','2160','540','90']),mc:true,ste:'4 meses = 4/12 de año. I = C·r·t/100 = 3000 × 18 × (4/12) / 100 = 180.'},
+  {_id:15,q:'Sofía deposita 6000 soles al 15% anual durante 6 meses. Determina el interés generado.',a:'450',opts:_i4gshuf(['450','5400','900','225']),mc:true,ste:'6 meses = 6/12 = 0.5 año. I = C·r·t/100 = 6000 × 15 × 0.5 / 100 = 450.'},
+  {_id:16,q:'Paolo coloca 2400 soles al 30% anual durante 10 meses. Determina el interés generado.',a:'600',opts:_i4gshuf(['600','7200','720','300']),mc:true,ste:'10 meses = 10/12 de año. I = C·r·t/100 = 2400 × 30 × (10/12) / 100 = 600.'},
+  {_id:17,q:'Zoe ahorra 1000 soles al 36% anual durante 5 meses. Determina el interés generado.',a:'150',opts:_i4gshuf(['150','1800','360','75']),mc:true,ste:'5 meses = 5/12 de año. I = C·r·t/100 = 1000 × 36 × (5/12) / 100 = 150.'},
+  {_id:18,q:'Iker invierte 9000 soles al 8% anual durante un año y medio. Determina el interés generado.',a:'1080',opts:_i4gshuf(['1080','720','1440','9000']),mc:true,ste:'Un año y medio = 1.5 años. I = C·r·t/100 = 9000 × 8 × 1.5 / 100 = 1080.'},
+  {_id:19,q:'Elena deposita 8000 soles al 24% anual durante 3 meses. Determina el interés generado.',a:'480',opts:_i4gshuf(['480','5760','1920','240']),mc:true,ste:'3 meses = 3/12 = 0.25 año. I = C·r·t/100 = 8000 × 24 × 0.25 / 100 = 480.'},
+  {_id:20,q:'Marco otorga un préstamo de 1200 soles al 45% anual durante 8 meses. Determina el interés generado.',a:'360',opts:_i4gshuf(['360','4320','540','180']),mc:true,ste:'8 meses = 8/12 de año. I = C·r·t/100 = 1200 × 45 × (8/12) / 100 = 360.'},
+  ]);
+}
+_SKILL_META['svr3ar2_b2']={ico:'💰',lbl:'Cálculo directo del interés simple (I = C·r·t/100)',qCount:4,gen:_genSVR3AR2_B2,plantillas:["Calcular el interés simple dado C, r y t en años enteros", "Calcular el interés simple con tiempo en años y medio (fracción)", "Calcular el interés simple con tiempo dado en meses (convertir a fracción de año)", "Variante con capital y tasa distintos, t en años", "Variante con tiempo en meses y otros valores de capital/tasa"]};
+
+function _genSVR3AR2_B3(){
+  return _i4gpick([
+  {_id:1,q:'Se depositan 8000 soles al 12% anual durante 1 año y 3 meses. ¿Cuál es el interés generado?',a:'1200',opts:_i4gshuf(['1200','1248','960','1300']),mc:true,ste:'t = 360+90 = 450 días. I = C·r·t/36000 = 8000×12×450/36000 = 1200.'},
+  {_id:2,q:'Rosa impone 5000 soles al 15% anual durante 1 año y 2 meses en una financiera. ¿Cuál es el interés obtenido?',a:'875',opts:_i4gshuf(['875','750','900','825']),mc:true,ste:'t = 360+60 = 420 días. I = 5000×15×420/36000 = 875.'},
+  {_id:3,q:'Tito deposita 6000 soles al 10% anual durante 8 meses y 15 días. ¿Qué interés genera?',a:'425',opts:_i4gshuf(['425','400','489','450']),mc:true,ste:'t = 240+15 = 255 días. I = 6000×10×255/36000 = 425.'},
+  {_id:4,q:'Se presta 9000 soles al 18% anual durante 7 meses. Halla el interés producido.',a:'945',opts:_i4gshuf(['945','1134','900','990']),mc:true,ste:'t = 7×30 = 210 días. I = 9000×18×210/36000 = 945.'},
+  {_id:5,q:'Santiago deposita 12000 soles al 9% anual durante 1 año y 4 meses. ¿Cuál es el interés generado?',a:'1440',opts:_i4gshuf(['1440','1080','1512','1400']),mc:true,ste:'t = 360+120 = 480 días. I = 12000×9×480/36000 = 1440.'},
+  {_id:6,q:'Carlos impone 4000 soles al 24% anual durante 5 meses y 15 días. ¿Qué interés obtiene?',a:'440',opts:_i4gshuf(['440','400','460','420']),mc:true,ste:'t = 150+15 = 165 días. I = 4000×24×165/36000 = 440.'},
+  {_id:7,q:'Lucía deposita 9000 soles al 20% anual durante 2 meses y 15 días. ¿Cuál es el interés generado?',a:'375',opts:_i4gshuf(['375','300','450','350']),mc:true,ste:'t = 60+15 = 75 días. I = 9000×20×75/36000 = 375.'},
+  {_id:8,q:'Se presta 10000 soles al 6% anual durante 1 año y 6 meses. Halla el interés producido.',a:'900',opts:_i4gshuf(['900','600','960','850']),mc:true,ste:'t = 360+180 = 540 días. I = 10000×6×540/36000 = 900.'},
+  {_id:9,q:'Miguel deposita 3000 soles al 30% anual durante 9 meses y 12 días. ¿Qué interés genera?',a:'705',opts:_i4gshuf(['705','675','684','715']),mc:true,ste:'t = 270+12 = 282 días. I = 3000×30×282/36000 = 705.'},
+  {_id:10,q:'Stephany impone 15000 soles al 8% anual durante 1 año y 1 mes en un banco. ¿Cuál es el interés obtenido?',a:'1300',opts:_i4gshuf(['1300','1200','1320','1250']),mc:true,ste:'t = 360+30 = 390 días. I = 15000×8×390/36000 = 1300.'},
+  {_id:11,q:'Se imponen 6000 soles al 30% trimestral durante 1 año, 1 mes y 10 días. Determina el interés generado.',a:'8000',opts:_i4gshuf(['8000','2000','7920','8800']),mc:true,ste:'Tasa anual: 30% trimestral × (360/90) = 120% anual. t = 360+30+10 = 400 días. I = 6000×120×400/36000 = 8000.'},
+  {_id:12,q:'Tania deposita 4000 pesos al 20% semestral durante 9 meses. ¿Cuál es el interés generado?',a:'1200',opts:_i4gshuf(['1200','600','1440','1250']),mc:true,ste:'Tasa anual: 20% semestral × (360/180) = 40% anual. t = 9×30 = 270 días. I = 4000×40×270/36000 = 1200.'},
+  {_id:13,q:'Se prestan 5000 soles al 10% bimestral durante 1 año y 2 meses. Halla el interés producido.',a:'3500',opts:_i4gshuf(['3500','500','3600','4200']),mc:true,ste:'Tasa anual: 10% bimestral × (360/60) = 60% anual. t = 360+60 = 420 días. I = 5000×60×420/36000 = 3500.'},
+  {_id:14,q:'Renzo impone 9000 soles al 15% trimestral durante 5 meses y 15 días en una financiera. ¿Cuál es el interés generado?',a:'2475',opts:_i4gshuf(['2475','2250','2500','2400']),mc:true,ste:'Tasa anual: 15% trimestral × (360/90) = 60% anual. t = 150+15 = 165 días. I = 9000×60×165/36000 = 2475.'},
+  {_id:15,q:'Se depositan 8000 soles al 8% bimestral durante 1 año. ¿Qué interés se obtiene?',a:'3840',opts:_i4gshuf(['3840','640','1920','3800']),mc:true,ste:'Tasa anual: 8% bimestral × (360/60) = 48% anual. t = 360 días. I = 8000×48×360/36000 = 3840.'},
+  {_id:16,q:'Sofía deposita 12000 soles al 25% semestral durante 10 meses. ¿Cuál es el interés generado?',a:'5000',opts:_i4gshuf(['5000','2500','3000','5200']),mc:true,ste:'Tasa anual: 25% semestral × (360/180) = 50% anual. t = 10×30 = 300 días. I = 12000×50×300/36000 = 5000.'},
+  {_id:17,q:'Se prestan 10000 soles al 6% bimestral durante 1 año y 3 meses. Halla el interés obtenido.',a:'4500',opts:_i4gshuf(['4500','750','3600','4400']),mc:true,ste:'Tasa anual: 6% bimestral × (360/60) = 36% anual. t = 360+90 = 450 días. I = 10000×36×450/36000 = 4500.'},
+  {_id:18,q:'Bruno impone 7000 soles al 12% trimestral durante 7 meses y 12 días. ¿Qué interés genera?',a:'2072',opts:_i4gshuf(['2072','518','1960','2100']),mc:true,ste:'Tasa anual: 12% trimestral × (360/90) = 48% anual. t = 210+12 = 222 días. I = 7000×48×222/36000 = 2072.'},
+  {_id:19,q:'Valeria deposita 5000 soles al 18% semestral durante 10 meses en un banco. ¿Cuál es el interés generado?',a:'1500',opts:_i4gshuf(['1500','750','900','1550']),mc:true,ste:'Tasa anual: 18% semestral × (360/180) = 36% anual. t = 10×30 = 300 días. I = 5000×36×300/36000 = 1500.'},
+  {_id:20,q:'Se depositan 6000 soles al 9% bimestral durante 1 año y 1 mes. Halla el interés obtenido.',a:'3510',opts:_i4gshuf(['3510','585','3240','3500']),mc:true,ste:'Tasa anual: 9% bimestral × (360/60) = 54% anual. t = 360+30 = 390 días. I = 6000×54×390/36000 = 3510.'},
+  ]);
+}
+_SKILL_META['svr3ar2_b3']={ico:'🕐',lbl:'Interés simple con tiempo mixto (años, meses y días)',qCount:4,gen:_genSVR3AR2_B3,plantillas:["Calcular el interés con tasa anual y tiempo mixto (años, meses y días)", "Calcular el interés con tasa por periodo (trimestral, semestral, bimestral) convertida a tasa anual, y tiempo mixto", "Variante con distintos capitales y tasas anuales directas", "Variante con distintas tasas por periodo y tiempos mixtos", "Problema de depósito o préstamo con conversión de unidades de tiempo"]};
+
+function _genSVR3AR2_B4(){
+  return _i4gpick([
+  {_id:1,q:'¿Qué capital se debe prestar al 10% anual durante 4 meses para producir un interés de 120 soles?',a:'3600',opts:_i4gshuf(['3600','300','3900','3300']),mc:true,ste:'t = 4/12 año. C = I×100/(r×t) = 120×100/(10×4/12) = 3600.'},
+  {_id:2,q:'¿Qué capital genera un interés de 320 soles al 8% anual en 1 año?',a:'4000',opts:_i4gshuf(['4000','3900','4100','3800']),mc:true,ste:'C = I×100/(r×t) = 320×100/(8×1) = 4000.'},
+  {_id:3,q:'Se coloca un capital al 12% anual durante 6 meses y se obtiene un interés de 300 soles. ¿Cuál es el capital?',a:'5000',opts:_i4gshuf(['5000','2500','5200','4800']),mc:true,ste:'t = 6/12 año. C = I×100/(r×t) = 300×100/(12×6/12) = 5000.'},
+  {_id:4,q:'Tania presta dinero al 15% anual durante 8 meses y obtiene un interés de 600 soles. ¿Cuál fue el capital prestado?',a:'6000',opts:_i4gshuf(['6000','500','6200','5800']),mc:true,ste:'t = 8/12 año. C = I×100/(r×t) = 600×100/(15×8/12) = 6000.'},
+  {_id:5,q:'Un capital impuesto al 20% anual durante 2 años produjo un interés de 1000 soles. ¿Cuál fue ese capital?',a:'2500',opts:_i4gshuf(['2500','5000','2400','2600']),mc:true,ste:'C = I×100/(r×t) = 1000×100/(20×2) = 2500.'},
+  {_id:6,q:'Miguel impone un capital al 6% anual durante 9 meses y gana un interés de 360 soles. ¿Cuál fue el capital?',a:'8000',opts:_i4gshuf(['8000','6000','8200','7800']),mc:true,ste:'t = 9/12 año. C = I×100/(r×t) = 360×100/(6×9/12) = 8000.'},
+  {_id:7,q:'Se debe prestar cierto capital al 18% anual durante 10 meses para producir un interés de 450 soles. ¿Cuál es ese capital?',a:'3000',opts:_i4gshuf(['3000','2500','3200','2800']),mc:true,ste:'t = 10/12 año. C = I×100/(r×t) = 450×100/(18×10/12) = 3000.'},
+  {_id:8,q:'Un capital de 4000 soles genera un interés de 400 soles en 2 años. ¿A qué tasa anual se impuso?',a:'5%',opts:_i4gshuf(['5%','10%','6%','4%']),mc:true,ste:'r = I×100/(C×t) = 400×100/(4000×2) = 5%.'},
+  {_id:9,q:'Un capital de 6000 soles produce un interés de 480 soles en 1 año. ¿Cuál es la tasa anual aplicada?',a:'8%',opts:_i4gshuf(['8%','7%','9%','10%']),mc:true,ste:'r = I×100/(C×t) = 480×100/(6000×1) = 8%.'},
+  {_id:10,q:'Carlos impone 5000 soles durante 6 meses y obtiene un interés de 300 soles. ¿A qué tasa anual fue impuesto?',a:'12%',opts:_i4gshuf(['12%','1%','11%','13%']),mc:true,ste:'t = 6/12 año. r = I×100/(C×t) = 300×100/(5000×6/12) = 12%.'},
+  {_id:11,q:'Un capital de 3000 soles genera 200 soles de interés en 4 meses. ¿Cuál fue la tasa anual?',a:'20%',opts:_i4gshuf(['20%','18%','22%','24%']),mc:true,ste:'t = 4/12 año. r = I×100/(C×t) = 200×100/(3000×4/12) = 20%.'},
+  {_id:12,q:'Un capital de 9000 soles produce un interés de 360 soles en 8 meses. ¿A qué tasa anual se prestó?',a:'6%',opts:_i4gshuf(['6%','4%','7%','5%']),mc:true,ste:'t = 8/12 año. r = I×100/(C×t) = 360×100/(9000×8/12) = 6%.'},
+  {_id:13,q:'Un capital de 2000 soles genera un interés de 900 soles en 3 años. ¿Cuál fue la tasa anual?',a:'15%',opts:_i4gshuf(['15%','14%','16%','18%']),mc:true,ste:'r = I×100/(C×t) = 900×100/(2000×3) = 15%.'},
+  {_id:14,q:'Rosa presta 7000 soles durante 6 meses y gana un interés de 350 soles. ¿A qué tasa anual fue prestado?',a:'10%',opts:_i4gshuf(['10%','5%','9%','11%']),mc:true,ste:'t = 6/12 año. r = I×100/(C×t) = 350×100/(7000×6/12) = 10%.'},
+  {_id:15,q:'¿Durante cuántos meses se debe imponer un capital de 4000 soles al 10% anual para generar un interés de 200 soles?',a:'6 meses',opts:_i4gshuf(['6 meses','5 meses','2 meses','8 meses']),mc:true,ste:'t = I×100/(C×r) = 200×100/(4000×10) = 0.5 año = 6 meses.'},
+  {_id:16,q:'¿Durante cuánto tiempo se impuso un capital de 5000 soles al 12% anual para producir un interés de 600 soles?',a:'1 año',opts:_i4gshuf(['1 año','6 meses','2 años','10 meses']),mc:true,ste:'t = I×100/(C×r) = 600×100/(5000×12) = 1 año.'},
+  {_id:17,q:'Un capital de 6000 soles impuesto al 8% anual generó un interés de 160 soles. ¿Durante cuántos meses estuvo impuesto?',a:'4 meses',opts:_i4gshuf(['4 meses','3 meses','6 meses','5 meses']),mc:true,ste:'t = I×100/(C×r) = 160×100/(6000×8) = 1/3 año = 4 meses.'},
+  {_id:18,q:'Tania prestó 3000 soles al 20% anual y ganó un interés de 1200 soles. ¿Durante cuánto tiempo estuvo prestado el dinero?',a:'2 años',opts:_i4gshuf(['2 años','1 año','18 meses','3 años']),mc:true,ste:'t = I×100/(C×r) = 1200×100/(3000×20) = 2 años.'},
+  {_id:19,q:'Un capital de 8000 soles impuesto al 6% anual produjo un interés de 120 soles. ¿Durante cuántos meses estuvo impuesto?',a:'3 meses',opts:_i4gshuf(['3 meses','2 meses','4 meses','6 meses']),mc:true,ste:'t = I×100/(C×r) = 120×100/(8000×6) = 0.25 año = 3 meses.'},
+  {_id:20,q:'Un capital de 2500 soles impuesto al 16% anual generó un interés de 300 soles. ¿Durante cuántos meses estuvo impuesto?',a:'9 meses',opts:_i4gshuf(['9 meses','6 meses','8 meses','10 meses']),mc:true,ste:'t = I×100/(C×r) = 300×100/(2500×16) = 0.75 año = 9 meses.'},
+  ]);
+}
+_SKILL_META['svr3ar2_b4']={ico:'🧮',lbl:'Hallar capital, tasa o tiempo (despejando la fórmula)',qCount:4,gen:_genSVR3AR2_B4,plantillas:["Despejar el capital (C) dados el interés, la tasa anual y el tiempo", "Despejar la tasa anual (r) dados el interés, el capital y el tiempo", "Despejar el tiempo (t) dados el interés, el capital y la tasa anual", "Variante con tiempo expresado en meses (fracción de año)", "Variante con tiempo expresado en años completos"]};
+
+function _genSVR3AR2_B5(){
+  return _i4gpick([
+  {_id:1,q:'Tito pide un préstamo de S/. 8000 al 15% anual, a pagar en 2 años. ¿Cuánto debe pagar en total al banco?',a:'S/. 10400',opts:_i4gshuf(['S/. 10400','S/. 2400','S/. 9200','S/. 11200']),mc:true,ste:'I = C·r·t/100 = 8000×15×2/100 = 2400; M = C + I = 8000 + 2400 = 10400.'},
+  {_id:2,q:'Stephany pide un préstamo de S/. 6000 al 18% anual, a devolver en 3 años. ¿Qué monto debe pagar en total?',a:'S/. 9240',opts:_i4gshuf(['S/. 9240','S/. 3240','S/. 8880','S/. 9600']),mc:true,ste:'I = 6000×18×3/100 = 3240; M = 6000 + 3240 = 9240.'},
+  {_id:3,q:'Santiago solicita un préstamo de S/. 12000 al 10% anual por 4 años. ¿Cuánto debe pagar en total?',a:'S/. 16800',opts:_i4gshuf(['S/. 16800','S/. 4800','S/. 15600','S/. 17200']),mc:true,ste:'I = 12000×10×4/100 = 4800; M = 12000 + 4800 = 16800.'},
+  {_id:4,q:'Rosa pide un préstamo de S/. 4000 al 25% anual, a pagar en 2 años. ¿Qué monto total debe pagar?',a:'S/. 6000',opts:_i4gshuf(['S/. 6000','S/. 2000','S/. 5000','S/. 6400']),mc:true,ste:'I = 4000×25×2/100 = 2000; M = 4000 + 2000 = 6000.'},
+  {_id:5,q:'Carlos debe pagar al banco un monto de S/. 9600 luego de 3 años, tras haber recibido un préstamo al 20% anual. ¿Cuál fue el capital que le prestaron?',a:'S/. 6000',opts:_i4gshuf(['S/. 6000','S/. 9600','S/. 8000','S/. 3840']),mc:true,ste:'M = C(1 + rt/100) → C = M/(1 + rt/100) = 9600/(1 + 20×3/100) = 9600/1.6 = 6000.'},
+  {_id:6,q:'Rosa depositó cierto capital en una financiera al 16% anual; luego de 5 años, retiró un monto total de S/. 9000. ¿Cuál fue el capital que depositó originalmente?',a:'S/. 5000',opts:_i4gshuf(['S/. 5000','S/. 9000','S/. 4000','S/. 7500']),mc:true,ste:'C = M/(1 + rt/100) = 9000/(1 + 16×5/100) = 9000/1.8 = 5000.'},
+  {_id:7,q:'Miguel recibió un préstamo al 12% anual, y después de 5 años terminó pagando un monto total de S/. 11200. ¿Cuánto fue el capital prestado?',a:'S/. 7000',opts:_i4gshuf(['S/. 7000','S/. 11200','S/. 4200','S/. 8000']),mc:true,ste:'C = M/(1 + rt/100) = 11200/(1 + 12×5/100) = 11200/1.6 = 7000.'},
+  {_id:8,q:'Lucía pidió un préstamo al 8% anual y, luego de 5 años, pagó en total S/. 14000. ¿Cuál fue el capital prestado?',a:'S/. 10000',opts:_i4gshuf(['S/. 10000','S/. 14000','S/. 4000','S/. 11200']),mc:true,ste:'C = M/(1 + rt/100) = 14000/(1 + 8×5/100) = 14000/1.4 = 10000.'},
+  {_id:9,q:'V/F: El monto M que se debe pagar por un préstamo de capital C a una tasa r% anual durante t años se calcula como M = C(1 + rt/100).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: el monto es el capital más el interés simple generado, M = C + I = C(1 + rt/100).'},
+  {_id:10,q:'V/F: El interés I generado por un préstamo es lo mismo que el monto total M que se debe pagar.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: el interés I es solo la ganancia generada; el monto M es el capital más el interés, M = C + I.'},
+  {_id:11,q:'V/F: Para hallar el capital C a partir del monto M, la tasa r% y el tiempo t, se despeja C = M / (1 + rt/100).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: como M = C(1 + rt/100), al despejar C se obtiene C = M / (1 + rt/100).'},
+  {_id:12,q:'V/F: Si una tasa está dada por periodo (por ejemplo, bimestral), se puede usar directamente el número de meses del préstamo en la fórmula, sin convertir a número de periodos.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: primero se debe convertir el tiempo total al número de periodos de esa tasa (por ejemplo, meses ÷ 2 para bimestres) antes de aplicar la fórmula.'},
+  {_id:13,q:'Stephany le presta a Miguel S/. 1500, a una tasa de 12% bimestral, para devolver en 4 meses. ¿Cuánto debe devolverle Miguel?',a:'S/. 1860',opts:_i4gshuf(['S/. 1860','S/. 360','S/. 2220','S/. 1800']),mc:true,ste:'4 meses = 2 bimestres; I = 1500×12×2/100 = 360; M = 1500 + 360 = 1860.'},
+  {_id:14,q:'Tania deposita S/. 2000 en una caja municipal al 8% trimestral, y retira su dinero a los 9 meses. ¿Qué monto recibe?',a:'S/. 2480',opts:_i4gshuf(['S/. 2480','S/. 480','S/. 2640','S/. 2400']),mc:true,ste:'9 meses = 3 trimestres; I = 2000×8×3/100 = 480; M = 2000 + 480 = 2480.'},
+  {_id:15,q:'Lucía le presta a Rosa S/. 900 al 15% cuatrimestral, a devolver en 8 meses. ¿Cuánto debe devolverle Rosa?',a:'S/. 1170',opts:_i4gshuf(['S/. 1170','S/. 270','S/. 1350','S/. 1035']),mc:true,ste:'8 meses = 2 cuatrimestres; I = 900×15×2/100 = 270; M = 900 + 270 = 1170.'},
+  {_id:16,q:'Carlos deposita S/. 2400 en una financiera al 6% bimestral, y retira su dinero luego de 6 meses. ¿Qué monto recibe en total?',a:'S/. 2832',opts:_i4gshuf(['S/. 2832','S/. 432','S/. 2976','S/. 2544']),mc:true,ste:'6 meses = 3 bimestres; I = 2400×6×3/100 = 432; M = 2400 + 432 = 2832.'},
+  {_id:17,q:'Tania debe devolver un préstamo luego de 6 meses, tras haber recibido cierto capital al 10% bimestral. Si el total devuelto fue S/. 1560, ¿cuál fue el capital prestado?',a:'S/. 1200',opts:_i4gshuf(['S/. 1200','S/. 1560','S/. 1360','S/. 1300']),mc:true,ste:'6 meses = 3 bimestres; C = M/(1 + rt/100) = 1560/(1 + 10×3/100) = 1560/1.3 = 1200.'},
+  {_id:18,q:'Miguel depositó cierto capital al 5% trimestral y, después de 9 meses, retiró un total de S/. 2070. ¿Cuál fue el capital depositado?',a:'S/. 1800',opts:_i4gshuf(['S/. 1800','S/. 2070','S/. 1955','S/. 1725']),mc:true,ste:'9 meses = 3 trimestres; C = 2070/(1 + 5×3/100) = 2070/1.15 = 1800.'},
+  {_id:19,q:'Rosa recibió un préstamo al 20% cuatrimestral y, luego de 8 meses, terminó pagando S/. 1400 en total. ¿Cuál fue el capital prestado?',a:'S/. 1000',opts:_i4gshuf(['S/. 1000','S/. 1400','S/. 1120','S/. 1200']),mc:true,ste:'8 meses = 2 cuatrimestres; C = 1400/(1 + 20×2/100) = 1400/1.4 = 1000.'},
+  {_id:20,q:'Carlos pidió un préstamo al 9% bimestral y, luego de 4 meses, pagó un total de S/. 1888. ¿Cuál fue el capital prestado?',a:'S/. 1600',opts:_i4gshuf(['S/. 1600','S/. 1888','S/. 1698','S/. 1700']),mc:true,ste:'4 meses = 2 bimestres; C = 1888/(1 + 9×2/100) = 1888/1.18 = 1600.'},
+  ]);
+}
+_SKILL_META['svr3ar2_b5']={ico:'🏦',lbl:'Préstamos y montos a pagar (M = C + I)',qCount:4,gen:_genSVR3AR2_B5,plantillas:["Calcular el monto a pagar de un préstamo dado el capital, la tasa anual y el tiempo en años", "Hallar el capital original dado el monto a pagar, la tasa anual y el tiempo en años", "V/F sobre el planteamiento correcto de interés simple y monto", "Calcular el monto con una tasa por periodo (bimestral, trimestral, cuatrimestral) convirtiendo el tiempo", "Hallar el capital original dado el monto, con una tasa por periodo"]};
+
+function _genSVR3AR2_B6(){
+  return _i4gpick([
+  {_id:1,q:'Tito impone S/. 6000 al 10% anual durante 4 años. Bruno impone S/. 8000 al 6% anual, generando el mismo interés que Tito. ¿Durante cuántos años impuso Bruno su capital?',a:'5 años',opts:_i4gshuf(['5 años','4 años','6 años','3 años']),mc:true,ste:'I de Tito = 6000×10×4/100 = 2400; para Bruno: 2400 = 8000×6×t/100 → t = 2400×100/(8000×6) = 5 años.'},
+  {_id:2,q:'Sofía impone S/. 5000 al 12% anual durante 3 años. Elena impone S/. 3000 al 10% anual, generando el mismo interés que Sofía. ¿Durante cuántos años impuso Elena su capital?',a:'6 años',opts:_i4gshuf(['6 años','3 años','5 años','4 años']),mc:true,ste:'I de Sofía = 5000×12×3/100 = 1800; para Elena: 1800 = 3000×10×t/100 → t = 1800×100/(3000×10) = 6 años.'},
+  {_id:3,q:'Diego impone S/. 4000 al 15% anual durante 2 años. Valeria impone S/. 6000 durante 4 años y obtiene el mismo interés que Diego. ¿A qué tasa anual impuso Valeria su capital?',a:'5%',opts:_i4gshuf(['5%','8%','4%','6%']),mc:true,ste:'I de Diego = 4000×15×2/100 = 1200; para Valeria: 1200 = 6000×r×4/100 → r = 1200×100/(6000×4) = 5%.'},
+  {_id:4,q:'Paolo impone un capital al 8% anual durante 5 años y obtiene S/. 3600 de interés. Iker impone otro capital al 12% anual durante 3 años y obtiene el mismo interés que Paolo. ¿Cuál fue el capital de Iker?',a:'S/. 10000',opts:_i4gshuf(['S/. 10000','S/. 9000','S/. 12000','S/. 8000']),mc:true,ste:'Para Iker: 3600 = C×12×3/100 → C = 3600×100/(12×3) = 10000 soles.'},
+  {_id:5,q:'Se reparte un capital de S/. 10000 en dos partes: una se invierte al 10% anual y la otra al 15% anual, ambas durante 1 año, obteniéndose en total S/. 1300 de interés. ¿Cuánto se invirtió al 10%?',a:'S/. 4000',opts:_i4gshuf(['S/. 4000','S/. 6000','S/. 5000','S/. 3000']),mc:true,ste:'Sea x lo invertido al 10%; (10000−x) al 15%: x×10/100 + (10000−x)×15/100 = 1300 → 1500 − 0.05x = 1300 → x = 4000.'},
+  {_id:6,q:'Se divide un capital de S/. 8000 en dos partes: S/. 5000 se invierten al 8% anual y el resto al 12% anual, ambas durante 2 años. ¿Cuál es el interés total generado?',a:'S/. 1520',opts:_i4gshuf(['S/. 1520','S/. 1600','S/. 1440','S/. 1360']),mc:true,ste:'I1 = 5000×8×2/100 = 800; I2 = 3000×12×2/100 = 720; total = 800 + 720 = 1520 soles.'},
+  {_id:7,q:'Un capital de S/. 12000 se reparte en dos partes: una se invierte al 6% anual y la otra al 9% anual, ambas durante 3 años, obteniéndose en total S/. 2610 de interés. ¿Cuánto se invirtió al 6%?',a:'S/. 7000',opts:_i4gshuf(['S/. 7000','S/. 5000','S/. 6000','S/. 8000']),mc:true,ste:'Sea x lo invertido al 6%; (12000−x) al 9%: x×18/100 + (12000−x)×27/100 = 2610 → 3240 − 0.09x = 2610 → x = 7000.'},
+  {_id:8,q:'Un capital de S/. 15000 se reparte en dos partes: una se invierte al 5% anual y la otra al 20% anual, ambas durante 2 años, obteniéndose en total S/. 3300 de interés. ¿Cuánto se invirtió al 20%?',a:'S/. 6000',opts:_i4gshuf(['S/. 6000','S/. 9000','S/. 5000','S/. 7000']),mc:true,ste:'Sea y lo invertido al 20%; (15000−y) al 5%: (15000−y)×10/100 + y×40/100 = 3300 → 1500 + 0.30y = 3300 → y = 6000.'},
+  {_id:9,q:'V/F: Si dos capitales generan el mismo interés simple, se cumple que C1·r1·t1 = C2·r2·t2.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: como I = C·r·t/100 para ambos, igualar los intereses da C1·r1·t1 = C2·r2·t2.'},
+  {_id:10,q:'V/F: Al repartir un capital en dos partes invertidas a tasas distintas, el interés total se calcula aplicando el promedio de ambas tasas al capital total.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: el interés total es la suma de los intereses de cada parte por separado, no el promedio de tasas aplicado al total.'},
+  {_id:11,q:'V/F: En un problema de dos capitales con el mismo interés, si el segundo capital es mayor que el primero, entonces el producto (tasa × tiempo) del segundo debe ser menor que el del primero.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: de C1·r1·t1 = C2·r2·t2, si C2 > C1 entonces necesariamente r2·t2 < r1·t1 para mantener la igualdad.'},
+  {_id:12,q:'V/F: El interés simple total de un capital dividido en dos partes es igual a la suma de los intereses generados por cada parte.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: el interés simple es aditivo, por lo que el interés total es la suma de los intereses de cada parte.'},
+  {_id:13,q:'Un capital se presta al 12% trimestral durante 6 meses; al cabo de ese tiempo, el monto obtenido se deposita al 25% cuatrimestral durante 8 meses, obteniéndose S/. 1240 de interés en esta segunda etapa. ¿Cuál fue el capital original?',a:'S/. 2000',opts:_i4gshuf(['S/. 2000','S/. 2480','S/. 2200','S/. 1800']),mc:true,ste:'6 meses = 2 trimestres: monto1 = C(1 + 12×2/100) = 1.24C; 8 meses = 2 cuatrimestres: interés2 = 1.24C×25×2/100 = 0.62C = 1240 → C = 2000.'},
+  {_id:14,q:'Un capital se presta al 10% bimestral durante 6 meses; luego, el monto obtenido se deposita al 15% trimestral durante 9 meses, obteniéndose S/. 1755 de interés en la segunda etapa. ¿Cuál fue el capital original?',a:'S/. 3000',opts:_i4gshuf(['S/. 3000','S/. 3900','S/. 3300','S/. 2700']),mc:true,ste:'6 meses = 3 bimestres: monto1 = C(1 + 10×3/100) = 1.30C; 9 meses = 3 trimestres: interés2 = 1.30C×15×3/100 = 0.585C = 1755 → C = 3000.'},
+  {_id:15,q:'Un capital se presta al 8% cuatrimestral durante 8 meses; luego, el monto obtenido se deposita al 10% bimestral durante 4 meses, obteniéndose S/. 1160 de interés en la segunda etapa. ¿Cuál fue el capital original?',a:'S/. 5000',opts:_i4gshuf(['S/. 5000','S/. 5800','S/. 5500','S/. 4500']),mc:true,ste:'8 meses = 2 cuatrimestres: monto1 = C(1 + 8×2/100) = 1.16C; 4 meses = 2 bimestres: interés2 = 1.16C×10×2/100 = 0.232C = 1160 → C = 5000.'},
+  {_id:16,q:'Un capital se presta al 5% mensual durante 6 meses; luego, el monto obtenido se deposita al 20% trimestral durante 6 meses, obteniéndose S/. 2080 de interés en la segunda etapa. ¿Cuál fue el capital original?',a:'S/. 4000',opts:_i4gshuf(['S/. 4000','S/. 5200','S/. 4400','S/. 3600']),mc:true,ste:'6 meses al 5% mensual: monto1 = C(1 + 5×6/100) = 1.30C; 6 meses = 2 trimestres: interés2 = 1.30C×20×2/100 = 0.52C = 2080 → C = 4000.'},
+  {_id:17,q:'Tres capitales generan el mismo interés simple. El primero es S/. 6000 al 5% anual durante 4 años. El segundo es S/. 4000 al 10% anual durante 3 años. Si el tercero se impone al 8% anual durante 3 años, ¿cuál es el tercer capital?',a:'S/. 5000',opts:_i4gshuf(['S/. 5000','S/. 4500','S/. 6000','S/. 4000']),mc:true,ste:'I = 6000×5×4/100 = 1200 (igual para el segundo: 4000×10×3/100 = 1200); para el tercero: 1200 = C×8×3/100 → C = 1200×100/24 = 5000.'},
+  {_id:18,q:'Un capital de S/. 4000 se invierte al 7% anual y otro de S/. 6000 al 13% anual, ambos durante 2 años. ¿Cuál es el interés total generado entre los dos capitales?',a:'S/. 2120',opts:_i4gshuf(['S/. 2120','S/. 2000','S/. 2200','S/. 1980']),mc:true,ste:'I1 = 4000×7×2/100 = 560; I2 = 6000×13×2/100 = 1560; total = 560 + 1560 = 2120 soles.'},
+  {_id:19,q:'Un capital de S/. 2500 se presta al 12% trimestral durante 6 meses; el monto obtenido se vuelve a invertir durante 9 meses a una nueva tasa trimestral, generando S/. 930 de interés en esta segunda etapa. ¿Cuál fue la nueva tasa trimestral?',a:'10%',opts:_i4gshuf(['10%','12%','8%','15%']),mc:true,ste:'6 meses = 2 trimestres: monto1 = 2500(1 + 12×2/100) = 3100; 9 meses = 3 trimestres: 930 = 3100×r×3/100 → r = 930×100/(3100×3) = 10%.'},
+  {_id:20,q:'Un capital de S/. 1800 se presta al 20% cuatrimestral durante 8 meses; el monto obtenido se reinvierte al 15% trimestral, generando S/. 1134 de interés en esta segunda etapa. ¿Durante cuántos meses estuvo reinvertido el dinero?',a:'9 meses',opts:_i4gshuf(['9 meses','6 meses','12 meses','3 meses']),mc:true,ste:'8 meses = 2 cuatrimestres: monto1 = 1800(1 + 20×2/100) = 2520; 1134 = 2520×15×n/100 → n = 3 trimestres = 9 meses.'},
+  ]);
+}
+_SKILL_META['svr3ar2_b6']={ico:'🧩',lbl:'Problemas compuestos: varios capitales y repartos',qCount:4,gen:_genSVR3AR2_B6,plantillas:["Dos capitales con el mismo interés simple: hallar el tiempo, la tasa o el capital faltante", "Reparto de un capital en dos partes a tasas distintas: hallar el monto invertido o el interés total", "V/F sobre relaciones entre capitales, tasas, tiempos e intereses simples", "Problema de dos etapas: préstamo y luego reinversión, hallar el capital original", "Variante de dos etapas o de capitales equivalentes: hallar la tasa, el tiempo o un tercer capital"]};
+
+function _genSVR3AR2_BQ1(){return _bqSrcPick(['svr3ar2_b1','svr3ar2_b2','svr3ar2_b3'],[_genSVR3AR2_B1,_genSVR3AR2_B2,_genSVR3AR2_B3]);}
+_SKILL_META['svr3ar2_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Tasas Equivalentes e Interés Simple',qCount:15,gen:_genSVR3AR2_BQ1,quiz:true,srcKeys:['svr3ar2_b1','svr3ar2_b2','svr3ar2_b3']};
+
+function _genSVR3AR2_BQ2(){return _bqSrcPick(['svr3ar2_b4','svr3ar2_b5','svr3ar2_b6'],[_genSVR3AR2_B4,_genSVR3AR2_B5,_genSVR3AR2_B6]);}
+_SKILL_META['svr3ar2_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Despejes, Préstamos y Problemas Compuestos',qCount:15,gen:_genSVR3AR2_BQ2,quiz:true,srcKeys:['svr3ar2_b4','svr3ar2_b5','svr3ar2_b6']};
+
 // Nota: NO se genera un examen general (BPU) por unidad — es redundante con el botón
 // nativo "Examen de unidad" (★) de la plataforma.
 
@@ -18598,10 +18762,10 @@ _SKILL_META['i1tr_rta_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Proporciones entr
 
 function _genI1arCj_B1(){
   return _i4gpick([
-  {_id:1,q:'Halla la suma de los elementos de: A = {(3x + 2) ∈ ℤ / 2 ≤ x < 5}',a:'33',opts:_i4gshuf(['33','36','30','39']),mc:true,ste:'Para x=2,3,4: los elementos son 8; 11; 14. Suma = 33.'},
-  {_id:2,q:'Halla la suma de los elementos de: A = {(2x + 1) ∈ ℤ / 3 ≤ x < 7}',a:'40',opts:_i4gshuf(['40','42','38','44']),mc:true,ste:'Para x=3,4,5,6: los elementos son 7; 9; 11; 13. Suma = 40.'},
-  {_id:3,q:'Halla la suma de los elementos de: A = {(4x + 3) ∈ ℤ / 1 ≤ x < 5}',a:'52',opts:_i4gshuf(['52','56','48','60']),mc:true,ste:'Para x=1,2,3,4: los elementos son 7; 11; 15; 19. Suma = 52.'},
-  {_id:4,q:'Halla la suma de los elementos de: A = {(5x − 1) ∈ ℤ / 2 ≤ x < 6}',a:'66',opts:_i4gshuf(['66','71','61','76']),mc:true,ste:'Para x=2,3,4,5: los elementos son 9; 14; 19; 24. Suma = 66.'},
+  {_id:1,q:'Halla la suma de los elementos de: A = {3x + 2 / x ∈ ℤ, 2 ≤ x < 5}',a:'33',opts:_i4gshuf(['33','36','30','39']),mc:true,ste:'Para x=2,3,4: los elementos son 8; 11; 14. Suma = 33.'},
+  {_id:2,q:'Halla la suma de los elementos de: A = {2x + 1 / x ∈ ℤ, 3 ≤ x < 7}',a:'40',opts:_i4gshuf(['40','42','38','44']),mc:true,ste:'Para x=3,4,5,6: los elementos son 7; 9; 11; 13. Suma = 40.'},
+  {_id:3,q:'Halla la suma de los elementos de: A = {4x + 3 / x ∈ ℤ, 1 ≤ x < 5}',a:'52',opts:_i4gshuf(['52','56','48','60']),mc:true,ste:'Para x=1,2,3,4: los elementos son 7; 11; 15; 19. Suma = 52.'},
+  {_id:4,q:'Halla la suma de los elementos de: A = {5x − 1 / x ∈ ℤ, 2 ≤ x < 6}',a:'66',opts:_i4gshuf(['66','71','61','76']),mc:true,ste:'Para x=2,3,4,5: los elementos son 9; 14; 19; 24. Suma = 66.'},
   {_id:5,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 5 ∧ n ≠ 2}. Da como respuesta la suma de los elementos de A.',a:'21',opts:_i4gshuf(['21','23','19','25']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2. Con n∈{1,3,4,5}, los elementos son 3; 5; 6; 7. Suma = 21.'},
   {_id:6,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 1 ≤ n ≤ 6 ∧ n ≠ 2 ∧ n ≠ 3}. Da como respuesta la suma de los elementos de A.',a:'24',opts:_i4gshuf(['24','26','22','28']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2 (el valor n=2 se excluye siempre porque ahí la expresión no está definida, 0/0). Con n∈{1,4,5,6}, los elementos son 3; 6; 7; 8. Suma = 24.'},
   {_id:7,q:'Determina por extensión el conjunto: A = {(n² − 4)/(n − 2) / n ∈ ℕ, 2 ≤ n ≤ 6 ∧ n ≠ 2 ∧ n ≠ 3}. Da como respuesta la suma de los elementos de A.',a:'21',opts:_i4gshuf(['21','23','19','25']),mc:true,ste:'(n²−4)/(n−2) = (n−2)(n+2)/(n−2) = n+2, para n≠2 (el valor n=2 se excluye siempre porque ahí la expresión no está definida, 0/0). Con n∈{4,5,6}, los elementos son 6; 7; 8. Suma = 21.'},
@@ -18610,14 +18774,14 @@ function _genI1arCj_B1(){
   {_id:10,q:'Halla la suma de los elementos de: A = {x² + 3 / x ∈ ℤ, -1 ≤ x ≤ 2}',a:'14',opts:_i4gshuf(['14','17','11','19']),mc:true,ste:'Para x∈{-1,0,1,2}: x²+3 da los valores 3; 4; 7 (sin repetir). Suma = 14.'},
   {_id:11,q:'Halla la suma de los elementos de: A = {x² + 5 / x ∈ ℤ, -2 ≤ x ≤ 4}',a:'55',opts:_i4gshuf(['55','60','50','58']),mc:true,ste:'Para x∈{-2,-1,0,1,2,3,4}: x²+5 da los valores 5; 6; 9; 14; 21 (sin repetir). Suma = 55.'},
   {_id:12,q:'Halla la suma de los elementos de: A = {x² + 2 / x ∈ ℤ, -2 ≤ x ≤ 2}',a:'11',opts:_i4gshuf(['11','13','9','14']),mc:true,ste:'Para x∈{-2,-1,0,1,2}: x²+2 da los valores 2; 3; 6 (sin repetir). Suma = 11.'},
-  {_id:13,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">2</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">4</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">6</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">8</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">10</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'Los elementos siguen el patrón D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}. Por lo tanto n(D) = 5.'},
-  {_id:14,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="81.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">3</text><text x="217.0" y="81.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">6</text><text x="123.0" y="111.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">9</text><text x="217.0" y="111.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">12</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'4',opts:_i4gshuf(['4','5','3','6']),mc:true,ste:'Los elementos siguen el patrón D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}. Por lo tanto n(D) = 4.'},
-  {_id:15,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">1</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">4</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">9</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">16</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">25</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'Los elementos siguen el patrón D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}. Por lo tanto n(D) = 5.'},
-  {_id:16,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">5</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">7</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">9</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">11</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">13</text><text x="217.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">15</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'6',opts:_i4gshuf(['6','7','5','8']),mc:true,ste:'Los elementos siguen el patrón D = {2x+3 / x ∈ ℕ, 1 ≤ x ≤ 6}. Por lo tanto n(D) = 6.'},
-  {_id:17,q:'Halla la suma de los elementos de: A = {(2x + 3) ∈ ℤ / 1 ≤ x < 5}',a:'32',opts:_i4gshuf(['32','34','30','36']),mc:true,ste:'Para x=1,2,3,4: los elementos son 5; 7; 9; 11. Suma = 32.'},
-  {_id:18,q:'Halla la suma de los elementos de: A = {(4x − 1) ∈ ℤ / 2 ≤ x < 6}',a:'52',opts:_i4gshuf(['52','56','48','60']),mc:true,ste:'Para x=2,3,4,5: los elementos son 7; 11; 15; 19. Suma = 52.'},
-  {_id:19,q:'Halla la suma de los elementos de: A = {(3x + 1) ∈ ℤ / 3 ≤ x < 7}',a:'58',opts:_i4gshuf(['58','61','55','64']),mc:true,ste:'Para x=3,4,5,6: los elementos son 10; 13; 16; 19. Suma = 58.'},
-  {_id:20,q:'Halla la suma de los elementos de: A = {(5x + 2) ∈ ℤ / 1 ≤ x < 4}',a:'36',opts:_i4gshuf(['36','41','31','46']),mc:true,ste:'Para x=1,2,3: los elementos son 7; 12; 17. Suma = 36.'},
+  {_id:13,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">2</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">4</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">6</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">8</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">10</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5',opts:_i4gshuf(['D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}; n(D) = 4','D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {2x + 3 / x ∈ ℕ, 1 ≤ x ≤ 6}; n(D) = 6']),mc:true,ste:'Los elementos siguen el patrón D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}. Por lo tanto n(D) = 5.'},
+  {_id:14,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="81.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">3</text><text x="217.0" y="81.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">6</text><text x="123.0" y="111.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">9</text><text x="217.0" y="111.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">12</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}; n(D) = 4',opts:_i4gshuf(['D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}; n(D) = 4','D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {2x + 3 / x ∈ ℕ, 1 ≤ x ≤ 6}; n(D) = 6']),mc:true,ste:'Los elementos siguen el patrón D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}. Por lo tanto n(D) = 4.'},
+  {_id:15,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">1</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">4</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">9</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">16</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">25</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5',opts:_i4gshuf(['D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}; n(D) = 4','D = {2x + 3 / x ∈ ℕ, 1 ≤ x ≤ 6}; n(D) = 6']),mc:true,ste:'Los elementos siguen el patrón D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}. Por lo tanto n(D) = 5.'},
+  {_id:16,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><ellipse cx="140.0" cy="96.0" rx="110.0" ry="64.0" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="36.0" y="28.0" text-anchor="start" font-size="15" fill="#a78bfa" font-weight="700">D</text><text x="123.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">5</text><text x="217.0" y="76.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">7</text><text x="123.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">9</text><text x="217.0" y="96.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">11</text><text x="123.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">13</text><text x="217.0" y="116.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">15</text></svg></div>Del gráfico, determina por comprensión el conjunto D y halla n(D).',a:'D = {2x + 3 / x ∈ ℕ, 1 ≤ x ≤ 6}; n(D) = 6',opts:_i4gshuf(['D = {2x + 3 / x ∈ ℕ, 1 ≤ x ≤ 6}; n(D) = 6','D = {2x / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5','D = {3x / x ∈ ℕ, 1 ≤ x ≤ 4}; n(D) = 4','D = {x² / x ∈ ℕ, 1 ≤ x ≤ 5}; n(D) = 5']),mc:true,ste:'Los elementos siguen el patrón D = {2x+3 / x ∈ ℕ, 1 ≤ x ≤ 6}. Por lo tanto n(D) = 6.'},
+  {_id:17,q:'Halla la suma de los elementos de: A = {2x + 3 / x ∈ ℤ, 1 ≤ x < 5}',a:'32',opts:_i4gshuf(['32','34','30','36']),mc:true,ste:'Para x=1,2,3,4: los elementos son 5; 7; 9; 11. Suma = 32.'},
+  {_id:18,q:'Halla la suma de los elementos de: A = {4x − 1 / x ∈ ℤ, 2 ≤ x < 6}',a:'52',opts:_i4gshuf(['52','56','48','60']),mc:true,ste:'Para x=2,3,4,5: los elementos son 7; 11; 15; 19. Suma = 52.'},
+  {_id:19,q:'Halla la suma de los elementos de: A = {3x + 1 / x ∈ ℤ, 3 ≤ x < 7}',a:'58',opts:_i4gshuf(['58','61','55','64']),mc:true,ste:'Para x=3,4,5,6: los elementos son 10; 13; 16; 19. Suma = 58.'},
+  {_id:20,q:'Halla la suma de los elementos de: A = {5x + 2 / x ∈ ℤ, 1 ≤ x < 4}',a:'36',opts:_i4gshuf(['36','41','31','46']),mc:true,ste:'Para x=1,2,3: los elementos son 7; 12; 17. Suma = 36.'},
   ]);
 }
 _SKILL_META['i1ar_cj_b1']={ico:'🖼',lbl:'Determinación de conjuntos por extensión y comprensión',qCount:4,gen:_genI1arCj_B1,plantillas:["Fórmula lineal (kx+c), hallar la suma de los elementos", "Fórmula racional simplificable ((n²−4)/(n−2)), determinar por extensión y sumar", "Fórmula cuadrática con dominio ℤ, hallar la suma de elementos", "Dado un diagrama con elementos dispersos, determinar por comprensión y hallar n(conjunto)", "Variante numérica de P1 (identificar el valor correcto)"]};
@@ -18629,12 +18793,12 @@ function _genI1arCj_B2(){
   {_id:3,q:'Dado el conjunto: D = {5; {5}; {5; 6}}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. 5 ∈ D<br>b. {5} ∈ D<br>c. {5; 6} ∈ D<br>d. 6 ∈ D<br>e. {6} ∈ D',a:'VVVFF',opts:_i4gshuf(['VVVFF','VFVFF','VVFFF','VVVVF']),mc:true,ste:'5, {5} y {5;6} son los tres elementos de D, así que las tres primeras son verdaderas; 6 no es un elemento directo de D (falso); {6} tampoco es un elemento de D (falso).'},
   {_id:4,q:'Dado el conjunto: E = {0; {0}; 1; {1; 2}}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. 0 ∈ E<br>b. {0} ∈ E<br>c. {1; 2} ∈ E<br>d. 1 ∈ E<br>e. 2 ∈ E',a:'VVVVF',opts:_i4gshuf(['VVVVF','VFVVF','VVFVF','VVVFF']),mc:true,ste:'0, {0}, 1 y {1;2} son los cuatro elementos de E: las cuatro primeras proposiciones son verdaderas; 2 no es un elemento directo de E (solo aparece dentro de {1;2}), por lo tanto es falso.'},
   {_id:5,q:'Dado el conjunto: A = {1; 5; {1; 7}; ∅; {8}}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. ∅ ∈ A<br>b. ∅ ⊂ A<br>c. 7 ∈ A<br>d. {1; 7} ⊂ A',a:'VVFF',opts:_i4gshuf(['VVFF','VFFF','VVVF','VVFV']),mc:true,ste:'∅ es un elemento directo de A (verdadero); además ∅ está incluido en cualquier conjunto, ∅⊂A (verdadero); 7 no es un elemento directo de A, solo aparece dentro de {1;7} (falso); {1;7} es un elemento de A, no un subconjunto de A, así que {1;7}⊂A es falso (lo correcto sería {1;7}∈A).'},
-  {_id:6,q:'Dado el conjunto: B = {2; {2}; ∅; {3; 4}}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. ∅ ∈ B<br>b. {∅} ⊂ B<br>c. 2 ⊂ B<br>d. {2} ∈ B',a:'VFFV',opts:_i4gshuf(['VFFV','VVFV','VFVV','VFFF']),mc:true,ste:'∅∈B es verdadero (es un elemento); {∅} no es lo mismo que ∅, y {∅}⊂B sería falso porque ∅ no es el mismo objeto que el conjunto {∅} en B; 2 es un elemento, no puede ser subconjunto con la notación ⊂ salvo que se compare conjunto con conjunto (falso); {2}∈B es verdadero pues {2} es un elemento de B.'},
+  {_id:6,q:'Dado el conjunto: B = {2; {2}; ∅; {3; 4}}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. ∅ ∈ B<br>b. {∅} ⊂ B<br>c. 2 ⊂ B<br>d. {2} ∈ B',a:'VVFV',opts:_i4gshuf(['VFFV','VVFV','VFVV','VFFF']),mc:true,ste:'∅∈B es verdadero (es un elemento directo); {∅}⊂B es verdadero porque para que {∅} sea subconjunto de B basta con que su único elemento (∅) pertenezca a B, y en efecto ∅∈B; 2 es un elemento, no puede ser subconjunto con la notación ⊂ salvo que se compare conjunto con conjunto (falso); {2}∈B es verdadero pues {2} es un elemento directo de B.'},
   {_id:7,q:'Dado el conjunto: C = {∅; {∅}; 6}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. ∅ ∈ C<br>b. {∅} ∈ C<br>c. ∅ ⊂ C<br>d. 6 ⊂ C',a:'VVVF',opts:_i4gshuf(['VVVF','VFVF','VVFF','VVVV']),mc:true,ste:'∅ es un elemento de C (verdadero); {∅} también es un elemento de C (verdadero); ∅ está incluido en cualquier conjunto (verdadero); 6 es un elemento, no puede escribirse con ⊂ frente a un conjunto (falso).'},
   {_id:8,q:'Dado el conjunto: D = {9; {9; 1}; ∅; {1}}. Indica verdadero (V) o falso (F) para cada proposición, en orden:<br>a. {9; 1} ∈ D<br>b. 1 ∈ D<br>c. ∅ ∈ D<br>d. {1} ⊂ D',a:'VFVF',opts:_i4gshuf(['VFVF','VVVF','VFFF','VFVV']),mc:true,ste:'{9;1} es un elemento directo de D (verdadero); 1 no es un elemento directo de D, solo aparece dentro de {9;1} y de {1} (falso); ∅ es un elemento de D (verdadero); {1} es un elemento de D, no un subconjunto, por lo que {1}⊂D es falso (lo correcto es {1}∈D).'},
   {_id:9,q:'Dado el conjunto: F = {a; {b; c}; d}. ¿Cuál de las siguientes proposiciones es verdadera?',a:'{b; c} ∈ F',opts:_i4gshuf(['{b; c} ∈ F','b ∈ F','c ∈ F','{d} ∈ F','a ⊂ F']),mc:true,ste:'{b;c} es un elemento directo de F, por lo tanto {b;c}∈F es la única proposición correcta (b y c no son elementos directos, y a es un elemento, no puede compararse con ⊂).'},
   {_id:10,q:'Dado el conjunto: G = {x; {x; y}; {z}}. ¿Cuál de las siguientes proposiciones es verdadera?',a:'{z} ∈ G',opts:_i4gshuf(['y ∈ G','{z} ∈ G','x ⊂ G','{x; y} ⊂ G']),mc:true,ste:'{z} es un elemento directo de G, por lo tanto {z}∈G es correcta (y no es elemento directo, x es elemento y no puede llevar ⊂, y {x;y} es un elemento, no un subconjunto).'},
-  {_id:11,q:'Dado el conjunto: H = {2; 4; {2; 4}; {6}}. ¿Cuál de las siguientes proposiciones es verdadera?',a:'{2; 4} ∈ H',opts:_i4gshuf(['{2; 4} ⊂ H','6 ∈ H','{2; 4} ∈ H','{6} ⊂ H']),mc:true,ste:'{2;4} es un elemento directo de H, por lo tanto {2;4}∈H es correcta (6 no es elemento directo, y las otras usan ⊂ incorrectamente sobre elementos).'},
+  {_id:11,q:'Dado el conjunto: H = {2; {2; 4}; {6}}. ¿Cuál de las siguientes proposiciones es verdadera?',a:'{2; 4} ∈ H',opts:_i4gshuf(['{2; 4} ⊂ H','6 ∈ H','{2; 4} ∈ H','{6} ⊂ H']),mc:true,ste:'{2;4} es un elemento directo de H, por lo tanto {2;4}∈H es correcta. {2;4}⊂H es falsa porque exigiría que 2 Y 4 fueran ambos elementos directos de H, pero 4 no lo es (solo aparece dentro de {2;4}); 6 tampoco es elemento directo (solo aparece dentro de {6}); y {6}⊂H exigiría que 6 fuera elemento directo de H, lo cual no ocurre.'},
   {_id:12,q:'Dado el conjunto: J = {∅; {1}; {2; 3}}. ¿Cuál de las siguientes proposiciones es verdadera?',a:'∅ ∈ J',opts:_i4gshuf(['1 ∈ J','2 ∈ J','∅ ∈ J','{2; 3} ⊂ J']),mc:true,ste:'∅ es un elemento directo de J, por lo tanto ∅∈J es correcta (1 y 2 no son elementos directos, y {2;3} es un elemento, no un subconjunto, de J).'},
   {_id:13,q:'V/F: Si x es un elemento de un conjunto A, la notación correcta para expresarlo es x ∈ A.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: el símbolo ∈ se usa para expresar la relación de pertenencia entre un elemento y un conjunto.'},
   {_id:14,q:'V/F: Si B es un subconjunto de A, la notación correcta para expresarlo es B ∈ A.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: cuando B es un subconjunto de A, la notación correcta es B⊂A (inclusión), no B∈A (pertenencia), salvo que B sea además un elemento de A.'},
@@ -18650,10 +18814,10 @@ _SKILL_META['i1ar_cj_b2']={ico:'🖼',lbl:'Pertenencia (∈) vs. inclusión (⊂
 
 function _genI1arCj_B3(){
   return _i4gpick([
-  {_id:1,q:'Si n(A) = 4, calcula n[P(A)].',a:'16',opts:_i4gshuf(['16','8','32','18']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^4 = 16.'},
-  {_id:2,q:'Si n(A) = 5, calcula n[P(A)].',a:'32',opts:_i4gshuf(['32','16','64','34']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^5 = 32.'},
-  {_id:3,q:'Si n(A) = 6, calcula n[P(A)].',a:'64',opts:_i4gshuf(['64','32','128','66']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^6 = 64.'},
-  {_id:4,q:'Si n(A) = 7, calcula n[P(A)].',a:'128',opts:_i4gshuf(['128','64','256','130']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^7 = 128.'},
+  {_id:1,q:'Si n(A) = 4, calcula n[P(A)]. (Número de elementos del conjunto Potencia de A)',a:'16',opts:_i4gshuf(['16','8','32','18']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^4 = 16.'},
+  {_id:2,q:'Si n(A) = 5, calcula n[P(A)]. (Número de elementos del conjunto Potencia de A)',a:'32',opts:_i4gshuf(['32','16','64','34']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^5 = 32.'},
+  {_id:3,q:'Si n(A) = 6, calcula n[P(A)]. (Número de elementos del conjunto Potencia de A)',a:'64',opts:_i4gshuf(['64','32','128','66']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^6 = 64.'},
+  {_id:4,q:'Si n(A) = 7, calcula n[P(A)]. (Número de elementos del conjunto Potencia de A)',a:'128',opts:_i4gshuf(['128','64','256','130']),mc:true,ste:'n[P(A)] = 2^n(A) = 2^7 = 128.'},
   {_id:5,q:'Si un conjunto posee 32 subconjuntos, ¿cuántos elementos tiene?',a:'5',opts:_i4gshuf(['5','6','4','7']),mc:true,ste:'El número de subconjuntos es 2ⁿ. Como 2ⁿ = 32, entonces n = 5.'},
   {_id:6,q:'Si un conjunto posee 64 subconjuntos, ¿cuántos elementos tiene?',a:'6',opts:_i4gshuf(['6','7','5','8']),mc:true,ste:'El número de subconjuntos es 2ⁿ. Como 2ⁿ = 64, entonces n = 6.'},
   {_id:7,q:'Si un conjunto posee 128 subconjuntos, ¿cuántos elementos tiene?',a:'7',opts:_i4gshuf(['7','8','6','9']),mc:true,ste:'El número de subconjuntos es 2ⁿ. Como 2ⁿ = 128, entonces n = 7.'},
@@ -18676,22 +18840,22 @@ _SKILL_META['i1ar_cj_b3']={ico:'🖼',lbl:'Conjunto potencia P(A): número de su
 
 function _genI1arCj_B4(){
   return _i4gpick([
-  {_id:1,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {10; 4}. Calcula: a + b',a:'10',opts:_i4gshuf(['10','11','9','12']),mc:true,ste:'Como A=B: a+b=10 y a−b=4 (o viceversa). Resolviendo: a=7, b=3. a + b = 10.'},
-  {_id:2,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {12; 2}. Calcula: a − 2b',a:'-3',opts:_i4gshuf(['-3','-2','-4','-1']),mc:true,ste:'Como A=B: a+b=12 y a−b=2 (o viceversa). Resolviendo: a=7, b=5. a − 2b = -3.'},
-  {_id:3,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {15; 5}. Calcula: 2a + b',a:'25',opts:_i4gshuf(['25','26','24','27']),mc:true,ste:'Como A=B: a+b=15 y a−b=5 (o viceversa). Resolviendo: a=10, b=5. 2a + b = 25.'},
-  {_id:4,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {20; 6}. Calcula: a × b',a:'91',opts:_i4gshuf(['91','92','90','93']),mc:true,ste:'Como A=B: a+b=20 y a−b=6 (o viceversa). Resolviendo: a=13, b=7. a × b = 91.'},
-  {_id:5,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 243} y B = {3<sup>b+2</sup>; 27}. Calcula: 2a − b',a:'11',opts:_i4gshuf(['11','12','10','13']),mc:true,ste:'Como A=B: a−b=5 (pues 3^(a−b)=243=3^5) y b+2=3 (pues 27=3^3). Entonces b=1, a=6. 2a − b = 11.'},
-  {_id:6,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 81} y B = {3<sup>b+2</sup>; 9}. Calcula: a + b',a:'4',opts:_i4gshuf(['4','5','3','6']),mc:true,ste:'Como A=B: a−b=4 (pues 3^(a−b)=81=3^4) y b+2=2 (pues 9=3^2). Entonces b=0, a=4. a + b = 4.'},
-  {_id:7,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 729} y B = {3<sup>b+2</sup>; 27}. Calcula: a − b',a:'6',opts:_i4gshuf(['6','7','5','8']),mc:true,ste:'Como A=B: a−b=6 (pues 3^(a−b)=729=3^6) y b+2=3 (pues 27=3^3). Entonces b=1, a=7. a − b = 6.'},
-  {_id:8,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 27} y B = {3<sup>b+2</sup>; 81}. Calcula: a × b',a:'10',opts:_i4gshuf(['10','11','9','12']),mc:true,ste:'Como A=B: a−b=3 (pues 3^(a−b)=27=3^3) y b+2=4 (pues 81=3^4). Entonces b=2, a=5. a × b = 10.'},
+  {_id:1,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {10; 4}, donde a y b son números enteros positivos. Calcula: a + b',a:'10',opts:_i4gshuf(['10','11','9','12']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=10 y a−b=4 (necesariamente en ese orden). Resolviendo: a=7, b=3. a + b = 10.'},
+  {_id:2,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {12; 2}, donde a y b son números enteros positivos. Calcula: a − 2b',a:'-3',opts:_i4gshuf(['-3','-2','-4','-1']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=12 y a−b=2 (necesariamente en ese orden). Resolviendo: a=7, b=5. a − 2b = -3.'},
+  {_id:3,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {15; 5}, donde a y b son números enteros positivos. Calcula: 2a + b',a:'25',opts:_i4gshuf(['25','26','24','27']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=15 y a−b=5 (necesariamente en ese orden). Resolviendo: a=10, b=5. 2a + b = 25.'},
+  {_id:4,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {20; 6}, donde a y b son números enteros positivos. Calcula: a × b',a:'91',opts:_i4gshuf(['91','92','90','93']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=20 y a−b=6 (necesariamente en ese orden). Resolviendo: a=13, b=7. a × b = 91.'},
+  {_id:5,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 243} y B = {3<sup>b+2</sup>; 27}. Calcula: 2a − b',a:'9',opts:_i4gshuf(['9','11','7','13']),mc:true,ste:'Como A=B y 243≠27, cada número fijo debe emparejarse con la expresión del OTRO conjunto: 3^(a−b)=27 (pues es el único elemento de B que puede igualar al elemento restante de A) → a−b=3; y 3^(b+2)=243 → b+2=5 → b=3. Entonces a=6. Verificación: A={3³;243}={27;243} y B={3⁵;27}={243;27}, mismo conjunto. 2a − b = 12−3 = 9.'},
+  {_id:6,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 81} y B = {3<sup>b+2</sup>; 9}. Calcula: a + b',a:'6',opts:_i4gshuf(['6','5','3','4']),mc:true,ste:'Como A=B y 81≠9, cada número fijo debe emparejarse con la expresión del OTRO conjunto: 3^(b+2)=81 → b+2=4 → b=2; y 3^(a−b)=9 → a−b=2 → a=4. Verificación: A={3²;81}={9;81} y B={3⁴;9}={81;9}, mismo conjunto. a + b = 4+2 = 6.'},
+  {_id:7,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 729} y B = {3<sup>b+2</sup>; 27}. Calcula: a − b',a:'3',opts:_i4gshuf(['3','5','1','7']),mc:true,ste:'Como A=B y 729≠27, cada número fijo debe emparejarse con la expresión del OTRO conjunto: 3^(a−b)=27 → a−b=3; y 3^(b+2)=729 → b+2=6 → b=4, a=7. Verificación: A={3³;729}={27;729} y B={3⁶;27}={729;27}, mismo conjunto. a − b = 3.'},
+  {_id:8,q:'Sean A y B dos conjuntos iguales tales que: A = {3<sup>a−b</sup>; 27} y B = {3<sup>b+2</sup>; 81}. Calcula: a × b',a:'5',opts:_i4gshuf(['5','7','3','9']),mc:true,ste:'Como A=B y 27≠81, cada número fijo debe emparejarse con la expresión del OTRO conjunto: 3^(a−b)=81 → a−b=4; y 3^(b+2)=27 → b+2=3 → b=1, a=5. Verificación: A={3⁴;27}={81;27} y B={3³;81}={27;81}, mismo conjunto. a × b = 5×1 = 5.'},
   {_id:9,q:'Sabiendo que el siguiente conjunto es unitario: A = {a+b; a+2b−3; 18}. Calcula: a² + b²',a:'234',opts:_i4gshuf(['234','236','232','238']),mc:true,ste:'Como A es unitario, todos sus elementos son iguales: a+b=18 y a+2b−3=18. Restando: b=3. Luego a=18−3=15. a² + b² = 234.'},
   {_id:10,q:'Sabiendo que el siguiente conjunto es unitario: A = {a+b; a+2b−3; 23}. Calcula: a² + b²',a:'409',opts:_i4gshuf(['409','411','407','413']),mc:true,ste:'Como A es unitario, todos sus elementos son iguales: a+b=23 y a+2b−3=23. Restando: b=3. Luego a=23−3=20. a² + b² = 409.'},
   {_id:11,q:'Sabiendo que el siguiente conjunto es unitario: A = {a+b; a+2b−3; 18}. Calcula: a + b',a:'18',opts:_i4gshuf(['18','20','16','22']),mc:true,ste:'Como A es unitario, todos sus elementos son iguales: a+b=18 y a+2b−3=18. Restando: b=3. Luego a=18−3=15. a + b = 18.'},
   {_id:12,q:'Sabiendo que el siguiente conjunto es unitario: A = {a+b; a+2b−3; 25}. Calcula: a + b',a:'25',opts:_i4gshuf(['25','27','23','29']),mc:true,ste:'Como A es unitario, todos sus elementos son iguales: a+b=25 y a+2b−3=25. Restando: b=3. Luego a=25−3=22. a + b = 25.'},
-  {_id:13,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {14; 4}. Calcula: a + b',a:'14',opts:_i4gshuf(['14','15','13','16']),mc:true,ste:'Como A=B: a+b=14 y a−b=4 (o viceversa). Resolviendo: a=9, b=5. a + b = 14.'},
-  {_id:14,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {16; 6}. Calcula: a − 2b',a:'1',opts:_i4gshuf(['1','2','0','3']),mc:true,ste:'Como A=B: a+b=16 y a−b=6 (o viceversa). Resolviendo: a=11, b=5. a − 2b = 1.'},
-  {_id:15,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {11; 3}. Calcula: 2a + b',a:'18',opts:_i4gshuf(['18','19','17','20']),mc:true,ste:'Como A=B: a+b=11 y a−b=3 (o viceversa). Resolviendo: a=7, b=4. 2a + b = 18.'},
-  {_id:16,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {18; 8}. Calcula: a × b',a:'65',opts:_i4gshuf(['65','66','64','67']),mc:true,ste:'Como A=B: a+b=18 y a−b=8 (o viceversa). Resolviendo: a=13, b=5. a × b = 65.'},
+  {_id:13,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {14; 4}, donde a y b son números enteros positivos. Calcula: a + b',a:'14',opts:_i4gshuf(['14','15','13','16']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=14 y a−b=4 (necesariamente en ese orden). Resolviendo: a=9, b=5. a + b = 14.'},
+  {_id:14,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {16; 6}, donde a y b son números enteros positivos. Calcula: a − 2b',a:'1',opts:_i4gshuf(['1','2','0','3']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=16 y a−b=6 (necesariamente en ese orden). Resolviendo: a=11, b=5. a − 2b = 1.'},
+  {_id:15,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {11; 3}, donde a y b son números enteros positivos. Calcula: 2a + b',a:'18',opts:_i4gshuf(['18','19','17','20']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=11 y a−b=3 (necesariamente en ese orden). Resolviendo: a=7, b=4. 2a + b = 18.'},
+  {_id:16,q:'Sean A y B dos conjuntos iguales tales que: A = {a+b; a−b} y B = {18; 8}, donde a y b son números enteros positivos. Calcula: a × b',a:'65',opts:_i4gshuf(['65','66','64','67']),mc:true,ste:'Como a y b son positivos, a+b siempre es mayor que a−b, así que a+b=18 y a−b=8 (necesariamente en ese orden). Resolviendo: a=13, b=5. a × b = 65.'},
   {_id:17,q:'V/F: Si dos conjuntos A y B son iguales, entonces tienen exactamente los mismos elementos, sin importar el orden en que se escriban.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: la igualdad de conjuntos depende únicamente de sus elementos, no del orden ni de repeticiones.'},
   {_id:18,q:'V/F: Para que un conjunto sea unitario, basta con que tenga una sola forma de escribirse.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: un conjunto es unitario cuando, sin importar cuántas expresiones (formas distintas) tenga escritas, todas representan el mismo y único elemento.'},
   {_id:19,q:'V/F: Si A={a+b; 10} y B={a-b; 4} son iguales, se puede plantear un sistema de ecuaciones para hallar a y b.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al igualar los conjuntos, se igualan sus elementos correspondientes, formando un sistema de ecuaciones.'},
@@ -19767,7 +19931,8 @@ const PREP_CURRICULUM = {
          {lbl:'Relaciones y Funciones',                area:'matematica',     editorial:'st_georges',   skills:['sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4']},
          {lbl:'Composición de Funciones',            area:'matematica',     editorial:'st_georges',   skills:['sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2']},
          {lbl:'Función Inversa',                     area:'matematica',     editorial:'st_georges',   skills:['sg3m3_b1','sg3m3_b2','sg3m3_b3','sg3m3_b4','sg3m3_bq1','sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8','sg3m3_bq2']},
-         {lbl:'Porcentajes',                       area:'aritmetica',     editorial:'san_vicente_retablo', skills:['svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2']}],
+         {lbl:'Porcentajes',                       area:'aritmetica',     editorial:'san_vicente_retablo', skills:['svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2']},
+         {lbl:'Reglas de Interés',                 area:'aritmetica',     editorial:'san_vicente_retablo', skills:['svr3ar2_b1','svr3ar2_b2','svr3ar2_b3','svr3ar2_bq1','svr3ar2_b4','svr3ar2_b5','svr3ar2_b6','svr3ar2_bq2']}],
     '5':[
       {lbl:'Números Reales',                              area:'matematica', editorial:'san_norberto', skills:['snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2']},
       {lbl:'Inecuaciones Lineales',                       area:'matematica', editorial:'san_norberto', skills:['snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2']},
@@ -20663,11 +20828,38 @@ function _prepConfigHtml() {
       };
       let innerContent = '';
       if (_maTab === 'tareas') {
+        const _tSubTab = _prep.tareasSubTab || 'activas';
+        // Una tarea es "vencida" si tiene fecha de vencimiento pasada y aún no está completada;
+        // si ya está completada (_done2) cuenta como "activa" independientemente de la fecha.
+        const _isVencidaMA = (t, hist) => {
+          if (!t.dueAt) return false;
+          const _isExamT2 = !!t.exam;
+          const _def3 = BINGO_TOPICS[t.topic]||{};
+          const skills2 = _isExamT2 ? (t.skills||[]) : (t.topic ? [t.topic] : []);
+          const pctData2 = _skillsScore(skills2, hist);
+          const _pct3 = pctData2 ? pctData2.pct : 0;
+          const _done3 = _pct3 >= 100;
+          return !_done3 && t.dueAt < (Date.now()/1000);
+        };
+        let _countActivasMA = 0, _countVencidasMA = 0;
+        _sortedSt.forEach(s => {
+          const _tks = (overrides[String(s.id)]||{}).prepTasks || [];
+          const _hSt = _histSt(s.id);
+          _tks.forEach(t => { if (_isVencidaMA(t, _hSt)) _countVencidasMA++; else _countActivasMA++; });
+        });
+        const _tSubBtn = (key, lbl, n) => `<button onclick="_prep.tareasSubTab='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTab===key?' sel':''}">${lbl} (${n})</button>`;
+        const _tSubHdr = `<div style="display:flex;gap:6px;margin:14px 0 14px">
+          ${_tSubBtn('activas','Activas',_countActivasMA)}
+          ${_tSubBtn('vencidas','Vencidas',_countVencidasMA)}
+        </div>`;
         const sections = _sortedSt.map(s => {
-          const tasks = (overrides[String(s.id)]||{}).prepTasks || [];
-          if (!tasks.length) return '';
+          const _allTasksMA = (overrides[String(s.id)]||{}).prepTasks || [];
           const _sHist = _histSt(s.id);
-          const cards = tasks.map((t, ti) => {
+          const tasks = _allTasksMA
+            .map((t, ti) => ({t, ti}))
+            .filter(({t}) => _tSubTab==='vencidas' ? _isVencidaMA(t, _sHist) : !_isVencidaMA(t, _sHist));
+          if (!tasks.length) return '';
+          const cards = tasks.map(({t, ti}) => {
             const _isExamT = !!t.exam;
             const _def2 = BINGO_TOPICS[t.topic]||{};
             const lbl = _isExamT ? (t.label||'Examen') : (_def2.lbl || t.topic || '—');
@@ -20709,7 +20901,8 @@ function _prepConfigHtml() {
           }).join('');
           return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''), s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
         }).filter(Boolean);
-        innerContent = sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin tareas asignadas</div>`;
+        const _tareasEmptyMsg = _tSubTab==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
+        innerContent = _tSubHdr + (sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">${_tareasEmptyMsg}</div>`);
       } else if (_maTab === 'cursos') {
         const sections = _sortedSt.map(s => {
           const cs = _prepMyCourses(s.id);
@@ -21639,7 +21832,34 @@ function _prepConfigHtml() {
       const pct     = Math.round((correct / total) * 100);
       return { correct, total, pct };
     };
-    const _taskCards = _myTasks.map(t => {
+    // Sub-tab Activas/Vencidas para la lista plana de Mis Tareas (Mis Cursos)
+    const _tSubTabMC = _prep.tareasSubTabMC || 'activas';
+    // Una tarea es "vencida" si tiene fecha de vencimiento pasada y aún no está completada;
+    // si ya está completada cuenta como "activa" independientemente de la fecha.
+    const _isVencidaMC = (t) => {
+      if (!t.dueAt) return false;
+      let _pctX;
+      if (t.exam) {
+        const _firstSkX = (t.skills||[]).find(sk=>BINGO_TOPICS[sk]&&!BINGO_TOPICS[sk].quiz) || (t.skills||[])[0];
+        const _attX = _taskLastAttempt(_firstSkX, true, t);
+        _pctX = _attX ? _attX.pct : 0;
+      } else {
+        const _attX = _taskLastAttempt(t.topic, false, t);
+        _pctX = _attX ? _attX.pct : 0;
+      }
+      const _doneX = _pctX >= 100;
+      return !_doneX && t.dueAt < (Date.now()/1000);
+    };
+    let _countActivasMC = 0, _countVencidasMC = 0;
+    _myTasks.forEach(t => { if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
+    const _tSubBtnMC = (key, lbl, n) => `<button onclick="_prep.tareasSubTabMC='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTabMC===key?' sel':''}">${lbl} (${n})</button>`;
+    const _tSubHdrMC = _myTasks.length ? `<div style="display:flex;gap:6px;margin:14px 0 14px">
+      ${_tSubBtnMC('activas','Activas',_countActivasMC)}
+      ${_tSubBtnMC('vencidas','Vencidas',_countVencidasMC)}
+    </div>` : '';
+    const _myTasksFiltered = _myTasks.filter(t => _tSubTabMC==='vencidas' ? _isVencidaMC(t) : !_isVencidaMC(t));
+    const _tareasEmptyMsgMC = _tSubTabMC==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
+    const _taskCards = _myTasksFiltered.map(t => {
       const _isExamT = !!t.exam;
       const _taskId  = _isExamT ? `exam:${(t.skills||[]).join(',')}` : t.topic;
       const _rmId    = _taskId.replace(/'/g,"\\'");
@@ -21699,7 +21919,7 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     }).join('');
-    const _tasksSection = _myTasks.length ? `${_secHdr('Mis Tareas')}<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : '';
+    const _tasksSection = _myTasks.length ? `${_secHdr('Mis Tareas')}${_tSubHdrMC}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">${_tareasEmptyMsgMC}</div>`}` : '';
     // ── Desafío de Dominio ────────────────────────────────────────────────────
     const _myDesafios = (overrides[_taskUid]?.prepDesafios) || [];
     const _retoColorDs = {Suma:'#22d3ee',Resta:'#ec4899',Multiplicación:'#fbbf24',División:'#a855f7',Multiplicacion:'#fbbf24',Division:'#a855f7','Op. Combinada':'#f97316',Ecuación:'#10b981'};
@@ -27784,9 +28004,6 @@ async function _prepSaveHistory() {
         const skPct     = stats ? Math.round((stats.correct / stats.total) * 100) : pct;
         const skCorrect = stats ? stats.correct : Math.round(pct * 4 / 100);
         const skTotal   = stats ? stats.total   : 4;
-        // No guardar si no mejora el nivel ya alcanzado en la habilidad
-        const currentBest = Math.max(...((Array.isArray(_prepHistoryData)?_prepHistoryData:[]).filter(h=>h.topic===sk).map(h=>_prepReEvalPct(h))), 0);
-        if (skPct <= currentBest) continue;
         const skDef = BINGO_TOPICS[sk]||{};
         const skEntry = {
           uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
@@ -27823,8 +28040,6 @@ async function _prepSaveHistory() {
         const skPct2     = stats2 ? Math.round((stats2.correct / stats2.total) * 100) : pct;
         const skCorrect2 = stats2 ? stats2.correct : Math.round(pct * 4 / 100);
         const skTotal2   = stats2 ? stats2.total   : 4;
-        const currentBest2 = Math.max(...((Array.isArray(_prepHistoryData)?_prepHistoryData:[]).filter(h=>h.topic===sk&&!h.autoFromExam&&!h.autoFromQuiz).map(h=>_prepReEvalPct(h))), 0);
-        if (skPct2 <= currentBest2) continue;
         const skDef2 = BINGO_TOPICS[sk]||{};
         const skE2 = { uid:me.uid, name:me.name, level:_prep.level, grade:_prep.grade||'', topic:sk, topicLabel:skDef2.lbl||sk, correct:skCorrect2, total:skTotal2, pct:skPct2, timeSec:0, answers:[], autoFromExam:_prep.topic, completedAt:{seconds:now} };
         if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skE2);
@@ -28183,9 +28398,35 @@ function _prepExamHtml() {
     s = _escStrayLt(s);
     // Normalizar símbolos de raíz Unicode a forma ⁿ√ para vinculum
     s = s.replace(/∛/g, '³√').replace(/∜/g, '⁴√');
-    // Iteratively wrap ⁿ√(expr) innermost-first, removing parens and adding vinculum
-    let prev;
-    do { prev = s; s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√\(([^()]*)\)/g, (_, i, c) => `${i}√${_vs(c)}`); } while (s !== prev);
+    // Wrap ⁿ√(expr) with vinculum, supporting nested parens (ej. ∛((x - 2)/4)) —
+    // the previous regex ([^()]*) only supported a single level and silently
+    // left doubly-parenthesized radicands (fractions inside a cube root, etc.)
+    // completely unwrapped, with no vinculum bar at all.
+    const _wrapRad = str => {
+      let out = '', i = 0;
+      while (i < str.length) {
+        const m = /^([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√\(/.exec(str.slice(i));
+        if (m) {
+          const start = i + m[0].length;
+          let depth = 1, j = start;
+          while (j < str.length && depth > 0) {
+            if (str[j] === '(') depth++;
+            else if (str[j] === ')') depth--;
+            j++;
+          }
+          if (depth === 0) {
+            const inner = _wrapRad(str.slice(start, j - 1));
+            out += `${m[1]}√${_vs(inner)}`;
+            i = j;
+            continue;
+          }
+        }
+        out += str[i];
+        i++;
+      }
+      return out;
+    };
+    s = _wrapRad(s);
     // ⁿ√N  (numeric radicand without parens)
     s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√(\d+)/g, (_, i, n) => `${i}√${_vs(n)}`);
     // ⁿ√x or ⁿ√x²  (single-letter + optional superscript digits, no parens)
@@ -28478,13 +28719,35 @@ function confirmPrepTask() {
   const _assignedAt = _readDt('prep-task-start') || Math.floor(Date.now()/1000);
   const _dueAt      = _readDt('prep-task-due');
   const taskId = _prepTaskInfo.exam ? 'exam:'+(_prepTaskInfo.skills||[]).join(',') : _prepTaskInfo.topic;
-  // Si ya existe, actualizar fechas; si no, añadir
+  // Si ya existe, actualizar fechas; si no, añadir. Excepción: si la tarea existente ya
+  // está vencida (misma semántica que _isVencidaMA en el panel admin: no completada y
+  // dueAt en el pasado), no se sobrescribe in-place — se agrega como entrada nueva e
+  // independiente, para que la vencida siga visible en "Vencidas" como historial y la
+  // nueva asignación aparezca en "Activas" con su propio dueAt.
   const existsIdx = overrides[uid].prepTasks.findIndex(t => {
     const tid = t.exam ? 'exam:'+(t.skills||[]).join(',') : t.topic;
     return tid === taskId;
   });
   const taskObj = { ..._prepTaskInfo, assignedAt: _assignedAt, dueAt: _dueAt };
-  if (existsIdx >= 0) overrides[uid].prepTasks[existsIdx] = taskObj;
+  let _overwriteInPlace = existsIdx >= 0;
+  if (_overwriteInPlace) {
+    const _existingTask = overrides[uid].prepTasks[existsIdx];
+    if (_existingTask.dueAt) {
+      const _hist = Array.isArray(_prepAdminHistData) ? _prepAdminHistData.filter(h=>String(h.uid)===String(uid)) : null;
+      const _skills = _existingTask.exam ? (_existingTask.skills||[]) : (_existingTask.topic ? [_existingTask.topic] : []);
+      const _pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
+      const _pure = _skills.filter(_pf);
+      let _pct = 0;
+      if (_pure.length && _hist) {
+        const _W2 = {dominado:100,competente:75,familiar:50,intentado:25,pendiente:0,unknown:0};
+        _pct = Math.round(_pure.map(k=>_W2[_prepMasteryLevelH(k,_hist)]||0).reduce((a,b)=>a+b,0)/_pure.length);
+      }
+      const _done = _pct >= 100;
+      const _isVencida = !_done && _existingTask.dueAt < (Date.now()/1000);
+      if (_isVencida) _overwriteInPlace = false;
+    }
+  }
+  if (_overwriteInPlace) overrides[uid].prepTasks[existsIdx] = taskObj;
   else overrides[uid].prepTasks.push(taskObj);
   if (typeof saveMeta === 'function') saveMeta();
   _prepTaskModalOpen = false;

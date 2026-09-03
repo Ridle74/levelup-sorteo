@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ventana completa · Opciones de grilla</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0a0912; --panel:#050810; --line:rgba(34,211,238,0.22);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.55); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --cyan:#22d3ee; --gold:#facc15; --pink:#f472b6;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:20px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13px; margin:0 0 20px; max-width:760px; line-height:1.55}
+  .sub b{color:var(--txt)}
+  .tabs{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:#121022;
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px rgba(139,92,246,0.4);}
+  .panes{max-width:780px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 12px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1)}
+  .why b{color:var(--txt)}
+  .rowtag{font-size:9.5px;color:var(--cyan);opacity:.7;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:12px 0 5px;display:flex;align-items:center;gap:6px}
+  .rowtag:first-child{margin-top:0}
+  .rowtag::after{content:'';flex:1;height:1px;background:rgba(34,211,238,0.2)}
+
+  .mock{ background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:16px; position:relative;
+    box-shadow:0 0 0 1px rgba(34,211,238,0.08), 0 30px 70px -30px rgba(0,0,0,0.8); }
+  .mock::before, .mock::after{content:'';position:absolute;width:14px;height:14px;border:2px solid var(--cyan);opacity:.6}
+  .mock::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .mock::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+  .card{background:rgba(34,211,238,0.03);border:1px solid var(--line);border-radius:2px;padding:10px}
+  .box{background:rgba(34,211,238,0.03);border:1px solid var(--line);border-radius:2px;padding:10px}
+  .boxlbl{font-family:'Orbitron',sans-serif;font-size:9.5px;color:var(--cyan);opacity:.75;text-transform:uppercase;font-weight:700;letter-spacing:.08em;margin:0 0 8px}
+
+  .pill{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Orbitron',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:.03em;padding:8px 8px;border-radius:2px;background:transparent;border:1px solid rgba(255,255,255,0.18);
+    color:var(--txt-dim);cursor:pointer;transition:.15s;text-transform:uppercase;text-align:center;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill:hover{border-color:rgba(34,211,238,0.5)}
+  .pill.on{background:rgba(34,211,238,0.12);border-color:var(--cyan);color:var(--cyan);box-shadow:inset 0 0 12px rgba(34,211,238,0.15)}
+  .pill.gold{border-color:rgba(250,204,21,0.5);color:var(--gold)}
+  .mini{display:inline-flex;align-items:center;gap:5px}
+  .mini button{width:15px;height:15px;border-radius:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:9px;cursor:pointer;flex:0 0 auto}
+  .mini b{font-family:'Orbitron',sans-serif;font-size:10.5px;min-width:8px;text-align:center;color:#fff}
+
+  .ico{width:32px;height:32px;border-radius:2px;background:transparent;border:2px solid var(--pink);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--pink);flex:0 0 auto}
+  .name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 10px rgba(34,211,238,0.5)}
+  .sub2{font-size:8.5px;color:rgba(34,211,238,0.4);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+
+  .stepline{display:flex;align-items:center;gap:8px;padding:6px 8px;border-left:3px solid var(--gold);background:rgba(250,204,21,0.07)}
+  .stepk{font-size:7.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .stepv{font-family:'Orbitron',sans-serif;font-size:11.5px;color:var(--gold);font-weight:700;text-transform:uppercase}
+  .optbtn{background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;padding:8px 12px;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+  .optbtn.sel{background:rgba(34,211,238,0.1);border-color:var(--cyan);color:var(--cyan)}
+  .optbtn .chk{margin-left:auto}
+  .split2{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+
+  .gridnote{font-size:10px;color:rgba(34,211,238,0.55);margin-top:4px;letter-spacing:.02em}
+
+  /* ══════════ A: grilla propia por fila (N columnas = N controles de esa fila) ══════════ */
+  .ga .hdrgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+  .ga .chipgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .ga .ftrgrid{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px}
+
+  /* ══════════ B: una sola grilla maestra de 12 columnas, todas las filas se alinean a las mismas líneas ══════════ */
+  .gb .row12{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+  .gb .c2{grid-column:span 2} .gb .c3{grid-column:span 3} .gb .c4{grid-column:span 4} .gb .c5{grid-column:span 5} .gb .c6{grid-column:span 6}
+
+  /* ══════════ C: cada fila se parte en dos mitades iguales (como ya hace Ruta/Temas) ══════════ */
+  .gc .halfrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .gc .halfrow > div{display:grid;gap:8px}
+  .gc .h3{grid-template-columns:repeat(3,1fr)}
+  .gc .h1{grid-template-columns:1fr}
+</style>
+</head>
+<body>
+
+<h1>Toda la ventana alineada a una grilla — 3 sistemas</h1>
+<p class="sub">Esto ya cubre <b>las 4 filas</b> de la ventana: header, fila de ajustes, Ruta/Temas y footer. Cada opción aplica una lógica de grilla distinta pero consistente en toda la ventana, no solo en la fila de ajustes.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="a">A · Grilla propia por fila</button>
+  <button class="tab" data-t="b">B · Grilla maestra de 12 columnas</button>
+  <button class="tab" data-t="c">C · Todo partido en dos mitades</button>
+</div>
+
+<div class="panes">
+
+  <!-- A -->
+  <div class="pane on ga" id="pane-a">
+    <div class="label">Cada fila define su propio número de columnas iguales, según cuántos controles tiene</div>
+    <div class="mock">
+      <div class="rowtag">Header · 5 columnas</div>
+      <div class="hdrgrid" style="margin-bottom:12px">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">🏆 Host: Profesor</span>
+        <span class="pill">🎮 Profesor</span>
+        <span class="pill">⛶ Pantalla completa</span>
+        <span class="pill">✕ Finalizar</span>
+      </div>
+      <div class="rowtag">Ajustes · 6 columnas</div>
+      <div class="chipgrid" style="margin-bottom:12px">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="rowtag">Ruta / Temas · 2 columnas (como ya está)</div>
+      <div class="split2" style="margin-bottom:12px">
+        <div class="box"><div class="boxlbl">📍 Ruta</div><div class="stepline"><div class="stepk">Nivel</div></div></div>
+        <div class="box"><div class="boxlbl">📝 Temas</div><div class="optbtn sel">Quiz I<span class="chk">✓</span></div><div class="optbtn">Quiz II</div></div>
+      </div>
+      <div class="rowtag">Footer · 3 columnas (1 / 1 / 2 — el CTA pesa el doble)</div>
+      <div class="ftrgrid">
+        <span class="pill">🎭 Rol: Jugador</span>
+        <span class="pill on">→ Espectador</span>
+        <span class="pill" style="background:rgba(244,114,182,0.1);border-color:var(--pink);color:var(--pink)">Abrir sala de espera →</span>
+      </div>
+      <div class="gridnote">5 col / 6 col / 2 col / (1+1+2) col — cada fila resuelve su propio orden</div>
+    </div>
+    <div class="why"><b>Idea:</b> la más simple de razonar — cada fila mira cuántos controles tiene y reparte ese ancho en partes iguales. El footer es la única con una excepción explícita: el botón de "Abrir sala" pesa el doble porque es la acción principal de toda la pantalla, así que ocupa 2 de las 3 partes.</div>
+  </div>
+
+  <!-- B -->
+  <div class="pane gb" id="pane-b">
+    <div class="label">Una sola grilla de 12 columnas para TODA la ventana — todo se alinea a las mismas líneas verticales</div>
+    <div class="mock">
+      <div class="rowtag">Header</div>
+      <div class="row12" style="margin-bottom:12px">
+        <span class="pill c2">← Salir</span>
+        <span class="pill gold c3">🏆 Host: Profesor</span>
+        <span class="pill c2">🎮 Profesor</span>
+        <span class="pill c3">⛶ Pantalla completa</span>
+        <span class="pill c2">✕ Finalizar</span>
+      </div>
+      <div class="rowtag">Ajustes</div>
+      <div class="row12" style="margin-bottom:12px">
+        <span class="pill on c2">⏱ Media</span>
+        <span class="pill on c2">⚡ Sin sumas</span>
+        <span class="pill c2">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill c2">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on c2">🌐 Global</span>
+        <span class="pill c2">👤 Por alumno</span>
+      </div>
+      <div class="rowtag">Ruta / Temas</div>
+      <div class="row12" style="margin-bottom:12px">
+        <div class="box c5"><div class="boxlbl">📍 Ruta</div><div class="stepline"><div class="stepk">Nivel</div></div></div>
+        <div class="box c-7" style="grid-column:span 7"><div class="boxlbl">📝 Temas</div><div class="optbtn sel">Quiz I<span class="chk">✓</span></div><div class="optbtn">Quiz II</div></div>
+      </div>
+      <div class="rowtag">Footer</div>
+      <div class="row12">
+        <span class="pill c3">🎭 Rol: Jugador</span>
+        <span class="pill on c3">→ Espectador</span>
+        <span class="pill c6" style="background:rgba(244,114,182,0.1);border-color:var(--pink);color:var(--pink)">Abrir sala de espera →</span>
+      </div>
+      <div class="gridnote">grid-template-columns: repeat(12,1fr) en las 4 filas — cada control ocupa un span fijo (2,3,5,6...)</div>
+    </div>
+    <div class="why"><b>Idea:</b> es la más "sistema de diseño real": una sola unidad de columna para toda la ventana, y cada control ocupa un número fijo de esas 12 columnas según su peso (Host: Profesor pesa 3, Salir pesa 2, etc.). El beneficio es que las columnas quedan alineadas verticalmente entre filas — por ejemplo el borde entre "Salir" y "Host" cae en la misma línea que algún borde de la fila de ajustes. Es más trabajo de mantener si agregas controles nuevos, pero es la opción más "grillada" de las tres.</div>
+  </div>
+
+  <!-- C -->
+  <div class="pane gc" id="pane-c">
+    <div class="label">Cada fila se parte en dos mitades iguales — extiende la lógica que ya usa Ruta/Temas a todo lo demás</div>
+    <div class="mock">
+      <div class="rowtag">Header · mitad izquierda (identidad) / mitad derecha (acciones)</div>
+      <div class="halfrow" style="margin-bottom:12px">
+        <div class="h3">
+          <span class="pill">← Salir</span>
+          <span class="pill gold">🏆 Host: Profesor</span>
+          <span class="pill">🎮 Profesor</span>
+        </div>
+        <div class="h3" style="grid-template-columns:1fr 1fr">
+          <span class="pill">⛶ Pantalla completa</span>
+          <span class="pill">✕ Finalizar</span>
+        </div>
+      </div>
+      <div class="rowtag">Ajustes · mitad izquierda (Partida) / mitad derecha (Jugadores)</div>
+      <div class="halfrow" style="margin-bottom:12px">
+        <div class="h3">
+          <span class="pill on">⏱ Media</span>
+          <span class="pill on">⚡ Sin sumas</span>
+          <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        </div>
+        <div class="h3">
+          <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+          <span class="pill on">🌐 Global</span>
+          <span class="pill">👤 Por alumno</span>
+        </div>
+      </div>
+      <div class="rowtag">Ruta / Temas · ya es mitad / mitad</div>
+      <div class="split2" style="margin-bottom:12px">
+        <div class="box"><div class="boxlbl">📍 Ruta</div><div class="stepline"><div class="stepk">Nivel</div></div></div>
+        <div class="box"><div class="boxlbl">📝 Temas</div><div class="optbtn sel">Quiz I<span class="chk">✓</span></div><div class="optbtn">Quiz II</div></div>
+      </div>
+      <div class="rowtag">Footer · mitad izquierda (rol) / mitad derecha (acción)</div>
+      <div class="halfrow">
+        <div class="h1" style="grid-template-columns:1fr 1fr">
+          <span class="pill">🎭 Rol: Jugador</span>
+          <span class="pill on">→ Espectador</span>
+        </div>
+        <div class="h1">
+          <span class="pill" style="background:rgba(244,114,182,0.1);border-color:var(--pink);color:var(--pink)">Abrir sala de espera →</span>
+        </div>
+      </div>
+      <div class="gridnote">las 4 filas son "mitad / mitad" — solo cambia cuántas columnas hay dentro de cada mitad</div>
+    </div>
+    <div class="why"><b>Idea:</b> en vez de que Ruta/Temas sea la única fila partida en dos, TODA la ventana sigue esa misma regla — mitad izquierda / mitad derecha, y dentro de cada mitad los controles se reparten en columnas iguales. Es la opción que más se siente "un solo patrón repetido 4 veces" en vez de 4 soluciones distintas por fila.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+
+  document.querySelectorAll('.pane').forEach(pane => {
+    pane.querySelectorAll('.mini').forEach(mini => {
+      const [minus, plus] = mini.querySelectorAll('button');
+      const b = mini.querySelector('b');
+      minus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; if (v > 0) b.textContent = v - 1; });
+      plus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; b.textContent = v + 1; });
+    });
+    pane.querySelectorAll('.pill').forEach(p => {
+      if (p.querySelector('.mini')) return;
+      p.addEventListener('click', () => p.classList.toggle('on'));
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Neon Bingo · Opciones de compactación</title>
+<style>
+  :root{
+    --bg:#0b0a14; --panel:#12111f; --panel2:#181629; --line:rgba(255,255,255,0.08);
+    --txt:#e9e7f7; --txt-dim:rgba(233,231,247,0.45); --txt-dim2:rgba(233,231,247,0.28);
+    --accent:#8b5cf6; --accent2:#a855f7; --accent-glow:rgba(139,92,246,0.35);
+    --gold:#facc15; --blue:#3b82f6; --green:#22c55e;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(900px 500px at 15% -10%, rgba(139,92,246,0.16), transparent),
+      radial-gradient(700px 400px at 100% 10%, rgba(168,85,247,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:28px 20px 60px; min-height:100%;
+  }
+  h1{
+    font-size:22px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#c4b5fd,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 26px; max-width:680px; line-height:1.5}
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer;
+    transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 6px 18px var(--accent-glow);}
+  .panes{display:flex; flex-direction:column; gap:34px; max-width:900px}
+  .pane{display:none}
+  .pane.on{display:block}
+  .cardlabel{ font-size:12px; font-weight:800; letter-spacing:.06em; color:var(--txt-dim); margin:0 0 8px;
+    display:flex; align-items:center; gap:8px; text-transform:uppercase;}
+  .cardlabel .n{ width:18px; height:18px; border-radius:50%; background:var(--panel2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--txt-dim2);}
+  .mock{
+    background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 18px 20px;
+    box-shadow:0 20px 50px -20px rgba(0,0,0,0.6);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.55; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line);}
+  .why b{color:var(--txt)}
+  .heightnote{
+    display:inline-flex; align-items:center; gap:6px; margin-top:12px; font-size:11.5px; color:var(--gold);
+    background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); padding:5px 10px; border-radius:8px;
+  }
+
+  /* ---- shared bits ---- */
+  .grid{display:grid; gap:6px}
+  .btn{
+    background:var(--panel2); border:1px solid var(--line); border-radius:8px; color:var(--txt-dim);
+    font-size:12px; font-weight:700; letter-spacing:.01em; padding:8px 10px; cursor:pointer; text-align:center;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .btn.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;}
+  .btn.row{ text-align:left; display:flex; align-items:center; gap:8px; }
+  .btn.small{ padding:6px 8px; font-size:11px; }
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:999px;
+    background:var(--panel2); border:1px solid var(--line); font-size:12px; font-weight:700; color:var(--txt);
+  }
+  .chip .arrow{color:var(--txt-dim2); font-weight:400}
+  .chip.edit{ color:var(--txt-dim); cursor:pointer; }
+  .chip.edit:hover{ border-color:rgba(139,92,246,0.5); color:var(--txt) }
+
+  /* ===== OPTION 1: dropdown selects for Nivel/Grado, chips row for the rest ===== */
+  .opt1 select{
+    width:100%; background:var(--panel2); border:1px solid var(--line); color:var(--txt);
+    padding:9px 10px; border-radius:8px; font-size:13px; font-weight:600; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a78bfa'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center;
+  }
+  .opt1 .row2{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px}
+  .opt1 .pillrow{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
+  .opt1 .pill{ padding:6px 12px; border-radius:999px; font-size:11.5px; font-weight:700;
+    background:var(--panel2); border:1px solid var(--line); color:var(--txt-dim); cursor:pointer;}
+  .opt1 .pill.on{background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent}
+  .opt1 .unitlist{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:12px}
+  .opt1 .unit{ flex:0 0 auto; min-width:150px; padding:9px 12px; border-radius:10px; background:var(--panel2);
+    border:1px solid var(--line); font-size:11.5px; font-weight:700; color:var(--txt-dim); cursor:pointer; }
+  .opt1 .unit.on{ border-color:var(--gold); color:var(--gold); background:rgba(250,204,21,0.08) }
+  .opt1 .topics{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+
+  /* ===== OPTION 2: breadcrumb trail collapses finished steps ===== */
+  .opt2 .trail{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:16px; }
+  .opt2 .active-step{ margin-bottom:14px }
+  .opt2 .grid4{grid-template-columns:repeat(4,1fr)}
+  .opt2 .unitgrid{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+  .opt2 .topics{display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px}
+
+  /* ===== OPTION 3: tight grid, everything visible, smaller type/padding ===== */
+  .opt3 .section{margin-bottom:12px}
+  .opt3 .grid6{grid-template-columns:repeat(6,1fr)}
+  .opt3 .grid5{grid-template-columns:repeat(5,1fr)}
+  .opt3 .grid3{grid-template-columns:repeat(3,1fr)}
+  .opt3 .btn{padding:6px 6px; font-size:10.5px}
+  .opt3 .unitscroll{
+    display:flex; flex-wrap:wrap; gap:6px; max-height:64px; overflow-y:auto; margin-bottom:10px;
+    scrollbar-width:thin;
+  }
+  .opt3 .unitscroll .btn{flex:0 0 calc(50% - 3px)}
+  .opt3 .topics{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px}
+
+  ::-webkit-scrollbar{height:6px; width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35); border-radius:4px}
+</style>
+</head>
+<body>
+
+<h1>Compactar el panel de temas del reto</h1>
+<p class="sub">Tres formas de reordenar Nivel → Grado → Área → Colegio → Unidad → Temas para que quepa más en pantalla sin scroll. El mayor "peso" en tu captura es la lista de Unidades en botones apilados a ancho completo — cada opción la resuelve distinto. Elige la que más te guste y la implemento tal cual en Neon Bingo.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">1 · Selects + chips</button>
+  <button class="tab" data-t="2">2 · Migas de pan (recomendada)</button>
+  <button class="tab" data-t="3">3 · Grilla densa</button>
+</div>
+
+<div class="panes">
+
+  <!-- OPTION 1 -->
+  <div class="pane on opt1" id="pane-1">
+    <div class="cardlabel"><span class="n">1</span> Nivel + Grado como menús desplegables</div>
+    <div class="mock">
+      <div class="row2">
+        <select><option>📐 Secundaria</option><option>🏫 Primaria</option></select>
+        <select><option>1° Grado</option><option>2° Grado</option></select>
+      </div>
+      <div class="cardlabel" style="margin-top:2px"><span class="n">2</span> Área</div>
+      <div class="pillrow">
+        <div class="pill">🔢 Matemática</div>
+        <div class="pill on">α Álgebra</div>
+        <div class="pill">🔢 Aritmética</div>
+        <div class="pill">∠ Trigonometría</div>
+        <div class="pill">◻ Geometría</div>
+      </div>
+      <div class="cardlabel"><span class="n">3</span> Colegio</div>
+      <div class="pillrow">
+        <div class="pill on">📘 Intellectum</div>
+        <div class="pill">📗 Saco Oliveros</div>
+      </div>
+      <div class="cardlabel"><span class="n">4</span> Unidad <span style="font-weight:400;text-transform:none;color:var(--txt-dim2)">— desliza →</span></div>
+      <div class="unitlist">
+        <div class="unit on">Unidad 1 — Leyes de Exponentes I</div>
+        <div class="unit">Unidad 2 — Leyes de Exponentes II</div>
+        <div class="unit">Unidad 3 — Polinomios</div>
+        <div class="unit">Unidad 4 — Productos Notables</div>
+      </div>
+      <div class="cardlabel"><span class="n">5</span> Temas</div>
+      <div class="topics">
+        <div class="btn row on">📐 Exponentes I <span style="margin-left:auto">✓</span></div>
+        <div class="btn row">📊 Radicación</div>
+        <div class="btn row">🧮 Ecuaciones</div>
+        <div class="btn row">📈 Funciones</div>
+      </div>
+      <div class="heightnote">↕ ~230px de alto visible</div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> Nivel y Grado casi nunca se re-visitan, así que van en un select de una sola línea en vez de una grilla de botones. Área y Colegio quedan como chips redondos compactos (una línea o dos). La Unidad pasa a una tira horizontal con scroll lateral en vez de apilarse — es el cambio que más espacio libera. Es el más simple de programar, pero pierde un poco el "look" táctil grande de los botones actuales.
+    </div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div class="pane opt2" id="pane-2">
+    <div class="cardlabel"><span class="n">✓</span> Pasos ya elegidos se colapsan en una miga de pan</div>
+    <div class="mock">
+      <div class="trail">
+        <div class="chip edit">📐 Secundaria <span class="arrow">✎</span></div>
+        <span class="arrow">›</span>
+        <div class="chip edit">1° Grado <span class="arrow">✎</span></div>
+        <span class="arrow">›</span>
+        <div class="chip edit">α Álgebra <span class="arrow">✎</span></div>
+        <span class="arrow">›</span>
+        <div class="chip edit">📘 Intellectum <span class="arrow">✎</span></div>
+      </div>
+      <div class="active-step">
+        <div class="cardlabel"><span class="n">▶</span> Unidad — paso actual</div>
+        <div class="grid unitgrid">
+          <div class="btn row on">Unidad 1 — Leyes de Exponentes I</div>
+          <div class="btn row">Unidad 2 — Leyes de Exponentes II</div>
+          <div class="btn row">Unidad 3 — Polinomios</div>
+          <div class="btn row">Unidad 4 — Productos Notables</div>
+          <div class="btn row">Unidad 5 — División Algebraica</div>
+          <div class="btn row">Unidad 6 — Factorización</div>
+        </div>
+      </div>
+      <div class="cardlabel"><span class="n">6</span> Temas</div>
+      <div class="topics">
+        <div class="btn row on">📐 Exponentes I <span style="margin-left:auto">✓</span></div>
+        <div class="btn row">📊 Radicación</div>
+      </div>
+      <div class="heightnote">↕ ~215px de alto visible</div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> cada paso ya resuelto (Nivel, Grado, Área, Colegio) se convierte en un chip pequeño con lápiz ✎ en una sola fila arriba — tocarlo lo vuelve a abrir. Solo el paso activo (aquí, Unidad) se muestra expandido y en grilla de 2 columnas, así que ya no acumulas 4-5 secciones abiertas a la vez como ahora. Es el que más espacio ahorra cuando ya avanzaste varios pasos, y sigue sintiéndose "guiado" paso a paso.
+    </div>
+  </div>
+
+  <!-- OPTION 3 -->
+  <div class="pane opt3" id="pane-3">
+    <div class="cardlabel"><span class="n">≡</span> Todo visible a la vez, en grillas más densas</div>
+    <div class="mock">
+      <div class="section">
+        <div class="cardlabel"><span class="n">1</span> Nivel</div>
+        <div class="grid grid5">
+          <div class="btn small">🏫 Primaria</div>
+          <div class="btn small on">📐 Secundaria</div>
+          <div class="btn small">🎯 Desafío</div>
+          <div class="btn small">🎓 Pre</div>
+          <div class="btn small">🏛️ Univ.</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="cardlabel"><span class="n">2</span> Grado</div>
+        <div class="grid grid5">
+          <div class="btn small on">1°</div><div class="btn small">2°</div><div class="btn small">3°</div><div class="btn small">4°</div><div class="btn small">5°</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="cardlabel"><span class="n">3</span> Área</div>
+        <div class="grid grid5">
+          <div class="btn small">🔢 Mat.</div>
+          <div class="btn small on">α Álg.</div>
+          <div class="btn small">🔢 Arit.</div>
+          <div class="btn small">∠ Trig.</div>
+          <div class="btn small">◻ Geom.</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="cardlabel"><span class="n">4</span> Colegio</div>
+        <div class="grid grid3">
+          <div class="btn small on">📘 Intellectum</div>
+          <div class="btn small">📗 Saco Oliveros</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="cardlabel"><span class="n">5</span> Unidad <span style="font-weight:400;text-transform:none;color:var(--txt-dim2)">— lista compacta con scroll interno</span></div>
+        <div class="unitscroll">
+          <div class="btn row on">Unidad 1 — Leyes de Exp. I</div>
+          <div class="btn row">Unidad 2 — Leyes de Exp. II</div>
+          <div class="btn row">Unidad 3 — Polinomios</div>
+          <div class="btn row">Unidad 4 — Prod. Notables</div>
+          <div class="btn row">Unidad 5 — División Alg.</div>
+          <div class="btn row">Unidad 6 — Factorización</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="cardlabel"><span class="n">6</span> Temas</div>
+        <div class="topics">
+          <div class="btn small on">📐 Exp. I ✓</div>
+          <div class="btn small">📊 Radic.</div>
+          <div class="btn small">🧮 Ecuac.</div>
+        </div>
+      </div>
+      <div class="heightnote">↕ ~260px de alto, pero <b style="color:var(--gold)">nada</b> se colapsa — todos los pasos quedan a la vista siempre</div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> se mantiene la estructura actual (todas las secciones visibles a la vez, nada se oculta), pero cada grilla pasa a 3-6 columnas con botones más chicos, y la lista de Unidades — la más larga — se mete en una caja de altura fija (~64px) con scroll interno en vez de crecer sin límite hacia abajo. Es el cambio menos disruptivo visualmente y el más parecido a lo que ya tienes, pero ahorra menos espacio que las otras dos opciones.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Neon Bingo · Rediseño visual</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Chakra+Petch:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0a0912; --page-panel:#121022; --line0:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.55); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Inter',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:20px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13px; margin:0 0 20px; max-width:760px; line-height:1.55}
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line0); background:var(--page-panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px rgba(139,92,246,0.4);}
+  .panes{max-width:760px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 12px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line0)}
+  .why b{color:var(--txt)}
+
+  /* comunes a los tres — misma jerarquía de contenido, distinto lenguaje visual */
+  .split2{display:grid;grid-template-columns:1fr 1.4fr;gap:10px}
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px}
+  .row2{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .row2 .grow{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .gradegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .steplbl{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+  .ftr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+
+  /* ══════════════════════ DISEÑO 1 — Cristal Neón (glass) ══════════════════════ */
+  .d1{ --p:rgba(255,255,255,0.055); --pborder:rgba(255,255,255,0.14); --sel:#c084fc; --gold:#facc15; --cyan:#5eead4 }
+  .d1 .mock{ background:linear-gradient(160deg, rgba(139,92,246,0.10), rgba(20,16,34,0.6) 40%);
+    border:1px solid rgba(255,255,255,0.1); border-radius:26px; padding:16px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 30px 70px -30px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06); }
+  .d1 .card, .d1 .box{ background:var(--p); backdrop-filter:blur(10px); border:1px solid var(--pborder); border-radius:20px; padding:13px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.08); }
+  .d1 .hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .d1 .ico{width:38px;height:38px;border-radius:14px;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 22px -4px #a855f7}
+  .d1 .titlewrap{margin-right:auto}
+  .d1 .name{font-weight:800;font-size:16px;letter-spacing:.01em;background:linear-gradient(90deg,#5eead4,#c084fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .d1 .sub2{font-size:9px;color:var(--txt-dim2);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+  .d1 .tips{font-size:11px;font-weight:700;color:var(--txt-dim);background:var(--p);border:1px solid var(--pborder);border-radius:12px;padding:6px 12px;cursor:pointer}
+  .d1 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;padding:8px 14px;border-radius:999px;
+    background:var(--p);border:1px solid var(--pborder);color:var(--txt-dim);cursor:pointer;transition:.15s;backdrop-filter:blur(8px)}
+  .d1 .pill:hover{border-color:rgba(255,255,255,0.3)}
+  .d1 .pill.on{background:linear-gradient(135deg, rgba(168,85,247,0.35), rgba(94,234,212,0.18));border-color:rgba(192,132,252,0.6);color:#fff;box-shadow:0 0 18px -6px #a855f7}
+  .d1 .pill.gold{background:rgba(250,204,21,0.12);border-color:rgba(250,204,21,0.45);color:var(--gold)}
+  .d1 .mini{display:inline-flex;align-items:center;gap:6px;margin-left:2px}
+  .d1 .mini button{width:17px;height:17px;border-radius:50%;background:rgba(255,255,255,0.18);border:none;color:#fff;font-size:10px;cursor:pointer}
+  .d1 .mini b{font-size:11px;min-width:8px;text-align:center;color:#fff}
+  .d1 .boxlbl{font-size:9.5px;color:var(--txt-dim2);text-transform:uppercase;font-weight:800;letter-spacing:.08em;margin-bottom:9px}
+  .d1 .stepline{display:flex;align-items:center;gap:9px;padding:8px;border-radius:14px;background:linear-gradient(135deg, rgba(250,204,21,0.14), rgba(250,204,21,0.04))}
+  .d1 .stepdot{width:16px;height:16px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px -2px var(--gold);flex:0 0 auto}
+  .d1 .stepk{font-size:8px;color:var(--txt-dim2);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .d1 .stepv{font-size:13px;color:var(--txt);font-weight:700}
+  .d1 .gradebtn{background:var(--p);border:1px solid var(--pborder);border-radius:16px;color:var(--txt-dim);font-size:12px;font-weight:700;
+    padding:13px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:.15s;backdrop-filter:blur(8px)}
+  .d1 .gradebtn:hover{border-color:rgba(255,255,255,0.28)}
+  .d1 .gradebtn.on{background:linear-gradient(160deg, rgba(168,85,247,0.4), rgba(94,234,212,0.15));border-color:#c084fc;color:#fff;box-shadow:0 0 20px -6px #a855f7}
+  .d1 .gradebtn .gi{font-size:16px}
+  .d1 .roltxt{font-size:11.5px;color:var(--txt-dim)}
+  .d1 .roltxt b{color:var(--txt)}
+  .d1 .openbtn{margin-left:auto;border-radius:14px;padding:11px 18px;font-weight:800;font-size:12.5px;
+    background:linear-gradient(135deg, rgba(94,234,212,0.25), rgba(139,92,246,0.25));border:1px solid rgba(94,234,212,0.5);color:#a7f3d0;
+    box-shadow:0 0 24px -6px #5eead4;cursor:pointer}
+
+  /* ══════════════════════ DISEÑO 2 — Consola HUD (bordes finos, esquinas rectas) ══════════════════════ */
+  .d2{ --neon1:#22d3ee; --neon2:#f472b6; --gold:#facc15; font-family:'Chakra Petch',sans-serif }
+  .d2 .mock{ background:#050810; border:1px solid rgba(34,211,238,0.25); border-radius:4px; padding:16px; position:relative;
+    box-shadow:0 0 0 1px rgba(34,211,238,0.08), 0 30px 70px -30px rgba(0,0,0,0.8); }
+  .d2 .mock::before, .d2 .mock::after{content:'';position:absolute;width:14px;height:14px;border:2px solid var(--neon1);opacity:.6}
+  .d2 .mock::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .d2 .mock::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+  .d2 .card, .d2 .box{ background:rgba(34,211,238,0.03); border:1px solid rgba(34,211,238,0.22); border-radius:2px; padding:12px }
+  .d2 .hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;border-bottom:1px solid rgba(34,211,238,0.2);padding-bottom:10px}
+  .d2 .ico{width:34px;height:34px;border:2px solid var(--neon2);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--neon2)}
+  .d2 .titlewrap{margin-right:auto}
+  .d2 .name{font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:var(--neon1);text-shadow:0 0 12px rgba(34,211,238,0.6)}
+  .d2 .sub2{font-size:9px;color:rgba(34,211,238,0.4);letter-spacing:.16em;text-transform:uppercase;margin-top:3px;font-family:'Inter',sans-serif}
+  .d2 .tips{font-size:10.5px;font-weight:700;color:var(--gold);background:transparent;border:1px solid rgba(250,204,21,0.4);border-radius:2px;padding:6px 12px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em}
+  .d2 .tips.on{background:rgba(250,204,21,0.15)}
+  .d2 .pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:7px 13px;border-radius:2px;
+    background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.55);cursor:pointer;transition:.15s;text-transform:uppercase;letter-spacing:.03em}
+  .d2 .pill:hover{border-color:rgba(34,211,238,0.5)}
+  .d2 .pill.on{background:rgba(34,211,238,0.12);border-color:var(--neon1);color:var(--neon1);box-shadow:inset 0 0 12px rgba(34,211,238,0.15)}
+  .d2 .pill.gold{border-color:rgba(250,204,21,0.5);color:var(--gold)}
+  .d2 .mini{display:inline-flex;align-items:center;gap:5px;margin-left:2px}
+  .d2 .mini button{width:16px;height:16px;border-radius:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:9px;cursor:pointer}
+  .d2 .mini b{font-size:11px;min-width:8px;text-align:center;color:#fff;font-family:'Chakra Petch',monospace}
+  .d2 .boxlbl{font-size:9.5px;color:var(--neon1);text-transform:uppercase;font-weight:700;letter-spacing:.1em;margin-bottom:9px;opacity:.75}
+  .d2 .stepline{display:flex;align-items:center;gap:9px;padding:7px 8px;border-left:3px solid var(--gold);background:rgba(250,204,21,0.06)}
+  .d2 .stepdot{display:none}
+  .d2 .stepk{font-size:8px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+  .d2 .stepv{font-size:13px;color:var(--gold);font-weight:700;text-transform:uppercase}
+  .d2 .gradebtn{background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;color:rgba(255,255,255,0.55);font-size:11.5px;font-weight:600;
+    padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:.15s;text-transform:uppercase;letter-spacing:.02em}
+  .d2 .gradebtn:hover{border-color:rgba(34,211,238,0.5)}
+  .d2 .gradebtn.on{background:rgba(34,211,238,0.1);border-color:var(--neon1);color:var(--neon1);box-shadow:inset 0 0 14px rgba(34,211,238,0.18)}
+  .d2 .gradebtn .gi{font-size:15px}
+  .d2 .roltxt{font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:.04em}
+  .d2 .roltxt b{color:var(--neon2)}
+  .d2 .openbtn{margin-left:auto;border-radius:2px;padding:11px 18px;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;
+    background:rgba(244,114,182,0.1);border:1px solid var(--neon2);color:var(--neon2);box-shadow:0 0 0 1px rgba(244,114,182,0.15), 0 0 24px -8px var(--neon2);cursor:pointer}
+
+  /* ══════════════════════ DISEÑO 3 — Arcade Suave (neón pastel, mucho más redondo/espacioso) ══════════════════════ */
+  .d3{ --lav:#a78bfa; --mint:#5eead4; --coral:#fb923c; --p:rgba(255,255,255,0.05) }
+  .d3 .mock{ background:linear-gradient(180deg,#161129,#0f0c1f); border:1px solid rgba(167,139,250,0.18); border-radius:30px; padding:18px;
+    box-shadow:0 30px 80px -32px rgba(88,28,135,0.6), inset 0 1px 0 rgba(255,255,255,0.04); }
+  .d3 .card, .d3 .box{ background:var(--p); border:1px solid rgba(255,255,255,0.08); border-radius:22px; padding:14px }
+  .d3 .hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .d3 .ico{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--lav),var(--mint));display:flex;align-items:center;justify-content:center;font-size:18px}
+  .d3 .titlewrap{margin-right:auto}
+  .d3 .name{font-weight:800;font-size:16px;color:#fff}
+  .d3 .sub2{font-size:10px;color:var(--txt-dim2);margin-top:2px}
+  .d3 .tips{font-size:11px;font-weight:700;color:var(--txt-dim);background:var(--p);border:1px solid rgba(255,255,255,0.1);border-radius:999px;padding:7px 13px;cursor:pointer}
+  .d3 .tips.on{background:rgba(167,139,250,0.22);color:var(--lav);border-color:rgba(167,139,250,0.4)}
+  .d3 .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:9px 15px;border-radius:999px;
+    background:var(--p);border:1px solid rgba(255,255,255,0.09);color:var(--txt-dim);cursor:pointer;transition:.15s}
+  .d3 .pill:hover{background:rgba(255,255,255,0.08)}
+  .d3 .pill.on{background:rgba(167,139,250,0.22);border-color:rgba(167,139,250,0.45);color:#e0d4ff}
+  .d3 .pill.gold{background:rgba(251,146,60,0.14);border-color:rgba(251,146,60,0.4);color:var(--coral)}
+  .d3 .mini{display:inline-flex;align-items:center;gap:6px;margin-left:2px}
+  .d3 .mini button{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,0.14);border:none;color:#fff;font-size:11px;cursor:pointer}
+  .d3 .mini b{font-size:12px;min-width:9px;text-align:center;color:#fff}
+  .d3 .boxlbl{font-size:10px;color:var(--txt-dim2);font-weight:700;letter-spacing:.02em;margin-bottom:10px}
+  .d3 .stepline{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:16px;background:rgba(251,146,60,0.1)}
+  .d3 .stepdot{width:18px;height:18px;border-radius:50%;background:var(--coral);flex:0 0 auto}
+  .d3 .stepk{font-size:8.5px;color:var(--txt-dim2);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  .d3 .stepv{font-size:13.5px;color:#fff;font-weight:700}
+  .d3 .gradebtn{background:var(--p);border:1px solid rgba(255,255,255,0.08);border-radius:18px;color:var(--txt-dim);font-size:12.5px;font-weight:600;
+    padding:14px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.15s}
+  .d3 .gradebtn:hover{background:rgba(255,255,255,0.08)}
+  .d3 .gradebtn.on{background:rgba(167,139,250,0.22);border-color:rgba(167,139,250,0.45);color:#fff}
+  .d3 .gradebtn .gi{font-size:17px}
+  .d3 .roltxt{font-size:12px;color:var(--txt-dim)}
+  .d3 .roltxt b{color:#fff}
+  .d3 .openbtn{margin-left:auto;border-radius:999px;padding:12px 20px;font-weight:800;font-size:13px;
+    background:linear-gradient(135deg,var(--mint),var(--lav));border:none;color:#0f0c1f;box-shadow:0 10px 28px -8px rgba(94,234,212,0.5);cursor:pointer}
+</style>
+</head>
+<body>
+
+<h1>Rediseño visual completo — 3 direcciones nuevas</h1>
+<p class="sub">Esto ya no es solo tipografía: cambié forma, color, profundidad y efectos en cada elemento (header, pastillas, tarjetas, grilla, botón). Las tres siguen siendo funcionales — pruébalas.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">1 · Cristal Neón</button>
+  <button class="tab" data-t="2">2 · Consola HUD</button>
+  <button class="tab" data-t="3">3 · Arcade Suave</button>
+</div>
+
+<div class="panes">
+
+  <!-- 1 -->
+  <div class="pane on d1" id="pane-1">
+    <div class="label">Vidrio esmerilado, bordes suaves, brillos difusos — sensación "premium"</div>
+    <div class="mock">
+      <div class="hdr">
+        <div class="ico">🎱</div>
+        <div class="titlewrap"><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+        <span class="tips">💡 Tips</span>
+      </div>
+      <div class="row2" style="margin-bottom:10px">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">🏆 Host: Profesor</span>
+        <span class="pill">🎮 Profesor</span>
+        <div class="grow"><span class="pill">⛶ Pantalla completa</span><span class="pill">✕ Finalizar</span></div>
+      </div>
+      <div class="chiprow" style="margin-bottom:10px">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="split2" style="margin-bottom:10px">
+        <div class="box">
+          <div class="boxlbl">📍 Ruta</div>
+          <div class="stepline"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Ahora</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">Elige el nivel</div>
+          <div class="gradegrid">
+            <div class="gradebtn on"><span class="gi">🌱</span>Primaria</div>
+            <div class="gradebtn"><span class="gi">📐</span>Secundaria</div>
+            <div class="gradebtn"><span class="gi">🎯</span>Dominio</div>
+            <div class="gradebtn"><span class="gi">🎓</span>Pre</div>
+            <div class="gradebtn"><span class="gi">🏛</span>Univ.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card ftr">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="pill on">→ Espectador 👁</span>
+        <button class="openbtn">Abrir sala de espera →</button>
+      </div>
+    </div>
+    <div class="why"><b>Idea:</b> capas translúcidas con blur (como cristal esmerilado), bordes muy sutiles y brillos degradados en vez de rellenos planos. Los elementos activos usan un glow difuso en vez de un simple cambio de color — se siente más "premium" y con profundidad real, sin perder la base oscura neón.</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="pane d2" id="pane-2">
+    <div class="label">Esquinas rectas, contornos finos, esquinas tipo HUD de videojuego</div>
+    <div class="mock">
+      <div class="hdr">
+        <div class="ico">🎱</div>
+        <div class="titlewrap"><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+        <span class="tips">Tips</span>
+      </div>
+      <div class="row2" style="margin-bottom:10px">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">Host: Profesor</span>
+        <span class="pill">Profesor</span>
+        <div class="grow"><span class="pill">Pantalla completa</span><span class="pill">Finalizar</span></div>
+      </div>
+      <div class="chiprow" style="margin-bottom:10px">
+        <span class="pill on">Media</span>
+        <span class="pill on">Sin sumas</span>
+        <span class="pill">Cartones <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">Bots <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">Global</span>
+        <span class="pill">Por alumno</span>
+      </div>
+      <div class="split2" style="margin-bottom:10px">
+        <div class="box">
+          <div class="boxlbl">// Ruta</div>
+          <div class="stepline"><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Ahora</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">// Elige el nivel</div>
+          <div class="gradegrid">
+            <div class="gradebtn on"><span class="gi">🌱</span>Primaria</div>
+            <div class="gradebtn"><span class="gi">📐</span>Secundaria</div>
+            <div class="gradebtn"><span class="gi">🎯</span>Dominio</div>
+            <div class="gradebtn"><span class="gi">🎓</span>Pre</div>
+            <div class="gradebtn"><span class="gi">🏛</span>Univ.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card ftr">
+        <span class="roltxt">Rol: <b>Jugador</b></span>
+        <span class="pill on">→ Espectador</span>
+        <button class="openbtn">Abrir sala de espera →</button>
+      </div>
+    </div>
+    <div class="why"><b>Idea:</b> nada de esquinas redondeadas ni rellenos: solo contornos de 1-2px, esquinas tipo mira/HUD en el marco general, y color como único indicador de estado (cian = activo, dorado = paso actual, rosa = acción principal). Fuente Chakra Petch (técnica, geométrica) refuerza el look "interfaz de videojuego" sin recurrir a mayúsculas por todos lados.</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="pane d3" id="pane-3">
+    <div class="label">Mucho más redondo y espacioso, neón pastel — más amigable</div>
+    <div class="mock">
+      <div class="hdr">
+        <div class="ico">🎱</div>
+        <div class="titlewrap"><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+        <span class="tips">💡 Tips</span>
+      </div>
+      <div class="row2" style="margin-bottom:12px">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">🏆 Host: Profesor</span>
+        <span class="pill">🎮 Profesor</span>
+        <div class="grow"><span class="pill">⛶ Pantalla completa</span><span class="pill">✕ Finalizar</span></div>
+      </div>
+      <div class="chiprow" style="margin-bottom:12px">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="split2" style="margin-bottom:12px">
+        <div class="box">
+          <div class="boxlbl">📍 Ruta</div>
+          <div class="stepline"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Ahora</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">Elige el nivel</div>
+          <div class="gradegrid">
+            <div class="gradebtn on"><span class="gi">🌱</span>Primaria</div>
+            <div class="gradebtn"><span class="gi">📐</span>Secundaria</div>
+            <div class="gradebtn"><span class="gi">🎯</span>Dominio</div>
+            <div class="gradebtn"><span class="gi">🎓</span>Pre</div>
+            <div class="gradebtn"><span class="gi">🏛</span>Univ.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card ftr">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="pill on">→ Espectador 👁</span>
+        <button class="openbtn">Abrir sala de espera →</button>
+      </div>
+    </div>
+    <div class="why"><b>Idea:</b> mismo espíritu neón pero con una paleta pastel (lavanda/menta/coral en vez de morado-dorado saturados), radios grandes (16-30px) y más aire entre elementos. Es la opción menos "gamer intenso" y más cercana a una app educativa pulida — sigue siendo llamativa pero menos agresiva a la vista en sesiones largas.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+
+  document.querySelectorAll('.pane').forEach(pane => {
+    const tips = pane.querySelector('.tips');
+    if (tips) tips.addEventListener('click', () => tips.classList.toggle('on'));
+
+    const speedPill = pane.querySelector('.chiprow .pill:nth-child(1)');
+    if (speedPill) speedPill.addEventListener('click', () => {
+      const rapida = speedPill.textContent.includes('Rápida');
+      speedPill.innerHTML = speedPill.innerHTML.includes('⏱') || speedPill.innerHTML.includes('⚡')
+        ? (rapida ? '⏱ Media' : '⚡ Rápida')
+        : (rapida ? 'Media' : 'Rápida');
+    });
+
+    const modePill = pane.querySelector('.chiprow .pill:nth-child(2)');
+    if (modePill) modePill.addEventListener('click', () => {
+      const sinSumas = modePill.textContent.includes('Sin sumas');
+      modePill.innerHTML = modePill.innerHTML.includes('⚡') || modePill.innerHTML.includes('🧮')
+        ? (sinSumas ? '🧮 Con sumas' : '⚡ Sin sumas')
+        : (sinSumas ? 'Con sumas' : 'Sin sumas');
+    });
+
+    pane.querySelectorAll('.mini').forEach(mini => {
+      const [minus, plus] = mini.querySelectorAll('button');
+      const b = mini.querySelector('b');
+      minus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; if (v > 0) b.textContent = v - 1; });
+      plus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; b.textContent = v + 1; });
+    });
+
+    const chiprowPills = pane.querySelectorAll('.chiprow .pill');
+    const modeTogglePills = [chiprowPills[4], chiprowPills[5]];
+    modeTogglePills.forEach(p => p && p.addEventListener('click', () => {
+      modeTogglePills.forEach(x => x && x.classList.remove('on'));
+      p.classList.add('on');
+    }));
+
+    const stepv = pane.querySelector('.stepv');
+    pane.querySelectorAll('.gradebtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pane.querySelectorAll('.gradebtn').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        if (stepv) stepv.textContent = btn.textContent.trim();
+      });
+    });
+
+    const roltxtB = pane.querySelector('.roltxt b');
+    const spectPill = pane.querySelector('.ftr .pill');
+    if (spectPill) spectPill.addEventListener('click', () => {
+      const isPlayer = roltxtB.textContent.trim() === 'Jugador';
+      roltxtB.textContent = isPlayer ? 'Espectador' : 'Jugador';
+      spectPill.innerHTML = spectPill.innerHTML.includes('👁') || spectPill.innerHTML.includes('🎮')
+        ? (isPlayer ? '→ Jugador 🎮' : '→ Espectador 👁')
+        : (isPlayer ? '→ Jugador' : '→ Espectador');
+    });
+
+    const openbtn = pane.querySelector('.openbtn');
+    if (openbtn) openbtn.addEventListener('click', () => {
+      openbtn.style.transform = 'scale(0.97)';
+      setTimeout(() => { openbtn.style.transform = ''; }, 120);
+    });
+  });
+</script>
+
+</body>
+</html>

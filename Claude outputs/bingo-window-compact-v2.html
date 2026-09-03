@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ventana completa · Más compactación</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --accent-glow:rgba(139,92,246,0.4);
+    --gold:#facc15;
+    --sel-bg:rgba(168,85,247,0.18); --sel-border:rgba(168,85,247,0.5); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:22px; margin:0 0 5px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 24px; max-width:740px; line-height:1.55}
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px var(--accent-glow);}
+  .panes{max-width:900px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 9px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:18px; padding:18px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line);}
+  .why b{color:var(--txt)}
+  .heightnote{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:11.5px;color:var(--gold);
+    background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.25);padding:5px 10px;border-radius:8px}
+
+  /* bingo title bar mimic — incluye TODO lo del header y footer reales */
+  .btb{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .btb .ico{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .btb .txt{font-size:15px;font-weight:900;color:#67e8f9;letter-spacing:.02em}
+  .btb .sub2{font-size:9px;color:var(--txt-dim2);text-transform:uppercase;letter-spacing:.05em}
+  .btb .right{margin-left:auto;display:flex;gap:6px}
+  .pillbtn{font-size:10px;font-weight:700;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:5px 10px}
+  .hdr-row2{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+  .hostpill{font-size:10px;font-weight:800;color:var(--gold);background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.4);border-radius:999px;padding:5px 10px;display:flex;align-items:center;gap:5px}
+  .playerchip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;margin-bottom:12px}
+  .rolrow{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-size:10.5px;color:var(--txt-dim)}
+  .rolrow b{color:var(--txt)}
+  .spectbtn{font-size:10px;font-weight:700;color:var(--sel-txt);background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.35);border-radius:999px;padding:5px 12px}
+  .openbtn{display:block;width:100%;text-align:center;background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.4);color:#67e8f9;border-radius:12px;padding:13px;font-weight:900;font-size:13px;letter-spacing:.04em;box-shadow:0 0 20px -4px #22d3ee;box-sizing:border-box}
+
+  .toggle2{display:grid;grid-template-columns:1fr 1fr;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-bottom:8px}
+  .toggle-btn{background:transparent;border:none;border-right:1px solid var(--line);color:var(--txt-dim2);font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:9px 6px}
+  .toggle-btn.on{background:var(--sel-bg);color:var(--sel-txt)}
+
+  .stile{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:38px}
+  .stile.on{background:var(--sel-bg);border-color:var(--sel-border)}
+  .stile .sk{font-size:10px;color:var(--txt-dim);font-weight:700;display:flex;align-items:center;gap:5px;white-space:nowrap}
+  .stile .sv{font-size:11px;font-weight:800;color:var(--txt)}
+  .stile.on .sv{color:var(--sel-txt)}
+  .sctl{display:flex;align-items:center;gap:5px}
+  .sctl button{width:17px;height:17px;border-radius:50%;background:rgba(255,255,255,0.09);border:1px solid var(--line);color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .sctl .n{font-size:11px;font-weight:800;min-width:10px;text-align:center}
+
+  .tstep-item{display:flex;align-items:center;gap:6px;padding:5px 5px;border-radius:8px}
+  .tstep-idx{width:15px;height:15px;border-radius:50%;background:var(--panel3);border:1px solid var(--line);color:var(--txt-dim2);font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .tstep-item.done .tstep-idx{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt);font-size:0}
+  .tstep-item.done .tstep-idx::after{content:'✓';font-size:8px}
+  .tstep-item.active{background:rgba(250,204,21,0.09)}
+  .tstep-item.active .tstep-idx{background:var(--gold);color:#1a1500;border-color:transparent}
+  .tstep-lbl{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+  .tstep-k{font-size:7.5px;color:var(--txt-dim2);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .tstep-v{font-size:10px;color:var(--txt);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .optbtn{background:var(--panel3);border:1px solid var(--line);border-radius:8px;color:var(--txt-dim);font-size:11px;font-weight:700;padding:7px 9px;display:flex;align-items:center;gap:6px}
+  .optbtn.sel{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+
+  /* ===== V1: unified single sidebar (settings + stepper share one list) ===== */
+  .v1 .split{display:grid;grid-template-columns:108px 1fr;gap:10px}
+  .v1 .unav{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px}
+  .v1 .settline{display:flex;align-items:center;justify-content:space-between;padding:5px 4px;border-radius:7px;font-size:9.5px}
+  .v1 .settline .k{color:var(--txt-dim2);font-weight:700;display:flex;align-items:center;gap:4px}
+  .v1 .settline .v{color:var(--txt);font-weight:800}
+  .v1 .sep{height:1px;background:var(--line);margin:3px 2px}
+
+  /* ===== V2: top strip of settings, full-width stepper below (no left column at all) ===== */
+  .v2 .stripe{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+  .v2 .strip-tile{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:7px 8px;display:flex;flex-direction:column;gap:1px;align-items:center;text-align:center}
+  .v2 .strip-tile .k{font-size:8px;color:var(--txt-dim2);text-transform:uppercase;font-weight:700}
+  .v2 .strip-tile .v{font-size:11px;font-weight:800;color:var(--txt)}
+  .v2 .strip-tile.on{background:var(--sel-bg);border-color:var(--sel-border)}
+  .v2 .strip-tile.on .v{color:var(--sel-txt)}
+  .v2 .split{display:grid;grid-template-columns:108px 1fr;gap:10px}
+  .v2 .unav{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px}
+
+  /* ===== V3: everything summarized in one line, tap to expand any section ===== */
+  .v3 .sumbar{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-bottom:10px;flex-wrap:wrap;font-size:11px;color:var(--txt-dim)}
+  .v3 .sumbar b{color:var(--txt);font-weight:800}
+  .v3 .sumbar .editbtn{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--sel-txt);background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);padding:4px 10px;border-radius:7px}
+  .v3 .split{display:grid;grid-template-columns:108px 1fr;gap:10px}
+  .v3 .unav{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:6px;display:flex;flex-direction:column;gap:2px}
+
+  ::-webkit-scrollbar{height:6px;width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35);border-radius:4px}
+</style>
+</head>
+<body>
+
+<h1>Aún más compacto — 3 formas de apretar toda la ventana</h1>
+<p class="sub">Partiendo de lo que ya quedó aplicado (ajustes a la izquierda, Temas a la derecha), tres pasos más agresivos de compactación para toda la ventana del panel de configuración.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">1 · Sidebar unificado</button>
+  <button class="tab" data-t="2">2 · Franja superior + ancho completo</button>
+  <button class="tab" data-t="3">3 · Resumen de una línea</button>
+</div>
+
+<div class="panes">
+
+  <!-- V1 -->
+  <div class="pane on v1" id="pane-1">
+    <div class="label">Ajustes y stepper de Temas comparten una sola columna continua</div>
+    <div class="mock">
+      <div class="hdr-row2">
+        <span class="pillbtn">← Salir</span>
+        <span class="hostpill">🏆 Host: Profesor</span>
+        <div style="margin-left:auto;display:flex;gap:6px"><span class="pillbtn">⛶ Pantalla completa</span><span class="pillbtn">✕ Finalizar</span></div>
+      </div>
+      <div class="btb">
+        <div class="ico">🎱</div><div><div class="txt">Neon Bingo</div><div class="sub2">En vivo · Matemáticas</div></div>
+      </div>
+      <div class="playerchip">🎮 Profesor</div>
+      <div class="toggle2"><button class="toggle-btn on">⏱ Media</button><button class="toggle-btn">⚡ Rápida</button></div>
+      <div class="split">
+        <div class="unav">
+          <div class="settline"><span class="k">⚡ Modo</span><span class="v">Sin sumas</span></div>
+          <div class="settline"><span class="k">🃏 Cartones</span><span class="v">1</span></div>
+          <div class="settline"><span class="k">🤖 Bots</span><span class="v">0</span></div>
+          <div class="sep"></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones</span></div></div>
+          <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+        </div>
+        <div>
+          <div class="toggle2"><button class="toggle-btn on">🌐 Global</button><button class="toggle-btn">👤 Por alumno</button></div>
+          <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+          <div class="optbtn" style="margin-top:5px">⚡ Quiz II – Inecuaciones Avanzadas</div>
+        </div>
+      </div>
+      <div class="heightnote">↕ una sola columna angosta en vez de dos separadas</div>
+      <div class="rolrow">🎭 Rol: <b>Jugador</b><span class="spectbtn" style="margin-left:auto">→ Espectador 👁</span></div>
+      <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+    </div>
+    <div class="why"><b>Idea:</b> en vez de una columna para "Partida/Jugadores" y otra caja separada para el stepper de Nivel→Temas, todo vive en UNA sola lista continua y angosta. Modo/Cartones/Bots se vuelven líneas de texto (sin controles +/− visibles — tocarlas abre un mini-selector), separadas del stepper por una línea fina. Es la fusión más directa de lo que ya tienes, ahorra el espacio de tener dos "cajas" con su propio padding.</div>
+  </div>
+
+  <!-- V2 -->
+  <div class="pane v2" id="pane-2">
+    <div class="label">Ajustes en una franja de 4 tiles arriba, el resto usa TODO el ancho</div>
+    <div class="mock">
+      <div class="hdr-row2">
+        <span class="pillbtn">← Salir</span>
+        <span class="hostpill">🏆 Host: Profesor</span>
+        <div style="margin-left:auto;display:flex;gap:6px"><span class="pillbtn">⛶ Pantalla completa</span><span class="pillbtn">✕ Finalizar</span></div>
+      </div>
+      <div class="btb">
+        <div class="ico">🎱</div><div><div class="txt">Neon Bingo</div><div class="sub2">En vivo · Matemáticas</div></div>
+      </div>
+      <div class="playerchip">🎮 Profesor</div>
+      <div class="stripe">
+        <div class="strip-tile on"><span class="k">Velocidad</span><span class="v">Media</span></div>
+        <div class="strip-tile on"><span class="k">Modo</span><span class="v">Sin sumas</span></div>
+        <div class="strip-tile"><span class="k">Cartones</span><span class="v">1</span></div>
+        <div class="strip-tile"><span class="k">Bots</span><span class="v">0</span></div>
+      </div>
+      <div class="toggle2"><button class="toggle-btn on">🌐 Global</button><button class="toggle-btn">👤 Por alumno</button></div>
+      <div class="split">
+        <div class="unav">
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones</span></div></div>
+          <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+        </div>
+        <div>
+          <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+          <div class="optbtn" style="margin-top:5px">⚡ Quiz II – Inecuaciones Avanzadas</div>
+        </div>
+      </div>
+      <div class="heightnote">↕ la más ancha para el panel de opciones de Temas — usa todo el ancho disponible</div>
+      <div class="rolrow">🎭 Rol: <b>Jugador</b><span class="spectbtn" style="margin-left:auto">→ Espectador 👁</span></div>
+      <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+    </div>
+    <div class="why"><b>Idea:</b> Velocidad/Modo/Cartones/Bots se convierten en 4 tiles chicas en una sola fila arriba de todo (en vez de una columna lateral). Debajo, el toggle Global/Por alumno y el stepper de Temas usan el ancho COMPLETO de la ventana (ya no compiten por espacio con la columna de ajustes). Es la que da más aire al panel de opciones de cada paso (Nivel, Unidad, Temas), a costa de una fila fija arriba.</div>
+  </div>
+
+  <!-- V3 -->
+  <div class="pane v3" id="pane-3">
+    <div class="label">Todo resumido en una línea; solo el paso pendiente se expande</div>
+    <div class="mock">
+      <div class="hdr-row2">
+        <span class="pillbtn">← Salir</span>
+        <span class="hostpill">🏆 Host: Profesor</span>
+        <div style="margin-left:auto;display:flex;gap:6px"><span class="pillbtn">⛶ Pantalla completa</span><span class="pillbtn">✕ Finalizar</span></div>
+      </div>
+      <div class="btb">
+        <div class="ico">🎱</div><div><div class="txt">Neon Bingo</div><div class="sub2">En vivo · Matemáticas</div></div>
+      </div>
+      <div class="playerchip">🎮 Profesor</div>
+      <div class="sumbar">⏱ <b>Media</b> · ⚡ <b>Sin sumas</b> · 🃏 <b>1 cartón</b> · 🤖 <b>0 bots</b> · 🌐 <b>Global</b><span class="editbtn">✎ Editar</span></div>
+      <div class="split">
+        <div class="unav">
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones</span></div></div>
+          <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+        </div>
+        <div>
+          <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+          <div class="optbtn" style="margin-top:5px">⚡ Quiz II – Inecuaciones Avanzadas</div>
+        </div>
+      </div>
+      <div class="heightnote">↕ la más compacta de las tres — casi todo el alto queda para el stepper de Temas</div>
+      <div class="rolrow">🎭 Rol: <b>Jugador</b><span class="spectbtn" style="margin-left:auto">→ Espectador 👁</span></div>
+      <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+    </div>
+    <div class="why"><b>Idea:</b> Velocidad, Modo, Cartones, Bots y el modo Global/Por alumno se resumen en UNA sola línea de texto arriba ("Media · Sin sumas · 1 cartón · 0 bots · Global") con un botón Editar que despliega los controles reales solo cuando los necesitas. Como estos ajustes casi nunca cambian entre partida y partida, la mayoría del tiempo ves solo esa línea y el stepper de Temas ocupa casi toda la ventana. Es la más compacta de las tres, a cambio de un tap extra para tocar cualquier ajuste.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+</script>
+
+</body>
+</html>

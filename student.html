@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260902a"></script>
+  <script src="/levelup.js?v=20260902g"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -989,7 +989,7 @@ textarea.fsm { resize:none; height:64px; }
 .btt-off:hover{color:rgba(239,68,68,0.7)}
 .btt-close{flex-shrink:0;background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:rgba(255,255,255,0.45);font-size:12px;width:22px;height:22px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:flex-start;margin-top:1px;transition:all .15s}
 .btt-close:hover{background:rgba(239,68,68,0.3);color:#fff}
-.bingo-tips-btn{flex-shrink:0;border:1px solid;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:.04em;font-family:'Barlow Condensed',sans-serif;transition:all .2s;text-transform:uppercase}
+.bingo-tips-btn{display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;border:1px solid rgba(250,204,21,0.4);border-radius:2px;padding:7px 8px;font-size:10.5px;font-weight:600;cursor:pointer;letter-spacing:.03em;font-family:'Orbitron',sans-serif;transition:all .2s;text-transform:uppercase;background:transparent;color:#facc15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bingo-tips-btn.on{background:rgba(220,38,38,0.18);border-color:rgba(220,38,38,0.45);color:#fca5a5}
 .bingo-tips-btn.off{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
 .bingo-cell.tip-hl{outline:2px solid #f59e0b;outline-offset:-2px;animation:btt-hl-pulse 1.2s ease-in-out infinite}
@@ -1037,11 +1037,14 @@ body.gaming-fs #hist-bar,body.gaming-fs #hist-bar.visible{display:none!important
 body.gaming-fs .game-back-btn{display:none!important}
 body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#070714;overflow-y:auto;padding:8px 0 0}
 /* ── BINGO (tab GAMING + /student/bingo) — diseño "Neon Bingo" ───────────────────────────────── */
-.bingo-wrap{background:#0a0e1a;border:1px solid rgba(124,58,237,0.18);border-radius:20px;padding:14px;font-family:'Barlow Condensed',sans-serif;box-shadow:0 0 30px -10px rgba(124,58,237,0.25)}
+.bingo-wrap{background:#050810;border:1px solid rgba(34,211,238,0.25);border-radius:4px;padding:14px;font-family:'IBM Plex Sans',sans-serif;box-shadow:0 0 0 1px rgba(34,211,238,0.08),0 0 30px -10px rgba(34,211,238,0.2);position:relative}
+.bingo-wrap::before, .bingo-wrap::after{content:'';position:absolute;width:14px;height:14px;border:2px solid #22d3ee;opacity:.6;pointer-events:none}
+.bingo-wrap::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.bingo-wrap::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
 .bingo-titlebar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bingo-titlebar .btb-ico{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;box-shadow:0 0 16px -2px #ec4899}
-.bingo-titlebar .btb-text{font-weight:900;font-size:18px;letter-spacing:0.1em;text-transform:uppercase;line-height:1;background:linear-gradient(to right,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
-.bingo-titlebar .btb-sub{font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:0.18em;text-transform:uppercase;margin-top:2px}
+.bingo-titlebar .btb-ico{width:36px;height:36px;border-radius:2px;background:transparent;border:2px solid #f472b6;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;color:#f472b6}
+.bingo-titlebar .btb-text{font-family:'Orbitron',sans-serif;font-weight:700;font-size:17px;letter-spacing:0.06em;text-transform:uppercase;line-height:1;color:#22d3ee;text-shadow:0 0 12px rgba(34,211,238,0.6)}
+.bingo-titlebar .btb-sub{font-family:'IBM Plex Sans',sans-serif;font-size:9px;color:rgba(34,211,238,0.4);letter-spacing:0.16em;text-transform:uppercase;margin-top:3px}
 .bingo-empty{text-align:center;padding:36px 20px;color:rgba(255,255,255,0.4)}
 .bingo-empty-ico{font-size:40px;margin-bottom:10px;filter:drop-shadow(0 0 14px rgba(168,85,247,0.6))}
 .bingo-create-btn{display:block;margin:14px auto 0;background:linear-gradient(135deg,#db2777,#7c3aed);color:#fff;font-weight:900;border:none;border-radius:14px;padding:14px 22px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 22px -4px #db2777}
@@ -1060,7 +1063,8 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bgc-enter-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:900;border:none;border-radius:12px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer}
 .bingo-host-badge{font-size:10px;color:#facc15;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.3);border-radius:20px;padding:4px 10px;display:inline-block}
 .bingo-players-row{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.bingo-player-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(132,204,22,0.25);border-radius:20px;padding:4px 10px 4px 4px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8)}
+.bingo-player-chip{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;box-sizing:border-box;background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;padding:4px 8px;font-size:10.5px;font-weight:600;color:rgba(255,255,255,0.7);font-family:'IBM Plex Sans',sans-serif;text-transform:uppercase;letter-spacing:.02em;overflow:hidden}
+.bingo-player-chip .bpc-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bingo-player-chip .bpc-ico{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;overflow:hidden}
 .bingo-player-chip .bpc-info{display:flex;flex-direction:column;line-height:1.2;min-width:0}
 .bingo-player-chip .bpc-name{font-size:11px;font-weight:700;white-space:nowrap}
@@ -1148,8 +1152,9 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .blc-spd-btn:last-child{border-right:none}
 .blc-spd-btn.on{background:rgba(168,85,247,0.18);color:#c084fc;text-shadow:0 0 22px rgba(192,132,252,0.7)}
 .blc-grade-grid{display:grid;gap:4px;margin:4px 0 8px}
-.blc-grade-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;color:rgba(255,255,255,0.45);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:12px 4px;cursor:pointer;transition:all .2s}
-.blc-grade-btn.on{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5);color:#c084fc}
+.blc-grade-btn{background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;color:rgba(255,255,255,0.55);font-family:'Orbitron',sans-serif;font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:12px 4px;cursor:pointer;transition:all .2s}
+.blc-grade-btn:hover{border-color:rgba(34,211,238,0.5)}
+.blc-grade-btn.on{background:rgba(34,211,238,0.1);border-color:#22d3ee;color:#22d3ee;box-shadow:inset 0 0 14px rgba(34,211,238,0.18)}
 .blc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px}
 .blc-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px}
 .blc-clickable{cursor:pointer;transition:border-color .2s,background .2s}
@@ -1164,13 +1169,119 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .blc-sbtn:disabled{opacity:0.2;cursor:default}
 .blc-snum{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;color:#fff;min-width:32px;text-align:center;line-height:1}
 .blc-diff-row{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 10px}
-.blc-diff-btn{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;color:rgba(255,255,255,0.35);font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:13px 4px;cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
-.blc-diff-btn.on{border-color:rgba(250,204,21,0.7);background:rgba(250,204,21,0.12);color:#facc15}
+.blc-diff-btn{flex:1;background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;color:rgba(255,255,255,0.5);font-family:'IBM Plex Sans',sans-serif;font-weight:600;padding:13px 4px;cursor:pointer;text-align:center;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.blc-diff-btn:hover{border-color:rgba(34,211,238,0.5)}
+.blc-diff-btn.on{border-color:#22d3ee;background:rgba(34,211,238,0.1);color:#22d3ee;box-shadow:inset 0 0 14px rgba(34,211,238,0.18)}
 .blc-diff-ico{font-size:20px;line-height:1}
 .blc-diff-lbl{font-size:11px;line-height:1}
 .blc-botlvl{display:flex;gap:7px;margin-top:6px}
-.blc-botlvl-btn{padding:9px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.35);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s}
-.blc-botlvl-btn.on{border-color:rgba(168,85,247,0.7);background:rgba(168,85,247,0.15);color:#c084fc}
+/* Selector Global/Por alumno de "Temas del reto" — dos tiles independientes, mismo look que
+   los tiles de ajuste (Velocidad/Modo/etc.) en vez de una píldora dividida que desentonaba. */
+.blc-tmode-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.blc-tmode-tile{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .2s}
+.blc-tmode-tile:hover{border-color:rgba(255,255,255,0.2)}
+.blc-tmode-tile .ico{font-size:17px;width:18px;text-align:center;flex-shrink:0}
+.blc-tmode-tile .txt{display:flex;flex-direction:column;line-height:1.2;font-family:'Barlow Condensed',sans-serif}
+.blc-tmode-tile .t1{font-size:13px;font-weight:800;color:rgba(255,255,255,0.7);letter-spacing:.02em;text-transform:uppercase}
+.blc-tmode-tile .t2{font-size:10px;color:rgba(255,255,255,0.3);font-weight:600}
+.blc-tmode-tile.on{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5)}
+.blc-tmode-tile.on .t1{color:#c084fc}
+/* Columna de ajustes (Velocidad/Modo/Cartones/Bots) — reorganizados junto al selector de Temas
+   en dos columnas, en vez de tarjetas grandes apiladas una debajo de otra. */
+.blc-tsplit{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start;margin:0 0 10px}
+.blc-settings-col{display:flex;flex-direction:column;gap:8px}
+.blc-grplabel{font-size:9px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.08em;font-weight:800;margin:0 0 1px 2px}
+.blc-grp{display:flex;flex-direction:column;gap:6px}
+.blc-divider{height:1px;background:rgba(255,255,255,0.09);margin:2px 2px}
+.blc-stile{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:9px 11px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:42px;cursor:pointer;transition:all .2s}
+.blc-stile:hover{border-color:rgba(255,255,255,0.2)}
+.blc-stile.on{background:rgba(168,85,247,0.18);border-color:rgba(168,85,247,0.5)}
+.blc-stile .sk{font-size:11px;color:rgba(255,255,255,0.5);font-weight:700;display:flex;align-items:center;gap:6px;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.blc-stile .sk .ic{font-size:14px;width:15px;text-align:center;flex-shrink:0}
+.blc-stile .sv{font-size:12px;font-weight:800;color:#fff;white-space:nowrap;font-family:'Barlow Condensed',sans-serif}
+.blc-stile.on .sv{color:#c084fc}
+.blc-sctl{display:flex;align-items:center;gap:6px}
+.blc-sctl button{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.14);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'Barlow Condensed',sans-serif;line-height:1}
+.blc-sctl button:disabled{opacity:.25;cursor:default}
+.blc-sctl .n{font-size:12px;font-weight:800;min-width:11px;text-align:center;color:#fff}
+/* ===== Ventana Neon Bingo — estilo "Consola HUD": esquinas rectas, contornos finos, sin rellenos planos ===== */
+.bwin-hudframe{position:relative}
+.bwin-hudframe::before, .bwin-hudframe::after{content:'';position:absolute;width:14px;height:14px;border:2px solid #22d3ee;opacity:.6;pointer-events:none;z-index:1}
+.bwin-hudframe::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.bwin-hudframe::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+.bwin-card{background:rgba(34,211,238,0.03);border:1px solid rgba(34,211,238,0.22);border-radius:2px;padding:10px}
+.bwin-hdr{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-flow:row;gap:8px;border-bottom:1px solid rgba(34,211,238,0.2);padding-bottom:9px}
+.bwin-pill{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10.5px;font-weight:600;letter-spacing:.03em;padding:7px 8px;border-radius:2px;background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;box-sizing:border-box;font-family:'Orbitron',sans-serif;text-transform:uppercase;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.bwin-pill:hover{border-color:rgba(34,211,238,0.5)}
+.bwin-pill.on{background:rgba(34,211,238,0.12);border-color:#22d3ee;color:#22d3ee;box-shadow:inset 0 0 12px rgba(34,211,238,0.15)}
+.bwin-pill.gold{background:transparent;border-color:rgba(250,204,21,0.5);color:#facc15}
+.bwin-pill.static{cursor:default}
+.bwin-pill .bwin-mini{display:inline-flex;align-items:center;gap:5px;margin-left:2px}
+.bwin-pill .bwin-mini button{width:15px;height:15px;border-radius:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:10px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.bwin-pill .bwin-mini button:disabled{opacity:.3;cursor:default}
+.bwin-pill .bwin-mini b{font-size:10.5px;min-width:8px;text-align:center;color:#fff;font-family:'Orbitron',sans-serif}
+.bwin-chiprow{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:0 0 10px}
+.bwin-split2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.bwin-box{background:rgba(34,211,238,0.03);border:1px solid rgba(34,211,238,0.22);border-radius:2px;padding:10px;min-width:0}
+.bwin-boxlbl{font-size:9.5px;color:#22d3ee;opacity:.75;text-transform:uppercase;font-weight:700;letter-spacing:.08em;margin:0 0 8px;display:flex;align-items:center;gap:5px;font-family:'Orbitron',sans-serif}
+.bwin-stepline{display:flex;align-items:center;gap:8px;padding:6px 8px;border-left:3px solid rgba(255,255,255,0.15);background:transparent;cursor:default}
+.bwin-stepline[onclick]{cursor:pointer}
+.bwin-stepline[onclick]:hover{background:rgba(255,255,255,0.05)}
+.bwin-stepline.active{border-left-color:#facc15;background:rgba(250,204,21,0.07)}
+.bwin-stepline.done{border-left-color:#22d3ee;background:rgba(34,211,238,0.05)}
+.bwin-stepdot{display:none}
+.bwin-steplbl{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.bwin-stepk{font-size:7.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.06em;font-weight:600;font-family:'IBM Plex Sans',sans-serif}
+.bwin-stepv{font-size:11.5px;color:rgba(255,255,255,0.85);font-weight:700;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Orbitron',sans-serif}
+.bwin-stepline.active .bwin-stepv{color:#facc15}
+.bwin-stepline.done .bwin-stepv{color:#22d3ee}
+.bwin-stepline.todo .bwin-stepv{color:rgba(255,255,255,0.25);font-weight:600}
+.bwin-optbtn{background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;padding:8px 12px;display:flex;align-items:center;gap:7px;margin-bottom:5px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:border-color .15s,background .15s}
+.bwin-optbtn:hover{border-color:rgba(34,211,238,0.5)}
+.bwin-optbtn:last-child{margin-bottom:0}
+.bwin-optbtn.sel{background:rgba(34,211,238,0.1);border-color:#22d3ee;color:#22d3ee}
+.bwin-optbtn .chk{margin-left:auto}
+.bwin-ftr{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.bwin-ftr > *{grid-column:span 2}
+.bwin-ftr .roltxt{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;box-sizing:border-box;padding:8px 8px;border:1px solid rgba(255,255,255,0.18);border-radius:2px;font-size:10.5px;color:rgba(255,255,255,0.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Orbitron',sans-serif;text-transform:uppercase;letter-spacing:.03em}
+.bwin-ftr .roltxt b{color:#f472b6}
+.bwin-openbtn{border-radius:2px;padding:10px 16px;font-weight:700;font-size:12px;letter-spacing:.05em;white-space:nowrap;text-align:center;background:rgba(244,114,182,0.1);border:1px solid #f472b6;color:#f472b6;box-shadow:0 0 0 1px rgba(244,114,182,0.15),0 0 24px -8px #f472b6;cursor:pointer;font-family:'Orbitron',sans-serif;text-transform:uppercase}
+.bwin-openbtn.full{grid-column:span 6}
+/* Selector de temas del reto — stepper lateral (Grado/Área/Colegio/Unidad/Temas), global */
+.blc-tstep-layout{display:grid;grid-template-columns:112px 1fr;gap:12px;margin:4px 0 10px;align-items:start}
+.blc-tstep-nav{display:flex;flex-direction:column;gap:2px}
+.blc-tstep-item{display:flex;align-items:center;gap:7px;padding:7px 6px;border-radius:10px;cursor:default;border:1px solid transparent;transition:background .15s,border-color .15s}
+.blc-tstep-item[onclick]{cursor:pointer}
+.blc-tstep-item[onclick]:hover{background:rgba(255,255,255,0.05)}
+.blc-tstep-idx{width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.35);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Barlow Condensed',sans-serif}
+.blc-tstep-item.done .blc-tstep-idx{background:rgba(168,85,247,0.28);border-color:rgba(168,85,247,0.6);color:#c084fc;font-size:0}
+.blc-tstep-item.done .blc-tstep-idx::after{content:'✓';font-size:10px}
+.blc-tstep-item.active{background:rgba(250,204,21,0.09);border-color:rgba(250,204,21,0.35)}
+.blc-tstep-item.active .blc-tstep-idx{background:#facc15;color:#1a1500;border-color:transparent}
+.blc-tstep-lbl{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.blc-tstep-k{font-size:8.5px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.blc-tstep-v{font-size:11.5px;color:rgba(255,255,255,0.85);font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blc-tstep-item.todo .blc-tstep-v{color:rgba(255,255,255,0.25);font-weight:600}
+.blc-tstep-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px;min-width:0}
+/* Variante compacta para el panel de configuración por jugador */
+.blo-tstep-layout{display:grid;grid-template-columns:82px 1fr;gap:8px;width:100%;align-items:start}
+.blo-tstep-nav{display:flex;flex-direction:column;gap:1px}
+.blo-tstep-item{display:flex;align-items:center;gap:5px;padding:4px 3px;border-radius:7px;cursor:default}
+.blo-tstep-item[onclick]{cursor:pointer}
+.blo-tstep-item[onclick]:hover{background:rgba(255,255,255,0.05)}
+.blo-tstep-idx{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.3);font-size:7.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.blo-tstep-item.done .blo-tstep-idx{background:rgba(99,102,241,0.3);border-color:#6366f1;color:#c7d2fe;font-size:0}
+.blo-tstep-item.done .blo-tstep-idx::after{content:'✓';font-size:7.5px}
+.blo-tstep-item.active{background:rgba(250,204,21,0.09)}
+.blo-tstep-item.active .blo-tstep-idx{background:#facc15;color:#1a1500;border-color:transparent}
+.blo-tstep-lbl{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.blo-tstep-k{font-size:7.5px;color:rgba(255,255,255,0.28);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.blo-tstep-v{font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blo-tstep-item.todo .blo-tstep-v{color:rgba(255,255,255,0.22)}
+.blo-tstep-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:8px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.blc-botlvl-btn{padding:9px 14px;border-radius:2px;border:1px solid rgba(255,255,255,0.18);background:transparent;color:rgba(255,255,255,0.45);font-family:'Orbitron',sans-serif;font-weight:600;font-size:12px;letter-spacing:.03em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.blc-botlvl-btn:hover{border-color:rgba(34,211,238,0.5)}
+.blc-botlvl-btn.on{border-color:#22d3ee;background:rgba(34,211,238,0.1);color:#22d3ee;box-shadow:inset 0 0 14px rgba(34,211,238,0.18)}
 /* Caja consolidada de sorteo — calco 1:1 de neon-bingo_31.html (bg-gray-900 border-cyan-500/50 rounded-2xl p-6 gl-cyan-15) */
 .bingo-head-box{background:#111827;border:1px solid rgba(6,182,212,0.5);border-radius:16px;padding:24px;box-shadow:0 0 25px rgba(6,182,212,0.15)}
 .bdh-row{display:flex;flex-direction:column;align-items:stretch;gap:20px}
@@ -1440,6 +1551,10 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bgc-badge-playing{background:rgba(74,222,128,0.15);color:#4ade80;border-color:rgba(74,222,128,0.3)}
 .bgc-meta{font-size:12px;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .bgc-in{color:#4ade80;font-weight:700}
+.bgc-mine{color:#c084fc;font-weight:700}
+.bgc-del-btn{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);color:#f87171;border-radius:8px;width:24px;height:24px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.bgc-del-btn:hover{background:rgba(239,68,68,0.28)}
+.bingo-create-disabled{margin:14px auto 0;text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.02em;border-radius:14px;padding:12px 16px}
 .bgc-join-btn{background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;border-radius:10px;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:0.04em;transition:opacity .15s}
 .bgc-join-btn:hover:not(:disabled){opacity:0.85}
 .bgc-join-btn:disabled{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);cursor:not-allowed}
@@ -1650,10 +1765,22 @@ let _bingoHlCalloutKey   = '';      // clave de estado del último callout mostr
 let _bingoHlCalloutTimer = null;    // timer para auto-ocultar el callout (10s)
 let _bingoIsSpectator = false;      // modo comentarista: panel resumen en vez de propios cartones
 let _bingoLobbyStep = 'config';    // 'config' | 'waiting' — paso del lobby para el host
+// _bingoLobbyNivel y _bingoLobbyGrade se declaran en levelup.js (comparten scope global de página).
+// Área/Colegio/Unidad se declaran acá — antes solo se creaban como globals implícitos dentro de los
+// setBingoLobby*, lo cual funcionaba mientras el código siempre pasaba por esos setters antes de leerlos;
+// el stepper lateral los lee apenas se elige el Nivel, así que deben existir desde el arranque.
+let _bingoLobbyArea = null;
+let _bingoLobbyColegio = null;
+let _bingoLobbyUnidad = null;
+let _bingoLobbyEditStep = null;    // id del paso que el host reabrió a mano en el stepper (null = auto-avanzar)
 let _bingoEditingPlayer = null;    // UID del jugador cuyo panel de config está abierto en sala de espera
 let _bingoTopicsMode = 'global';   // 'global' | 'per_player'
 let _bingoEditPlayerNivel = {};    // uid → nivel key para el selector por jugador
 let _bingoEditPlayerGrade = {};    // uid → grade string para el selector por jugador
+let _bingoEditPlayerArea = {};     // uid → área key para el selector por jugador
+let _bingoEditPlayerColegio = {};  // uid → editorial (colegio) para el selector por jugador
+let _bingoEditPlayerUnidad = {};   // uid → índice de unidad para el selector por jugador
+let _bingoEditPlayerStep = {};     // uid → id del paso reabierto a mano en el stepper (null/ausente = auto-avanzar)
 let _btFirstMarkDone   = false; // si ya se disparó el tip first_mark
 let _bingoExpandedPlayer = null; // uid del jugador expandido en el panel de proximity
 let _bingoViewingPlayer  = null; // uid del jugador cuyo cartón se está espiando (null = propios)
@@ -2057,6 +2184,21 @@ function getStudentPoints(id, monthOffset=getCupoMonthOffset()) {
   const arrToBool = v => Array.isArray(v) ? v : (v ? [true] : []);
   Object.entries(log).forEach(([dateKey, marks]) => {
     if (!dateKey.startsWith(ym) || !marks || marks.absent) return;
+    // v2 (automático): si esta fecha ya tiene un snapshot calculado desde datos reales de PREP
+    // (ver _ptsRefreshAutoSnapshot) y el admin NO lo anuló manualmente, se usa ese snapshot.
+    // Es un snapshot GUARDADO (no un cálculo en vivo) para que el total de un mes ya cerrado
+    // no cambie solo porque el historial de PREP se siga sincronizando o editando después —
+    // esto alimenta un sorteo con premios reales y necesita ser estable/auditable. El snapshot
+    // se refresca cada vez que el admin vuelve a abrir el panel de ese alumno/mes.
+    if (marks.auto && !marks.manualOverride) {
+      hours    += marks.auto.hours    || 0;
+      progress += marks.auto.progress || 0;
+      tasks    += (marks.auto.tasks   || 0) * taskMult;
+      return;
+    }
+    // Legado / anulación manual: casillas marcadas a mano por el admin (sistema anterior, o
+    // usado deliberadamente vía el modo "Editar manualmente" cuando el cálculo automático no
+    // aplica para un caso puntual).
     arrToBool(marks.hours).forEach(v => { if (v) hours++; });
     arrToBool(marks.progress).forEach(v => { if (v) progress++; });
     arrToBool(marks.tasks).forEach(v => { if (v) tasks += taskMult; });
@@ -2073,11 +2215,18 @@ function getDateReachedScore(id, targetScore, monthOffset=getCupoMonthOffset()) 
   const now = new Date(); now.setMonth(now.getMonth()+monthOffset);
   const prefix = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   const log = pointsLog[id] || {};
+  const taskMult = getTaskMult(id);
+  const arrCount = v => Array.isArray(v) ? v.filter(Boolean).length : (v ? 1 : 0);
   const keys = Object.keys(log).filter(k => k.startsWith(prefix)).sort();
   let cum = 0;
   for (const key of keys) {
     const e = log[key]; if (!e || e.absent) continue;
-    cum += (e.hours?1:0) + (e.progress?1:0) + (e.tasks?1:0);
+    // Igual prioridad que getStudentPoints: snapshot automático salvo anulación manual.
+    if (e.auto && !e.manualOverride) {
+      cum += (e.auto.hours||0) + (e.auto.progress||0) + (e.auto.tasks||0) * taskMult;
+    } else {
+      cum += arrCount(e.hours) + arrCount(e.progress) + arrCount(e.tasks) * taskMult;
+    }
     if (cum >= targetScore) return new Date(key).getTime();
   }
   return Number.MAX_SAFE_INTEGER;
@@ -2298,6 +2447,148 @@ const PTS_TASKS_MAX = 5;          // máximo de cuadraditos de Tareas por fecha
 // Multiplicador de valor por cuadradito de Tareas para un alumno (1 = normal, 3 = vale el triple, etc.)
 // Editable por el admin desde el panel de Puntos — sin necesidad de tocar código para futuros casos como el de Joanna.
 function getTaskMult(id) { return Number(taskMultipliers[String(id)]) || 1; }
+
+// ════════════════════════════════════════════════════════
+// PUNTOS AUTOMÁTICOS (v2) — Horas/Progreso/Tareas calculados desde datos reales de PREP
+// (prepHistory / overrides[id].prepTasks), en vez de casillas marcadas a mano por el admin.
+// ════════════════════════════════════════════════════════
+// Requisitos del profesor (confirmados):
+//  · Horas  = tiempo REAL practicado ese día (mismo dato que el reporte semanal: timeSec de
+//             prepHistory), no horas de clase programadas. 1 punto = 1 hora completa practicada
+//             ese día (Math.floor(segundos/3600) — igual criterio que "1 casillita = 1 hora"
+//             del sistema anterior, pero medido con tiempo real en vez de horario).
+//  · Progreso = 1 punto por cada HABILIDAD que llega a 'dominado' por primera vez ese día (diff
+//             real antes/después: no estaba dominada con el historial hasta el día anterior,
+//             y sí lo está incluyendo ese día). "Subir de nivel 1 habilidad = 1 punto".
+//  · Tareas   = 1 punto por cada tarea asignada (overrides[id].prepTasks) que se TERMINÓ de
+//             completar ese día (su última habilidad pendiente llegó a 'dominado' ese día),
+//             multiplicado por el multiplicador manual del alumno (getTaskMult), igual que antes.
+// NOTA IMPORTANTE: _prepAdminHistData (usado en el panel "Preparate") solo trae los 200
+// documentos MÁS RECIENTES de TODOS los alummnos juntos — no sirve para calcular puntos de un
+// alumno específico mes a mes (se quedaría corto o incompleto). Por eso aquí se consulta
+// prepHistory filtrado por uid directamente (mismo patrón que usa el reporte semanal), cacheado
+// en memoria por alumno mientras el panel de Puntos está abierto.
+const _ptsHistCache = {}; // { [studentId]: { data:[...] } | { loading:Promise } }
+function _ptsFetchHist(studentId) {
+  const key = String(studentId);
+  const cached = _ptsHistCache[key];
+  if (cached && cached.data) return Promise.resolve(cached.data);
+  if (cached && cached.loading) return cached.loading;
+  const p = db.collection('prepHistory').where('uid','==',key).orderBy('completedAt','asc').limit(3000).get()
+    .then(snap => {
+      const arr = [];
+      snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+      _ptsHistCache[key] = { data: arr };
+      return arr;
+    })
+    .catch(e => { console.error('[pts-auto] error cargando prepHistory', e); _ptsHistCache[key] = { data: [] }; return []; });
+  _ptsHistCache[key] = { loading: p };
+  return p;
+}
+function _ptsInvalidateHist(studentId) { delete _ptsHistCache[String(studentId)]; }
+function _ptsDateKeyFromSeconds(sec) {
+  const d = new Date(sec*1000);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+// Segundos totales practicados por un alumno en una fecha calendario dada (misma fuente de
+// datos que el reporte semanal de PREP: timeSec por intento en prepHistory).
+function _ptsSecondsForDate(histAsc, dateKey) {
+  return histAsc.reduce((sum,h) => {
+    const sec = h.completedAt?.seconds; if (!sec) return sum;
+    return _ptsDateKeyFromSeconds(sec)===dateKey ? sum + (Number(h.timeSec)||0) : sum;
+  }, 0);
+}
+function _ptsAutoHoursForDate(histAsc, dateKey) {
+  return Math.floor(_ptsSecondsForDate(histAsc, dateKey) / 3600);
+}
+// Fecha (YYYY-MM-DD) en la que una habilidad (topicKey) alcanzó 'dominado' por PRIMERA VEZ,
+// según el historial completo del alumno en orden cronológico ascendente. Se apoya en
+// _prepMasteryLevelH (misma función que usa el reporte semanal/admin), evaluada sobre prefijos
+// crecientes del historial para detectar el momento exacto del cambio de estado — antes esto no
+// existía: solo había una aproximación ("¿está dominada ahora Y se tocó esta semana?") que no
+// distinguía si ya estaba dominada desde antes. null si nunca llegó a dominarse.
+function _ptsFirstDominatedDate(topicKey, histAsc) {
+  for (let i=0; i<histAsc.length; i++) {
+    const sec = histAsc[i].completedAt?.seconds; if (!sec) continue;
+    if (_prepMasteryLevelH(topicKey, histAsc.slice(0, i+1)) === 'dominado') {
+      return _ptsDateKeyFromSeconds(sec);
+    }
+  }
+  return null;
+}
+function _ptsAutoProgressForDate(histAsc, dateKey) {
+  // Se excluyen los cuestionarios (_bq#) y bancos de refuerzo (_bpu): son evaluaciones que
+  // agregan varias habilidades, no una habilidad nueva en sí. Si se contaran aparte, dominar
+  // el cuestionario 1 (que ya reusa las habilidades b1/b2/b3) sumaría puntos de Progreso
+  // duplicados sobre las mismas habilidades ya contadas al dominarlas individualmente.
+  const topics = _ptsPureSkills([...new Set(histAsc.map(h=>h.topic).filter(Boolean))]);
+  let n = 0;
+  topics.forEach(tk => { if (_ptsFirstDominatedDate(tk, histAsc) === dateKey) n++; });
+  return n;
+}
+// Igual filtro de habilidades "puras" (excluye preguntas de banco/refuerzo _bq#/_bpu) que usa
+// _skillsScore en el panel admin de Preparate (levelup.js) — reimplementado aquí porque esa
+// función vive como closure local dentro de _renderPreparatePane y no es accesible desde afuera.
+function _ptsPureSkills(skills) {
+  const pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
+  return (skills||[]).filter(pf);
+}
+// Fecha en la que una tarea asignada quedó 100% completada: la fecha en que se dominó la ÚLTIMA
+// de sus habilidades pendientes. null si todavía no está completa.
+function _ptsTaskCompletionDate(task, histAsc) {
+  const skills = _ptsPureSkills(task.exam ? (task.skills||[]) : (task.topic ? [task.topic] : []));
+  if (!skills.length) return null;
+  const dates = skills.map(k => _ptsFirstDominatedDate(k, histAsc));
+  if (dates.some(d => !d)) return null; // aún falta al menos una habilidad
+  return dates.sort().pop(); // la más tardía de todas = cuándo se completó la tarea entera
+}
+function _ptsAutoTasksForDate(studentId, histAsc, dateKey) {
+  const tasks = (overrides[String(studentId)]||{}).prepTasks || [];
+  let n = 0;
+  tasks.forEach(t => { if (_ptsTaskCompletionDate(t, histAsc) === dateKey) n++; });
+  return Math.min(n, PTS_TASKS_MAX);
+}
+// Recalcula y GUARDA (snapshot en pointsLog[id][dateKey].auto) los 3 valores automáticos para
+// cada fecha de clase del mes mostrado. Se guarda un snapshot (no se recalcula en vivo en cada
+// lectura) para que los totales de un sorteo ya realizado no cambien solos si luego se edita o
+// se sigue sincronizando el historial de PREP — pero se refresca cada vez que el admin vuelve a
+// abrir el panel de ese alumno/mes, así el dato se mantiene razonablemente al día. Las fechas
+// marcadas manualmente como "Faltó" o con anulación manual (manualOverride) NO se recalculan.
+let _ptsAutoLoading = {};
+async function _ptsRefreshAutoSnapshot(s, offset) {
+  const key = String(s.id);
+  if (_ptsAutoLoading[key]) return;
+  _ptsAutoLoading[key] = true;
+  try {
+    const dates = getClassDatesForStudent(s.name, offset);
+    if (!dates.length) return;
+    const histAsc = await _ptsFetchHist(s.id);
+    await savePointsLog(fresh => {
+      const log = JSON.parse(JSON.stringify(fresh || {}));
+      if (!log[key]) log[key] = {};
+      dates.forEach(({key:dateKey}) => {
+        const entry = log[key][dateKey] || {};
+        if (entry.absent || entry.manualOverride) return; // se respeta la decisión manual del admin
+        log[key][dateKey] = {
+          ...entry,
+          auto: {
+            hours:    _ptsAutoHoursForDate(histAsc, dateKey),
+            progress: _ptsAutoProgressForDate(histAsc, dateKey),
+            tasks:    _ptsAutoTasksForDate(s.id, histAsc, dateKey),
+            computedAt: Date.now()
+          }
+        };
+      });
+      return log;
+    });
+    if (expandedPtsStudent === s.id && ptsMonthOffset === offset) {
+      const cont = document.getElementById(`pts-dates-${s.id}`);
+      if (cont) cont.outerHTML = vPtsDateChecklist(s);
+      _refreshPtsBars(s.id);
+    }
+  } catch(e) { console.error('[pts-auto] error calculando snapshot', e); }
+  finally { _ptsAutoLoading[key] = false; }
+}
 function fmtPtsMonth(monthOffset=0) {
   const base = new Date();
   base.setMonth(base.getMonth()+monthOffset);
@@ -4236,6 +4527,10 @@ function _bingoResetLocalState() {
   _bingoTopicsMode = 'global';
   _bingoEditPlayerNivel = {};
   _bingoEditPlayerGrade = {};
+  _bingoEditPlayerArea = {};
+  _bingoEditPlayerColegio = {};
+  _bingoEditPlayerUnidad = {};
+  _bingoEditPlayerStep = {};
   // Reset tips tracking state for new game
   _bingoTipsEnabled = true; // siempre ON al inicio de cada partida
   _bingoTipsShown = new Set(); _bingoTipQueue = []; _btFirstMarkDone = false;
@@ -4287,7 +4582,13 @@ function startBingoListener() {
   bingoGamesUnsub = db.collection('bingo')
     .where('status', 'in', ['lobby', 'playing'])
     .onSnapshot(snap => {
+      // Partidas "lobby"/"playing" que nunca se cerraron correctamente (el host se fue sin
+      // finalizarlas) se quedaban visibles para siempre en la lista. Ocultamos las de más de
+      // 6 horas de antigüedad — igual siguen existiendo en Firestore, solo no se listan.
+      const _bingoMaxAgeMs = 6 * 60 * 60 * 1000;
+      const _bingoNow = Date.now();
       bingoGames = snap.docs.map(d => Object.assign({ id: d.id }, d.data()))
+        .filter(g => (_bingoNow - (g.createdAt || 0)) <= _bingoMaxAgeMs)
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)); // más nuevas primero
       _renderBingoPane();
     }, err => {
@@ -4905,9 +5206,15 @@ function setBubbleShape(shape) {
 }
 function createBingoGame() {
   if (bingoCreating) return;
+  const me = _bingoMe();
+  // Un solo host no puede tener más de una partida creada a la vez — debe cerrar/eliminar
+  // la que ya tiene (desde la lista) antes de abrir otra.
+  if (bingoGames.some(g => g.hostId === me.uid)) {
+    showToast('Ya tienes una partida creada. Elimínala o continúa con ella antes de crear otra.', 'error');
+    return;
+  }
   bingoCreating = true;
   try {
-    const me = _bingoMe();
     const cardCount = 1;
     db.collection('bingo').add({
       status:'lobby', hostId: me.uid, hostName: me.name,
@@ -4971,8 +5278,12 @@ function setBingoConfig(field, value) {
   }
   BINGO_REF.update(patch).catch(e=>console.error('bingo config',e));
 }
-function setBingoLobbyNivel(nivel) { _bingoLobbyNivel = nivel; _bingoLobbyGrade = null; _renderBingoPane(); }
-function setBingoLobbyGrade(g) { _bingoLobbyGrade = g; _renderBingoPane(); }
+function setBingoLobbyNivel(nivel) { _bingoLobbyNivel = nivel; _bingoLobbyGrade = null; _bingoLobbyArea = null; _bingoLobbyColegio = null; _bingoLobbyUnidad = null; _bingoLobbyEditStep = null; _renderBingoPane(); }
+function setBingoLobbyGrade(g) { _bingoLobbyGrade = g; _bingoLobbyArea = null; _bingoLobbyColegio = null; _bingoLobbyUnidad = null; _bingoLobbyEditStep = null; _renderBingoPane(); }
+function setBingoLobbyArea(area) { _bingoLobbyArea = area; _bingoLobbyColegio = null; _bingoLobbyUnidad = null; _bingoLobbyEditStep = null; _renderBingoPane(); }
+function setBingoLobbyColegio(ed) { _bingoLobbyColegio = ed; _bingoLobbyUnidad = null; _bingoLobbyEditStep = null; _renderBingoPane(); }
+function setBingoLobbyUnidad(idx) { _bingoLobbyUnidad = idx; _bingoLobbyEditStep = null; _renderBingoPane(); }
+function setBingoLobbyEditStep(stepId) { _bingoLobbyEditStep = stepId; _renderBingoPane(); }
 function toggleBingoTopic(topic) {
   const me = _bingoMe();
   if (!bingoGame || bingoGame.hostId!==me.uid || bingoGame.status!=='lobby') return;
@@ -5019,6 +5330,19 @@ function endBingoGame() {
   if (bingoGame.hostId!==me.uid && !isAdmin()) return;
   BINGO_REF.update({ status:'ended', updatedAt:Date.now() })
     .catch(e=>console.error('bingo end',e));
+}
+// Eliminar una partida propia directamente desde la lista (sin tener que entrar a ella).
+// Solo el host que la creó (o un admin) puede hacerlo. Es un cierre suave: cambia el status
+// a 'ended', igual que endBingoGame(), así el historial de la partida se conserva.
+function deleteBingoGameFromList(gameId) {
+  const me = _bingoMe();
+  const game = bingoGames.find(g => g.id === gameId);
+  if (!game) return;
+  if (game.hostId !== me.uid && !isAdmin()) return;
+  if (!confirm('¿Eliminar esta partida? Los jugadores dentro serán desconectados.')) return;
+  db.collection('bingo').doc(gameId).update({ status:'ended', updatedAt:Date.now() })
+    .then(() => showToast('Partida eliminada.', 'success'))
+    .catch(e => { showToast('No se pudo eliminar la partida.', 'error'); console.error('bingo delete', e); });
 }
 let _bingoHistoryData = null, _bingoShowHistory = false;
 async function _bingoSaveHistory() {
@@ -5776,10 +6100,54 @@ function setBingoEditPlayerNivel(uid, nivel) {
   _bingoEditPlayerNivel = Object.assign({}, _bingoEditPlayerNivel, {[uid]: nivel});
   _bingoEditPlayerGrade = Object.assign({}, _bingoEditPlayerGrade);
   delete _bingoEditPlayerGrade[uid];
+  _bingoEditPlayerArea = Object.assign({}, _bingoEditPlayerArea);
+  delete _bingoEditPlayerArea[uid];
+  _bingoEditPlayerColegio = Object.assign({}, _bingoEditPlayerColegio);
+  delete _bingoEditPlayerColegio[uid];
+  _bingoEditPlayerUnidad = Object.assign({}, _bingoEditPlayerUnidad);
+  delete _bingoEditPlayerUnidad[uid];
+  _bingoEditPlayerStep = Object.assign({}, _bingoEditPlayerStep);
+  delete _bingoEditPlayerStep[uid];
   _renderBingoPane();
 }
 function setBingoEditPlayerGrade(uid, grade) {
   _bingoEditPlayerGrade = Object.assign({}, _bingoEditPlayerGrade, {[uid]: grade});
+  _bingoEditPlayerArea = Object.assign({}, _bingoEditPlayerArea);
+  delete _bingoEditPlayerArea[uid];
+  _bingoEditPlayerColegio = Object.assign({}, _bingoEditPlayerColegio);
+  delete _bingoEditPlayerColegio[uid];
+  _bingoEditPlayerUnidad = Object.assign({}, _bingoEditPlayerUnidad);
+  delete _bingoEditPlayerUnidad[uid];
+  _bingoEditPlayerStep = Object.assign({}, _bingoEditPlayerStep);
+  delete _bingoEditPlayerStep[uid];
+  _renderBingoPane();
+}
+function setBingoEditPlayerArea(uid, area) {
+  _bingoEditPlayerArea = Object.assign({}, _bingoEditPlayerArea, {[uid]: area});
+  _bingoEditPlayerColegio = Object.assign({}, _bingoEditPlayerColegio);
+  delete _bingoEditPlayerColegio[uid];
+  _bingoEditPlayerUnidad = Object.assign({}, _bingoEditPlayerUnidad);
+  delete _bingoEditPlayerUnidad[uid];
+  _bingoEditPlayerStep = Object.assign({}, _bingoEditPlayerStep);
+  delete _bingoEditPlayerStep[uid];
+  _renderBingoPane();
+}
+function setBingoEditPlayerColegio(uid, ed) {
+  _bingoEditPlayerColegio = Object.assign({}, _bingoEditPlayerColegio, {[uid]: ed});
+  _bingoEditPlayerUnidad = Object.assign({}, _bingoEditPlayerUnidad);
+  delete _bingoEditPlayerUnidad[uid];
+  _bingoEditPlayerStep = Object.assign({}, _bingoEditPlayerStep);
+  delete _bingoEditPlayerStep[uid];
+  _renderBingoPane();
+}
+function setBingoEditPlayerUnidad(uid, idx) {
+  _bingoEditPlayerUnidad = Object.assign({}, _bingoEditPlayerUnidad, {[uid]: idx});
+  _bingoEditPlayerStep = Object.assign({}, _bingoEditPlayerStep);
+  delete _bingoEditPlayerStep[uid];
+  _renderBingoPane();
+}
+function setBingoEditPlayerStep(uid, stepId) {
+  _bingoEditPlayerStep = Object.assign({}, _bingoEditPlayerStep, {[uid]: stepId});
   _renderBingoPane();
 }
 
@@ -6335,10 +6703,11 @@ function _bingoPlayerTopicSelectorHtml(uid, ptopics) {
     ).join('')}
   </div>`;
 
-  // Grado / Área
+  // Grado (o Área, para niveles sin grados como Pre/Universitario)
   let gradeHtml = '';
+  const _hasGrades = lv && Object.keys(lv.grades||{}).length > 0;
   if (lv) {
-    if (lv.areas) {
+    if (!_hasGrades && lv.areas) {
       gradeHtml = `<div style="display:flex;flex-wrap:wrap;gap:5px">
         ${lv.areas.map(a => `<button class="blo-ptopic-btn${pGrade===a.key?' on':''}" onclick="setBingoEditPlayerGrade('${uid}','${a.key}')">${a.ico} ${a.lbl}</button>`).join('')}
       </div>`;
@@ -6350,18 +6719,65 @@ function _bingoPlayerTopicSelectorHtml(uid, ptopics) {
     }
   }
 
-  // Temas
-  let topicsHtml = '';
-  if (pNivel && pGrade && lv && !lv.areas) {
-    const units = (PREP_CURRICULUM[pNivel]||{})[pGrade] || [];
-    const tks = units.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]?.quiz);
-    topicsHtml = tks.length
-      ? `<div style="display:flex;flex-direction:column;gap:3px;width:100%">
-          ${tks.map(k => { const def=BINGO_TOPICS[k]||{}; const on=ptopics.includes(k);
+  // Área / Colegio (editorial) / Unidad / Temas — stepper lateral, solo para niveles con grados reales
+  const pArea = _bingoEditPlayerArea[uid] || null;
+  const pColegio = _bingoEditPlayerColegio[uid] || null;
+  const pUnidad = _bingoEditPlayerUnidad[uid];
+  let stepperHtml = '';
+  if (pNivel && pGrade && lv && _hasGrades) {
+    const allUnitsRaw = (PREP_CURRICULUM[pNivel]||{})[pGrade] || [];
+    const areaSet = (lv.areas||[]).filter(a=>allUnitsRaw.some(u=>u.area===a.key));
+    const areaApplicable = areaSet.length > 1;
+    const area = areaApplicable ? pArea : (areaSet[0]?.key || null);
+    const allUnits = allUnitsRaw.filter(u=>!area || u.area===area);
+    const edSet = [];
+    allUnits.forEach(u => { if (u.editorial && edSet.indexOf(u.editorial)<0) edSet.push(u.editorial); });
+    const colegioApplicable = edSet.length > 1;
+    const colegio = colegioApplicable ? pColegio : (edSet[0] || null);
+    const unitsFiltered = allUnits.map((u,i)=>({u,i})).filter(({u})=>!colegio || u.editorial===colegio);
+    const unit = (pUnidad !== undefined && pUnidad !== null) ? allUnits[pUnidad] : null;
+    const tks = unit ? (unit.skills||[]).filter(k=>BINGO_TOPICS[k]?.quiz) : [];
+
+    const steps = [
+      { id:'area', k:'Área', v: area ? ((areaSet.find(a=>a.key===area)||{}).lbl || area) : null, applicable:areaApplicable,
+        panel:`<div style="display:flex;flex-wrap:wrap;gap:5px">${areaSet.map(a => `<button class="blo-ptopic-btn${pArea===a.key?' on':''}" onclick="setBingoEditPlayerArea('${uid}','${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')}</div>` },
+      { id:'colegio', k:'Colegio', v: colegio ? ((PREP_EDITORIALS[colegio]||{}).lbl || colegio) : null, applicable:colegioApplicable,
+        panel:`<div style="display:flex;flex-wrap:wrap;gap:5px">${edSet.map(ed => { const info=PREP_EDITORIALS[ed]||{}; return `<button class="blo-ptopic-btn${pColegio===ed?' on':''}" onclick="setBingoEditPlayerColegio('${uid}','${ed}')">${info.ico||'🏫'} ${info.lbl||ed}</button>`; }).join('')}</div>` },
+      { id:'unidad', k:'Unidad', v: unit ? unit.lbl : null, applicable:true,
+        panel:`<div style="display:flex;flex-direction:column;gap:3px;width:100%">${unitsFiltered.map(({u,i}) => `<button class="blo-ptopic-btn${pUnidad===i?' on':''}" style="text-align:left;width:100%;padding:5px 12px;gap:8px" onclick="setBingoEditPlayerUnidad('${uid}',${i})">Unidad ${i+1} — ${u.lbl}</button>`).join('')}</div>` },
+    ];
+    const stepsAp = steps.filter(s=>s.applicable);
+    let activeId = _bingoEditPlayerStep[uid];
+    if (!activeId || !stepsAp.some(s=>s.id===activeId)) {
+      const firstPend = stepsAp.find(s=>!s.v);
+      activeId = firstPend ? firstPend.id : null;
+    }
+    const temasState = activeId===null ? 'active' : (unit ? 'done' : 'todo');
+    const navHtml = `<div class="blo-tstep-nav">${stepsAp.map((s,i)=>{
+      const state = s.id===activeId ? 'active' : (s.v ? 'done' : 'todo');
+      return `<div class="blo-tstep-item ${state}" ${state!=='todo'?`onclick="setBingoEditPlayerStep('${uid}','${s.id}')"`:''}>
+        <div class="blo-tstep-idx">${i+1}</div>
+        <div class="blo-tstep-lbl"><span class="blo-tstep-k">${s.k}</span><span class="blo-tstep-v">${s.v || (state==='active'?'Ahora':'Después')}</span></div>
+      </div>`;
+    }).join('')}
+      <div class="blo-tstep-item ${temasState}" ${unit?`onclick="setBingoEditPlayerStep('${uid}',null)"`:''}>
+        <div class="blo-tstep-idx">${stepsAp.length+1}</div>
+        <div class="blo-tstep-lbl"><span class="blo-tstep-k">Temas</span><span class="blo-tstep-v">${activeId===null && ptopics.length ? `${ptopics.length} elegido${ptopics.length===1?'':'s'}` : (temasState==='active'?'Ahora':'Después')}</span></div>
+      </div>
+    </div>`;
+    let panelHtml;
+    if (activeId) {
+      panelHtml = stepsAp.find(s=>s.id===activeId).panel;
+    } else if (unit) {
+      panelHtml = tks.length
+        ? `<div style="display:flex;flex-direction:column;gap:3px;width:100%">${tks.map(k => { const def=BINGO_TOPICS[k]||{}; const on=ptopics.includes(k);
             return `<button class="blo-ptopic-btn${on?' on':''}" style="text-align:left;width:100%;padding:5px 12px;gap:8px" onclick="toggleBingoPlayerTopic('${uid}','${k}')">${def.ico||''} ${def.lbl||k}${on?' ✓':''}</button>`;
-          }).join('')}
-        </div>`
-      : `<div class="blo-pconf-note">🚧 Próximamente para este grado/área</div>`;
+          }).join('')}</div>`
+        : `<div class="blo-pconf-note">🚧 Próximamente para esta unidad</div>`;
+    } else {
+      panelHtml = `<div class="blo-pconf-note">Completa los pasos anteriores</div>`;
+    }
+    stepperHtml = `<div class="blo-tstep-layout"><div>${navHtml}</div><div class="blo-tstep-panel">${panelHtml}</div></div>`;
   }
 
   // Nota de estado
@@ -6371,7 +6787,7 @@ function _bingoPlayerTopicSelectorHtml(uid, ptopics) {
 
   return `<div class="blo-pconf-row" style="flex-direction:column;align-items:flex-start;gap:6px">
     <span class="blo-pconf-label">Temas del reto</span>
-    ${nivelHtml}${gradeHtml}${topicsHtml}${noteHtml}
+    ${nivelHtml}${gradeHtml}${stepperHtml}${noteHtml}
   </div>`;
 }
 
@@ -6386,8 +6802,9 @@ function _bingoPaneHtml() {
         <div class="btb-text">Neon Bingo</div>
         <div class="btb-sub">En vivo · Matemáticas</div>
       </div>
-      <button onclick="toggleBingoTips()" class="bingo-tips-btn ${_bingoTipsEnabled?'on':'off'}">💡 TIPS</button>
     </div>`;
+  // El botón de Tips vive ahora en la fila del header (bwin-hdr), como un control más de la grilla de 6 columnas.
+  const bingoTipsBtnHtml = `<button onclick="toggleBingoTips()" class="bingo-tips-btn ${_bingoTipsEnabled?'on':'off'}">💡 Tips</button>`;
 
   // ── Invitado sin identidad: pedir nombre antes de mostrar nada ───────────────────
   if (_isBingoGuest() && !_bingoGuestUid) {
@@ -6421,22 +6838,26 @@ function _bingoPaneHtml() {
         <button onclick="_bingoGuestUid=null;_renderBingoPane()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);border-radius:8px;padding:3px 8px;font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:700;cursor:pointer">✏️ Cambiar</button>
       </div>`;
     }
+    const _me = _bingoMe();
+    const _myOwnGame = bingoGames.find(g => g.hostId === _me.uid) || null;
     if (!bingoGames.length) {
       glHtml += '<div class="bingo-empty"><div class="bingo-empty-ico">🎱</div>' +
         '<div style="font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase">No hay partidas activas</div>' +
         '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Crea una nueva para empezar</div></div>';
     } else {
       try {
-        const _me = _bingoMe();
         bingoGames.forEach(g => {
           const _pc = Object.values(g.players||{}).filter(p=>!p.isBot).length;
           const _in = !!((g.players||{})[_me.uid]);
           const _sb = g.status==='lobby' ? '🕐 Esperando' : '🎮 En juego';
           const _bl = _in ? 'Continuar →' : 'Entrar →';
+          const _mine = g.hostId === _me.uid;
           glHtml += `<div class="bingo-game-card" onclick="joinBingoGame('${g.id}')" >` +
             `<div class="bgc-head"><span class="bgc-host">👑 ${g.hostName||'Anónimo'}</span>` +
-            `<span class="bgc-badge${g.status==='playing'?' bgc-badge-playing':''}">${_sb}</span></div>` +
-            `<div class="bgc-meta"><span>👥 ${_pc} jugador${_pc!==1?'es':''}</span>${_in?'<span class="bgc-in">✓ Ya estás dentro</span>':''}</div>` +
+            `<span style="display:flex;align-items:center;gap:6px">` +
+            (_mine ? `<button class="bgc-del-btn" title="Eliminar mi partida" onclick="event.stopPropagation();deleteBingoGameFromList('${g.id}')">🗑</button>` : '') +
+            `<span class="bgc-badge${g.status==='playing'?' bgc-badge-playing':''}">${_sb}</span></span></div>` +
+            `<div class="bgc-meta"><span>👥 ${_pc} jugador${_pc!==1?'es':''}</span>${_in?'<span class="bgc-in">✓ Ya estás dentro</span>':''}${_mine?'<span class="bgc-mine">🏠 Tu partida</span>':''}</div>` +
             `<button class="bgc-join-btn" onclick="event.stopPropagation();joinBingoGame('${g.id}')">${_bl}</button>` +
             `</div>`;
         });
@@ -6446,7 +6867,9 @@ function _bingoPaneHtml() {
       <span style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:0.08em;text-transform:uppercase">Velocidad:</span>
       ${['media','rapida'].map(sp=>`<button onclick="_bingoPendingSpeed='${sp}';_renderBingoPane()" style="padding:4px 12px;border-radius:20px;border:1px solid ${_bingoPendingSpeed===sp?'rgba(168,85,247,0.8)':'rgba(255,255,255,0.15)'};background:${_bingoPendingSpeed===sp?'rgba(168,85,247,0.2)':'transparent'};color:${_bingoPendingSpeed===sp?'#c084fc':'rgba(255,255,255,0.5)'};font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;cursor:pointer">${sp==='media'?'⏱ Media':'⚡ Rápida'}</button>`).join('')}
     </div>`;
-    glHtml += '<button class="bingo-create-btn" style="margin-top:8px" onclick="createBingoGame()">🎲 + Crear nueva partida</button>';
+    glHtml += _myOwnGame
+      ? '<div class="bingo-create-disabled" style="margin-top:8px">🔒 Ya tienes una partida creada — continúa con ella o elimínala arriba para crear otra</div>'
+      : '<button class="bingo-create-btn" style="margin-top:8px" onclick="createBingoGame()">🎲 + Crear nueva partida</button>';
     glHtml += `<button onclick="loadBingoHistory()" style="width:100%;margin-top:8px;padding:11px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;color:rgba(255,255,255,0.55);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.04em">📊 Ver historial de partidas</button></div>`;
     let listBody = titleHtml + glHtml;
     if (_bingoShowHistory) {
@@ -6511,23 +6934,24 @@ function _bingoPaneHtml() {
   const isHost    = bingoGame.hostId === me.uid;
   const playersArr = Object.values(players);
 
-  const hostLine = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:6px">
-        <button class="bingo-leave-btn" onclick="_leaveBingoGame()">← Salir</button>
-        <span class="bingo-host-badge">👑 Host: ${bingoGame.hostName||'—'}</span>
-      </div>
-      <div style="display:flex;gap:6px">
-        ${currentView!=='bingo' ? `<button class="bingo-full-btn" onclick="go('bingo')">⛶ Pantalla completa</button>` : ''}
-        ${status==='playing' && isAdmin() ? `<button class="bingo-commentator-btn${_bingoIsSpectator?' on':''}" onclick="toggleBingoSpectator()">👁 ${_bingoIsSpectator?'Comentarista':'Jugador'}</button>` : ''}
-        ${(isHost||isAdmin()) && status==='playing' ? `<button class="bingo-pause-btn" onclick="pauseBingoGame()">${bingoGame.paused?'▶ Reanudar':'⏸ Pausar'}</button>` : ''}
-        ${(isHost||isAdmin()) ? `<button class="bingo-end-btn" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
-      </div>
+  // Los chips de jugadores van DENTRO de la misma tarjeta del header (no en una fila aparte)
+  // salvo en la sala de espera del host, donde ya se muestra una lista de jugadores más completa más abajo.
+  const _showPlayersInline = !(isHost && status==='lobby' && _bingoLobbyStep==='waiting');
+  const playersChipsHtml = playersArr.length
+    ? playersArr.map(p=>`<span class="bingo-player-chip${p.isBot?' bpc-bot':''}"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span><span class="bpc-info"><span class="bpc-name">${p.name}</span>${p.playerStatus?`<span class="bpc-status">${p.playerStatus}</span>`:''}</span></span>`).join('')
+    : `<span class="bwin-pill static" style="color:rgba(255,255,255,0.35)">Aún no se unió nadie</span>`;
+  const hostLine = `<div class="bwin-card bwin-hdr" style="margin-bottom:8px">
+      <button class="bwin-pill" onclick="_leaveBingoGame()">← Salir</button>
+      <span class="bwin-pill gold static">🏆 Host: ${bingoGame.hostName||'—'}</span>
+      ${_showPlayersInline ? playersChipsHtml : ''}
+      ${currentView!=='bingo' ? `<button class="bwin-pill" onclick="go('bingo')">⛶ Pantalla completa</button>` : ''}
+      ${status==='playing' && isAdmin() ? `<button class="bwin-pill${_bingoIsSpectator?' on':''}" onclick="toggleBingoSpectator()">👁 ${_bingoIsSpectator?'Comentarista':'Jugador'}</button>` : ''}
+      ${(isHost||isAdmin()) && status==='playing' ? `<button class="bwin-pill${bingoGame.paused?' on':''}" onclick="pauseBingoGame()">${bingoGame.paused?'▶ Reanudar':'⏸ Pausar'}</button>` : ''}
+      ${(isHost||isAdmin()) ? `<button class="bwin-pill" onclick="endBingoGame()">✕ Finalizar</button>` : ''}
+      ${bingoTipsBtnHtml}
     </div>`;
-  const playersRowHtml = playersArr.length
-    ? `<div class="bingo-players-row">${playersArr.map(p=>`<span class="bingo-player-chip${p.isBot?' bpc-bot':''}"><span class="bpc-ico" style="background:${p.color||'#555'}">${p.icon||'👤'}</span><span class="bpc-info"><span class="bpc-name">${p.name}</span>${p.playerStatus?`<span class="bpc-status">${p.playerStatus}</span>`:''}</span></span>`).join('')}</div>`
-    : `<div style="font-size:11px;color:rgba(255,255,255,0.35);margin:6px 0 10px">Aún no se unió nadie</div>`;
 
-  let body = titleHtml + hostLine + (isHost && status==='lobby' && _bingoLobbyStep==='waiting' ? '' : playersRowHtml);
+  let body = titleHtml + hostLine;
   if (bingoGame.paused) body += `<div class="bingo-paused-banner">⏸ Partida en pausa · El host la reanudará en breve</div>`;
 
   if (status==='lobby') {
@@ -6540,72 +6964,104 @@ function _bingoPaneHtml() {
         const _bots = bingoGame.botCount || 0;
         const _dm = bingoGame.directMode !== false;
         body += `
-        <div class="blc-speed">
-          <button class="blc-spd-btn ${_curSpd==='media'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'media',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['media']})">⏱ Media</button>
-          <button class="blc-spd-btn ${_curSpd==='rapida'?'on':''}" onclick="BINGO_REF.update({gameSpeed:'rapida',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['rapida']})">⚡ Rápida</button>
+        <div class="bwin-card bwin-chiprow">
+          <span class="bwin-pill on" onclick="BINGO_REF.update({gameSpeed:'${_curSpd==='media'?'rapida':'media'}',challengeSchedule:BINGO_CHALLENGE_SCHEDULES['${_curSpd==='media'?'rapida':'media'}']})">${_curSpd==='rapida'?'⚡':'⏱'} ${_curSpd==='rapida'?'Rápida':'Media'}</span>
+          <span class="bwin-pill on" onclick="setBingoConfig('directMode',${!_dm})">${_dm?'⚡':'🧮'} ${_dm?'Sin sumas':'Con sumas'}</span>
+          <span class="bwin-pill static">🃏 <span class="bwin-mini"><button onclick="setBingoConfig('cardCount',Math.max(1,${_cards}-1))" ${_cards<=1?'disabled':''}>−</button><b>${_cards}</b><button onclick="setBingoConfig('cardCount',Math.min(4,${_cards}+1))" ${_cards>=4?'disabled':''}>+</button></span></span>
+          <span class="bwin-pill static">🤖 <span class="bwin-mini"><button onclick="setBingoConfig('botCount',Math.max(0,${_bots}-1))" ${_bots<=0?'disabled':''}>−</button><b>${_bots}</b><button onclick="setBingoConfig('botCount',Math.min(8,${_bots}+1))">+</button></span></span>
+          <span class="bwin-pill ${_bingoTopicsMode==='global'?'on':''}" onclick="setBingoTopicsMode('global')">🌐 Global</span>
+          <span class="bwin-pill ${_bingoTopicsMode==='per_player'?'on':''}" onclick="setBingoTopicsMode('per_player')">👤 Por alumno</span>
         </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin:0 0 4px">TEMAS DEL RETO</div>
-        <div class="blc-speed" style="grid-template-columns:1fr 1fr;margin:0 0 10px">
-          <button class="blc-spd-btn ${_bingoTopicsMode==='global'?'on':''}" onclick="setBingoTopicsMode('global')">🌐 Global · elegir ahora</button>
-          <button class="blc-spd-btn ${_bingoTopicsMode==='per_player'?'on':''}" onclick="setBingoTopicsMode('per_player')">👤 Por alumno · en sala</button>
-        </div>
+        ${_bots>0?`<div class="blc-botlvl" style="margin:-4px 0 10px">${['basic','intermediate','advanced'].map(l=>`<button class="blc-botlvl-btn ${(bingoGame.botLevel||'basic')===l?'on':''}" onclick="setBingoConfig('botLevel','${l}')">${{basic:'Básico',intermediate:'Medio',advanced:'Pro'}[l]}</button>`).join('')}</div>`:''}
         ${_bingoTopicsMode === 'global' ? `
-        <div class="blc-speed" style="grid-template-columns:1fr 1fr 1fr;margin:0 0 8px">
-          ${Object.entries(PREP_LEVELS).map(([key,lv])=>`<button class="blc-spd-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${lv.lbl}</button>`).join('')}
-        </div>
         ${(()=>{
-          const lv = PREP_LEVELS[_bingoLobbyNivel];
-          if (!lv) return '';
-          // Pre-univ: tiene áreas pero sin grados → mostrar áreas (próximamente)
+          const lv = PREP_LEVELS[_bingoLobbyNivel] || null;
+          const nivelPanel = `<div class="blc-grade-grid" style="grid-template-columns:repeat(3,1fr)">${Object.entries(PREP_LEVELS).map(([key,l])=>`<button class="blc-grade-btn ${_bingoLobbyNivel===key?'on':''}" onclick="setBingoLobbyNivel('${key}')">${l.ico||''} ${l.lbl}</button>`).join('')}</div>`;
+          // Nivel es siempre el primer paso de la ruta. Si se reabrió a mano o todavía no hay
+          // nivel elegido, mostramos solo ese paso (el resto depende de qué nivel se elija).
+          if (_bingoLobbyEditStep === 'nivel' || !lv) {
+            const _route = `<div class="bwin-stepline active"><div class="bwin-stepdot"></div><div class="bwin-steplbl"><span class="bwin-stepk">Nivel</span><span class="bwin-stepv">Ahora</span></div></div>`;
+            return `<div class="bwin-split2"><div class="bwin-box"><div class="bwin-boxlbl">📍 Ruta</div>${_route}</div><div class="bwin-box"><div class="bwin-boxlbl">Elige el nivel</div>${nivelPanel}</div></div>`;
+          }
+          const nivelLine = `<div class="bwin-stepline done" onclick="setBingoLobbyEditStep('nivel')"><div class="bwin-stepdot"></div><div class="bwin-steplbl"><span class="bwin-stepk">Nivel</span><span class="bwin-stepv">${lv.lbl}</span></div></div>`;
+          // Pre-univ: tiene áreas pero sin grados reales → el "grado" es en realidad el área (próximamente).
+          // No hay currícula real acá, así que se queda como panel simple debajo de la línea de Nivel.
           if (lv.areas && !Object.keys(lv.grades||{}).length) {
-            const areasHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')}</div>`;
-            return areasHtml + (_bingoLobbyGrade ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>` : '');
+            const areaPanel = `<div class="blc-grade-grid" style="grid-template-columns:repeat(2,1fr)">${lv.areas.map(a=>`<button class="blc-grade-btn ${_bingoLobbyGrade===a.key?'on':''}" onclick="setBingoLobbyGrade('${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')}</div>`;
+            const proxHtml = _bingoLobbyGrade ? `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>` : '';
+            return `<div class="bwin-split2"><div class="bwin-box"><div class="bwin-boxlbl">📍 Ruta</div>${nivelLine}</div><div class="bwin-box"><div class="bwin-boxlbl">Elige el área</div>${areaPanel}${proxHtml}</div></div>`;
           }
           const grades = lv.grades || {};
           const gKeys = Object.keys(grades).sort((a,b)=>+a-+b);
-          if (!gKeys.length) return `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
+          if (!gKeys.length) return `<div class="bwin-split2"><div class="bwin-box"><div class="bwin-boxlbl">📍 Ruta</div>${nivelLine}</div><div class="bwin-box"><div class="bwin-boxlbl">📝 Temas</div><div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div></div></div>`;
+
+          // ── Datos derivados de cada paso (Grado → Área → Colegio → Unidad → Temas) ──
           const cols = Math.min(gKeys.length, 3);
-          const gradeHtml = `<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>`;
-          if (!_bingoLobbyGrade) return gradeHtml;
-          const _currUnits = (PREP_CURRICULUM[_bingoLobbyNivel]||{})[_bingoLobbyGrade] || [];
-          const tks = _currUnits.flatMap(u=>u.skills||[]).filter(k=>BINGO_TOPICS[k]?.quiz);
-          const topicsHtml = tks.length
-            ? tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<button class="blc-diff-btn ${on?'on':''}" style="flex-direction:row;width:100%;padding:11px 16px;margin-bottom:5px;justify-content:flex-start;gap:10px;font-size:15px;box-sizing:border-box" onclick="toggleBingoTopic('${k}')"><span style="font-size:20px;width:26px;text-align:center">${ico}</span><span style="font-weight:800;letter-spacing:.03em">${lbl}</span>${on?`<span style="margin-left:auto;font-size:13px">✓</span>`:''}</button>`;}).join('')
-            : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
-          return gradeHtml + topicsHtml;
-        })()}` : `<div style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.2);border-radius:10px;padding:10px 14px;font-size:11.5px;color:rgba(255,255,255,0.4);margin-bottom:10px">👤 Configura el nivel, grado y temas de cada alumno cuando se unan en la sala de espera</div>`}
-        <div class="blc-grid">
-          <div class="blc-card blc-clickable ${_dm?'active':''}" onclick="setBingoConfig('directMode',${!_dm})">
-            <span class="blc-clabel">Modo directo</span>
-            <span class="blc-cico">${_dm?'⚡':'🧮'}</span>
-            <span class="blc-cval">${_dm?'Sin sumas':'Con sumas'}</span>
-          </div>
-          <div class="blc-card">
-            <span class="blc-clabel">Cartones por jugador</span>
-            <div class="blc-stepper">
-              <button class="blc-sbtn" onclick="setBingoConfig('cardCount',Math.max(1,${_cards}-1))" ${_cards<=1?'disabled':''}>−</button>
-              <span class="blc-snum">${_cards}</span>
-              <button class="blc-sbtn" onclick="setBingoConfig('cardCount',Math.min(4,${_cards}+1))" ${_cards>=4?'disabled':''}>+</button>
-            </div>
-          </div>
-        </div>
-        <div class="blc-card" style="margin-bottom:10px">
-          <span class="blc-clabel">Bots 🤖</span>
-          <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
-            <div class="blc-stepper">
-              <button class="blc-sbtn" onclick="setBingoConfig('botCount',Math.max(0,${_bots}-1))" ${_bots<=0?'disabled':''}>−</button>
-              <span class="blc-snum">${_bots}</span>
-              <button class="blc-sbtn" onclick="setBingoConfig('botCount',Math.min(8,${_bots}+1))">+</button>
-            </div>
-            ${_bots>0?`<div><div class="blc-clabel" style="margin-bottom:2px">Nivel</div><div class="blc-botlvl">${['basic','intermediate','advanced'].map(l=>`<button class="blc-botlvl-btn ${(bingoGame.botLevel||'basic')===l?'on':''}" onclick="setBingoConfig('botLevel','${l}')">${{basic:'Básico',intermediate:'Medio',advanced:'Pro'}[l]}</button>`).join('')}</div></div>`:''}
-          </div>
-        </div>
-        ${isAdmin() ? `<div class="bsp-role-row">${myPlayer?'🎮 Rol: <b>Jugador</b>':'👁 Rol: <b>Espectador</b>'}
+          const _allUnitsRaw = _bingoLobbyGrade ? ((PREP_CURRICULUM[_bingoLobbyNivel]||{})[_bingoLobbyGrade] || []) : [];
+          const _areaSet = (lv.areas||[]).filter(a=>_allUnitsRaw.some(u=>u.area===a.key));
+          const _areaApplicable = _areaSet.length > 1;
+          const _area = _areaApplicable ? _bingoLobbyArea : (_areaSet[0]?.key || null);
+          const _allUnits = _allUnitsRaw.filter(u=>!_area || u.area===_area);
+          const _edSet = [];
+          _allUnits.forEach(u=>{ if (u.editorial && _edSet.indexOf(u.editorial)<0) _edSet.push(u.editorial); });
+          const _colegioApplicable = _edSet.length > 1;
+          const _colegio = _colegioApplicable ? _bingoLobbyColegio : (_edSet[0] || null);
+          const _unitsFiltered = _allUnits.map((u,i)=>({u,i})).filter(({u})=>!_colegio || u.editorial===_colegio);
+          const _unit = (_bingoLobbyUnidad !== null && _bingoLobbyUnidad !== undefined) ? _allUnits[_bingoLobbyUnidad] : null;
+          const _tks = _unit ? (_unit.skills||[]).filter(k=>BINGO_TOPICS[k]?.quiz) : [];
+
+          // ── Pasos de la ruta: cada uno sabe su valor ya elegido (o null), su etiqueta de panel y su propia grilla ──
+          const _steps = [
+            { id:'grado', k:'Grado', lbl:'Elige el grado', v: _bingoLobbyGrade ? `${_bingoLobbyGrade}° Grado` : null, applicable:true,
+              panel:`<div class="blc-grade-grid" style="grid-template-columns:repeat(${cols},1fr)">${gKeys.map(g=>`<button class="blc-grade-btn ${_bingoLobbyGrade===g?'on':''}" onclick="setBingoLobbyGrade('${g}')">${g}° Grado</button>`).join('')}</div>` },
+            { id:'area', k:'Área', lbl:'Elige el área', v: _area ? ((_areaSet.find(a=>a.key===_area)||{}).lbl || _area) : null, applicable:_areaApplicable,
+              panel:`<div class="blc-grade-grid" style="grid-template-columns:repeat(${Math.min(_areaSet.length,3)},1fr)">${_areaSet.map(a=>`<button class="blc-grade-btn ${_bingoLobbyArea===a.key?'on':''}" onclick="setBingoLobbyArea('${a.key}')">${a.ico||''} ${a.lbl}</button>`).join('')}</div>` },
+            { id:'colegio', k:'Colegio', lbl:'Elige el colegio', v: _colegio ? ((PREP_EDITORIALS[_colegio]||{}).lbl || _colegio) : null, applicable:_colegioApplicable,
+              panel:`<div class="blc-grade-grid" style="grid-template-columns:repeat(${Math.min(_edSet.length,3)},1fr)">${_edSet.map(ed=>{const info=PREP_EDITORIALS[ed]||{};return `<button class="blc-grade-btn ${_bingoLobbyColegio===ed?'on':''}" onclick="setBingoLobbyColegio('${ed}')">${info.ico||'🏫'} ${info.lbl||ed}</button>`;}).join('')}</div>` },
+            { id:'unidad', k:'Unidad', lbl:'Elige la unidad', v: _unit ? _unit.lbl : null, applicable:true,
+              panel:`<div style="display:flex;flex-direction:column;gap:5px">${_unitsFiltered.map(({u,i})=>`<button class="blc-diff-btn ${_bingoLobbyUnidad===i?'on':''}" style="flex-direction:row;width:100%;padding:9px 14px;justify-content:flex-start;gap:8px;font-size:13px;box-sizing:border-box" onclick="setBingoLobbyUnidad(${i})">Unidad ${i+1} — ${u.lbl}</button>`).join('')}</div>` },
+          ];
+          const _stepsAp = _steps.filter(s=>s.applicable);
+          // Paso activo: el que el host reabrió a mano, o si no, el primero sin resolver (null = todos listos → Temas)
+          let _activeId = _bingoLobbyEditStep;
+          if (!_activeId || !_stepsAp.some(s=>s.id===_activeId)) {
+            const _firstPend = _stepsAp.find(s=>!s.v);
+            _activeId = _firstPend ? _firstPend.id : null;
+          }
+          const _temasState = _activeId===null ? 'active' : (_unit ? 'done' : 'todo');
+          const _routeHtml = `${nivelLine}${_stepsAp.map(s=>{
+            const state = s.id===_activeId ? 'active' : (s.v ? 'done' : 'todo');
+            return `<div class="bwin-stepline ${state}" ${state!=='todo'?`onclick="setBingoLobbyEditStep('${s.id}')"`:''}>
+              <div class="bwin-stepdot"></div>
+              <div class="bwin-steplbl"><span class="bwin-stepk">${s.k}</span><span class="bwin-stepv">${s.v || (state==='active'?'Ahora':'Después')}</span></div>
+            </div>`;
+          }).join('')}
+            <div class="bwin-stepline ${_temasState}" ${_unit?`onclick="setBingoLobbyEditStep(null)"`:''}>
+              <div class="bwin-stepdot"></div>
+              <div class="bwin-steplbl"><span class="bwin-stepk">Temas</span><span class="bwin-stepv">${_activeId===null && _topics.length ? `${_topics.length} elegido${_topics.length===1?'':'s'}` : (_temasState==='active'?'Ahora':'Después')}</span></div>
+            </div>`;
+          let _panelHtml, _panelLbl;
+          if (_activeId) {
+            const _s = _stepsAp.find(s=>s.id===_activeId);
+            _panelLbl = _s.lbl; _panelHtml = _s.panel;
+          } else if (_unit) {
+            _panelLbl = `📝 Temas${_topics.length?` · ${_topics.length} elegido${_topics.length===1?'':'s'}`:''}`;
+            _panelHtml = _tks.length
+              ? _tks.map(k=>{const{ico,lbl}=BINGO_TOPICS[k];const on=_topics.includes(k);return `<div class="bwin-optbtn ${on?'sel':''}" onclick="toggleBingoTopic('${k}')">${ico} ${lbl}${on?`<span class="chk">✓</span>`:''}</div>`;}).join('')
+              : `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">🚧 Próximamente</div>`;
+          } else {
+            _panelLbl = '📝 Temas';
+            _panelHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.25);padding:14px 0">Completa los pasos anteriores</div>`;
+          }
+          return `<div class="bwin-split2"><div class="bwin-box"><div class="bwin-boxlbl">📍 Ruta</div>${_routeHtml}</div><div class="bwin-box"><div class="bwin-boxlbl">${_panelLbl}</div>${_panelHtml}</div></div>`;
+        })()}` : `<div class="bwin-box" style="margin:0 0 10px">👤 Configura el nivel, grado y temas de cada alumno cuando se unan en la sala de espera</div>`}
+        <div class="bwin-card bwin-ftr" style="margin-top:8px">
+          ${isAdmin() ? `<span class="roltxt">🎭 Rol: <b>${myPlayer?'Jugador':'Espectador'}</b></span>
           ${myPlayer
-            ? `<button class="bsp-role-btn to-spectator" onclick="setBingoHostRole('spectator')">→ Espectador 👁</button>`
-            : `<button class="bsp-role-btn to-player" onclick="setBingoHostRole('player')">→ Jugador 🎮</button>`}
-        </div>` : ''}
-        <button class="blo-open-btn" onclick="_bingoLobbyStep='waiting';_renderBingoPane()">Abrir sala de espera →</button>`;
+            ? `<button class="bwin-pill on" onclick="setBingoHostRole('spectator')">→ Espectador 👁</button>`
+            : `<button class="bwin-pill on" onclick="setBingoHostRole('player')">→ Jugador 🎮</button>`}` : ''}
+          <button class="bwin-openbtn${isAdmin()?'':' full'}" onclick="_bingoLobbyStep='waiting';_renderBingoPane()">Abrir sala de espera →</button>
+        </div>`;
 
       } else {
         // ── Paso 2: Sala de espera ──────────────────────────────────────────
@@ -10698,6 +11154,10 @@ function setTaskMult(studentId, value) {
 }
 
 // Genera N casillas (checkboxes) para un campo (hours/progress/tasks) de una fecha, según el arreglo guardado.
+// LEGADO: genera N casillas manuales. Ya no se usa por defecto (los puntos se calculan
+// automáticamente, ver _ptsRefreshAutoSnapshot / getStudentPoints) — se conserva solo como
+// vía de anulación manual puntual desde "🔧 Editar manualmente" en vPtsDateChecklist, para no
+// perder la capacidad de corregir un caso excepcional sin tocar código.
 function ptsCheckRow(studentId, dateKey, field, count, savedArr, color, disabled) {
   const arr = Array.isArray(savedArr) ? savedArr : (savedArr ? [true] : []);
   let html = '';
@@ -10707,6 +11167,13 @@ function ptsCheckRow(studentId, dateKey, field, count, savedArr, color, disabled
   }
   return html;
 }
+// Indicador de solo lectura para un valor calculado automáticamente (Horas/Progreso/Tareas).
+function ptsAutoBadge(label, value, color, suffix='') {
+  return `<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:4px">
+    <span style="font-size:9px;color:${color};opacity:0.75;flex-shrink:0">${label}</span>
+    <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;color:${color}">${value}${suffix}</span>
+  </div>`;
+}
 
 function vPtsDateChecklist(s) {
   const offset = ptsMonthOffset;
@@ -10714,6 +11181,7 @@ function vPtsDateChecklist(s) {
   const log    = pointsLog[String(s.id)] || {};
   const today  = new Date(); today.setHours(0,0,0,0);
   const mult   = getTaskMult(s.id);
+  const manualMode = !!_ptsManualMode[s.id];
 
   if (!dates.length) {
     return `
@@ -10736,8 +11204,11 @@ function vPtsDateChecklist(s) {
       <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:0.05em">${fmtPtsMonth(offset)}</span>
       <button onclick="changePtsMonth(1)" style="border:none;background:rgba(255,255,255,0.06);color:#fff;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:12px">▶</button>
     </div>
-    <div style="font-size:9px;color:rgba(255,255,255,0.35);line-height:1.6;margin-bottom:10px">
-      ⏱️ Horas y 📈 Progreso: un cuadradito por cada hora de clase ese día. ✅ Tareas: hasta ${PTS_TASKS_MAX} por fecha${mult>1?`, cada uno vale ×${mult} para este alumno (ajustable arriba)`:''}. 🚫 Si el alumno faltó, marca "Faltó a clase" para que esa fecha no sume ni reste puntos.
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+      <div style="font-size:9px;color:rgba(255,255,255,0.35);line-height:1.6">
+        ⏱️ Horas, 📈 Progreso y ✅ Tareas se calculan AUTOMÁTICAMENTE desde el progreso real del alumno en PREP (tiempo practicado, habilidades dominadas y tareas completadas)${mult>1?`. Cada tarea vale ×${mult} para este alumno (ajustable arriba)`:''}. 🚫 Si el alumno faltó, marca "Faltó a clase" para que esa fecha no sume ni reste puntos.
+      </div>
+      <button onclick="togglePtsManualMode(${s.id})" title="Anular el cálculo automático y marcar casillas a mano para casos excepcionales" style="flex-shrink:0;border:1px solid rgba(255,255,255,0.12);background:${manualMode?'rgba(255,255,255,0.1)':'rgba(255,255,255,0.03)'};color:rgba(255,255,255,0.6);border-radius:8px;padding:4px 8px;font-size:9px;font-weight:800;letter-spacing:0.04em;cursor:pointer;white-space:nowrap">🔧 ${manualMode?'Modo manual: ON':'Manual'}</button>
     </div>
     <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch">
       ${dates.map(({date,key,hours,slots}) => {
@@ -10752,6 +11223,25 @@ function vPtsDateChecklist(s) {
           const mod   = sl.modality ? ` · ${sl.modality}` : '';
           return `<div style="margin-top:4px;font-size:9px;font-weight:700;color:rgba(79,182,255,0.9);background:rgba(79,182,255,0.1);border:1px solid rgba(79,182,255,0.25);border-radius:6px;padding:2px 7px;white-space:nowrap">${range}${mod}</div>`;
         }).join('');
+        // Cuerpo de puntos: por defecto, indicadores de solo lectura con el snapshot automático
+        // (m.auto, ver _ptsRefreshAutoSnapshot); si aún no se calculó para esta fecha, muestra
+        // "…" mientras carga. En modo manual (por alumno) se muestran las casillas clásicas.
+        const pointsBody = (manualMode || m.manualOverride)
+          ? `
+            <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(79,182,255,0.7);width:38px;flex-shrink:0">⏱️ Horas</span>${ptsCheckRow(s.id,key,'hours',hours,m.hours,'#4fb6ff',isFuture||absent)}</div>
+            <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(176,107,255,0.7);width:38px;flex-shrink:0">📈 Prog.</span>${ptsCheckRow(s.id,key,'progress',hours,m.progress,'#b06bff',isFuture||absent)}</div>
+            <div style="${dim};display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:rgba(74,222,128,0.7);width:38px;flex-shrink:0">✅ Tareas</span>${ptsCheckRow(s.id,key,'tasks',PTS_TASKS_MAX,m.tasks,'#39ff7a',isFuture||absent)}</div>
+            ${m.manualOverride?`<div style="margin-top:4px;font-size:8px;color:#ffb84d">Anulado manualmente</div>`:''}
+          `
+          : (m.auto
+              ? `${dim?`<div style="${dim}">`:''}
+                ${ptsAutoBadge('⏱️ Horas', m.auto.hours, '#4fb6ff')}
+                ${ptsAutoBadge('📈 Progreso', m.auto.progress, '#b06bff')}
+                ${ptsAutoBadge('✅ Tareas', m.auto.tasks, '#39ff7a')}
+                ${dim?`</div>`:''}
+              `
+              : `<div style="font-size:9px;color:rgba(255,255,255,0.3);font-style:italic;padding:6px 0">Calculando…</div>`
+            );
         return `
         <div style="flex:0 0 auto;min-width:152px;background:rgba(255,255,255,0.03);border:1px solid ${absent?'rgba(255,92,122,0.25)':isFuture?'rgba(255,255,255,0.06)':'rgba(255,255,255,0.1)'};border-radius:10px;padding:10px">
           <div style="margin-bottom:10px;${isFuture?'opacity:0.45':''}">
@@ -10762,9 +11252,7 @@ function vPtsDateChecklist(s) {
             <input type="checkbox" ${absent?'checked':''} ${isFuture?'disabled':''} onchange="toggleAbsent(${s.id},'${key}',this.checked)" style="width:14px;height:14px;accent-color:#ff5c7a;cursor:${isFuture?'default':'pointer'}">
             🚫 Faltó
           </label>
-          <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(79,182,255,0.7);width:38px;flex-shrink:0">⏱️ Horas</span>${ptsCheckRow(s.id,key,'hours',hours,m.hours,'#4fb6ff',isFuture||absent)}</div>
-          <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(176,107,255,0.7);width:38px;flex-shrink:0">📈 Prog.</span>${ptsCheckRow(s.id,key,'progress',hours,m.progress,'#b06bff',isFuture||absent)}</div>
-          <div style="${dim};display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:rgba(74,222,128,0.7);width:38px;flex-shrink:0">✅ Tareas</span>${ptsCheckRow(s.id,key,'tasks',PTS_TASKS_MAX,m.tasks,'#39ff7a',isFuture||absent)}</div>
+          ${pointsBody}
         </div>`;
       }).join('')}
     </div>
@@ -12001,11 +12489,32 @@ function togglePtsEditor(studentId) {
   ptsMonthOffset = 0;
   const app=document.getElementById('app');
   if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+  // Al abrir el panel de un alumno, recalcula y refresca el snapshot automático de puntos
+  // (ver _ptsRefreshAutoSnapshot) para que refleje su progreso real más reciente en PREP.
+  if (expandedPtsStudent === studentId) {
+    const st = getStudents().find(x=>String(x.id)===String(studentId));
+    if (st) _ptsRefreshAutoSnapshot(st, ptsMonthOffset);
+  }
 }
 function changePtsMonth(delta) {
   ptsMonthOffset += delta;
   const app=document.getElementById('app');
   if (app) app.innerHTML=`<div class="vw">${vPuntos()}</div>`;
+  if (expandedPtsStudent != null) {
+    const st = getStudents().find(x=>String(x.id)===String(expandedPtsStudent));
+    if (st) _ptsRefreshAutoSnapshot(st, ptsMonthOffset);
+  }
+}
+// Alterna, por alumno, el modo "editar manualmente" (anular el cálculo automático). Cuando está
+// activo, el panel muestra las casillas clásicas en vez de los indicadores automáticos, y
+// cualquier casilla marcada en ese modo queda protegida (manualOverride) para que el próximo
+// refresco automático no la sobrescriba. Pensado como excepción puntual, no como flujo normal.
+let _ptsManualMode = {}; // { [studentId]: true }
+function togglePtsManualMode(studentId) {
+  _ptsManualMode[studentId] = !_ptsManualMode[studentId];
+  const st = getStudents().find(x=>String(x.id)===String(studentId));
+  const cont = document.getElementById(`pts-dates-${studentId}`);
+  if (cont && st) cont.outerHTML = vPtsDateChecklist(st);
 }
 let _ptsTimer=null;
 // Cola de ediciones de Puntos todavía no guardadas (se vacía al disparar _flushPointsLog).
@@ -12027,6 +12536,7 @@ function _applyPtsEditsToLog(freshLog, edits) {
       if (!Array.isArray(entry[edit.field])) entry[edit.field]=[];
       while (entry[edit.field].length < edit.count) entry[edit.field].push(false);
       entry[edit.field][edit.idx]=!!edit.checked;
+      entry.manualOverride = true; // ver comentario en togglePointMark
     } else { // 'absent'
       entry.absent = !!edit.checked;
       if (edit.checked) { entry.hours=[]; entry.progress=[]; entry.tasks=[]; }
@@ -12070,6 +12580,9 @@ function togglePointMark(studentId, dateKey, field, idx, count, checked) {
   if (!Array.isArray(entry[field])) entry[field]=[];
   while (entry[field].length < count) entry[field].push(false);
   entry[field][idx]=!!checked;
+  // Marcar una casilla a mano es una anulación deliberada del cálculo automático para esta
+  // fecha: queda protegida (manualOverride) para que _ptsRefreshAutoSnapshot no la pise después.
+  entry.manualOverride = true;
   _ptsPendingEdits.push({type:'mark', studentId, dateKey, field, idx, count, checked});
   _refreshPtsBars(studentId);
   clearTimeout(_ptsTimer);
@@ -12625,8 +13138,32 @@ function _qmFmt(text) {
   s = s.replace(/∛/g, '³√').replace(/∜/g, '⁴√');
   // Vinculum: línea superior sobre el radicando (igual que en el examen)
   var _vs = function(c) { return '<span style="border-top:1.5px solid currentColor;padding:0 2px;display:inline-block;line-height:1.1">'+c+'</span>'; };
-  var prev;
-  do { prev = s; s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√\(([^()]*)\)/g, function(_, i, c){ return i+'√'+_vs(c); }); } while (s !== prev);
+  // Envuelve ⁿ√(...) con soporte para paréntesis anidados (ej. ∛((x - 2)/4)),
+  // a diferencia del regex anterior [^()]* que solo soportaba un nivel.
+  var _wrapRad = function(str) {
+    var out = '', i = 0;
+    while (i < str.length) {
+      var m = /^([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√\(/.exec(str.slice(i));
+      if (m) {
+        var start = i + m[0].length, depth = 1, j = start;
+        while (j < str.length && depth > 0) {
+          if (str[j] === '(') depth++;
+          else if (str[j] === ')') depth--;
+          j++;
+        }
+        if (depth === 0) {
+          var inner = _wrapRad(str.slice(start, j - 1));
+          out += m[1] + '√' + _vs(inner);
+          i = j;
+          continue;
+        }
+      }
+      out += str[i];
+      i++;
+    }
+    return out;
+  };
+  s = _wrapRad(s);
   s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√(\d+)/g, function(_, i, n){ return i+'√'+_vs(n); });
   s = s.replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹]*)√([a-zA-Z][⁰¹²³⁴⁵⁶⁷⁸⁹]*)/g, function(_, i, c){ return i+'√'+_vs(c); });
   // Superíndices y subíndices Unicode → HTML

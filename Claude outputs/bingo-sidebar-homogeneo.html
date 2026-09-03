@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Columna lateral · Sistema unificado</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --accent-glow:rgba(139,92,246,0.4);
+    --gold:#facc15;
+    /* Escala de radios: un solo sistema, tres pasos */
+    --r-card:14px; --r-ctrl:10px; --r-chip:8px;
+    /* Un solo tono de "seleccionado" en toda la ventana */
+    --sel-bg:rgba(168,85,247,0.22); --sel-border:rgba(168,85,247,0.55); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:23px; margin:0 0 5px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 22px; max-width:740px; line-height:1.55}
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px var(--accent-glow);}
+  .panes{max-width:940px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 9px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:18px; padding:20px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line);}
+  .why b{color:var(--txt)}
+  .why ul{margin:8px 0 0; padding-left:18px}
+  .why li{margin-bottom:4px}
+
+  /* ============================================================
+     SISTEMA ÚNICO DE CONTROLES — todo comparte altura, radio, tipografía
+     ============================================================ */
+
+  /* Toggle de dos opciones (Velocidad / Modo de temas) */
+  .toggle2{display:grid; grid-template-columns:1fr 1fr; border-radius:var(--r-card); overflow:hidden; border:1px solid var(--line)}
+  .toggle-btn{background:transparent; border:none; border-right:1px solid var(--line); color:var(--txt-dim2);
+    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:11px 8px; cursor:pointer;
+    font-family:inherit; transition:background .15s,color .15s}
+  .toggle-btn:last-child{border-right:none}
+  .toggle-btn.on{background:var(--sel-bg); color:var(--sel-txt)}
+
+  /* Tile de ajuste — MISMA caja para los 4: Velocidad/Modo/Cartones/Bots */
+  .stat{
+    background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card);
+    padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+    min-height:44px; cursor:pointer; transition:border-color .15s,background .15s;
+  }
+  .stat:hover{border-color:rgba(255,255,255,0.18)}
+  .stat.sel{background:var(--sel-bg); border-color:var(--sel-border)}
+  .stat .sk{font-size:11px; color:var(--txt-dim); font-weight:700; display:flex; align-items:center; gap:7px; white-space:nowrap}
+  .stat .sk .ic{font-size:14px; width:16px; text-align:center; flex:0 0 auto}
+  .stat .sv{font-size:12.5px; font-weight:800; color:var(--txt); white-space:nowrap}
+  .stat.sel .sv{color:var(--sel-txt)}
+
+  /* Control +/- — MISMO estilo de botón redondo que el resto de íconos de la app */
+  .stepctl{display:flex; align-items:center; gap:7px}
+  .stepctl button{
+    width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid var(--line);
+    color:var(--txt); font-size:14px; font-family:inherit; cursor:pointer; display:flex; align-items:center;
+    justify-content:center; padding:0; line-height:1; transition:background .15s;
+  }
+  .stepctl button:hover{background:rgba(255,255,255,0.16)}
+  .stepctl .n{font-size:13px; font-weight:800; min-width:13px; text-align:center; color:var(--txt)}
+
+  /* Stepper lateral de Temas — mismo radio de card (--r-card) para el nav, --r-ctrl para cada fila */
+  .tstep-nav{display:flex; flex-direction:column; gap:3px; background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card); padding:6px}
+  .tstep-item{display:flex; align-items:center; gap:7px; padding:7px 6px; border-radius:var(--r-ctrl); cursor:pointer; transition:background .15s}
+  .tstep-item:hover{background:rgba(255,255,255,0.05)}
+  .tstep-idx{width:17px; height:17px; border-radius:50%; background:var(--panel3); border:1px solid var(--line);
+    color:var(--txt-dim2); font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+  .tstep-item.done .tstep-idx{background:var(--sel-bg); border-color:var(--sel-border); color:var(--sel-txt); font-size:0}
+  .tstep-item.done .tstep-idx::after{content:'✓'; font-size:9px}
+  .tstep-item.active{background:rgba(250,204,21,0.1)}
+  .tstep-item.active .tstep-idx{background:var(--gold); color:#1a1500; border-color:transparent}
+  .tstep-lbl{display:flex; flex-direction:column; line-height:1.15; min-width:0}
+  .tstep-k{font-size:8px; color:var(--txt-dim2); text-transform:uppercase; letter-spacing:.05em; font-weight:700}
+  .tstep-v{font-size:10.5px; color:var(--txt); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+  /* Panel de opciones del paso activo — mismo radio de card, mismo tile de botón que .stat */
+  .tstep-panel{background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card); padding:10px; display:flex; flex-direction:column; gap:6px}
+  .optbtn{
+    background:var(--panel3); border:1px solid var(--line); border-radius:var(--r-ctrl); color:var(--txt-dim);
+    font-size:12px; font-weight:700; padding:9px 11px; cursor:pointer; text-align:left; display:flex; align-items:center; gap:8px;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .optbtn:hover{border-color:rgba(255,255,255,0.2)}
+  .optbtn.sel{background:var(--sel-bg); border-color:var(--sel-border); color:var(--sel-txt)}
+
+  .grplabel{font-size:9px; color:var(--txt-dim2); text-transform:uppercase; letter-spacing:.08em; font-weight:800; margin:0 0 2px 2px}
+  .grp{display:flex; flex-direction:column; gap:6px}
+  .divider{height:1px; background:var(--line); margin:4px 2px}
+
+  .split{display:grid; grid-template-columns:158px 1fr; gap:16px; align-items:start}
+  .settings-col{display:flex; flex-direction:column; gap:10px}
+
+  .swatches{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
+  .swatch{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--txt-dim)}
+  .swatch .dot{width:12px; height:12px; border-radius:4px; flex:0 0 auto}
+
+  ::-webkit-scrollbar{height:6px; width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35); border-radius:4px}
+</style>
+</head>
+<body>
+
+<h1>Opción 2, con un solo sistema de diseño</h1>
+<p class="sub">Tenías razón — en la maqueta anterior cada control (toggle, tile de ajuste, +/− de cartones, stepper de Temas) tenía su propio radio, su propio acento de color y su propio tamaño de texto. Acá unifiqué todo bajo un solo sistema: mismo radio en cards (14px) y en controles internos (10px), un solo color de "seleccionado" (morado) en vez de mezclar morado + verde + dorado, y una sola escala tipográfica para etiquetas/valores en toda la columna.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">Resultado unificado</button>
+  <button class="tab" data-t="2">Qué cambió y por qué</button>
+</div>
+
+<div class="panes">
+
+  <!-- RESULT -->
+  <div class="pane on" id="pane-1">
+    <div class="mock">
+      <div class="split">
+        <div class="settings-col">
+          <div class="grplabel">Partida</div>
+          <div class="grp">
+            <div class="stat sel"><span class="sk"><span class="ic">⏱</span>Velocidad</span><span class="sv">Media</span></div>
+            <div class="stat sel"><span class="sk"><span class="ic">⚡</span>Modo</span><span class="sv">Sin sumas</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="grplabel">Jugadores</div>
+          <div class="grp">
+            <div class="stat"><span class="sk"><span class="ic">🃏</span>Cartones</span><div class="stepctl"><button>−</button><span class="n">1</span><button>+</button></div></div>
+            <div class="stat"><span class="sk"><span class="ic">🤖</span>Bots</span><div class="stepctl"><button>−</button><span class="n">0</span><button>+</button></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="toggle2" style="margin-bottom:10px">
+            <button class="toggle-btn on">🌐 Global · elegir ahora</button>
+            <button class="toggle-btn">👤 Por alumno · en sala</button>
+          </div>
+          <div class="label">Temas del reto</div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:10px">
+            <div class="tstep-nav">
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones...</span></div></div>
+              <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+            </div>
+            <div class="tstep-panel">
+              <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+              <div class="optbtn">⚡ Quiz II – Inecuaciones Avanzadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swatches">
+        <div class="swatch"><span class="dot" style="background:var(--sel-bg);border:1px solid var(--sel-border)"></span>Seleccionado / elegido (un solo morado, en todos lados)</div>
+        <div class="swatch"><span class="dot" style="background:var(--gold)"></span>Paso activo ahora mismo (solo en el stepper — significa "estás aquí")</div>
+        <div class="swatch"><span class="dot" style="background:var(--panel2);border:1px solid var(--line)"></span>Sin elegir / disponible</div>
+      </div>
+    </div>
+    <div class="why">
+      <b>Regla simple:</b> el morado siempre significa "esto es lo que está elegido" — ya sea un toggle, un ajuste, una opción de Temas o un paso ya resuelto del stepper. El dorado se reserva únicamente para "este es el paso en el que estás parado ahora" dentro del stepper — nunca se usa para otra cosa, así no compite visualmente con el morado. Ya no hay verde para "modo activo": antes Modo directo usaba verde y todo lo demás usaba morado/dorado, lo cual hacía que pareciera un control de otra pantalla.
+    </div>
+  </div>
+
+  <!-- WHAT CHANGED -->
+  <div class="pane" id="pane-2">
+    <div class="mock">
+      <div class="why" style="border-top:none; padding-top:0; margin-top:0">
+        <b>Cinco inconsistencias que tenía la maqueta anterior, ya corregidas:</b>
+        <ul>
+          <li><b>Radios mezclados:</b> los tiles de ajuste, el stepper y los botones de tema tenían cada uno su propio border-radius (12px, 14px, 9px...). Ahora hay solo dos valores en toda la columna: 14px para las "cajas grandes" (tiles, panel, nav) y 10px para lo que va adentro (filas del stepper, botones de opción).</li>
+          <li><b>Tres colores de "seleccionado":</b> morado en toggles, verde en Modo directo, dorado en el paso activo del stepper. Ahora solo hay morado para "elegido" y dorado reservado exclusivamente para "paso activo ahora" — dos significados, dos colores, sin mezclarlos.</li>
+          <li><b>Tamaños de texto sin escala:</b> las etiquetas (Velocidad, Cartones, Nivel, Grado...) tenían tamaños distintos entre sí. Ahora todas las etiquetas comparten el mismo tamaño/peso, y todos los valores (Media, Sin sumas, 1, Secundaria...) comparten el suyo.</li>
+          <li><b>El control +/− se sentía "de otra parte":</b> antes era un botón redondo más grande y con más contraste que el resto. Ahora usa el mismo tamaño de botón circular (22px) y el mismo tono de fondo que cualquier otro ícono clickeable de la app.</li>
+          <li><b>Alturas de fila distintas:</b> Velocidad/Modo eran más altos que Cartones/Bots. Ahora las 4 tiles comparten la misma altura mínima (44px), aunque una muestre texto y otra un control +/−.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+</script>
+
+</body>
+</html>

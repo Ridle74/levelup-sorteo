@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Toggle en contexto · Panel completo</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --accent-glow:rgba(139,92,246,0.4);
+    --gold:#facc15;
+    --r-card:14px; --r-ctrl:10px;
+    --sel-bg:rgba(168,85,247,0.22); --sel-border:rgba(168,85,247,0.55); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:22px; margin:0 0 5px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 24px; max-width:740px; line-height:1.55}
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px var(--accent-glow);}
+  .panes{max-width:940px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 9px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:18px; padding:20px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line);}
+  .why b{color:var(--txt)}
+
+  /* ---- sidebar (idéntico a lo ya aprobado, sin cambios) ---- */
+  .stat{
+    background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card);
+    padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+    min-height:44px; cursor:pointer;
+  }
+  .stat.sel{background:var(--sel-bg); border-color:var(--sel-border)}
+  .stat .sk{font-size:11px; color:var(--txt-dim); font-weight:700; display:flex; align-items:center; gap:7px; white-space:nowrap}
+  .stat .sk .ic{font-size:14px; width:16px; text-align:center; flex:0 0 auto}
+  .stat .sv{font-size:12.5px; font-weight:800; color:var(--txt); white-space:nowrap}
+  .stat.sel .sv{color:var(--sel-txt)}
+  .stepctl{display:flex; align-items:center; gap:7px}
+  .stepctl button{width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,0.08); border:1px solid var(--line);
+    color:var(--txt); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0}
+  .stepctl .n{font-size:13px; font-weight:800; min-width:13px; text-align:center}
+  .grplabel{font-size:9px; color:var(--txt-dim2); text-transform:uppercase; letter-spacing:.08em; font-weight:800; margin:0 0 2px 2px}
+  .grp{display:flex; flex-direction:column; gap:6px}
+  .divider{height:1px; background:var(--line); margin:4px 2px}
+  .split{display:grid; grid-template-columns:158px 1fr; gap:16px; align-items:start}
+  .settings-col{display:flex; flex-direction:column; gap:10px}
+
+  /* ---- stepper de Temas (idéntico a lo ya aprobado) ---- */
+  .tstep-nav{display:flex; flex-direction:column; gap:3px; background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card); padding:6px}
+  .tstep-item{display:flex; align-items:center; gap:7px; padding:7px 6px; border-radius:var(--r-ctrl); cursor:pointer}
+  .tstep-idx{width:17px; height:17px; border-radius:50%; background:var(--panel3); border:1px solid var(--line);
+    color:var(--txt-dim2); font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+  .tstep-item.done .tstep-idx{background:var(--sel-bg); border-color:var(--sel-border); color:var(--sel-txt); font-size:0}
+  .tstep-item.done .tstep-idx::after{content:'✓'; font-size:9px}
+  .tstep-item.active{background:rgba(250,204,21,0.1)}
+  .tstep-item.active .tstep-idx{background:var(--gold); color:#1a1500; border-color:transparent}
+  .tstep-lbl{display:flex; flex-direction:column; line-height:1.15; min-width:0}
+  .tstep-k{font-size:8px; color:var(--txt-dim2); text-transform:uppercase; letter-spacing:.05em; font-weight:700}
+  .tstep-v{font-size:10.5px; color:var(--txt); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .tstep-panel{background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card); padding:10px; display:flex; flex-direction:column; gap:6px}
+  .optbtn{
+    background:var(--panel3); border:1px solid var(--line); border-radius:var(--r-ctrl); color:var(--txt-dim);
+    font-size:12px; font-weight:700; padding:9px 11px; cursor:pointer; text-align:left; display:flex; align-items:center; gap:8px;
+  }
+  .optbtn.sel{background:var(--sel-bg); border-color:var(--sel-border); color:var(--sel-txt)}
+
+  /* ---- las 4 variantes del toggle Global/Por alumno ---- */
+  .t1-toggle{display:grid; grid-template-columns:1fr 1fr; border-radius:var(--r-card); overflow:hidden; border:1px solid var(--line); background:var(--panel2); margin-bottom:10px}
+  .t1-btn{background:transparent; border:none; color:var(--txt-dim2); font-family:inherit;
+    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:12px 10px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:7px}
+  .t1-btn.on{background:var(--sel-bg); color:var(--sel-txt)}
+
+  .t2-row{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px}
+  .t2-tile{background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card); padding:11px 14px;
+    display:flex; align-items:center; gap:9px; cursor:pointer}
+  .t2-tile .ic{font-size:16px; width:18px; text-align:center; flex:0 0 auto}
+  .t2-tile .txt{display:flex; flex-direction:column; line-height:1.2}
+  .t2-tile .tt1{font-size:11.5px; font-weight:800; color:var(--txt)}
+  .t2-tile .tt2{font-size:9.5px; color:var(--txt-dim2); font-weight:600}
+  .t2-tile.sel{background:var(--sel-bg); border-color:var(--sel-border)}
+  .t2-tile.sel .tt1{color:var(--sel-txt)}
+
+  .t3-tabs{display:flex; gap:22px; border-bottom:1px solid var(--line); margin-bottom:14px}
+  .t3-tab{background:none; border:none; color:var(--txt-dim2); font-family:inherit; font-size:12.5px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.04em; padding:8px 2px 11px; cursor:pointer; position:relative;
+    display:flex; align-items:center; gap:7px}
+  .t3-tab.on{color:var(--sel-txt)}
+  .t3-tab.on::after{content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--sel-txt); border-radius:2px}
+
+  .t4-row{display:flex; align-items:center; gap:12px; margin-bottom:14px}
+  .t4-lbl{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--txt-dim2); display:flex; align-items:center; gap:6px; cursor:pointer}
+  .t4-lbl.on{color:var(--sel-txt)}
+  .t4-switch{width:44px; height:23px; border-radius:999px; background:var(--panel2); border:1px solid var(--line); position:relative; cursor:pointer; flex:0 0 auto}
+  .t4-knob{position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:var(--sel-txt)}
+
+  ::-webkit-scrollbar{height:6px; width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35); border-radius:4px}
+</style>
+</head>
+<body>
+
+<h1>Las 4 opciones, dentro del panel completo</h1>
+<p class="sub">Mismo panel de siempre (columna de ajustes + stepper de Temas, ya aprobados) — lo único que cambia entre pestañas es el control Global/Por alumno, para que lo veas en su lugar real y no aislado.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">1 · Píldora dividida</button>
+  <button class="tab" data-t="2">2 · Dos tiles</button>
+  <button class="tab" data-t="3">3 · Tabs subrayados</button>
+  <button class="tab" data-t="4">4 · Switch</button>
+</div>
+
+<div class="panes">
+
+  <!-- shared sidebar+stepper markup repeated per pane, only the toggle differs -->
+  <div class="pane on" id="pane-1">
+    <div class="mock">
+      <div class="split">
+        <div class="settings-col">
+          <div class="grplabel">Partida</div>
+          <div class="grp">
+            <div class="stat sel"><span class="sk"><span class="ic">⏱</span>Velocidad</span><span class="sv">Media</span></div>
+            <div class="stat sel"><span class="sk"><span class="ic">⚡</span>Modo</span><span class="sv">Sin sumas</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="grplabel">Jugadores</div>
+          <div class="grp">
+            <div class="stat"><span class="sk"><span class="ic">🃏</span>Cartones</span><div class="stepctl"><button>−</button><span class="n">1</span><button>+</button></div></div>
+            <div class="stat"><span class="sk"><span class="ic">🤖</span>Bots</span><div class="stepctl"><button>−</button><span class="n">0</span><button>+</button></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t1-toggle">
+            <button class="t1-btn on">🌐 Global · elegir ahora</button>
+            <button class="t1-btn">👤 Por alumno · en sala</button>
+          </div>
+          <div class="label">Temas del reto</div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:10px">
+            <div class="tstep-nav">
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones...</span></div></div>
+              <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+            </div>
+            <div class="tstep-panel">
+              <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+              <div class="optbtn">⚡ Quiz II – Inecuaciones Avanzadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="why"><b>1 · Píldora dividida:</b> la misma píldora de siempre, con el radio y morado ya usados en las tiles y el stepper.</div>
+  </div>
+
+  <div class="pane" id="pane-2">
+    <div class="mock">
+      <div class="split">
+        <div class="settings-col">
+          <div class="grplabel">Partida</div>
+          <div class="grp">
+            <div class="stat sel"><span class="sk"><span class="ic">⏱</span>Velocidad</span><span class="sv">Media</span></div>
+            <div class="stat sel"><span class="sk"><span class="ic">⚡</span>Modo</span><span class="sv">Sin sumas</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="grplabel">Jugadores</div>
+          <div class="grp">
+            <div class="stat"><span class="sk"><span class="ic">🃏</span>Cartones</span><div class="stepctl"><button>−</button><span class="n">1</span><button>+</button></div></div>
+            <div class="stat"><span class="sk"><span class="ic">🤖</span>Bots</span><div class="stepctl"><button>−</button><span class="n">0</span><button>+</button></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t2-row">
+            <div class="t2-tile sel"><span class="ic">🌐</span><span class="txt"><span class="tt1">Global</span><span class="tt2">Elegir ahora</span></span></div>
+            <div class="t2-tile"><span class="ic">👤</span><span class="txt"><span class="tt1">Por alumno</span><span class="tt2">En sala</span></span></div>
+          </div>
+          <div class="label">Temas del reto</div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:10px">
+            <div class="tstep-nav">
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones...</span></div></div>
+              <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+            </div>
+            <div class="tstep-panel">
+              <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+              <div class="optbtn">⚡ Quiz II – Inecuaciones Avanzadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="why"><b>2 · Dos tiles:</b> reutiliza exactamente la misma caja que Velocidad/Modo/Cartones/Bots — se siente más parte del mismo sistema que las otras opciones.</div>
+  </div>
+
+  <div class="pane" id="pane-3">
+    <div class="mock">
+      <div class="split">
+        <div class="settings-col">
+          <div class="grplabel">Partida</div>
+          <div class="grp">
+            <div class="stat sel"><span class="sk"><span class="ic">⏱</span>Velocidad</span><span class="sv">Media</span></div>
+            <div class="stat sel"><span class="sk"><span class="ic">⚡</span>Modo</span><span class="sv">Sin sumas</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="grplabel">Jugadores</div>
+          <div class="grp">
+            <div class="stat"><span class="sk"><span class="ic">🃏</span>Cartones</span><div class="stepctl"><button>−</button><span class="n">1</span><button>+</button></div></div>
+            <div class="stat"><span class="sk"><span class="ic">🤖</span>Bots</span><div class="stepctl"><button>−</button><span class="n">0</span><button>+</button></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t3-tabs">
+            <button class="t3-tab on">🌐 Global · elegir ahora</button>
+            <button class="t3-tab">👤 Por alumno · en sala</button>
+          </div>
+          <div class="label">Temas del reto</div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:10px">
+            <div class="tstep-nav">
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones...</span></div></div>
+              <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+            </div>
+            <div class="tstep-panel">
+              <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+              <div class="optbtn">⚡ Quiz II – Inecuaciones Avanzadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="why"><b>3 · Tabs subrayados:</b> sin caja de fondo, solo la línea morada bajo la opción activa — deja de competir con las tiles de la izquierda que sí tienen caja.</div>
+  </div>
+
+  <div class="pane" id="pane-4">
+    <div class="mock">
+      <div class="split">
+        <div class="settings-col">
+          <div class="grplabel">Partida</div>
+          <div class="grp">
+            <div class="stat sel"><span class="sk"><span class="ic">⏱</span>Velocidad</span><span class="sv">Media</span></div>
+            <div class="stat sel"><span class="sk"><span class="ic">⚡</span>Modo</span><span class="sv">Sin sumas</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="grplabel">Jugadores</div>
+          <div class="grp">
+            <div class="stat"><span class="sk"><span class="ic">🃏</span>Cartones</span><div class="stepctl"><button>−</button><span class="n">1</span><button>+</button></div></div>
+            <div class="stat"><span class="sk"><span class="ic">🤖</span>Bots</span><div class="stepctl"><button>−</button><span class="n">0</span><button>+</button></div></div>
+          </div>
+        </div>
+        <div>
+          <div class="t4-row">
+            <span class="t4-lbl on">🌐 Global</span>
+            <div class="t4-switch"><div class="t4-knob"></div></div>
+            <span class="t4-lbl">👤 Por alumno</span>
+          </div>
+          <div class="label">Temas del reto</div>
+          <div style="display:grid;grid-template-columns:110px 1fr;gap:10px">
+            <div class="tstep-nav">
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+              <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones...</span></div></div>
+              <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+            </div>
+            <div class="tstep-panel">
+              <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+              <div class="optbtn">⚡ Quiz II – Inecuaciones Avanzadas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="why"><b>4 · Switch:</b> la más compacta en ancho, pero pierde peso visual para una decisión importante.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ventana completa · Compactación real</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --accent-glow:rgba(139,92,246,0.4);
+    --gold:#facc15;
+    --sel-bg:rgba(168,85,247,0.18); --sel-border:rgba(168,85,247,0.5); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:22px; margin:0 0 5px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 24px; max-width:760px; line-height:1.55}
+  .sub b{color:var(--txt)}
+  .tabs{display:flex; gap:8px; margin-bottom:22px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px var(--accent-glow);}
+  .panes{max-width:760px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 9px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:16px; padding:12px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line);}
+  .why b{color:var(--txt)}
+  .heightnote{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--gold);
+    background:rgba(250,204,21,0.08);border:1px solid rgba(250,204,21,0.25);padding:4px 9px;border-radius:8px}
+
+  /* ---- piezas reutilizables, todas más apretadas que la ronda anterior ---- */
+  .toggle2{display:grid;grid-template-columns:1fr 1fr;border-radius:10px;overflow:hidden;border:1px solid var(--line);margin-bottom:6px}
+  .toggle-btn{background:transparent;border:none;border-right:1px solid var(--line);color:var(--txt-dim2);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:6px 6px}
+  .toggle-btn.on{background:var(--sel-bg);color:var(--sel-txt)}
+
+  .stile{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:5px 8px;display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:28px}
+  .stile.on{background:var(--sel-bg);border-color:var(--sel-border)}
+  .stile .sk{font-size:9.5px;color:var(--txt-dim);font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .stile .sv{font-size:10.5px;font-weight:800;color:var(--txt)}
+  .stile.on .sv{color:var(--sel-txt)}
+
+  .tstep-item{display:flex;align-items:center;gap:5px;padding:3px 4px;border-radius:6px}
+  .tstep-idx{width:13px;height:13px;border-radius:50%;background:var(--panel3);border:1px solid var(--line);color:var(--txt-dim2);font-size:7px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .tstep-item.done .tstep-idx{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt);font-size:0}
+  .tstep-item.done .tstep-idx::after{content:'✓';font-size:7px}
+  .tstep-item.active{background:rgba(250,204,21,0.09)}
+  .tstep-item.active .tstep-idx{background:var(--gold);color:#1a1500;border-color:transparent}
+  .tstep-lbl{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+  .tstep-k{font-size:6.5px;color:var(--txt-dim2);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .tstep-v{font-size:9px;color:var(--txt);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .optbtn{background:var(--panel3);border:1px solid var(--line);border-radius:7px;color:var(--txt-dim);font-size:10px;font-weight:700;padding:5px 8px;display:flex;align-items:center;gap:5px}
+  .optbtn.sel{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+
+  /* header/footer piezas — ahora en UNA sola barra cada uno, sin filas sueltas */
+  .hbar{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+  .hbar .ico{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:12px;flex:0 0 auto}
+  .hbar .name{font-size:12.5px;font-weight:900;color:#67e8f9;letter-spacing:.01em;white-space:nowrap}
+  .pillbtn{font-size:9px;font-weight:700;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 8px;white-space:nowrap}
+  .hostpill{font-size:9px;font-weight:800;color:var(--gold);background:rgba(250,204,21,0.1);border:1px solid rgba(250,204,21,0.4);border-radius:999px;padding:4px 8px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .playerchip{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 8px;white-space:nowrap}
+  .hbar .grow{margin-left:auto;display:flex;gap:5px;flex-wrap:wrap}
+
+  .fbar{display:flex;align-items:center;gap:8px;margin-top:8px;background:rgba(34,211,238,0.05);border:1px solid rgba(34,211,238,0.18);border-radius:10px;padding:6px 6px 6px 10px}
+  .fbar .roltxt{font-size:10px;color:var(--txt-dim);white-space:nowrap}
+  .fbar .roltxt b{color:var(--txt)}
+  .spectbtn{font-size:9.5px;font-weight:700;color:var(--sel-txt);background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.35);border-radius:999px;padding:4px 9px;white-space:nowrap}
+  .openbtn{margin-left:auto;background:rgba(34,211,238,0.14);border:1px solid rgba(34,211,238,0.5);color:#67e8f9;border-radius:8px;padding:7px 13px;font-weight:900;font-size:10.5px;letter-spacing:.02em;white-space:nowrap;box-shadow:0 0 14px -4px #22d3ee}
+
+  ::-webkit-scrollbar{height:6px;width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35);border-radius:4px}
+
+  /* ===== V1: header fusionado en una línea + ajustes en fila + stepper/temas lado a lado ===== */
+  .v1 .split{display:grid;grid-template-columns:92px 1fr;gap:8px}
+  .v1 .unav{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:5px;display:flex;flex-direction:column;gap:1px}
+  .v1 .settrow{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:6px}
+
+  /* ===== V2: todo — header, ajustes, stepper — vive en UNA tarjeta de filas sin separación entre bloques ===== */
+  .v2 .allrows{display:flex;flex-direction:column}
+  .v2 .r{display:flex;align-items:center;gap:7px;padding:4px 2px;border-bottom:1px solid rgba(255,255,255,0.05)}
+  .v2 .r:last-child{border-bottom:none}
+  .v2 .r .k{font-size:9.5px;color:var(--txt-dim2);font-weight:700;width:64px;flex:0 0 auto;display:flex;align-items:center;gap:4px}
+  .v2 .r .v{font-size:10.5px;font-weight:800;color:var(--txt)}
+  .v2 .r.on{background:rgba(168,85,247,0.08);border-radius:6px}
+  .v2 .r.on .v{color:var(--sel-txt)}
+  .v2 .r .opts{display:flex;gap:5px;flex-wrap:wrap}
+
+  /* ===== V3: máxima densidad — chips en línea, grid 2 columnas para todo el bloque inferior ===== */
+  .v3 .chiprow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+  .v3 .chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:9.5px;font-weight:700;color:var(--txt-dim);display:flex;align-items:center;gap:4px}
+  .v3 .chip.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+  .v3 .split2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .v3 .box{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px}
+  .v3 .boxlbl{font-size:7.5px;color:var(--txt-dim2);text-transform:uppercase;font-weight:800;letter-spacing:.05em;margin-bottom:3px}
+</style>
+</head>
+<body>
+
+<h1>Compactación real — 3 propuestas más apretadas</h1>
+<p class="sub">La ronda anterior tenía demasiado aire: filas sueltas para cada elemento del header, el toggle Global/alumno como línea aparte, el rol y el botón de sala de espera como dos bloques separados. Aquí fusiono cada grupo en <b>una sola barra</b> (header, footer) y aprieto paddings/gaps en todo lo demás — sin quitar ningún elemento, solo reorganizando la densidad.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">1 · Header fusionado</button>
+  <button class="tab" data-t="2">2 · Todo en filas</button>
+  <button class="tab" data-t="3">3 · Chips + grid</button>
+</div>
+
+<div class="panes">
+
+  <!-- V1 -->
+  <div class="pane on v1" id="pane-1">
+    <div class="label">Header en una sola línea · ajustes en fila de 4 · stepper y temas lado a lado</div>
+    <div class="mock">
+      <div class="hbar">
+        <span class="pillbtn">← Salir</span>
+        <div class="ico">🎱</div><span class="name">Neon Bingo</span>
+        <span class="hostpill">🏆 Profesor</span>
+        <span class="playerchip">🎮 Profesor</span>
+        <div class="grow"><span class="pillbtn">⛶</span><span class="pillbtn">✕ Finalizar</span></div>
+      </div>
+      <div class="settrow">
+        <div class="stile on"><span class="sk">⏱</span><span class="sv">Media</span></div>
+        <div class="stile on"><span class="sk">⚡</span><span class="sv">Sin sumas</span></div>
+        <div class="stile"><span class="sk">🃏</span><span class="sv">1</span></div>
+        <div class="stile"><span class="sk">🤖</span><span class="sv">0</span></div>
+      </div>
+      <div class="toggle2"><button class="toggle-btn on">🌐 Global</button><button class="toggle-btn">👤 Por alumno</button></div>
+      <div class="split">
+        <div class="unav">
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones</span></div></div>
+          <div class="tstep-item active"><div class="tstep-idx">5</div><div class="tstep-lbl"><span class="tstep-k">Temas</span><span class="tstep-v">1 elegido</span></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="optbtn sel">⚡ Quiz I – Inecuaciones Lineales <span style="margin-left:auto">✓</span></div>
+          <div class="optbtn">⚡ Quiz II – Inecuaciones Avanzadas</div>
+        </div>
+      </div>
+      <div class="fbar">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="spectbtn">→ Espectador 👁</span>
+        <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+      </div>
+      <div class="heightnote">↕ header 1 línea (antes 3) + footer 1 línea (antes 2 bloques) = todo el resto igual pero sin huecos</div>
+    </div>
+    <div class="why"><b>Qué cambia vs. lo anterior:</b> el header ya no ocupa tres renglones (Salir/Host arriba, título en medio, chip de jugador abajo) — ahora Salir, ícono+nombre, Host y el chip de jugador son <b>pastillas en una sola fila</b> que se acomodan por ancho. Abajo, el rol y el botón de sala de espera comparten <b>una sola barra</b> en vez de una línea de texto y luego un botón ancho separado. Es el cambio más directo: mismos componentes, fusionados en menos renglones.</div>
+  </div>
+
+  <!-- V2 -->
+  <div class="pane v2" id="pane-2">
+    <div class="label">Todo el panel — header, ajustes, temas — es una sola lista de filas sin cajas anidadas</div>
+    <div class="mock">
+      <div class="hbar">
+        <span class="pillbtn">← Salir</span>
+        <div class="ico">🎱</div><span class="name">Neon Bingo</span>
+        <span class="hostpill">🏆 Profesor</span>
+        <span class="playerchip">🎮 Profesor</span>
+        <div class="grow"><span class="pillbtn">⛶</span><span class="pillbtn">✕ Finalizar</span></div>
+      </div>
+      <div class="allrows">
+        <div class="r on"><span class="k">⏱ Velocidad</span><span class="v">Media</span></div>
+        <div class="r on"><span class="k">⚡ Modo</span><span class="v">Sin sumas</span></div>
+        <div class="r"><span class="k">🃏 Cartones</span><span class="v">1</span></div>
+        <div class="r"><span class="k">🤖 Bots</span><span class="v">0</span></div>
+        <div class="r on"><span class="k">🌐 Temas</span><span class="v">Global</span></div>
+        <div class="r"><span class="k">Nivel</span><span class="v">Secundaria</span></div>
+        <div class="r"><span class="k">Grado</span><span class="v">5° Grado</span></div>
+        <div class="r"><span class="k">Colegio</span><span class="v">San Norberto</span></div>
+        <div class="r"><span class="k">Unidad</span><span class="v">Inecuaciones</span></div>
+        <div class="r on"><span class="k">Elegidos</span><div class="opts"><span class="optbtn sel">Quiz I ✓</span><span class="optbtn">Quiz II</span></div></div>
+      </div>
+      <div class="fbar">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="spectbtn">→ Espectador 👁</span>
+        <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+      </div>
+      <div class="heightnote">↕ sin cajas dentro de cajas — una sola tabla de filas con separadores finos</div>
+    </div>
+    <div class="why"><b>Qué cambia vs. lo anterior:</b> elimina por completo las "cajas dentro de cajas" (tile con su borde, dentro de una columna con su borde, dentro del mock). Todo — ajustes y los 5 pasos del stepper — es <b>una sola tabla de filas clave/valor</b> separadas por líneas finas de 1px, sin padding extra entre bloques. Es la que menos espacio en blanco tiene de las tres porque no hay margen entre "secciones": todo es la misma lista.</div>
+  </div>
+
+  <!-- V3 -->
+  <div class="pane v3" id="pane-3">
+    <div class="label">Ajustes y estado como chips en línea · Temas en un grid de 2 columnas</div>
+    <div class="mock">
+      <div class="hbar">
+        <span class="pillbtn">← Salir</span>
+        <div class="ico">🎱</div><span class="name">Neon Bingo</span>
+        <span class="hostpill">🏆 Profesor</span>
+        <span class="playerchip">🎮 Profesor</span>
+        <div class="grow"><span class="pillbtn">⛶</span><span class="pillbtn">✕ Finalizar</span></div>
+      </div>
+      <div class="chiprow">
+        <span class="chip on">⏱ Media</span>
+        <span class="chip on">⚡ Sin sumas</span>
+        <span class="chip">🃏 1 cartón</span>
+        <span class="chip">🤖 0 bots</span>
+        <span class="chip on">🌐 Global</span>
+      </div>
+      <div class="split2">
+        <div class="box">
+          <div class="boxlbl">Ruta</div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Nivel</span><span class="tstep-v">Secundaria</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Grado</span><span class="tstep-v">5° Grado</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Colegio</span><span class="tstep-v">San Norberto</span></div></div>
+          <div class="tstep-item done"><div class="tstep-idx"></div><div class="tstep-lbl"><span class="tstep-k">Unidad</span><span class="tstep-v">Inecuaciones</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">Temas (1 elegido)</div>
+          <div class="optbtn sel" style="margin-bottom:4px">Quiz I ✓</div>
+          <div class="optbtn">Quiz II</div>
+        </div>
+      </div>
+      <div class="fbar">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="spectbtn">→ Espectador 👁</span>
+        <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+      </div>
+      <div class="heightnote">↕ la más ancha de las tres: dos cajas del mismo alto, lado a lado, sin columna angosta de 90px</div>
+    </div>
+    <div class="why"><b>Qué cambia vs. lo anterior:</b> Velocidad/Modo/Cartones/Bots/Global dejan de ser tiles con caja — se vuelven <b>chips de una línea</b> (como etiquetas), liberando toda esa fila. Debajo, en vez de una columna angosta de stepper + una columna ancha de temas, son <b>dos cajas del mismo tamaño</b> lado a lado ("Ruta" y "Temas"), lo que evita el hueco vertical que dejaba la columna de 90px cuando el stepper tenía menos filas que el panel de opciones.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+</script>
+
+</body>
+</html>

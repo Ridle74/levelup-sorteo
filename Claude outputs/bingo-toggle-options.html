@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Toggle Global/Alumno · Opciones</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --accent-glow:rgba(139,92,246,0.4);
+    --r-card:14px; --r-ctrl:10px;
+    --sel-bg:rgba(168,85,247,0.22); --sel-border:rgba(168,85,247,0.55); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:22px; margin:0 0 5px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 26px; max-width:700px; line-height:1.55}
+  .row{display:flex; flex-direction:column; gap:10px; max-width:560px; margin-bottom:34px}
+  .tag{font-size:11px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--txt-dim2); display:flex; align-items:center; gap:8px}
+  .tag .num{width:20px; height:20px; border-radius:50%; background:var(--panel2); border:1px solid var(--line); color:var(--txt-dim); display:flex; align-items:center; justify-content:center; font-size:10px}
+  .why{font-size:12.5px; color:var(--txt-dim); line-height:1.55; max-width:560px}
+  .why b{color:var(--txt)}
+
+  /* ===== 1: pill actual, solo con el sistema unificado (radio+color consistentes) ===== */
+  .opt1-toggle{display:grid; grid-template-columns:1fr 1fr; border-radius:var(--r-card); overflow:hidden; border:1px solid var(--line); background:var(--panel2)}
+  .opt1-btn{background:transparent; border:none; color:var(--txt-dim2); font-family:inherit;
+    font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; padding:12px 10px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:7px; transition:background .15s,color .15s}
+  .opt1-btn.on{background:var(--sel-bg); color:var(--sel-txt)}
+
+  /* ===== 2: dos tiles independientes, mismo look que las tiles de ajuste (no una píldora unida) ===== */
+  .opt2-row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .opt2-tile{background:var(--panel2); border:1px solid var(--line); border-radius:var(--r-card); padding:11px 14px;
+    display:flex; align-items:center; gap:9px; cursor:pointer; transition:border-color .15s,background .15s}
+  .opt2-tile .ic{font-size:16px; width:18px; text-align:center; flex:0 0 auto}
+  .opt2-tile .txt{display:flex; flex-direction:column; line-height:1.2}
+  .opt2-tile .t1{font-size:11.5px; font-weight:800; color:var(--txt)}
+  .opt2-tile .t2{font-size:9.5px; color:var(--txt-dim2); font-weight:600}
+  .opt2-tile.sel{background:var(--sel-bg); border-color:var(--sel-border)}
+  .opt2-tile.sel .t1{color:var(--sel-txt)}
+
+  /* ===== 3: tabs subrayados, minimalista, sin caja de fondo ===== */
+  .opt3-tabs{display:flex; gap:22px; border-bottom:1px solid var(--line); padding-bottom:0}
+  .opt3-tab{background:none; border:none; color:var(--txt-dim2); font-family:inherit; font-size:12.5px; font-weight:800;
+    text-transform:uppercase; letter-spacing:.04em; padding:10px 2px 12px; cursor:pointer; position:relative;
+    display:flex; align-items:center; gap:7px}
+  .opt3-tab.on{color:var(--sel-txt)}
+  .opt3-tab.on::after{content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--sel-txt); border-radius:2px}
+
+  /* ===== 4: switch tipo interruptor deslizante, con las dos etiquetas a los lados ===== */
+  .opt4-row{display:flex; align-items:center; gap:12px}
+  .opt4-lbl{font-size:11.5px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; color:var(--txt-dim2); display:flex; align-items:center; gap:6px; cursor:pointer}
+  .opt4-lbl.on{color:var(--sel-txt)}
+  .opt4-switch{width:46px; height:24px; border-radius:999px; background:var(--panel2); border:1px solid var(--line); position:relative; cursor:pointer; flex:0 0 auto}
+  .opt4-knob{position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--sel-txt); box-shadow:0 2px 6px var(--accent-glow); transition:left .18s}
+  .opt4-switch.right .opt4-knob{left:26px; background:var(--txt-dim2)}
+
+  ::-webkit-scrollbar{height:6px; width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35); border-radius:4px}
+</style>
+</head>
+<body>
+
+<h1>Toggle "Global / Por alumno" — 4 opciones</h1>
+<p class="sub">Solo este control, sin tocar nada más del panel. Las cuatro usan el mismo morado y el mismo radio que ya definimos para el resto de la columna (tiles, stepper, panel de opciones), para que esta vez sí case con todo lo demás.</p>
+
+<div class="row">
+  <div class="tag"><span class="num">1</span>Píldora dividida, con el sistema unificado</div>
+  <div class="opt1-toggle">
+    <button class="opt1-btn on">🌐 Global · elegir ahora</button>
+    <button class="opt1-btn">👤 Por alumno · en sala</button>
+  </div>
+  <div class="why"><b>Qué cambia:</b> es la misma píldora dividida de siempre, pero con el radio de 14px y el morado exacto (<code>--sel-bg</code>/<code>--sel-txt</code>) que ya usan las tiles de ajuste y el stepper — antes tenía su propio morado más saturado y esquinas más redondeadas, por eso desentonaba.</div>
+</div>
+
+<div class="row">
+  <div class="tag"><span class="num">2</span>Dos tiles separadas (mismo look que Velocidad/Modo)</div>
+  <div class="opt2-row">
+    <div class="opt2-tile sel"><span class="ic">🌐</span><span class="txt"><span class="t1">Global</span><span class="t2">Elegir ahora</span></span></div>
+    <div class="opt2-tile"><span class="ic">👤</span><span class="txt"><span class="t1">Por alumno</span><span class="t2">En sala</span></span></div>
+  </div>
+  <div class="why"><b>Qué cambia:</b> en vez de una píldora unida, son dos tiles independientes con un pequeño espacio entre ellas — exactamente la misma caja (fondo, borde, radio) que usan los tiles de Velocidad/Modo/Cartones/Bots de la columna lateral. Es la que más "se siente parte del mismo sistema", porque literalmente reutiliza el mismo componente visual.</div>
+</div>
+
+<div class="row">
+  <div class="tag"><span class="num">3</span>Tabs con subrayado, sin caja de fondo</div>
+  <div class="opt3-tabs">
+    <button class="opt3-tab on">🌐 Global · elegir ahora</button>
+    <button class="opt3-tab">👤 Por alumno · en sala</button>
+  </div>
+  <div class="why"><b>Qué cambia:</b> quita la caja de fondo por completo — solo texto con una línea morada debajo de la opción activa, como una pestaña de navegador. Es la más liviana visualmente y deja de competir por atención con las tiles de ajuste que sí tienen caja; útil si sientes que ya hay demasiadas "cajas" en la pantalla.</div>
+</div>
+
+<div class="row">
+  <div class="tag"><span class="num">4</span>Interruptor deslizante con etiquetas a los lados</div>
+  <div class="opt4-row">
+    <span class="opt4-lbl on">🌐 Global</span>
+    <div class="opt4-switch"><div class="opt4-knob"></div></div>
+    <span class="opt4-lbl">👤 Por alumno</span>
+  </div>
+  <div class="why"><b>Qué cambia:</b> se convierte en un switch pequeño (como un ajuste de configuración de celular) con las dos etiquetas a los costados. Es la más compacta en ancho de las cuatro, pero pierde un poco de peso visual — puede sentirse "menor" comparado con la importancia real de esta decisión (define si los temas se eligen ahora o por alumno).</div>
+</div>
+
+</body>
+</html>

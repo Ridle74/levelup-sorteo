@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Fila de controles · Opciones de grilla</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0a0912; --panel:#050810; --line:rgba(34,211,238,0.22);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.55); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --cyan:#22d3ee; --gold:#facc15; --pink:#f472b6;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:20px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13px; margin:0 0 20px; max-width:720px; line-height:1.55}
+  .sub b{color:var(--txt)}
+  .tabs{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid rgba(255,255,255,0.1); background:#121022;
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+    font-family:'IBM Plex Sans',sans-serif;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px rgba(139,92,246,0.4);}
+  .panes{max-width:720px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 12px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1)}
+  .why b{color:var(--txt)}
+
+  .mock{ background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:16px; position:relative;
+    box-shadow:0 0 0 1px rgba(34,211,238,0.08), 0 30px 70px -30px rgba(0,0,0,0.8); }
+  .mock::before, .mock::after{content:'';position:absolute;width:14px;height:14px;border:2px solid var(--cyan);opacity:.6}
+  .mock::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .mock::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+  .pill{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Orbitron',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:.03em;padding:9px 8px;border-radius:2px;background:transparent;border:1px solid rgba(255,255,255,0.18);
+    color:var(--txt-dim);cursor:pointer;transition:.15s;text-transform:uppercase;text-align:center;width:100%}
+  .pill:hover{border-color:rgba(34,211,238,0.5)}
+  .pill.on{background:rgba(34,211,238,0.12);border-color:var(--cyan);color:var(--cyan);box-shadow:inset 0 0 12px rgba(34,211,238,0.15)}
+  .mini{display:inline-flex;align-items:center;gap:5px}
+  .mini button{width:15px;height:15px;border-radius:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:9px;cursor:pointer;flex:0 0 auto}
+  .mini b{font-family:'Orbitron',sans-serif;font-size:10.5px;min-width:8px;text-align:center;color:#fff}
+
+  .gridnote{font-size:10.5px;color:rgba(34,211,238,0.6);margin-top:10px;text-align:center;letter-spacing:.02em}
+
+  /* ══════ A: grilla de 6 columnas iguales, un control por celda ══════ */
+  .ga{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+
+  /* ══════ B: 3 columnas × 2 filas, agrupado por función (arriba = modos, abajo = cantidades) ══════ */
+  .gb{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+
+  /* ══════ C: 4 columnas — fila de valores sueltos arriba, el selector Global/Alumno como una franja de ancho completo abajo ══════ */
+  .gc{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .gc .span4{grid-column:span 4;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+</style>
+</head>
+<body>
+
+<h1>Fila de controles — 3 formas de alinear a una grilla</h1>
+<p class="sub">Ahora los controles (Velocidad, Modo, Cartones, Bots, Global, Por alumno) se acomodan con flexbox y quedan de ancho distinto según su contenido. Aquí los alineo a una grilla real con columnas de igual tamaño — donde un control necesita más espacio, ocupa más columnas de forma <b>ordenada</b>, no libre.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="a">A · 6 columnas iguales</button>
+  <button class="tab" data-t="b">B · 3×2 agrupado por función</button>
+  <button class="tab" data-t="c">C · Franja Global/Alumno de ancho completo</button>
+</div>
+
+<div class="panes">
+
+  <!-- A -->
+  <div class="pane on" id="pane-a">
+    <div class="label">Los 6 controles, cada uno en su propia columna del mismo ancho</div>
+    <div class="mock">
+      <div class="ga">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="gridnote">grid-template-columns: repeat(6, 1fr)</div>
+    </div>
+    <div class="why"><b>Idea:</b> la solución más directa — 6 controles, 6 columnas del mismo ancho, sin excepciones. Cada pastilla se estira para llenar su celda y el texto queda centrado. Es la más "cuadriculada" y predecible: cualquier control nuevo que agregues en el futuro simplemente ocupa la próxima columna.</div>
+  </div>
+
+  <!-- B -->
+  <div class="pane" id="pane-b">
+    <div class="label">3 columnas, 2 filas — arriba los "modos" (Velocidad/Modo/Global), abajo las "cantidades" (Cartones/Bots/Por alumno)</div>
+    <div class="mock">
+      <div class="gb">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="gridnote">grid-template-columns: repeat(3, 1fr) · 2 filas</div>
+    </div>
+    <div class="why"><b>Idea:</b> en vez de una sola fila larga de 6, son 2 filas de 3 — y el orden no es arbitrario: arriba quedan los controles que son "un estado" (Media/Rápida, Con o sin sumas, Global/Por alumno), abajo los que son "una cantidad" (Cartones, Bots) más el segundo estado del par Global. Columnas más anchas que en A, y la relación entre pares queda más clara verticalmente.</div>
+  </div>
+
+  <!-- C -->
+  <div class="pane" id="pane-c">
+    <div class="label">4 columnas para Velocidad/Modo/Cartones/Bots, y el selector Global/Alumno como franja completa debajo</div>
+    <div class="mock">
+      <div class="gc">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <div class="span4">
+          <span class="pill on">🌐 Global · Elegir ahora</span>
+          <span class="pill">👤 Por alumno · En sala</span>
+        </div>
+      </div>
+      <div class="gridnote">grid-template-columns: repeat(4, 1fr) · el toggle Global/Alumno ocupa las 4 columnas (2+2)</div>
+    </div>
+    <div class="why"><b>Idea:</b> Velocidad/Modo/Cartones/Bots son 4 ajustes del mismo "peso" → 4 columnas iguales. Pero Global/Por alumno es conceptualmente una decisión aparte y más importante (define cómo se eligen los temas), así que ocupa todo el ancho como una franja de 2 mitades iguales debajo — con espacio para textos más descriptivos ("Elegir ahora" / "En sala") que no cabrían en una celda de 6.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+
+  document.querySelectorAll('.pane').forEach(pane => {
+    pane.querySelectorAll('.mini').forEach(mini => {
+      const [minus, plus] = mini.querySelectorAll('button');
+      const b = mini.querySelector('b');
+      minus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; if (v > 0) b.textContent = v - 1; });
+      plus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; b.textContent = v + 1; });
+    });
+    pane.querySelectorAll('.pill').forEach(p => {
+      if (p.querySelector('.mini')) return;
+      p.addEventListener('click', () => p.classList.toggle('on'));
+    });
+  });
+</script>
+
+</body>
+</html>

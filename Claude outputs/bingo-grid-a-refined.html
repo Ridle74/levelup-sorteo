@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ventana completa · Grilla de 6 columnas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0a0912; --panel:#050810; --line:rgba(34,211,238,0.22);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.55); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --cyan:#22d3ee; --gold:#facc15; --pink:#f472b6;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:20px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13px; margin:0 0 20px; max-width:720px; line-height:1.55}
+  .sub b{color:var(--txt)}
+  .frame{max-width:780px;margin:0 auto}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 12px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1); max-width:780px}
+  .why b{color:var(--txt)}
+  .rowtag{font-size:9.5px;color:var(--cyan);opacity:.7;text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin:12px 0 5px;display:flex;align-items:center;gap:6px}
+  .rowtag:first-child{margin-top:0}
+  .rowtag::after{content:'';flex:1;height:1px;background:rgba(34,211,238,0.2)}
+
+  .mock{ background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:16px; position:relative;
+    box-shadow:0 0 0 1px rgba(34,211,238,0.08), 0 30px 70px -30px rgba(0,0,0,0.8); }
+  .mock::before, .mock::after{content:'';position:absolute;width:14px;height:14px;border:2px solid var(--cyan);opacity:.6}
+  .mock::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .mock::after{bottom:-1px;right:-1px;border-left:none;border-top:none}
+
+  .box{background:rgba(34,211,238,0.03);border:1px solid var(--line);border-radius:2px;padding:10px}
+  .boxlbl{font-family:'Orbitron',sans-serif;font-size:9.5px;color:var(--cyan);opacity:.75;text-transform:uppercase;font-weight:700;letter-spacing:.08em;margin:0 0 8px}
+
+  .pill{display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Orbitron',sans-serif;font-size:10.5px;font-weight:600;
+    letter-spacing:.03em;padding:8px 8px;border-radius:2px;background:transparent;border:1px solid rgba(255,255,255,0.18);
+    color:var(--txt-dim);cursor:pointer;transition:.15s;text-transform:uppercase;text-align:center;width:100%;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box}
+  .pill:hover{border-color:rgba(34,211,238,0.5)}
+  .pill.on{background:rgba(34,211,238,0.12);border-color:var(--cyan);color:var(--cyan);box-shadow:inset 0 0 12px rgba(34,211,238,0.15)}
+  .pill.gold{border-color:rgba(250,204,21,0.5);color:var(--gold)}
+  .pill.pink{background:rgba(244,114,182,0.1);border-color:var(--pink);color:var(--pink)}
+  .mini{display:inline-flex;align-items:center;gap:5px}
+  .mini button{width:15px;height:15px;border-radius:0;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:9px;cursor:pointer;flex:0 0 auto}
+  .mini b{font-family:'Orbitron',sans-serif;font-size:10.5px;min-width:8px;text-align:center;color:#fff}
+
+  .ico{width:32px;height:32px;border-radius:2px;background:transparent;border:2px solid var(--pink);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--pink);flex:0 0 auto}
+  .name{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 10px rgba(34,211,238,0.5)}
+  .sub2{font-size:8.5px;color:rgba(34,211,238,0.4);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+  .titlerow{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+
+  .stepline{display:flex;align-items:center;gap:8px;padding:6px 8px;border-left:3px solid var(--gold);background:rgba(250,204,21,0.07)}
+  .stepk{font-size:7.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+  .stepv{font-family:'Orbitron',sans-serif;font-size:11.5px;color:var(--gold);font-weight:700;text-transform:uppercase}
+  .optbtn{background:transparent;border:1px solid rgba(255,255,255,0.18);border-radius:2px;color:rgba(255,255,255,0.6);font-size:11px;font-weight:600;padding:8px 12px;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+  .optbtn.sel{background:rgba(34,211,238,0.1);border-color:var(--cyan);color:var(--cyan)}
+  .optbtn .chk{margin-left:auto}
+  .split2{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+
+  .gridnote{font-size:10px;color:rgba(34,211,238,0.55);margin-top:4px;letter-spacing:.02em}
+
+  /* Header y Ajustes: 6 columnas iguales, sin excepción */
+  .grid6{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  /* Footer: 6 columnas también, pero cada uno de los 3 controles ocupa 2 */
+  .grid6 .span2{grid-column:span 2}
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <h1>Opción A ajustada — header, ajustes y footer, los tres a 6 columnas</h1>
+  <p class="sub">Cambios sobre la opción A que elegiste: el header pasa de 5 a <b>6 columnas</b> (se le suma el botón Tips, que antes vivía aparte del panel de configuración). El footer deja de ser 1/1/2 y ahora también es una grilla de 6, con sus 3 controles ocupando <b>2 columnas cada uno</b> — quedando exactamente alineado con el ancho de columna del header y los ajustes.</p>
+
+  <div class="mock">
+    <div class="titlerow">
+      <div class="ico">🎱</div>
+      <div><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+    </div>
+
+    <div class="rowtag">Header · 6 columnas (se agregó Tips)</div>
+    <div class="grid6" style="margin-bottom:12px">
+      <span class="pill">← Salir</span>
+      <span class="pill gold">🏆 Host: Profesor</span>
+      <span class="pill">🎮 Profesor</span>
+      <span class="pill">⛶ Pantalla completa</span>
+      <span class="pill">✕ Finalizar</span>
+      <span class="pill">💡 Tips</span>
+    </div>
+
+    <div class="rowtag">Ajustes · 6 columnas (sin cambios)</div>
+    <div class="grid6" style="margin-bottom:12px">
+      <span class="pill on">⏱ Media</span>
+      <span class="pill on">⚡ Sin sumas</span>
+      <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+      <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+      <span class="pill on">🌐 Global</span>
+      <span class="pill">👤 Por alumno</span>
+    </div>
+
+    <div class="rowtag">Ruta / Temas · 2 columnas (sin cambios)</div>
+    <div class="split2" style="margin-bottom:12px">
+      <div class="box"><div class="boxlbl">📍 Ruta</div><div class="stepline"><div class="stepk">Nivel</div></div></div>
+      <div class="box"><div class="boxlbl">📝 Temas</div><div class="optbtn sel">Quiz I<span class="chk">✓</span></div><div class="optbtn">Quiz II</div></div>
+    </div>
+
+    <div class="rowtag">Footer · 6 columnas (antes 1/1/2, ahora 2/2/2)</div>
+    <div class="grid6">
+      <span class="pill span2">🎭 Rol: Jugador</span>
+      <span class="pill on span2">→ Espectador</span>
+      <span class="pill pink span2">Abrir sala de espera →</span>
+    </div>
+
+    <div class="gridnote">grid-template-columns: repeat(6, 1fr) en header, ajustes y footer — misma unidad de columna en las tres filas</div>
+  </div>
+
+  <p class="why"><b>Resultado:</b> header, ajustes y footer comparten exactamente la misma grilla de 6 columnas de igual ancho. Ruta/Temas se queda en su propio esquema de 2 columnas (no forma parte de este pedido). Si te gusta, lo aplico así al código real.</p>
+</div>
+
+<script>
+  document.querySelectorAll('.mini').forEach(mini => {
+    const [minus, plus] = mini.querySelectorAll('button');
+    const b = mini.querySelector('b');
+    minus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; if (v > 0) b.textContent = v - 1; });
+    plus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; b.textContent = v + 1; });
+  });
+  document.querySelectorAll('.pill').forEach(p => {
+    if (p.querySelector('.mini')) return;
+    p.addEventListener('click', () => p.classList.toggle('on'));
+  });
+</script>
+
+</body>
+</html>

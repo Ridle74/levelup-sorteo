@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Neon Bingo · Opciones de tipografía</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Rajdhani:wght@600;700&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.55); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc;
+    --gold:#facc15; --cyan:#22d3ee;
+    --sel-bg:rgba(168,85,247,0.18); --sel-border:rgba(168,85,247,0.5); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:20px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13px; margin:0 0 20px; max-width:760px; line-height:1.55}
+  .tabs{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; transition:.15s;
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px rgba(139,92,246,0.4);}
+  .panes{max-width:760px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:11.5px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 9px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px; font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+  .fontspec{font-size:12px; color:var(--txt-dim2); margin:0 0 12px; font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+  .fontspec code{color:var(--sel-txt); background:rgba(168,85,247,0.1); padding:1px 5px; border-radius:5px}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:18px; padding:12px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line); font-family:'Segoe UI',system-ui,-apple-system,sans-serif}
+  .why b{color:var(--txt)}
+
+  /* ===== estructura compartida (idéntica a la real) — solo cambia --f-head/--f-body y las escalas ===== */
+  .card{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .hdr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .hdr .ico{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#ec4899,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 auto}
+  .hdr .titlewrap{margin-right:auto}
+  .hdr .name{font-family:var(--f-head);font-weight:800;font-size:var(--sz-title);letter-spacing:var(--ls-title);text-transform:uppercase;line-height:1;background:linear-gradient(to right,#22d3ee,#a855f7);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;display:block}
+  .hdr .sub2{font-family:var(--f-body);font-size:var(--sz-micro);color:var(--txt-dim2);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+  .hdr .tips{font-family:var(--f-body);font-size:var(--sz-pill);font-weight:700;color:var(--txt-dim);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+  .hdr .tips.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+
+  .row2{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .row2 .grow{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--f-body);font-size:var(--sz-pill);font-weight:700;letter-spacing:.02em;
+    padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);
+    color:var(--txt-dim);white-space:nowrap;text-transform:var(--tt-pill);cursor:pointer;user-select:none;transition:background .15s,border-color .15s,color .15s}
+  .pill:hover{border-color:rgba(255,255,255,0.3)}
+  .pill.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+  .pill.gold{background:rgba(250,204,21,0.1);border-color:rgba(250,204,21,0.4);color:var(--gold)}
+
+  .chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .pill .mini{display:inline-flex;align-items:center;gap:5px;margin-left:2px}
+  .pill .mini button{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,0.14);border:none;color:#fff;font-size:10px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .pill .mini button:hover{background:rgba(255,255,255,0.26)}
+  .pill .mini b{font-family:var(--f-body);font-size:var(--sz-pill);min-width:8px;text-align:center;color:#fff}
+
+  .split2{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+  .box{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:16px;padding:10px}
+  .boxlbl{font-family:var(--f-body);font-size:var(--sz-label);color:var(--txt-dim2);text-transform:var(--tt-label);font-weight:800;letter-spacing:.06em;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+
+  .stepline{display:flex;align-items:center;gap:7px;padding:5px 5px;border-radius:8px;background:rgba(250,204,21,0.09)}
+  .stepdot{width:15px;height:15px;border-radius:50%;background:var(--gold);flex:0 0 auto}
+  .steplbl{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+  .stepk{font-family:var(--f-body);font-size:var(--sz-micro);color:var(--txt-dim2);text-transform:var(--tt-label);letter-spacing:.05em;font-weight:700}
+  .stepv{font-family:var(--f-head);font-size:var(--sz-value);color:var(--txt);font-weight:700}
+
+  .gradegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .gradebtn{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;color:var(--txt-dim);
+    font-family:var(--f-head);font-size:var(--sz-btn);font-weight:700;letter-spacing:.03em;text-transform:var(--tt-pill);
+    padding:12px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all .15s}
+  .gradebtn:hover{border-color:rgba(255,255,255,0.25)}
+  .gradebtn.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+  .gradebtn .gi{font-size:15px}
+
+  .ftr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .ftr .roltxt{font-family:var(--f-body);font-size:var(--sz-pill);color:var(--txt-dim);white-space:nowrap;text-transform:var(--tt-label);letter-spacing:.03em}
+  .ftr .roltxt b{color:var(--txt)}
+  .openbtn{margin-left:auto;font-family:var(--f-head);border-radius:10px;padding:10px 16px;font-weight:800;font-size:var(--sz-cta);letter-spacing:.04em;
+    white-space:nowrap;background:rgba(34,211,238,0.14);border:1px solid rgba(34,211,238,0.5);color:var(--cyan);
+    box-shadow:0 0 16px -4px var(--cyan);text-transform:var(--tt-pill)}
+
+  /* ===== A: Inter en todo — un solo sistema neutro, sin mayúsculas forzadas en valores ===== */
+  .va{--f-head:'Inter',sans-serif; --f-body:'Inter',sans-serif;
+    --sz-title:15px; --sz-micro:8.5px; --sz-pill:11px; --sz-label:9px; --sz-value:12px; --sz-btn:12.5px; --sz-cta:12px;
+    --ls-title:.02em; --tt-pill:none; --tt-label:uppercase}
+  .va .name{text-transform:none}
+  .va .pill, .va .roltxt, .va .openbtn{text-transform:none}
+
+  /* ===== B: Rajdhani para títulos/valores/botones (look "HUD" gamer) + Inter para texto de apoyo ===== */
+  .vb{--f-head:'Rajdhani',sans-serif; --f-body:'Inter',sans-serif;
+    --sz-title:19px; --sz-micro:8.5px; --sz-pill:11.5px; --sz-label:9px; --sz-value:13.5px; --sz-btn:14px; --sz-cta:13.5px;
+    --ls-title:.06em; --tt-pill:uppercase; --tt-label:uppercase}
+
+  /* ===== C: Space Grotesk para títulos + Inter para todo lo demás — técnico, menos "grito" que B ===== */
+  .vc{--f-head:'Space Grotesk',sans-serif; --f-body:'Inter',sans-serif;
+    --sz-title:16px; --sz-micro:8.5px; --sz-pill:11px; --sz-label:9px; --sz-value:12.5px; --sz-btn:12.5px; --sz-cta:12px;
+    --ls-title:.01em; --tt-pill:none; --tt-label:uppercase}
+  .vc .name{text-transform:none}
+  .vc .pill, .vc .roltxt, .vc .openbtn{text-transform:none}
+</style>
+</head>
+<body>
+
+<h1>Una sola tipografía para toda la ventana — 3 propuestas</h1>
+<p class="sub">Ahora mismo la ventana mezcla 3 sistemas sin querer: Barlow Condensed (heredado del panel), Segoe UI (lo que agregué en la última ronda) y tamaños que no siguen una escala. Estas tres opciones aplican <b>una sola fuente</b> (o un par título/cuerpo) con <b>una sola escala de tamaños</b> a absolutamente todo — título, pastillas, ruta, grilla de nivel, footer.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="a">A · Inter — neutro y limpio</button>
+  <button class="tab" data-t="b">B · Rajdhani — estilo HUD gamer</button>
+  <button class="tab" data-t="c">C · Space Grotesk — técnico</button>
+</div>
+
+<div class="panes">
+
+  <!-- A -->
+  <div class="pane on va" id="pane-a">
+    <div class="label">Una sola familia para todo, mayúsculas solo en pastillas/botones</div>
+    <div class="fontspec">Título, valores y botones: <code>Inter 700-800</code> · Etiquetas y texto de apoyo: <code>Inter 600</code></div>
+    <div class="mock">
+      <div class="hdr">
+        <div class="ico">🎱</div>
+        <div class="titlewrap"><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+        <span class="tips">💡 Tips</span>
+      </div>
+      <div class="row2">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">🏆 Host: Profesor</span>
+        <span class="pill">🎮 Profesor</span>
+        <div class="grow"><span class="pill">⛶ Pantalla completa</span><span class="pill">✕ Finalizar</span></div>
+      </div>
+      <div class="chiprow">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="split2">
+        <div class="box">
+          <div class="boxlbl">📍 Ruta</div>
+          <div class="stepline"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Ahora</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">Elige el nivel</div>
+          <div class="gradegrid">
+            <div class="gradebtn on"><span class="gi">🌱</span>Primaria</div>
+            <div class="gradebtn"><span class="gi">📐</span>Secundaria</div>
+            <div class="gradebtn"><span class="gi">🎯</span>Desafío de Dominio</div>
+            <div class="gradebtn"><span class="gi">🎓</span>Pre</div>
+            <div class="gradebtn"><span class="gi">🏛</span>Universitario</div>
+          </div>
+        </div>
+      </div>
+      <div class="ftr">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="pill on">→ Espectador 👁</span>
+        <button class="openbtn">Abrir sala de espera →</button>
+      </div>
+    </div>
+    <div class="why"><b>Por qué:</b> una sola familia (Inter) elimina cualquier discordancia entre título, botones y texto — es la fuente que usan la mayoría de apps de producto por su legibilidad a tamaños chicos. Bajé el uso de MAYÚSCULAS solo a pastillas/botones (donde comunican "acción"), dejando los valores (Primaria, Ahora, Jugador) en texto normal — más fácil de leer de un vistazo que todo en mayúscula.</div>
+  </div>
+
+  <!-- B -->
+  <div class="pane vb" id="pane-b">
+    <div class="label">Rajdhani (look "consola de videojuego") para título/valores/botones + Inter de apoyo</div>
+    <div class="fontspec">Título, valores y botones: <code>Rajdhani 700</code> · Etiquetas y texto de apoyo: <code>Inter 600</code></div>
+    <div class="mock">
+      <div class="hdr">
+        <div class="ico">🎱</div>
+        <div class="titlewrap"><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+        <span class="tips">💡 Tips</span>
+      </div>
+      <div class="row2">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">🏆 Host: Profesor</span>
+        <span class="pill">🎮 Profesor</span>
+        <div class="grow"><span class="pill">⛶ Pantalla completa</span><span class="pill">✕ Finalizar</span></div>
+      </div>
+      <div class="chiprow">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="split2">
+        <div class="box">
+          <div class="boxlbl">📍 Ruta</div>
+          <div class="stepline"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Ahora</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">Elige el nivel</div>
+          <div class="gradegrid">
+            <div class="gradebtn on"><span class="gi">🌱</span>Primaria</div>
+            <div class="gradebtn"><span class="gi">📐</span>Secundaria</div>
+            <div class="gradebtn"><span class="gi">🎯</span>Desafío de Dominio</div>
+            <div class="gradebtn"><span class="gi">🎓</span>Pre</div>
+            <div class="gradebtn"><span class="gi">🏛</span>Universitario</div>
+          </div>
+        </div>
+      </div>
+      <div class="ftr">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="pill on">→ Espectador 👁</span>
+        <button class="openbtn">Abrir sala de espera →</button>
+      </div>
+    </div>
+    <div class="why"><b>Por qué:</b> Rajdhani es una fuente "técnica" (ángulos rectos, algo condensada pero legible) muy usada en HUDs de videojuego y paneles tipo "consola" — mantiene el carácter arcade que ya tiene Neon Bingo (el título con degradado, el brillo neón) pero con UNA sola familia consistente en vez de mezclar Barlow Condensed y Segoe UI. Es la que más se parece al espíritu actual del juego.</div>
+  </div>
+
+  <!-- C -->
+  <div class="pane vc" id="pane-c">
+    <div class="label">Space Grotesk para título + Inter para todo lo demás — técnico pero calmado</div>
+    <div class="fontspec">Título y valores: <code>Space Grotesk 600-700</code> · Pastillas, botones y etiquetas: <code>Inter 600-700</code></div>
+    <div class="mock">
+      <div class="hdr">
+        <div class="ico">🎱</div>
+        <div class="titlewrap"><span class="name">Neon Bingo</span><div class="sub2">En vivo · Matemáticas</div></div>
+        <span class="tips">💡 Tips</span>
+      </div>
+      <div class="row2">
+        <span class="pill">← Salir</span>
+        <span class="pill gold">🏆 Host: Profesor</span>
+        <span class="pill">🎮 Profesor</span>
+        <div class="grow"><span class="pill">⛶ Pantalla completa</span><span class="pill">✕ Finalizar</span></div>
+      </div>
+      <div class="chiprow">
+        <span class="pill on">⏱ Media</span>
+        <span class="pill on">⚡ Sin sumas</span>
+        <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+        <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+        <span class="pill on">🌐 Global</span>
+        <span class="pill">👤 Por alumno</span>
+      </div>
+      <div class="split2">
+        <div class="box">
+          <div class="boxlbl">📍 Ruta</div>
+          <div class="stepline"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Ahora</span></div></div>
+        </div>
+        <div class="box">
+          <div class="boxlbl">Elige el nivel</div>
+          <div class="gradegrid">
+            <div class="gradebtn on"><span class="gi">🌱</span>Primaria</div>
+            <div class="gradebtn"><span class="gi">📐</span>Secundaria</div>
+            <div class="gradebtn"><span class="gi">🎯</span>Desafío de Dominio</div>
+            <div class="gradebtn"><span class="gi">🎓</span>Pre</div>
+            <div class="gradebtn"><span class="gi">🏛</span>Universitario</div>
+          </div>
+        </div>
+      </div>
+      <div class="ftr">
+        <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+        <span class="pill on">→ Espectador 👁</span>
+        <button class="openbtn">Abrir sala de espera →</button>
+      </div>
+    </div>
+    <div class="why"><b>Por qué:</b> Space Grotesk tiene personalidad (letras un poco geométricas, buen peso en negrita) sin ser tan "gamer/HUD" como Rajdhani — un punto medio entre A (100% neutro) y B (100% arcade). Solo el título y los valores importantes (Primaria, Ahora, Jugador) la usan; pastillas y botones se quedan en Inter para no competir por atención.</div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+
+  // ── Cada pane es un mini-prototipo funcional: clicks reales, no solo una foto ──
+  document.querySelectorAll('.pane').forEach(pane => {
+    // Tips: on/off
+    const tips = pane.querySelector('.tips');
+    if (tips) tips.addEventListener('click', () => tips.classList.toggle('on'));
+
+    // Velocidad: alterna Media <-> Rápida
+    const speedPill = pane.querySelector('.chiprow .pill:nth-child(1)');
+    if (speedPill) speedPill.addEventListener('click', () => {
+      const rapida = speedPill.textContent.includes('Rápida');
+      speedPill.innerHTML = rapida ? '⏱ Media' : '⚡ Rápida';
+    });
+
+    // Modo: alterna Sin sumas <-> Con sumas
+    const modePill = pane.querySelector('.chiprow .pill:nth-child(2)');
+    if (modePill) modePill.addEventListener('click', () => {
+      const sinSumas = modePill.textContent.includes('Sin sumas');
+      modePill.innerHTML = sinSumas ? '🧮 Con sumas' : '⚡ Sin sumas';
+    });
+
+    // Cartones / Bots: contadores +/-
+    pane.querySelectorAll('.mini').forEach(mini => {
+      const [minus, plus] = mini.querySelectorAll('button');
+      const b = mini.querySelector('b');
+      minus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; if (v > 0) b.textContent = v - 1; });
+      plus.addEventListener('click', e => { e.stopPropagation(); const v = +b.textContent; b.textContent = v + 1; });
+    });
+
+    // Global / Por alumno: selección única entre las dos últimas pastillas de la fila
+    const chiprowPills = pane.querySelectorAll('.chiprow .pill');
+    const modeTogglePills = [chiprowPills[4], chiprowPills[5]];
+    modeTogglePills.forEach(p => p && p.addEventListener('click', () => {
+      modeTogglePills.forEach(x => x && x.classList.remove('on'));
+      p.classList.add('on');
+    }));
+
+    // Grilla de nivel: selección única + refleja el elegido en la Ruta
+    const stepv = pane.querySelector('.stepv');
+    const stepdot = pane.querySelector('.stepdot');
+    const stepline = pane.querySelector('.stepline');
+    pane.querySelectorAll('.gradebtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pane.querySelectorAll('.gradebtn').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        if (stepv) stepv.textContent = btn.textContent.trim();
+        if (stepline) stepline.style.background = 'transparent';
+        if (stepdot) { stepdot.style.background = 'var(--sel-bg)'; stepdot.style.border = '1px solid var(--sel-border)'; }
+      });
+    });
+
+    // Rol: Jugador <-> Espectador
+    const roltxtB = pane.querySelector('.roltxt b');
+    const spectPill = pane.querySelector('.ftr .pill');
+    if (spectPill) spectPill.addEventListener('click', () => {
+      const isPlayer = roltxtB.textContent.trim() === 'Jugador';
+      roltxtB.textContent = isPlayer ? 'Espectador' : 'Jugador';
+      spectPill.innerHTML = isPlayer ? '→ Jugador 🎮' : '→ Espectador 👁';
+    });
+
+    // Abrir sala de espera: feedback visual de presión
+    const openbtn = pane.querySelector('.openbtn');
+    if (openbtn) openbtn.addEventListener('click', () => {
+      openbtn.style.transform = 'scale(0.97)';
+      setTimeout(() => { openbtn.style.transform = ''; }, 120);
+    });
+  });
+</script>
+
+</body>
+</html>

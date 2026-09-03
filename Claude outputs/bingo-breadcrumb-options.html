@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Migas de pan · Variantes</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.08);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc; --accent-glow:rgba(139,92,246,0.4);
+    --gold:#facc15; --gold-glow:rgba(250,204,21,0.35);
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:23px; margin:0 0 5px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13.5px; margin:0 0 26px; max-width:700px; line-height:1.55}
+  .tabs{display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap}
+  .tab{
+    padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--panel);
+    color:var(--txt-dim); font-size:12.5px; font-weight:700; letter-spacing:.02em; cursor:pointer;
+    transition:.15s;
+  }
+  .tab:hover{color:var(--txt); border-color:rgba(139,92,246,0.4)}
+  .tab.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 8px 22px var(--accent-glow);}
+  .panes{max-width:920px}
+  .pane{display:none}
+  .pane.on{display:block; animation:fade .25s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+  .label{ font-size:12px; font-weight:800; letter-spacing:.07em; color:var(--txt-dim); margin:0 0 10px;
+    text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:18px; padding:22px 22px 24px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .why{ font-size:12.5px; color:var(--txt-dim); line-height:1.6; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line);}
+  .why b{color:var(--txt)}
+
+  .grid{display:grid; gap:7px}
+  .btn{
+    background:var(--panel2); border:1px solid var(--line); border-radius:9px; color:var(--txt-dim);
+    font-size:12px; font-weight:700; letter-spacing:.01em; padding:9px 11px; cursor:pointer; text-align:center;
+    transition:.12s;
+  }
+  .btn.on{ background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border-color:transparent;
+    box-shadow:0 4px 14px var(--accent-glow);}
+  .btn.row{ text-align:left; display:flex; align-items:center; gap:9px; }
+
+  /* ============ VARIANT 1: connected timeline chips ============ */
+  .v1 .trail{ display:flex; align-items:center; gap:0; margin-bottom:22px; overflow-x:auto; padding-bottom:4px}
+  .v1 .node{ display:flex; align-items:center; gap:8px; flex:0 0 auto}
+  .v1 .dot{
+    width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:14px; background:var(--panel3); border:1.5px solid rgba(139,92,246,0.35); color:var(--accent2);
+    flex:0 0 auto; cursor:pointer;
+  }
+  .v1 .dot.done{ background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:#fff}
+  .v1 .dot.active{ border-color:var(--gold); color:var(--gold); box-shadow:0 0 0 4px rgba(250,204,21,0.12)}
+  .v1 .txtcol{display:flex; flex-direction:column; line-height:1.15}
+  .v1 .txtcol .k{font-size:9px; color:var(--txt-dim2); text-transform:uppercase; letter-spacing:.06em}
+  .v1 .txtcol .v{font-size:12px; font-weight:700; color:var(--txt)}
+  .v1 .connector{ width:26px; height:2px; background:linear-gradient(90deg, var(--accent), rgba(139,92,246,0.15)); flex:0 0 auto; margin:0 4px}
+  .v1 .connector.pending{background:var(--line)}
+  .v1 .stepcard{ background:var(--panel2); border:1px solid rgba(250,204,21,0.25); border-radius:14px; padding:16px; margin-bottom:14px}
+  .v1 .grid4{grid-template-columns:repeat(4,1fr)}
+  .v1 .grid2{grid-template-columns:1fr 1fr}
+  .v1 .topics{grid-template-columns:1fr 1fr; margin-top:2px}
+
+  /* ============ VARIANT 2: sidebar stepper + right panel ============ */
+  .v2 .layout{display:grid; grid-template-columns:172px 1fr; gap:20px}
+  .v2 .steps{display:flex; flex-direction:column; gap:2px}
+  .v2 .step{
+    display:flex; align-items:center; gap:10px; padding:10px 10px; border-radius:9px; cursor:pointer;
+    border:1px solid transparent;
+  }
+  .v2 .step .idx{
+    width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:800; background:var(--panel3); color:var(--txt-dim2); flex:0 0 auto;
+  }
+  .v2 .step.done .idx{background:rgba(139,92,246,0.25); color:var(--accent2)}
+  .v2 .step.done .idx::after{content:'✓'; font-size:10px}
+  .v2 .step.done .idx{font-size:0}
+  .v2 .step.active{background:var(--panel2); border-color:rgba(250,204,21,0.3)}
+  .v2 .step.active .idx{background:var(--gold); color:#1a1500}
+  .v2 .step .lbl{display:flex; flex-direction:column; line-height:1.2}
+  .v2 .step .lbl .k{font-size:9.5px; color:var(--txt-dim2); text-transform:uppercase; letter-spacing:.05em}
+  .v2 .step .lbl .v{font-size:12.5px; font-weight:700; color:var(--txt)}
+  .v2 .step.todo .lbl .v{color:var(--txt-dim2); font-weight:600}
+  .v2 .rail{width:1px; background:var(--line); margin-left:10px}
+  .v2 .panelbox{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px}
+  .v2 .grid2{grid-template-columns:1fr 1fr}
+  .v2 .topics{grid-template-columns:1fr; margin-top:10px}
+
+  /* ============ VARIANT 3: single summary bar, expand-on-demand ============ */
+  .v3 .bar{
+    display:flex; align-items:center; gap:10px; background:var(--panel2); border:1px solid var(--line);
+    border-radius:12px; padding:12px 14px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .v3 .bar .crumbs{display:flex; align-items:center; gap:6px; flex-wrap:wrap; flex:1}
+  .v3 .bar .crumb{font-size:12.5px; font-weight:700; color:var(--txt)}
+  .v3 .bar .sep{color:var(--txt-dim2)}
+  .v3 .bar .editbtn{
+    margin-left:auto; font-size:11.5px; font-weight:700; color:var(--accent2); background:rgba(139,92,246,0.12);
+    border:1px solid rgba(139,92,246,0.3); padding:6px 12px; border-radius:8px; cursor:pointer; white-space:nowrap;
+  }
+  .v3 .expand{ background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:16px; display:flex; flex-direction:column; gap:12px}
+  .v3 .miniblock .label{margin-bottom:6px}
+  .v3 .grid5{grid-template-columns:repeat(5,1fr)}
+  .v3 .grid2{grid-template-columns:1fr 1fr}
+  .v3 .stepcard{background:var(--panel2); border:1px solid rgba(250,204,21,0.25); border-radius:14px; padding:16px; margin-bottom:14px}
+  .v3 .unitgrid{grid-template-columns:1fr 1fr}
+  .v3 .topics{grid-template-columns:1fr 1fr}
+
+  /* ============ VARIANT 4: pill trail with avatar-style icons + focus card w/ progress ============ */
+  .v4 .progress{height:4px; border-radius:99px; background:var(--panel2); margin-bottom:16px; overflow:hidden}
+  .v4 .progress i{display:block; height:100%; width:66%; background:linear-gradient(90deg,var(--accent),var(--gold)); border-radius:99px}
+  .v4 .trail{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px}
+  .v4 .pill{
+    display:inline-flex; align-items:center; gap:7px; padding:7px 13px 7px 7px; border-radius:999px;
+    background:var(--panel2); border:1px solid var(--line); font-size:12px; font-weight:700; color:var(--txt); cursor:pointer;
+  }
+  .v4 .pill .ico{ width:22px; height:22px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff; flex:0 0 auto}
+  .v4 .focuscard{
+    background:linear-gradient(180deg, var(--panel3), var(--panel2)); border:1.5px solid var(--gold);
+    border-radius:16px; padding:18px; box-shadow:0 0 0 4px rgba(250,204,21,0.08);
+  }
+  .v4 .focuscard .fh{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px}
+  .v4 .focuscard .fh .t{font-size:13px; font-weight:800; color:var(--gold); letter-spacing:.02em}
+  .v4 .focuscard .fh .c{font-size:11px; color:var(--txt-dim2)}
+  .v4 .unitgrid{grid-template-columns:1fr 1fr}
+  .v4 .topics{grid-template-columns:1fr 1fr; margin-top:14px}
+
+  ::-webkit-scrollbar{height:6px; width:6px}
+  ::-webkit-scrollbar-thumb{background:rgba(139,92,246,0.35); border-radius:4px}
+</style>
+</head>
+<body>
+
+<h1>Migas de pan — 4 variantes de diseño</h1>
+<p class="sub">Todas colapsan Nivel/Grado/Área/Colegio ya elegidos para dejar sitio a la Unidad y los Temas, pero con distinto tratamiento visual. Mismo dato de ejemplo en las cuatro: Secundaria · 1° Grado · Álgebra · Intellectum, eligiendo Unidad.</p>
+
+<div class="tabs">
+  <button class="tab on" data-t="1">1 · Línea de tiempo</button>
+  <button class="tab" data-t="2">2 · Stepper lateral</button>
+  <button class="tab" data-t="3">3 · Barra resumen</button>
+  <button class="tab" data-t="4">4 · Pastillas + tarjeta foco</button>
+</div>
+
+<div class="panes">
+
+  <!-- VARIANT 1 -->
+  <div class="pane on v1" id="pane-1">
+    <div class="label">Pasos como nodos conectados por una línea</div>
+    <div class="mock">
+      <div class="trail">
+        <div class="node">
+          <div class="dot done">📐</div>
+          <div class="txtcol"><span class="k">Nivel</span><span class="v">Secundaria</span></div>
+        </div>
+        <div class="connector"></div>
+        <div class="node">
+          <div class="dot done">1°</div>
+          <div class="txtcol"><span class="k">Grado</span><span class="v">1° Grado</span></div>
+        </div>
+        <div class="connector"></div>
+        <div class="node">
+          <div class="dot done">α</div>
+          <div class="txtcol"><span class="k">Área</span><span class="v">Álgebra</span></div>
+        </div>
+        <div class="connector"></div>
+        <div class="node">
+          <div class="dot done">📘</div>
+          <div class="txtcol"><span class="k">Colegio</span><span class="v">Intellectum</span></div>
+        </div>
+        <div class="connector pending"></div>
+        <div class="node">
+          <div class="dot active">▶</div>
+          <div class="txtcol"><span class="k">Ahora</span><span class="v">Unidad</span></div>
+        </div>
+      </div>
+      <div class="stepcard">
+        <div class="label" style="margin-bottom:10px">Elige la unidad</div>
+        <div class="grid grid2">
+          <div class="btn row on">Unidad 1 — Leyes de Exponentes I</div>
+          <div class="btn row">Unidad 2 — Leyes de Exponentes II</div>
+          <div class="btn row">Unidad 3 — Polinomios</div>
+          <div class="btn row">Unidad 4 — Productos Notables</div>
+          <div class="btn row">Unidad 5 — División Algebraica</div>
+          <div class="btn row">Unidad 6 — Factorización</div>
+        </div>
+      </div>
+      <div class="label">Temas</div>
+      <div class="grid topics">
+        <div class="btn row on">📐 Exponentes I <span style="margin-left:auto">✓</span></div>
+        <div class="btn row">📊 Radicación</div>
+      </div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> cada paso resuelto es un nodo circular con ícono + una etiqueta de dos líneas (Nivel/valor) conectado por una línea degradada al siguiente. El nodo activo se destaca en dorado con un halo. Tocar cualquier nodo pasado te regresa a ese paso. Es visualmente el más "narrativo" — se lee como el recorrido que hizo el host — y funciona muy bien en pantallas anchas; en móvil la fila se puede deslizar horizontalmente.
+    </div>
+  </div>
+
+  <!-- VARIANT 2 -->
+  <div class="pane v2" id="pane-2">
+    <div class="label">Columna de pasos a la izquierda, opciones a la derecha</div>
+    <div class="mock">
+      <div class="layout">
+        <div class="steps">
+          <div class="step done"><div class="idx"></div><div class="lbl"><span class="k">Nivel</span><span class="v">Secundaria</span></div></div>
+          <div class="step done"><div class="idx"></div><div class="lbl"><span class="k">Grado</span><span class="v">1°</span></div></div>
+          <div class="step done"><div class="idx"></div><div class="lbl"><span class="k">Área</span><span class="v">Álgebra</span></div></div>
+          <div class="step done"><div class="idx"></div><div class="lbl"><span class="k">Colegio</span><span class="v">Intellectum</span></div></div>
+          <div class="step active"><div class="idx">5</div><div class="lbl"><span class="k">Ahora</span><span class="v">Unidad</span></div></div>
+          <div class="step todo"><div class="idx">6</div><div class="lbl"><span class="k">Después</span><span class="v">Temas</span></div></div>
+        </div>
+        <div class="panelbox">
+          <div class="label">Unidad</div>
+          <div class="grid v2-grid2" style="grid-template-columns:1fr 1fr">
+            <div class="btn row on">Unidad 1 — Leyes de Exp. I</div>
+            <div class="btn row">Unidad 2 — Leyes de Exp. II</div>
+            <div class="btn row">Unidad 3 — Polinomios</div>
+            <div class="btn row">Unidad 4 — Prod. Notables</div>
+            <div class="btn row">Unidad 5 — División Alg.</div>
+            <div class="btn row">Unidad 6 — Factorización</div>
+          </div>
+          <div class="label topics" style="margin-top:14px">Temas</div>
+          <div class="grid" style="grid-template-columns:1fr 1fr">
+            <div class="btn row on">📐 Exponentes I ✓</div>
+            <div class="btn row">📊 Radicación</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> en vez de una fila horizontal, los pasos viven en una columna angosta fija a la izquierda (como el stepper de un checkout), y el panel a la derecha siempre muestra las opciones del paso activo. Aprovecha mejor el ancho disponible en pantallas de escritorio/tablet (que es justo tu caso), y deja ver de un vistazo cuánto falta (pasos en gris = "Después"). Es el que mejor combina compactación vertical con contexto permanente de "dónde estoy".
+    </div>
+  </div>
+
+  <!-- VARIANT 3 -->
+  <div class="pane v3" id="pane-3">
+    <div class="label">Una sola barra de texto + botón "Editar" que despliega todo</div>
+    <div class="mock">
+      <div class="bar">
+        <div class="crumbs">
+          <span class="crumb">📐 Secundaria</span><span class="sep">›</span>
+          <span class="crumb">1° Grado</span><span class="sep">›</span>
+          <span class="crumb">α Álgebra</span><span class="sep">›</span>
+          <span class="crumb">📘 Intellectum</span>
+        </div>
+        <div class="editbtn">✎ Editar</div>
+      </div>
+      <div class="stepcard">
+        <div class="label" style="margin-bottom:10px">Unidad</div>
+        <div class="grid unitgrid">
+          <div class="btn row on">Unidad 1 — Leyes de Exp. I</div>
+          <div class="btn row">Unidad 2 — Leyes de Exp. II</div>
+          <div class="btn row">Unidad 3 — Polinomios</div>
+          <div class="btn row">Unidad 4 — Prod. Notables</div>
+        </div>
+      </div>
+      <div class="label">Temas</div>
+      <div class="grid topics">
+        <div class="btn row on">📐 Exponentes I ✓</div>
+        <div class="btn row">📊 Radicación</div>
+      </div>
+      <div class="why" style="margin-top:18px; border-top:1px dashed var(--line); padding-top:14px">
+        <b>Al tocar "Editar" se despliega esto arriba de la barra:</b>
+      </div>
+      <div class="expand" style="margin-top:10px">
+        <div class="miniblock"><div class="label">Nivel</div><div class="grid grid5"><div class="btn on">📐 Sec.</div><div class="btn">🏫 Prim.</div><div class="btn">🎯 Desafío</div><div class="btn">🎓 Pre</div><div class="btn">🏛️ Univ.</div></div></div>
+        <div class="miniblock"><div class="label">Grado</div><div class="grid grid5"><div class="btn on">1°</div><div class="btn">2°</div><div class="btn">3°</div><div class="btn">4°</div><div class="btn">5°</div></div></div>
+        <div class="miniblock"><div class="label">Área</div><div class="grid grid5"><div class="btn">🔢 Mat.</div><div class="btn on">α Álg.</div><div class="btn">🔢 Arit.</div><div class="btn">∠ Trig.</div><div class="btn">◻ Geom.</div></div></div>
+        <div class="miniblock"><div class="label">Colegio</div><div class="grid grid2"><div class="btn on">📘 Intellectum</div><div class="btn">📗 Saco Oliveros</div></div></div>
+      </div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> por defecto solo ves una línea de texto ("Secundaria › 1° Grado › Álgebra › Intellectum") con un botón Editar — cero espacio extra usado por pasos ya resueltos. Si necesitas cambiar algo de atrás, tocas Editar y se abre un bloque con las 4 grillas completas para ajustar cualquiera sin perder tu lugar. Es la opción más compacta de las cuatro cuando no necesitas tocar pasos anteriores, aunque agrega un tap extra cuando sí quieres editar.
+    </div>
+  </div>
+
+  <!-- VARIANT 4 -->
+  <div class="pane v4" id="pane-4">
+    <div class="label">Barra de progreso + pastillas con ícono + tarjeta de foco dorada</div>
+    <div class="mock">
+      <div class="progress"><i></i></div>
+      <div class="trail">
+        <div class="pill"><span class="ico">📐</span> Secundaria</div>
+        <div class="pill"><span class="ico">1°</span> 1° Grado</div>
+        <div class="pill"><span class="ico">α</span> Álgebra</div>
+        <div class="pill"><span class="ico">📘</span> Intellectum</div>
+      </div>
+      <div class="focuscard">
+        <div class="fh"><span class="t">▶ ELIGE LA UNIDAD</span><span class="c">Paso 5 de 6</span></div>
+        <div class="grid unitgrid">
+          <div class="btn row on">Unidad 1 — Leyes de Exp. I</div>
+          <div class="btn row">Unidad 2 — Leyes de Exp. II</div>
+          <div class="btn row">Unidad 3 — Polinomios</div>
+          <div class="btn row">Unidad 4 — Prod. Notables</div>
+          <div class="btn row">Unidad 5 — División Alg.</div>
+          <div class="btn row">Unidad 6 — Factorización</div>
+        </div>
+        <div class="label topics" style="margin-top:0">Temas</div>
+        <div class="grid topics">
+          <div class="btn row on">📐 Exponentes I ✓</div>
+          <div class="btn row">📊 Radicación</div>
+        </div>
+      </div>
+    </div>
+    <div class="why">
+      <b>Idea:</b> arriba, una barra de progreso fina muestra cuánto llevas del recorrido total. Los pasos resueltos son pastillas con un avatar circular a color (mismo lenguaje que ya usas en Colegio/Área) en una sola fila. Todo el paso activo — Unidad + Temas — vive dentro de una tarjeta con borde dorado que salta a la vista como "aquí es donde actúo ahora". Es el más pulido visualmente y el que más se siente "juego" (encaja con la estética neón de Bingo), a cambio de ser un poco más laborioso de construir que las otras variantes.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+      tab.classList.add('on');
+      document.getElementById('pane-' + tab.dataset.t).classList.add('on');
+    });
+  });
+</script>
+
+</body>
+</html>

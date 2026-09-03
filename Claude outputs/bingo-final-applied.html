@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Neon Bingo · Diseño final aplicado</title>
+<style>
+  :root{
+    --bg:#0a0912; --panel:#121022; --panel2:#191730; --panel3:#211d3d; --line:rgba(255,255,255,0.09);
+    --txt:#eeecfb; --txt-dim:rgba(238,236,251,0.5); --txt-dim2:rgba(238,236,251,0.3);
+    --accent:#8b5cf6; --accent2:#c084fc;
+    --gold:#facc15; --cyan:#22d3ee;
+    --sel-bg:rgba(168,85,247,0.18); --sel-border:rgba(168,85,247,0.5); --sel-txt:#c084fc;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:
+      radial-gradient(1000px 560px at 10% -15%, rgba(139,92,246,0.18), transparent),
+      radial-gradient(800px 460px at 100% 0%, rgba(192,132,252,0.10), transparent),
+      var(--bg);
+    color:var(--txt); font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    padding:30px 22px 70px; min-height:100%;
+  }
+  h1{
+    font-size:20px; margin:0 0 4px; letter-spacing:.01em;
+    background:linear-gradient(90deg,#ddd6fe,#f0abfc); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .sub{color:var(--txt-dim); font-size:13px; margin:0 0 22px; max-width:680px; line-height:1.5}
+  .frame{max-width:720px; margin:0 auto}
+  .mock{
+    background:linear-gradient(180deg, var(--panel), var(--panel) 40%, #100e1e);
+    border:1px solid var(--line); border-radius:18px; padding:12px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.04em;
+    text-transform:uppercase;color:#86efac;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.35);
+    border-radius:999px;padding:5px 11px;margin-bottom:14px}
+
+  /* ===== sistema homogéneo — idéntico al aplicado en student.html ===== */
+  .card{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .hdr{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .hdr .ico{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#3b82f6);display:flex;align-items:center;justify-content:center;font-size:13px;flex:0 0 auto}
+  .hdr .name{font-size:13px;font-weight:900;color:#67e8f9;letter-spacing:.01em;white-space:nowrap;margin-right:2px}
+  .hdr .grow{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:800;letter-spacing:.02em;
+    padding:6px 12px;border-radius:999px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);
+    color:var(--txt-dim);white-space:nowrap}
+  .pill.on{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+  .pill.gold{background:rgba(250,204,21,0.1);border-color:rgba(250,204,21,0.4);color:var(--gold)}
+  .playerchip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);
+    background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:999px;padding:4px 10px 4px 4px}
+  .playerchip .ico{width:20px;height:20px;border-radius:50%;background:#a855f7;display:flex;align-items:center;justify-content:center;font-size:11px}
+
+  .chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .pill .mini{display:inline-flex;align-items:center;gap:5px;margin-left:2px}
+  .pill .mini button{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,0.14);border:none;color:#fff;font-size:10px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center}
+  .pill .mini b{font-size:10.5px;min-width:8px;text-align:center;color:#fff}
+
+  .split2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .box{background:rgba(255,255,255,0.04);border:1px solid var(--line);border-radius:16px;padding:10px}
+  .boxlbl{font-size:9px;color:var(--txt-dim2);text-transform:uppercase;font-weight:800;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+
+  .stepline{display:flex;align-items:center;gap:7px;padding:4px 4px}
+  .stepdot{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.14);flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:0}
+  .stepline.done .stepdot{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt);font-size:8px}
+  .stepline.done .stepdot::after{content:'✓'}
+  .steplbl{display:flex;flex-direction:column;line-height:1.1;min-width:0}
+  .stepk{font-size:7.5px;color:var(--txt-dim2);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .stepv{font-size:11px;color:var(--txt);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .optbtn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:999px;color:var(--txt-dim);
+    font-size:11px;font-weight:700;padding:8px 12px;display:flex;align-items:center;gap:7px;margin-bottom:5px}
+  .optbtn:last-child{margin-bottom:0}
+  .optbtn.sel{background:var(--sel-bg);border-color:var(--sel-border);color:var(--sel-txt)}
+  .optbtn .chk{margin-left:auto}
+
+  .ftr{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .ftr .roltxt{font-size:11px;color:var(--txt-dim);white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+  .ftr .roltxt b{color:var(--txt)}
+  .openbtn{margin-left:auto;border-radius:10px;padding:10px 16px;font-weight:900;font-size:12px;letter-spacing:.04em;
+    white-space:nowrap;background:rgba(34,211,238,0.14);border:1px solid rgba(34,211,238,0.5);color:var(--cyan);
+    box-shadow:0 0 16px -4px var(--cyan);text-transform:uppercase}
+
+  .footnote{max-width:680px;margin:18px auto 0;font-size:12px;color:var(--txt-dim);line-height:1.55;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="frame">
+  <span class="badge">✓ Aplicado a student.html</span>
+  <h1>Neon Bingo — configuración del lobby</h1>
+  <p class="sub">Este es el diseño final que aprobaste (Chips + grid, opción A) y que ya está en producción: pastillas 100% redondas para todo lo interactivo, y una sola tarjeta compartida entre header, cuerpo y footer.</p>
+
+  <div class="mock">
+    <div class="card hdr">
+      <span class="pill">← Salir</span>
+      <div class="ico">🎱</div><span class="name">Neon Bingo</span>
+      <span class="pill gold">🏆 Host: Profesor</span>
+      <span class="playerchip"><span class="ico">👤</span>Profesor</span>
+      <div class="grow"><span class="pill">⛶ Pantalla completa</span><span class="pill">✕ Finalizar</span></div>
+    </div>
+
+    <div class="chiprow">
+      <span class="pill on">⏱ Media</span>
+      <span class="pill on">⚡ Sin sumas</span>
+      <span class="pill">🃏 <span class="mini"><button>−</button><b>1</b><button>+</button></span></span>
+      <span class="pill">🤖 <span class="mini"><button>−</button><b>0</b><button>+</button></span></span>
+      <span class="pill on">🌐 Global</span>
+      <span class="pill">👤 Por alumno</span>
+    </div>
+
+    <div class="split2">
+      <div class="box">
+        <div class="boxlbl">📍 Ruta</div>
+        <div class="stepline done"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Nivel</span><span class="stepv">Secundaria</span></div></div>
+        <div class="stepline done"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Grado</span><span class="stepv">5° Grado</span></div></div>
+        <div class="stepline done"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Colegio</span><span class="stepv">San Norberto</span></div></div>
+        <div class="stepline done"><div class="stepdot"></div><div class="steplbl"><span class="stepk">Unidad</span><span class="stepv">Inecuaciones</span></div></div>
+      </div>
+      <div class="box">
+        <div class="boxlbl">📝 Temas · 1 elegido</div>
+        <div class="optbtn sel">⚡ Quiz I – Lineales<span class="chk">✓</span></div>
+        <div class="optbtn">⚡ Quiz II – Avanzadas</div>
+      </div>
+    </div>
+
+    <div class="card ftr">
+      <span class="roltxt">🎭 Rol: <b>Jugador</b></span>
+      <span class="pill on">→ Espectador 👁</span>
+      <button class="openbtn">ABRIR SALA DE ESPERA →</button>
+    </div>
+  </div>
+
+  <p class="footnote">Morado = seleccionado en cualquier control · dorado = solo para el badge de Host · una sola forma de pastilla y una sola tarjeta en toda la ventana.</p>
+</div>
+
+</body>
+</html>
