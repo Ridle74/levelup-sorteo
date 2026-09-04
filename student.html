@@ -1830,6 +1830,9 @@ let padresRaw        = { students: {}, sessions: [] }; // snapshot crudo de /pad
 let expandedPtsStudent = null; // id del alumno cuyo detalle de puntos por fecha está abierto
 let _lastPtsLocalEdit = 0; // timestamp del último cambio local en Puntos (evita re-render brusco al recibir el propio guardado)
 let ptsMonthOffset = 0; // 0 = mes actual, -1 = anterior, +1 = siguiente (para revisar puntos por mes)
+let storeCatalog = []; // [{id,name,desc,cost,stock,icon,active}] — catálogo de la Tienda, editable por el admin (lms.storeCatalog)
+let _storeAdminOpen = false; // panel de administración del catálogo (Tienda), colapsado/expandido
+let _storeMyOrdersOpen = true; // sección "Mis canjes" del alumno, colapsada/expandida
 let appReady    = false;
 // true SOLO después de que REF.onSnapshot recibió con éxito el documento real de Firestore
 // al menos una vez en esta sesión. Mientras sea false, saveTasks()/savePointsLog()/savePrompts()/
@@ -2383,6 +2386,13 @@ function savePrompts(transformFn) {
     return updated;
   });
 }
+function saveStoreCatalog(transformFn) {
+  return saveLmsFieldTx('storeCatalog', fresh => {
+    const updated = transformFn(Array.isArray(fresh) ? fresh : []);
+    storeCatalog = updated;
+    return updated;
+  });
+}
 
 // Devuelve [{date:Date, key:'YYYY-MM-DD', hours:N, slots}] de las fechas del mes (con offset) en que
 // el alumno tiene clase, junto con el total de horas de clase ese día — calculado fecha por fecha desde
@@ -2444,6 +2454,10 @@ function getClassDatesForStudent(studentName, monthOffset=0) {
   return out;
 }
 const PTS_TASKS_MAX = 5;          // máximo de cuadraditos de Tareas por fecha
+// El cálculo automático de Puntos (ver más abajo) solo aplica desde esta fecha en adelante.
+// Antes de esta fecha, los meses quedan "congelados" tal como estaban (con el tildado manual
+// clásico) para no alterar retroactivamente sorteos que ya se realizaron con esos puntos.
+const PTS_AUTO_CUTOFF = '2026-09-01';
 // Multiplicador de valor por cuadradito de Tareas para un alumno (1 = normal, 3 = vale el triple, etc.)
 // Editable por el admin desde el panel de Puntos — sin necesidad de tocar código para futuros casos como el de Joanna.
 function getTaskMult(id) { return Number(taskMultipliers[String(id)]) || 1; }
@@ -2560,8 +2574,8 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
   if (_ptsAutoLoading[key]) return;
   _ptsAutoLoading[key] = true;
   try {
-    const dates = getClassDatesForStudent(s.name, offset);
-    if (!dates.length) return;
+    const dates = getClassDatesForStudent(s.name, offset).filter(d => d.key >= PTS_AUTO_CUTOFF);
+    if (!dates.length) return; // mes anterior al corte: queda congelado con el tildado clásico
     const histAsc = await _ptsFetchHist(s.id);
     await savePointsLog(fresh => {
       const log = JSON.parse(JSON.stringify(fresh || {}));
@@ -2642,7 +2656,7 @@ function router() {
     login: vLogin, dashboard: vDashboard, tablero: vTablero,
     ranking: vRankingPage, numeros: vNumerosPage, winners: vGanadoresPage,
     tareas: vTareas, puntos: vPuntos, horarios: vHorarios, perfil: vPerfil,
-    bingo: vBingoFull, levelup: vLevelUpFull
+    bingo: vBingoFull, levelup: vLevelUpFull, tienda: vTienda
   };
   app.innerHTML = `<div class="vw">${(views[hash]||vLogin)()}</div>`;
 
@@ -2673,7 +2687,7 @@ function router() {
     login:vLoginSetup, dashboard:vDashboardSetup, tablero:vTableroSetup,
     ranking:vRankingSetup, numeros:vNumerosSetup, winners:vGanadoresSetup,
     tareas:vTareasSetup, puntos:vPuntosSetup, horarios:vHorariosSetup, perfil:()=>{},
-    bingo: vBingoFullSetup, levelup: vLevelUpFullSetup
+    bingo: vBingoFullSetup, levelup: vLevelUpFullSetup, tienda: vTiendaSetup
   };
   if (setup[hash]) setup[hash]();
 
@@ -2693,6 +2707,7 @@ function buildNav(active) {
         { r:'tablero',   i:'🎮', l:'Tablero' },
         { r:'tareas',    i:'📜', l:'Actividad' },
         { r:'puntos',    i:'⚡', l:'Puntos' },
+        { r:'tienda',    i:'🛍️', l:'Tienda' },
         { r:'horarios',  i:'📅', l:'Horarios' },
       ]
     : [
@@ -2701,6 +2716,7 @@ function buildNav(active) {
         { r:'levelup',   i:'📚', l:'Mis cursos' },
         { r:'tareas',    i:'📜', l:'Actividad' },
         { r:'puntos',    i:'⚡', l:'Puntos' },
+        { r:'tienda',    i:'🛍️', l:'Tienda' },
         { r:'ranking',   i:'👑', l:'Ranking' },
       ];
   const loggedId2 = getLoggedId();
@@ -11226,12 +11242,17 @@ function vPtsDateChecklist(s) {
         // Cuerpo de puntos: por defecto, indicadores de solo lectura con el snapshot automático
         // (m.auto, ver _ptsRefreshAutoSnapshot); si aún no se calculó para esta fecha, muestra
         // "…" mientras carga. En modo manual (por alumno) se muestran las casillas clásicas.
-        const pointsBody = (manualMode || m.manualOverride)
+        // Las fechas anteriores a PTS_AUTO_CUTOFF quedan siempre en modo clásico (congeladas),
+        // sin depender del toggle "Manual" ni de manualOverride — así los meses ya usados en un
+        // sorteo pasado no se recalculan solo por abrir el panel.
+        const isPreCutoff = key < PTS_AUTO_CUTOFF;
+        const pointsBody = (manualMode || m.manualOverride || isPreCutoff)
           ? `
             <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(79,182,255,0.7);width:38px;flex-shrink:0">⏱️ Horas</span>${ptsCheckRow(s.id,key,'hours',hours,m.hours,'#4fb6ff',isFuture||absent)}</div>
             <div style="${dim};display:flex;align-items:center;gap:4px;margin-bottom:4px"><span style="font-size:9px;color:rgba(176,107,255,0.7);width:38px;flex-shrink:0">📈 Prog.</span>${ptsCheckRow(s.id,key,'progress',hours,m.progress,'#b06bff',isFuture||absent)}</div>
             <div style="${dim};display:flex;align-items:center;gap:4px"><span style="font-size:9px;color:rgba(74,222,128,0.7);width:38px;flex-shrink:0">✅ Tareas</span>${ptsCheckRow(s.id,key,'tasks',PTS_TASKS_MAX,m.tasks,'#39ff7a',isFuture||absent)}</div>
             ${m.manualOverride?`<div style="margin-top:4px;font-size:8px;color:#ffb84d">Anulado manualmente</div>`:''}
+            ${isPreCutoff&&!manualMode&&!m.manualOverride?`<div style="margin-top:4px;font-size:8px;color:rgba(255,255,255,0.3)">Mes anterior al cálculo automático</div>`:''}
           `
           : (m.auto
               ? `${dim?`<div style="${dim}">`:''}
@@ -11260,6 +11281,328 @@ function vPtsDateChecklist(s) {
 }
 
 function vPuntosSetup() {}
+
+// ════════════════════════════════════════════════════════
+// VIEW: TIENDA (canje de puntos por premios)
+// ════════════════════════════════════════════════════════
+// La "billetera" de la Tienda usa el mismo puntaje que el alumno ya ve en los rankings de
+// Preparate (prepLeaderboard) — NO los puntos de Horas/Progreso/Tareas (pointsLog), que
+// siguen alimentando el sorteo mensual exactamente igual que antes, sin tocarlos.
+// Saldo = suma del MEJOR score de cada actividad distinta completada en TODA la historia
+// (sin corte de fecha) − suma del "cost" de todos sus canjes (storeOrders), sin importar si
+// ya fueron entregados o no (el gasto ocurre al canjear, no al entregar).
+// "Actividad distinta" = misma clave de agrupación que ya usa el leaderboard existente
+// (ver _prepLoadLeaderboard / _prepLoadDesafioLeaderboard en levelup.js): topic +
+// (examen de unidad vs habilidad) + (reto/desafío + nivel, si aplica).
+
+// Caché de los documentos de prepLeaderboard de un alumno, para no releer todo su historial
+// en cada render. Se invalida después de cada canje (por si el saldo cambió).
+const _storeLbCache = {};
+function _storeFetchAllLbEntries(uid) {
+  const key = String(uid);
+  if (_storeLbCache[key] && _storeLbCache[key].data) return Promise.resolve(_storeLbCache[key].data);
+  if (_storeLbCache[key] && _storeLbCache[key].loading) return _storeLbCache[key].loading;
+  const p = db.collection('prepLeaderboard').where('uid','==',key).limit(3000).get()
+    .then(snap => { const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()})); _storeLbCache[key]={data:arr}; return arr; })
+    .catch(e => { console.error('[tienda] error prepLeaderboard', e); _storeLbCache[key]={data:[]}; return []; });
+  _storeLbCache[key] = { loading: p };
+  return p;
+}
+function _storeInvalidateLb(uid) { delete _storeLbCache[String(uid)]; }
+// Misma fórmula de respaldo que _lbScore en _prepLoadLeaderboard (levelup.js), para
+// documentos legado que no tengan "score" guardado directamente.
+function _storeEntryScore(e) {
+  if (e.score != null) return e.score;
+  const pct=(e.correct??0)/(e.total||1);
+  const tpq=e.total>0?(e.timeSecs||0)/e.total:(e.timeSecs||0);
+  const ts=Math.round(Math.max(0,60-tpq)/60*500*pct);
+  const tm=(e.isUnitExam||e.scoreType==='exam')?3:(BINGO_TOPICS?.[e.topic]?.quiz||e.scoreType==='quiz')?2:1;
+  return Math.round((Math.round(pct*1000)+ts)*tm);
+}
+function _storeGroupKey(e) {
+  const base = (e.topic||'') + '|' + (e.isUnitExam?'exam':'skill');
+  return e.desafio ? base + '|desafio' + (e.nivel||1) : base;
+}
+function _storeEarnedTotal(entries) {
+  const bestByGroup = {};
+  entries.forEach(e => {
+    const k = _storeGroupKey(e);
+    const sc = _storeEntryScore(e);
+    if (!(k in bestByGroup) || sc > bestByGroup[k]) bestByGroup[k] = sc;
+  });
+  return Object.values(bestByGroup).reduce((a,b)=>a+b, 0);
+}
+async function _storeGetSpentTotal(uid) {
+  const snap = await db.collection('storeOrders').where('uid','==',String(uid)).get();
+  let sum = 0; snap.forEach(d => sum += Number(d.data().cost)||0);
+  return sum;
+}
+async function _storeGetBalance(uid) {
+  const entries = await _storeFetchAllLbEntries(uid);
+  const earned = _storeEarnedTotal(entries);
+  const spent = await _storeGetSpentTotal(uid);
+  return { earned, spent, balance: Math.max(0, earned - spent) };
+}
+
+// NOTA sobre la transacción de canje: el SDK de Firestore para web (firebase-firestore-compat,
+// cargado en <head>) NO soporta transaction.get(query) — a diferencia del SDK Admin (Node.js),
+// el cliente web solo puede leer DOCUMENTOS dentro de una transacción, no queries/colecciones.
+// Por eso el saldo se recalcula con una lectura FRESCA (no transaccional) justo antes de abrir
+// la transacción, y solo el descuento de stock del catálogo + la creación del pedido van dentro
+// de la transacción (eso sí, atómico: nunca se sobrevende un premio con stock limitado). Queda
+// una ventana muy pequeña de condición de carrera solo en la revisión de saldo (dos canjes del
+// mismo alumno en el mismo instante, en dos pestañas/dispositivos distintos, podrían ambos pasar
+// la revisión de saldo antes de que el primero se refleje) — aceptable dado el volumen de esta
+// app (uso escolar, no producción de alto tráfico); si algún día hiciera falta cerrarla del todo
+// habría que mover el saldo a un contador propio en un documento (no derivarlo de queries).
+async function redeemStoreItem(itemId) {
+  const me = _bingoMe();
+  if (!me || !me.uid) { showToast('No se pudo identificar tu usuario.'); return; }
+  const uid = String(me.uid);
+  let item = null;
+  try {
+    const { balance } = await _storeGetBalance(uid);
+    item = (storeCatalog||[]).find(i => i.id === itemId);
+    if (!item || !item.active) { showToast('Este premio ya no está disponible.'); return; }
+    if (item.stock != null && item.stock <= 0) { showToast('Este premio ya no tiene stock.'); return; }
+    if (balance < item.cost) { showToast(`Te faltan puntos: tienes ${balance}, este premio cuesta ${item.cost}.`); return; }
+    if (!confirm(`¿Canjear "${item.name}" por ${item.cost} puntos?`)) return;
+
+    // Saldo fresco (no transaccional) inmediatamente antes de la transacción — ver nota arriba.
+    _storeInvalidateLb(uid);
+    const { balance: freshBalance } = await _storeGetBalance(uid);
+    if (freshBalance < item.cost) throw new Error('INSUFFICIENT_BALANCE');
+
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(REF);
+      const data = snap.exists ? snap.data() : {};
+      const catalog = (data.lms || {}).storeCatalog || [];
+      const idx = catalog.findIndex(i => i.id === itemId);
+      if (idx === -1) throw new Error('ITEM_NOT_FOUND');
+      const freshItem = catalog[idx];
+      if (!freshItem.active) throw new Error('ITEM_INACTIVE');
+      if (freshItem.stock != null && freshItem.stock <= 0) throw new Error('OUT_OF_STOCK');
+
+      const newCatalog = [...catalog];
+      if (freshItem.stock != null) newCatalog[idx] = { ...freshItem, stock: freshItem.stock - 1 };
+      tx.update(REF, { ['lms.storeCatalog']: newCatalog });
+
+      const orderRef = db.collection('storeOrders').doc();
+      tx.set(orderRef, {
+        uid, studentName: me.name || '', itemId: freshItem.id, itemName: freshItem.name, cost: freshItem.cost,
+        redeemedAt: firebase.firestore.FieldValue.serverTimestamp(), delivered: false, deliveredAt: null
+      });
+    });
+
+    storeCatalog = storeCatalog.map(i => i.id===itemId && i.stock!=null ? {...i, stock: i.stock-1} : i);
+    _storeInvalidateLb(uid);
+    showToast(`✅ Canjeaste "${item.name}"! Pídeselo a tu profesor para que te lo entregue.`, 'success');
+    if (currentView === 'tienda') go('tienda');
+  } catch (e) {
+    console.error('[tienda] redeem error', e);
+    const msgs = { ITEM_NOT_FOUND:'Este premio ya no existe.', ITEM_INACTIVE:'Este premio ya no está disponible.', OUT_OF_STOCK:'Se acabó el stock justo ahora.', INSUFFICIENT_BALANCE:'No te alcanzan los puntos (puede que se hayan actualizado).' };
+    showToast(msgs[e.message] || 'No se pudo completar el canje.');
+  }
+}
+
+function vTienda() {
+  const admin = isAdmin();
+  const me = _bingoMe();
+  return `
+  <div style="padding:12px">
+    <div class="pts-hero" style="margin-bottom:10px">
+      <div style="position:relative">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:900;line-height:1">🛍️ TIENDA</div>
+        <div style="font-size:10px;color:rgba(134,239,172,0.7);font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin-top:4px">Canjea tus puntos de Preparate por premios</div>
+        ${!admin ? `
+        <div style="display:flex;gap:10px;margin-top:14px">
+          <div style="flex:1;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;text-align:center">
+            <div style="font-size:8px;color:rgba(134,239,172,0.6);font-weight:900;letter-spacing:0.15em;text-transform:uppercase">TU SALDO</div>
+            <div id="tienda-balance" style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:#39ff7a;margin-top:2px">
+              <span style="font-size:14px;opacity:0.5">cargando…</span>
+            </div>
+          </div>
+        </div>` : ''}
+      </div>
+    </div>
+
+    ${admin ? vTiendaAdminPanel() : ''}
+
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.8);margin:16px 0 8px">🎁 Catálogo de premios</div>
+    <div id="tienda-catalog">${vTiendaCatalogHtml(null)}</div>
+
+    ${!admin ? `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin:20px 0 8px;cursor:pointer" onclick="toggleTiendaMyOrders()">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.8)">🧾 Mis canjes</div>
+      <span style="font-size:12px;color:rgba(255,255,255,0.4)">${_storeMyOrdersOpen?'▲':'▼'}</span>
+    </div>
+    <div id="tienda-my-orders">${_storeMyOrdersOpen ? '<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.35);font-size:12px">Cargando…</div>' : ''}</div>` : `
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.8);margin:20px 0 8px">📦 Pedidos pendientes de entrega</div>
+    <div id="tienda-pending-orders"><div style="text-align:center;padding:14px;color:rgba(255,255,255,0.35);font-size:12px">Cargando…</div></div>`}
+  </div>`;
+}
+
+function vTiendaSetup() {
+  const admin = isAdmin();
+  if (!admin) {
+    const me = _bingoMe();
+    if (me && me.uid) {
+      _storeGetBalance(me.uid).then(({balance}) => {
+        const el = document.getElementById('tienda-balance');
+        if (el) el.textContent = balance;
+        // El botón "Canjear" de cada tarjeta depende del saldo real, así que una vez que
+        // llega, se vuelve a pintar el catálogo entero (mismo patrón que _ptsRefreshAutoSnapshot).
+        const cat = document.getElementById('tienda-catalog');
+        if (cat) cat.innerHTML = vTiendaCatalogHtml(balance);
+      });
+      if (_storeMyOrdersOpen) _storeLoadMyOrders(me.uid);
+    }
+  } else {
+    _storeLoadPendingOrders();
+  }
+}
+
+function vTiendaCatalogHtml(balance) {
+  const admin = isAdmin();
+  const items = (storeCatalog||[]).filter(i => admin ? true : i.active);
+  if (!items.length) return `<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.35);font-size:12px;font-style:italic">${admin?'Todavía no agregaste ningún premio.':'Tu profesor todavía no agregó premios a la tienda.'}</div>`;
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px">
+    ${items.map(i => {
+      const outOfStock = i.stock != null && i.stock <= 0;
+      const noBalance = balance != null && balance < i.cost;
+      const disabled = admin ? true : (balance == null || outOfStock || !i.active || noBalance);
+      let reason = '';
+      if (!admin) {
+        if (!i.active) reason = 'No disponible';
+        else if (outOfStock) reason = 'Sin stock';
+        else if (balance != null && noBalance) reason = `Te faltan ${i.cost - balance} pts`;
+      }
+      return `
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:6px;${!i.active?'opacity:0.5':''}">
+        <div style="font-size:30px;text-align:center">${i.icon||'🎁'}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;text-align:center;text-transform:uppercase">${i.name}</div>
+        ${i.desc ? `<div style="font-size:10px;color:rgba(255,255,255,0.5);text-align:center;line-height:1.4">${i.desc}</div>` : ''}
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;color:#39ff7a;text-align:center;margin-top:2px">${i.cost} pts</div>
+        ${i.stock != null ? `<div style="font-size:9px;color:${outOfStock?'#f87171':'rgba(255,255,255,0.4)'};text-align:center;font-weight:700">${outOfStock?'Sin stock':'Quedan '+i.stock}</div>` : ''}
+        ${!i.active ? `<div style="font-size:9px;color:#f87171;text-align:center;font-weight:700">Inactivo</div>` : ''}
+        ${admin
+          ? `<div style="display:flex;gap:4px;margin-top:6px">
+              <button onclick="tiendaAdminEditItem('${i.id}')" style="flex:1;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;border-radius:8px;padding:6px 4px;font-size:10px;font-weight:800;cursor:pointer">✏️ Editar</button>
+              <button onclick="tiendaAdminToggleActive('${i.id}')" style="flex:1;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;border-radius:8px;padding:6px 4px;font-size:10px;font-weight:800;cursor:pointer">${i.active?'🚫 Ocultar':'✅ Activar'}</button>
+              <button onclick="tiendaAdminDeleteItem('${i.id}')" style="border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.12);color:#f87171;border-radius:8px;padding:6px 8px;font-size:10px;font-weight:800;cursor:pointer">🗑️</button>
+            </div>`
+          : `<button ${disabled?'disabled':''} onclick="redeemStoreItem('${i.id}')" style="margin-top:6px;border:none;border-radius:8px;padding:8px 4px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;letter-spacing:0.05em;text-transform:uppercase;cursor:${disabled?'default':'pointer'};background:${disabled?'rgba(255,255,255,0.08)':'#39ff7a'};color:${disabled?'rgba(255,255,255,0.35)':'#08240f'}">${reason || 'Canjear'}</button>`}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function toggleTiendaMyOrders() {
+  _storeMyOrdersOpen = !_storeMyOrdersOpen;
+  go('tienda');
+}
+
+async function _storeLoadMyOrders(uid) {
+  const cont = document.getElementById('tienda-my-orders');
+  try {
+    const snap = await db.collection('storeOrders').where('uid','==',String(uid)).get();
+    const orders = [];
+    snap.forEach(d => orders.push({id:d.id, ...d.data()}));
+    orders.sort((a,b) => (b.redeemedAt?.toMillis?.()||0) - (a.redeemedAt?.toMillis?.()||0));
+    if (!cont) return;
+    if (!orders.length) { cont.innerHTML = '<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.3);font-size:11px;font-style:italic">Todavía no canjeaste ningún premio.</div>'; return; }
+    cont.innerHTML = orders.map(o => `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;margin-bottom:6px">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px">${o.itemName||'—'}</div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.4)">${o.cost} pts · ${o.redeemedAt?.toDate ? o.redeemedAt.toDate().toLocaleDateString('es-ES') : ''}</div>
+        </div>
+        <div style="font-size:11px;font-weight:800;color:${o.delivered?'#39ff7a':'#fbbf24'};white-space:nowrap">${o.delivered?'✅ Entregado':'⏳ Pendiente'}</div>
+      </div>`).join('');
+  } catch(e) { console.error('[tienda] mis canjes', e); if (cont) cont.innerHTML = '<div style="text-align:center;padding:10px;color:#f87171;font-size:11px">Error al cargar tus canjes.</div>'; }
+}
+
+async function _storeLoadPendingOrders() {
+  const cont = document.getElementById('tienda-pending-orders');
+  try {
+    const snap = await db.collection('storeOrders').where('delivered','==',false).get();
+    const orders = [];
+    snap.forEach(d => orders.push({id:d.id, ...d.data()}));
+    orders.sort((a,b) => (a.redeemedAt?.toMillis?.()||0) - (b.redeemedAt?.toMillis?.()||0));
+    if (!cont) return;
+    if (!orders.length) { cont.innerHTML = '<div style="text-align:center;padding:14px;color:rgba(255,255,255,0.3);font-size:11px;font-style:italic">No hay pedidos pendientes de entrega.</div>'; return; }
+    cont.innerHTML = orders.map(o => `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px;margin-bottom:6px">
+        <div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px">${o.itemName||'—'} <span style="opacity:0.5;font-weight:700">· ${o.studentName||'?'}</span></div>
+          <div style="font-size:9px;color:rgba(255,255,255,0.4)">${o.cost} pts · ${o.redeemedAt?.toDate ? o.redeemedAt.toDate().toLocaleDateString('es-ES') : ''}</div>
+        </div>
+        <button onclick="tiendaMarkDelivered('${o.id}')" style="border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.12);color:#39ff7a;border-radius:8px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap">✅ Marcar entregado</button>
+      </div>`).join('');
+  } catch(e) { console.error('[tienda] pendientes', e); if (cont) cont.innerHTML = '<div style="text-align:center;padding:10px;color:#f87171;font-size:11px">Error al cargar pedidos.</div>'; }
+}
+
+async function tiendaMarkDelivered(orderId) {
+  try {
+    await db.collection('storeOrders').doc(orderId).update({ delivered:true, deliveredAt: firebase.firestore.FieldValue.serverTimestamp() });
+    showToast('Pedido marcado como entregado.', 'success');
+    _storeLoadPendingOrders();
+  } catch(e) { console.error('[tienda] marcar entregado', e); showToast('No se pudo actualizar el pedido.'); }
+}
+
+// ── Panel de administración del catálogo (solo admin) ──────────────────────
+function vTiendaAdminPanel() {
+  return `
+  <div style="margin-bottom:10px">
+    <button onclick="toggleTiendaAdminPanel()" style="width:100%;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.7);border-radius:10px;padding:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer">
+      ${_storeAdminOpen ? '▲ Ocultar administración del catálogo' : '▼ Administrar catálogo'}
+    </button>
+    ${_storeAdminOpen ? `
+    <div style="margin-top:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px">
+      <button onclick="tiendaAdminAddItem()" style="width:100%;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.12);color:#39ff7a;border-radius:8px;padding:9px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer">➕ Agregar premio</button>
+      <div style="font-size:9px;color:rgba(255,255,255,0.35);margin-top:8px;line-height:1.5">Usa los botones ✏️/🚫/🗑️ en cada tarjeta del catálogo (abajo) para editar, activar/desactivar o eliminar un premio.</div>
+    </div>` : ''}
+  </div>`;
+}
+function toggleTiendaAdminPanel() { _storeAdminOpen = !_storeAdminOpen; go('tienda'); }
+
+function tiendaAdminAddItem() {
+  const name = (prompt('Nombre del premio:')||'').trim();
+  if (!name) return;
+  const cost = parseInt(prompt('Costo en puntos:', '100')||'', 10);
+  if (!Number.isFinite(cost) || cost <= 0) { showToast('Costo inválido.'); return; }
+  const desc = (prompt('Descripción (opcional):','')||'').trim();
+  const icon = (prompt('Ícono/emoji (opcional):','🎁')||'🎁').trim() || '🎁';
+  const stockRaw = (prompt('Stock disponible (déjalo vacío para ilimitado):','')||'').trim();
+  const stock = stockRaw === '' ? null : (Number.isFinite(parseInt(stockRaw,10)) ? Math.max(0,parseInt(stockRaw,10)) : null);
+  const newItem = { id: 'item_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6), name, desc, cost, stock, icon, active: true };
+  saveStoreCatalog(fresh => [...fresh, newItem]).then(() => { showToast('Premio agregado.','success'); if (currentView==='tienda') go('tienda'); });
+}
+function tiendaAdminEditItem(itemId) {
+  const item = (storeCatalog||[]).find(i => i.id === itemId);
+  if (!item) return;
+  const name = (prompt('Nombre del premio:', item.name)||'').trim();
+  if (!name) return;
+  const cost = parseInt(prompt('Costo en puntos:', String(item.cost))||'', 10);
+  if (!Number.isFinite(cost) || cost <= 0) { showToast('Costo inválido.'); return; }
+  const desc = (prompt('Descripción (opcional):', item.desc||'')||'').trim();
+  const icon = (prompt('Ícono/emoji (opcional):', item.icon||'🎁')||'🎁').trim() || '🎁';
+  const stockRaw = (prompt('Stock disponible (déjalo vacío para ilimitado):', item.stock==null?'':String(item.stock))||'').trim();
+  const stock = stockRaw === '' ? null : (Number.isFinite(parseInt(stockRaw,10)) ? Math.max(0,parseInt(stockRaw,10)) : null);
+  saveStoreCatalog(fresh => fresh.map(i => i.id===itemId ? {...i, name, desc, cost, stock, icon} : i))
+    .then(() => { showToast('Premio actualizado.','success'); if (currentView==='tienda') go('tienda'); });
+}
+function tiendaAdminToggleActive(itemId) {
+  saveStoreCatalog(fresh => fresh.map(i => i.id===itemId ? {...i, active: !i.active} : i))
+    .then(() => { showToast('Premio actualizado.','success'); if (currentView==='tienda') go('tienda'); });
+}
+function tiendaAdminDeleteItem(itemId) {
+  const item = (storeCatalog||[]).find(i => i.id === itemId);
+  if (!item) return;
+  if (!confirm(`¿Eliminar "${item.name}" del catálogo? Esta acción no se puede deshacer (el historial de canjes ya hechos no se ve afectado).`)) return;
+  saveStoreCatalog(fresh => fresh.filter(i => i.id !== itemId))
+    .then(() => { showToast('Premio eliminado.','success'); if (currentView==='tienda') go('tienda'); });
+}
 
 // ════════════════════════════════════════════════════════
 // VIEW: HORARIOS
@@ -12789,6 +13132,7 @@ REF.onSnapshot(doc => {
   pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
   taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
   prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
+  storeCatalog = Array.isArray(lms.storeCatalog) ? lms.storeCatalog : [];
   // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
   // Si por algún motivo llega doc.exists=false (no debería pasar en producción, pero es
   // la misma situación de riesgo que un error de red: variables locales en blanco), NO
