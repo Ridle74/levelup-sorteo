@@ -22375,22 +22375,11 @@ function _prepConfigHtml() {
     };
     // Sub-tab Activas/Vencidas para la lista plana de Mis Tareas (Mis Cursos)
     const _tSubTabMC = _prep.tareasSubTabMC || 'activas';
-    // Una tarea es "vencida" si tiene fecha de vencimiento pasada y aún no está completada;
-    // si ya está completada cuenta como "activa" independientemente de la fecha.
-    const _isVencidaMC = (t) => {
-      if (!t.dueAt) return false;
-      let _pctX;
-      if (t.exam) {
-        const _firstSkX = (t.skills||[]).find(sk=>BINGO_TOPICS[sk]&&!BINGO_TOPICS[sk].quiz) || (t.skills||[])[0];
-        const _attX = _taskLastAttempt(_firstSkX, true, t);
-        _pctX = _attX ? _attX.pct : 0;
-      } else {
-        const _attX = _taskLastAttempt(t.topic, false, t);
-        _pctX = _attX ? _attX.pct : 0;
-      }
-      const _doneX = _pctX >= 100;
-      return !_doneX && t.dueAt < (Date.now()/1000);
-    };
+    // Una tarea es "vencida" simplemente si ya pasó su fecha de vencimiento, esté o no
+    // completada — antes una tarea completada nunca pasaba a "Vencidas" sin importar la
+    // fecha, lo que hacía que tareas ya hechas pero con vencimiento pasado se quedaran
+    // mezcladas para siempre en "Activas".
+    const _isVencidaMC = (t) => !!t.dueAt && t.dueAt < (Date.now()/1000);
     let _countActivasMC = 0, _countVencidasMC = 0;
     _myTasks.forEach(t => { if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
     const _tSubBtnMC = (key, lbl, n) => `<button onclick="_prep.tareasSubTabMC='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTabMC===key?' sel':''}">${lbl} (${n})</button>`;
@@ -24105,14 +24094,17 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
     return { header: g.header, rows };
   }).filter(t=>t.rows.length);
 
-  // ---- "Actividades practicadas" (Sección II): TODO el historial, sin límite semanal.
-  // Restructurado a pedido del usuario ("me gusta la opción A aplicala"): una tabla POR CURSO (no
-  // una tabla combinada como en la Sección I), agrupada por Unidad (misma fila divisoria que
-  // Curso en la Sección I) y, dentro de cada unidad, por "grupo de habilidades + su cuestionario"
-  // (usando los srcKeys de cada cuestionario para saber qué habilidades componen su grupo),
-  // terminando con el examen de unidad. Lo no practicado se muestra igual, atenuado, como fila
-  // "pendiente", para que se vea el hueco en la secuencia.
-  const _histAssigned2 = hist.filter(_isAssignedCourseP);
+  // ---- "Actividades practicadas" (Sección II): SOLO la ventana del reporte (por defecto,
+  // los últimos 7 días / "la semana anterior" — mismo weekAgoSec que el resto del reporte).
+  // Antes usaba TODO el historial sin límite semanal (a pedido de un cambio anterior), pero eso
+  // hacía que la sección mostrara actividad de meses atrás bajo un reporte etiquetado "semanal",
+  // confundiendo qué se practicó realmente esta semana. Una tabla POR CURSO (no una tabla
+  // combinada como en la Sección I), agrupada por Unidad (misma fila divisoria que Curso en la
+  // Sección I) y, dentro de cada unidad, por "grupo de habilidades + su cuestionario" (usando los
+  // srcKeys de cada cuestionario para saber qué habilidades componen su grupo), terminando con el
+  // examen de unidad. Lo no practicado ESTA SEMANA no aparece (al no tener sesiones en la
+  // ventana, ni la unidad ni el curso se agregan a _activityCourseGroups).
+  const _histAssigned2 = hist.filter(_isAssignedCourseP).filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec);
   const _cleanQuizLbl = lbl => (lbl||'').replace(/^(Cuestionario\s*\d*\s*[–-]\s*|Examen\s*[–-]\s*)/i, '');
   const _pureUnitSkillsFor = uo => (uo.skills||[]).filter(_pureSkillFilter);
   // Estadísticas de una actividad (habilidad, cuestionario o examen) sobre TODO el historial
