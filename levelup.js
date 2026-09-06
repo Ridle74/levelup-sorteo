@@ -17,6 +17,13 @@ let _prepSideRanks = null;         // {topicKey: rank(1-based)} para sidebar Mis
 let _prepSideScores = null;        // {topicKey: finalScore con bonus de ranking} para sidebar
 let _prepSideRanksLoading = false;
 let _prepSideRanksUid = null;      // uid para invalidar cache si cambia usuario
+// Evita disparar _ptsRefreshAutoSnapshot más de una vez por (alumno, mes) en esta sesión de
+// pestaña — ver el disparo en _preparatePaneHtml, junto al badge "Puntos de <mes>".
+let _ptsBadgeAutoRefreshed = {};
+// Estado del modal "detalle de Puntos de <mes>" que se abre al hacer clic en el badge
+// "🎯 Puntos de <mes>" (ver _ptsOpenDetail / _ptsDetailModalHtml más abajo). null = cerrado.
+// {offset, student, loading, hist} cuando está abierto.
+let _ptsDetailModal = null;
 
 // ── URL Routing ─────────────────────────────────────────────────────────────────
 const _PREP_URL_NIVEL   = {p:'primaria',s:'secundaria',pr:'pre',u:'universitario'};
@@ -77,6 +84,15 @@ let _prepAdminHistLoading = false;
 let _prepAdminShowHist = false;
 let _prepAdminFilterUid = null;  // null = todos
 let _prepAdminExpandedId = null;
+// _prepAdminHistData son solo los 200 registros MÁS RECIENTES de TODO el colegio junto — un
+// alumno que no haya practicado hace poco (comparado con el resto) puede no aparecer ahí aunque
+// sí tenga historial propio real. Esto complementa esa lista: detecta alumnos con historial
+// propio que quedaron fuera del top-200, para que su etiqueta siga apareciendo, y carga su
+// historial individual bajo demanda solo cuando el admin hace clic en su etiqueta.
+let _prepAdminExtraUids = new Set();   // uids con historial propio confirmado, aunque no estén en el top-200
+let _prepAdminExtraChecking = false;
+let _prepAdminExtraHist = {};          // {uid: [entradas]} — historial individual ya cargado bajo demanda
+let _prepAdminExtraHistLoading = {};   // {uid: true} — evita pedir dos veces en simultáneo
 let _prepAdminReassignOpenId = null; // id de partida (prepHistory) con el selector de "asignar a alumno" abierto
 let _prepAdminReassignBusyId = null; // id de partida cuya reasignación está en curso (evita doble click)
 let _prepBackfillBusy = false; // evita doble click en "Corregir cuestionarios/exámenes ya asignados"
@@ -12489,6 +12505,345 @@ _SKILL_META['li1m_u3_b5']={ico:'📐',lbl:'Traducir enunciados en ecuaciones y r
 function _genLi1mU3_BQ3(){return _bqSrcPick(['li1m_u3_b5','li1m_u3_b6','li1m_u3_b7'],[_genLi1mU3_B5,_genLi1mU3_B6,_genLi1mU3_B7]);}
 _SKILL_META['li1m_u3_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Enunciados, combinado y reparto avanzado',qCount:15,gen:_genLi1mU3_BQ3,quiz:true,srcKeys:['li1m_u3_b5','li1m_u3_b6','li1m_u3_b7']};
 
+// Unidad 4: Escala, Perímetro y Área de Figuras Geométricas
+
+function _genLi1mU4_B1(){
+  return _i4gpick([
+    // Plantilla 1 — Nombre de polígonos según número de lados (3-6) (4 preguntas)
+    {_id:1,  q:'¿Cómo se llama el polígono de 3 lados?', a:'Triángulo', opts:_i4gshuf(['Triángulo','Cuadrilátero','Pentágono','Hexágono']), mc:true, ste:'Un polígono de 3 lados se llama triángulo.'},
+    {_id:2,  q:'¿Cómo se llama el polígono de 4 lados?', a:'Cuadrilátero', opts:_i4gshuf(['Cuadrilátero','Triángulo','Pentágono','Hexágono']), mc:true, ste:'Un polígono de 4 lados se llama cuadrilátero.'},
+    {_id:3,  q:'¿Cómo se llama el polígono de 5 lados?', a:'Pentágono', opts:_i4gshuf(['Pentágono','Cuadrilátero','Hexágono','Heptágono']), mc:true, ste:'Un polígono de 5 lados se llama pentágono.'},
+    {_id:4,  q:'¿Cómo se llama el polígono de 6 lados?', a:'Hexágono', opts:_i4gshuf(['Hexágono','Pentágono','Heptágono','Octágono']), mc:true, ste:'Un polígono de 6 lados se llama hexágono.'},
+    // Plantilla 2 — Nombre de polígonos según número de lados (7-10) (4 preguntas)
+    {_id:5,  q:'¿Cómo se llama el polígono de 7 lados?', a:'Heptágono', opts:_i4gshuf(['Heptágono','Hexágono','Octágono','Eneágono']), mc:true, ste:'Un polígono de 7 lados se llama heptágono.'},
+    {_id:6,  q:'¿Cómo se llama el polígono de 8 lados?', a:'Octágono', opts:_i4gshuf(['Octágono','Heptágono','Eneágono','Decágono']), mc:true, ste:'Un polígono de 8 lados se llama octágono.'},
+    {_id:7,  q:'¿Cómo se llama el polígono de 9 lados?', a:'Eneágono', opts:_i4gshuf(['Eneágono','Octágono','Decágono','Dodecágono']), mc:true, ste:'Un polígono de 9 lados se llama eneágono.'},
+    {_id:8,  q:'¿Cómo se llama el polígono de 10 lados?', a:'Decágono', opts:_i4gshuf(['Decágono','Eneágono','Dodecágono','Heptágono']), mc:true, ste:'Un polígono de 10 lados se llama decágono.'},
+    // Plantilla 3 — Número de lados según el nombre (4 preguntas)
+    {_id:9,  q:'¿Cuántos lados tiene un dodecágono?', a:'12', opts:_i4gshuf(['12','10','9','11']), mc:true, ste:'El prefijo "dodeca" indica 12 lados.'},
+    {_id:10, q:'¿Cuántos lados tiene un pentágono?', a:'5', opts:_i4gshuf(['5','4','6','7']), mc:true, ste:'El prefijo "penta" indica 5 lados.'},
+    {_id:11, q:'¿Cuántos lados tiene un octágono?', a:'8', opts:_i4gshuf(['8','7','9','6']), mc:true, ste:'El prefijo "octo" indica 8 lados.'},
+    {_id:12, q:'¿Cuántos lados tiene un heptágono?', a:'7', opts:_i4gshuf(['7','6','8','9']), mc:true, ste:'El prefijo "hepta" indica 7 lados.'},
+    // Plantilla 4 — Polígono regular vs irregular (4 preguntas)
+    {_id:13, q:'Un polígono cuyos lados y ángulos son todos iguales se llama...', a:'Polígono regular', opts:_i4gshuf(['Polígono regular','Polígono irregular','Polígono cóncavo','Polígono convexo']), mc:true, ste:'Cuando todos los lados y ángulos son iguales, el polígono es regular.'},
+    {_id:14, q:'Un triángulo tiene sus 3 lados de 5 cm y sus 3 ángulos iguales. ¿Qué tipo de polígono es?', a:'Regular', opts:_i4gshuf(['Regular','Irregular','Cóncavo','No es un polígono']), mc:true, ste:'Al tener todos los lados y ángulos iguales, es un polígono regular.'},
+    {_id:15, q:'Un cuadrilátero tiene lados de 3 cm, 4 cm, 3 cm y 5 cm. ¿Qué tipo de polígono es?', a:'Irregular', opts:_i4gshuf(['Irregular','Regular','Cóncavo convexo','Ninguno']), mc:true, ste:'Al tener lados de distinta medida, es un polígono irregular.'},
+    {_id:16, q:'¿Cómo se llama un polígono cuyos lados o ángulos NO son todos iguales?', a:'Polígono irregular', opts:_i4gshuf(['Polígono irregular','Polígono regular','Polígono cóncavo','Eneágono regular']), mc:true, ste:'Si al menos un lado o ángulo difiere, el polígono es irregular.'},
+    // Plantilla 5 — Polígono convexo vs cóncavo (4 preguntas)
+    {_id:17, q:'¿Cómo se llama un polígono en el que todos sus ángulos internos miden menos de 180°?', a:'Polígono convexo', opts:_i4gshuf(['Polígono convexo','Polígono cóncavo','Polígono irregular','Polígono regular']), mc:true, ste:'Si ningún ángulo interno supera 180°, el polígono es convexo.'},
+    {_id:18, q:'¿Cómo se llama un polígono que tiene al menos un ángulo interno mayor que 180°?', a:'Polígono cóncavo', opts:_i4gshuf(['Polígono cóncavo','Polígono convexo','Polígono regular','Pentágono']), mc:true, ste:'Si un ángulo interno mide más de 180°, el polígono es cóncavo.'},
+    {_id:19, q:'Un hexágono tiene todos sus ángulos internos menores que 180°. ¿Qué tipo de polígono es?', a:'Convexo', opts:_i4gshuf(['Convexo','Cóncavo','Irregular obligatoriamente','No tiene ángulos']), mc:true, ste:'Todos los ángulos menores a 180° indican un polígono convexo.'},
+    {_id:20, q:'Una figura en forma de estrella tiene un ángulo interno de 250°. ¿Qué tipo de polígono es?', a:'Cóncavo', opts:_i4gshuf(['Cóncavo','Convexo','Regular','Triángulo']), mc:true, ste:'Un ángulo interno mayor que 180° hace que el polígono sea cóncavo.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b1']={ico:'🔷',lbl:'Clasificación de polígonos según número de lados',qCount:4,gen:_genLi1mU4_B1,plantillas:['Nombres de polígonos (3 a 6 lados)','Nombres de polígonos (7 a 10 lados)','Número de lados según el nombre','Polígono regular e irregular','Polígono convexo y cóncavo']};
+
+function _genLi1mU4_B2(){
+  return _i4gpick([
+    // Plantilla 1 — Hallar medida real de un objeto usando una referencia (4 preguntas)
+    {_id:1,  q:'Una persona mide 1.60 m de altura real y en una foto mide 8 cm. Un muro en la misma foto mide 12 cm. ¿Cuál es la altura real del muro?', a:'2.40 m', opts:_i4gshuf(['2.40 m','1.92 m','2.00 m','3.00 m']), mc:true, ste:'Razón: 160 cm ÷ 8 cm = 20. Real del muro = 12 × 20 = 240 cm = 2.40 m.'},
+    {_id:2,  q:'Una persona mide 1.50 m de altura real y en una foto mide 5 cm. Un poste en la misma foto mide 4 cm. ¿Cuál es la altura real del poste?', a:'1.20 m', opts:_i4gshuf(['1.20 m','1.50 m','1.00 m','0.80 m']), mc:true, ste:'Razón: 150 cm ÷ 5 cm = 30. Real del poste = 4 × 30 = 120 cm = 1.20 m.'},
+    {_id:3,  q:'Una persona mide 1.80 m de altura real y en una foto mide 9 cm. Una puerta en la misma foto mide 7 cm. ¿Cuál es la altura real de la puerta?', a:'1.40 m', opts:_i4gshuf(['1.40 m','1.80 m','1.20 m','1.60 m']), mc:true, ste:'Razón: 180 cm ÷ 9 cm = 20. Real de la puerta = 7 × 20 = 140 cm = 1.40 m.'},
+    {_id:4,  q:'Una persona mide 1.40 m de altura real y en una foto mide 7 cm. Una ventana en la misma foto mide 15 cm. ¿Cuál es la altura real de la ventana?', a:'3.00 m', opts:_i4gshuf(['3.00 m','2.10 m','2.80 m','1.50 m']), mc:true, ste:'Razón: 140 cm ÷ 7 cm = 20. Real de la ventana = 15 × 20 = 300 cm = 3.00 m.'},
+    // Plantilla 2 — Hallar la medida en la foto conociendo la medida real (4 preguntas)
+    {_id:5,  q:'Una persona mide 1.60 m de altura real y 8 cm en la foto. Una puerta mide 2.00 m de altura real. ¿Cuánto medirá la puerta en la foto?', a:'10 cm', opts:_i4gshuf(['10 cm','8 cm','12 cm','16 cm']), mc:true, ste:'Razón: 160 cm ÷ 8 cm = 20. Medida en foto = 200 ÷ 20 = 10 cm.'},
+    {_id:6,  q:'Una persona mide 1.50 m de altura real y 5 cm en la foto. Un mueble mide 0.90 m de altura real. ¿Cuánto medirá el mueble en la foto?', a:'3 cm', opts:_i4gshuf(['3 cm','5 cm','6 cm','9 cm']), mc:true, ste:'Razón: 150 cm ÷ 5 cm = 30. Medida en foto = 90 ÷ 30 = 3 cm.'},
+    {_id:7,  q:'Una persona mide 1.80 m de altura real y 9 cm en la foto. Una columna mide 2.60 m de altura real. ¿Cuánto medirá la columna en la foto?', a:'13 cm', opts:_i4gshuf(['13 cm','9 cm','15 cm','20 cm']), mc:true, ste:'Razón: 180 cm ÷ 9 cm = 20. Medida en foto = 260 ÷ 20 = 13 cm.'},
+    {_id:8,  q:'Una persona mide 1.40 m de altura real y 7 cm en la foto. Un muro mide 3.60 m de altura real. ¿Cuánto medirá el muro en la foto?', a:'18 cm', opts:_i4gshuf(['18 cm','14 cm','20 cm','36 cm']), mc:true, ste:'Razón: 140 cm ÷ 7 cm = 20. Medida en foto = 360 ÷ 20 = 18 cm.'},
+    // Plantilla 3 — Escala de mapas: hallar la distancia real (4 preguntas)
+    {_id:9,  q:'En un mapa a escala 1:500, una distancia mide 3 cm. ¿Cuál es la distancia real?', a:'15 m', opts:_i4gshuf(['15 m','1.5 m','150 m','30 m']), mc:true, ste:'Real = 3 cm × 500 = 1500 cm = 15 m.'},
+    {_id:10, q:'En un mapa a escala 1:1000, una distancia mide 4 cm. ¿Cuál es la distancia real?', a:'40 m', opts:_i4gshuf(['40 m','4 m','400 m','10 m']), mc:true, ste:'Real = 4 cm × 1000 = 4000 cm = 40 m.'},
+    {_id:11, q:'En un mapa a escala 1:200, una distancia mide 6 cm. ¿Cuál es la distancia real?', a:'12 m', opts:_i4gshuf(['12 m','1.2 m','120 m','6 m']), mc:true, ste:'Real = 6 cm × 200 = 1200 cm = 12 m.'},
+    {_id:12, q:'En un mapa a escala 1:2000, una distancia mide 5 cm. ¿Cuál es la distancia real?', a:'100 m', opts:_i4gshuf(['100 m','10 m','1000 m','50 m']), mc:true, ste:'Real = 5 cm × 2000 = 10000 cm = 100 m.'},
+    // Plantilla 4 — Escala de mapas: hallar la distancia en el mapa (4 preguntas)
+    {_id:13, q:'En un mapa a escala 1:500, una distancia real es de 25 m. ¿Cuánto medirá en el mapa?', a:'5 cm', opts:_i4gshuf(['5 cm','25 cm','50 cm','2.5 cm']), mc:true, ste:'25 m = 2500 cm. Mapa = 2500 ÷ 500 = 5 cm.'},
+    {_id:14, q:'En un mapa a escala 1:1000, una distancia real es de 60 m. ¿Cuánto medirá en el mapa?', a:'6 cm', opts:_i4gshuf(['6 cm','60 cm','0.6 cm','16 cm']), mc:true, ste:'60 m = 6000 cm. Mapa = 6000 ÷ 1000 = 6 cm.'},
+    {_id:15, q:'En un mapa a escala 1:200, una distancia real es de 18 m. ¿Cuánto medirá en el mapa?', a:'9 cm', opts:_i4gshuf(['9 cm','18 cm','1.8 cm','90 cm']), mc:true, ste:'18 m = 1800 cm. Mapa = 1800 ÷ 200 = 9 cm.'},
+    {_id:16, q:'En un mapa a escala 1:2000, una distancia real es de 140 m. ¿Cuánto medirá en el mapa?', a:'7 cm', opts:_i4gshuf(['7 cm','14 cm','70 cm','0.7 cm']), mc:true, ste:'140 m = 14000 cm. Mapa = 14000 ÷ 2000 = 7 cm.'},
+    // Plantilla 5 — Problemas de razón y escala con referencia fotográfica (4 preguntas)
+    {_id:17, q:'En una foto, una persona de 1.60 m de altura real mide 4 cm, y un árbol mide 10 cm en la misma foto. ¿Cuál es la altura real del árbol?', a:'4 m', opts:_i4gshuf(['4 m','2.5 m','4.5 m','6 m']), mc:true, ste:'Razón: 160 cm ÷ 4 cm = 40. Real del árbol = 10 × 40 = 400 cm = 4 m.'},
+    {_id:18, q:'En una foto, una persona de 1.50 m de altura real mide 3 cm, y un poste mide 9 cm en la misma foto. ¿Cuál es la altura real del poste?', a:'4.5 m', opts:_i4gshuf(['4.5 m','3 m','5 m','2.7 m']), mc:true, ste:'Razón: 150 cm ÷ 3 cm = 50. Real del poste = 9 × 50 = 450 cm = 4.5 m.'},
+    {_id:19, q:'En una foto, una persona de 1.80 m de altura real mide 6 cm, y una puerta mide 7 cm en la misma foto. ¿Cuál es la altura real de la puerta?', a:'2.1 m', opts:_i4gshuf(['2.1 m','1.8 m','2.4 m','1.4 m']), mc:true, ste:'Razón: 180 cm ÷ 6 cm = 30. Real de la puerta = 7 × 30 = 210 cm = 2.1 m.'},
+    {_id:20, q:'En una foto, un niño de 1.20 m de altura real mide 4 cm, y una pared mide 11 cm en la misma foto. ¿Cuál es la altura real de la pared?', a:'3.3 m', opts:_i4gshuf(['3.3 m','2.2 m','4.4 m','1.2 m']), mc:true, ste:'Razón: 120 cm ÷ 4 cm = 30. Real de la pared = 11 × 30 = 330 cm = 3.3 m.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b2']={ico:'📏',lbl:'Escala y razón: hallar medidas reales',qCount:4,gen:_genLi1mU4_B2,plantillas:['Medida real usando una referencia','Medida en la foto conociendo lo real','Escala de mapas: hallar lo real','Escala de mapas: hallar en el mapa','Razón y escala con referencia fotográfica']};
+
+function _genLi1mU4_B3(){
+  return _i4gpick([
+    // Plantilla 1 — Perímetro del triángulo (4 preguntas)
+    {_id:1,  q:'Halla el perímetro de un triángulo equilátero de lado 7 cm.', a:'21 cm', opts:_i4gshuf(['21 cm','14 cm','49 cm','28 cm']), mc:true, ste:'P = 3 × 7 = 21 cm.'},
+    {_id:2,  q:'Un triángulo isósceles tiene lados de 8 cm, 8 cm y 5 cm. Halla su perímetro.', a:'21 cm', opts:_i4gshuf(['21 cm','16 cm','29 cm','13 cm']), mc:true, ste:'P = 8 + 8 + 5 = 21 cm.'},
+    {_id:3,  q:'Un triángulo escaleno tiene lados de 6 cm, 9 cm y 11 cm. Halla su perímetro.', a:'26 cm', opts:_i4gshuf(['26 cm','20 cm','17 cm','15 cm']), mc:true, ste:'P = 6 + 9 + 11 = 26 cm.'},
+    {_id:4,  q:'Halla el perímetro de un triángulo equilátero de lado 12 cm.', a:'36 cm', opts:_i4gshuf(['36 cm','24 cm','48 cm','144 cm']), mc:true, ste:'P = 3 × 12 = 36 cm.'},
+    // Plantilla 2 — Perímetro del cuadrado y rectángulo (4 preguntas)
+    {_id:5,  q:'Halla el perímetro de un cuadrado de lado 9 cm.', a:'36 cm', opts:_i4gshuf(['36 cm','18 cm','81 cm','27 cm']), mc:true, ste:'P = 4 × 9 = 36 cm.'},
+    {_id:6,  q:'Un rectángulo tiene 12 cm de largo y 7 cm de ancho. Halla su perímetro.', a:'38 cm', opts:_i4gshuf(['38 cm','19 cm','84 cm','40 cm']), mc:true, ste:'P = 2 × (12 + 7) = 2 × 19 = 38 cm.'},
+    {_id:7,  q:'Halla el perímetro de un cuadrado de lado 15 cm.', a:'60 cm', opts:_i4gshuf(['60 cm','30 cm','225 cm','45 cm']), mc:true, ste:'P = 4 × 15 = 60 cm.'},
+    {_id:8,  q:'Un rectángulo tiene 20 cm de largo y 13 cm de ancho. Halla su perímetro.', a:'66 cm', opts:_i4gshuf(['66 cm','33 cm','260 cm','46 cm']), mc:true, ste:'P = 2 × (20 + 13) = 2 × 33 = 66 cm.'},
+    // Plantilla 3 — Perímetro de polígonos regulares (4 preguntas)
+    {_id:9,  q:'Halla el perímetro de un pentágono regular de lado 6 cm.', a:'30 cm', opts:_i4gshuf(['30 cm','24 cm','36 cm','25 cm']), mc:true, ste:'P = 5 × 6 = 30 cm.'},
+    {_id:10, q:'Halla el perímetro de un hexágono regular de lado 5 cm.', a:'30 cm', opts:_i4gshuf(['30 cm','25 cm','35 cm','20 cm']), mc:true, ste:'P = 6 × 5 = 30 cm.'},
+    {_id:11, q:'Halla el perímetro de un heptágono regular de lado 4 cm.', a:'28 cm', opts:_i4gshuf(['28 cm','24 cm','32 cm','21 cm']), mc:true, ste:'P = 7 × 4 = 28 cm.'},
+    {_id:12, q:'Halla el perímetro de un octágono regular de lado 3 cm.', a:'24 cm', opts:_i4gshuf(['24 cm','21 cm','27 cm','16 cm']), mc:true, ste:'P = 8 × 3 = 24 cm.'},
+    // Plantilla 4 — Perímetro (longitud) de la circunferencia, respuesta EXACTA en términos de π (4 preguntas)
+    {_id:13, q:'Halla el perímetro (longitud) de una circunferencia de radio 5 cm. Deja tu respuesta en términos de π.', a:'10π cm', opts:_i4gshuf(['10π cm','5π cm','25π cm','20π cm']), mc:true, ste:'L = 2 × π × r = 2 × π × 5 = 10π cm. (No se reemplaza el valor de π: la respuesta queda exacta.)'},
+    {_id:14, q:'Halla el perímetro (longitud) de una circunferencia de diámetro 16 cm. Deja tu respuesta en términos de π.', a:'16π cm', opts:_i4gshuf(['16π cm','8π cm','32π cm','64π cm']), mc:true, ste:'L = π × d = π × 16 = 16π cm.'},
+    {_id:15, q:'Halla el perímetro (longitud) de una circunferencia de radio 7 cm. Deja tu respuesta en términos de π.', a:'14π cm', opts:_i4gshuf(['14π cm','7π cm','49π cm','28π cm']), mc:true, ste:'L = 2 × π × r = 2 × π × 7 = 14π cm.'},
+    {_id:16, q:'Halla el perímetro (longitud) de una circunferencia de diámetro 30 cm. Deja tu respuesta en términos de π.', a:'30π cm', opts:_i4gshuf(['30π cm','15π cm','60π cm','900π cm']), mc:true, ste:'L = π × d = π × 30 = 30π cm.'},
+    // Plantilla 5 — Perímetros con figuras irregulares y problemas inversos (4 preguntas)
+    {_id:17, q:'Un terreno pentagonal irregular tiene lados de 4 m, 6 m, 5 m, 7 m y 3 m. Halla su perímetro.', a:'25 m', opts:_i4gshuf(['25 m','21 m','28 m','20 m']), mc:true, ste:'P = 4 + 6 + 5 + 7 + 3 = 25 m.'},
+    {_id:18, q:'Un hexágono irregular tiene lados de 2 cm, 3 cm, 4 cm, 5 cm, 6 cm y 7 cm. Halla su perímetro.', a:'27 cm', opts:_i4gshuf(['27 cm','24 cm','30 cm','21 cm']), mc:true, ste:'P = 2 + 3 + 4 + 5 + 6 + 7 = 27 cm.'},
+    {_id:19, q:'Un cuadrilátero irregular tiene lados de 5 cm, 7 cm, 5 cm y 9 cm. Halla su perímetro.', a:'26 cm', opts:_i4gshuf(['26 cm','21 cm','30 cm','24 cm']), mc:true, ste:'P = 5 + 7 + 5 + 9 = 26 cm.'},
+    {_id:20, q:'Un triángulo tiene un perímetro de 40 cm. Dos de sus lados miden 15 cm y 12 cm. ¿Cuánto mide el tercer lado?', a:'13 cm', opts:_i4gshuf(['13 cm','15 cm','27 cm','3 cm']), mc:true, ste:'Tercer lado = 40 − 15 − 12 = 13 cm.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b3']={ico:'📐',lbl:'Perímetro de figuras geométricas',qCount:4,gen:_genLi1mU4_B3,plantillas:['Perímetro del triángulo','Perímetro del cuadrado y rectángulo','Perímetro de polígonos regulares','Longitud de la circunferencia','Perímetros irregulares y problemas inversos']};
+
+function _genLi1mU4_BQ1(){return _bqSrcPick(['li1m_u4_b1','li1m_u4_b2','li1m_u4_b3'],[_genLi1mU4_B1,_genLi1mU4_B2,_genLi1mU4_B3]);}
+_SKILL_META['li1m_u4_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Polígonos, escala y perímetro',qCount:15,gen:_genLi1mU4_BQ1,quiz:true,srcKeys:['li1m_u4_b1','li1m_u4_b2','li1m_u4_b3']};
+
+function _genLi1mU4_B4(){
+  return _i4gpick([
+    // Plantilla 1 — Área del cuadrado (4 preguntas)
+    {_id:1,  q:'Halla el área de un cuadrado de lado 6 cm.', a:'36 cm²', opts:_i4gshuf(['36 cm²','24 cm²','12 cm²','18 cm²']), mc:true, ste:'A = 6² = 36 cm².'},
+    {_id:2,  q:'Halla el área de un cuadrado de lado 9 cm.', a:'81 cm²', opts:_i4gshuf(['81 cm²','36 cm²','18 cm²','27 cm²']), mc:true, ste:'A = 9² = 81 cm².'},
+    {_id:3,  q:'Halla el área de un cuadrado de lado 12 cm.', a:'144 cm²', opts:_i4gshuf(['144 cm²','48 cm²','24 cm²','96 cm²']), mc:true, ste:'A = 12² = 144 cm².'},
+    {_id:4,  q:'Halla el área de un cuadrado de lado 15 cm.', a:'225 cm²', opts:_i4gshuf(['225 cm²','60 cm²','30 cm²','150 cm²']), mc:true, ste:'A = 15² = 225 cm².'},
+    // Plantilla 2 — Área del rectángulo (4 preguntas)
+    {_id:5,  q:'Halla el área de un rectángulo de 10 cm de largo y 4 cm de ancho.', a:'40 cm²', opts:_i4gshuf(['40 cm²','28 cm²','14 cm²','20 cm²']), mc:true, ste:'A = 10 × 4 = 40 cm².'},
+    {_id:6,  q:'Halla el área de un rectángulo de 15 cm de largo y 6 cm de ancho.', a:'90 cm²', opts:_i4gshuf(['90 cm²','42 cm²','21 cm²','45 cm²']), mc:true, ste:'A = 15 × 6 = 90 cm².'},
+    {_id:7,  q:'Halla el área de un rectángulo de 20 cm de largo y 8 cm de ancho.', a:'160 cm²', opts:_i4gshuf(['160 cm²','56 cm²','28 cm²','80 cm²']), mc:true, ste:'A = 20 × 8 = 160 cm².'},
+    {_id:8,  q:'Halla el área de un rectángulo de 25 cm de largo y 5 cm de ancho.', a:'125 cm²', opts:_i4gshuf(['125 cm²','60 cm²','30 cm²','100 cm²']), mc:true, ste:'A = 25 × 5 = 125 cm².'},
+    // Plantilla 3 — Área del triángulo (4 preguntas)
+    {_id:9,  q:'Halla el área de un triángulo de base 10 cm y altura 6 cm.', a:'30 cm²', opts:_i4gshuf(['30 cm²','60 cm²','16 cm²','48 cm²']), mc:true, ste:'A = (10 × 6) ÷ 2 = 60 ÷ 2 = 30 cm².'},
+    {_id:10, q:'Halla el área de un triángulo de base 14 cm y altura 5 cm.', a:'35 cm²', opts:_i4gshuf(['35 cm²','70 cm²','19 cm²','40 cm²']), mc:true, ste:'A = (14 × 5) ÷ 2 = 70 ÷ 2 = 35 cm².'},
+    {_id:11, q:'Halla el área de un triángulo de base 16 cm y altura 9 cm.', a:'72 cm²', opts:_i4gshuf(['72 cm²','144 cm²','25 cm²','80 cm²']), mc:true, ste:'A = (16 × 9) ÷ 2 = 144 ÷ 2 = 72 cm².'},
+    {_id:12, q:'Halla el área de un triángulo de base 20 cm y altura 7 cm.', a:'70 cm²', opts:_i4gshuf(['70 cm²','140 cm²','27 cm²','98 cm²']), mc:true, ste:'A = (20 × 7) ÷ 2 = 140 ÷ 2 = 70 cm².'},
+    // Plantilla 4 — Problemas inversos: hallar la dimensión faltante (4 preguntas)
+    {_id:13, q:'El área de un cuadrado es 49 cm². ¿Cuánto mide su lado?', a:'7 cm', opts:_i4gshuf(['7 cm','24.5 cm','14 cm','49 cm']), mc:true, ste:'Lado = √49 = 7 cm.'},
+    {_id:14, q:'El área de un rectángulo es 72 cm² y su largo es 12 cm. ¿Cuánto mide su ancho?', a:'6 cm', opts:_i4gshuf(['6 cm','60 cm','84 cm','12 cm']), mc:true, ste:'Ancho = 72 ÷ 12 = 6 cm.'},
+    {_id:15, q:'El área de un triángulo es 54 cm² y su base es 12 cm. ¿Cuánto mide su altura?', a:'9 cm', opts:_i4gshuf(['9 cm','4.5 cm','18 cm','66 cm']), mc:true, ste:'Altura = (2 × 54) ÷ 12 = 108 ÷ 12 = 9 cm.'},
+    {_id:16, q:'El área de un cuadrado es 100 cm². ¿Cuánto mide su lado?', a:'10 cm', opts:_i4gshuf(['10 cm','50 cm','25 cm','20 cm']), mc:true, ste:'Lado = √100 = 10 cm.'},
+    // Plantilla 5 — Problemas con contexto (4 preguntas)
+    {_id:17, q:'Un terreno cuadrado tiene 8 m de lado. ¿Cuál es su área?', a:'64 m²', opts:_i4gshuf(['64 m²','32 m²','16 m²','24 m²']), mc:true, ste:'A = 8² = 64 m².'},
+    {_id:18, q:'Una sala rectangular mide 6 m de largo y 4 m de ancho. ¿Cuál es su área?', a:'24 m²', opts:_i4gshuf(['24 m²','20 m²','10 m²','12 m²']), mc:true, ste:'A = 6 × 4 = 24 m².'},
+    {_id:19, q:'Un triángulo tiene 18 cm de base y 4 cm de altura. ¿Cuál es su área?', a:'36 cm²', opts:_i4gshuf(['36 cm²','72 cm²','22 cm²','44 cm²']), mc:true, ste:'A = (18 × 4) ÷ 2 = 72 ÷ 2 = 36 cm².'},
+    {_id:20, q:'El área de un rectángulo es 96 m² y su ancho es 8 m. ¿Cuánto mide su largo?', a:'12 m', opts:_i4gshuf(['12 m','88 m','104 m','16 m']), mc:true, ste:'Largo = 96 ÷ 8 = 12 m.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b4']={ico:'🔲',lbl:'Área del cuadrado, rectángulo y triángulo',qCount:4,gen:_genLi1mU4_B4,plantillas:['Área del cuadrado','Área del rectángulo','Área del triángulo','Problemas inversos: dimensión faltante','Problemas con contexto']};
+
+function _genLi1mU4_B5(){
+  return _i4gpick([
+    // Plantilla 1 — Área del paralelogramo (4 preguntas)
+    {_id:1,  q:'Halla el área de un paralelogramo de base 12 cm y altura 5 cm.', a:'60 cm²', opts:_i4gshuf(['60 cm²','17 cm²','34 cm²','120 cm²']), mc:true, ste:'A = 12 × 5 = 60 cm².'},
+    {_id:2,  q:'Halla el área de un paralelogramo de base 9 cm y altura 8 cm.', a:'72 cm²', opts:_i4gshuf(['72 cm²','17 cm²','34 cm²','144 cm²']), mc:true, ste:'A = 9 × 8 = 72 cm².'},
+    {_id:3,  q:'Halla el área de un paralelogramo de base 15 cm y altura 6 cm.', a:'90 cm²', opts:_i4gshuf(['90 cm²','21 cm²','42 cm²','180 cm²']), mc:true, ste:'A = 15 × 6 = 90 cm².'},
+    {_id:4,  q:'Halla el área de un paralelogramo de base 20 cm y altura 7 cm.', a:'140 cm²', opts:_i4gshuf(['140 cm²','27 cm²','54 cm²','280 cm²']), mc:true, ste:'A = 20 × 7 = 140 cm².'},
+    // Plantilla 2 — Área del trapecio (4 preguntas)
+    {_id:5,  q:'Un trapecio tiene base mayor 10 cm, base menor 6 cm y altura 4 cm. Halla su área.', a:'32 cm²', opts:_i4gshuf(['32 cm²','64 cm²','40 cm²','16 cm²']), mc:true, ste:'A = ((10+6)/2) × 4 = 8 × 4 = 32 cm².'},
+    {_id:6,  q:'Un trapecio tiene base mayor 14 cm, base menor 8 cm y altura 5 cm. Halla su área.', a:'55 cm²', opts:_i4gshuf(['55 cm²','110 cm²','70 cm²','22 cm²']), mc:true, ste:'A = ((14+8)/2) × 5 = 11 × 5 = 55 cm².'},
+    {_id:7,  q:'Un trapecio tiene base mayor 18 cm, base menor 10 cm y altura 6 cm. Halla su área.', a:'84 cm²', opts:_i4gshuf(['84 cm²','168 cm²','98 cm²','42 cm²']), mc:true, ste:'A = ((18+10)/2) × 6 = 14 × 6 = 84 cm².'},
+    {_id:8,  q:'Un trapecio tiene base mayor 20 cm, base menor 12 cm y altura 3 cm. Halla su área.', a:'48 cm²', opts:_i4gshuf(['48 cm²','96 cm²','60 cm²','16 cm²']), mc:true, ste:'A = ((20+12)/2) × 3 = 16 × 3 = 48 cm².'},
+    // Plantilla 3 — Área del círculo, respuesta EXACTA en términos de π (4 preguntas)
+    {_id:9,  q:'Halla el área de un círculo de radio 5 cm. Deja tu respuesta en términos de π.', a:'25π cm²', opts:_i4gshuf(['25π cm²','10π cm²','50π cm²','5π cm²']), mc:true, ste:'A = π × r² = π × 5² = 25π cm². (No se reemplaza el valor de π: la respuesta queda exacta.)'},
+    {_id:10, q:'Halla el área de un círculo de diámetro 20 cm. Deja tu respuesta en términos de π.', a:'100π cm²', opts:_i4gshuf(['100π cm²','20π cm²','50π cm²','200π cm²']), mc:true, ste:'Radio = 20 ÷ 2 = 10 cm. A = π × r² = π × 10² = 100π cm².'},
+    {_id:11, q:'Halla el área de un círculo de radio 4 cm. Deja tu respuesta en términos de π.', a:'16π cm²', opts:_i4gshuf(['16π cm²','8π cm²','4π cm²','32π cm²']), mc:true, ste:'A = π × r² = π × 4² = 16π cm².'},
+    {_id:12, q:'Halla el área de un círculo de diámetro 12 cm. Deja tu respuesta en términos de π.', a:'36π cm²', opts:_i4gshuf(['36π cm²','12π cm²','18π cm²','72π cm²']), mc:true, ste:'Radio = 12 ÷ 2 = 6 cm. A = π × r² = π × 6² = 36π cm².'},
+    // Plantilla 4 — Problemas inversos y con diámetro (4 preguntas)
+    {_id:13, q:'El área de un paralelogramo es 96 cm² y su base es 12 cm. ¿Cuánto mide su altura?', a:'8 cm', opts:_i4gshuf(['8 cm','12 cm','84 cm','108 cm']), mc:true, ste:'Altura = 96 ÷ 12 = 8 cm.'},
+    {_id:14, q:'Un trapecio tiene área 75 cm², base mayor 12 cm y base menor 8 cm. ¿Cuánto mide su altura?', a:'7.5 cm', opts:_i4gshuf(['7.5 cm','10 cm','15 cm','5 cm']), mc:true, ste:'((12+8)/2) = 10. Altura = 75 ÷ 10 = 7.5 cm.'},
+    {_id:15, q:'Halla el área de un círculo de diámetro 8 cm. Deja tu respuesta en términos de π.', a:'16π cm²', opts:_i4gshuf(['16π cm²','8π cm²','32π cm²','64π cm²']), mc:true, ste:'Radio = 8 ÷ 2 = 4 cm. A = π × 4² = 16π cm².'},
+    {_id:16, q:'El área de un paralelogramo es 140 cm² y su altura es 7 cm. ¿Cuánto mide su base?', a:'20 cm', opts:_i4gshuf(['20 cm','133 cm','147 cm','7 cm']), mc:true, ste:'Base = 140 ÷ 7 = 20 cm.'},
+    // Plantilla 5 — Problemas con contexto (4 preguntas)
+    {_id:17, q:'Un terreno con forma de paralelogramo tiene base 25 m y altura 10 m. Halla su área.', a:'250 m²', opts:_i4gshuf(['250 m²','35 m²','70 m²','125 m²']), mc:true, ste:'A = 25 × 10 = 250 m².'},
+    {_id:18, q:'Un trapecio tiene bases de 16 cm y 24 cm, y altura 10 cm. Halla su área.', a:'200 cm²', opts:_i4gshuf(['200 cm²','400 cm²','240 cm²','100 cm²']), mc:true, ste:'A = ((16+24)/2) × 10 = 20 × 10 = 200 cm².'},
+    {_id:19, q:'Una plaza circular tiene radio 20 m. Halla su área. Deja tu respuesta en términos de π.', a:'400π m²', opts:_i4gshuf(['400π m²','40π m²','200π m²','800π m²']), mc:true, ste:'A = π × r² = π × 20² = 400π m².'},
+    {_id:20, q:'Un jardín trapezoidal tiene bases de 6 m y 10 m, y altura 5 m. Halla su área.', a:'40 m²', opts:_i4gshuf(['40 m²','80 m²','30 m²','16 m²']), mc:true, ste:'A = ((6+10)/2) × 5 = 8 × 5 = 40 m².'},
+  ]);
+}
+_SKILL_META['li1m_u4_b5']={ico:'⭕',lbl:'Área del paralelogramo, trapecio y círculo',qCount:4,gen:_genLi1mU4_B5,plantillas:['Área del paralelogramo','Área del trapecio','Área del círculo (en términos de π)','Problemas inversos y con diámetro','Problemas con contexto']};
+
+function _genLi1mU4_B7(){ // Hallar la base mayor o base menor de un trapecio (dado el área y la otra base)
+  return _i4gpick([
+  {_id:1,  q:'Un trapecio tiene área 60 cm², altura 5 cm y base menor 8 cm. ¿Cuánto mide su base mayor?',a:'16 cm',opts:_i4gshuf(['16 cm','12 cm','8 cm','24 cm']),mc:true,ste:'A = ((B+b)/2)×h → 60 = ((B+8)/2)×5 → (B+8)/2 = 12 → B+8 = 24 → B = 16 cm.'},
+  {_id:2,  q:'Un trapecio tiene área 42 cm², altura 6 cm y base menor 5 cm. ¿Cuánto mide su base mayor?',a:'9 cm',opts:_i4gshuf(['9 cm','7 cm','14 cm','4 cm']),mc:true,ste:'42 = ((B+5)/2)×6 → (B+5)/2 = 7 → B+5 = 14 → B = 9 cm.'},
+  {_id:3,  q:'Un trapecio tiene área 90 cm², altura 9 cm y base menor 12 cm. ¿Cuánto mide su base mayor?',a:'8 cm',opts:_i4gshuf(['8 cm','10 cm','20 cm','2 cm']),mc:true,ste:'90 = ((B+12)/2)×9 → (B+12)/2 = 10 → B+12 = 20 → B = 8 cm.'},
+  {_id:4,  q:'Un trapecio tiene área 55 cm², altura 5 cm y base menor 10 cm. ¿Cuánto mide su base mayor?',a:'12 cm',opts:_i4gshuf(['12 cm','11 cm','22 cm','2 cm']),mc:true,ste:'55 = ((B+10)/2)×5 → (B+10)/2 = 11 → B+10 = 22 → B = 12 cm.'},
+  {_id:5,  q:'Un trapecio tiene área 36 cm², altura 4 cm y base mayor 11 cm. ¿Cuánto mide su base menor?',a:'7 cm',opts:_i4gshuf(['7 cm','9 cm','4 cm','18 cm']),mc:true,ste:'A = ((B+b)/2)×h → 36 = ((11+b)/2)×4 → (11+b)/2 = 9 → 11+b = 18 → b = 7 cm.'},
+  {_id:6,  q:'Un trapecio tiene área 63 cm², altura 7 cm y base mayor 14 cm. ¿Cuánto mide su base menor?',a:'4 cm',opts:_i4gshuf(['4 cm','9 cm','5 cm','18 cm']),mc:true,ste:'63 = ((14+b)/2)×7 → (14+b)/2 = 9 → 14+b = 18 → b = 4 cm.'},
+  {_id:7,  q:'Un trapecio tiene área 48 cm², altura 6 cm y base mayor 10 cm. ¿Cuánto mide su base menor?',a:'6 cm',opts:_i4gshuf(['6 cm','8 cm','4 cm','16 cm']),mc:true,ste:'48 = ((10+b)/2)×6 → (10+b)/2 = 8 → 10+b = 16 → b = 6 cm.'},
+  {_id:8,  q:'Un trapecio tiene área 80 cm², altura 8 cm y base mayor 15 cm. ¿Cuánto mide su base menor?',a:'5 cm',opts:_i4gshuf(['5 cm','10 cm','20 cm','25 cm']),mc:true,ste:'80 = ((15+b)/2)×8 → (15+b)/2 = 10 → 15+b = 20 → b = 5 cm.'},
+  {_id:9,  q:'Un trapecio tiene área 100 cm², bases mayor y menor cuya suma se necesita hallar, y altura 10 cm. ¿Cuánto suman la base mayor y la base menor?',a:'20 cm',opts:_i4gshuf(['20 cm','10 cm','40 cm','200 cm']),mc:true,ste:'A = ((B+b)/2)×h → 100 = ((B+b)/2)×10 → (B+b)/2 = 10 → B+b = 20 cm.'},
+  {_id:10, q:'Un trapecio tiene área 72 cm² y altura 8 cm. ¿Cuánto suman su base mayor y su base menor?',a:'18 cm',opts:_i4gshuf(['18 cm','9 cm','36 cm','64 cm']),mc:true,ste:'72 = ((B+b)/2)×8 → (B+b)/2 = 9 → B+b = 18 cm.'},
+  {_id:11, q:'V/F: Si conoces el área, la altura y una de las bases de un trapecio, siempre puedes hallar la base que falta despejando la fórmula A=((B+b)/2)×h.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Con esos tres datos hay una sola incógnita en la fórmula, así que siempre se puede despejar.'},
+  {_id:12, q:'V/F: En la fórmula del área del trapecio A=((B+b)/2)×h, si se conoce A y h pero NO ninguna de las bases, se puede hallar cada base por separado sin más información.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Solo se puede hallar la SUMA (B+b), no cada base por separado, porque hay dos incógnitas y una sola ecuación.'},
+  {_id:13, q:'Un trapecio tiene área 24 cm², altura 4 cm y base menor 4 cm. ¿Cuánto mide su base mayor?',a:'8 cm',opts:_i4gshuf(['8 cm','6 cm','12 cm','4 cm']),mc:true,ste:'24 = ((B+4)/2)×4 → (B+4)/2 = 6 → B+4 = 12 → B = 8 cm.'},
+  {_id:14, q:'Un trapecio tiene área 108 cm², altura 9 cm y base mayor 16 cm. ¿Cuánto mide su base menor?',a:'8 cm',opts:_i4gshuf(['8 cm','12 cm','24 cm','4 cm']),mc:true,ste:'108 = ((16+b)/2)×9 → (16+b)/2 = 12 → 16+b = 24 → b = 8 cm.'},
+  {_id:15, q:'Un jardín con forma de trapecio tiene área 65 m², altura 10 m y base menor 5 m. ¿Cuánto mide su base mayor?',a:'8 m',opts:_i4gshuf(['8 m','13 m','6.5 m','3 m']),mc:true,ste:'65 = ((B+5)/2)×10 → (B+5)/2 = 6.5 → B+5 = 13 → B = 8 m.'},
+  {_id:16, q:'Un lote con forma de trapecio tiene área 84 m², altura 12 m y base mayor 9 m. ¿Cuánto mide su base menor?',a:'5 m',opts:_i4gshuf(['5 m','7 m','14 m','3 m']),mc:true,ste:'84 = ((9+b)/2)×12 → (9+b)/2 = 7 → 9+b = 14 → b = 5 m.'},
+  {_id:17, q:'Un trapecio tiene base mayor 20 cm, área 130 cm² y altura 10 cm. ¿Cuánto mide su base menor?',a:'6 cm',opts:_i4gshuf(['6 cm','13 cm','26 cm','14 cm']),mc:true,ste:'130 = ((20+b)/2)×10 → (20+b)/2 = 13 → 20+b = 26 → b = 6 cm.'},
+  {_id:18, q:'Un trapecio tiene base menor 7 cm, área 66 cm² y altura 6 cm. ¿Cuánto mide su base mayor?',a:'15 cm',opts:_i4gshuf(['15 cm','11 cm','22 cm','4 cm']),mc:true,ste:'66 = ((B+7)/2)×6 → (B+7)/2 = 11 → B+7 = 22 → B = 15 cm.'},
+  {_id:19, q:'Una mesa con forma de trapecio tiene área 45 cm², altura 5 cm y base mayor 13 cm. ¿Cuánto mide su base menor?',a:'5 cm',opts:_i4gshuf(['5 cm','9 cm','18 cm','4 cm']),mc:true,ste:'45 = ((13+b)/2)×5 → (13+b)/2 = 9 → 13+b = 18 → b = 5 cm.'},
+  {_id:20, q:'Un puente con forma de trapecio tiene área 154 m², altura 14 m y base menor 9 m. ¿Cuánto mide su base mayor?',a:'13 m',opts:_i4gshuf(['13 m','11 m','22 m','4 m']),mc:true,ste:'154 = ((B+9)/2)×14 → (B+9)/2 = 11 → B+9 = 22 → B = 13 m.'},
+  // Plantilla 6 — Hallar la ALTURA de un trapecio dadas el área, la base mayor y la base menor (4 preguntas)
+  {_id:21, q:'Un trapecio tiene área 56 cm², base mayor 10 cm y base menor 4 cm. ¿Cuánto mide su altura?',a:'8 cm',opts:_i4gshuf(['8 cm','7 cm','14 cm','4 cm']),mc:true,ste:'A = ((B+b)/2)×h → 56 = ((10+4)/2)×h = 7×h → h = 56 ÷ 7 = 8 cm.'},
+  {_id:22, q:'Un trapecio tiene área 99 cm², base mayor 15 cm y base menor 7 cm. ¿Cuánto mide su altura?',a:'9 cm',opts:_i4gshuf(['9 cm','11 cm','18 cm','4.5 cm']),mc:true,ste:'99 = ((15+7)/2)×h = 11×h → h = 99 ÷ 11 = 9 cm.'},
+  {_id:23, q:'Un trapecio tiene área 70 cm², base mayor 12 cm y base menor 8 cm. ¿Cuánto mide su altura?',a:'7 cm',opts:_i4gshuf(['7 cm','10 cm','14 cm','3.5 cm']),mc:true,ste:'70 = ((12+8)/2)×h = 10×h → h = 70 ÷ 10 = 7 cm.'},
+  {_id:24, q:'Un trapecio tiene área 40 cm², base mayor 9 cm y base menor 7 cm. ¿Cuánto mide su altura?',a:'5 cm',opts:_i4gshuf(['5 cm','8 cm','10 cm','2.5 cm']),mc:true,ste:'40 = ((9+7)/2)×h = 8×h → h = 40 ÷ 8 = 5 cm.'},
+  {_id:25, q:'Un techo con forma de trapecio tiene área 168 m², base mayor 20 m y base menor 8 m. ¿Cuánto mide su altura?',a:'12 m',opts:_i4gshuf(['12 m','14 m','24 m','6 m']),mc:true,ste:'168 = ((20+8)/2)×h = 14×h → h = 168 ÷ 14 = 12 m.'},
+  {_id:26, q:'Un jardín trapezoidal tiene área 45 cm², base mayor 8 cm y base menor 4 cm. ¿Cuánto mide su altura?',a:'7.5 cm',opts:_i4gshuf(['7.5 cm','6 cm','15 cm','3.75 cm']),mc:true,ste:'45 = ((8+4)/2)×h = 6×h → h = 45 ÷ 6 = 7.5 cm.'},
+  {_id:27, q:'V/F: Para hallar la altura de un trapecio a partir del área y ambas bases, primero se calcula ((B+b)/2) y luego se divide el área entre ese resultado.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'De A=((B+b)/2)×h se despeja h = A ÷ ((B+b)/2).'},
+  ]);
+}
+_SKILL_META['li1m_u4_b7']={ico:'📏',lbl:'Trapecio: hallar la base mayor, la base menor o la altura',qCount:4,gen:_genLi1mU4_B7,plantillas:['Hallar la base mayor dada el área, la altura y la base menor','Hallar la base menor dada el área, la altura y la base mayor','Hallar la suma de ambas bases dadas el área y la altura','Hallar la altura dadas el área, la base mayor y la base menor','V/F sobre qué se puede y qué no se puede despejar de la fórmula','Problemas con contexto (jardines, lotes, mesas, puentes, techos)']};
+
+function _genLi1mU4_B8(){ // Hallar el radio de un círculo dado su área o su circunferencia (en términos de π)
+  return _i4gpick([
+  {_id:1,  q:'La circunferencia de un círculo mide 12π cm. ¿Cuál es su radio?',a:'6 cm',opts:_i4gshuf(['6 cm','12 cm','24 cm','3 cm']),mc:true,ste:'L = 2πr → 12π = 2πr → r = 12π ÷ 2π = 6 cm.'},
+  {_id:2,  q:'La circunferencia de un círculo mide 20π cm. ¿Cuál es su radio?',a:'10 cm',opts:_i4gshuf(['10 cm','20 cm','40 cm','5 cm']),mc:true,ste:'20π = 2πr → r = 20π ÷ 2π = 10 cm.'},
+  {_id:3,  q:'La circunferencia de un círculo mide 18π cm. ¿Cuál es su radio?',a:'9 cm',opts:_i4gshuf(['9 cm','18 cm','36 cm','4.5 cm']),mc:true,ste:'18π = 2πr → r = 18π ÷ 2π = 9 cm.'},
+  {_id:4,  q:'La circunferencia de un círculo mide 30π cm. ¿Cuál es su diámetro?',a:'30 cm',opts:_i4gshuf(['30 cm','15 cm','60 cm','9 cm']),mc:true,ste:'L = πd → 30π = πd → d = 30 cm.'},
+  {_id:5,  q:'La circunferencia de un círculo mide 24π cm. ¿Cuál es su diámetro?',a:'24 cm',opts:_i4gshuf(['24 cm','12 cm','48 cm','8 cm']),mc:true,ste:'24π = πd → d = 24 cm.'},
+  {_id:6,  q:'El área de un círculo es 49π cm². ¿Cuál es su radio?',a:'7 cm',opts:_i4gshuf(['7 cm','49 cm','14 cm','24.5 cm']),mc:true,ste:'A = πr² → 49π = πr² → r² = 49 → r = √49 = 7 cm.'},
+  {_id:7,  q:'El área de un círculo es 81π cm². ¿Cuál es su radio?',a:'9 cm',opts:_i4gshuf(['9 cm','81 cm','18 cm','40.5 cm']),mc:true,ste:'81π = πr² → r² = 81 → r = √81 = 9 cm.'},
+  {_id:8,  q:'El área de un círculo es 100π cm². ¿Cuál es su radio?',a:'10 cm',opts:_i4gshuf(['10 cm','100 cm','20 cm','50 cm']),mc:true,ste:'100π = πr² → r² = 100 → r = √100 = 10 cm.'},
+  {_id:9,  q:'El área de un círculo es 144π cm². ¿Cuál es su diámetro?',a:'24 cm',opts:_i4gshuf(['24 cm','12 cm','48 cm','72 cm']),mc:true,ste:'144π = πr² → r² = 144 → r = √144 = 12 cm → diámetro = 2×12 = 24 cm.'},
+  {_id:10, q:'El área de un círculo es 25π cm². ¿Cuál es su diámetro?',a:'10 cm',opts:_i4gshuf(['10 cm','5 cm','20 cm','25 cm']),mc:true,ste:'25π = πr² → r² = 25 → r = 5 cm → diámetro = 2×5 = 10 cm.'},
+  {_id:11, q:'V/F: Si la circunferencia de un círculo es kπ (con k un número), su radio mide k/2.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'L = 2πr = kπ → 2r = k → r = k/2.'},
+  {_id:12, q:'V/F: Si el área de un círculo es kπ (con k un número), su radio mide k/2.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'A = πr² = kπ → r² = k → r = √k, NO k/2. Esa fórmula (÷2) es para la circunferencia, no para el área.'},
+  {_id:13, q:'V/F: Para hallar el radio a partir del área de un círculo, se debe sacar raíz cuadrada; para hallarlo a partir de la circunferencia, se debe dividir entre 2.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Del área: r=√(A/π). De la circunferencia: r=L/(2π). Son procedimientos distintos porque una fórmula usa r² y la otra usa r.'},
+  {_id:14, q:'Una fuente circular tiene una circunferencia de 16π m. ¿Cuál es su radio?',a:'8 m',opts:_i4gshuf(['8 m','16 m','32 m','4 m']),mc:true,ste:'16π = 2πr → r = 16π ÷ 2π = 8 m.'},
+  {_id:15, q:'Una plaza circular tiene un área de 64π m². ¿Cuál es su radio?',a:'8 m',opts:_i4gshuf(['8 m','64 m','16 m','32 m']),mc:true,ste:'64π = πr² → r² = 64 → r = √64 = 8 m.'},
+  {_id:16, q:'Una rueda tiene un área de 36π cm². ¿Cuál es su diámetro?',a:'12 cm',opts:_i4gshuf(['12 cm','6 cm','18 cm','36 cm']),mc:true,ste:'36π = πr² → r² = 36 → r = 6 cm → diámetro = 2×6 = 12 cm.'},
+  {_id:17, q:'Un aro tiene una circunferencia de 22π cm. ¿Cuál es su radio?',a:'11 cm',opts:_i4gshuf(['11 cm','22 cm','44 cm','5.5 cm']),mc:true,ste:'22π = 2πr → r = 22π ÷ 2π = 11 cm.'},
+  {_id:18, q:'Una piscina circular tiene un área de 121π m². ¿Cuál es su radio?',a:'11 m',opts:_i4gshuf(['11 m','121 m','22 m','60.5 m']),mc:true,ste:'121π = πr² → r² = 121 → r = √121 = 11 m.'},
+  {_id:19, q:'Un reloj circular tiene una circunferencia de 26π cm. ¿Cuál es su diámetro?',a:'26 cm',opts:_i4gshuf(['26 cm','13 cm','52 cm','6.5 cm']),mc:true,ste:'26π = πd → d = 26 cm.'},
+  {_id:20, q:'Un plato circular tiene un área de 4π cm². ¿Cuál es su radio?',a:'2 cm',opts:_i4gshuf(['2 cm','4 cm','8 cm','1 cm']),mc:true,ste:'4π = πr² → r² = 4 → r = √4 = 2 cm.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b8']={ico:'🎯',lbl:'Círculo: hallar el radio dado el área o la circunferencia',qCount:4,gen:_genLi1mU4_B8,plantillas:['Hallar el radio dada la circunferencia (en términos de π)','Hallar el diámetro dada la circunferencia','Hallar el radio dada el área (en términos de π)','V/F sobre las fórmulas inversas (÷2 vs. raíz cuadrada)','Problemas con contexto (fuentes, ruedas, piscinas, platos)']};
+
+function _genLi1mU4_BQ3(){return _bqSrcPick(['li1m_u4_b7','li1m_u4_b8'],[_genLi1mU4_B7,_genLi1mU4_B8]);}
+_SKILL_META['li1m_u4_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Bases del Trapecio y Radio del Círculo',qCount:15,gen:_genLi1mU4_BQ3,quiz:true,srcKeys:['li1m_u4_b7','li1m_u4_b8']};
+
+function _genLi1mU4_B9(){ // Cuadrado y rectángulo: hallar el lado, el largo o el ancho
+  return _i4gpick([
+  {_id:1,  q:'El perímetro de un cuadrado es 28 cm. ¿Cuánto mide su lado?',a:'7 cm',opts:_i4gshuf(['7 cm','14 cm','4 cm','24 cm']),mc:true,ste:'Lado = P ÷ 4 = 28 ÷ 4 = 7 cm.'},
+  {_id:2,  q:'El perímetro de un cuadrado es 44 cm. ¿Cuánto mide su lado?',a:'11 cm',opts:_i4gshuf(['11 cm','22 cm','4 cm','40 cm']),mc:true,ste:'Lado = 44 ÷ 4 = 11 cm.'},
+  {_id:3,  q:'El perímetro de un cuadrado es 60 cm. ¿Cuánto mide su lado?',a:'15 cm',opts:_i4gshuf(['15 cm','30 cm','4 cm','56 cm']),mc:true,ste:'Lado = 60 ÷ 4 = 15 cm.'},
+  {_id:4,  q:'El perímetro de un cuadrado es 100 cm. ¿Cuánto mide su lado?',a:'25 cm',opts:_i4gshuf(['25 cm','50 cm','4 cm','96 cm']),mc:true,ste:'Lado = 100 ÷ 4 = 25 cm.'},
+  {_id:5,  q:'El área de un cuadrado es 64 cm². ¿Cuánto mide su lado?',a:'8 cm',opts:_i4gshuf(['8 cm','32 cm','16 cm','4 cm']),mc:true,ste:'Lado = √64 = 8 cm.'},
+  {_id:6,  q:'El área de un cuadrado es 121 cm². ¿Cuánto mide su lado?',a:'11 cm',opts:_i4gshuf(['11 cm','60.5 cm','22 cm','13 cm']),mc:true,ste:'Lado = √121 = 11 cm.'},
+  {_id:7,  q:'El área de un cuadrado es 169 cm². ¿Cuánto mide su lado?',a:'13 cm',opts:_i4gshuf(['13 cm','84.5 cm','26 cm','12 cm']),mc:true,ste:'Lado = √169 = 13 cm.'},
+  {_id:8,  q:'El área de un cuadrado es 225 cm². ¿Cuánto mide su lado?',a:'15 cm',opts:_i4gshuf(['15 cm','112.5 cm','30 cm','14 cm']),mc:true,ste:'Lado = √225 = 15 cm.'},
+  {_id:9,  q:'El perímetro de un rectángulo es 36 cm y su largo es 12 cm. ¿Cuánto mide su ancho?',a:'6 cm',opts:_i4gshuf(['6 cm','18 cm','24 cm','12 cm']),mc:true,ste:'Semiperímetro = 36÷2 = 18. Ancho = 18 − 12 = 6 cm.'},
+  {_id:10, q:'El perímetro de un rectángulo es 50 cm y su largo es 15 cm. ¿Cuánto mide su ancho?',a:'10 cm',opts:_i4gshuf(['10 cm','25 cm','35 cm','15 cm']),mc:true,ste:'Semiperímetro = 50÷2 = 25. Ancho = 25 − 15 = 10 cm.'},
+  {_id:11, q:'El perímetro de un rectángulo es 64 cm y su ancho es 14 cm. ¿Cuánto mide su largo?',a:'18 cm',opts:_i4gshuf(['18 cm','32 cm','50 cm','14 cm']),mc:true,ste:'Semiperímetro = 64÷2 = 32. Largo = 32 − 14 = 18 cm.'},
+  {_id:12, q:'El perímetro de un rectángulo es 90 cm y su ancho es 20 cm. ¿Cuánto mide su largo?',a:'25 cm',opts:_i4gshuf(['25 cm','45 cm','70 cm','20 cm']),mc:true,ste:'Semiperímetro = 90÷2 = 45. Largo = 45 − 20 = 25 cm.'},
+  {_id:13, q:'El área de un rectángulo es 48 cm² y su largo es 8 cm. ¿Cuánto mide su ancho?',a:'6 cm',opts:_i4gshuf(['6 cm','40 cm','56 cm','384 cm']),mc:true,ste:'Ancho = 48 ÷ 8 = 6 cm.'},
+  {_id:14, q:'El área de un rectángulo es 126 cm² y su largo es 14 cm. ¿Cuánto mide su ancho?',a:'9 cm',opts:_i4gshuf(['9 cm','112 cm','140 cm','5 cm']),mc:true,ste:'Ancho = 126 ÷ 14 = 9 cm.'},
+  {_id:15, q:'El área de un rectángulo es 200 cm² y su ancho es 10 cm. ¿Cuánto mide su largo?',a:'20 cm',opts:_i4gshuf(['20 cm','190 cm','210 cm','2000 cm']),mc:true,ste:'Largo = 200 ÷ 10 = 20 cm.'},
+  {_id:16, q:'El área de un rectángulo es 175 cm² y su ancho es 7 cm. ¿Cuánto mide su largo?',a:'25 cm',opts:_i4gshuf(['25 cm','168 cm','182 cm','1225 cm']),mc:true,ste:'Largo = 175 ÷ 7 = 25 cm.'},
+  {_id:17, q:'Un terreno cuadrado tiene un perímetro de 80 m. ¿Cuánto mide cada lado?',a:'20 m',opts:_i4gshuf(['20 m','40 m','4 m','76 m']),mc:true,ste:'Lado = 80 ÷ 4 = 20 m.'},
+  {_id:18, q:'Una sala rectangular tiene un área de 54 m² y su ancho es 6 m. ¿Cuánto mide su largo?',a:'9 m',opts:_i4gshuf(['9 m','48 m','60 m','324 m']),mc:true,ste:'Largo = 54 ÷ 6 = 9 m.'},
+  {_id:19, q:'V/F: Para hallar el lado de un cuadrado a partir de su área, se debe sacar raíz cuadrada.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Como A=lado², despejar el lado significa hacer lado=√A.'},
+  {_id:20, q:'V/F: Para hallar el largo de un rectángulo a partir de su perímetro (conociendo el ancho), basta con dividir el perímetro entre 2.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Hay que dividir el perímetro entre 2 para obtener el SEMIPERÍMETRO (largo+ancho), y luego restar el ancho para obtener el largo.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b9']={ico:'🔲',lbl:'Cuadrado y rectángulo: hallar el lado, el largo o el ancho',qCount:4,gen:_genLi1mU4_B9,plantillas:['Hallar el lado de un cuadrado dado su perímetro','Hallar el lado de un cuadrado dado su área','Hallar el largo o ancho de un rectángulo dado su perímetro','Hallar el largo o ancho de un rectángulo dado su área','Problemas con contexto']};
+
+function _genLi1mU4_B10(){ // Triángulo: hallar la base o la altura
+  return _i4gpick([
+  {_id:1,  q:'Un triángulo tiene área 40 cm² y altura 8 cm. ¿Cuánto mide su base?',a:'10 cm',opts:_i4gshuf(['10 cm','5 cm','20 cm','320 cm']),mc:true,ste:'Base = (2 × A) ÷ h = (2 × 40) ÷ 8 = 80 ÷ 8 = 10 cm.'},
+  {_id:2,  q:'Un triángulo tiene área 54 cm² y altura 9 cm. ¿Cuánto mide su base?',a:'12 cm',opts:_i4gshuf(['12 cm','6 cm','24 cm','486 cm']),mc:true,ste:'Base = (2 × 54) ÷ 9 = 108 ÷ 9 = 12 cm.'},
+  {_id:3,  q:'Un triángulo tiene área 45 cm² y altura 5 cm. ¿Cuánto mide su base?',a:'18 cm',opts:_i4gshuf(['18 cm','9 cm','36 cm','225 cm']),mc:true,ste:'Base = (2 × 45) ÷ 5 = 90 ÷ 5 = 18 cm.'},
+  {_id:4,  q:'Un triángulo tiene área 48 cm² y altura 6 cm. ¿Cuánto mide su base?',a:'16 cm',opts:_i4gshuf(['16 cm','8 cm','32 cm','288 cm']),mc:true,ste:'Base = (2 × 48) ÷ 6 = 96 ÷ 6 = 16 cm.'},
+  {_id:5,  q:'Un triángulo tiene área 60 cm² y base 15 cm. ¿Cuánto mide su altura?',a:'8 cm',opts:_i4gshuf(['8 cm','4 cm','16 cm','450 cm']),mc:true,ste:'Altura = (2 × A) ÷ b = (2 × 60) ÷ 15 = 120 ÷ 15 = 8 cm.'},
+  {_id:6,  q:'Un triángulo tiene área 84 cm² y base 12 cm. ¿Cuánto mide su altura?',a:'14 cm',opts:_i4gshuf(['14 cm','7 cm','28 cm','504 cm']),mc:true,ste:'Altura = (2 × 84) ÷ 12 = 168 ÷ 12 = 14 cm.'},
+  {_id:7,  q:'Un triángulo tiene área 100 cm² y base 20 cm. ¿Cuánto mide su altura?',a:'10 cm',opts:_i4gshuf(['10 cm','5 cm','20 cm','1000 cm']),mc:true,ste:'Altura = (2 × 100) ÷ 20 = 200 ÷ 20 = 10 cm.'},
+  {_id:8,  q:'Un triángulo tiene área 39 cm² y base 13 cm. ¿Cuánto mide su altura?',a:'6 cm',opts:_i4gshuf(['6 cm','3 cm','12 cm','253.5 cm']),mc:true,ste:'Altura = (2 × 39) ÷ 13 = 78 ÷ 13 = 6 cm.'},
+  {_id:9,  q:'V/F: Para hallar la base de un triángulo a partir del área, se debe multiplicar el área por 2 y dividir entre la altura.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Como A=(b×h)÷2, despejar la base da b=(2×A)÷h.'},
+  {_id:10, q:'V/F: La fórmula despejada para la altura de un triángulo es h = A × 2 × b (se multiplica por la base, no se divide).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La fórmula correcta es h = (2 × A) ÷ b: se DIVIDE entre la base, no se multiplica.'},
+  {_id:11, q:'Un triángulo tiene área 32 cm² y base 8 cm. ¿Cuánto mide su altura?',a:'8 cm',opts:_i4gshuf(['8 cm','4 cm','16 cm','256 cm']),mc:true,ste:'Altura = (2 × 32) ÷ 8 = 64 ÷ 8 = 8 cm.'},
+  {_id:12, q:'Un triángulo tiene área 27 cm² y altura 6 cm. ¿Cuánto mide su base?',a:'9 cm',opts:_i4gshuf(['9 cm','4.5 cm','18 cm','162 cm']),mc:true,ste:'Base = (2 × 27) ÷ 6 = 54 ÷ 6 = 9 cm.'},
+  {_id:13, q:'Un triángulo tiene área 63 cm² y altura 7 cm. ¿Cuánto mide su base?',a:'18 cm',opts:_i4gshuf(['18 cm','9 cm','36 cm','441 cm']),mc:true,ste:'Base = (2 × 63) ÷ 7 = 126 ÷ 7 = 18 cm.'},
+  {_id:14, q:'Un triángulo tiene área 20 cm² y altura 4 cm. ¿Cuánto mide su base?',a:'10 cm',opts:_i4gshuf(['10 cm','5 cm','20 cm','80 cm']),mc:true,ste:'Base = (2 × 20) ÷ 4 = 40 ÷ 4 = 10 cm.'},
+  {_id:15, q:'Un terreno triangular tiene área 150 m² y su base mide 25 m. ¿Cuánto mide su altura?',a:'12 m',opts:_i4gshuf(['12 m','6 m','24 m','3750 m']),mc:true,ste:'Altura = (2 × 150) ÷ 25 = 300 ÷ 25 = 12 m.'},
+  {_id:16, q:'Una vela triangular tiene área 21 m² y su altura mide 6 m. ¿Cuánto mide su base?',a:'7 m',opts:_i4gshuf(['7 m','3.5 m','14 m','126 m']),mc:true,ste:'Base = (2 × 21) ÷ 6 = 42 ÷ 6 = 7 m.'},
+  {_id:17, q:'Un triángulo tiene área 44 cm² y base 11 cm. ¿Cuánto mide su altura?',a:'8 cm',opts:_i4gshuf(['8 cm','4 cm','16 cm','484 cm']),mc:true,ste:'Altura = (2 × 44) ÷ 11 = 88 ÷ 11 = 8 cm.'},
+  {_id:18, q:'Un triángulo tiene área 65 cm² y altura 10 cm. ¿Cuánto mide su base?',a:'13 cm',opts:_i4gshuf(['13 cm','6.5 cm','26 cm','650 cm']),mc:true,ste:'Base = (2 × 65) ÷ 10 = 130 ÷ 10 = 13 cm.'},
+  {_id:19, q:'Un techo triangular tiene área 36 m² y base 9 m. ¿Cuánto mide su altura?',a:'8 m',opts:_i4gshuf(['8 m','4 m','16 m','324 m']),mc:true,ste:'Altura = (2 × 36) ÷ 9 = 72 ÷ 9 = 8 m.'},
+  {_id:20, q:'Un cartel triangular tiene área 52 cm² y altura 8 cm. ¿Cuánto mide su base?',a:'13 cm',opts:_i4gshuf(['13 cm','6.5 cm','26 cm','416 cm']),mc:true,ste:'Base = (2 × 52) ÷ 8 = 104 ÷ 8 = 13 cm.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b10']={ico:'🔺',lbl:'Triángulo: hallar la base o la altura',qCount:4,gen:_genLi1mU4_B10,plantillas:['Hallar la base de un triángulo dada el área y la altura','Hallar la altura de un triángulo dada el área y la base','V/F sobre despejar la fórmula A=(b×h)/2','Problemas con techos, velas y carteles triangulares','Problemas con terrenos triangulares']};
+
+function _genLi1mU4_B11(){ // Paralelogramo: hallar la base o la altura
+  return _i4gpick([
+  {_id:1,  q:'Un paralelogramo tiene área 96 cm² y altura 8 cm. ¿Cuánto mide su base?',a:'12 cm',opts:_i4gshuf(['12 cm','24 cm','6 cm','768 cm']),mc:true,ste:'Base = A ÷ h = 96 ÷ 8 = 12 cm.'},
+  {_id:2,  q:'Un paralelogramo tiene área 72 cm² y altura 9 cm. ¿Cuánto mide su base?',a:'8 cm',opts:_i4gshuf(['8 cm','16 cm','4 cm','648 cm']),mc:true,ste:'Base = 72 ÷ 9 = 8 cm.'},
+  {_id:3,  q:'Un paralelogramo tiene área 150 cm² y altura 10 cm. ¿Cuánto mide su base?',a:'15 cm',opts:_i4gshuf(['15 cm','30 cm','7.5 cm','1500 cm']),mc:true,ste:'Base = 150 ÷ 10 = 15 cm.'},
+  {_id:4,  q:'Un paralelogramo tiene área 88 cm² y altura 11 cm. ¿Cuánto mide su base?',a:'8 cm',opts:_i4gshuf(['8 cm','16 cm','4 cm','968 cm']),mc:true,ste:'Base = 88 ÷ 11 = 8 cm.'},
+  {_id:5,  q:'Un paralelogramo tiene área 126 cm² y altura 9 cm. ¿Cuánto mide su base?',a:'14 cm',opts:_i4gshuf(['14 cm','28 cm','7 cm','1134 cm']),mc:true,ste:'Base = 126 ÷ 9 = 14 cm.'},
+  {_id:6,  q:'Un paralelogramo tiene área 54 cm² y altura 6 cm. ¿Cuánto mide su base?',a:'9 cm',opts:_i4gshuf(['9 cm','18 cm','4.5 cm','324 cm']),mc:true,ste:'Base = 54 ÷ 6 = 9 cm.'},
+  {_id:7,  q:'Un paralelogramo tiene área 140 cm² y base 20 cm. ¿Cuánto mide su altura?',a:'7 cm',opts:_i4gshuf(['7 cm','14 cm','3.5 cm','2800 cm']),mc:true,ste:'Altura = A ÷ b = 140 ÷ 20 = 7 cm.'},
+  {_id:8,  q:'Un paralelogramo tiene área 108 cm² y base 12 cm. ¿Cuánto mide su altura?',a:'9 cm',opts:_i4gshuf(['9 cm','18 cm','4.5 cm','1296 cm']),mc:true,ste:'Altura = 108 ÷ 12 = 9 cm.'},
+  {_id:9,  q:'Un paralelogramo tiene área 175 cm² y base 25 cm. ¿Cuánto mide su altura?',a:'7 cm',opts:_i4gshuf(['7 cm','14 cm','3.5 cm','4375 cm']),mc:true,ste:'Altura = 175 ÷ 25 = 7 cm.'},
+  {_id:10, q:'Un paralelogramo tiene área 117 cm² y base 13 cm. ¿Cuánto mide su altura?',a:'9 cm',opts:_i4gshuf(['9 cm','18 cm','4.5 cm','1521 cm']),mc:true,ste:'Altura = 117 ÷ 13 = 9 cm.'},
+  {_id:11, q:'Un paralelogramo tiene área 91 cm² y base 13 cm. ¿Cuánto mide su altura?',a:'7 cm',opts:_i4gshuf(['7 cm','14 cm','3.5 cm','1183 cm']),mc:true,ste:'Altura = 91 ÷ 13 = 7 cm.'},
+  {_id:12, q:'Un paralelogramo tiene área 64 cm² y base 8 cm. ¿Cuánto mide su altura?',a:'8 cm',opts:_i4gshuf(['8 cm','16 cm','4 cm','512 cm']),mc:true,ste:'Altura = 64 ÷ 8 = 8 cm.'},
+  {_id:13, q:'Un paralelogramo tiene área 200 cm² y altura 10 cm. ¿Cuánto mide su base?',a:'20 cm',opts:_i4gshuf(['20 cm','40 cm','10 cm','2000 cm']),mc:true,ste:'Base = 200 ÷ 10 = 20 cm.'},
+  {_id:14, q:'Un paralelogramo tiene área 45 cm² y altura 5 cm. ¿Cuánto mide su base?',a:'9 cm',opts:_i4gshuf(['9 cm','18 cm','4.5 cm','225 cm']),mc:true,ste:'Base = 45 ÷ 5 = 9 cm.'},
+  {_id:15, q:'V/F: La fórmula del área del paralelogramo es A=b×h, la misma estructura que la del rectángulo (largo×ancho).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'En ambos casos el área es el producto de dos dimensiones perpendiculares entre sí (base y altura, o largo y ancho).'},
+  {_id:16, q:'V/F: Para hallar la altura de un paralelogramo a partir del área, se debe dividir el área entre la base.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Como A=b×h, despejar la altura da h=A÷b.'},
+  {_id:17, q:'V/F: Un triángulo con la misma base y la misma altura que un paralelogramo tiene el DOBLE de área que ese paralelogramo.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es al revés: el triángulo tiene la MITAD del área del paralelogramo (A_triángulo=(b×h)/2, mientras que A_paralelogramo=b×h).'},
+  {_id:18, q:'Un jardín con forma de paralelogramo tiene área 180 m² y su base mide 15 m. ¿Cuánto mide su altura?',a:'12 m',opts:_i4gshuf(['12 m','24 m','6 m','2700 m']),mc:true,ste:'Altura = 180 ÷ 15 = 12 m.'},
+  {_id:19, q:'Una vela de barco con forma de paralelogramo tiene área 49 m² y su altura mide 7 m. ¿Cuánto mide su base?',a:'7 m',opts:_i4gshuf(['7 m','14 m','3.5 m','343 m']),mc:true,ste:'Base = 49 ÷ 7 = 7 m.'},
+  {_id:20, q:'Un paralelogramo tiene área 165 cm² y altura 15 cm. ¿Cuánto mide su base?',a:'11 cm',opts:_i4gshuf(['11 cm','22 cm','5.5 cm','2475 cm']),mc:true,ste:'Base = 165 ÷ 15 = 11 cm.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b11']={ico:'▱',lbl:'Paralelogramo: hallar la base o la altura',qCount:4,gen:_genLi1mU4_B11,plantillas:['Hallar la base de un paralelogramo dada el área y la altura','Hallar la altura de un paralelogramo dada el área y la base','V/F sobre despejar la fórmula A=b×h','Comparación con la fórmula del triángulo (mitad de área)','Problemas con jardines y velas de barco']};
+
+function _genLi1mU4_BQ4(){return _bqSrcPick(['li1m_u4_b9','li1m_u4_b10','li1m_u4_b11'],[_genLi1mU4_B9,_genLi1mU4_B10,_genLi1mU4_B11]);}
+_SKILL_META['li1m_u4_bq4']={ico:'⚡',lbl:'Cuestionario 4 – Elementos Faltantes del Cuadrado, Rectángulo, Triángulo y Paralelogramo',qCount:15,gen:_genLi1mU4_BQ4,quiz:true,srcKeys:['li1m_u4_b9','li1m_u4_b10','li1m_u4_b11']};
+
+function _genLi1mU4_B6(){
+  return _i4gpick([
+    // Plantilla 1 — Escala + perímetro real de un triángulo equilátero (4 preguntas)
+    {_id:1,  q:'Una estudiante mide 1.60 m de altura real y en su foto mide 8 cm. En la misma foto, un triángulo equilátero tallado en una piedra tiene lados de 3 cm. ¿Cuál es el perímetro REAL del triángulo?', a:'1.8 m', opts:_i4gshuf(['1.8 m','0.9 m','1.2 m','2.4 m']), mc:true, ste:'Razón = 160÷8 = 20. Lado real = 3×20 = 60 cm. Perímetro real = 3×60 = 180 cm = 1.8 m.'},
+    {_id:2,  q:'Una estudiante mide 1.50 m de altura real y en su foto mide 5 cm. En la misma foto, un triángulo equilátero grabado en un muro tiene lados de 4 cm. ¿Cuál es el perímetro REAL del triángulo?', a:'3.6 m', opts:_i4gshuf(['3.6 m','1.2 m','2.4 m','4.8 m']), mc:true, ste:'Razón = 150÷5 = 30. Lado real = 4×30 = 120 cm. Perímetro real = 3×120 = 360 cm = 3.6 m.'},
+    {_id:3,  q:'Un estudiante mide 1.80 m de altura real y en su foto mide 9 cm. En la misma foto, un triángulo equilátero labrado en piedra tiene lados de 7 cm. ¿Cuál es el perímetro REAL del triángulo?', a:'4.2 m', opts:_i4gshuf(['4.2 m','1.4 m','2.1 m','8.4 m']), mc:true, ste:'Razón = 180÷9 = 20. Lado real = 7×20 = 140 cm. Perímetro real = 3×140 = 420 cm = 4.2 m.'},
+    {_id:4,  q:'Una estudiante mide 1.60 m de altura real y en su foto mide 8 cm. En la misma foto, un triángulo equilátero tallado en un muro tiene lados de 9 cm. ¿Cuál es el perímetro REAL del triángulo?', a:'5.4 m', opts:_i4gshuf(['5.4 m','1.8 m','2.7 m','10.8 m']), mc:true, ste:'Razón = 160÷8 = 20. Lado real = 9×20 = 180 cm. Perímetro real = 3×180 = 540 cm = 5.4 m.'},
+    // Plantilla 2 — Escala + área real de un cuadrado (4 preguntas)
+    {_id:5,  q:'Un estudiante mide 1.60 m de altura real y en su foto mide 8 cm. En la misma foto, una piedra cuadrada tallada tiene 4 cm de lado. ¿Cuál es el área REAL de la piedra?', a:'0.64 m²', opts:_i4gshuf(['0.64 m²','0.8 m²','1.6 m²','0.32 m²']), mc:true, ste:'Razón = 160÷8 = 20. Lado real = 4×20 = 80 cm = 0.8 m. Área real = 0.8² = 0.64 m².'},
+    {_id:6,  q:'Una estudiante mide 1.50 m de altura real y en su foto mide 5 cm. En la misma foto, un bloque cuadrado tiene 3 cm de lado. ¿Cuál es el área REAL del bloque?', a:'0.81 m²', opts:_i4gshuf(['0.81 m²','0.9 m²','1.8 m²','0.45 m²']), mc:true, ste:'Razón = 150÷5 = 30. Lado real = 3×30 = 90 cm = 0.9 m. Área real = 0.9² = 0.81 m².'},
+    {_id:7,  q:'Un estudiante mide 1.80 m de altura real y en su foto mide 9 cm. En la misma foto, una losa cuadrada tiene 5 cm de lado. ¿Cuál es el área REAL de la losa?', a:'1 m²', opts:_i4gshuf(['1 m²','2 m²','0.5 m²','1.5 m²']), mc:true, ste:'Razón = 180÷9 = 20. Lado real = 5×20 = 100 cm = 1 m. Área real = 1² = 1 m².'},
+    {_id:8,  q:'Una estudiante mide 1.50 m de altura real y en su foto mide 6 cm. En la misma foto, una piedra cuadrada tiene 6 cm de lado. ¿Cuál es el área REAL de la piedra?', a:'2.25 m²', opts:_i4gshuf(['2.25 m²','1.5 m²','3 m²','1 m²']), mc:true, ste:'Razón = 150÷6 = 25. Lado real = 6×25 = 150 cm = 1.5 m. Área real = 1.5² = 2.25 m².'},
+    // Plantilla 3 — Escala + perímetro real de un rectángulo (4 preguntas)
+    {_id:9,  q:'Un estudiante mide 1.60 m de altura real y en su foto mide 8 cm. En la misma foto, un bloque rectangular mide 6 cm de largo y 4 cm de ancho. ¿Cuál es el perímetro REAL del bloque?', a:'4 m', opts:_i4gshuf(['4 m','2 m','8 m','6 m']), mc:true, ste:'Razón = 160÷8 = 20. Largo real = 1.2 m, ancho real = 0.8 m. Perímetro = 2×(1.2+0.8) = 4 m.'},
+    {_id:10, q:'Una estudiante mide 1.50 m de altura real y en su foto mide 5 cm. En la misma foto, un bloque rectangular mide 5 cm de largo y 3 cm de ancho. ¿Cuál es el perímetro REAL del bloque?', a:'4.8 m', opts:_i4gshuf(['4.8 m','2.4 m','9 m','3.6 m']), mc:true, ste:'Razón = 150÷5 = 30. Largo real = 1.5 m, ancho real = 0.9 m. Perímetro = 2×(1.5+0.9) = 4.8 m.'},
+    {_id:11, q:'Un estudiante mide 1.80 m de altura real y en su foto mide 9 cm. En la misma foto, un muro rectangular mide 7 cm de largo y 5 cm de ancho. ¿Cuál es el perímetro REAL del muro?', a:'4.8 m', opts:_i4gshuf(['4.8 m','2.4 m','9.6 m','7 m']), mc:true, ste:'Razón = 180÷9 = 20. Largo real = 1.4 m, ancho real = 1 m. Perímetro = 2×(1.4+1) = 4.8 m.'},
+    {_id:12, q:'Una estudiante mide 1.50 m de altura real y en su foto mide 6 cm. En la misma foto, una losa rectangular mide 8 cm de largo y 4 cm de ancho. ¿Cuál es el perímetro REAL de la losa?', a:'6 m', opts:_i4gshuf(['6 m','3 m','12 m','8 m']), mc:true, ste:'Razón = 150÷6 = 25. Largo real = 2 m, ancho real = 1 m. Perímetro = 2×(2+1) = 6 m.'},
+    // Plantilla 4 — Escala + área real de un rectángulo (4 preguntas)
+    {_id:13, q:'Un estudiante mide 1.60 m de altura real y en su foto mide 8 cm. En la misma foto, un bloque rectangular mide 6 cm de largo y 3 cm de ancho. ¿Cuál es el área REAL del bloque?', a:'0.72 m²', opts:_i4gshuf(['0.72 m²','1.2 m²','0.6 m²','1.44 m²']), mc:true, ste:'Razón = 160÷8 = 20. Largo real = 1.2 m, ancho real = 0.6 m. Área = 1.2×0.6 = 0.72 m².'},
+    {_id:14, q:'Una estudiante mide 1.50 m de altura real y en su foto mide 5 cm. En la misma foto, un muro rectangular mide 4 cm de largo y 3 cm de ancho. ¿Cuál es el área REAL del muro?', a:'1.08 m²', opts:_i4gshuf(['1.08 m²','1.2 m²','0.9 m²','2.16 m²']), mc:true, ste:'Razón = 150÷5 = 30. Largo real = 1.2 m, ancho real = 0.9 m. Área = 1.2×0.9 = 1.08 m².'},
+    {_id:15, q:'Un estudiante mide 1.80 m de altura real y en su foto mide 9 cm. En la misma foto, una losa rectangular mide 5 cm de largo y 4 cm de ancho. ¿Cuál es el área REAL de la losa?', a:'0.8 m²', opts:_i4gshuf(['0.8 m²','1 m²','0.9 m²','1.8 m²']), mc:true, ste:'Razón = 180÷9 = 20. Largo real = 1 m, ancho real = 0.8 m. Área = 1×0.8 = 0.8 m².'},
+    {_id:16, q:'Una estudiante mide 1.50 m de altura real y en su foto mide 6 cm. En la misma foto, un bloque rectangular mide 6 cm de largo y 4 cm de ancho. ¿Cuál es el área REAL del bloque?', a:'1.5 m²', opts:_i4gshuf(['1.5 m²','1.75 m²','2 m²','1 m²']), mc:true, ste:'Razón = 150÷6 = 25. Largo real = 1.5 m, ancho real = 1 m. Área = 1.5×1 = 1.5 m².'},
+    // Plantilla 5 — Escala + lado real o perímetro real de polígonos regulares (4 preguntas)
+    {_id:17, q:'Un estudiante mide 1.60 m de altura real y en su foto mide 8 cm. En la misma foto, un pentágono regular tallado en piedra tiene lados de 4 cm. ¿Cuál es el lado REAL del pentágono?', a:'0.8 m', opts:_i4gshuf(['0.8 m','0.4 m','1.6 m','4 m']), mc:true, ste:'Razón = 160÷8 = 20. Lado real = 4×20 = 80 cm = 0.8 m.'},
+    {_id:18, q:'Una estudiante mide 1.50 m de altura real y en su foto mide 5 cm. En la misma foto, un hexágono regular grabado en un muro tiene lados de 3 cm. ¿Cuál es el perímetro REAL del hexágono?', a:'5.4 m', opts:_i4gshuf(['5.4 m','0.9 m','2.7 m','1.8 m']), mc:true, ste:'Razón = 150÷5 = 30. Lado real = 3×30 = 90 cm = 0.9 m. Perímetro = 6×0.9 = 5.4 m.'},
+    {_id:19, q:'Un estudiante mide 1.80 m de altura real y en su foto mide 9 cm. En la misma foto, un pentágono regular tallado en piedra tiene lados de 5 cm. ¿Cuál es el perímetro REAL del pentágono?', a:'5 m', opts:_i4gshuf(['5 m','1 m','4 m','2.5 m']), mc:true, ste:'Razón = 180÷9 = 20. Lado real = 5×20 = 100 cm = 1 m. Perímetro = 5×1 = 5 m.'},
+    {_id:20, q:'Una estudiante mide 1.50 m de altura real y en su foto mide 6 cm. En la misma foto, un hexágono regular labrado en piedra tiene lados de 4 cm. ¿Cuál es el lado REAL del hexágono?', a:'1 m', opts:_i4gshuf(['1 m','0.6 m','1.5 m','6 m']), mc:true, ste:'Razón = 150÷6 = 25. Lado real = 4×25 = 100 cm = 1 m.'},
+  ]);
+}
+_SKILL_META['li1m_u4_b6']={ico:'🧩',lbl:'Problemas integrados: escala, perímetro y área reales',qCount:4,gen:_genLi1mU4_B6,plantillas:['Escala y perímetro real (triángulo)','Escala y área real (cuadrado)','Escala y perímetro real (rectángulo)','Escala y área real (rectángulo)','Escala y lado/perímetro real (polígono regular)']};
+
+function _genLi1mU4_BQ2(){return _bqSrcPick(['li1m_u4_b4','li1m_u4_b5','li1m_u4_b6'],[_genLi1mU4_B4,_genLi1mU4_B5,_genLi1mU4_B6]);}
+_SKILL_META['li1m_u4_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Área y problemas integrados de escala',qCount:15,gen:_genLi1mU4_BQ2,quiz:true,srcKeys:['li1m_u4_b4','li1m_u4_b5','li1m_u4_b6']};
+
+
 function _genLi1mU3_B6(){
   return _i4gpick([
     // Plantilla 1 — Mezcla 2 y 3 pasos [_id 1-4]
@@ -19768,6 +20123,171 @@ _SKILL_META['ac1_esc_b8']={ico:'🧮',lbl:'Problemas combinados de perímetro y 
 function _genAc1Esc_BQ3(){return _bqSrcPick(['ac1_esc_b6','ac1_esc_b7','ac1_esc_b8'],[_genAc1Esc_B6,_genAc1Esc_B7,_genAc1Esc_B8]);}
 _SKILL_META['ac1_esc_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Perímetro y Área de Copias a Escala',qCount:15,gen:_genAc1Esc_BQ3,quiz:true,srcKeys:['ac1_esc_b6','ac1_esc_b7','ac1_esc_b8']};
 
+function _genAc1Esc_B9(){ // Cantidad de bloques para construir una copia a escala (k²)
+  return _i4gpick([
+  {_id:1,q:'Para construir una copia a escala de un rombo (usando rombos idénticos como bloques) con un factor de escala de 2, ¿cuántos rombos se necesitan?',a:'4',opts:_i4gshuf(['4','2','8','16']),mc:true,ste:'Se necesitan k² bloques para cubrir la copia: 2² = 4 rombos.'},
+  {_id:2,q:'Para construir una copia a escala de un rombo con un factor de escala de 3, ¿cuántos rombos se necesitan?',a:'9',opts:_i4gshuf(['9','6','3','27']),mc:true,ste:'k² bloques: 3² = 9 rombos. (Ojo: NO son 3×3 bloques "sumados", es 3² multiplicando.)'},
+  {_id:3,q:'Para construir una copia a escala de un rombo con un factor de escala de 4, ¿cuántos rombos se necesitan?',a:'16',opts:_i4gshuf(['16','8','12','64']),mc:true,ste:'k² bloques: 4² = 16 rombos.'},
+  {_id:4,q:'Para construir una copia a escala de un rombo con un factor de escala de 5, ¿cuántos rombos se necesitan?',a:'25',opts:_i4gshuf(['25','10','20','125']),mc:true,ste:'k² bloques: 5² = 25 rombos.'},
+  {_id:5,q:'Un triángulo pequeño se usa como bloque para construir una copia a escala con factor de escala 3. ¿Cuántos triángulos se necesitan?',a:'9',opts:_i4gshuf(['9','3','6','27']),mc:true,ste:'k² bloques: 3² = 9 triángulos.'},
+  {_id:6,q:'Un triángulo pequeño se usa como bloque para construir una copia a escala con factor de escala 4. ¿Cuántos triángulos se necesitan?',a:'16',opts:_i4gshuf(['16','4','12','64']),mc:true,ste:'k² bloques: 4² = 16 triángulos.'},
+  {_id:7,q:'Un trapecio pequeño se usa como bloque para construir una copia a escala con factor de escala 2. ¿Cuántos trapecios se necesitan?',a:'4',opts:_i4gshuf(['4','2','8','16']),mc:true,ste:'k² bloques: 2² = 4 trapecios.'},
+  {_id:8,q:'Un trapecio pequeño se usa como bloque para construir una copia a escala con factor de escala 4. ¿Cuántos trapecios se necesitan?',a:'16',opts:_i4gshuf(['16','8','12','64']),mc:true,ste:'k² bloques: 4² = 16 trapecios.'},
+  {_id:9,q:'Una figura está hecha con 2 rombos idénticos pegados. Se amplía con un factor de escala de 3. ¿Cuántos rombos se necesitan en total para construir la copia?',a:'18',opts:_i4gshuf(['18','6','9','12']),mc:true,ste:'Cada "unidad" de la figura necesita k² = 9 bloques. Como la figura original tiene 2 unidades, se necesitan 2 × 9 = 18 bloques en total.'},
+  {_id:10,q:'Una figura está hecha con 3 rombos idénticos pegados. Se amplía con un factor de escala de 2. ¿Cuántos rombos se necesitan en total para construir la copia?',a:'12',opts:_i4gshuf(['12','6','9','24']),mc:true,ste:'Cada unidad necesita k² = 4 bloques. Como hay 3 unidades: 3 × 4 = 12 bloques en total.'},
+  {_id:11,q:'Se usaron 16 bloques idénticos para construir la copia a escala de una figura hecha de 1 bloque. ¿Cuál fue el factor de escala?',a:'4',opts:_i4gshuf(['4','8','16','2']),mc:true,ste:'k² = 16, entonces k = √16 = 4.'},
+  {_id:12,q:'Se usaron 25 bloques idénticos para construir la copia a escala de una figura hecha de 1 bloque. ¿Cuál fue el factor de escala?',a:'5',opts:_i4gshuf(['5','25','10','2.5']),mc:true,ste:'k² = 25, entonces k = √25 = 5.'},
+  {_id:13,q:'Una figura hecha de 2 bloques idénticos se amplió y se usaron 8 bloques en total para la copia. ¿Cuál fue el factor de escala?',a:'2',opts:_i4gshuf(['2','4','8','1.5']),mc:true,ste:'8 bloques ÷ 2 unidades = 4 bloques por unidad = k², entonces k = √4 = 2.'},
+  {_id:14,q:'V/F: Si el factor de escala es k, se necesitan k veces más bloques para construir la copia.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Se necesitan k² veces más bloques, no k, porque los bloques cubren un área y el área escala con el cuadrado del factor de escala.'},
+  {_id:15,q:'V/F: Duplicar el factor de escala (de 1 a 2) requiere 4 veces más bloques que la figura original.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'k = 2, entonces k² = 4: se necesitan 4 veces más bloques.'},
+  {_id:16,q:'V/F: Triplicar el factor de escala (usar k=3) requiere 6 veces más bloques que la figura original.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Con k=3 se necesitan k² = 9 veces más bloques, no 6.'},
+  {_id:17,q:'Ana construye una copia a escala de una figura con factor de escala 2 y usa 4 bloques. Beto construye una copia de la misma figura base con factor de escala 4. ¿Cuántos bloques más que Ana usa Beto?',a:'12',opts:_i4gshuf(['12','8','4','20']),mc:true,ste:'Beto usa 4²=16 bloques y Ana usa 2²=4 bloques. Diferencia: 16 − 4 = 12 bloques más.'},
+  {_id:18,q:'Cada bloque triangular representa una baldosa de un patio. Si el patio original usa 1 baldosa y se amplía con un factor de escala de 6, ¿cuántas baldosas se necesitan?',a:'36',opts:_i4gshuf(['36','6','12','18']),mc:true,ste:'k² bloques: 6² = 36 baldosas.'},
+  {_id:19,q:'Cada bloque representa una baldosa. Si el patio original usa 1 baldosa y se amplía con un factor de escala de 10, ¿cuántas baldosas se necesitan?',a:'100',opts:_i4gshuf(['100','10','20','50']),mc:true,ste:'k² bloques: 10² = 100 baldosas.'},
+  {_id:20,q:'Si una figura formada por 4 bloques idénticos se amplía con un factor de escala de 2, ¿cuántos bloques se necesitan en total para la copia?',a:'16',opts:_i4gshuf(['16','8','4','32']),mc:true,ste:'Cada unidad necesita k²=4 bloques. Como hay 4 unidades: 4 × 4 = 16 bloques en total.'},
+  ]);
+}
+_SKILL_META['ac1_esc_b9']={ico:'🧱',lbl:'Cantidad de bloques para construir una copia a escala',qCount:4,gen:_genAc1Esc_B9,plantillas:["Hallar cuántos bloques se necesitan dado el factor de escala (k²)","Caso con una figura base de más de 1 bloque","Caso inverso: hallar el factor de escala dado el total de bloques usados","V/F sobre por qué se necesitan k² bloques y no k","Problema verbal comparando dos copias con distintos factores de escala"]};
+
+function _genAc1Esc_B10(){ // Escalar una figura en cuadrícula y hallar su área (k²)
+  return _i4gpick([
+  {_id:1,q:'Una figura en forma de L está dibujada en una cuadrícula y cubre 5 cuadrados. Si se escala con un factor de 3, ¿cuántos cuadrados cubrirá la copia?',a:'45 cuadrados',opts:_i4gshuf(['45 cuadrados','15 cuadrados','8 cuadrados','25 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 3² × 5 = 9 × 5 = 45 cuadrados.'},
+  {_id:2,q:'Una figura en una cuadrícula cubre 4 cuadrados. Si se escala con un factor de 3, ¿cuántos cuadrados cubrirá la copia?',a:'36 cuadrados',opts:_i4gshuf(['36 cuadrados','12 cuadrados','7 cuadrados','24 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 9 × 4 = 36 cuadrados.'},
+  {_id:3,q:'Una figura en una cuadrícula cubre 6 cuadrados. Si se escala con un factor de 2, ¿cuántos cuadrados cubrirá la copia?',a:'24 cuadrados',opts:_i4gshuf(['24 cuadrados','12 cuadrados','8 cuadrados','36 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 4 × 6 = 24 cuadrados.'},
+  {_id:4,q:'Una figura en una cuadrícula cubre 8 cuadrados. Si se escala con un factor de 3, ¿cuántos cuadrados cubrirá la copia?',a:'72 cuadrados',opts:_i4gshuf(['72 cuadrados','24 cuadrados','11 cuadrados','64 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 9 × 8 = 72 cuadrados.'},
+  {_id:5,q:'Una figura en una cuadrícula cubre 3 cuadrados. Si se escala con un factor de 4, ¿cuántos cuadrados cubrirá la copia?',a:'48 cuadrados',opts:_i4gshuf(['48 cuadrados','12 cuadrados','7 cuadrados','24 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 16 × 3 = 48 cuadrados.'},
+  {_id:6,q:'La copia de una figura en cuadrícula cubre 36 cuadrados y se hizo con un factor de escala de 3. ¿Cuántos cuadrados cubría la figura original?',a:'4 cuadrados',opts:_i4gshuf(['4 cuadrados','12 cuadrados','32 cuadrados','9 cuadrados']),mc:true,ste:'A_original = A_copia ÷ k² = 36 ÷ 9 = 4 cuadrados.'},
+  {_id:7,q:'La copia de una figura en cuadrícula cubre 20 cuadrados y se hizo con un factor de escala de 2. ¿Cuántos cuadrados cubría la figura original?',a:'5 cuadrados',opts:_i4gshuf(['5 cuadrados','10 cuadrados','16 cuadrados','40 cuadrados']),mc:true,ste:'A_original = A_copia ÷ k² = 20 ÷ 4 = 5 cuadrados.'},
+  {_id:8,q:'La copia de una figura en cuadrícula cubre 63 cuadrados y se hizo con un factor de escala de 3. ¿Cuántos cuadrados cubría la figura original?',a:'7 cuadrados',opts:_i4gshuf(['7 cuadrados','21 cuadrados','54 cuadrados','9 cuadrados']),mc:true,ste:'A_original = A_copia ÷ k² = 63 ÷ 9 = 7 cuadrados.'},
+  {_id:9,q:'Al contar los cuadrados de una cuadrícula, una figura en forma de L cubre 2 cuadrados enteros y 2 mitades de cuadrado. ¿Cuál es su área en cuadrados?',a:'3 cuadrados',opts:_i4gshuf(['3 cuadrados','4 cuadrados','2 cuadrados','2.5 cuadrados']),mc:true,ste:'Área = enteros + mitades: 2 + (2 × 0.5) = 2 + 1 = 3 cuadrados.'},
+  {_id:10,q:'Una figura en una cuadrícula cubre 3 cuadrados enteros y 4 mitades de cuadrado. ¿Cuál es su área en cuadrados?',a:'5 cuadrados',opts:_i4gshuf(['5 cuadrados','7 cuadrados','3.5 cuadrados','4 cuadrados']),mc:true,ste:'Área = 3 + (4 × 0.5) = 3 + 2 = 5 cuadrados.'},
+  {_id:11,q:'Una figura en una cuadrícula cubre 6 cuadrados enteros y 2 mitades de cuadrado. ¿Cuál es su área en cuadrados?',a:'7 cuadrados',opts:_i4gshuf(['7 cuadrados','8 cuadrados','6.5 cuadrados','6 cuadrados']),mc:true,ste:'Área = 6 + (2 × 0.5) = 6 + 1 = 7 cuadrados.'},
+  {_id:12,q:'V/F: Si el área original de una figura en cuadrícula es 5 cuadrados y se escala con un factor de 3, la nueva área es 15 cuadrados.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El área escala con k², no con k. Con factor 3, el área correcta es 3²×5 = 45 cuadrados, no 15.'},
+  {_id:13,q:'V/F: El área de una figura escalada con un factor de escala de 1/2 se reduce a la cuarta parte del área original.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'(1/2)² = 1/4, así que la nueva área es 1/4 de la original.'},
+  {_id:14,q:'V/F: Al escalar una figura dibujada en una cuadrícula, cada cuadrado unitario de la figura original se convierte en k² cuadrados unitarios en la copia.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es exactamente la razón por la que el área total escala con k²: cada unidad de área se multiplica por k².'},
+  {_id:15,q:'Dos copias de la misma figura (área original 4 cuadrados) se hacen con factores de escala 2 y 3. ¿Cuántos cuadrados más cubre la segunda copia que la primera?',a:'20 cuadrados más',opts:_i4gshuf(['20 cuadrados más','5 cuadrados más','9 cuadrados más','36 cuadrados más']),mc:true,ste:'Primera copia: 4×2²=16. Segunda copia: 4×3²=36. Diferencia: 36−16=20 cuadrados más.'},
+  {_id:16,q:'Una figura cubre 7 cuadrados. Se hace una copia con factor de escala 2. ¿Cuántos cuadrados MÁS que el original cubre la copia?',a:'21 cuadrados más',opts:_i4gshuf(['21 cuadrados más','14 cuadrados más','7 cuadrados más','28 cuadrados más']),mc:true,ste:'Copia: 7×2²=28. Diferencia: 28−7=21 cuadrados más.'},
+  {_id:17,q:'Un rectángulo dibujado en una cuadrícula mide 2 por 3 cuadrados (área 6 cuadrados). Si se escala con un factor de 4, ¿cuál es el área de la copia en cuadrados?',a:'96 cuadrados',opts:_i4gshuf(['96 cuadrados','24 cuadrados','48 cuadrados','54 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 16 × 6 = 96 cuadrados.'},
+  {_id:18,q:'Un cuadrado en una cuadrícula mide 3 por 3 (área 9 cuadrados). Se escala con un factor de 1/3. ¿Cuál es el área de la copia?',a:'1 cuadrado',opts:_i4gshuf(['1 cuadrado','3 cuadrados','0.33 cuadrados','9 cuadrados']),mc:true,ste:'A_copia = k² × A_original = (1/3)² × 9 = (1/9) × 9 = 1 cuadrado.'},
+  {_id:19,q:'Si el área original en cuadrados es A y el factor de escala es k, ¿cuál es la fórmula del área de la copia?',a:'A × k²',opts:_i4gshuf(['A × k²','A × k','A ÷ k','A + k²']),mc:true,ste:'El área siempre escala con el cuadrado del factor de escala: A_copia = A × k².'},
+  {_id:20,q:'El plano de un jardín cubre 12 cuadrados de una cuadrícula. Se hace un dibujo ampliado con factor de escala 5 para un mural. ¿Cuántos cuadrados cubrirá el mural?',a:'300 cuadrados',opts:_i4gshuf(['300 cuadrados','60 cuadrados','144 cuadrados','17 cuadrados']),mc:true,ste:'A_copia = k² × A_original = 25 × 12 = 300 cuadrados.'},
+  ]);
+}
+_SKILL_META['ac1_esc_b10']={ico:'⬜',lbl:'Escalar una figura dibujada en cuadrícula y hallar su área',qCount:4,gen:_genAc1Esc_B10,plantillas:["Hallar el área de la copia dado el área original (en cuadrados) y el factor de escala","Contar cuadrados enteros y mitades para hallar el área de una figura","Caso inverso: hallar el área original dado el área de la copia y el factor de escala","V/F sobre cómo cambia el área al escalar una figura en cuadrícula","Comparar el área de dos copias con distintos factores de escala"]};
+
+function _genAc1Esc_BQ4(){return _bqSrcPick(['ac1_esc_b9','ac1_esc_b10'],[_genAc1Esc_B9,_genAc1Esc_B10]);}
+_SKILL_META['ac1_esc_bq4']={ico:'⚡',lbl:'Cuestionario 4 – Bloques y Cuadrículas',qCount:15,gen:_genAc1Esc_BQ4,quiz:true,srcKeys:['ac1_esc_b9','ac1_esc_b10']};
+
+function _genAc1Esc_B11(){ // Volumen de un sólido y su copia a escala (k³)
+  return _i4gpick([
+  {_id:1,q:'Un cobertizo tiene un volumen de 80 m³. Se construye una maqueta con factor de escala 1/2. ¿Cuál es el volumen de la maqueta?',a:'10 m³',opts:_i4gshuf(['10 m³','40 m³','20 m³','160 m³']),mc:true,ste:'El volumen escala con el CUBO del factor de escala: V_copia = k³ × V_original = (1/2)³ × 80 = (1/8) × 80 = 10 m³.'},
+  {_id:2,q:'Un sólido tiene un volumen de 64 m³. Se construye una copia con factor de escala 1/2. ¿Cuál es el volumen de la copia?',a:'8 m³',opts:_i4gshuf(['8 m³','32 m³','16 m³','512 m³']),mc:true,ste:'V_copia = k³ × V_original = (1/2)³ × 64 = (1/8) × 64 = 8 m³.'},
+  {_id:3,q:'Un sólido tiene un volumen de 27 m³. Se construye una copia con factor de escala 1/3. ¿Cuál es el volumen de la copia?',a:'1 m³',opts:_i4gshuf(['1 m³','9 m³','3 m³','729 m³']),mc:true,ste:'V_copia = k³ × V_original = (1/3)³ × 27 = (1/27) × 27 = 1 m³.'},
+  {_id:4,q:'Un sólido tiene un volumen de 16 m³. Se construye una copia con factor de escala 2. ¿Cuál es el volumen de la copia?',a:'128 m³',opts:_i4gshuf(['128 m³','32 m³','64 m³','2 m³']),mc:true,ste:'V_copia = k³ × V_original = 2³ × 16 = 8 × 16 = 128 m³.'},
+  {_id:5,q:'Un sólido tiene un volumen de 5 m³. Se construye una copia con factor de escala 3. ¿Cuál es el volumen de la copia?',a:'135 m³',opts:_i4gshuf(['135 m³','15 m³','45 m³','0.19 m³']),mc:true,ste:'V_copia = k³ × V_original = 3³ × 5 = 27 × 5 = 135 m³.'},
+  {_id:6,q:'Un sólido tiene un volumen de 2 m³. Se construye una copia con factor de escala 5. ¿Cuál es el volumen de la copia?',a:'250 m³',opts:_i4gshuf(['250 m³','10 m³','50 m³','0.02 m³']),mc:true,ste:'V_copia = k³ × V_original = 5³ × 2 = 125 × 2 = 250 m³.'},
+  {_id:7,q:'La copia de un sólido tiene un volumen de 10 m³, con factor de escala 1/2. ¿Cuál era el volumen del original?',a:'80 m³',opts:_i4gshuf(['80 m³','5 m³','20 m³','1.25 m³']),mc:true,ste:'V_original = V_copia ÷ k³ = 10 ÷ (1/2)³ = 10 ÷ (1/8) = 80 m³.'},
+  {_id:8,q:'La copia de un sólido tiene un volumen de 1 m³, con factor de escala 1/3. ¿Cuál era el volumen del original?',a:'27 m³',opts:_i4gshuf(['27 m³','3 m³','9 m³','0.04 m³']),mc:true,ste:'V_original = V_copia ÷ k³ = 1 ÷ (1/3)³ = 1 ÷ (1/27) = 27 m³.'},
+  {_id:9,q:'La copia de un sólido tiene un volumen de 128 m³, con factor de escala 2. ¿Cuál era el volumen del original?',a:'16 m³',opts:_i4gshuf(['16 m³','256 m³','32 m³','1024 m³']),mc:true,ste:'V_original = V_copia ÷ k³ = 128 ÷ 2³ = 128 ÷ 8 = 16 m³.'},
+  {_id:10,q:'La copia de un sólido tiene un volumen de 135 m³, con factor de escala 3. ¿Cuál era el volumen del original?',a:'5 m³',opts:_i4gshuf(['5 m³','45 m³','15 m³','3645 m³']),mc:true,ste:'V_original = V_copia ÷ k³ = 135 ÷ 3³ = 135 ÷ 27 = 5 m³.'},
+  {_id:11,q:'El volumen del original es 8 m³ y el de la copia es 64 m³. ¿Cuál es el factor de escala?',a:'2',opts:_i4gshuf(['2','8','4','0.13']),mc:true,ste:'k³ = V_copia ÷ V_original = 64 ÷ 8 = 8, entonces k = ∛8 = 2.'},
+  {_id:12,q:'El volumen del original es 27 m³ y el de la copia es 1 m³. ¿Cuál es el factor de escala?',a:'1/3',opts:_i4gshuf(['1/3','1/27','3','27']),mc:true,ste:'k³ = V_copia ÷ V_original = 1 ÷ 27 = 1/27, entonces k = ∛(1/27) = 1/3.'},
+  {_id:13,q:'El volumen del original es 2 m³ y el de la copia es 250 m³. ¿Cuál es el factor de escala?',a:'5',opts:_i4gshuf(['5','125','25','0.2']),mc:true,ste:'k³ = V_copia ÷ V_original = 250 ÷ 2 = 125, entonces k = ∛125 = 5.'},
+  {_id:14,q:'El volumen del original es 16 m³ y el de la copia es 2 m³. ¿Cuál es el factor de escala?',a:'1/2',opts:_i4gshuf(['1/2','1/8','2','8']),mc:true,ste:'k³ = V_copia ÷ V_original = 2 ÷ 16 = 1/8, entonces k = ∛(1/8) = 1/2.'},
+  {_id:15,q:'V/F: Si el factor de escala es k, el volumen de la copia es k³ veces el volumen del original.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'V_copia = k³ × V_original, porque el volumen depende del producto de tres dimensiones que escalan cada una por k.'},
+  {_id:16,q:'V/F: Si el factor de escala es 1/2, el volumen de la copia es 1/2 del volumen original.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'El volumen escala con k³, no con k. Con factor 1/2, el volumen de la copia es (1/2)³=1/8 del original, no 1/2.'},
+  {_id:17,q:'V/F: El volumen escala con el cubo del factor de escala porque un sólido tiene tres dimensiones que escalan, cada una, por el mismo factor k.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Largo, ancho y alto se multiplican cada uno por k, así que el volumen (su producto) se multiplica por k×k×k=k³.'},
+  {_id:18,q:'V/F: Si el factor de escala es 3, el volumen de la copia es 9 veces el volumen original.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Con factor de escala 3, el volumen es 3³=27 veces el original, no 9 (9 sería para el área, no el volumen).'},
+  {_id:19,q:'Un cobertizo con techo a dos aguas tiene un volumen real de 48 m³. Se construye una maqueta con factor de escala 1/4. ¿Cuál es el volumen de la maqueta (en m³)?',a:'0.75 m³',opts:_i4gshuf(['0.75 m³','12 m³','3 m³','3072 m³']),mc:true,ste:'V_maqueta = k³ × V_real = (1/4)³ × 48 = (1/64) × 48 = 0.75 m³.'},
+  {_id:20,q:'Una maqueta de un edificio tiene un volumen de 6 cm³ y fue construida con un factor de escala de 1/20 respecto al edificio real. ¿Cuál es el volumen real del edificio (en cm³)?',a:'48000 cm³',opts:_i4gshuf(['48000 cm³','120 cm³','2400 cm³','0.00075 cm³']),mc:true,ste:'V_real = V_maqueta ÷ k³ = 6 ÷ (1/20)³ = 6 ÷ (1/8000) = 6 × 8000 = 48000 cm³.'},
+  ]);
+}
+_SKILL_META['ac1_esc_b11']={ico:'🧊',lbl:'Volumen de un sólido y su copia a escala',qCount:4,gen:_genAc1Esc_B11,plantillas:["Hallar el volumen de la copia dado el volumen original y el factor de escala (k³)","Caso inverso: hallar el volumen original dado el volumen de la copia","Hallar el factor de escala dados ambos volúmenes","V/F sobre cómo escala el volumen (con el cubo del factor) a diferencia del área y el perímetro","Problema verbal con maquetas o cobertizos escalados por un factor fraccionario"]};
+
+function _genAc1Esc_B12(){ // Ángulos de un paralelogramo (para trazar con transportador)
+  return _i4gpick([
+  {_id:1,q:'Vas a trazar un paralelogramo con dos ángulos interiores de 110°. ¿Cuánto deben medir los otros dos ángulos interiores?',a:'70°',opts:_i4gshuf(['70°','110°','35°','180°']),mc:true,ste:'En un paralelogramo, los ángulos consecutivos son suplementarios (suman 180°): 180°−110°=70°. Los otros dos ángulos también miden 70° (los ángulos opuestos son iguales).'},
+  {_id:2,q:'Vas a trazar un paralelogramo con dos ángulos interiores de 65°. ¿Cuánto deben medir los otros dos ángulos interiores?',a:'115°',opts:_i4gshuf(['115°','65°','25°','130°']),mc:true,ste:'180°−65°=115°. Los otros dos ángulos miden 115° cada uno.'},
+  {_id:3,q:'Vas a trazar un paralelogramo con dos ángulos interiores de 130°. ¿Cuánto deben medir los otros dos ángulos interiores?',a:'50°',opts:_i4gshuf(['50°','130°','40°','180°']),mc:true,ste:'180°−130°=50°. Los otros dos ángulos miden 50° cada uno.'},
+  {_id:4,q:'Vas a trazar un paralelogramo con dos ángulos interiores de 95°. ¿Cuánto deben medir los otros dos ángulos interiores?',a:'85°',opts:_i4gshuf(['85°','95°','5°','180°']),mc:true,ste:'180°−95°=85°. Los otros dos ángulos miden 85° cada uno.'},
+  {_id:5,q:'En un paralelogramo, un ángulo mide 72°. ¿Cuánto mide el ángulo opuesto a él?',a:'72°',opts:_i4gshuf(['72°','108°','36°','144°']),mc:true,ste:'En un paralelogramo, los ángulos opuestos son siempre iguales entre sí.'},
+  {_id:6,q:'En un paralelogramo, un ángulo mide 58°. ¿Cuánto mide el ángulo consecutivo (adyacente) a él?',a:'122°',opts:_i4gshuf(['122°','58°','32°','180°']),mc:true,ste:'Los ángulos consecutivos son suplementarios: 180°−58°=122°.'},
+  {_id:7,q:'Si un paralelogramo tiene un ángulo de 90°, ¿cuánto miden los otros tres ángulos?',a:'90° cada uno',opts:_i4gshuf(['90° cada uno','45°, 45° y 90°','180° cada uno','No se puede saber']),mc:true,ste:'Si un ángulo es 90°, su consecutivo es 180°−90°=90°, y por ángulos opuestos iguales, los otros dos también son 90°. Es un rectángulo.'},
+  {_id:8,q:'La suma de los cuatro ángulos interiores de cualquier paralelogramo es siempre:',a:'360°',opts:_i4gshuf(['360°','180°','270°','720°']),mc:true,ste:'Como todo cuadrilátero, un paralelogramo tiene ángulos interiores que suman (4−2)×180°=360°.'},
+  {_id:9,q:'V/F: En un paralelogramo, los ángulos opuestos son siempre iguales.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es una propiedad básica del paralelogramo: ángulos opuestos congruentes.'},
+  {_id:10,q:'V/F: En un paralelogramo, los ángulos consecutivos son siempre iguales.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los ángulos consecutivos son suplementarios (suman 180°), no necesariamente iguales (solo lo serían si ambos miden 90°).'},
+  {_id:11,q:'V/F: Si conoces la medida de un ángulo de un paralelogramo, puedes hallar los otros tres sin necesidad de medirlos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Usando "opuestos iguales" y "consecutivos suplementarios" puedes deducir los otros tres ángulos.'},
+  {_id:12,q:'V/F: Un paralelogramo puede tener sus cuatro ángulos interiores diferentes entre sí.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un paralelogramo solo tiene dos medidas de ángulo distintas (cada una repetida dos veces), salvo el caso del rectángulo, donde las 4 son iguales (90°).'},
+  {_id:13,q:'Al usar un transportador para trazar un paralelogramo con un primer ángulo de 125°, ¿qué medida debes marcar para el ángulo consecutivo a él?',a:'55°',opts:_i4gshuf(['55°','125°','65°','180°']),mc:true,ste:'180°−125°=55°.'},
+  {_id:14,q:'Al usar un transportador para trazar un paralelogramo con un ángulo de 48°, ¿qué medida debes marcar para el ángulo opuesto a él?',a:'48°',opts:_i4gshuf(['48°','132°','24°','96°']),mc:true,ste:'Los ángulos opuestos de un paralelogramo son siempre iguales: 48°.'},
+  {_id:15,q:'Un paralelogramo tiene ángulos interiores de 110°, 70°, 110° y 70°. ¿Es correcto? Verifica sumando los cuatro ángulos.',a:'Sí, suman 360°',opts:_i4gshuf(['Sí, suman 360°','No, suman 400°','No, suman 320°','No se puede verificar']),mc:true,ste:'110+70+110+70=360°, y además los opuestos son iguales y los consecutivos suplementarios: es correcto.'},
+  {_id:16,q:'Nicole traza un paralelogramo y mide con el transportador un primer ángulo de 100°. Al trazar el segundo ángulo (adyacente al primero), ¿qué medida debe usar para que la figura sea un paralelogramo válido?',a:'80°',opts:_i4gshuf(['80°','100°','20°','180°']),mc:true,ste:'180°−100°=80°, porque los ángulos consecutivos de un paralelogramo son suplementarios.'},
+  {_id:17,q:'Hiyab traza un paralelogramo con dos ángulos opuestos de 135° cada uno. ¿Cuánto miden los otros dos ángulos (también opuestos entre sí)?',a:'45°',opts:_i4gshuf(['45°','135°','90°','22.5°']),mc:true,ste:'180°−135°=45°. Los otros dos ángulos miden 45° cada uno.'},
+  {_id:18,q:'Si los cuatro ángulos de un paralelogramo son iguales entre sí, ¿qué tipo de figura es?',a:'Un rectángulo (o cuadrado)',opts:_i4gshuf(['Un rectángulo (o cuadrado)','Un rombo únicamente','Un trapecio','No es posible']),mc:true,ste:'Si los 4 ángulos suman 360° y son iguales entre sí, cada uno mide 90°, lo que corresponde a un rectángulo (o cuadrado, si además los lados son iguales).'},
+  {_id:19,q:'En un paralelogramo, un ángulo mide el triple de su ángulo consecutivo. Si el ángulo pequeño mide x, el grande mide 3x, y juntos suman 180° (son suplementarios). ¿Cuánto mide el ángulo pequeño?',a:'45°',opts:_i4gshuf(['45°','60°','30°','135°']),mc:true,ste:'x+3x=180° → 4x=180° → x=45°.'},
+  {_id:20,q:'En un paralelogramo, un ángulo mide el doble de su ángulo consecutivo. Si juntos suman 180° (son suplementarios), ¿cuánto mide el ángulo pequeño?',a:'60°',opts:_i4gshuf(['60°','90°','45°','120°']),mc:true,ste:'x+2x=180° → 3x=180° → x=60°.'},
+  ]);
+}
+_SKILL_META['ac1_esc_b12']={ico:'📐',lbl:'Ángulos de un paralelogramo (para trazar con transportador)',qCount:4,gen:_genAc1Esc_B12,plantillas:["Hallar los ángulos faltantes de un paralelogramo dado uno de sus ángulos","Aplicar la propiedad de ángulos consecutivos suplementarios y opuestos iguales","V/F sobre las propiedades angulares de un paralelogramo","Verificar que los cuatro ángulos interiores sumen 360°","Problema de construcción: qué ángulos marcar con el transportador"]};
+
+function _genAc1Esc_BQ5(){return _bqSrcPick(['ac1_esc_b11','ac1_esc_b12'],[_genAc1Esc_B11,_genAc1Esc_B12]);}
+_SKILL_META['ac1_esc_bq5']={ico:'⚡',lbl:'Cuestionario 5 – Volumen a Escala y Ángulos del Paralelogramo',qCount:15,gen:_genAc1Esc_BQ5,quiz:true,srcKeys:['ac1_esc_b11','ac1_esc_b12']};
+
+function _genAc1Esc_B13(){ // Distancia real usando la escala de un mapa
+  return _i4gpick([
+  {_id:1,q:'Un mapa tiene una escala donde 1 cm representa 50 km en la realidad. Si la distancia entre dos ciudades en el mapa mide 3 cm, ¿cuál es la distancia real?',a:'150 km',opts:_i4gshuf(['150 km','53 km','1500 km','17 km']),mc:true,ste:'Distancia real = distancia en el mapa × escala = 3 × 50 = 150 km.'},
+  {_id:2,q:'Un mapa tiene una escala donde 1 cm representa 100 km. La distancia entre dos ciudades en el mapa mide 4 cm. ¿Cuál es la distancia real?',a:'400 km',opts:_i4gshuf(['400 km','104 km','40 km','4000 km']),mc:true,ste:'Distancia real = 4 × 100 = 400 km.'},
+  {_id:3,q:'Un mapa tiene una escala donde 1 cm representa 25 km. La distancia entre dos ciudades en el mapa mide 6 cm. ¿Cuál es la distancia real?',a:'150 km',opts:_i4gshuf(['150 km','31 km','1500 km','19 km']),mc:true,ste:'Distancia real = 6 × 25 = 150 km.'},
+  {_id:4,q:'Un mapa tiene una escala donde 1 cm representa 80 millas. La distancia entre dos ciudades en el mapa mide 2.5 cm. ¿Cuál es la distancia real?',a:'200 millas',opts:_i4gshuf(['200 millas','82.5 millas','20 millas','2000 millas']),mc:true,ste:'Distancia real = 2.5 × 80 = 200 millas.'},
+  {_id:5,q:'Un mapa tiene una escala donde 1 cm representa 120 km. La distancia entre dos ciudades en el mapa mide 3.5 cm. ¿Cuál es la distancia real?',a:'420 km',opts:_i4gshuf(['420 km','123.5 km','42 km','4200 km']),mc:true,ste:'Distancia real = 3.5 × 120 = 420 km.'},
+  {_id:6,q:'Un mapa tiene una escala de 1 cm = 50 km. Dos ciudades están realmente a 250 km. ¿Cuántos cm deben medir en el mapa?',a:'5 cm',opts:_i4gshuf(['5 cm','12.5 cm','50 cm','300 cm']),mc:true,ste:'Distancia en el mapa = distancia real ÷ escala = 250 ÷ 50 = 5 cm.'},
+  {_id:7,q:'Un mapa tiene una escala de 1 cm = 100 km. Dos ciudades están realmente a 650 km. ¿Cuántos cm deben medir en el mapa?',a:'6.5 cm',opts:_i4gshuf(['6.5 cm','65 cm','7.5 cm','650 cm']),mc:true,ste:'Distancia en el mapa = 650 ÷ 100 = 6.5 cm.'},
+  {_id:8,q:'Un mapa tiene una escala de 1 cm = 40 millas. Dos ciudades están realmente a 180 millas. ¿Cuántos cm deben medir en el mapa?',a:'4.5 cm',opts:_i4gshuf(['4.5 cm','5.5 cm','45 cm','140 cm']),mc:true,ste:'Distancia en el mapa = 180 ÷ 40 = 4.5 cm.'},
+  {_id:9,q:'En un mapa, dos ciudades miden 2 cm de distancia y su distancia real es 300 km. ¿Cuál es la escala del mapa (1 cm = ? km)?',a:'1 cm = 150 km',opts:_i4gshuf(['1 cm = 150 km','1 cm = 300 km','1 cm = 600 km','1 cm = 75 km']),mc:true,ste:'Escala = distancia real ÷ distancia en el mapa = 300 ÷ 2 = 150 km por cm.'},
+  {_id:10,q:'En un mapa, dos ciudades miden 5 cm de distancia y su distancia real es 100 km. ¿Cuál es la escala del mapa (1 cm = ? km)?',a:'1 cm = 20 km',opts:_i4gshuf(['1 cm = 20 km','1 cm = 500 km','1 cm = 5 km','1 cm = 105 km']),mc:true,ste:'Escala = 100 ÷ 5 = 20 km por cm.'},
+  {_id:11,q:'V/F: En un mapa, cuanto mayor es la distancia real que representa 1 cm, más "alejada" (a menor escala) está dibujada la zona.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Una escala como 1cm=100km cubre más territorio en menos espacio que 1cm=10km: es una escala más "pequeña" o alejada.'},
+  {_id:12,q:'V/F: La escala de un mapa se puede escribir como una razón, por ejemplo 1:500000, que significa que 1 unidad en el mapa equivale a 500000 de esas mismas unidades en la realidad.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Así funcionan las escalas tipo razón: ambos lados usan la misma unidad (por ejemplo, cm).'},
+  {_id:13,q:'V/F: Si mides 2 cm entre dos ciudades en un mapa con escala 1cm=100km, la distancia real es 50 km.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Distancia real = 2 × 100 = 200 km, no 50 km.'},
+  {_id:14,q:'En un mapa de Estados Unidos, la escala indica que 1 pulgada representa 100 millas. Sacramento y Los Ángeles están separadas por 3.8 pulgadas en el mapa. ¿Cuál es la distancia real aproximada?',a:'380 millas',opts:_i4gshuf(['380 millas','38 millas','3800 millas','103.8 millas']),mc:true,ste:'Distancia real ≈ 3.8 × 100 = 380 millas.'},
+  {_id:15,q:'En el mismo mapa (1 pulgada = 100 millas), Salt Lake City y Las Vegas están separadas por 4.2 pulgadas. ¿Cuál es la distancia real aproximada?',a:'420 millas',opts:_i4gshuf(['420 millas','42 millas','4200 millas','104.2 millas']),mc:true,ste:'Distancia real ≈ 4.2 × 100 = 420 millas.'},
+  {_id:16,q:'En el mismo mapa (1 pulgada = 100 millas), Phoenix y Anaheim están separadas por 3.7 pulgadas. ¿Cuál es la distancia real aproximada?',a:'370 millas',opts:_i4gshuf(['370 millas','37 millas','3700 millas','103.7 millas']),mc:true,ste:'Distancia real ≈ 3.7 × 100 = 370 millas.'},
+  {_id:17,q:'Un mapa usa la escala 1:1,000,000. Si dos pueblos están a 8 cm en el mapa, ¿a cuántos km de distancia real están? (recuerda: 1 km = 100,000 cm)',a:'80 km',opts:_i4gshuf(['80 km','8 km','800 km','0.8 km']),mc:true,ste:'8 cm × 1,000,000 = 8,000,000 cm, y 8,000,000 cm ÷ 100,000 = 80 km.'},
+  {_id:18,q:'Un mapa usa la escala 1:2,000,000. Si dos pueblos están a 6 cm en el mapa, ¿a cuántos km de distancia real están?',a:'120 km',opts:_i4gshuf(['120 km','12 km','60 km','1200 km']),mc:true,ste:'6 cm × 2,000,000 = 12,000,000 cm, y 12,000,000 cm ÷ 100,000 = 120 km.'},
+  {_id:19,q:'Si en un mapa la escala es 1 cm = 60 km y sabes que la distancia real entre dos pueblos es 300 km, ¿cuántos cm debes medir para verificarlo?',a:'5 cm',opts:_i4gshuf(['5 cm','6 cm','18 cm','60 cm']),mc:true,ste:'Distancia en el mapa = 300 ÷ 60 = 5 cm.'},
+  {_id:20,q:'Un mapa tiene una barra de escala donde un segmento de 2 cm representa 100 km. ¿Cuántos km representa 1 cm?',a:'50 km',opts:_i4gshuf(['50 km','100 km','25 km','200 km']),mc:true,ste:'Si 2 cm = 100 km, entonces 1 cm = 100 ÷ 2 = 50 km.'},
+  ]);
+}
+_SKILL_META['ac1_esc_b13']={ico:'🗺️',lbl:'Distancia real usando la escala de un mapa',qCount:4,gen:_genAc1Esc_B13,plantillas:["Calcular la distancia real dada la escala del mapa y la distancia medida en el mapa","Calcular la distancia en el mapa dada la escala y la distancia real","Hallar la escala del mapa dadas ambas distancias","V/F sobre cómo funciona la escala de un mapa","Problema verbal con ciudades y un mapa con escala impresa (tipo barra de escala)"]};
+
+function _genAc1Esc_B14(){ // Propiedades que se cumplen (o no) en cualquier copia a escala
+  return _i4gpick([
+  {_id:1,q:'V/F: En cualquier copia a escala, todas las medidas de los lados deben ser números enteros.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los lados de la copia pueden ser decimales o fracciones: depende del factor de escala y de las medidas originales. No hay ninguna regla que los obligue a ser enteros.'},
+  {_id:2,q:'V/F: En cualquier copia a escala, todas las medidas de los ángulos deben ser números enteros.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los ángulos de la copia son EXACTAMENTE los mismos que los del original, que podrían no ser números enteros.'},
+  {_id:3,q:'V/F: Toda copia a escala de un polígono debe tener exactamente 1 ángulo recto.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Depende únicamente de la figura original: si el original no tiene ángulos rectos, la copia tampoco tendrá ninguno; si tiene 2, la copia también tendrá 2.'},
+  {_id:4,q:'V/F: Si el factor de escala entre P y Q es 1/5, entonces cada lado de P se multiplica por 1/5 para obtener el lado correspondiente de Q.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Así se define el factor de escala: cada lado del original se multiplica por k para obtener el lado correspondiente de la copia.'},
+  {_id:5,q:'V/F: Si el factor de escala entre P y Q es 2, entonces cada ángulo de P se multiplica por 2 para obtener el ángulo correspondiente en Q.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los ángulos NUNCA cambian en una copia a escala, sin importar el factor de escala. Solo los lados (longitudes) se multiplican por k.'},
+  {_id:6,q:'V/F: El número de ángulos agudos y obtusos de una copia a escala es siempre igual al de la figura original.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'La forma no cambia al escalar, solo el tamaño. Como los ángulos se conservan exactamente, también se conserva cuántos son agudos, rectos u obtusos.'},
+  {_id:7,q:'V/F: Los ángulos correspondientes entre una figura y su copia a escala son siempre congruentes (iguales).',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es una de las dos propiedades clave de toda copia a escala: ángulos correspondientes iguales.'},
+  {_id:8,q:'V/F: Los lados correspondientes entre una figura y su copia a escala son siempre congruentes (iguales).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los lados correspondientes son PROPORCIONALES (se multiplican por k), no necesariamente iguales, salvo que k=1.'},
+  {_id:9,q:'V/F: Toda copia a escala conserva la forma de la figura original, aunque cambie de tamaño.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Escalar cambia el tamaño (los lados) pero conserva la forma (los ángulos y las proporciones entre lados).'},
+  {_id:10,q:'V/F: El orden en que se nombran los vértices correspondientes puede cambiar libremente entre la figura y su copia.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Debe mantenerse la correspondencia (A↔P, B↔Q, etc.) para que las comparaciones de lados y ángulos sean válidas.'},
+  {_id:11,q:'V/F: Si todos los lados de una figura se multiplican por el mismo factor k, entonces automáticamente los ángulos también cambian.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Multiplicar los lados por k no afecta a los ángulos: estos permanecen exactamente iguales.'},
+  {_id:12,q:'V/F: Una copia a escala con factor de escala k=1 es idéntica (congruente) a la figura original.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Multiplicar por 1 no cambia ninguna medida, así que la "copia" es congruente al original.'},
+  {_id:13,q:'V/F: Si el factor de escala es menor que 1 (por ejemplo, 1/3), la copia es más pequeña que el original.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un factor de escala entre 0 y 1 siempre produce una reducción.'},
+  {_id:14,q:'V/F: Si el factor de escala es mayor que 1 (por ejemplo, 4), la copia es más pequeña que el original.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Un factor de escala mayor que 1 produce una ampliación, no una reducción.'},
+  {_id:15,q:'V/F: Para que Q sea una copia a escala de P, TODOS los lados deben escalar con el mismo factor k, no solo algunos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Si solo algunos lados comparten la razón k y otros no, la figura NO es una copia a escala válida (se deformaría).'},
+  {_id:16,q:'V/F: Si un cuadrilátero P tiene un ángulo de 125°, cualquier copia a escala Q de P también tendrá un ángulo de 125° en la posición correspondiente.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Los ángulos se conservan sin importar el factor de escala usado.'},
+  {_id:17,q:'Una figura P tiene un ángulo de 125°. Si Q es una copia a escala de P con factor de escala 3, ¿cuánto mide el ángulo de Q correspondiente al de 125° de P?',a:'125°',opts:_i4gshuf(['125°','375°','41.67°','128°']),mc:true,ste:'El factor de escala solo afecta a los lados, nunca a los ángulos: el ángulo correspondiente sigue midiendo 125°.'},
+  {_id:18,q:'Si el factor de escala entre P y Q es k y un lado de P mide 40 unidades, ¿cuánto mide el lado correspondiente de Q?',a:'40k unidades',opts:_i4gshuf(['40k unidades','40+k unidades','40/k unidades','k unidades']),mc:true,ste:'El lado de la copia se obtiene multiplicando el lado original por el factor de escala: 40 × k = 40k.'},
+  {_id:19,q:'Al escalar un polígono para obtener una copia a escala, ¿qué cambia y qué se mantiene igual?',a:'Cambia el tamaño (lados); se mantienen los ángulos y la forma.',opts:_i4gshuf(['Cambia el tamaño (lados); se mantienen los ángulos y la forma.','Cambian los ángulos; se mantiene el tamaño.','Cambian tanto los ángulos como los lados.','No cambia nada, solo la posición.']),mc:true,ste:'Escalar multiplica todos los lados por k, pero deja los ángulos (y por lo tanto la forma) exactamente iguales.'},
+  {_id:20,q:'V/F: Es posible que dos copias a escala de un mismo polígono, hechas con distinto factor de escala, tengan formas diferentes entre sí.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Todas las copias a escala del mismo polígono son semejantes entre sí: tienen la misma forma, solo cambia el tamaño.'},
+  ]);
+}
+_SKILL_META['ac1_esc_b14']={ico:'✅',lbl:'Propiedades que se cumplen (o no) en cualquier copia a escala',qCount:4,gen:_genAc1Esc_B14,plantillas:["V/F sobre si los lados o los ángulos de la copia deben ser números enteros","V/F sobre ángulos rectos y otras propiedades específicas de la figura original","V/F sobre cómo el factor de escala afecta a los lados (sí) y a los ángulos (no)","Reconocer qué cambia y qué se conserva siempre al escalar un polígono","V/F sobre la forma y la correspondencia entre una figura y sus copias a escala"]};
+
+function _genAc1Esc_BQ6(){return _bqSrcPick(['ac1_esc_b13','ac1_esc_b14'],[_genAc1Esc_B13,_genAc1Esc_B14]);}
+_SKILL_META['ac1_esc_bq6']={ico:'⚡',lbl:'Cuestionario 6 – Mapas y Propiedades de las Copias a Escala',qCount:15,gen:_genAc1Esc_BQ6,quiz:true,srcKeys:['ac1_esc_b13','ac1_esc_b14']};
+
 // Nota: NO se genera un examen general (BPU) por unidad — es redundante con el botón
 // nativo "Examen de unidad" (★) de la plataforma.
 // Currículo: nivel → grado → unidades → habilidades (skills = claves de BINGO_TOPICS)
@@ -19907,10 +20427,11 @@ const PREP_CURRICULUM = {
          {lbl:'Expresiones Algebraicas',        area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u1_b1','li1m_u1_b2','li1m_u1_b3','li1m_u1_bq1','li1m_u1_b4','li1m_u1_b5','li1m_u1_b6','li1m_u1_bq2']},
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_b5','li1m_u2_bq2']},
          {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7','li1m_u3_bq3']},
+         {lbl:'Escala, Perímetro y Área de Figuras Geométricas', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u4_b1','li1m_u4_b2','li1m_u4_b3','li1m_u4_bq1','li1m_u4_b4','li1m_u4_b5','li1m_u4_b6','li1m_u4_bq2','li1m_u4_b7','li1m_u4_b8','li1m_u4_bq3','li1m_u4_b9','li1m_u4_b10','li1m_u4_b11','li1m_u4_bq4']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
-         {lbl:'Polígonos',                      area:'geometria',     editorial:'san_ignacio', skills:['sir1m_pol_b1','sir1m_pol_b2','sir1m_pol_bq1','sir1m_geo_bpu']},{lbl:'Copias a Escala', area:'matematica', editorial:'arte_creative', skills:['ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3']},
+         {lbl:'Polígonos',                      area:'geometria',     editorial:'san_ignacio', skills:['sir1m_pol_b1','sir1m_pol_b2','sir1m_pol_bq1','sir1m_geo_bpu']},{lbl:'Copias a Escala', area:'matematica', editorial:'arte_creative', skills:['ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3','ac1_esc_b9','ac1_esc_b10','ac1_esc_bq4','ac1_esc_b11','ac1_esc_b12','ac1_esc_bq5','ac1_esc_b13','ac1_esc_b14','ac1_esc_bq6']},
          {lbl:'Operaciones Básicas, Fracciones y Ecuaciones Lineales', area:'matematica', editorial:'chs', skills:['chs1m_u1_b1','chs1m_u1_b2','chs1m_u1_b3','chs1m_u1_b4','chs1m_u1_bq1','chs1m_u1_b5','chs1m_u1_b6','chs1m_u1_b7','chs1m_u1_b8','chs1m_u1_bq2','chs1m_u1_b9','chs1m_u1_b10','chs1m_u1_bq3']},
          {lbl:'Geometría y Medidas',            area:'matematica', editorial:'chs', skills:['chs1m_u2_b1','chs1m_u2_b2','chs1m_u2_b3','chs1m_u2_b4','chs1m_u2_b5','chs1m_u2_bq1','chs1m_u2_b6','chs1m_u2_b7','chs1m_u2_bq2','chs1m_u2_b8','chs1m_u2_b9','chs1m_u2_bq3','chs1m_u2_b10','chs1m_u2_b11','chs1m_u2_b12','chs1m_u2_bq4']},
          {lbl:'Series Numéricas y Comparaciones Cuantitativas', area:'matematica', editorial:'chs', skills:['chs1m_u3_b1','chs1m_u3_b2','chs1m_u3_bq1','chs1m_u3_b3','chs1m_u3_b4','chs1m_u3_bq2','chs1m_u3_b5','chs1m_u3_b6','chs1m_u3_bq3']},
@@ -21164,6 +21685,26 @@ function _prepConfigHtml() {
     // pero que todavía no cuenta para el sorteo — mismo criterio que ya usan Ranking y Puntos.
     const _cupoOffset = (typeof getCupoMonthOffset === 'function') ? getCupoMonthOffset() : 0;
     const _ptsOficial = (typeof getTotalPts2 === 'function' && _loggedId !== null) ? getTotalPts2(_loggedId, _cupoOffset) : null;
+    // El snapshot .auto de Puntos (Horas/Progreso/Tareas) que lee getStudentPoints es un valor
+    // GUARDADO en pointsLog (ver _ptsRefreshAutoSnapshot en student.html), y hasta ahora solo se
+    // recalculaba cuando el profesor abría a mano el panel de checklist de ese alumno/mes. Si
+    // nadie lo había abierto todavía (típico apenas empieza un mes), este badge mostraba "0"
+    // aunque el alumno ya hubiera practicado — el cálculo no era realmente automático. Para que
+    // sí lo sea, se dispara aquí un refresh silencioso para el propio alumno logueado (no admin),
+    // una sola vez por (alumno, mes) en esta sesión de pestaña, con el mismo patrón de carga
+    // async → re-render que ya usa _prepLoadSideRanks arriba.
+    if (_loggedId !== null && !_isAdminMode && typeof _ptsRefreshAutoSnapshot === 'function' && typeof getFullList === 'function') {
+      const _meStudentPts = getFullList().find(x => x.id === _loggedId);
+      if (_meStudentPts) {
+        [...new Set([_cupoOffset, 0])].forEach(off => {
+          const _rKey = `${_loggedId}_${off}`;
+          if (!_ptsBadgeAutoRefreshed[_rKey]) {
+            _ptsBadgeAutoRefreshed[_rKey] = true;
+            _ptsRefreshAutoSnapshot(_meStudentPts, off).then(() => _renderPreparatePane());
+          }
+        });
+      }
+    }
     const _mesNombre = off => {
       if (typeof MESES_ES === 'undefined') return '';
       const d = new Date(); d.setMonth(d.getMonth()+off);
@@ -21175,18 +21716,18 @@ function _prepConfigHtml() {
       if (_cupoOffset !== 0) {
         const _ptsActual = (typeof getTotalPts2 === 'function') ? getTotalPts2(_loggedId, 0) : 0;
         _ptsBadge = `<div style="margin:0 15px 8px;padding:7px 10px;border-radius:7px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);display:flex;flex-direction:column;gap:5px">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-            <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase;white-space:nowrap">🎯 Puntos de ${_mesNombre(_cupoOffset)}</span>
+          <div onclick="_ptsOpenDetail(${_cupoOffset})" title="Ver detalle día por día" style="display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer">
+            <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase;white-space:nowrap">🎯 Puntos de ${_mesNombre(_cupoOffset)} <span style="opacity:0.5">▸</span></span>
             <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fbbf24;white-space:nowrap">${_ptsOficial}</span>
           </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-            <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.4);text-transform:uppercase;white-space:nowrap">📅 Puntos de ${_mesNombre(0)}</span>
+          <div onclick="_ptsOpenDetail(0)" title="Ver detalle día por día" style="display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer">
+            <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.4);text-transform:uppercase;white-space:nowrap">📅 Puntos de ${_mesNombre(0)} <span style="opacity:0.5">▸</span></span>
             <span style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);white-space:nowrap">${_ptsActual}</span>
           </div>
         </div>`;
       } else {
-        _ptsBadge = `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 15px 8px;padding:7px 10px;border-radius:7px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25)">
-          <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase">🎯 Puntos mensuales</span>
+        _ptsBadge = `<div onclick="_ptsOpenDetail(0)" title="Ver detalle día por día" style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 15px 8px;padding:7px 10px;border-radius:7px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.25);cursor:pointer">
+          <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase">🎯 Puntos mensuales <span style="opacity:0.5">▸</span></span>
           <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#fbbf24">${_ptsOficial}</span>
         </div>`;
       }
@@ -22013,7 +22554,252 @@ function _prepConfigHtml() {
   return `<div class="prep-wrap" style="padding-bottom:8px">
     <div class="prep-kh-topbar-wrap">${topbar}</div>
     <div class="prep-kh-layout">${sidebar}${contentArea}</div>
-  </div>${isAdmin() ? _prepWeeklyReportModalHtml() : ''}`;
+  </div>${isAdmin() ? _prepWeeklyReportModalHtml() : ''}${_ptsDetailModalHtml()}`;
+}
+// Nombre de mes corto ("Setiembre") para un offset relativo al mes calendario actual (0=este
+// mes, -1=el anterior, etc.) — misma lógica que el "_mesNombre" local de _preparatePaneHtml,
+// pero como función de módulo para poder reusarla también desde el modal de detalle de abajo.
+function _ptsMesNombre(off) {
+  if (typeof MESES_ES === 'undefined') return '';
+  const d = new Date(); d.setMonth(d.getMonth()+off);
+  const m = MESES_ES[d.getMonth()];
+  return m.charAt(0) + m.slice(1).toLowerCase();
+}
+// Abre el modal de detalle día por día al hacer clic en el badge "🎯 Puntos de <mes>" (pedido
+// explícito: antes el badge solo mostraba el total, sin poder ver de dónde salía cada punto).
+// Carga el historial completo del alumno logueado (mismo _ptsFetchHist que ya alimenta el
+// cálculo oficial de Horas/Progreso/Tareas) y vuelve a renderizar cuando está listo.
+function _ptsOpenDetail(offset) {
+  const _uidNow = typeof getLoggedId === 'function' ? getLoggedId() : null;
+  if (typeof getFullList !== 'function' || _uidNow === null) return;
+  const student = getFullList().find(x => x.id === _uidNow);
+  if (!student) return;
+  _ptsDetailModal = { offset, student, loading: true, hist: null, type: 'hours', allView: false };
+  _renderPreparatePane();
+  if (typeof _ptsFetchHist !== 'function') { _ptsDetailModal.loading = false; _renderPreparatePane(); return; }
+  _ptsFetchHist(student.id).then(hist => {
+    // Si mientras cargaba se cerró el modal, o se abrió otro (otro mes/alumno), no pisar ese estado.
+    if (!_ptsDetailModal || _ptsDetailModal.student.id !== student.id || _ptsDetailModal.offset !== offset) return;
+    _ptsDetailModal.hist = hist;
+    _ptsDetailModal.loading = false;
+    _renderPreparatePane();
+  });
+}
+function _ptsCloseDetail() { _ptsDetailModal = null; _renderPreparatePane(); }
+function _ptsSetDetailType(type) {
+  if (!_ptsDetailModal) return;
+  _ptsDetailModal.type = type;
+  _renderPreparatePane();
+}
+// Alterna entre el detalle día por día de UN alumno y la tabla comparativa de TODOS los
+// alumnos del mes (solo visible para el admin — ver _ptsDetailModalHtml). No requiere volver a
+// cargar historial: los totales de "todos" se leen del snapshot ya guardado en pointsLog
+// (mismo dato que usa getStudentPoints en el resto de la app), así que es instantáneo.
+function _ptsToggleAllView() {
+  if (!_ptsDetailModal) return;
+  _ptsDetailModal.allView = !_ptsDetailModal.allView;
+  _renderPreparatePane();
+}
+// Cambia el modal de detalle a OTRO alumno sin cerrarlo (se usa al tocar una fila de la tabla
+// "Ver todos"), manteniendo el mismo mes.
+function _ptsSwitchStudent(id) {
+  if (!_ptsDetailModal || typeof getFullList !== 'function') return;
+  const student = getFullList().find(x => x.id === id);
+  if (!student) return;
+  const offset = _ptsDetailModal.offset;
+  _ptsDetailModal = { offset, student, loading: true, hist: null, type: 'hours', allView: false };
+  _renderPreparatePane();
+  if (typeof _ptsFetchHist !== 'function') { _ptsDetailModal.loading = false; _renderPreparatePane(); return; }
+  _ptsFetchHist(student.id).then(hist => {
+    if (!_ptsDetailModal || _ptsDetailModal.student.id !== student.id || _ptsDetailModal.offset !== offset) return;
+    _ptsDetailModal.hist = hist;
+    _ptsDetailModal.loading = false;
+    _renderPreparatePane();
+  });
+}
+// Tabla comparativa de Puntos del mes para TODOS los alumnos (opción "Ver todos"): lee los
+// totales ya calculados/guardados por getStudentPoints (mismo snapshot que usa el resto de la
+// app), así que no dispara ninguna carga nueva — aparece al instante. Ordenada por total
+// descendente, como un mini-ranking del mes. Tocar una fila abre el detalle de ese alumno.
+function _ptsAllStudentsTableHtml(offset, currentId) {
+  if (typeof getFullList !== 'function' || typeof getStudentPoints !== 'function') {
+    return `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.4);font-size:12px">No se pudo cargar la lista de alumnos.</div>`;
+  }
+  const rows = getFullList().filter(s => s.id !== 0).map(s => {
+    const p = getStudentPoints(s.id, offset);
+    return { s, p, total: p.hours + p.progress + p.tasks };
+  }).sort((a,b) => b.total - a.total);
+  if (!rows.length) {
+    return `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.4);font-size:12px">No hay alumnos registrados.</div>`;
+  }
+  const rowsHtml = rows.map(({s,p,total}, i) => {
+    const isTop = i === 0 && total > 0;
+    const isCur = s.id === currentId;
+    const bg = isCur ? 'background:rgba(255,207,79,0.10);' : (isTop ? 'background:linear-gradient(90deg,rgba(255,207,79,0.08),transparent 65%);' : '');
+    return `<tr onclick="_ptsSwitchStudent(${s.id})" style="cursor:pointer;${bg}">
+      <td style="padding:9px 8px;border-top:1px solid rgba(255,255,255,0.05);font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px">${s.icon||'👤'} ${s.name}</td>
+      <td style="padding:9px 6px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;font-family:'Orbitron',monospace;font-weight:800;font-size:12.5px;color:#4fb6ff">${p.hours}</td>
+      <td style="padding:9px 6px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;font-family:'Orbitron',monospace;font-weight:800;font-size:12.5px;color:#b06bff">${p.progress}</td>
+      <td style="padding:9px 6px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;font-family:'Orbitron',monospace;font-weight:800;font-size:12.5px;color:#39ff7a">${p.tasks}</td>
+      <td style="padding:9px 8px;border-top:1px solid rgba(255,255,255,0.05);text-align:center;font-family:'Orbitron',monospace;font-weight:900;font-size:13.5px;color:#ffcf4f;text-shadow:0 0 8px rgba(255,207,79,0.4)">${total}</td>
+    </tr>`;
+  }).join('');
+  return `
+    <div style="font-size:9.5px;color:rgba(255,255,255,0.35);margin-bottom:8px">${rows.length} alumnos · toca un nombre para ver su detalle</div>
+    <div style="background:#17161f;border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden">
+      <div style="max-height:52vh;overflow-y:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="position:sticky;top:0;background:#17161f;z-index:1">
+            <th style="padding:8px;text-align:left;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,0.35)">Alumno</th>
+            <th style="padding:8px 6px;text-align:center;font-size:12px">⚡</th>
+            <th style="padding:8px 6px;text-align:center;font-size:12px">🎯</th>
+            <th style="padding:8px 6px;text-align:center;font-size:12px">🚩</th>
+            <th style="padding:8px;text-align:center;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,0.35)">Total</th>
+          </tr></thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+// Placa de icono con el efecto "neón con resplandor" elegido: fondo translúcido del color de la
+// categoría + box-shadow de brillo alrededor. sizePx chico para las pestañas/filas, grande para
+// las tarjetas de totales.
+function _ptsGlowBadge(icon, hex, sizePx) {
+  return `<span style="width:${sizePx}px;height:${sizePx}px;border-radius:${sizePx>=28?9:7}px;display:inline-flex;align-items:center;justify-content:center;font-size:${Math.round(sizePx*0.5)}px;flex-shrink:0;background:${hex}29;color:${hex};box-shadow:0 0 10px ${hex}8c">${icon}</span>`;
+}
+// Modal "detalle de Puntos de <mes>": organizado por TIPO de punto (pestañas Horas ⚡ / Progreso
+// 🎯 / Tareas 🚩, elegidas junto con el alumno), cada una mostrando solo las fechas donde pasó
+// algo de ese tipo, con el detalle real que lo explica — tiempo practicado (Horas), qué
+// habilidades se dominaron por primera vez (Progreso) y qué tareas quedaron completas (Tareas).
+// Estilo visual "neón con resplandor" (glow), elegido junto con el alumno tras comparar varias
+// opciones en un mockup aparte.
+function _ptsDetailModalHtml() {
+  if (!_ptsDetailModal) return '';
+  const { offset, student, loading, hist, type, allView } = _ptsDetailModal;
+  const mesLbl = _ptsMesNombre(offset);
+  const TYPES = {
+    hours:    { icon:'⚡', hex:'#4fb6ff', lbl:'Horas' },
+    progress: { icon:'🎯', hex:'#b06bff', lbl:'Progreso' },
+    tasks:    { icon:'🚩', hex:'#39ff7a', lbl:'Tareas' }
+  };
+  let bodyHtml;
+  if (allView) {
+    bodyHtml = _ptsAllStudentsTableHtml(offset, student.id);
+  } else if (loading || !Array.isArray(hist)) {
+    bodyHtml = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.4);font-size:12px">Cargando actividad de ${mesLbl}…</div>`;
+  } else if (typeof getClassDatesForStudent !== 'function' || typeof PTS_AUTO_CUTOFF === 'undefined' || typeof _ptsSecondsForDate !== 'function') {
+    bodyHtml = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.4);font-size:12px">No se pudo calcular el detalle en este momento.</div>`;
+  } else {
+    const allDates = getClassDatesForStudent(student.name, offset);
+    const dates = allDates.filter(d => d.key >= PTS_AUTO_CUTOFF);
+    const today = new Date(); today.setHours(0,0,0,0);
+    if (!allDates.length) {
+      bodyHtml = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.4);font-size:12px">No se encontró un horario de clase sincronizado para ${mesLbl}.</div>`;
+    } else if (!dates.length) {
+      bodyHtml = `<div style="text-align:center;padding:30px 10px;color:rgba(255,255,255,0.4);font-size:12px">El detalle automático solo está disponible desde ${PTS_AUTO_CUTOFF}. ${mesLbl} es anterior a esa fecha.</div>`;
+    } else {
+      const dayShort = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+      const topicsTouched = (typeof _ptsPureSkills === 'function') ? _ptsPureSkills([...new Set(hist.map(h=>h.topic).filter(Boolean))]) : [];
+      const myTasks = (overrides[String(student.id)]||{}).prepTasks || [];
+      const mult = (typeof getTaskMult === 'function') ? getTaskMult(student.id) : 1;
+      const tasksMax = (typeof PTS_TASKS_MAX !== 'undefined') ? PTS_TASKS_MAX : 5;
+      const skillLbl = tk => (typeof _cleanLbl === 'function') ? _cleanLbl((BINGO_TOPICS[tk]||{}).lbl, tk) : ((BINGO_TOPICS[tk]||{}).lbl || tk);
+      const taskLbl = t => t.exam ? (t.label||'Examen de unidad') : ((BINGO_TOPICS[t.topic]||{}).lbl || t.topic || 'Tarea');
+      const dlabel = date => `${dayShort[date.getDay()]} ${date.getDate()} de ${mesLbl}`;
+      const pastDates = dates.filter(d => d.date <= today).slice().reverse(); // más reciente primero
+
+      // Filas de la pestaña Horas: una por día de clase pasado, con sus puntos y el tiempo real.
+      let totalHoursPts = 0, totalRealSec = 0;
+      const hoursRows = pastDates.map(({date,key}) => {
+        const realSec = _ptsSecondsForDate(hist, key);
+        const hPts = _ptsAutoHoursForDate(hist, key);
+        totalHoursPts += hPts; totalRealSec += realSec;
+        const earned = hPts > 0;
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
+          <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(date)}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">practicó ${_prepFmtDur(realSec)}${earned?'':' (no alcanzó)'}</div></div>
+          <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:${earned?'#4fb6ff':'rgba(255,255,255,0.3)'}">+${hPts}</div>
+        </div>`;
+      }).join('');
+
+      // Filas de la pestaña Progreso: una por CADA habilidad dominada por primera vez este mes.
+      let totalProgressPts = 0;
+      const progressEvents = [];
+      pastDates.forEach(({date,key}) => {
+        topicsTouched.forEach(tk => {
+          if (typeof _ptsFirstDominatedDate === 'function' && _ptsFirstDominatedDate(tk, hist) === key) {
+            progressEvents.push({date, label: skillLbl(tk)});
+          }
+        });
+      });
+      totalProgressPts = progressEvents.length;
+      const progressRows = progressEvents.map(ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(ev.date)}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">${ev.label}</div></div>
+        <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:#b06bff">+1</div>
+      </div>`).join('');
+
+      // Filas de la pestaña Tareas: una por cada tarea asignada que quedó completa este mes.
+      let totalTasksPts = 0;
+      const taskEvents = [];
+      pastDates.forEach(({date,key}) => {
+        const doneThatDay = myTasks.filter(t => typeof _ptsTaskCompletionDate === 'function' && _ptsTaskCompletionDate(t, hist) === key);
+        // Respeta el mismo tope diario (tasksMax) que usa el cálculo oficial de puntos.
+        doneThatDay.slice(0, tasksMax).forEach(t => taskEvents.push({date, label: taskLbl(t)}));
+        totalTasksPts += Math.min(doneThatDay.length, tasksMax) * mult;
+      });
+      const taskRows = taskEvents.map(ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(ev.date)}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">${ev.label}</div></div>
+        <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:#39ff7a">+${mult}</div>
+      </div>`).join('');
+
+      const ROWS = { hours: hoursRows, progress: progressRows, tasks: taskRows };
+      const EMPTY_MSG = {
+        hours: 'Aún no hay fechas de clase pasadas este mes.',
+        progress: 'Todavía no domina ninguna habilidad nueva este mes.',
+        tasks: 'Todavía no completa ninguna tarea asignada este mes.'
+      };
+      const TOTALS = { hours: totalHoursPts, progress: totalProgressPts, tasks: totalTasksPts };
+
+      const statTile = key => {
+        const t = TYPES[key];
+        return `<div style="flex:1;text-align:center;border-radius:10px;padding:11px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;background:${t.hex}1f;border:1px solid ${t.hex};box-shadow:0 0 16px ${t.hex}59, inset 0 0 12px ${t.hex}14">
+          ${_ptsGlowBadge(t.icon, t.hex, 30)}
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,0.55)">${t.lbl}</div>
+          <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:19px;line-height:1;color:${t.hex};text-shadow:0 0 12px ${t.hex}b3">${TOTALS[key]}</div>
+        </div>`;
+      };
+      const tabBtn = key => {
+        const t = TYPES[key]; const sel = type === key;
+        return `<button onclick="_ptsSetDetailType('${key}')" style="flex:1;border:none;padding:8px 6px;border-radius:9px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:6px;background:${sel?t.hex+'29':'transparent'};color:${sel?t.hex:'rgba(255,255,255,0.4)'};box-shadow:${sel?'0 0 10px '+t.hex+'66':'none'}">
+          ${_ptsGlowBadge(t.icon, t.hex, 22)} ${t.lbl}
+        </button>`;
+      };
+
+      bodyHtml = `
+        <div style="display:flex;gap:8px;margin-bottom:14px">${statTile('hours')}${statTile('progress')}${statTile('tasks')}</div>
+        ${type==='hours' ? `<div style="text-align:right;font-size:9px;color:rgba(255,255,255,0.3);margin:-8px 0 8px">${_prepFmtDur(totalRealSec)} reales practicados en total</div>` : ''}
+        <div style="display:flex;gap:6px;margin-bottom:4px;background:rgba(255,255,255,0.04);padding:4px;border-radius:12px">${tabBtn('hours')}${tabBtn('progress')}${tabBtn('tasks')}</div>
+        <div style="background:#17161f;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0 13px">
+          ${ROWS[type] || `<div style="text-align:center;padding:20px 10px;color:rgba(255,255,255,0.3);font-size:11px">${EMPTY_MSG[type]}</div>`}
+        </div>
+      `;
+    }
+  }
+  return `<div id="pts-detail-overlay" onclick="if(event.target===this)_ptsCloseDetail()" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#111017;border:1px solid rgba(255,255,255,0.12);border-radius:14px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,0.5), 0 0 40px rgba(176,107,255,0.10)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:16px;text-transform:uppercase;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${allView ? '🏆 Todos — ' + mesLbl : '🎯 Puntos de ' + mesLbl}</span>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          ${((typeof isAdmin === 'function' && isAdmin()) || (typeof _isTeacher === 'function' && _isTeacher())) ? `<button onclick="_ptsToggleAllView()" style="border:1px solid rgba(255,207,79,0.45);background:${allView?'rgba(255,207,79,0.18)':'rgba(255,255,255,0.06)'};color:#ffcf4f;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10.5px;padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap">${allView?'👤 Ver detalle':'🏆 Ver todos'}</button>` : ''}
+          <button onclick="_ptsCloseDetail()" style="border:none;background:rgba(255,255,255,0.08);color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;flex-shrink:0">✕</button>
+        </div>
+      </div>
+      ${bodyHtml}
+    </div>
+  </div>`;
 }
 function _prepHistCardHtml(h, dateStr, timeStr, ok) {
   const expanded = _prepExpandedHistId === h.id;
@@ -22561,7 +23347,14 @@ function _prepCourseScore(topicKeys) {
 function _prepMasteryLevelH(topicKey, hist) {
   if (!Array.isArray(hist)) return 'unknown';
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  let sessions = hist.filter(h=>h.topic===topicKey);
+  // IMPORTANTE: ordenar siempre de más reciente a más antiguo antes de tomar sessions[0].
+  // Si el `hist` recibido viene en orden ASCENDENTE (como histAsc en _ptsFirstDominatedDate,
+  // que evalúa prefijos crecientes hist.slice(0,i+1) para "revivir" el historial día a día),
+  // sin este sort sessions[0] quedaría fijo en el PRIMER intento de esa habilidad para
+  // siempre (nunca cambia al crecer el prefijo), así que un alumno que no dominó una
+  // habilidad en su primer intento pero sí en uno posterior NUNCA se detectaba como
+  // "dominado" por esta función, aunque el panel de mastery actual sí lo mostrara dominado.
+  let sessions = hist.filter(h=>h.topic===topicKey).slice().sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   if (isQuiz) {
     const boost = _prepQuizExamBoost(topicKey, hist);
     if (boost) sessions = sessions.concat([boost]).sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
@@ -22598,7 +23391,9 @@ function _prepMasteryLevelH(topicKey, hist) {
 function _prepLastPctH(topicKey, hist) {
   if (!Array.isArray(hist)) return null;
   const isQuiz = !!BINGO_TOPICS[topicKey]?.quiz;
-  let allSess = hist.filter(h=>h.topic===topicKey);
+  // Mismo fix que en _prepMasteryLevelH: forzar orden descendente antes de usar allSess[0],
+  // para que funcione igual sin importar si `hist` viene ascendente o descendente.
+  let allSess = hist.filter(h=>h.topic===topicKey).slice().sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   if (isQuiz) {
     const boost = _prepQuizExamBoost(topicKey, hist);
     if (boost) allSess = allSess.concat([boost]).sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
@@ -24210,6 +25005,18 @@ function _prepApplyMcMode(q) {
   }
   return q;
 }
+// Determina si la sesión que está por iniciar usa una configuración distinta a la que el
+// profesor vería "por defecto" para este tema (misma fórmula que el reseteo automático del
+// selector de Preguntas al cambiar de tema: cuestionarios de grupo → 5 por habilidad fuente,
+// cualquier otro tema → 10). "Sin límite" (_prep.timeSec === 0) también cuenta como configuración
+// no-regular, ya que cambia por completo la dinámica de la sesión (sin presión de tiempo).
+// Se usa para (a) mostrar "Modo: Básico" vs "Modo: Regular" en el HUD de la sesión, y (b) marcar
+// el historial guardado (customConfig) para que esas sesiones no cuenten puntos de Progreso.
+function _prepIsCustomConfig(topic) {
+  const def = BINGO_TOPICS[topic || _prep.topic] || {};
+  const naturalQCount = (def.srcKeys && def.srcKeys.length) ? def.srcKeys.length * 5 : 10;
+  return (_prep.qCount !== naturalQCount) || (_prep.timeSec === 0);
+}
 function _prepStartUnit(skills) {
   const valid = (skills||[]).filter(sk=>BINGO_TOPICS[sk]);
   if (!valid.length) return;
@@ -24258,7 +25065,7 @@ function _prepStartFromUnit(sk) {
   // lógica que las demás pantallas de práctica: escala por pregunta y respeta "Sin límite".
   const _isUnlimited2 = _prep.timeSec === 0;
   const _autoTime2 = _isUnlimited2 ? 0 : qs.length * (def.quiz ? 40 : 60);
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,timeUnlimited:_isUnlimited2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,timeUnlimited:_isUnlimited2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now(),customConfig:_prepIsCustomConfig(sk)});
   clearInterval(_prepTimerIntv);
   if (_autoTime2>0 || _isUnlimited2) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -24360,7 +25167,9 @@ function _prepUnitExam(skills, unitIdx) {
   // examen nunca termina por tiempo.
   const _isUnlimitedExam = _prep.timeSec === 0;
   const _examTime = _isUnlimitedExam ? 0 : qs.length * 20;
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,timeUnlimited:_isUnlimitedExam,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now()});
+  // El examen de unidad usa siempre 5 preguntas fijas por habilidad (perSkill), no _prep.qCount,
+  // así que lo único que puede volverlo "no regular" aquí es haber elegido "Sin límite" de tiempo.
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,timeUnlimited:_isUnlimitedExam,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now(),customConfig:_isUnlimitedExam});
   clearInterval(_prepTimerIntv);
   if (_examTime > 0 || _isUnlimitedExam) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -24436,7 +25245,7 @@ function _prepStart() {
     // cronómetro cuenta hacia arriba en vez de hacia abajo y la sesión nunca termina por tiempo.
     const _isUnlimited = _prep.timeSec === 0;
     const _autoTime = _isUnlimited ? 0 : qs.length * (def.quiz ? 40 : 60);
-    Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, timeUnlimited:_isUnlimited, showReview:false, lives:def.quiz?4:5, maxLives:def.quiz?4:5, streak:0, streakBonusAccum:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now() });
+    Object.assign(_prep, { state:'exam', questions:qs, answers:[], currentIdx:0, selectedOpt:null, answered:false, startTime:Date.now(), endTime:null, timeLeft:_autoTime, timeUnlimited:_isUnlimited, showReview:false, lives:def.quiz?4:5, maxLives:def.quiz?4:5, streak:0, streakBonusAccum:0, gameStartTime:Date.now(), retryLock:false, gameOver:false, qStartTime:Date.now(), customConfig:_prepIsCustomConfig(_prep.topic) });
     clearInterval(_prepTimerIntv);
     if (_autoTime > 0 || _isUnlimited) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
     clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -27842,6 +28651,10 @@ async function _prepSaveHistoryPartial() {
       isUnitExam: !!_prep.isUnitExam, quizNum: _prep.quizNum||0,
       correct, total, pct, timeSec: secs,
       partial: true,
+      // true si la sesión usó una cantidad de preguntas o un tiempo distinto al que el profesor
+      // vería "por defecto" para esta habilidad (o "Sin límite" de tiempo). Estas sesiones no
+      // deben contar para los puntos de Progreso (ver _ptsFirstDominatedDate en student.html).
+      customConfig: !!_prep.customConfig,
       answers: _prep.answers.map(a=>({q:a.q,a:a.a,given:a.given,correct:a.correct,timeSec:a.timeSec||0,_id:a._id??null,_src:a._src||null})),
       completedAt: { seconds: Math.floor(Date.now()/1000) },
       ...(_isDesafioPartial ? {retoLbl: _prep.selectedExamLbl||'', desafioNivel: _prep.desafioNivel||1} : {})
@@ -27953,6 +28766,10 @@ async function _prepSaveHistory() {
       uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
       topic: _prep.topic, topicLabel: _examUnitLabel || _cleanLbl(def.lbl||_prep.topic), isUnitExam: !!_prep.isUnitExam, quizNum: _prep.quizNum||0,
       correct, total, pct, timeSec: secs,
+      // true si la sesión usó una cantidad de preguntas o un tiempo distinto al que el profesor
+      // vería "por defecto" para esta habilidad (o "Sin límite" de tiempo). Estas sesiones no
+      // deben contar para los puntos de Progreso (ver _ptsFirstDominatedDate en student.html).
+      customConfig: !!_prep.customConfig,
       answers: _prep.answers.map(a=>({q:a.q,a:a.a,given:a.given,correct:a.correct,timeSec:a.timeSec||0,_id:a._id??null,_src:a._src||null})),
       completedAt: { seconds: Math.floor(Date.now()/1000) },
       ...(_isDesafioSave ? {retoLbl: _prep.selectedExamLbl||'', desafioNivel: _prep.desafioNivel||1} : {})
@@ -27979,9 +28796,9 @@ async function _prepSaveHistory() {
       for (const sk of _examAllSkills) {
         if (_prepMasteryLevel(sk)==='dominado') continue;
         const skDef=BINGO_TOPICS[sk]||{};
-        const skE={uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:{seconds:now}};
+        const skE={uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,customConfig:!!_prep.customConfig,completedAt:{seconds:now}};
         if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skE);
-        db.collection('prepHistory').add({uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,completedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(e=>console.error('exam auto-dominate',e));
+        db.collection('prepHistory').add({uid:me.uid,name:me.name,level:_prep.level,grade:_prep.grade||'',topic:sk,topicLabel:skDef.lbl||sk,correct:4,total:4,pct:100,timeSec:0,answers:[],autoFromExam:true,customConfig:!!_prep.customConfig,completedAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(e=>console.error('exam auto-dominate',e));
       }
     }
     // Si cuestionario completado (cualquier pct > 0): propagar nivel a cada habilidad cubierta.
@@ -28009,7 +28826,7 @@ async function _prepSaveHistory() {
           uid: me.uid, name: me.name, level: _prep.level, grade: _prep.grade||'',
           topic: sk, topicLabel: skDef.lbl||sk,
           correct: skCorrect, total: skTotal, pct: skPct, timeSec: 0, answers: [],
-          autoFromQuiz: _prep.topic, completedAt: { seconds: now }
+          autoFromQuiz: _prep.topic, customConfig: !!_prep.customConfig, completedAt: { seconds: now }
         };
         if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skEntry);
         db.collection('prepHistory').add({
@@ -28017,6 +28834,7 @@ async function _prepSaveHistory() {
           topic: sk, topicLabel: skDef.lbl||sk,
           correct: skCorrect, total: skTotal, pct: skPct, timeSec: 0, answers: [],
           autoFromQuiz: _prep.topic,
+          customConfig: !!_prep.customConfig,
           completedAt: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(e=>console.error('quiz-propagate save',e));
       }
@@ -28041,9 +28859,9 @@ async function _prepSaveHistory() {
         const skCorrect2 = stats2 ? stats2.correct : Math.round(pct * 4 / 100);
         const skTotal2   = stats2 ? stats2.total   : 4;
         const skDef2 = BINGO_TOPICS[sk]||{};
-        const skE2 = { uid:me.uid, name:me.name, level:_prep.level, grade:_prep.grade||'', topic:sk, topicLabel:skDef2.lbl||sk, correct:skCorrect2, total:skTotal2, pct:skPct2, timeSec:0, answers:[], autoFromExam:_prep.topic, completedAt:{seconds:now} };
+        const skE2 = { uid:me.uid, name:me.name, level:_prep.level, grade:_prep.grade||'', topic:sk, topicLabel:skDef2.lbl||sk, correct:skCorrect2, total:skTotal2, pct:skPct2, timeSec:0, answers:[], autoFromExam:_prep.topic, customConfig:!!_prep.customConfig, completedAt:{seconds:now} };
         if (Array.isArray(_prepHistoryData)) _prepHistoryData.unshift(skE2);
-        db.collection('prepHistory').add({ uid:me.uid, name:me.name, level:_prep.level, grade:_prep.grade||'', topic:sk, topicLabel:skDef2.lbl||sk, correct:skCorrect2, total:skTotal2, pct:skPct2, timeSec:0, answers:[], autoFromExam:_prep.topic, completedAt:firebase.firestore.FieldValue.serverTimestamp() }).catch(e=>console.error('exam skill-propagate save',e));
+        db.collection('prepHistory').add({ uid:me.uid, name:me.name, level:_prep.level, grade:_prep.grade||'', topic:sk, topicLabel:skDef2.lbl||sk, correct:skCorrect2, total:skTotal2, pct:skPct2, timeSec:0, answers:[], autoFromExam:_prep.topic, customConfig:!!_prep.customConfig, completedAt:firebase.firestore.FieldValue.serverTimestamp() }).catch(e=>console.error('exam skill-propagate save',e));
       }
     }
     await db.collection('prepHistory').add({
@@ -28057,6 +28875,7 @@ async function _prepSaveHistory() {
       quizNum:    _prep.quizNum || 0,
       correct, total, pct,
       timeSec:    secs,
+      customConfig: !!_prep.customConfig,
       answers:    _prep.answers.map(a=>({q:a.q, a:a.a, given:a.given, correct:a.correct, timeSec:a.timeSec||0, _id:a._id??null, _src:a._src||null})),
       completedAt: firebase.firestore.FieldValue.serverTimestamp(),
       ...(_isDesafioSave ? {retoLbl: _prep.selectedExamLbl||'', desafioNivel: _prep.desafioNivel||1} : {})
@@ -28124,6 +28943,58 @@ async function loadPrepHistoryAdmin() {
     _prepAdminHistData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
   } catch(e) { _prepAdminHistData = []; console.error('prep admin history load', e); }
   _prepAdminHistLoading = false;
+  _renderPreparatePane();
+  _prepAdminCheckExtraStudents(); // fire-and-forget: no bloquea el render de arriba
+}
+// Detecta alumnos con historial propio en prepHistory que quedaron fuera del top-200 global
+// (_prepAdminHistData) — típicamente alumnos que practican con menos frecuencia que el resto del
+// colegio. Para cada uno hace solo una consulta mínima (.limit(1), un único documento) para
+// confirmar si existe AL MENOS un registro suyo; no trae su historial completo todavía (eso se
+// carga recién bajo demanda, ver _prepAdminFetchOwnHistory, cuando el admin hace clic en su
+// etiqueta). Se dispara una sola vez por apertura del panel de historial.
+async function _prepAdminCheckExtraStudents() {
+  if (_prepAdminExtraChecking || !Array.isArray(_prepAdminHistData)) return;
+  _prepAdminExtraChecking = true;
+  try {
+    const known = new Set(_prepAdminHistData.map(h => String(h.uid)));
+    const missing = getStudents().filter(s => !known.has(String(s.id)) && !_prepAdminExtraUids.has(String(s.id)));
+    let changed = false;
+    for (const s of missing) {
+      try {
+        const snap = await db.collection('prepHistory').where('uid','==',String(s.id)).limit(1).get();
+        if (!snap.empty) { _prepAdminExtraUids.add(String(s.id)); changed = true; }
+      } catch(e) { console.error('[prep-admin] check extra student', s.id, e); }
+    }
+    if (changed && _prepAdminShowHist) _renderPreparatePane();
+  } finally { _prepAdminExtraChecking = false; }
+}
+// Carga el historial individual completo de un alumno que quedó fuera del top-200 global, para
+// cuando el admin filtra por su etiqueta (ver _prepAdminHistoryHtml). Mismo patrón de fallback
+// sin orderBy que _ptsFetchHist (student.html) por si falta el índice compuesto uid+completedAt.
+async function _prepAdminFetchOwnHistory(uid) {
+  if (_prepAdminExtraHist[uid] || _prepAdminExtraHistLoading[uid]) return;
+  _prepAdminExtraHistLoading[uid] = true;
+  try {
+    let snap;
+    try {
+      // Límite alto (antes 200): un alumno muy activo (ej. Lucio) puede superar fácilmente
+      // las 200 actividades totales, y cuando eso pasa Y además falla la consulta ordenada
+      // (ver catch de abajo, típico por faltar el índice compuesto uid+completedAt), el
+      // fallback sin orden le devolvía "200 cualquiera" de Firestore — ni siquiera las 200 más
+      // recientes — lo que hacía que faltaran actividades sueltas y salteadas de un mismo día
+      // en vez de faltar solo las más antiguas. Con 3000 (mismo tope que usa el propio alumno
+      // en _ptsFetchHist para su cálculo de Horas) esto ya no debería recortar a nadie.
+      snap = await db.collection('prepHistory').where('uid','==',uid).orderBy('completedAt','desc').limit(3000).get();
+    } catch(idxErr) {
+      console.error('[prep-admin] orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error para crearlo), usando fallback sin orden:', idxErr);
+      snap = await db.collection('prepHistory').where('uid','==',uid).limit(3000).get();
+    }
+    const arr = [];
+    snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+    arr.sort((a,b) => (b.completedAt?.seconds||0) - (a.completedAt?.seconds||0));
+    _prepAdminExtraHist[uid] = arr;
+  } catch(e) { console.error('[prep-admin] fetch own history', uid, e); _prepAdminExtraHist[uid] = []; }
+  _prepAdminExtraHistLoading[uid] = false;
   _renderPreparatePane();
 }
 // Muestra el modal propio (estilo app, sin el cuadro nativo del navegador) para confirmar
@@ -28287,6 +29158,19 @@ async function _prepBackfillReassignedPropagation() {
   _prepBackfillBusy = false;
   _renderPreparatePane();
 }
+// Formatea segundos como "1h 17m 4s" / "17m 4s" / "4s" (omite unidades en cero, salvo que el
+// total sea 0). Usada en el historial de alumnos para mostrar cuánto duró cada intento y el
+// total del listado filtrado — mismo campo timeSec que usa el cálculo automático de Puntos
+// (_ptsSecondsForDate en student.html), así ambos lados se pueden comparar directamente.
+function _prepFmtDur(totalSec) {
+  const sec = Math.max(0, Math.round(Number(totalSec)||0));
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = sec%60;
+  const parts = [];
+  if (h) parts.push(h+'h');
+  if (m) parts.push(m+'m');
+  if (s || !parts.length) parts.push(s+'s');
+  return parts.join(' ');
+}
 function _prepAdminHistoryHtml() {
   const loading = _prepAdminHistLoading;
   const raw = _prepAdminHistData;
@@ -28296,26 +29180,57 @@ function _prepAdminHistoryHtml() {
   const allPeople = [teacherEntry, ...students];
   // Solo entradas directas (excluir auto-dominados indirectos)
   const direct = Array.isArray(raw) ? raw.filter(h=>!h.autoFromExam && !h.autoFromQuiz) : raw;
-  // Filtrar por persona si hay filtro activo
-  const data = Array.isArray(direct)
-    ? (_prepAdminFilterUid ? direct.filter(h=>h.uid===_prepAdminFilterUid) : direct)
-    : null;
+  // Filtrar por persona: siempre se carga su historial completo bajo demanda (ver más abajo),
+  // nunca se recorta sobre "direct" (que solo trae las 200 actividades más recientes de TODO
+  // el colegio junto).
+  let data;
+  if (_prepAdminFilterUid) {
+    // Al filtrar por UNA persona específica siempre se usa su historial COMPLETO propio
+    // (hasta 200 registros DE ESA PERSONA, vía _prepAdminFetchOwnHistory) en vez de recortar
+    // sobre "direct" (que solo trae las 200 actividades más recientes de TODO el colegio
+    // junto). Antes, si esa persona ya tenía algo de actividad muy reciente y por eso
+    // aparecía en ese top-200 global, se usaba ese caché recortado para filtrar — y sus
+    // actividades más antiguas (de días previos) podían faltar en la lista aunque su
+    // etiqueta sí apareciera, dando un total de tiempo menor al real (el de Horas/reporte
+    // semanal, que sí lee el historial completo de la persona sin ningún tope de 200 global).
+    if (_prepAdminExtraHist[_prepAdminFilterUid]) {
+      data = _prepAdminExtraHist[_prepAdminFilterUid].filter(h=>!h.autoFromExam && !h.autoFromQuiz);
+    } else {
+      _prepAdminFetchOwnHistory(_prepAdminFilterUid);
+      data = null;
+    }
+  } else {
+    data = Array.isArray(direct) ? direct : null;
+  }
   const empty = Array.isArray(data) && data.length === 0;
-  // Pills (alumnos + profesor, solo los que tienen entradas)
-  const uidsWithData = Array.isArray(direct) ? [...new Set(direct.map(h=>h.uid))] : [];
+  // Pills (alumnos + profesor): los del top-200 (uidsWithData) más los "extra" detectados con
+  // historial propio aunque hayan quedado fuera de ese top-200 (_prepAdminExtraUids).
+  const uidsWithData = [...new Set([...(Array.isArray(direct) ? direct.map(h=>h.uid) : []), ..._prepAdminExtraUids])];
   const studentPills = allPeople
     .filter(s=>uidsWithData.includes(String(s.id)))
     .map(s=>{
       const active = _prepAdminFilterUid === String(s.id);
       return `<button onclick="_prepAdminFilterUid=${active?'null':"'"+String(s.id)+"'"};_renderPreparatePane()" style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:16px;border:1px solid ${active?s.color:'rgba(255,255,255,0.15)'};background:${active?s.color+'22':'rgba(255,255,255,0.05)'};color:${active?s.color:'rgba(255,255,255,0.6)'};font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer">${s.icon} ${s.name.split(' ')[0]}</button>`;
     }).join('');
+  // Resumen de tiempo del listado actualmente mostrado (respeta el filtro por alumno/profesor
+  // activo, si hay uno) — mismo campo timeSec que alimenta el punto automático de Horas, para
+  // poder comparar directamente "¿cuánto practicó realmente?" contra lo que sumó Puntos.
+  let timeSummaryHtml = '';
+  if (Array.isArray(data) && data.length) {
+    const totalTimeSec = data.reduce((a,h)=>a+(Number(h.timeSec)||0),0);
+    const totalTimeSecDirect = data.filter(h=>!h.autoFromExam&&!h.autoFromQuiz).reduce((a,h)=>a+(Number(h.timeSec)||0),0);
+    timeSummaryHtml = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;padding:7px 10px;border-radius:8px;background:rgba(79,182,255,0.08);border:1px solid rgba(79,182,255,0.25)">
+      <span style="font-size:10px;font-weight:700;letter-spacing:.04em;color:rgba(255,255,255,0.6);text-transform:uppercase">⏱️ Tiempo total (${data.length} registro${data.length===1?'':'s'})</span>
+      <span style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:#4fb6ff" title="Sin contar registros auto-propagados por examen/cuestionario: ${_prepFmtDur(totalTimeSecDirect)}">${_prepFmtDur(totalTimeSec)}</span>
+    </div>`;
+  }
   let cardsHtml = '';
   if (loading || !Array.isArray(data)) {
     cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`;
   } else if (empty) {
     cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">Aún no hay partidas guardadas.</div>`;
   } else {
-    cardsHtml = `<div class="prep-review-list">${data.map(h=>{
+    cardsHtml = `${timeSummaryHtml}<div class="prep-review-list">${data.map(h=>{
       const stu = allPeople.find(s=>String(s.id)===String(h.uid));
       const dateStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
       const timeStr = h.completedAt?.seconds ? new Date(h.completedAt.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
@@ -28371,7 +29286,7 @@ function _prepAdminHistoryHtml() {
         +'</div>'
         +'<div style="display:flex;justify-content:space-between;margin-top:2px">'
         +'<span style="font-size:11px;color:rgba(255,255,255,0.35);cursor:pointer;text-decoration:underline dotted rgba(255,255,255,0.2)" onclick="_prepGoToTopic(\''+h.topic+'\',\''+h.level+'\',\''+(h.grade||'')+'\','+(_aRetoLbl?'\''+_aRetoLbl.replace(/'/g,"\\'")+'\'':'null')+','+_aNivel+')" title="Ir al curso">'+lvlLbl+gradeLbl+_aEd+_aArea+'</span>'
-        +'<span style="font-size:11px;color:rgba(255,255,255,0.3)">'+dateStr+' '+timeStr+'</span>'
+        +'<span style="font-size:11px;color:rgba(255,255,255,0.3)">'+dateStr+' '+timeStr+(h.timeSec?' · ⏱ '+_prepFmtDur(h.timeSec):'')+'</span>'
         +'</div>'+expandBtn+reassignBtn+'</div>';
     }).join('')}</div>`;
   }
@@ -28477,7 +29392,10 @@ function _prepExamHtml() {
         </div>
         <div style="padding-right:48px;flex-shrink:0">${timerHtml}</div>
       </div>
-      <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_examLbl}</div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_examLbl}</div>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;padding:3px 8px;border-radius:7px;white-space:nowrap;${_prep.customConfig?'background:rgba(255,207,79,0.14);border:1px solid rgba(255,207,79,0.4);color:#ffcf4f':'background:rgba(79,182,255,0.14);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff'}" title="${_prep.customConfig?'Configuración personalizada por el profesor: esta sesión no suma puntos de Progreso.':'Configuración por defecto de la habilidad.'}">${_prep.customConfig?'⚙️ Modo: Básico':'✓ Modo: Regular'}</span>
+      </div>
     </div>
     <div class="prep-progress-row">
       <span class="prep-prog-label">${idx+1}/${total}</span>

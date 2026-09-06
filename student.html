@@ -2441,7 +2441,13 @@ function getClassDatesForStudent(studentName, monthOffset=0) {
       const isOneTime = s.recurring === false && s.date;
       if (isOneTime) return s.date === key && isSessionActive(s, dt, key);
       if (Array.isArray(s.skipDates) && s.skipDates.includes(key)) return false;
-      if (Number(s.day) !== dt.getDay()) return false;
+      // Igual expansión que ya usan otras vistas de horario (ver líneas ~10640 y ~11862): una
+      // sesión recurrente en varios días de la semana (ej. Martes y Jueves) guarda esos días en
+      // "days" (array), y "day" queda como un solo día "principal" heredado por compatibilidad.
+      // Antes esta función solo miraba "day", así que una sesión con days:[2,4] únicamente
+      // aparecía los martes y el jueves desaparecía por completo del calendario de Puntos.
+      const daysArr = Array.isArray(s.days) && s.days.length ? s.days : [Number(s.day)];
+      if (!daysArr.includes(dt.getDay())) return false;
       return isSessionActive(s, dt, key);
     });
     if (todays.length) {
@@ -2488,14 +2494,27 @@ function _ptsFetchHist(studentId) {
   const cached = _ptsHistCache[key];
   if (cached && cached.data) return Promise.resolve(cached.data);
   if (cached && cached.loading) return cached.loading;
-  const p = db.collection('prepHistory').where('uid','==',key).orderBy('completedAt','asc').limit(3000).get()
-    .then(snap => {
-      const arr = [];
-      snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
-      _ptsHistCache[key] = { data: arr };
-      return arr;
-    })
-    .catch(e => { console.error('[pts-auto] error cargando prepHistory', e); _ptsHistCache[key] = { data: [] }; return []; });
+  // Igual fallback que ya usa loadPrepHistory (levelup.js) para este mismo caso: si el índice
+  // compuesto (uid ASC, completedAt ASC) todavía no existe en Firestore, la consulta con orderBy
+  // falla con 'failed-precondition' (Firestore imprime en consola un link para crearlo con un
+  // clic). ANTES este error se tragaba en el .catch de abajo y devolvía [] silenciosamente — eso
+  // hacía que TODO el cálculo automático de Puntos (Horas/Progreso/Tareas) diera 0 para cualquier
+  // alumno mientras el índice no existiera, aunque sí tuviera historial real. Ahora, si el orderBy
+  // falla, se reintenta sin ordenar en el servidor y se ordena en el cliente como red de seguridad.
+  const p = (async () => {
+    let snap;
+    try {
+      snap = await db.collection('prepHistory').where('uid','==',key).orderBy('completedAt','asc').limit(3000).get();
+    } catch(idxErr) {
+      console.error('[pts-auto] prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
+      snap = await db.collection('prepHistory').where('uid','==',key).limit(3000).get();
+    }
+    const arr = [];
+    snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
+    arr.sort((a,b) => (a.completedAt?.seconds||0) - (b.completedAt?.seconds||0));
+    _ptsHistCache[key] = { data: arr };
+    return arr;
+  })().catch(e => { console.error('[pts-auto] error cargando prepHistory', e); _ptsHistCache[key] = { data: [] }; return []; });
   _ptsHistCache[key] = { loading: p };
   return p;
 }
@@ -2513,7 +2532,12 @@ function _ptsSecondsForDate(histAsc, dateKey) {
   }, 0);
 }
 function _ptsAutoHoursForDate(histAsc, dateKey) {
-  return Math.floor(_ptsSecondsForDate(histAsc, dateKey) / 3600);
+  const sec = _ptsSecondsForDate(histAsc, dateKey);
+  const wholeHours = Math.floor(sec / 3600);
+  const remainderSec = sec % 3600;
+  // Redondeo hacia arriba solo si llegó a los 20 min de la hora en curso (>=1200s); si no, se
+  // queda en las horas completas ya practicadas. Ej: 1h17m → 1 punto; 1h20m → 2 puntos.
+  return remainderSec >= 1200 ? wholeHours + 1 : wholeHours;
 }
 // Fecha (YYYY-MM-DD) en la que una habilidad (topicKey) alcanzó 'dominado' por PRIMERA VEZ,
 // según el historial completo del alumno en orden cronológico ascendente. Se apoya en
@@ -2522,9 +2546,15 @@ function _ptsAutoHoursForDate(histAsc, dateKey) {
 // existía: solo había una aproximación ("¿está dominada ahora Y se tocó esta semana?") que no
 // distinguía si ya estaba dominada desde antes. null si nunca llegó a dominarse.
 function _ptsFirstDominatedDate(topicKey, histAsc) {
-  for (let i=0; i<histAsc.length; i++) {
-    const sec = histAsc[i].completedAt?.seconds; if (!sec) continue;
-    if (_prepMasteryLevelH(topicKey, histAsc.slice(0, i+1)) === 'dominado') {
+  // Se excluyen las sesiones con configuración personalizada (customConfig: cantidad de
+  // preguntas y/o tiempo distintos al de la habilidad por defecto, elegidos por el profesor
+  // vía "Configurar sesión") — no cuentan como prueba válida de dominio para efectos de
+  // puntos de Progreso/Tareas, ya que el alumno pudo haber tenido menos preguntas o más tiempo
+  // del que tendría en una sesión regular.
+  const histFiltered = histAsc.filter(h => !h.customConfig);
+  for (let i=0; i<histFiltered.length; i++) {
+    const sec = histFiltered[i].completedAt?.seconds; if (!sec) continue;
+    if (_prepMasteryLevelH(topicKey, histFiltered.slice(0, i+1)) === 'dominado') {
       return _ptsDateKeyFromSeconds(sec);
     }
   }
