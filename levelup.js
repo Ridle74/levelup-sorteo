@@ -21350,23 +21350,16 @@ function _prepConfigHtml() {
       let innerContent = '';
       if (_maTab === 'tareas') {
         const _tSubTab = _prep.tareasSubTab || 'activas';
-        // Una tarea es "vencida" si tiene fecha de vencimiento pasada y aún no está completada;
-        // si ya está completada (_done2) cuenta como "activa" independientemente de la fecha.
-        const _isVencidaMA = (t, hist) => {
-          if (!t.dueAt) return false;
-          const _isExamT2 = !!t.exam;
-          const _def3 = BINGO_TOPICS[t.topic]||{};
-          const skills2 = _isExamT2 ? (t.skills||[]) : (t.topic ? [t.topic] : []);
-          const pctData2 = _skillsScore(skills2, hist);
-          const _pct3 = pctData2 ? pctData2.pct : 0;
-          const _done3 = _pct3 >= 100;
-          return !_done3 && t.dueAt < (Date.now()/1000);
-        };
+        // Una tarea es "vencida" simplemente si ya pasó su fecha de vencimiento, esté o no
+        // completada — misma corrección que _isVencidaMC (panel "Mis Cursos" del alumno):
+        // antes una tarea completada nunca pasaba a "Vencidas" sin importar la fecha, así que
+        // tareas ya hechas pero con vencimiento pasado se quedaban mezcladas en "Activas".
+        const _isVencidaMA = (t) => !!t.dueAt && t.dueAt < (Date.now()/1000);
         let _countActivasMA = 0, _countVencidasMA = 0;
         _sortedSt.forEach(s => {
           const _tks = (overrides[String(s.id)]||{}).prepTasks || [];
           const _hSt = _histSt(s.id);
-          _tks.forEach(t => { if (_isVencidaMA(t, _hSt)) _countVencidasMA++; else _countActivasMA++; });
+          _tks.forEach(t => { if (_isVencidaMA(t)) _countVencidasMA++; else _countActivasMA++; });
         });
         const _tSubBtn = (key, lbl, n) => `<button onclick="_prep.tareasSubTab='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTab===key?' sel':''}">${lbl} (${n})</button>`;
         const _tSubHdr = `<div style="display:flex;gap:6px;margin:14px 0 14px">
@@ -21378,7 +21371,7 @@ function _prepConfigHtml() {
           const _sHist = _histSt(s.id);
           const tasks = _allTasksMA
             .map((t, ti) => ({t, ti}))
-            .filter(({t}) => _tSubTab==='vencidas' ? _isVencidaMA(t, _sHist) : !_isVencidaMA(t, _sHist));
+            .filter(({t}) => _tSubTab==='vencidas' ? _isVencidaMA(t) : !_isVencidaMA(t));
           if (!tasks.length) return '';
           const cards = tasks.map(({t, ti}) => {
             const _isExamT = !!t.exam;
@@ -29352,18 +29345,25 @@ function _prepExamHtml() {
   // Timer verde superior eliminado para cursos; el countdown va en el HUD (⏱️ junto a 0/10)
   const timerHtml = '';
   let ansHtml = '';
+  // Última respuesta de esta pregunta y si el profesor ya la corrigió con su contraseña —
+  // usado para el aviso visual en modo opción múltiple/V-F (en modo texto el mensaje de
+  // ✓/✗ ya sale directo de lastAns.correct más abajo, no hace falta aviso aparte).
+  const _lastAnsMC = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
+  const _overrideNoticeHtml = _lastAnsMC?.overridden
+    ? `<div style="text-align:center;font-size:12px;font-weight:700;padding:6px 0;color:#39ff7a;font-family:'Barlow Condensed',sans-serif">✅ Corregida por el profesor — cuenta como correcta</div>`
+    : '';
   if (isMC && isVF) {
     ansHtml = `<div class="prep-vf-row">${(q.opts||[]).map(opt=>{
       let cls='prep-vf-btn';
       if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
       return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${_fmtOpt(opt)}</button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>${_overrideNoticeHtml}`;
   } else if (isMC) {
     ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
       let cls='prep-mc-btn';
       if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
       return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1})&nbsp;&nbsp;${_fmtOpt(opt)}</button>`;
-    }).join('')}</div>`;
+    }).join('')}</div>${_overrideNoticeHtml}`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
     ansHtml = `<div class="prep-text-row">
@@ -29425,14 +29425,26 @@ function _prepExamHtml() {
         <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
         <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Enviar reporte</button>
       </div>
-      ${!_prep.answered ? `<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08)">
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Autorización del profesor — saltar pregunta</div>
+      ${(() => {
+        // Antes esta autorización solo aparecía si la pregunta aún no había sido respondida.
+        // Si el alumno ya la respondió y quedó marcada como incorrecta (ejercicio con error o
+        // mal planteado), el profesor debe poder seguir anulando esa calificación con su
+        // contraseña — no solo "saltar" preguntas todavía sin responder. Si ya está marcada
+        // como correcta (o ya fue corregida antes), no hay nada que anular.
+        const _lastAnsPin = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
+        const _canOverridePin = !_prep.answered || (_lastAnsPin && !_lastAnsPin.correct);
+        if (!_canOverridePin) return '';
+        const _pinLbl = _prep.answered ? '🔑 Autorización del profesor — marcar como correcta' : '🔑 Autorización del profesor — saltar pregunta';
+        const _pinBtnLbl = _prep.answered ? 'Corregir →' : 'Saltar →';
+        return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08)">
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">${_pinLbl}</div>
         <div style="display:flex;gap:8px;align-items:center">
           <input id="prep-report-pin-inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña del profesor" onkeydown="if(event.key==='Enter')skipQWithTeacherPin()" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid ${_prepReportPinErr?'rgba(248,113,113,0.7)':'rgba(255,255,255,0.15)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
-          <button onclick="skipQWithTeacherPin()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap">Saltar →</button>
+          <button onclick="skipQWithTeacherPin()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap">${_pinBtnLbl}</button>
         </div>
         ${_prepReportPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}
-      </div>` : ''}
+      </div>`;
+      })()}
     </div>
   </div>` : ''}`;
 }
@@ -29702,17 +29714,34 @@ function skipQWithTeacherPin() {
   const ta = document.getElementById('prep-report-ta');
   const comment = ta ? ta.value.trim() : '';
   if (comment) submitPrepReport();   // se envía en paralelo; no esperamos
-  // Marcar pregunta como respondida/saltada con autorización del profesor
   const q = _prep.questions[_prep.currentIdx];
+  let _advance = false;
   if (q) {
-    const _qt = Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000);
-    _prep.answers.push({ given:'[saltada]', correct:true, skipped:true, q:q.q||'', a:q.a, mc:!!(q.mc), _src:q._src||null, timeSec:_qt });
-    _prep.answered = true;
+    if (_prep.answered) {
+      // La pregunta YA fue respondida y quedó como incorrecta (ejercicio con error o mal
+      // planteado) — el profesor anula esa calificación con su contraseña: se corrige la
+      // MISMA entrada de _prep.answers (no se agrega una nueva), y se le devuelve al alumno
+      // la vida perdida por ese error (tope: maxLives), ya que el fallo era del ejercicio, no
+      // suyo. Si esa vida perdida había terminado la sesión ("sin vidas"), también se revierte.
+      const last = _prep.answers[_prep.answers.length-1];
+      if (last && !last.correct) {
+        last.correct = true;
+        last.overridden = true;
+        _prep.lives = Math.min(_prep.maxLives??3, (_prep.lives??0)+1);
+        if (_prep.gameOver && _prep.lives > 0) _prep.gameOver = false;
+        _prepUpdateHud();
+      }
+    } else {
+      const _qt = Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000);
+      _prep.answers.push({ given:'[saltada]', correct:true, skipped:true, q:q.q||'', a:q.a, mc:!!(q.mc), _src:q._src||null, timeSec:_qt });
+      _prep.answered = true;
+      _advance = true;
+    }
   }
   _prepReportModalOpen = false;
   _prepReportPinErr    = false;
-  showToast('✅ Pregunta saltada con autorización del profesor');
-  _prepNextQ();
+  showToast(_advance ? '✅ Pregunta saltada con autorización del profesor' : '✅ Respuesta corregida por el profesor — cuenta como correcta');
+  if (_advance) _prepNextQ(); else _renderPreparatePane();
 }
 async function submitPrepReport() {
   const ta = document.getElementById('prep-report-ta');
