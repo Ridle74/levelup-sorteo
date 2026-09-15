@@ -22582,6 +22582,7 @@ function _prepConfigHtml() {
     // ── Mis Tareas ────────────────────────────────────────────────────────────
     const _taskUid = String(typeof getLoggedId === 'function' ? getLoggedId() : null);
     const _myTasks = (overrides[_taskUid]?.prepTasks) || [];
+    const _myDesafios = (overrides[_taskUid]?.prepDesafios) || [];
     // Función de navegación para tareas (skill o examen)
     const _taskNavStr = (t) => {
       if (t.exam) {
@@ -22641,8 +22642,9 @@ function _prepConfigHtml() {
     const _isVencidaMC = (t) => !!t.dueAt && t.dueAt < (Date.now()/1000);
     let _countActivasMC = 0, _countVencidasMC = 0;
     _myTasks.forEach(t => { if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
+    _myDesafios.forEach(d => { if (_isVencidaMC(d)) _countVencidasMC++; else _countActivasMC++; });
     const _tSubBtnMC = (key, lbl, n) => `<button onclick="_prep.tareasSubTabMC='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTabMC===key?' sel':''}">${lbl} (${n})</button>`;
-    const _tSubHdrMC = _myTasks.length ? `<div style="display:flex;gap:6px;margin:14px 0 14px">
+    const _tSubHdrMC = (_myTasks.length || _myDesafios.length) ? `<div style="display:flex;gap:6px;margin:14px 0 14px">
       ${_tSubBtnMC('activas','Activas',_countActivasMC)}
       ${_tSubBtnMC('vencidas','Vencidas',_countVencidasMC)}
     </div>` : '';
@@ -22708,15 +22710,15 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     }).join('');
-    const _tasksSection = _myTasks.length ? `${_secHdr('Mis Tareas')}${_tSubHdrMC}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">${_tareasEmptyMsgMC}</div>`}` : '';
+    const _tasksSection = _myTasks.length ? `${_secHdr('Mis Tareas')}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : ''}` : '';
     // ── Desafío de Dominio ────────────────────────────────────────────────────
-    const _myDesafios = (overrides[_taskUid]?.prepDesafios) || [];
+    const _myDesafiosFiltered = _myDesafios.filter(d => _tSubTabMC==='vencidas' ? _isVencidaMC(d) : !_isVencidaMC(d));
     const _retoColorDs = {Suma:'#22d3ee',Resta:'#ec4899',Multiplicación:'#fbbf24',División:'#a855f7',Multiplicacion:'#fbbf24',Division:'#a855f7','Op. Combinada':'#f97316',Ecuación:'#10b981'};
     const _retoRgbDs   = {Suma:'34,211,238',Resta:'236,72,153',Multiplicación:'251,191,36',División:'168,85,247',Multiplicacion:'251,191,36',Division:'168,85,247','Op. Combinada':'249,115,22',Ecuación:'16,185,129'};
     const _nivelLblDs = ['','Básico','Intermedio','Avanzado'];
     const _nowSecDs = Math.floor(Date.now()/1000);
     const _dsAllUnits = (PREP_CURRICULUM['especial']||{})['1'] || [];
-    const _desafioCards = _myDesafios.map(d => {
+    const _desafioCards = _myDesafiosFiltered.map(d => {
       const cl  = _retoColorDs[d.retoLbl] || '#a855f7';
       const rgb = _retoRgbDs[d.retoLbl]   || '168,85,247';
       const nlbl = _nivelLblDs[d.nivel||1] || 'Básico';
@@ -22769,7 +22771,7 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     }).join('');
-    const _desafioSection = _myDesafios.length ? `${_secHdr('Desafío de Dominio')}<div style="display:flex;flex-direction:column;gap:7px">${_desafioCards}</div>` : '';
+    const _desafioSection = _myDesafiosFiltered.length ? `${_secHdr('Desafío de Dominio')}<div style="display:flex;flex-direction:column;gap:7px">${_desafioCards}</div>` : '';
     const _hasTareas = !!(_myTasks.length || _myDesafios.length);
     if (!_prep.misCursosTab || (_prep.misCursosTab==='tareas' && !_hasTareas)) _prep.misCursosTab = _hasTareas ? 'tareas' : 'cursos';
     const _mcTab = _prep.misCursosTab;
@@ -22781,7 +22783,9 @@ function _prepConfigHtml() {
     </div>`;
     let _mcInner = '';
     if (_mcTab === 'tareas') {
-      _mcInner = _tasksSection + _desafioSection || '<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">Sin tareas asignadas</div>';
+      const _tareasContent = _tasksSection + _desafioSection;
+      const _tareasEmpty = `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">${_tareasEmptyMsgMC}</div>`;
+      _mcInner = _tSubHdrMC + (_tareasContent || _tareasEmpty);
     } else if (_mcTab === 'cursos') {
       _mcInner = `${_secHdr('Dominio de curso')}<div style="display:flex;flex-direction:column;gap:8px">${courseCards}</div>`;
     } else {
