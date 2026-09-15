@@ -74,6 +74,9 @@ function _prepSyncUrl() {
   if (location.pathname !== newPath) history.replaceState({view:'levelup'}, '', newPath);
 }
 let _prepTimerIntv = null;
+let _prepInactivityIntv  = null;   // ticker del sistema anti-inactividad
+let _prepLastActivity    = 0;      // timestamp ms de la última actividad
+let _prepInactivityPopup = false;  // true si el popup de inactividad está visible
 let _prepHistoryData = null;    // null=sin cargar, []=vacío, [...]=datos
 let _prepHistoryLoading = false;
 let _prepShowHistory = false;
@@ -25324,6 +25327,7 @@ function _prepStartFromUnit(sk) {
   clearInterval(_prepTimerIntv);
   if (_autoTime2>0 || _isUnlimited2) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
+  _prepStartInactivityWatcher();
   _snd.start();
   _renderPreparatePane();
 }
@@ -25428,6 +25432,7 @@ function _prepUnitExam(skills, unitIdx) {
   clearInterval(_prepTimerIntv);
   if (_examTime > 0 || _isUnlimitedExam) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
+  _prepStartInactivityWatcher();
   _snd.start();
   _renderPreparatePane();
 }
@@ -25504,6 +25509,7 @@ function _prepStart() {
     clearInterval(_prepTimerIntv);
     if (_autoTime > 0 || _isUnlimited) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
     clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
+    _prepStartInactivityWatcher();
     _snd.start();
     _renderPreparatePane();
   } catch(e) {
@@ -25537,6 +25543,80 @@ function _prepTickTimer() {
   }
 }
 function _prepFmtTime(sec) { const m=Math.floor(sec/60),s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+
+// ── Sistema anti-inactividad ──────────────────────────────────────────────────
+// 2 min sin mouse ni respuesta → popup; 10 s sin respuesta en popup → terminar
+const _PREP_INACT_SEC = 120;
+const _PREP_POPUP_SEC = 10;
+
+function _prepResetInactivity() {
+  _prepLastActivity = Date.now();
+  if (_prepInactivityPopup) {
+    _prepInactivityPopup = false;
+    const _ov = document.getElementById('_prep_inact_overlay');
+    if (_ov) _ov.remove();
+  }
+}
+
+function _prepShowInactivityPopup() {
+  if (_prepInactivityPopup || _prep.state !== 'exam') return;
+  _prepInactivityPopup = true;
+  let _sec = _PREP_POPUP_SEC;
+  const _ov = document.createElement('div');
+  _ov.id = '_prep_inact_overlay';
+  _ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.78);backdrop-filter:blur(5px)';
+  _ov.innerHTML = `<div style="background:linear-gradient(135deg,#1e1b4b,#312e81);border:1px solid rgba(139,92,246,0.55);border-radius:20px;padding:32px 36px;text-align:center;max-width:320px;box-shadow:0 20px 60px rgba(0,0,0,0.6);font-family:inherit">
+    <div style="font-size:52px;margin-bottom:10px">👀</div>
+    <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:6px">¿Estás ahí?</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px">No hemos detectado actividad por 2 minutos.</div>
+    <div id="_prep_inact_cd" style="font-size:46px;font-weight:900;color:#a78bfa;line-height:1;margin-bottom:14px">${_sec}</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:22px">La sesión terminará si no respondes</div>
+    <button onclick="_prepResetInactivity()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;padding:13px 0;cursor:pointer;width:100%;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">¡Sí, estoy aquí! ✋</button>
+  </div>`;
+  document.body.appendChild(_ov);
+  const _popIntv = setInterval(() => {
+    if (!_prepInactivityPopup) { clearInterval(_popIntv); return; }
+    _sec--;
+    const _cd = document.getElementById('_prep_inact_cd');
+    if (_cd) _cd.textContent = Math.max(0, _sec);
+    if (_sec <= 0) {
+      clearInterval(_popIntv);
+      _prepInactivityPopup = false;
+      const _el = document.getElementById('_prep_inact_overlay');
+      if (_el) _el.remove();
+      if (_prep.state === 'exam') { _prep.gameOver = false; _prepFinish(); }
+    }
+  }, 1000);
+}
+
+function _prepInactivityTick() {
+  if (_prep.state !== 'exam' || _prepInactivityPopup) return;
+  if (Date.now() - _prepLastActivity >= _PREP_INACT_SEC * 1000) _prepShowInactivityPopup();
+}
+
+function _prepStartInactivityWatcher() {
+  _prepLastActivity    = Date.now();
+  _prepInactivityPopup = false;
+  const _old = document.getElementById('_prep_inact_overlay');
+  if (_old) _old.remove();
+  clearInterval(_prepInactivityIntv);
+  _prepInactivityIntv = setInterval(_prepInactivityTick, 5000);
+}
+
+function _prepStopInactivityWatcher() {
+  clearInterval(_prepInactivityIntv);
+  _prepInactivityIntv  = null;
+  _prepInactivityPopup = false;
+  const _el = document.getElementById('_prep_inact_overlay');
+  if (_el) _el.remove();
+}
+
+// Registro global de eventos de actividad (una sola vez al cargar)
+;(function() {
+  const _resetIA = () => { _prepLastActivity = Date.now(); };
+  ['mousemove','mousedown','keydown','touchstart','click'].forEach(ev =>
+    document.addEventListener(ev, _resetIA, {passive:true}));
+})();
 // ── LABEL CLEANER ────────────────────────────────────────────────────────────
 const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Cc]uestionario\s*\d*\s*[–\-—]?\s*/,'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').replace(/^(Visual|Verbal)\s*[IVXivx]*\s*[–\-—]\s*/i,'').replace(/^[IVXivx]+\s*[–\-—]\s*/,'').replace(/[Pp]rueba\s+de\s+unidad/gi,'Examen').replace(/[Pp]rueba\s+do[nñ]at/gi,'Examen').trim(); return s || fallback || lbl || ''; };
 
@@ -28574,6 +28654,7 @@ function _prepDesafioExam(retoLbl,nivel,skills,uIdx){
   Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:0,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,gameOver:false,qStartTime:Date.now()});
   clearInterval(_prepTimerIntv);
   clearInterval(_prep.gameTimerIntv);_prep.gameTimerIntv=setInterval(_prepGameTimerTick,1000);
+  _prepStartInactivityWatcher();
   _snd.start();_renderPreparatePane();
 }
 function _prepLeaderboardHtml(topic,compact,isExam){
@@ -28930,6 +29011,7 @@ async function _prepSaveHistoryPartial() {
 function _prepFinish() {
   clearInterval(_prepTimerIntv);
   clearInterval(_prep.gameTimerIntv);
+  _prepStopInactivityWatcher();
   _prep.state = 'result'; _prep.endTime = Date.now();
   _snd.finish();
   // Marcar skill actual como completado en el contexto de unidad
