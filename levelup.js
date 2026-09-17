@@ -21150,6 +21150,12 @@ function _prepSearchInput(val) {
 function _prepSyncSearchWidth() {
   const wrap = document.getElementById('prep-search-wrap');
   if (!wrap) return;
+  // En móvil el buscador ocupa todo el ancho disponible
+  if (window.innerWidth < 640) {
+    wrap.dataset.collapsedWidth = '100%';
+    wrap.style.width = '100%';
+    return;
+  }
   const btns = document.querySelectorAll('.prep-kh-btn-challenge');
   let visibleBtn = null;
   btns.forEach(b => { if (!visibleBtn && b.offsetWidth > 0) visibleBtn = b; });
@@ -21163,12 +21169,17 @@ function _prepSyncSearchWidth() {
 function _prepSearchExpand(inputEl) {
   inputEl.style.borderColor = '#a855f7';
   const wrap = inputEl.parentElement;
-  if (wrap) wrap.style.width = 'min(300px,60%)';
+  if (!wrap) return;
+  wrap.style.width = window.innerWidth < 640 ? '100%' : 'min(300px,60%)';
 }
 function _prepSearchCollapse(inputEl) {
   inputEl.style.borderColor = '#1f2937';
   const wrap = inputEl.parentElement;
   if (!wrap) return;
+  if (window.innerWidth < 640) {
+    wrap.style.width = '100%';
+    return;
+  }
   if (!inputEl.value.trim()) {
     const w = wrap.dataset.collapsedWidth || 170;
     wrap.style.width = w + 'px';
@@ -22031,7 +22042,7 @@ function _prepConfigHtml() {
   const _streak = masLoading ? 0 : _prepCalcStreak();
   const _searchVal = (_prep.searchQuery||'').replace(/"/g,'&quot;');
   const _searchHasQuery = (_prep.searchQuery||'').trim().length>0;
-  const _searchBar = `<div id="prep-search-wrap" class="prep-kh-topbar-right prep-search-bar" style="position:relative;width:170px;max-width:60%;transition:width .18s ease">
+  const _searchBar = `<div id="prep-search-wrap" class="prep-kh-topbar-right prep-search-bar" style="position:relative;width:170px;max-width:100%;transition:width .18s ease">
     <input type="text" id="prep-search-input" value="${_searchVal}" placeholder="🔍 Buscar…" autocomplete="off"
       oninput="_prepSearchInput(this.value)"
       style="width:100%;box-sizing:border-box;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 12px;color:#e2e8f0;font-size:12px;font-family:'Lato',sans-serif;font-weight:700;outline:none;transition:border-color .15s"
