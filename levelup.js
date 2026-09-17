@@ -29868,21 +29868,32 @@ function _prepExamHtml() {
   const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
   const _areaLbl = _prep.area ? ` · ${(PREP_LEVELS[_prep.level]?.areas||[]).find(a=>a.key===_prep.area)?.lbl||''}` : '';
   const _isBas   = !!_prep.customConfig;
-  const _accentC  = _isBas ? '#f59e0b'               : '#c084fc';
-  const _accentBg = _isBas ? 'rgba(245,158,11,0.14)' : 'rgba(192,132,252,0.14)';
-  const _accentBd = _isBas ? 'rgba(245,158,11,0.3)'  : 'rgba(192,132,252,0.28)';
-  const _rowBg    = _isBas ? 'rgba(251,191,36,0.05)' : 'rgba(192,132,252,0.06)';
-  const _rowBd    = _isBas ? 'rgba(251,191,36,0.18)' : 'rgba(192,132,252,0.18)';
-  const _l2C      = _isBas ? 'rgba(253,230,138,0.4)' : 'rgba(216,180,254,0.4)';
-  const _nameC    = _isBas ? '#fef3c7'               : '#e9d5ff';
-  const _pauseBg  = _isBas ? 'rgba(251,191,36,0.1)'  : 'rgba(192,132,252,0.14)';
-  const _pauseBd  = _isBas ? 'rgba(251,191,36,0.28)' : 'rgba(192,132,252,0.32)';
-  const _pauseC   = _isBas ? '#fde68a'               : '#d8b4fe';
+  // Paleta de colores seleccionable por el alumno
+  if(typeof window._prepColorVariant==='undefined') window._prepColorVariant=0;
+  window._prepCycleColor = window._prepCycleColor || function(){ window._prepColorVariant=(window._prepColorVariant+1)%4; _renderPreparatePane(); };
+  const _cvPalettes = [
+    { name:'Violeta',   dot:'#c084fc', pauseBg:'rgba(192,132,252,0.14)', pauseBd:'rgba(192,132,252,0.32)', pauseC:'#d8b4fe',  rowBg:'rgba(192,132,252,0.07)', rowBd:'rgba(192,132,252,0.2)',  accentBg:'rgba(232,121,249,0.16)', accentBd:'rgba(232,121,249,0.32)', accentC:'#e879f9',  l2C:'rgba(216,180,254,0.45)', nameC:'#e9d5ff', nextBg:'#7c3aed' },
+    { name:'Cyan',      dot:'#22d3ee', pauseBg:'rgba(34,211,238,0.1)',   pauseBd:'rgba(34,211,238,0.28)',  pauseC:'#67e8f9',  rowBg:'rgba(34,211,238,0.06)',  rowBd:'rgba(34,211,238,0.18)',  accentBg:'rgba(34,211,238,0.14)',  accentBd:'rgba(34,211,238,0.3)',  accentC:'#22d3ee',  l2C:'rgba(103,232,249,0.42)', nameC:'#a5f3fc', nextBg:'#0891b2' },
+    { name:'Ámbar',     dot:'#fbbf24', pauseBg:'rgba(251,191,36,0.1)',   pauseBd:'rgba(251,191,36,0.28)',  pauseC:'#fde68a',  rowBg:'rgba(251,191,36,0.05)',  rowBd:'rgba(251,191,36,0.18)',  accentBg:'rgba(245,158,11,0.14)',  accentBd:'rgba(245,158,11,0.3)',  accentC:'#f59e0b',  l2C:'rgba(253,230,138,0.4)', nameC:'#fef3c7', nextBg:'#d97706' },
+    { name:'Esmeralda', dot:'#34d399', pauseBg:'rgba(52,211,153,0.1)',   pauseBd:'rgba(52,211,153,0.28)',  pauseC:'#6ee7b7',  rowBg:'rgba(52,211,153,0.06)',  rowBd:'rgba(52,211,153,0.18)',  accentBg:'rgba(16,185,129,0.14)',  accentBd:'rgba(16,185,129,0.3)',  accentC:'#10b981',  l2C:'rgba(110,231,183,0.4)', nameC:'#d1fae5', nextBg:'#059669' },
+  ];
+  const _cv = _cvPalettes[window._prepColorVariant % 4];
+  const _accentC  = _cv.accentC;
+  const _accentBg = _cv.accentBg;
+  const _accentBd = _cv.accentBd;
+  const _rowBg    = _cv.rowBg;
+  const _rowBd    = _cv.rowBd;
+  const _l2C      = _cv.l2C;
+  const _nameC    = _cv.nameC;
+  const _pauseBg  = _cv.pauseBg;
+  const _pauseBd  = _cv.pauseBd;
+  const _pauseC   = _cv.pauseC;
   return `<div class="prep-wrap">
     <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:4px">
-      <!-- L1: ✕ Salir y Pausar — ambos rectangulares mismo alto -->
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <!-- L1: Salir | Selector de color (centro) | Pausar -->
+      <div style="display:flex;align-items:center;gap:6px">
         <button onclick="_prepExitSave()" title="Salir y guardar progreso" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:7px;color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1">✕ Salir</button>
+        <button onclick="_prepCycleColor()" style="flex:1;height:28px;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:7px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;user-select:none"><span style="width:8px;height:8px;border-radius:50%;background:${_cv.dot};flex-shrink:0;display:inline-block"></span>${_cv.name}</button>
         <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;gap:5px;background:${_pauseBg};border:1px solid ${_pauseBd};border-radius:7px;color:${_pauseC};font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;line-height:1">⏸ Pausar</button>
       </div>
       <!-- L2+L3: caja unificada — badge (Regular/Básico) izq, contexto+nombre der -->
@@ -29898,10 +29909,10 @@ function _prepExamHtml() {
       <span class="prep-prog-label">${idx+1}/${total}</span>
       <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
     </div>
-    <div class="prep-game-hud">
-      <span id="_prep_lives" class="prep-hud-lives">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
-      <span id="_prep_streak" class="prep-hud-streak">${_prepStreakHudHtml()}</span>
-      <span id="_prep_timer" class="prep-hud-timer">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
+    <div class="prep-game-hud" style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06)">
+      <span id="_prep_lives" class="prep-hud-lives" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55)">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
+      <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55)">${_prepStreakHudHtml()}</span>
+      <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);font-variant-numeric:tabular-nums">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
     </div>
     ${_prepPauseAskPin ? `<div style="background:rgba(30,30,50,0.95);border:1px solid rgba(139,92,246,0.45);border-radius:14px;padding:16px 18px;margin:10px 0;display:flex;flex-direction:column;gap:10px">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#c4b5fd;letter-spacing:0.04em">⏸ PAUSAR SESIÓN — Contraseña del profesor</div>
@@ -29916,9 +29927,9 @@ function _prepExamHtml() {
     ${q.algo ? _renderAlgo(q, _prep.answered) : ansHtml}
     ${q.algo && !_prep.answered ? `<button class="prep-submit-btn" style="width:100%;margin-top:12px" onclick="_prepSubmitAlgo()">✓ Verificar</button>` : ''}
     ${q.algo && _prep.answered ? `<div style="text-align:center;font-size:15px;font-weight:700;padding:6px 0;font-family:'Barlow Condensed',sans-serif">${_prep.answers[_prep.answers.length-1]?.correct?'<span style="color:#39ff7a">✓ ¡Correcto!</span>':'<span style="color:#f87171">✗ Incorrecto — respuesta: '+q.a.replace('r',' R ')+'</span>'}</div>` : ''}
-    ${!q.algo ? `<button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()">${idx===total-1?'🏁 Ver resultados':'Siguiente →'}</button>` : ''}
-    <div style="text-align:center;margin-top:10px">
-      <button class="prep-report-btn" onclick="openPrepReportModal()">⚠️ Reportar error en este ejercicio</button>
+    ${!q.algo ? `<button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()" style="display:flex;align-items:center;justify-content:center;width:100%;height:40px;border-radius:9px;border:none;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.05em;cursor:pointer;margin-bottom:10px;color:#fff;background:${_prep.answered?_cv.nextBg:'rgba(255,255,255,0.08)'};opacity:${_prep.answered?1:0.5};transition:background 0.2s">${idx===total-1?'🏁 Ver resultados':'Siguiente →'}</button>` : ''}
+    <div style="text-align:center;margin-top:4px;margin-bottom:14px">
+      <button class="prep-report-btn" onclick="openPrepReportModal()" style="background:none;border:none;font-size:11px;color:rgba(255,255,255,0.2);cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:6px 0">⚑ Reportar error</button>
     </div>
   </div>${_prepReportModalOpen ? `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepReportModal()">
     <div class="prep-report-modal-box">
