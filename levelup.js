@@ -29850,10 +29850,16 @@ function _prepExamHtml() {
       return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${_fmtOpt(opt)}</button>`;
     }).join('')}</div>${_overrideNoticeHtml}`;
   } else if (isMC) {
-    ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
-      let cls='prep-mc-btn';
-      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1})&nbsp;&nbsp;${_fmtOpt(opt)}</button>`;
+    ansHtml = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">${(q.opts||[]).map((opt,i)=>{
+      const _ltr = ['A','B','C','D','E'][i] || String(i+1);
+      let _bgC='rgba(255,255,255,0.04)', _bdC='rgba(255,255,255,0.07)', _txC='rgba(255,255,255,0.6)', _ltBd='rgba(255,255,255,0.14)', _ltC='rgba(255,255,255,0.3)';
+      if (_prep.answered) {
+        const _isCor = String(opt).toLowerCase()===String(q.a).toLowerCase();
+        const _isSel = String(_prep.selectedOpt)===String(opt);
+        if (_isCor) { _bgC='rgba(57,255,122,0.08)'; _bdC='rgba(57,255,122,0.3)'; _txC='#39ff7a'; _ltBd='rgba(57,255,122,0.4)'; _ltC='#39ff7a'; }
+        else if (_isSel) { _bgC='rgba(248,113,113,0.08)'; _bdC='rgba(248,113,113,0.3)'; _txC='#f87171'; _ltBd='rgba(248,113,113,0.4)'; _ltC='#f87171'; }
+      }
+      return `<button ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${_bgC};border:1px solid ${_bdC};border-radius:8px;font-size:13px;color:${_txC};cursor:pointer;width:100%;text-align:left;line-height:1.4;transition:background 0.15s"><span style="width:18px;height:18px;flex-shrink:0;border:1px solid ${_ltBd};border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${_ltC};font-family:'Rajdhani',sans-serif">${_ltr}</span>${_fmtOpt(opt)}</button>`;
     }).join('')}</div>${_overrideNoticeHtml}`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
@@ -29910,9 +29916,9 @@ function _prepExamHtml() {
       <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
     </div>
     <div class="prep-game-hud" style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06)">
-      <span id="_prep_lives" class="prep-hud-lives" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55)">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
-      <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55)">${_prepStreakHudHtml()}</span>
-      <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.55);font-variant-numeric:tabular-nums">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
+      <span id="_prep_lives" class="prep-hud-lives" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
+      <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff">${_prepStreakHudHtml()}</span>
+      <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
     </div>
     ${_prepPauseAskPin ? `<div style="background:rgba(30,30,50,0.95);border:1px solid rgba(139,92,246,0.45);border-radius:14px;padding:16px 18px;margin:10px 0;display:flex;flex-direction:column;gap:10px">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#c4b5fd;letter-spacing:0.04em">⏸ PAUSAR SESIÓN — Contraseña del profesor</div>
