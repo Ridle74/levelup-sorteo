@@ -29866,22 +29866,32 @@ function _prepExamHtml() {
   const _nivelLbl = _prep.level==='primaria'?'Primaria':_prep.level==='secundaria'?'Secundaria':'Pre-univ.';
   const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
   const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
+  const _areaLbl = _prep.area ? ` · ${(PREP_LEVELS[_prep.level]?.areas||[]).find(a=>a.key===_prep.area)?.lbl||''}` : '';
+  const _isBas   = !!_prep.customConfig;
+  const _accentC  = _isBas ? '#f59e0b'               : '#c084fc';
+  const _accentBg = _isBas ? 'rgba(245,158,11,0.14)' : 'rgba(192,132,252,0.14)';
+  const _accentBd = _isBas ? 'rgba(245,158,11,0.3)'  : 'rgba(192,132,252,0.28)';
+  const _rowBg    = _isBas ? 'rgba(251,191,36,0.05)' : 'rgba(192,132,252,0.06)';
+  const _rowBd    = _isBas ? 'rgba(251,191,36,0.18)' : 'rgba(192,132,252,0.18)';
+  const _l2C      = _isBas ? 'rgba(253,230,138,0.4)' : 'rgba(216,180,254,0.4)';
+  const _nameC    = _isBas ? '#fef3c7'               : '#e9d5ff';
+  const _pauseBg  = _isBas ? 'rgba(251,191,36,0.1)'  : 'rgba(192,132,252,0.14)';
+  const _pauseBd  = _isBas ? 'rgba(251,191,36,0.28)' : 'rgba(192,132,252,0.32)';
+  const _pauseC   = _isBas ? '#fde68a'               : '#d8b4fe';
   return `<div class="prep-wrap">
-    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:3px">
-      <!-- L1: botones salir y pausar -->
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <button onclick="_prepExitSave()" title="Salir y guardar progreso" style="flex-shrink:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:rgba(255,255,255,0.5);font-size:15px;cursor:pointer;line-height:1">✕</button>
-        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;height:30px;display:flex;align-items:center;gap:5px;padding:0 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.75);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">⏸ Pausar</button>
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:4px">
+      <!-- L1: ✕ Salir y Pausar — ambos rectangulares mismo alto -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+        <button onclick="_prepExitSave()" title="Salir y guardar progreso" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:7px;color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1">✕ Salir</button>
+        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;gap:5px;background:${_pauseBg};border:1px solid ${_pauseBd};border-radius:7px;color:${_pauseC};font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;line-height:1">⏸ Pausar</button>
       </div>
-      <!-- L2: nivel · grado · colegio · área (solo texto) -->
-      <div style="display:flex;align-items:center;min-width:0">
-        <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.03em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
-      </div>
-      <!-- L3: actividad + modo (solo texto, sin ícono) -->
-      <div style="display:flex;align-items:center;min-width:0;gap:5px">
-        <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;${_prep.customConfig?'color:#ffcf4f':'color:#c4b5fd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_examLbl}</span>
-        <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.25);flex-shrink:0">·</span>
-        <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;${_prep.customConfig?'color:#e9b84a':'color:#a78bfa'};white-space:nowrap;flex-shrink:0">${_prep.customConfig?'Básico':'Regular'}</span>
+      <!-- L2+L3: caja unificada — badge (Regular/Básico) izq, contexto+nombre der -->
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:0 11px;align-items:center;background:${_rowBg};border:1px solid ${_rowBd};border-radius:8px;padding:7px 10px">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${_accentC};background:${_accentBg};border:1px solid ${_accentBd};padding:3px 9px;border-radius:5px;white-space:nowrap;align-self:center">${_isBas?'Básico':'Regular'}</span>
+        <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+          <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:${_l2C};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_nivelLbl}${_gradeLbl}${_edLbl}${_areaLbl}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:${_nameC};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_examLbl}</span>
+        </div>
       </div>
     </div>
     <div class="prep-progress-row">
