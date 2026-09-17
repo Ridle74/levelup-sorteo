@@ -29863,25 +29863,25 @@ function _prepExamHtml() {
     </div>`;
     if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${_fmtMath(q.a)}</b></span>`}</div>`;
   }
-  const _nivelLbl = _prep.level==='primaria'?'🏫 Primaria':_prep.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
+  const _nivelLbl = _prep.level==='primaria'?'Primaria':_prep.level==='secundaria'?'Secundaria':'Pre-univ.';
   const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
-  const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].ico} ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
+  const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
   return `<div class="prep-wrap">
-    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:4px">
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:3px">
+      <!-- L1: botones salir y pausar -->
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:8px;min-width:0">
-          <button onclick="_prepExitSave()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir y guardar progreso">✕</button>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.03em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
-        </div>
-        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;padding:4px 12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.03em;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">⏸ Pausar</button>
+        <button onclick="_prepExitSave()" title="Salir y guardar progreso" style="flex-shrink:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:rgba(255,255,255,0.5);font-size:15px;cursor:pointer;line-height:1">✕</button>
+        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;height:30px;display:flex;align-items:center;gap:5px;padding:0 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.2);border-radius:8px;color:rgba(255,255,255,0.75);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">⏸ Pausar</button>
       </div>
-      <div style="display:flex;align-items:center">
-        <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;max-width:100%;overflow:hidden;${_prep.customConfig?'background:rgba(255,207,79,0.10);border:1px solid rgba(255,207,79,0.35)':'background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.35)'}">
-          <span style="flex-shrink:0;font-size:13px">${def.ico||'📚'}</span>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;${_prep.customConfig?'color:#ffcf4f':'color:#c4b5fd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_examLbl}</span>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.3);flex-shrink:0">·</span>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;${_prep.customConfig?'color:#e9b84a':'color:#a78bfa'};white-space:nowrap;flex-shrink:0">${_prep.customConfig?'Básico':'Regular'}</span>
-        </div>
+      <!-- L2: nivel · grado · colegio · área (solo texto) -->
+      <div style="display:flex;align-items:center;min-width:0">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.03em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
+      </div>
+      <!-- L3: actividad + modo (solo texto, sin ícono) -->
+      <div style="display:flex;align-items:center;min-width:0;gap:5px">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;${_prep.customConfig?'color:#ffcf4f':'color:#c4b5fd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_examLbl}</span>
+        <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.25);flex-shrink:0">·</span>
+        <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;${_prep.customConfig?'color:#e9b84a':'color:#a78bfa'};white-space:nowrap;flex-shrink:0">${_prep.customConfig?'Básico':'Regular'}</span>
       </div>
     </div>
     <div class="prep-progress-row">

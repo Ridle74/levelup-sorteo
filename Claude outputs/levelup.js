@@ -21150,6 +21150,12 @@ function _prepSearchInput(val) {
 function _prepSyncSearchWidth() {
   const wrap = document.getElementById('prep-search-wrap');
   if (!wrap) return;
+  // En móvil el buscador ocupa todo el ancho disponible
+  if (window.innerWidth < 640) {
+    wrap.dataset.collapsedWidth = '100%';
+    wrap.style.width = '100%';
+    return;
+  }
   const btns = document.querySelectorAll('.prep-kh-btn-challenge');
   let visibleBtn = null;
   btns.forEach(b => { if (!visibleBtn && b.offsetWidth > 0) visibleBtn = b; });
@@ -21163,12 +21169,17 @@ function _prepSyncSearchWidth() {
 function _prepSearchExpand(inputEl) {
   inputEl.style.borderColor = '#a855f7';
   const wrap = inputEl.parentElement;
-  if (wrap) wrap.style.width = 'min(300px,60%)';
+  if (!wrap) return;
+  wrap.style.width = window.innerWidth < 640 ? '100%' : 'min(300px,60%)';
 }
 function _prepSearchCollapse(inputEl) {
   inputEl.style.borderColor = '#1f2937';
   const wrap = inputEl.parentElement;
   if (!wrap) return;
+  if (window.innerWidth < 640) {
+    wrap.style.width = '100%';
+    return;
+  }
   if (!inputEl.value.trim()) {
     const w = wrap.dataset.collapsedWidth || 170;
     wrap.style.width = w + 'px';
@@ -22031,7 +22042,7 @@ function _prepConfigHtml() {
   const _streak = masLoading ? 0 : _prepCalcStreak();
   const _searchVal = (_prep.searchQuery||'').replace(/"/g,'&quot;');
   const _searchHasQuery = (_prep.searchQuery||'').trim().length>0;
-  const _searchBar = `<div id="prep-search-wrap" class="prep-kh-topbar-right prep-search-bar" style="position:relative;width:170px;max-width:60%;transition:width .18s ease">
+  const _searchBar = `<div id="prep-search-wrap" class="prep-kh-topbar-right prep-search-bar" style="position:relative;width:170px;max-width:100%;transition:width .18s ease">
     <input type="text" id="prep-search-input" value="${_searchVal}" placeholder="🔍 Buscar…" autocomplete="off"
       oninput="_prepSearchInput(this.value)"
       style="width:100%;box-sizing:border-box;background:#0a0e1a;border:1px solid #1f2937;border-radius:20px;padding:6px 12px;color:#e2e8f0;font-size:12px;font-family:'Lato',sans-serif;font-weight:700;outline:none;transition:border-color .15s"
@@ -29856,17 +29867,24 @@ function _prepExamHtml() {
   const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
   const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].ico} ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
   return `<div class="prep-wrap">
-    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:6px">
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:3px">
+      <!-- L1: botones salir y pausar -->
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:8px;min-width:0">
-          <button onclick="_prepExitSave()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir y guardar progreso">✕</button>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.35);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
-        </div>
-        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.04em;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">⏸ Pausar</button>
+        <button onclick="_prepExitSave()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir y guardar progreso">✕</button>
+        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;padding:4px 12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.03em;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">⏸ Pausar</button>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_examLbl}</div>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;padding:3px 8px;border-radius:7px;white-space:nowrap;${_prep.customConfig?'background:rgba(255,207,79,0.14);border:1px solid rgba(255,207,79,0.4);color:#ffcf4f':'background:rgba(79,182,255,0.14);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff'}" title="${_prep.customConfig?'Configuración personalizada por el profesor: esta sesión no suma puntos de Progreso.':'Configuración por defecto de la habilidad.'}">${_prep.customConfig?'⚙️ Modo: Básico':'✓ Modo: Regular'}</span>
+      <!-- L2: nivel · grado · colegio · área -->
+      <div style="display:flex;align-items:center;min-width:0">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.03em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
+      </div>
+      <!-- L3: píldora actividad + modo -->
+      <div style="display:flex;align-items:center">
+        <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;max-width:100%;overflow:hidden;${_prep.customConfig?'background:rgba(255,207,79,0.10);border:1px solid rgba(255,207,79,0.35)':'background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.35)'}">
+          <span style="flex-shrink:0;font-size:13px">${def.ico||'📚'}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;${_prep.customConfig?'color:#ffcf4f':'color:#c4b5fd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_examLbl}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.3);flex-shrink:0">·</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;${_prep.customConfig?'color:#e9b84a':'color:#a78bfa'};white-space:nowrap;flex-shrink:0">${_prep.customConfig?'Básico':'Regular'}</span>
+        </div>
       </div>
     </div>
     <div class="prep-progress-row">
@@ -29910,6 +29928,11 @@ function _prepExamHtml() {
       <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${_fmtMath(q.a)}</div>` : ''}
       <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Describe el error <span style="color:rgba(255,255,255,0.3);font-weight:600;text-transform:none;letter-spacing:0">(obligatorio)</span></div>
       <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser 3/4 porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
+      ${!isAdmin() ? `<div style="margin-top:12px;padding:12px 14px;background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.25);border-radius:11px">
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor (requerida para reportar)</div>
+        <input id="prep-report-submit-pin" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña del profesor" onkeydown="if(event.key==='Enter')submitPrepReport()" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid ${_prepReportPinErr?'rgba(248,113,113,0.7)':'rgba(139,92,246,0.35)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
+        ${_prepReportPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">⚠ Contraseña incorrecta</div>` : ''}
+      </div>` : ''}
       <div style="display:flex;gap:8px;margin-top:14px">
         <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
         <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Enviar reporte</button>
@@ -30019,6 +30042,7 @@ function _prepResultHtml() {
 // ── Report modal helpers ─────────────────────────────────────────────────────
 function openPrepReportModal() {
   _prepReportModalOpen = true;
+  _prepReportPinErr    = false;
   _renderPreparatePane();
   setTimeout(()=>{ const ta=document.getElementById('prep-report-ta'); if(ta)ta.focus(); },80);
 }
@@ -30236,6 +30260,23 @@ async function submitPrepReport() {
   const ta = document.getElementById('prep-report-ta');
   const comment = ta ? ta.value.trim() : '';
   if (!comment) { showToast('Escribe el error antes de enviar'); if(ta)ta.focus(); return; }
+  // Verificación de contraseña para alumnos (no-admin)
+  if (!isAdmin()) {
+    const pinInp = document.getElementById('prep-report-submit-pin');
+    const pinVal = pinInp ? String(pinInp.value) : '';
+    if (pinVal !== String(ADMIN && ADMIN.pin)) {
+      _prepReportPinErr = true;
+      _renderPreparatePane();
+      setTimeout(() => {
+        const ta2 = document.getElementById('prep-report-ta');
+        if (ta2) ta2.value = comment;
+        const pi2 = document.getElementById('prep-report-submit-pin');
+        if (pi2) pi2.focus();
+      }, 50);
+      return;
+    }
+    _prepReportPinErr = false;
+  }
   const q = _prep.questions[_prep.currentIdx];
   if (!q) return;
   const def = BINGO_TOPICS[_prep.topic] || {};
