@@ -29867,17 +29867,21 @@ function _prepExamHtml() {
   const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
   const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].ico} ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
   return `<div class="prep-wrap">
-    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:6px">
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:4px">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px;min-width:0">
           <button onclick="_prepExitSave()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir y guardar progreso">✕</button>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.35);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.03em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
         </div>
-        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:rgba(255,255,255,0.7);font-size:12px;cursor:pointer;padding:4px 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.04em;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">⏸ Pausar</button>
+        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;padding:4px 12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.03em;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">⏸ Pausar</button>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <div class="prep-topic-badge-sm" style="align-self:flex-start">${def.ico||'📚'} ${_examLbl}</div>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.04em;padding:3px 8px;border-radius:7px;white-space:nowrap;${_prep.customConfig?'background:rgba(255,207,79,0.14);border:1px solid rgba(255,207,79,0.4);color:#ffcf4f':'background:rgba(79,182,255,0.14);border:1px solid rgba(79,182,255,0.4);color:#4fb6ff'}" title="${_prep.customConfig?'Configuración personalizada por el profesor: esta sesión no suma puntos de Progreso.':'Configuración por defecto de la habilidad.'}">${_prep.customConfig?'⚙️ Modo: Básico':'✓ Modo: Regular'}</span>
+      <div style="display:flex;align-items:center">
+        <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;max-width:100%;overflow:hidden;${_prep.customConfig?'background:rgba(255,207,79,0.10);border:1px solid rgba(255,207,79,0.35)':'background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.35)'}">
+          <span style="flex-shrink:0;font-size:13px">${def.ico||'📚'}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;${_prep.customConfig?'color:#ffcf4f':'color:#c4b5fd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_examLbl}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.3);flex-shrink:0">·</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;${_prep.customConfig?'color:#e9b84a':'color:#a78bfa'};white-space:nowrap;flex-shrink:0">${_prep.customConfig?'Básico':'Regular'}</span>
+        </div>
       </div>
     </div>
     <div class="prep-progress-row">
