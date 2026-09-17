@@ -77,6 +77,7 @@ let _prepTimerIntv = null;
 let _prepInactivityIntv  = null;   // ticker del sistema anti-inactividad
 let _prepLastActivity    = 0;      // timestamp ms de la última actividad
 let _prepInactivityPopup = false;  // true si el popup de inactividad está visible
+let _prepPopupShownAt    = 0;      // timestamp ms cuando se mostró el popup de inactividad
 let _prepPaused          = false;  // true si la sesión está en pausa
 let _prepPauseStart      = 0;      // timestamp ms cuando se pausó
 let _prepPausedMs        = 0;      // ms acumulados en pausa (descuento de duración)
@@ -25591,7 +25592,7 @@ function _prepResetInactivity() {
 function _prepShowInactivityPopup() {
   if (_prepInactivityPopup || _prep.state !== 'exam') return;
   _prepInactivityPopup = true;
-  let _sec = _PREP_POPUP_SEC;
+  _prepPopupShownAt = Date.now();  // timestamp real — no depende del foco
   const _ov = document.createElement('div');
   _ov.id = '_prep_inact_overlay';
   _ov.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.78);backdrop-filter:blur(5px)';
@@ -25599,26 +25600,28 @@ function _prepShowInactivityPopup() {
     <div style="font-size:52px;margin-bottom:10px">👀</div>
     <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:6px">¿Estás ahí?</div>
     <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:18px">No hemos detectado actividad por 2 minutos.</div>
-    <div id="_prep_inact_cd" style="font-size:46px;font-weight:900;color:#a78bfa;line-height:1;margin-bottom:14px">${_sec}</div>
+    <div id="_prep_inact_cd" style="font-size:46px;font-weight:900;color:#a78bfa;line-height:1;margin-bottom:14px">${_PREP_POPUP_SEC}</div>
     <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-bottom:22px">La sesión terminará si no respondes</div>
     <button onclick="_prepResetInactivity()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;padding:13px 0;cursor:pointer;width:100%;transition:opacity .15s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">¡Sí, estoy aquí! ✋</button>
   </div>`;
   document.body.appendChild(_ov);
   _snd.tick();
+  // Usa Date.now() para el countdown — funciona aunque el tab esté en segundo plano
   const _popIntv = setInterval(() => {
     if (!_prepInactivityPopup) { clearInterval(_popIntv); return; }
-    _sec--;
+    const _elapsed = Math.floor((Date.now() - _prepPopupShownAt) / 1000);
+    const _rem = Math.max(0, _PREP_POPUP_SEC - _elapsed);
     const _cd = document.getElementById('_prep_inact_cd');
-    if (_cd) _cd.textContent = Math.max(0, _sec);
-    if (_sec > 0) _snd.tick();
-    if (_sec <= 0) {
+    if (_cd) _cd.textContent = _rem;
+    if (_rem > 0 && _elapsed % 1 === 0) _snd.tick();
+    if (_rem <= 0) {
       clearInterval(_popIntv);
       _prepInactivityPopup = false;
       const _el = document.getElementById('_prep_inact_overlay');
       if (_el) _el.remove();
       if (_prep.state === 'exam') { _prep.gameOver = false; _prepFinish(); }
     }
-  }, 1000);
+  }, 500);  // 500ms para reaccionar rápido incluso con throttling
 }
 
 function _prepInactivityTick() {
@@ -25648,6 +25651,28 @@ function _prepStopInactivityWatcher() {
   const _resetIA = () => { _prepLastActivity = Date.now(); };
   ['mousemove','mousedown','keydown','touchstart','click'].forEach(ev =>
     document.addEventListener(ev, _resetIA, {passive:true}));
+
+  // visibilitychange: cuando el alumno vuelve a la pestaña, verificamos
+  // si el tiempo ya expiró mientras estaba en otra ventana
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden || _prep.state !== 'exam' || _prepPaused) return;
+    // Si el popup ya estaba visible y el tiempo ya expiró → terminar de inmediato
+    if (_prepInactivityPopup && _prepPopupShownAt) {
+      const _elapsed = Math.floor((Date.now() - _prepPopupShownAt) / 1000);
+      if (_elapsed >= _PREP_POPUP_SEC) {
+        _prepInactivityPopup = false;
+        const _el = document.getElementById('_prep_inact_overlay');
+        if (_el) _el.remove();
+        if (_prep.state === 'exam') { _prep.gameOver = false; _prepFinish(); }
+        return;
+      }
+    }
+    // Si el popup aún no estaba visible pero ya pasaron los 2 minutos → mostrarlo ahora
+    if (!_prepInactivityPopup && _prepLastActivity > 0 &&
+        Date.now() - _prepLastActivity >= _PREP_INACT_SEC * 1000) {
+      _prepShowInactivityPopup();
+    }
+  });
 })();
 
 // ── Sistema de pausa con contraseña de admin ──────────────────────────────────
@@ -25729,15 +25754,66 @@ function _prepResume() {
   _prepLastActivity = Date.now();
 }
 
+// Overlay de petición de PIN — aparece encima de la vista actual
+function _prepShowPinRequestOverlay() {
+  if (document.getElementById('_prep_pin_req_ov')) return;
+  const _ov = document.createElement('div');
+  _ov.id = '_prep_pin_req_ov';
+  _ov.style.cssText = 'position:fixed;inset:0;z-index:99997;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.72);backdrop-filter:blur(6px)';
+  _ov.innerHTML = `<div style="background:linear-gradient(135deg,rgba(25,22,54,0.98),rgba(18,16,42,0.98));border:1px solid rgba(139,92,246,0.45);border-radius:20px;padding:32px 28px;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.7);font-family:'Barlow Condensed',sans-serif">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <div style="font-size:24px;font-weight:900;color:#fff;letter-spacing:0.04em">⏸ Pausar sesión</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:3px">Ingresa la contraseña del profesor</div>
+      </div>
+      <button onclick="document.getElementById('_prep_pin_req_ov')?.remove()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:22px;cursor:pointer;line-height:1;padding:0;margin-left:12px">✕</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+      <input id="_prep_pin_req_inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')_prepPauseConfirm()" style="flex:1;padding:11px 14px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:17px;outline:none;letter-spacing:0.05em">
+      <button onclick="_prepPauseConfirm()" style="padding:11px 16px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.22);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer;white-space:nowrap;letter-spacing:0.03em">Pausar →</button>
+    </div>
+    <div id="_prep_pin_req_err" style="font-size:11px;color:#f87171;font-weight:700;min-height:16px;letter-spacing:0.03em"></div>
+  </div>`;
+  document.body.appendChild(_ov);
+  setTimeout(() => { const _i = document.getElementById('_prep_pin_req_inp'); if (_i) _i.focus(); }, 60);
+}
+function _prepPauseConfirm() {
+  if (_prep.state !== 'exam' || _prepPaused) return;
+  const _imp = typeof _isTeacher === 'function' && _isTeacher();
+  if (!_imp) {
+    const _inp = document.getElementById('_prep_pin_req_inp');
+    const _val = _inp ? String(_inp.value) : '';
+    if (_val !== String(ADMIN && ADMIN.pin)) {
+      const _err = document.getElementById('_prep_pin_req_err');
+      if (_err) _err.textContent = 'Contraseña incorrecta';
+      if (_inp) { _inp.value = ''; _inp.focus(); }
+      return;
+    }
+  }
+  const _ov = document.getElementById('_prep_pin_req_ov');
+  if (_ov) _ov.remove();
+  _prepPauseAskPin = false; _prepPausePinErr = false;
+  _prepPaused = true; _prepPauseStart = Date.now();
+  clearInterval(_prepTimerIntv);
+  clearInterval(_prep.gameTimerIntv);
+  clearInterval(_prepInactivityIntv);
+  _snd.click();
+  _prepShowPauseOverlay();
+}
 // Abre el flujo de pausa con PIN desde el botón del HUD
 function _prepRequestPause() {
   if (_prep.state !== 'exam' || _prepPaused) return;
   const _imp = typeof _isTeacher === 'function' && _isTeacher();
-  if (_imp) { _prepPause(); return; }
-  _prepPauseAskPin = true;
-  _prepPausePinErr = false;
-  _renderPreparatePane();
-  setTimeout(() => { const inp = document.getElementById('_prep_pause_pin_input'); if (inp) inp.focus(); }, 60);
+  if (_imp) {
+    _prepPaused = true; _prepPauseStart = Date.now();
+    clearInterval(_prepTimerIntv);
+    clearInterval(_prep.gameTimerIntv);
+    clearInterval(_prepInactivityIntv);
+    _snd.click();
+    _prepShowPauseOverlay();
+    return;
+  }
+  _prepShowPinRequestOverlay();
 }
 // ── LABEL CLEANER ────────────────────────────────────────────────────────────
 const _cleanLbl = (lbl, fallback) => { const s = (lbl||'').replace(/^[Cc]uestionario\s*\d*\s*[–\-—]?\s*/,'').replace(/^[Qq]uiz\s*[:\-–]?\s*/,'').replace(/^(Visual|Verbal)\s*[IVXivx]*\s*[–\-—]\s*/i,'').replace(/^[IVXivx]+\s*[–\-—]\s*/,'').replace(/[Pp]rueba\s+de\s+unidad/gi,'Examen').replace(/[Pp]rueba\s+do[nñ]at/gi,'Examen').trim(); return s || fallback || lbl || ''; };
@@ -29957,15 +30033,6 @@ function _prepExamHtml() {
       <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:3px">${_prepStreakHudHtml()}</span>
       <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums">${_prepClockSvg}${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return _prepTimerStr(e);}else{return _prepTimerStr(Math.max(0,_prep.timeLeft||0));}})()}</span>
     </div>
-    ${_prepPauseAskPin ? `<div style="background:rgba(30,30,50,0.95);border:1px solid rgba(139,92,246,0.45);border-radius:14px;padding:16px 18px;margin:10px 0;display:flex;flex-direction:column;gap:10px">
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#c4b5fd;letter-spacing:0.04em">⏸ PAUSAR SESIÓN — Contraseña del profesor</div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="_prep_pause_pin_input" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')_prepPause()" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid ${_prepPausePinErr?'rgba(248,113,113,0.6)':'rgba(139,92,246,0.4)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
-        <button onclick="_prepPause()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.2);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer">Pausar →</button>
-        <button onclick="_prepPauseAskPin=false;_prepPausePinErr=false;_renderPreparatePane()" style="padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);background:none;color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:13px;cursor:pointer">✕</button>
-      </div>
-      ${_prepPausePinErr ? `<div style="font-size:11px;color:#f87171;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}
-    </div>` : ''}
     ${q.algo ? '' : `<div class="prep-question-card"><span>${_fmtMath(q.q)}</span></div>`}
     ${q.algo ? _renderAlgo(q, _prep.answered) : ansHtml}
     ${q.algo && !_prep.answered ? `<button class="prep-submit-btn" style="width:100%;margin-top:12px" onclick="_prepSubmitAlgo()">✓ Verificar</button>` : ''}
