@@ -29910,11 +29910,6 @@ function _prepExamHtml() {
       <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${_fmtMath(q.a)}</div>` : ''}
       <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Describe el error <span style="color:rgba(255,255,255,0.3);font-weight:600;text-transform:none;letter-spacing:0">(obligatorio)</span></div>
       <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser 3/4 porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
-      ${!isAdmin() ? `<div style="margin-top:12px;padding:12px 14px;background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.25);border-radius:11px">
-        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor (requerida para reportar)</div>
-        <input id="prep-report-submit-pin" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña del profesor" onkeydown="if(event.key==='Enter')submitPrepReport()" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid ${_prepReportPinErr?'rgba(248,113,113,0.7)':'rgba(139,92,246,0.35)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
-        ${_prepReportPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">⚠ Contraseña incorrecta</div>` : ''}
-      </div>` : ''}
       <div style="display:flex;gap:8px;margin-top:14px">
         <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
         <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Enviar reporte</button>
@@ -30024,7 +30019,6 @@ function _prepResultHtml() {
 // ── Report modal helpers ─────────────────────────────────────────────────────
 function openPrepReportModal() {
   _prepReportModalOpen = true;
-  _prepReportPinErr    = false;
   _renderPreparatePane();
   setTimeout(()=>{ const ta=document.getElementById('prep-report-ta'); if(ta)ta.focus(); },80);
 }
@@ -30242,23 +30236,6 @@ async function submitPrepReport() {
   const ta = document.getElementById('prep-report-ta');
   const comment = ta ? ta.value.trim() : '';
   if (!comment) { showToast('Escribe el error antes de enviar'); if(ta)ta.focus(); return; }
-  // Verificación de contraseña para alumnos (no-admin)
-  if (!isAdmin()) {
-    const pinInp = document.getElementById('prep-report-submit-pin');
-    const pinVal = pinInp ? String(pinInp.value) : '';
-    if (pinVal !== String(ADMIN && ADMIN.pin)) {
-      _prepReportPinErr = true;
-      _renderPreparatePane();
-      setTimeout(() => {
-        const ta2 = document.getElementById('prep-report-ta');
-        if (ta2) ta2.value = comment;
-        const pi2 = document.getElementById('prep-report-submit-pin');
-        if (pi2) pi2.focus();
-      }, 50);
-      return;
-    }
-    _prepReportPinErr = false;
-  }
   const q = _prep.questions[_prep.currentIdx];
   if (!q) return;
   const def = BINGO_TOPICS[_prep.topic] || {};
