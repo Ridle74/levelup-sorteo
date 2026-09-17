@@ -26101,44 +26101,51 @@ function _renderAlgo(q, disabled){
 }
 
 
+const _prepClockSvg=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+function _prepTimerStr(secs){return Math.floor(secs/60).toString().padStart(2,'0')+':'+(secs%60).toString().padStart(2,'0');}
 function _prepGameTimerTick(){
   if(_prep.state!=='exam'){clearInterval(_prep.gameTimerIntv);return;}
   const el=document.getElementById('_prep_timer');
   if(!el) return;
   const isDesafio=_prep.isUnitExam&&_prep.level==='especial';
   if(isDesafio){
-    // Desafío: muestra tiempo transcurrido (métrica del leaderboard)
     const elapsed=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;
-    el.textContent='⏱️ '+Math.floor(elapsed/60).toString().padStart(2,'0')+':'+(elapsed%60).toString().padStart(2,'0');
+    el.innerHTML=_prepClockSvg+_prepTimerStr(elapsed);
   } else {
-    // Curso: muestra countdown del tiempo restante
     const left=Math.max(0,_prep.timeLeft||0);
-    el.textContent='⏱️ '+Math.floor(left/60).toString().padStart(2,'0')+':'+(left%60).toString().padStart(2,'0');
+    el.innerHTML=_prepClockSvg+_prepTimerStr(left);
   }
 }
 function _prepStreakHudHtml(){
   const s=_prep.streak||0;
-  const _bMode=_prep.isUnitExam?'exam':((BINGO_TOPICS[_prep.topic]||{}).quiz?'quiz':'skill');
-  const _maxS=_bMode==='exam'?5:_bMode==='quiz'?4:3;
-  let filt,tc;
-  if(s===0){filt='grayscale(1) opacity(0.35)';tc='rgba(255,255,255,0.3)';}
-  else if(s>_maxS){filt='hue-rotate(220deg) saturate(3) brightness(1.3)';tc='#c084fc';}
-  else{
-    const prog=_maxS>1?(s-1)/(_maxS-1):0;
-    const hr=Math.round(30-55*prog);
-    const sat=(1.8+0.4*prog).toFixed(2);
-    const bri=(1.2-0.15*prog).toFixed(2);
-    filt=`hue-rotate(${hr}deg) saturate(${sat}) brightness(${bri})`;
-    const th=Math.round(50*(1-prog));
-    tc=`hsl(${th},90%,60%)`;
-  }
-  return `<span style="font-size:1.1em;filter:${filt}">🔥</span><span style="color:${tc};font-weight:900"> ×${s}</span>`;
+  function _fSvg(c,w,h,op){return `<svg width="${w}" height="${h}" viewBox="0 0 20 28" fill="${c}" style="opacity:${op??1};filter:drop-shadow(0 0 3px ${c}88);flex-shrink:0;transition:all .3s"><path d="M10 1 C10 1 5 7 5 13 C5 16 6.5 18 6.5 18 C6.5 18 6 15 8 13 C8 13 7 20 12 24 C12 24 16 20 16 14 C16 9 13 7 13 7 C13 7 14 12 11 14 C11 14 13 8 10 1Z"/></svg>`;}
+  const _lvls=[
+    {min:0,  flames:[], numC:'rgba(255,255,255,0.2)'},
+    {min:1,  flames:[{c:'#fde68a',w:14,h:18,op:0.9}], numC:'#fde68a'},
+    {min:2,  flames:[{c:'#fbbf24',w:13,h:17,op:0.85},{c:'#fbbf24',w:15,h:19,op:1}], numC:'#fbbf24'},
+    {min:3,  flames:[{c:'#fbbf24',w:13,h:16,op:0.8},{c:'#fb923c',w:17,h:21,op:1},{c:'#fbbf24',w:13,h:16,op:0.8}], numC:'#fb923c'},
+    {min:5,  flames:[{c:'#fb923c',w:14,h:18,op:0.8},{c:'#f97316',w:18,h:22,op:1},{c:'#fb923c',w:14,h:18,op:0.8}], numC:'#f97316'},
+    {min:8,  flames:[{c:'#f97316',w:15,h:19,op:0.85},{c:'#ef4444',w:20,h:24,op:1},{c:'#f97316',w:15,h:19,op:0.85}], numC:'#ef4444'},
+    {min:12, flames:[{c:'#ef4444',w:16,h:20,op:0.85},{c:'#dc2626',w:22,h:26,op:1},{c:'#ef4444',w:16,h:20,op:0.85}], numC:'#dc2626'},
+    {min:20, flames:[{c:'#818cf8',w:17,h:21,op:0.9},{c:'#60a5fa',w:24,h:28,op:1},{c:'#818cf8',w:17,h:21,op:0.9}], numC:'#60a5fa'},
+  ];
+  let lv=_lvls[0];
+  for(const l of _lvls){if(s>=l.min)lv=l;}
+  const flamesHtml=lv.flames.map(f=>_fSvg(f.c,f.w,f.h,f.op)).join('');
+  if(s===0) return `<span style="display:flex;align-items:flex-end;gap:1px">${_fSvg('rgba(255,255,255,0.15)',13,16,0.5)}</span><span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.2);margin-left:2px">×0</span>`;
+  const shadow=s>=3?`;text-shadow:0 0 10px ${lv.numC}66`:'';
+  return `<span style="display:flex;align-items:flex-end;gap:1px">${flamesHtml}</span><span style="font-family:'Rajdhani',sans-serif;font-size:${s>=20?'16px':s>=8?'15px':'14px'};font-weight:700;color:${lv.numC};line-height:1${shadow};margin-left:3px">×${s}</span>`;
+}
+function _prepLivesHudHtml(l,mx){
+  const dots=[];
+  for(let i=0;i<Math.max(0,mx);i++) dots.push(`<span style="width:8px;height:8px;border-radius:50%;background:${i<l?'#fff':'rgba(255,255,255,0.15)'};flex-shrink:0"></span>`);
+  return dots.join('');
 }
 function _prepUpdateHud(){
-  const l=(_prep.lives??3);
-  const mx=(_prep.maxLives??3);
+  const l=Math.max(0,_prep.lives??3);
+  const mx=Math.max(0,_prep.maxLives??3);
   const livesEl=document.getElementById('_prep_lives');
-  if(livesEl) livesEl.textContent='❤️'.repeat(Math.max(0,l))+'🖤'.repeat(Math.max(0,mx-l));
+  if(livesEl) livesEl.innerHTML=_prepLivesHudHtml(l,mx);
   const streakEl=document.getElementById('_prep_streak');
   if(streakEl) streakEl.innerHTML=_prepStreakHudHtml();
 }
@@ -29916,9 +29923,9 @@ function _prepExamHtml() {
       <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
     </div>
     <div class="prep-game-hud" style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06)">
-      <span id="_prep_lives" class="prep-hud-lives" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
-      <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff">${_prepStreakHudHtml()}</span>
-      <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
+      <span id="_prep_lives" class="prep-hud-lives" style="display:flex;align-items:center;gap:5px">${_prepLivesHudHtml(Math.max(0,_prep.lives??3),Math.max(0,_prep.maxLives??3))}</span>
+      <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:3px">${_prepStreakHudHtml()}</span>
+      <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums">${_prepClockSvg}${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return _prepTimerStr(e);}else{return _prepTimerStr(Math.max(0,_prep.timeLeft||0));}})()}</span>
     </div>
     ${_prepPauseAskPin ? `<div style="background:rgba(30,30,50,0.95);border:1px solid rgba(139,92,246,0.45);border-radius:14px;padding:16px 18px;margin:10px 0;display:flex;flex-direction:column;gap:10px">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#c4b5fd;letter-spacing:0.04em">⏸ PAUSAR SESIÓN — Contraseña del profesor</div>

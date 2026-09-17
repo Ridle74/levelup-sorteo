@@ -26101,44 +26101,51 @@ function _renderAlgo(q, disabled){
 }
 
 
+const _prepClockSvg=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+function _prepTimerStr(secs){return Math.floor(secs/60).toString().padStart(2,'0')+':'+(secs%60).toString().padStart(2,'0');}
 function _prepGameTimerTick(){
   if(_prep.state!=='exam'){clearInterval(_prep.gameTimerIntv);return;}
   const el=document.getElementById('_prep_timer');
   if(!el) return;
   const isDesafio=_prep.isUnitExam&&_prep.level==='especial';
   if(isDesafio){
-    // Desafío: muestra tiempo transcurrido (métrica del leaderboard)
     const elapsed=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;
-    el.textContent='⏱️ '+Math.floor(elapsed/60).toString().padStart(2,'0')+':'+(elapsed%60).toString().padStart(2,'0');
+    el.innerHTML=_prepClockSvg+_prepTimerStr(elapsed);
   } else {
-    // Curso: muestra countdown del tiempo restante
     const left=Math.max(0,_prep.timeLeft||0);
-    el.textContent='⏱️ '+Math.floor(left/60).toString().padStart(2,'0')+':'+(left%60).toString().padStart(2,'0');
+    el.innerHTML=_prepClockSvg+_prepTimerStr(left);
   }
 }
 function _prepStreakHudHtml(){
   const s=_prep.streak||0;
-  const _bMode=_prep.isUnitExam?'exam':((BINGO_TOPICS[_prep.topic]||{}).quiz?'quiz':'skill');
-  const _maxS=_bMode==='exam'?5:_bMode==='quiz'?4:3;
-  let filt,tc;
-  if(s===0){filt='grayscale(1) opacity(0.35)';tc='rgba(255,255,255,0.3)';}
-  else if(s>_maxS){filt='hue-rotate(220deg) saturate(3) brightness(1.3)';tc='#c084fc';}
-  else{
-    const prog=_maxS>1?(s-1)/(_maxS-1):0;
-    const hr=Math.round(30-55*prog);
-    const sat=(1.8+0.4*prog).toFixed(2);
-    const bri=(1.2-0.15*prog).toFixed(2);
-    filt=`hue-rotate(${hr}deg) saturate(${sat}) brightness(${bri})`;
-    const th=Math.round(50*(1-prog));
-    tc=`hsl(${th},90%,60%)`;
-  }
-  return `<span style="font-size:1.1em;filter:${filt}">🔥</span><span style="color:${tc};font-weight:900"> ×${s}</span>`;
+  function _fSvg(c,w,h,op){return `<svg width="${w}" height="${h}" viewBox="0 0 20 28" fill="${c}" style="opacity:${op??1};filter:drop-shadow(0 0 3px ${c}88);flex-shrink:0;transition:all .3s"><path d="M10 1 C10 1 5 7 5 13 C5 16 6.5 18 6.5 18 C6.5 18 6 15 8 13 C8 13 7 20 12 24 C12 24 16 20 16 14 C16 9 13 7 13 7 C13 7 14 12 11 14 C11 14 13 8 10 1Z"/></svg>`;}
+  const _lvls=[
+    {min:0,  flames:[], numC:'rgba(255,255,255,0.2)'},
+    {min:1,  flames:[{c:'#fde68a',w:14,h:18,op:0.9}], numC:'#fde68a'},
+    {min:2,  flames:[{c:'#fbbf24',w:13,h:17,op:0.85},{c:'#fbbf24',w:15,h:19,op:1}], numC:'#fbbf24'},
+    {min:3,  flames:[{c:'#fbbf24',w:13,h:16,op:0.8},{c:'#fb923c',w:17,h:21,op:1},{c:'#fbbf24',w:13,h:16,op:0.8}], numC:'#fb923c'},
+    {min:5,  flames:[{c:'#fb923c',w:14,h:18,op:0.8},{c:'#f97316',w:18,h:22,op:1},{c:'#fb923c',w:14,h:18,op:0.8}], numC:'#f97316'},
+    {min:8,  flames:[{c:'#f97316',w:15,h:19,op:0.85},{c:'#ef4444',w:20,h:24,op:1},{c:'#f97316',w:15,h:19,op:0.85}], numC:'#ef4444'},
+    {min:12, flames:[{c:'#ef4444',w:16,h:20,op:0.85},{c:'#dc2626',w:22,h:26,op:1},{c:'#ef4444',w:16,h:20,op:0.85}], numC:'#dc2626'},
+    {min:20, flames:[{c:'#818cf8',w:17,h:21,op:0.9},{c:'#60a5fa',w:24,h:28,op:1},{c:'#818cf8',w:17,h:21,op:0.9}], numC:'#60a5fa'},
+  ];
+  let lv=_lvls[0];
+  for(const l of _lvls){if(s>=l.min)lv=l;}
+  const flamesHtml=lv.flames.map(f=>_fSvg(f.c,f.w,f.h,f.op)).join('');
+  if(s===0) return `<span style="display:flex;align-items:flex-end;gap:1px">${_fSvg('rgba(255,255,255,0.15)',13,16,0.5)}</span><span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.2);margin-left:2px">×0</span>`;
+  const shadow=s>=3?`;text-shadow:0 0 10px ${lv.numC}66`:'';
+  return `<span style="display:flex;align-items:flex-end;gap:1px">${flamesHtml}</span><span style="font-family:'Rajdhani',sans-serif;font-size:${s>=20?'16px':s>=8?'15px':'14px'};font-weight:700;color:${lv.numC};line-height:1${shadow};margin-left:3px">×${s}</span>`;
+}
+function _prepLivesHudHtml(l,mx){
+  const dots=[];
+  for(let i=0;i<Math.max(0,mx);i++) dots.push(`<span style="width:8px;height:8px;border-radius:50%;background:${i<l?'#fff':'rgba(255,255,255,0.15)'};flex-shrink:0"></span>`);
+  return dots.join('');
 }
 function _prepUpdateHud(){
-  const l=(_prep.lives??3);
-  const mx=(_prep.maxLives??3);
+  const l=Math.max(0,_prep.lives??3);
+  const mx=Math.max(0,_prep.maxLives??3);
   const livesEl=document.getElementById('_prep_lives');
-  if(livesEl) livesEl.textContent='❤️'.repeat(Math.max(0,l))+'🖤'.repeat(Math.max(0,mx-l));
+  if(livesEl) livesEl.innerHTML=_prepLivesHudHtml(l,mx);
   const streakEl=document.getElementById('_prep_streak');
   if(streakEl) streakEl.innerHTML=_prepStreakHudHtml();
 }
@@ -29850,10 +29857,16 @@ function _prepExamHtml() {
       return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${_fmtOpt(opt)}</button>`;
     }).join('')}</div>${_overrideNoticeHtml}`;
   } else if (isMC) {
-    ansHtml = `<div class="prep-mc-grid">${(q.opts||[]).map((opt,i)=>{
-      let cls='prep-mc-btn';
-      if (_prep.answered) { const isCor=String(opt).toLowerCase()===String(q.a).toLowerCase(); cls+=isCor?' correct':(String(_prep.selectedOpt)===String(opt)?' wrong':''); }
-      return `<button class="${cls}" ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')">${i+1})&nbsp;&nbsp;${_fmtOpt(opt)}</button>`;
+    ansHtml = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px">${(q.opts||[]).map((opt,i)=>{
+      const _ltr = ['A','B','C','D','E'][i] || String(i+1);
+      let _bgC='rgba(255,255,255,0.04)', _bdC='rgba(255,255,255,0.07)', _txC='rgba(255,255,255,0.6)', _ltBd='rgba(255,255,255,0.14)', _ltC='rgba(255,255,255,0.3)';
+      if (_prep.answered) {
+        const _isCor = String(opt).toLowerCase()===String(q.a).toLowerCase();
+        const _isSel = String(_prep.selectedOpt)===String(opt);
+        if (_isCor) { _bgC='rgba(57,255,122,0.08)'; _bdC='rgba(57,255,122,0.3)'; _txC='#39ff7a'; _ltBd='rgba(57,255,122,0.4)'; _ltC='#39ff7a'; }
+        else if (_isSel) { _bgC='rgba(248,113,113,0.08)'; _bdC='rgba(248,113,113,0.3)'; _txC='#f87171'; _ltBd='rgba(248,113,113,0.4)'; _ltC='#f87171'; }
+      }
+      return `<button ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${_bgC};border:1px solid ${_bdC};border-radius:8px;font-size:13px;color:${_txC};cursor:pointer;width:100%;text-align:left;line-height:1.4;transition:background 0.15s"><span style="width:18px;height:18px;flex-shrink:0;border:1px solid ${_ltBd};border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${_ltC};font-family:'Rajdhani',sans-serif">${_ltr}</span>${_fmtOpt(opt)}</button>`;
     }).join('')}</div>${_overrideNoticeHtml}`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
@@ -29863,27 +29876,45 @@ function _prepExamHtml() {
     </div>`;
     if (lastAns) ansHtml += `<div style="text-align:center;font-size:13px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700">${lastAns.correct?`<span style="color:#39ff7a">✓ ¡Correcto!</span>`:`<span style="color:#f87171">✗ ${lastAns.given}</span> <span style="color:rgba(255,255,255,0.4)">→ <b style="color:#fff">${_fmtMath(q.a)}</b></span>`}</div>`;
   }
-  const _nivelLbl = _prep.level==='primaria'?'🏫 Primaria':_prep.level==='secundaria'?'📐 Secundaria':'🎓 Pre-univ.';
+  const _nivelLbl = _prep.level==='primaria'?'Primaria':_prep.level==='secundaria'?'Secundaria':'Pre-univ.';
   const _gradeLbl = _prep.grade ? ` · ${_prep.grade}° Grado` : '';
-  const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].ico} ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
+  const _edLbl = _prep.editorial && PREP_EDITORIALS[_prep.editorial] ? ` · ${PREP_EDITORIALS[_prep.editorial].lbl}` : '';
+  const _areaLbl = _prep.area ? ` · ${(PREP_LEVELS[_prep.level]?.areas||[]).find(a=>a.key===_prep.area)?.lbl||''}` : '';
+  const _isBas   = !!_prep.customConfig;
+  // Paleta de colores seleccionable por el alumno
+  if(typeof window._prepColorVariant==='undefined') window._prepColorVariant=0;
+  window._prepCycleColor = window._prepCycleColor || function(){ window._prepColorVariant=(window._prepColorVariant+1)%4; _renderPreparatePane(); };
+  const _cvPalettes = [
+    { name:'Violeta',   dot:'#c084fc', pauseBg:'rgba(192,132,252,0.14)', pauseBd:'rgba(192,132,252,0.32)', pauseC:'#d8b4fe',  rowBg:'rgba(192,132,252,0.07)', rowBd:'rgba(192,132,252,0.2)',  accentBg:'rgba(232,121,249,0.16)', accentBd:'rgba(232,121,249,0.32)', accentC:'#e879f9',  l2C:'rgba(216,180,254,0.45)', nameC:'#e9d5ff', nextBg:'#7c3aed' },
+    { name:'Cyan',      dot:'#22d3ee', pauseBg:'rgba(34,211,238,0.1)',   pauseBd:'rgba(34,211,238,0.28)',  pauseC:'#67e8f9',  rowBg:'rgba(34,211,238,0.06)',  rowBd:'rgba(34,211,238,0.18)',  accentBg:'rgba(34,211,238,0.14)',  accentBd:'rgba(34,211,238,0.3)',  accentC:'#22d3ee',  l2C:'rgba(103,232,249,0.42)', nameC:'#a5f3fc', nextBg:'#0891b2' },
+    { name:'Ámbar',     dot:'#fbbf24', pauseBg:'rgba(251,191,36,0.1)',   pauseBd:'rgba(251,191,36,0.28)',  pauseC:'#fde68a',  rowBg:'rgba(251,191,36,0.05)',  rowBd:'rgba(251,191,36,0.18)',  accentBg:'rgba(245,158,11,0.14)',  accentBd:'rgba(245,158,11,0.3)',  accentC:'#f59e0b',  l2C:'rgba(253,230,138,0.4)', nameC:'#fef3c7', nextBg:'#d97706' },
+    { name:'Esmeralda', dot:'#34d399', pauseBg:'rgba(52,211,153,0.1)',   pauseBd:'rgba(52,211,153,0.28)',  pauseC:'#6ee7b7',  rowBg:'rgba(52,211,153,0.06)',  rowBd:'rgba(52,211,153,0.18)',  accentBg:'rgba(16,185,129,0.14)',  accentBd:'rgba(16,185,129,0.3)',  accentC:'#10b981',  l2C:'rgba(110,231,183,0.4)', nameC:'#d1fae5', nextBg:'#059669' },
+  ];
+  const _cv = _cvPalettes[window._prepColorVariant % 4];
+  const _accentC  = _cv.accentC;
+  const _accentBg = _cv.accentBg;
+  const _accentBd = _cv.accentBd;
+  const _rowBg    = _cv.rowBg;
+  const _rowBd    = _cv.rowBd;
+  const _l2C      = _cv.l2C;
+  const _nameC    = _cv.nameC;
+  const _pauseBg  = _cv.pauseBg;
+  const _pauseBd  = _cv.pauseBd;
+  const _pauseC   = _cv.pauseC;
   return `<div class="prep-wrap">
-    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:3px">
-      <!-- L1: botones salir y pausar -->
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <button onclick="_prepExitSave()" style="background:none;border:none;color:rgba(255,255,255,0.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" title="Salir y guardar progreso">✕</button>
-        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);border-radius:7px;color:rgba(255,255,255,0.7);font-size:13px;cursor:pointer;padding:4px 12px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.03em;line-height:1" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">⏸ Pausar</button>
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:4px">
+      <!-- L1: Salir | Selector de color (centro) | Pausar -->
+      <div style="display:flex;align-items:center;gap:6px">
+        <button onclick="_prepExitSave()" title="Salir y guardar progreso" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:7px;color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1">✕ Salir</button>
+        <button onclick="_prepCycleColor()" style="flex:1;height:28px;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:7px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;user-select:none"><span style="width:8px;height:8px;border-radius:50%;background:${_cv.dot};flex-shrink:0;display:inline-block"></span>${_cv.name}</button>
+        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;gap:5px;background:${_pauseBg};border:1px solid ${_pauseBd};border-radius:7px;color:${_pauseC};font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;line-height:1">⏸ Pausar</button>
       </div>
-      <!-- L2: nivel · grado · colegio · área -->
-      <div style="display:flex;align-items:center;min-width:0">
-        <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.03em;color:rgba(255,255,255,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_nivelLbl}${_gradeLbl}${_edLbl}</span>
-      </div>
-      <!-- L3: píldora actividad + modo -->
-      <div style="display:flex;align-items:center">
-        <div style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;max-width:100%;overflow:hidden;${_prep.customConfig?'background:rgba(255,207,79,0.10);border:1px solid rgba(255,207,79,0.35)':'background:rgba(139,92,246,0.10);border:1px solid rgba(139,92,246,0.35)'}">
-          <span style="flex-shrink:0;font-size:13px">${def.ico||'📚'}</span>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;${_prep.customConfig?'color:#ffcf4f':'color:#c4b5fd'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_examLbl}</span>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.3);flex-shrink:0">·</span>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;${_prep.customConfig?'color:#e9b84a':'color:#a78bfa'};white-space:nowrap;flex-shrink:0">${_prep.customConfig?'Básico':'Regular'}</span>
+      <!-- L2+L3: caja unificada — badge (Regular/Básico) izq, contexto+nombre der -->
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:0 11px;align-items:center;background:${_rowBg};border:1px solid ${_rowBd};border-radius:8px;padding:7px 10px">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${_accentC};background:${_accentBg};border:1px solid ${_accentBd};padding:3px 9px;border-radius:5px;white-space:nowrap;align-self:center">${_isBas?'Básico':'Regular'}</span>
+        <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+          <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:${_l2C};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_nivelLbl}${_gradeLbl}${_edLbl}${_areaLbl}</span>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:${_nameC};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_examLbl}</span>
         </div>
       </div>
     </div>
@@ -29891,10 +29922,10 @@ function _prepExamHtml() {
       <span class="prep-prog-label">${idx+1}/${total}</span>
       <div class="prep-prog-bar"><div class="prep-prog-fill" style="width:${pct}%"></div></div>
     </div>
-    <div class="prep-game-hud">
-      <span id="_prep_lives" class="prep-hud-lives">${'❤️'.repeat(Math.max(0,_prep.lives??3))+'🖤'.repeat(Math.max(0,(_prep.maxLives??3)-(_prep.lives??3)))}</span>
-      <span id="_prep_streak" class="prep-hud-streak">${_prepStreakHudHtml()}</span>
-      <span id="_prep_timer" class="prep-hud-timer">⏱️ ${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return Math.floor(e/60).toString().padStart(2,'0')+':'+(e%60).toString().padStart(2,'0');}else{const l=Math.max(0,_prep.timeLeft||0);return Math.floor(l/60).toString().padStart(2,'0')+':'+(l%60).toString().padStart(2,'0');}})()}</span>
+    <div class="prep-game-hud" style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06)">
+      <span id="_prep_lives" class="prep-hud-lives" style="display:flex;align-items:center;gap:5px">${_prepLivesHudHtml(Math.max(0,_prep.lives??3),Math.max(0,_prep.maxLives??3))}</span>
+      <span id="_prep_streak" class="prep-hud-streak" style="display:flex;align-items:center;gap:3px">${_prepStreakHudHtml()}</span>
+      <span id="_prep_timer" class="prep-hud-timer" style="display:flex;align-items:center;gap:5px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums">${_prepClockSvg}${(()=>{const isD=_prep.isUnitExam&&_prep.level==='especial';if(isD){const e=_prep.gameStartTime?Math.floor((Date.now()-_prep.gameStartTime)/1000):0;return _prepTimerStr(e);}else{return _prepTimerStr(Math.max(0,_prep.timeLeft||0));}})()}</span>
     </div>
     ${_prepPauseAskPin ? `<div style="background:rgba(30,30,50,0.95);border:1px solid rgba(139,92,246,0.45);border-radius:14px;padding:16px 18px;margin:10px 0;display:flex;flex-direction:column;gap:10px">
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;color:#c4b5fd;letter-spacing:0.04em">⏸ PAUSAR SESIÓN — Contraseña del profesor</div>
@@ -29909,9 +29940,9 @@ function _prepExamHtml() {
     ${q.algo ? _renderAlgo(q, _prep.answered) : ansHtml}
     ${q.algo && !_prep.answered ? `<button class="prep-submit-btn" style="width:100%;margin-top:12px" onclick="_prepSubmitAlgo()">✓ Verificar</button>` : ''}
     ${q.algo && _prep.answered ? `<div style="text-align:center;font-size:15px;font-weight:700;padding:6px 0;font-family:'Barlow Condensed',sans-serif">${_prep.answers[_prep.answers.length-1]?.correct?'<span style="color:#39ff7a">✓ ¡Correcto!</span>':'<span style="color:#f87171">✗ Incorrecto — respuesta: '+q.a.replace('r',' R ')+'</span>'}</div>` : ''}
-    ${!q.algo ? `<button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()">${idx===total-1?'🏁 Ver resultados':'Siguiente →'}</button>` : ''}
-    <div style="text-align:center;margin-top:10px">
-      <button class="prep-report-btn" onclick="openPrepReportModal()">⚠️ Reportar error en este ejercicio</button>
+    ${!q.algo ? `<button class="prep-next-btn" ${_prep.answered?'':'disabled'} onclick="_prepNextQ()" style="display:flex;align-items:center;justify-content:center;width:100%;height:40px;border-radius:9px;border:none;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.05em;cursor:pointer;margin-bottom:10px;color:#fff;background:${_prep.answered?_cv.nextBg:'rgba(255,255,255,0.08)'};opacity:${_prep.answered?1:0.5};transition:background 0.2s">${idx===total-1?'🏁 Ver resultados':'Siguiente →'}</button>` : ''}
+    <div style="text-align:center;margin-top:4px;margin-bottom:14px">
+      <button class="prep-report-btn" onclick="openPrepReportModal()" style="background:none;border:none;font-size:11px;color:rgba(255,255,255,0.2);cursor:pointer;display:inline-flex;align-items:center;gap:5px;padding:6px 0">⚑ Reportar error</button>
     </div>
   </div>${_prepReportModalOpen ? `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepReportModal()">
     <div class="prep-report-modal-box">
