@@ -26149,6 +26149,15 @@ function _prepUpdateHud(){
   const streakEl=document.getElementById('_prep_streak');
   if(streakEl) streakEl.innerHTML=_prepStreakHudHtml();
 }
+function _prepHdrTapRow(e){
+  if(window.innerWidth>=640)return;
+  const tray=document.getElementById('_prep_hdr_tray');
+  const chev=document.getElementById('_prep_hdr_chev');
+  if(!tray)return;
+  const isOpen=tray.classList.contains('open');
+  tray.classList.toggle('open',!isOpen);
+  if(chev)chev.style.transform=isOpen?'':'rotate(180deg)';
+}
 let _prepNotifTimer=null;
 function _prepStreakNotif(msg, type='streak'){
   let el=document.getElementById('_prep_streak_notif');
@@ -29866,7 +29875,7 @@ function _prepExamHtml() {
         if (_isCor) { _bgC='rgba(57,255,122,0.08)'; _bdC='rgba(57,255,122,0.3)'; _txC='#39ff7a'; _ltBd='rgba(57,255,122,0.4)'; _ltC='#39ff7a'; }
         else if (_isSel) { _bgC='rgba(248,113,113,0.08)'; _bdC='rgba(248,113,113,0.3)'; _txC='#f87171'; _ltBd='rgba(248,113,113,0.4)'; _ltC='#f87171'; }
       }
-      return `<button ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${_bgC};border:1px solid ${_bdC};border-radius:8px;font-size:13px;color:${_txC};cursor:pointer;width:100%;text-align:left;line-height:1.4;transition:background 0.15s"><span style="width:18px;height:18px;flex-shrink:0;border:1px solid ${_ltBd};border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${_ltC};font-family:'Rajdhani',sans-serif">${_ltr}</span>${_fmtOpt(opt)}</button>`;
+      return `<button ${_prep.answered?'disabled':''} onclick="_prepSelectOpt('${String(opt).replace(/'/g,"\\'")}')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:${_bgC};border:1px solid ${_bdC};border-radius:8px;font-size:13px;color:${_txC};cursor:pointer;width:100%;text-align:left;line-height:1.4;transition:background 0.15s"><span style="width:18px;height:18px;flex-shrink:0;border:1px solid ${_ltBd};border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:${_ltC};font-family:'Rajdhani',sans-serif">${_ltr}</span><span style="flex:1">${_fmtOpt(opt)}</span></button>`;
     }).join('')}</div>${_overrideNoticeHtml}`;
   } else {
     const lastAns = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
@@ -29902,19 +29911,40 @@ function _prepExamHtml() {
   const _pauseBd  = _cv.pauseBd;
   const _pauseC   = _cv.pauseC;
   return `<div class="prep-wrap">
-    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:4px">
-      <!-- L1: Salir | Selector de color (centro) | Pausar -->
-      <div style="display:flex;align-items:center;gap:6px">
-        <button onclick="_prepExitSave()" title="Salir y guardar progreso" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:7px;color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1">✕ Salir</button>
-        <button onclick="_prepCycleColor()" style="flex:1;height:28px;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:7px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;user-select:none"><span style="width:8px;height:8px;border-radius:50%;background:${_cv.dot};flex-shrink:0;display:inline-block"></span>${_cv.name}</button>
-        <button onclick="_prepRequestPause()" title="Pausar sesión (requiere contraseña)" style="flex-shrink:0;height:28px;padding:0 13px;display:flex;align-items:center;gap:5px;background:${_pauseBg};border:1px solid ${_pauseBd};border-radius:7px;color:${_pauseC};font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;line-height:1">⏸ Pausar</button>
-      </div>
-      <!-- L2+L3: caja unificada — badge (Regular/Básico) izq, contexto+nombre der -->
-      <div style="display:grid;grid-template-columns:auto 1fr;gap:0 11px;align-items:center;background:${_rowBg};border:1px solid ${_rowBd};border-radius:8px;padding:7px 10px">
-        <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${_accentC};background:${_accentBg};border:1px solid ${_accentBd};padding:3px 9px;border-radius:5px;white-space:nowrap;align-self:center">${_isBas?'Básico':'Regular'}</span>
-        <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+    <div class="prep-exam-header" style="flex-direction:column;align-items:stretch;gap:0;padding:0">
+      <style>
+        .prep-hdr-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--phr-bg);border:1px solid var(--phr-bd);border-radius:8px;margin:8px 8px 4px}
+        .prep-hdr-chev{flex-shrink:0;transition:transform .25s;display:none}
+        .prep-hdr-ctrl{display:flex;gap:6px;align-items:center;flex-shrink:0}
+        .prep-hdr-tray{overflow:hidden;max-height:0;opacity:0;transition:max-height .3s ease,opacity .25s;border-top:1px solid rgba(255,255,255,0.07);margin:0 8px}
+        .prep-hdr-tray.open{max-height:64px;opacity:1}
+        .prep-hdr-tray-inner{display:flex;gap:8px;padding:8px 0}
+        @media(max-width:639px){
+          .prep-hdr-row{cursor:pointer;user-select:none}
+          .prep-hdr-chev{display:block}
+          .prep-hdr-ctrl{display:none}
+        }
+      </style>
+      <!-- Fila única: REGULAR | info | ● Color · ⏸ Pausar · ✕ Salir -->
+      <div class="prep-hdr-row" id="_prep_hdr_row" style="--phr-bg:${_rowBg};--phr-bd:${_rowBd}" onclick="_prepHdrTapRow(event)">
+        <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${_accentC};background:${_accentBg};border:1px solid ${_accentBd};padding:3px 9px;border-radius:5px;white-space:nowrap;flex-shrink:0">${_isBas?'Básico':'Regular'}</span>
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
           <span style="font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:${_l2C};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_nivelLbl}${_gradeLbl}${_edLbl}${_areaLbl}</span>
           <span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:${_nameC};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_examLbl}</span>
+        </div>
+        <svg class="prep-hdr-chev" id="_prep_hdr_chev" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"/></svg>
+        <div class="prep-hdr-ctrl">
+          <button onclick="_prepCycleColor();event.stopPropagation()" style="flex-shrink:0;height:28px;padding:0 10px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:7px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;user-select:none"><span style="width:8px;height:8px;border-radius:50%;background:${_cv.dot};flex-shrink:0;display:inline-block"></span>${_cv.name}</button>
+          <button onclick="_prepRequestPause();event.stopPropagation()" title="Pausar sesión" style="flex-shrink:0;height:28px;padding:0 12px;display:flex;align-items:center;gap:5px;background:${_pauseBg};border:1px solid ${_pauseBd};border-radius:7px;color:${_pauseC};font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;line-height:1">⏸ Pausar</button>
+          <button onclick="_prepExitSave();event.stopPropagation()" title="Salir y guardar progreso" style="flex-shrink:0;height:28px;padding:0 12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:7px;color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1">✕ Salir</button>
+        </div>
+      </div>
+      <!-- Tray móvil: se revela al tocar la fila de info (solo <640px) -->
+      <div class="prep-hdr-tray" id="_prep_hdr_tray">
+        <div class="prep-hdr-tray-inner">
+          <button onclick="_prepCycleColor()" style="flex:1;height:32px;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:7px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;user-select:none"><span style="width:8px;height:8px;border-radius:50%;background:${_cv.dot};flex-shrink:0;display:inline-block"></span>${_cv.name}</button>
+          <button onclick="_prepRequestPause()" style="flex:1;height:32px;display:flex;align-items:center;justify-content:center;gap:5px;background:${_pauseBg};border:1px solid ${_pauseBd};border-radius:7px;color:${_pauseC};font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.04em;cursor:pointer;line-height:1">⏸ Pausar</button>
+          <button onclick="_prepExitSave()" style="flex:1;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.13);border-radius:7px;color:rgba(255,255,255,0.5);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.03em;cursor:pointer;line-height:1">✕ Salir</button>
         </div>
       </div>
     </div>
