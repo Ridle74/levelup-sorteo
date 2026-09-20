@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="/levelup.js?v=20260902g"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -956,10 +956,48 @@ textarea.fsm { resize:none; height:64px; }
 .prep-report-btn{background:none;border:none;color:rgba(255,255,255,0.22);font-size:11px;cursor:pointer;font-family:'Lato',sans-serif;letter-spacing:0.01em;padding:4px 8px;border-radius:6px;transition:color .2s}
 .prep-report-btn:hover{color:rgba(251,191,36,0.82)}
 .prep-report-modal-ov{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,0.82);display:flex;align-items:center;justify-content:center;padding:16px}
-.prep-report-modal-box{background:#100d2e;border:1px solid rgba(255,255,255,0.13);border-radius:18px;padding:20px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto}
-.prep-report-tag{display:inline-block;background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.5);border-radius:8px;padding:2px 10px;font-size:12px;font-weight:700;color:#c4b5fd;font-family:'Lato',sans-serif;letter-spacing:0.02em}
-.prep-report-ta{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 12px;color:#fff;font-family:'Lato',sans-serif;font-size:13px;font-weight:400;resize:none;outline:none;box-sizing:border-box;min-height:80px;margin-top:8px}
-.prep-report-ta:focus{border-color:rgba(168,85,247,0.6);box-shadow:0 0 0 2px rgba(168,85,247,0.15)}
+.prep-report-modal-box{background:#100d2e;border:1px solid rgba(139,92,246,0.22);border-radius:18px;padding:0;width:100%;max-width:420px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+/* Modal header */
+.prep-report-modal-top{background:linear-gradient(135deg,rgba(109,40,217,0.5),rgba(147,51,234,0.22));padding:13px 15px 12px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid rgba(139,92,246,0.18);flex-shrink:0}
+.prep-report-modal-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;letter-spacing:0.04em}
+.prep-report-modal-sub{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:#fff;letter-spacing:0.05em;margin-top:2px}
+.prep-report-modal-close{background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.45);font-size:13px;cursor:pointer;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:10px;margin-top:1px;line-height:1}
+/* Modal body */
+.prep-report-modal-body{padding:13px 14px 16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.prep-report-flbl{display:block;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;letter-spacing:0.01em;color:#fff;margin-bottom:5px}
+.prep-report-divider{border:none;border-top:1px solid rgba(255,255,255,0.06);margin:0}
+/* Scope chips */
+.prep-report-scope-chips{display:flex;flex-direction:column;gap:5px}
+.prep-report-scope-chip{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:8px;border:1px solid rgba(255,255,255,0.09);background:rgba(255,255,255,0.03);cursor:pointer;transition:all .12s;color:#fff;user-select:none;font-family:'Barlow Condensed',sans-serif}
+.prep-report-scope-chip.on{background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.35);color:#fff}
+.prep-report-scope-radio{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.18);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.prep-report-scope-chip.on .prep-report-scope-radio{border-color:#a78bfa}
+.prep-report-scope-chip.on .prep-report-scope-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:#a78bfa;display:block}
+.prep-report-scope-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400}
+.prep-report-scope-desc{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;color:#fff}
+.prep-report-scope-chip.on .prep-report-scope-desc{color:#fff}
+/* Exercise display */
+.prep-report-exercise{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 11px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;line-height:1.35}
+/* Textarea */
+.prep-report-ta{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 11px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;resize:none;outline:none;box-sizing:border-box;height:46px;min-height:46px;max-height:46px;margin-top:5px;line-height:1.35;overflow-y:auto}
+.prep-report-ta:focus{border-color:rgba(139,92,246,0.4)}
+.prep-report-ta::placeholder{color:rgba(255,255,255,0.55)}
+/* PIN unified */
+.prep-report-pin-unified{display:block;width:100%;height:38px;border-radius:8px;border:1px solid rgba(139,92,246,0.35);background:rgba(139,92,246,0.07);color:#fff;outline:none;padding:0 11px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;letter-spacing:0.01em;box-sizing:border-box;transition:border-color .15s,background .15s;margin-top:5px}
+.prep-report-pin-unified:focus{border-color:rgba(139,92,246,0.6);background:rgba(139,92,246,0.12)}
+.prep-report-pin-unified::placeholder{color:rgba(255,255,255,0.55)}
+.prep-report-pin-err{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:400;color:#f87171;margin-top:4px;letter-spacing:0.02em}
+/* Stacked buttons */
+.prep-report-btn-stack{display:flex;flex-direction:column;gap:6px}
+.prep-report-btn-primary{width:100%;height:42px;border-radius:8px;border:none;background:linear-gradient(135deg,#6d28d9,#9333ea);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:0.02em;transition:opacity .12s}
+.prep-report-btn-primary:hover{opacity:.9}
+.prep-report-btn-primary:disabled{opacity:.5;cursor:default}
+.prep-report-btn-secondary{width:100%;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,1);background:transparent;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;letter-spacing:0.02em;transition:color .12s,border-color .12s,opacity .12s}
+.prep-report-btn-secondary:hover{opacity:.7}
+/* Hint */
+.prep-report-hint{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:400;color:#fff;line-height:1.4;letter-spacing:0.01em}
+/* Legacy tag (used in admin report list) */
+.prep-report-tag{display:inline-block;background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.5);border-radius:8px;padding:2px 10px;font-size:12px;font-weight:700;color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.02em}
 .prep-score-wrap{text-align:center;padding:8px 0 16px}
 .prep-score-num{font-size:58px;font-weight:900;line-height:1;color:#fff}
 .prep-score-denom{font-size:28px;font-weight:700;color:rgba(255,255,255,0.35)}

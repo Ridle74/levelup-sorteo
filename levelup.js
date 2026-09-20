@@ -127,6 +127,7 @@ let _prepAdminReportsData = null;
 let _prepAdminReportsLoading = false;
 let _prepAdminShowReports = false;
 let _prepAdminReportsFilter = 'pending'; // 'pending' | 'confirmed' | 'dismissed'
+let _prepAdminReportsNameFilter = null;  // student name chip filter
 
 // ── Generadores de ejercicios ───────────────────────────────────────────────────
 
@@ -6925,7 +6926,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2','sf6_are_b1','sf6_are_b2','sf6_are_bq1','sf6_are_b3','sf6_are_b4','sf6_are_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'aritmetica', lbl:'Aritmética', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_ang_b9','i1tr_ang_b10','i1tr_ang_bq4','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3','ac1_esc_b9','ac1_esc_b10','ac1_esc_bq4','ac1_esc_b11','ac1_esc_b12','ac1_esc_bq5','ac1_esc_b13','ac1_esc_b14','ac1_esc_bq6','ac1_esc_b15','ac1_esc_b16','ac1_esc_bq7','ac1_esc_b17','ac1_esc_b18','ac1_esc_bq8',],
+    grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3','ac1_esc_b9','ac1_esc_b10','ac1_esc_bq4','ac1_esc_b11','ac1_esc_b12','ac1_esc_bq5','ac1_esc_b13','ac1_esc_b14','ac1_esc_bq6','ac1_esc_b15','ac1_esc_b16','ac1_esc_bq7','ac1_esc_b17','ac1_esc_b18','ac1_esc_bq8',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex','jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2'],
       '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4','sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2','svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2','svr3ar2_b1','svr3ar2_b2','svr3ar2_b3','svr3ar2_bq1','svr3ar2_b4','svr3ar2_b5','svr3ar2_b6','svr3ar2_bq2'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','hca9_b1','hca9_b2','hca9_b3','hca9_bq1','hca9_b4','hca9_b5','hca9_b6','hca9_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex','inn5m_np_b1','inn5m_np_b2','inn5m_np_bq1','inn5m_np_b3','inn5m_np_b4','inn5m_np_b5','inn5m_np_bq2','inn5m_dv_b1','inn5m_dv_b2','inn5m_dv_bq1','inn5m_dv_b3','inn5m_dv_b4','inn5m_dv_b5','inn5m_dv_bq2','inn5m_ecu_b1','inn5m_ecu_b2','inn5m_ecu_bq1','inn5m_ecu_b3','inn5m_ecu_b4','inn5m_ecu_bq2','inn5m_ine_b1','inn5m_ine_b2','inn5m_ine_bq1','inn5m_ine_b3','inn5m_ine_b4','inn5m_ine_bq2'] },
     areas:[
@@ -12852,6 +12853,511 @@ _SKILL_META['li1m_u4_b6']={ico:'🧩',lbl:'Problemas integrados: escala, períme
 function _genLi1mU4_BQ2(){return _bqSrcPick(['li1m_u4_b4','li1m_u4_b5','li1m_u4_b6'],[_genLi1mU4_B4,_genLi1mU4_B5,_genLi1mU4_B6]);}
 _SKILL_META['li1m_u4_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Área y problemas integrados de escala',qCount:15,gen:_genLi1mU4_BQ2,quiz:true,srcKeys:['li1m_u4_b4','li1m_u4_b5','li1m_u4_b6']};
 
+// ═══════════════════════════════════════════════════════════════
+// UNIT 5 — Repaso: Operaciones con Fracciones (li1m_u5_)
+// ═══════════════════════════════════════════════════════════════
+
+function _genLi1mU5_B1(){
+  return _i4gpick([
+    {_id:1,q:'Calcula: 1/5 + 2/5',a:'3/5',opts:_i4gshuf(['3/5','4/5','2/5','1/5']),mc:true,ste:'Mismo denominador: 1+2=3 → 3/5'},
+    {_id:2,q:'Calcula: 3/7 + 2/7',a:'5/7',opts:_i4gshuf(['5/7','6/7','4/7','1/7']),mc:true,ste:'Mismo denominador: 3+2=5 → 5/7'},
+    {_id:3,q:'Calcula: 4/9 + 3/9',a:'7/9',opts:_i4gshuf(['7/9','8/9','5/9','6/9']),mc:true,ste:'Mismo denominador: 4+3=7 → 7/9'},
+    {_id:4,q:'Calcula: 2/8 + 3/8 + 1/8',a:'6/8 = 3/4',opts:_i4gshuf(['6/8 = 3/4','5/8','7/8','4/8']),mc:true,ste:'2+3+1=6 → 6/8, simplifica dividiendo entre 2: 3/4'},
+    {_id:5,q:'Calcula: 5/9 + 2/9 + 1/9',a:'8/9',opts:_i4gshuf(['8/9','7/9','9/9','6/9']),mc:true,ste:'5+2+1=8 → 8/9'},
+    {_id:6,q:'Calcula: 7/8 − 3/8',a:'4/8 = 1/2',opts:_i4gshuf(['4/8 = 1/2','3/8','5/8','2/8']),mc:true,ste:'Mismo denominador: 7−3=4 → 4/8 = 1/2'},
+    {_id:7,q:'Calcula: 5/6 − 2/6',a:'3/6 = 1/2',opts:_i4gshuf(['3/6 = 1/2','2/6','4/6','1/6']),mc:true,ste:'5−2=3 → 3/6, simplifica: 1/2'},
+    {_id:8,q:'Calcula: 9/10 − 4/10',a:'5/10 = 1/2',opts:_i4gshuf(['5/10 = 1/2','4/10','6/10','3/10']),mc:true,ste:'9−4=5 → 5/10 = 1/2'},
+    {_id:9,q:'Calcula: 8/9 − 5/9',a:'3/9 = 1/3',opts:_i4gshuf(['3/9 = 1/3','4/9','2/9','1/9']),mc:true,ste:'8−5=3 → 3/9 = 1/3'},
+    {_id:10,q:'Calcula: 11/12 − 5/12',a:'6/12 = 1/2',opts:_i4gshuf(['6/12 = 1/2','5/12','7/12','4/12']),mc:true,ste:'11−5=6 → 6/12 = 1/2'},
+    {_id:11,q:'¿Cuál es el resultado de 2/5 + 3/5?',a:'1',opts:_i4gshuf(['1','5/5','4/5','6/10']),mc:true,ste:'2+3=5 → 5/5 = 1'},
+    {_id:12,q:'¿Cuál es el resultado de 3/8 + 5/8?',a:'1',opts:_i4gshuf(['1','8/8','7/8','6/8']),mc:true,ste:'3+5=8 → 8/8 = 1'},
+    {_id:13,q:'Calcula: 1/6 + 3/6',a:'4/6 = 2/3',opts:_i4gshuf(['4/6 = 2/3','3/6','5/6','2/6']),mc:true,ste:'1+3=4 → 4/6 = 2/3'},
+    {_id:14,q:'Calcula: 5/7 − 3/7',a:'2/7',opts:_i4gshuf(['2/7','3/7','1/7','4/7']),mc:true,ste:'5−3=2 → 2/7'},
+    {_id:15,q:'¿Cuál de las siguientes es la suma correcta de 4/9 + 4/9?',a:'8/9',opts:_i4gshuf(['8/9','8/18','4/9','1']),mc:true,ste:'Mismo denominador: 4+4=8 → 8/9'},
+    {_id:16,q:'Calcula: 7/10 − 2/10',a:'5/10 = 1/2',opts:_i4gshuf(['5/10 = 1/2','4/10','6/10','3/10']),mc:true,ste:'7−2=5 → 5/10 = 1/2'},
+    {_id:17,q:'Calcula: 3/8 + 2/8 + 1/8',a:'6/8 = 3/4',opts:_i4gshuf(['6/8 = 3/4','5/8','7/8','4/8']),mc:true,ste:'3+2+1=6 → 6/8 = 3/4'},
+    {_id:18,q:'Calcula: 5/12 + 3/12',a:'8/12 = 2/3',opts:_i4gshuf(['8/12 = 2/3','7/12','9/12','6/12']),mc:true,ste:'5+3=8 → 8/12 = 2/3'},
+    {_id:19,q:'Calcula: 11/15 − 4/15',a:'7/15',opts:_i4gshuf(['7/15','8/15','6/15','5/15']),mc:true,ste:'11−4=7 → 7/15'},
+    {_id:20,q:'¿Cuál es la diferencia correcta de 9/10 − 3/10?',a:'6/10 = 3/5',opts:_i4gshuf(['6/10 = 3/5','5/10','7/10','4/10']),mc:true,ste:'9−3=6 → 6/10 = 3/5'},
+  ]);
+}
+_SKILL_META['li1m_u5_b1']={ico:'📐',lbl:'Suma y resta de fracciones homogéneas',qCount:4,gen:_genLi1mU5_B1,plantillas:['2 fracciones homo, mismo denom (5-9)','Suma de 3 fracciones homo','Resta de 2 fracciones homo','Resta con simplificación','Identificar resultado correcto']};
+
+function _genLi1mU5_B2(){
+  return _i4gpick([
+    {_id:1,q:'Calcula: 1/2 + 1/4',a:'3/4',opts:_i4gshuf(['3/4','2/6','1/2','2/4']),mc:true,ste:'MCM(2,4)=4: 2/4 + 1/4 = 3/4'},
+    {_id:2,q:'Calcula: 1/3 + 1/6',a:'3/6 = 1/2',opts:_i4gshuf(['3/6 = 1/2','2/6','4/6','1/3']),mc:true,ste:'MCM(3,6)=6: 2/6 + 1/6 = 3/6 = 1/2'},
+    {_id:3,q:'Calcula: 3/4 + 1/8',a:'7/8',opts:_i4gshuf(['7/8','4/12','6/8','5/8']),mc:true,ste:'MCM(4,8)=8: 6/8 + 1/8 = 7/8'},
+    {_id:4,q:'Calcula: 1/2 + 1/3',a:'5/6',opts:_i4gshuf(['5/6','2/5','4/6','3/6']),mc:true,ste:'MCM(2,3)=6: 3/6 + 2/6 = 5/6'},
+    {_id:5,q:'Calcula: 2/3 + 1/4',a:'11/12',opts:_i4gshuf(['11/12','3/7','8/12','9/12']),mc:true,ste:'MCM(3,4)=12: 8/12 + 3/12 = 11/12'},
+    {_id:6,q:'Calcula: 3/4 − 1/2',a:'1/4',opts:_i4gshuf(['1/4','2/2','1/2','2/4']),mc:true,ste:'MCM(4,2)=4: 3/4 − 2/4 = 1/4'},
+    {_id:7,q:'Calcula: 5/6 − 1/3',a:'3/6 = 1/2',opts:_i4gshuf(['3/6 = 1/2','4/6','2/6','1/6']),mc:true,ste:'MCM(6,3)=6: 5/6 − 2/6 = 3/6 = 1/2'},
+    {_id:8,q:'Calcula: 7/8 − 1/4',a:'5/8',opts:_i4gshuf(['5/8','6/8','4/8','3/8']),mc:true,ste:'MCM(8,4)=8: 7/8 − 2/8 = 5/8'},
+    {_id:9,q:'Calcula: 1/2 + 1/4 + 1/8',a:'7/8',opts:_i4gshuf(['7/8','6/8','5/8','8/8']),mc:true,ste:'MCM=8: 4/8 + 2/8 + 1/8 = 7/8'},
+    {_id:10,q:'Calcula: 1/3 + 1/4 + 1/6',a:'9/12 = 3/4',opts:_i4gshuf(['9/12 = 3/4','8/12','10/12','7/12']),mc:true,ste:'MCM=12: 4/12 + 3/12 + 2/12 = 9/12 = 3/4'},
+    {_id:11,q:'¿Cuál es el resultado de 1/2 + 2/3?',a:'7/6',opts:_i4gshuf(['7/6','3/5','5/6','6/6']),mc:true,ste:'MCM(2,3)=6: 3/6 + 4/6 = 7/6'},
+    {_id:12,q:'Calcula: 3/5 + 1/2',a:'11/10',opts:_i4gshuf(['11/10','4/7','5/10','7/10']),mc:true,ste:'MCM(5,2)=10: 6/10 + 5/10 = 11/10'},
+    {_id:13,q:'Calcula: 5/6 − 1/4',a:'7/12',opts:_i4gshuf(['7/12','8/12','6/12','5/12']),mc:true,ste:'MCM(6,4)=12: 10/12 − 3/12 = 7/12'},
+    {_id:14,q:'Calcula: 3/4 − 2/3',a:'1/12',opts:_i4gshuf(['1/12','2/12','3/12','1/6']),mc:true,ste:'MCM(4,3)=12: 9/12 − 8/12 = 1/12'},
+    {_id:15,q:'¿Cuál es la suma correcta de 1/6 + 1/4?',a:'5/12',opts:_i4gshuf(['5/12','2/10','3/12','4/12']),mc:true,ste:'MCM(6,4)=12: 2/12 + 3/12 = 5/12'},
+    {_id:16,q:'Calcula: 2/5 + 1/3',a:'11/15',opts:_i4gshuf(['11/15','3/8','10/15','9/15']),mc:true,ste:'MCM(5,3)=15: 6/15 + 5/15 = 11/15'},
+    {_id:17,q:'Calcula: 7/10 − 2/5',a:'3/10',opts:_i4gshuf(['3/10','2/10','4/10','5/10']),mc:true,ste:'MCM(10,5)=10: 7/10 − 4/10 = 3/10'},
+    {_id:18,q:'Calcula: 5/8 + 1/4 + 1/8',a:'1',opts:_i4gshuf(['1','7/8','9/8','6/8']),mc:true,ste:'MCM=8: 5/8 + 2/8 + 1/8 = 8/8 = 1'},
+    {_id:19,q:'Calcula: 2/3 − 1/4',a:'5/12',opts:_i4gshuf(['5/12','4/12','6/12','3/12']),mc:true,ste:'MCM(3,4)=12: 8/12 − 3/12 = 5/12'},
+    {_id:20,q:'¿Cuál de los siguientes es el resultado correcto de 3/8 + 1/4?',a:'5/8',opts:_i4gshuf(['5/8','4/12','4/8','6/8']),mc:true,ste:'MCM(8,4)=8: 3/8 + 2/8 = 5/8'},
+  ]);
+}
+_SKILL_META['li1m_u5_b2']={ico:'📐',lbl:'Suma y resta de fracciones heterogéneas',qCount:4,gen:_genLi1mU5_B2,plantillas:['Suma: un denom múltiplo del otro','Suma de 2 fracciones con MCM distinto','Resta: un denom múltiplo del otro','Combinada +/- de 3 fracciones heterogéneas','Identificar resultado correcto']};
+
+function _genLi1mU5_BQ1(){return _bqSrcPick(['li1m_u5_b1','li1m_u5_b2'],[_genLi1mU5_B1,_genLi1mU5_B2]);}
+_SKILL_META['li1m_u5_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Suma y Resta de Fracciones',qCount:10,gen:_genLi1mU5_BQ1,quiz:true,srcKeys:['li1m_u5_b1','li1m_u5_b2']};
+
+function _genLi1mU5_B3(){
+  return _i4gpick([
+    {_id:1,q:'Calcula: 2/3 × 3/4',a:'1/2',opts:_i4gshuf(['1/2','6/12','2/4','3/4']),mc:true,ste:'2×3=6, 3×4=12 → 6/12 = 1/2'},
+    {_id:2,q:'Calcula: 3/5 × 2/3',a:'2/5',opts:_i4gshuf(['2/5','6/15','5/15','1/5']),mc:true,ste:'3×2=6, 5×3=15 → 6/15 = 2/5'},
+    {_id:3,q:'Calcula: 1/2 × 4/5',a:'4/10 = 2/5',opts:_i4gshuf(['4/10 = 2/5','5/10','3/10','1/5']),mc:true,ste:'1×4=4, 2×5=10 → 4/10 = 2/5'},
+    {_id:4,q:'Calcula: 3/4 × 2/9',a:'1/6',opts:_i4gshuf(['1/6','6/36','5/36','2/6']),mc:true,ste:'Simplificación cruzada: 3/4 × 2/9 = 1/2 × 1/3 = 1/6'},
+    {_id:5,q:'Calcula: 5/6 × 3/5',a:'1/2',opts:_i4gshuf(['1/2','15/30','3/6','4/6']),mc:true,ste:'Simplificación: 5/6 × 3/5 = 1/2 × 3/5×5/1 = 3/6 → no, 5×3=15, 6×5=30 → 1/2'},
+    {_id:6,q:'Calcula: 2/5 × 5/8',a:'1/4',opts:_i4gshuf(['1/4','10/40','3/8','2/8']),mc:true,ste:'2×5=10, 5×8=40 → 10/40 = 1/4'},
+    {_id:7,q:'Calcula: 4/7 × 7/8',a:'1/2',opts:_i4gshuf(['1/2','28/56','3/7','4/8']),mc:true,ste:'4×7=28, 7×8=56 → 28/56 = 1/2'},
+    {_id:8,q:'Calcula: 3/8 × 4/9',a:'1/6',opts:_i4gshuf(['1/6','12/72','2/9','1/8']),mc:true,ste:'12/72 = 1/6'},
+    {_id:9,q:'Calcula: 2/3 × 3/5 × 1/2',a:'1/5',opts:_i4gshuf(['1/5','6/30','2/15','3/15']),mc:true,ste:'(2×3×1)/(3×5×2) = 6/30 = 1/5'},
+    {_id:10,q:'Calcula: 1/4 × 2/3 × 3/2',a:'1/4',opts:_i4gshuf(['1/4','6/24','2/8','3/12']),mc:true,ste:'6/24 = 1/4'},
+    {_id:11,q:'¿Cuál es el producto de 3/7 × 7/9?',a:'1/3',opts:_i4gshuf(['1/3','21/63','3/9','2/7']),mc:true,ste:'21/63 = 1/3'},
+    {_id:12,q:'Calcula: 5/8 × 4/15',a:'1/6',opts:_i4gshuf(['1/6','20/120','2/8','1/8']),mc:true,ste:'20/120 = 1/6'},
+    {_id:13,q:'Calcula: 2/9 × 3/4',a:'1/6',opts:_i4gshuf(['1/6','6/36','2/6','1/9']),mc:true,ste:'6/36 = 1/6'},
+    {_id:14,q:'Calcula: 7/10 × 5/14',a:'1/4',opts:_i4gshuf(['1/4','35/140','1/2','2/10']),mc:true,ste:'35/140 = 1/4'},
+    {_id:15,q:'¿Cuál es el producto correcto de 4/5 × 5/12?',a:'1/3',opts:_i4gshuf(['1/3','20/60','2/5','4/12']),mc:true,ste:'20/60 = 1/3'},
+    {_id:16,q:'Calcula: 1/3 × 6/7',a:'2/7',opts:_i4gshuf(['2/7','6/21','3/7','1/7']),mc:true,ste:'6/21 = 2/7'},
+    {_id:17,q:'Calcula: 5/9 × 3/10',a:'1/6',opts:_i4gshuf(['1/6','15/90','2/9','1/9']),mc:true,ste:'15/90 = 1/6'},
+    {_id:18,q:'Calcula: 8/9 × 3/4',a:'2/3',opts:_i4gshuf(['2/3','24/36','3/4','1/3']),mc:true,ste:'24/36 = 2/3'},
+    {_id:19,q:'Calcula: 2/7 × 7/8',a:'1/4',opts:_i4gshuf(['1/4','14/56','2/8','3/14']),mc:true,ste:'14/56 = 1/4'},
+    {_id:20,q:'¿Cuál es el resultado correcto de 3/4 × 8/9?',a:'2/3',opts:_i4gshuf(['2/3','24/36','1/3','3/8']),mc:true,ste:'24/36 = 2/3'},
+  ]);
+}
+_SKILL_META['li1m_u5_b3']={ico:'📐',lbl:'Multiplicación de fracciones',qCount:4,gen:_genLi1mU5_B3,plantillas:['2 fracciones simples sin simplificación','2 fracciones con simplificación','Simplificación cruzada','3 fracciones','Identificar el producto correcto']};
+
+function _genLi1mU5_B4(){
+  return _i4gpick([
+    {_id:1,q:'Calcula: 2/3 ÷ 4/5',a:'5/6',opts:_i4gshuf(['5/6','8/15','10/12','2/3']),mc:true,ste:'÷ = × recíproco: 2/3 × 5/4 = 10/12 = 5/6'},
+    {_id:2,q:'Calcula: 3/4 ÷ 3/8',a:'2',opts:_i4gshuf(['2','9/32','1/2','3/4']),mc:true,ste:'3/4 × 8/3 = 24/12 = 2'},
+    {_id:3,q:'Calcula: 5/6 ÷ 5/3',a:'1/2',opts:_i4gshuf(['1/2','25/18','3/6','5/9']),mc:true,ste:'5/6 × 3/5 = 15/30 = 1/2'},
+    {_id:4,q:'Calcula: 4/5 ÷ 8/15',a:'3/2',opts:_i4gshuf(['3/2','32/75','2/3','4/8']),mc:true,ste:'4/5 × 15/8 = 60/40 = 3/2'},
+    {_id:5,q:'Calcula: 7/8 ÷ 7/4',a:'1/2',opts:_i4gshuf(['1/2','49/32','7/4','2/8']),mc:true,ste:'7/8 × 4/7 = 28/56 = 1/2'},
+    {_id:6,q:'Calcula: 1/2 ÷ 1/4',a:'2',opts:_i4gshuf(['2','1/8','4','1/2']),mc:true,ste:'1/2 × 4/1 = 4/2 = 2'},
+    {_id:7,q:'Calcula: 3/5 ÷ 6/10',a:'1',opts:_i4gshuf(['1','18/50','1/2','2']),mc:true,ste:'3/5 × 10/6 = 30/30 = 1'},
+    {_id:8,q:'Calcula: 2/7 ÷ 4/7',a:'1/2',opts:_i4gshuf(['1/2','8/49','2','4/7']),mc:true,ste:'2/7 × 7/4 = 14/28 = 1/2'},
+    {_id:9,q:'Calcula: 5/8 ÷ 15/16',a:'2/3',opts:_i4gshuf(['2/3','75/128','3/2','5/16']),mc:true,ste:'5/8 × 16/15 = 80/120 = 2/3'},
+    {_id:10,q:'Calcula: 9/10 ÷ 3/5',a:'3/2',opts:_i4gshuf(['3/2','27/50','2/3','9/6']),mc:true,ste:'9/10 × 5/3 = 45/30 = 3/2'},
+    {_id:11,q:'¿Cuál es el cociente de 6/7 ÷ 3/7?',a:'2',opts:_i4gshuf(['2','18/49','3','1/2']),mc:true,ste:'6/7 × 7/3 = 42/21 = 2'},
+    {_id:12,q:'Calcula: 4/9 ÷ 2/3',a:'2/3',opts:_i4gshuf(['2/3','8/27','3/2','4/6']),mc:true,ste:'4/9 × 3/2 = 12/18 = 2/3'},
+    {_id:13,q:'Calcula: 5/12 ÷ 5/6',a:'1/2',opts:_i4gshuf(['1/2','25/72','2','5/10']),mc:true,ste:'5/12 × 6/5 = 30/60 = 1/2'},
+    {_id:14,q:'Calcula: 8/9 ÷ 4/3',a:'2/3',opts:_i4gshuf(['2/3','32/27','3/2','8/12']),mc:true,ste:'8/9 × 3/4 = 24/36 = 2/3'},
+    {_id:15,q:'¿Cuál es el cociente correcto de 3/8 ÷ 9/16?',a:'2/3',opts:_i4gshuf(['2/3','27/128','3/2','3/9']),mc:true,ste:'3/8 × 16/9 = 48/72 = 2/3'},
+    {_id:16,q:'Calcula: 7/10 ÷ 7/5',a:'1/2',opts:_i4gshuf(['1/2','49/50','2','7/14']),mc:true,ste:'7/10 × 5/7 = 35/70 = 1/2'},
+    {_id:17,q:'Calcula: 1/3 ÷ 2/9',a:'3/2',opts:_i4gshuf(['3/2','2/27','2/3','1/6']),mc:true,ste:'1/3 × 9/2 = 9/6 = 3/2'},
+    {_id:18,q:'Calcula: 5/6 ÷ 10/12',a:'1',opts:_i4gshuf(['1','50/72','2','5/12']),mc:true,ste:'5/6 × 12/10 = 60/60 = 1'},
+    {_id:19,q:'Calcula: 4/5 ÷ 2/5',a:'2',opts:_i4gshuf(['2','8/25','1/2','4/2']),mc:true,ste:'4/5 × 5/2 = 20/10 = 2'},
+    {_id:20,q:'¿Cuál es el resultado correcto de 9/16 ÷ 3/4?',a:'3/4',opts:_i4gshuf(['3/4','27/64','4/3','9/12']),mc:true,ste:'9/16 × 4/3 = 36/48 = 3/4'},
+  ]);
+}
+_SKILL_META['li1m_u5_b4']={ico:'📐',lbl:'División de fracciones',qCount:4,gen:_genLi1mU5_B4,plantillas:['División simple por recíproco','División con simplificación','División con resultado entero','División con cociente >1','Identificar el cociente correcto']};
+
+function _genLi1mU5_BQ2(){return _bqSrcPick(['li1m_u5_b3','li1m_u5_b4'],[_genLi1mU5_B3,_genLi1mU5_B4]);}
+_SKILL_META['li1m_u5_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Multiplicación y División',qCount:10,gen:_genLi1mU5_BQ2,quiz:true,srcKeys:['li1m_u5_b3','li1m_u5_b4']};
+
+function _genLi1mU5_B5(){
+  return _i4gpick([
+    {_id:1,q:'Calcula: 1/2 + 1/3 − 1/6',a:'2/3',opts:_i4gshuf(['2/3','1/2','5/6','1/6']),mc:true,ste:'MCM=6: 3/6 + 2/6 − 1/6 = 4/6 = 2/3'},
+    {_id:2,q:'Calcula: 3/4 − 1/2 + 1/8',a:'3/8',opts:_i4gshuf(['3/8','4/8','2/8','5/8']),mc:true,ste:'MCM=8: 6/8 − 4/8 + 1/8 = 3/8'},
+    {_id:3,q:'Calcula: 2/3 × 1/2 + 1/6',a:'1/2',opts:_i4gshuf(['1/2','2/3','1/3','5/6']),mc:true,ste:'Primero ×: 2/6 = 1/3, luego + 1/6: 2/6 + 1/6 = 3/6 = 1/2'},
+    {_id:4,q:'Calcula: 3/4 × 2/3 − 1/4',a:'1/4',opts:_i4gshuf(['1/4','1/2','3/4','1/3']),mc:true,ste:'3/4 × 2/3 = 1/2; 1/2 − 1/4 = 1/4'},
+    {_id:5,q:'Calcula: 5/6 ÷ 5/3 + 1/4',a:'3/4',opts:_i4gshuf(['3/4','1/4','1/2','7/12']),mc:true,ste:'5/6 ÷ 5/3 = 1/2; 1/2 + 1/4 = 3/4'},
+    {_id:6,q:'Calcula: (1/2 + 1/4) × 2/3',a:'1/2',opts:_i4gshuf(['1/2','3/4','2/3','1/4']),mc:true,ste:'(3/4) × 2/3 = 6/12 = 1/2'},
+    {_id:7,q:'Calcula: (3/4 − 1/2) ÷ 1/8',a:'2',opts:_i4gshuf(['2','1/2','4','1/4']),mc:true,ste:'(1/4) ÷ 1/8 = 1/4 × 8 = 2'},
+    {_id:8,q:'Calcula: 1/3 + 2/5 × 5/6',a:'2/3',opts:_i4gshuf(['2/3','1/2','5/6','7/15']),mc:true,ste:'2/5 × 5/6 = 1/3; 1/3 + 1/3 = 2/3'},
+    {_id:9,q:'Calcula: 7/8 − 3/4 ÷ 3/2',a:'3/8',opts:_i4gshuf(['3/8','5/8','1/2','1/4']),mc:true,ste:'3/4 ÷ 3/2 = 1/2; 7/8 − 4/8 = 3/8'},
+    {_id:10,q:'Calcula: 2/3 × 3/4 + 1/4 × 2/3',a:'2/3',opts:_i4gshuf(['2/3','1/2','1/3','5/6']),mc:true,ste:'1/2 + 1/6 = 4/6 = 2/3'},
+    {_id:11,q:'Calcula: (2/3 + 1/6) × 3/5',a:'1/2',opts:_i4gshuf(['1/2','5/6','2/5','1/3']),mc:true,ste:'(5/6) × 3/5 = 15/30 = 1/2'},
+    {_id:12,q:'Calcula: 5/8 ÷ (5/4 − 5/8)',a:'1',opts:_i4gshuf(['1','2','1/2','5/8']),mc:true,ste:'5/4 − 5/8 = 10/8 − 5/8 = 5/8; 5/8 ÷ 5/8 = 1'},
+    {_id:13,q:'Calcula: 1/4 + 1/4 × 4/5',a:'2/5',opts:_i4gshuf(['2/5','1/5','3/5','1/2']),mc:true,ste:'1/4 × 4/5 = 1/5; 1/4 + 1/5 = 9/20 → ERROR, recalcula: 1/4+1/5=5/20+4/20=9/20... Hmm: 2/5=8/20. Dejamos: 1/4+1/5=9/20',a:'9/20',opts:_i4gshuf(['9/20','2/5','1/4','1/2']),mc:true,ste:'1/4 × 4/5 = 1/5; 1/4 + 1/5 = 5/20 + 4/20 = 9/20'},
+    {_id:14,q:'Calcula: 3/5 × (2/3 + 1/3)',a:'3/5',opts:_i4gshuf(['3/5','1','2/5','4/5']),mc:true,ste:'(2/3 + 1/3) = 1; 3/5 × 1 = 3/5'},
+    {_id:15,q:'Calcula: 1/2 + 3/4 − 1/8 × 4',a:'1',opts:_i4gshuf(['1','3/2','1/2','5/4']),mc:true,ste:'1/8 × 4 = 1/2; 1/2 + 3/4 − 1/2 = 3/4 → ERROR: 4/8+6/8−4/8=6/8=3/4',a:'3/4',opts:_i4gshuf(['3/4','1','1/2','5/8']),mc:true,ste:'1/8 × 4 = 1/2; 1/2 + 3/4 − 1/2 = 3/4'},
+    {_id:16,q:'Calcula: (1/3 + 1/6) ÷ (1/2)',a:'1',opts:_i4gshuf(['1','1/2','3/2','2/3']),mc:true,ste:'1/3+1/6=1/2; 1/2÷1/2=1'},
+    {_id:17,q:'Calcula: 2/5 + 3/5 × 5/6',a:'9/10',opts:_i4gshuf(['9/10','1/2','4/5','7/10']),mc:true,ste:'3/5×5/6=1/2; 2/5+1/2=4/10+5/10=9/10'},
+    {_id:18,q:'Calcula: 3/4 ÷ 3/8 − 1',a:'1',opts:_i4gshuf(['1','2','3/2','1/2']),mc:true,ste:'3/4÷3/8=2; 2−1=1'},
+    {_id:19,q:'Calcula: (5/6 − 1/3) × 3',a:'3/2',opts:_i4gshuf(['3/2','1','1/2','2']),mc:true,ste:'5/6−1/3=5/6−2/6=3/6=1/2; 1/2×3=3/2'},
+    {_id:20,q:'¿Cuál es el resultado de 1/2 × (1/3 + 1/6)?',a:'1/4',opts:_i4gshuf(['1/4','1/3','1/2','1/6']),mc:true,ste:'1/3+1/6=1/2; 1/2×1/2=1/4'},
+  ]);
+}
+_SKILL_META['li1m_u5_b5']={ico:'📐',lbl:'Operaciones combinadas con fracciones',qCount:4,gen:_genLi1mU5_B5,plantillas:['+/- combinadas de 3 términos heterogéneos','Multiplicación seguida de suma','División seguida de resta','Operaciones con paréntesis','Cadena de operaciones']};
+
+function _genLi1mU5_B6(){
+  return _i4gpick([
+    {_id:1,q:'Ana tenía 3/4 de pizza. Comió 1/4. ¿Cuánto le queda?',a:'1/2',opts:_i4gshuf(['1/2','1/4','3/4','2/4']),mc:true,ste:'3/4 − 1/4 = 2/4 = 1/2'},
+    {_id:2,q:'Luis caminó 2/5 de km por la mañana y 1/5 de km por la tarde. ¿Cuánto caminó en total?',a:'3/5 km',opts:_i4gshuf(['3/5 km','1/5 km','4/5 km','2/5 km']),mc:true,ste:'2/5 + 1/5 = 3/5 km'},
+    {_id:3,q:'Una receta usa 2/3 de taza de harina. Si se hacen 3 porciones, ¿cuánta harina se necesita?',a:'2 tazas',opts:_i4gshuf(['2 tazas','1 taza','3 tazas','2/3 taza']),mc:true,ste:'2/3 × 3 = 2 tazas'},
+    {_id:4,q:'Se tiene 3/4 de litro de jugo para repartir en partes de 1/8 de litro. ¿Cuántas partes salen?',a:'6',opts:_i4gshuf(['6','4','8','3']),mc:true,ste:'3/4 ÷ 1/8 = 3/4 × 8 = 6'},
+    {_id:5,q:'Pedro tiene 1/2 de m de cuerda y María tiene 3/8 de m. ¿Cuánto tienen juntos?',a:'7/8 m',opts:_i4gshuf(['7/8 m','4/8 m','5/8 m','8/8 m']),mc:true,ste:'1/2 + 3/8 = 4/8 + 3/8 = 7/8 m'},
+    {_id:6,q:'De un trozo de tela de 5/6 m se corta 1/3 m. ¿Cuánto queda?',a:'1/2 m',opts:_i4gshuf(['1/2 m','1/3 m','2/3 m','1/6 m']),mc:true,ste:'5/6 − 1/3 = 5/6 − 2/6 = 3/6 = 1/2 m'},
+    {_id:7,q:'Una parcela tiene 3/5 de hectárea. Si se siembra 2/3 de esa parcela, ¿cuántas hectáreas se siembran?',a:'2/5 ha',opts:_i4gshuf(['2/5 ha','5/8 ha','1/3 ha','6/15 ha']),mc:true,ste:'3/5 × 2/3 = 6/15 = 2/5 ha'},
+    {_id:8,q:'Un depósito tiene 7/8 de su capacidad. Se usa 3/8. ¿Cuánto queda?',a:'1/2',opts:_i4gshuf(['1/2','4/8','3/8','2/8']),mc:true,ste:'7/8 − 3/8 = 4/8 = 1/2'},
+    {_id:9,q:'Se divide 3/4 de pastel entre 3 personas. ¿Cuánto recibe cada una?',a:'1/4',opts:_i4gshuf(['1/4','1/3','3/4','1/8']),mc:true,ste:'3/4 ÷ 3 = 3/4 × 1/3 = 1/4'},
+    {_id:10,q:'Carlos tiene 2/3 de su trabajo hecho el lunes y añade 1/4 el martes. ¿Cuánto lleva?',a:'11/12',opts:_i4gshuf(['11/12','3/7','9/12','8/12']),mc:true,ste:'MCM(3,4)=12: 8/12 + 3/12 = 11/12'},
+    {_id:11,q:'Una botella tiene 5/8 L de agua. Se vierten 1/4 L. ¿Cuánto queda?',a:'3/8 L',opts:_i4gshuf(['3/8 L','4/8 L','2/8 L','1/4 L']),mc:true,ste:'5/8 − 2/8 = 3/8 L'},
+    {_id:12,q:'Si 3/5 de una cuerda mide 12 m, ¿cuánto mide toda la cuerda?',a:'20 m',opts:_i4gshuf(['20 m','15 m','18 m','25 m']),mc:true,ste:'Si 3/5 = 12, entonces 1/5 = 4 → total = 5 × 4 = 20 m'},
+    {_id:13,q:'Elena gasta 1/3 de su dinero en comida y 1/4 en transporte. ¿Qué fracción gastó en total?',a:'7/12',opts:_i4gshuf(['7/12','2/7','5/12','1/2']),mc:true,ste:'MCM(3,4)=12: 4/12 + 3/12 = 7/12'},
+    {_id:14,q:'Un recipiente lleno tiene 4/5 L. Si se usa 2/3 de lo que tiene, ¿cuánto se usa?',a:'8/15 L',opts:_i4gshuf(['8/15 L','6/8 L','6/15 L','4/5 L']),mc:true,ste:'4/5 × 2/3 = 8/15 L'},
+    {_id:15,q:'Se tienen 5/6 de m de cinta. Se usan 1/3 m y se añaden 1/4 m. ¿Cuánto hay?',a:'3/4 m',opts:_i4gshuf(['3/4 m','7/12 m','5/6 m','11/12 m']),mc:true,ste:'5/6 − 1/3 + 1/4 = 10/12 − 4/12 + 3/12 = 9/12 = 3/4 m'},
+    {_id:16,q:'Un libro tiene 3/4 de las páginas leídas. Quedan 50 páginas. ¿Cuántas páginas tiene el libro?',a:'200',opts:_i4gshuf(['200','150','100','250']),mc:true,ste:'Si 1/4 = 50, el total = 50×4 = 200'},
+    {_id:17,q:'Javier tiene 2/5 kg de manzanas y compra 3/10 kg más. ¿Cuánto tiene?',a:'7/10 kg',opts:_i4gshuf(['7/10 kg','5/15 kg','5/10 kg','1/2 kg']),mc:true,ste:'2/5 + 3/10 = 4/10 + 3/10 = 7/10 kg'},
+    {_id:18,q:'Una bandeja con 3/4 kg de queso se reparte en porciones de 1/8 kg. ¿Cuántas porciones hay?',a:'6',opts:_i4gshuf(['6','4','8','3']),mc:true,ste:'3/4 ÷ 1/8 = 3/4 × 8 = 6'},
+    {_id:19,q:'Se mezclan 2/3 L de naranja, 1/4 L de limón y 1/6 L de manzana. ¿Cuántos litros hay en total?',a:'13/12 L',opts:_i4gshuf(['13/12 L','1 L','11/12 L','12/12 L']),mc:true,ste:'MCM=12: 8/12 + 3/12 + 2/12 = 13/12 L'},
+    {_id:20,q:'¿Cuál es el resultado de multiplicar 5/6 × 3/10 y luego sumarle 1/4?',a:'1/2',opts:_i4gshuf(['1/2','1/4','3/4','7/12']),mc:true,ste:'5/6 × 3/10 = 1/4; 1/4 + 1/4 = 1/2'},
+  ]);
+}
+_SKILL_META['li1m_u5_b6']={ico:'📐',lbl:'Problemas de aplicación con las 4 operaciones',qCount:4,gen:_genLi1mU5_B6,plantillas:['Problema verbal de suma','Problema verbal de resta','Problema verbal de multiplicación','Problema verbal de división','Problema combinado (2 operaciones)']};
+
+function _genLi1mU5_BQ3(){return _bqSrcPick(['li1m_u5_b5','li1m_u5_b6'],[_genLi1mU5_B5,_genLi1mU5_B6]);}
+_SKILL_META['li1m_u5_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Operaciones combinadas y problemas',qCount:10,gen:_genLi1mU5_BQ3,quiz:true,srcKeys:['li1m_u5_b5','li1m_u5_b6']};
+// ═══════════════════════════════════════════════════════════════
+// UNIT 6 — Repaso: Problemas con Fracciones (li1m_u6_)
+// ═══════════════════════════════════════════════════════════════
+
+function _genLi1mU6_B1(){
+  return _i4gpick([
+    {_id:1,q:'¿Cuánto es 1/2 de 40?',a:'20',opts:_i4gshuf(['20','10','15','25']),mc:true,ste:'1/2 × 40 = 20'},
+    {_id:2,q:'¿Cuánto es 3/4 de 80?',a:'60',opts:_i4gshuf(['60','40','20','80']),mc:true,ste:'3/4 × 80 = 60'},
+    {_id:3,q:'Un recipiente tiene 60 L. Está lleno a 2/3. ¿Cuántos litros hay?',a:'40 L',opts:_i4gshuf(['40 L','20 L','30 L','45 L']),mc:true,ste:'2/3 × 60 = 40 L'},
+    {_id:4,q:'Un producto cuesta 120 soles. ¿Cuánto es 5/6 del precio?',a:'100 soles',opts:_i4gshuf(['100 soles','80 soles','60 soles','90 soles']),mc:true,ste:'5/6 × 120 = 100 soles'},
+    {_id:5,q:'Un costal tiene 48 kg. ¿Cuánto es 3/8 del costal?',a:'18 kg',opts:_i4gshuf(['18 kg','12 kg','24 kg','16 kg']),mc:true,ste:'3/8 × 48 = 18 kg'},
+    {_id:6,q:'Una tela de 36 m. ¿Cuánto es 5/9 de la tela?',a:'20 m',opts:_i4gshuf(['20 m','18 m','15 m','24 m']),mc:true,ste:'5/9 × 36 = 20 m'},
+    {_id:7,q:'Un día tiene 24 horas. ¿Cuánto es 7/8 del día?',a:'21 horas',opts:_i4gshuf(['21 horas','18 horas','20 horas','16 horas']),mc:true,ste:'7/8 × 24 = 21 horas'},
+    {_id:8,q:'Un cable de 100 m. ¿Cuánto es 2/5 del cable?',a:'40 m',opts:_i4gshuf(['40 m','20 m','50 m','60 m']),mc:true,ste:'2/5 × 100 = 40 m'},
+    {_id:9,q:'Un peso de 90 kg. ¿Cuánto es 4/9 del peso?',a:'40 kg',opts:_i4gshuf(['40 kg','30 kg','45 kg','36 kg']),mc:true,ste:'4/9 × 90 = 40 kg'},
+    {_id:10,q:'Un tanque de 300 L. ¿Cuánto es 7/10 del tanque?',a:'210 L',opts:_i4gshuf(['210 L','200 L','180 L','240 L']),mc:true,ste:'7/10 × 300 = 210 L'},
+    {_id:11,q:'¿Cuánto es 3/5 de 75?',a:'45',opts:_i4gshuf(['45','25','30','60']),mc:true,ste:'3/5 × 75 = 45'},
+    {_id:12,q:'¿Cuánto es 5/8 de 64?',a:'40',opts:_i4gshuf(['40','32','48','24']),mc:true,ste:'5/8 × 64 = 40'},
+    {_id:13,q:'Un aula tiene 30 alumnos. Aprobaron 4/5. ¿Cuántos aprobaron?',a:'24',opts:_i4gshuf(['24','20','25','16']),mc:true,ste:'4/5 × 30 = 24'},
+    {_id:14,q:'Una granja tiene 56 animales. 3/7 son vacas. ¿Cuántas vacas hay?',a:'24',opts:_i4gshuf(['24','21','28','18']),mc:true,ste:'3/7 × 56 = 24'},
+    {_id:15,q:'¿Cuánto es 2/3 de 150?',a:'100',opts:_i4gshuf(['100','75','120','50']),mc:true,ste:'2/3 × 150 = 100'},
+    {_id:16,q:'Un jardín de 72 m². ¿Cuánto es 5/8 del jardín?',a:'45 m²',opts:_i4gshuf(['45 m²','36 m²','40 m²','54 m²']),mc:true,ste:'5/8 × 72 = 45 m²'},
+    {_id:17,q:'Un salario de 1800 soles. ¿Cuánto es 2/9 del salario?',a:'400 soles',opts:_i4gshuf(['400 soles','200 soles','600 soles','360 soles']),mc:true,ste:'2/9 × 1800 = 400 soles'},
+    {_id:18,q:'Una piscina de 500 L. ¿Cuánto es 3/10 de la piscina?',a:'150 L',opts:_i4gshuf(['150 L','100 L','200 L','50 L']),mc:true,ste:'3/10 × 500 = 150 L'},
+    {_id:19,q:'¿Cuánto es 7/12 de 84?',a:'49',opts:_i4gshuf(['49','42','56','63']),mc:true,ste:'7/12 × 84 = 49'},
+    {_id:20,q:'¿Cuál es el resultado correcto de 5/6 de 42?',a:'35',opts:_i4gshuf(['35','30','36','40']),mc:true,ste:'5/6 × 42 = 35'},
+  ]);
+}
+_SKILL_META['li1m_u6_b1']={ico:'📐',lbl:'Fracción de una cantidad (a/b × N)',qCount:4,gen:_genLi1mU6_B1,plantillas:['Hallar a/b de N','Litros en recipiente lleno a a/b','Precio/cantidad con fracción simple','Fracción de medida de peso/tiempo','Identificar resultado correcto']};
+
+function _genLi1mU6_B2(){
+  return _i4gpick([
+    {_id:1,q:'De 20 frutas, 8 son manzanas. ¿Qué fracción son manzanas?',a:'2/5',opts:_i4gshuf(['2/5','8/20','4/10','1/3']),mc:true,ste:'8/20 = 2/5'},
+    {_id:2,q:'De 30 alumnos, 18 son mujeres. ¿Qué fracción son mujeres?',a:'3/5',opts:_i4gshuf(['3/5','18/30','6/10','1/2']),mc:true,ste:'18/30 = 3/5'},
+    {_id:3,q:'De 24 horas, dormiste 8. ¿Qué fracción del día dormiste?',a:'1/3',opts:_i4gshuf(['1/3','8/24','2/6','1/4']),mc:true,ste:'8/24 = 1/3'},
+    {_id:4,q:'De un pastel de 16 trozos se comieron 12. ¿Qué fracción se comió?',a:'3/4',opts:_i4gshuf(['3/4','12/16','6/8','2/3']),mc:true,ste:'12/16 = 3/4'},
+    {_id:5,q:'De 40 preguntas, respondiste bien 35. ¿Qué fracción respondiste bien?',a:'7/8',opts:_i4gshuf(['7/8','35/40','3/4','4/5']),mc:true,ste:'35/40 = 7/8'},
+    {_id:6,q:'Una cinta de 50 cm. Se usaron 30 cm. ¿Qué fracción se usó?',a:'3/5',opts:_i4gshuf(['3/5','30/50','1/2','2/3']),mc:true,ste:'30/50 = 3/5'},
+    {_id:7,q:'De 100 personas, 45 son adultos. ¿Qué fracción son adultos?',a:'9/20',opts:_i4gshuf(['9/20','45/100','1/2','2/5']),mc:true,ste:'45/100 = 9/20'},
+    {_id:8,q:'De 60 libros, 15 son de ciencias. ¿Qué fracción son de ciencias?',a:'1/4',opts:_i4gshuf(['1/4','15/60','2/8','3/12']),mc:true,ste:'15/60 = 1/4'},
+    {_id:9,q:'De 36 monedas, 9 son de 1 sol. ¿Qué fracción son de 1 sol?',a:'1/4',opts:_i4gshuf(['1/4','9/36','3/12','2/8']),mc:true,ste:'9/36 = 1/4'},
+    {_id:10,q:'De 72 estudiantes, 48 tienen celular. ¿Qué fracción tiene celular?',a:'2/3',opts:_i4gshuf(['2/3','48/72','3/4','1/2']),mc:true,ste:'48/72 = 2/3'},
+    {_id:11,q:'¿Qué fracción de 25 es 10?',a:'2/5',opts:_i4gshuf(['2/5','10/25','1/2','1/3']),mc:true,ste:'10/25 = 2/5'},
+    {_id:12,q:'¿Qué fracción de 90 es 60?',a:'2/3',opts:_i4gshuf(['2/3','60/90','3/4','1/2']),mc:true,ste:'60/90 = 2/3'},
+    {_id:13,q:'De 80 pollos, 60 son ponedoras. ¿Qué fracción son ponedoras?',a:'3/4',opts:_i4gshuf(['3/4','60/80','2/3','4/5']),mc:true,ste:'60/80 = 3/4'},
+    {_id:14,q:'De 56 páginas leídas, acabé 42. ¿Qué fracción terminé?',a:'3/4',opts:_i4gshuf(['3/4','42/56','5/6','2/3']),mc:true,ste:'42/56 = 3/4'},
+    {_id:15,q:'¿Cuál es la fracción que representa 18 de 48?',a:'3/8',opts:_i4gshuf(['3/8','18/48','1/3','2/6']),mc:true,ste:'18/48 = 3/8'},
+    {_id:16,q:'De 120 tornillos, 80 son gruesos. ¿Qué fracción es gruesa?',a:'2/3',opts:_i4gshuf(['2/3','80/120','3/4','1/2']),mc:true,ste:'80/120 = 2/3'},
+    {_id:17,q:'¿Qué fracción de 42 es 14?',a:'1/3',opts:_i4gshuf(['1/3','14/42','1/4','2/7']),mc:true,ste:'14/42 = 1/3'},
+    {_id:18,q:'De 64 alumnos, 48 aprobaron. ¿Qué fracción aprobó?',a:'3/4',opts:_i4gshuf(['3/4','48/64','2/3','4/5']),mc:true,ste:'48/64 = 3/4'},
+    {_id:19,q:'¿Qué fracción de 55 es 33?',a:'3/5',opts:_i4gshuf(['3/5','33/55','1/2','2/5']),mc:true,ste:'33/55 = 3/5'},
+    {_id:20,q:'¿Cuál de las siguientes representa correctamente 35 de 56?',a:'5/8',opts:_i4gshuf(['5/8','35/56','4/7','3/5']),mc:true,ste:'35/56 = 5/8'},
+  ]);
+}
+_SKILL_META['li1m_u6_b2']={ico:'📐',lbl:'¿Qué fracción de X es Y?',qCount:4,gen:_genLi1mU6_B2,plantillas:['¿Qué fracción de X es Y? (directo)','¿Qué fracción del total es un grupo?','Completar fracción','¿Qué fracción con simplificación?','Identificar fracción correcta']};
+
+function _genLi1mU6_BQ1(){return _bqSrcPick(['li1m_u6_b1','li1m_u6_b2'],[_genLi1mU6_B1,_genLi1mU6_B2]);}
+_SKILL_META['li1m_u6_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Fracción de cantidad',qCount:10,gen:_genLi1mU6_BQ1,quiz:true,srcKeys:['li1m_u6_b1','li1m_u6_b2']};
+
+function _genLi1mU6_B3(){
+  return _i4gpick([
+    {_id:1,q:'Un precio de 60 soles disminuye en 1/3. ¿Cuál es el nuevo precio?',a:'40 soles',opts:_i4gshuf(['40 soles','20 soles','45 soles','50 soles']),mc:true,ste:'Baja: 1/3×60=20; 60−20=40 soles'},
+    {_id:2,q:'Un salario de 800 soles aumenta en 1/4. ¿Cuánto es el nuevo salario?',a:'1000 soles',opts:_i4gshuf(['1000 soles','900 soles','1200 soles','850 soles']),mc:true,ste:'Sube: 1/4×800=200; 800+200=1000 soles'},
+    {_id:3,q:'La edad de Ana es 20 años. Aumenta en 1/5. ¿Cuántos años tendrá?',a:'24 años',opts:_i4gshuf(['24 años','25 años','22 años','21 años']),mc:true,ste:'1/5×20=4; 20+4=24 años'},
+    {_id:4,q:'Un kilo de arroz cuesta 4 soles. El precio sube 3/4. ¿Cuánto costará?',a:'7 soles',opts:_i4gshuf(['7 soles','6 soles','5 soles','8 soles']),mc:true,ste:'3/4×4=3; 4+3=7 soles'},
+    {_id:5,q:'Una distancia de 90 m se reduce en 2/9. ¿Cuánto queda?',a:'70 m',opts:_i4gshuf(['70 m','80 m','60 m','75 m']),mc:true,ste:'2/9×90=20; 90−20=70 m'},
+    {_id:6,q:'Un número es 48. Disminuye en 5/8. ¿Cuánto queda?',a:'18',opts:_i4gshuf(['18','24','30','12']),mc:true,ste:'5/8×48=30; 48−30=18'},
+    {_id:7,q:'El peso de un costal es 36 kg. Aumenta en 2/9. ¿Cuánto pesa ahora?',a:'44 kg',opts:_i4gshuf(['44 kg','40 kg','48 kg','42 kg']),mc:true,ste:'2/9×36=8; 36+8=44 kg'},
+    {_id:8,q:'Una tienda vendía 120 artículos. Las ventas bajan 1/6. ¿Cuántos vende ahora?',a:'100',opts:_i4gshuf(['100','90','80','110']),mc:true,ste:'1/6×120=20; 120−20=100'},
+    {_id:9,q:'¿Cuánto se disminuyó si un precio de 60 soles bajó en 1/4?',a:'15 soles',opts:_i4gshuf(['15 soles','20 soles','10 soles','12 soles']),mc:true,ste:'1/4×60=15 soles disminuidos'},
+    {_id:10,q:'Una producción de 200 unidades aumenta en 3/10. ¿Cuánto aumentó?',a:'60 unidades',opts:_i4gshuf(['60 unidades','30 unidades','40 unidades','50 unidades']),mc:true,ste:'3/10×200=60 unidades de aumento'},
+    {_id:11,q:'Un libro de 180 páginas se reduce en 2/9. ¿Cuántas páginas tiene ahora?',a:'140 páginas',opts:_i4gshuf(['140 páginas','120 páginas','160 páginas','150 páginas']),mc:true,ste:'2/9×180=40; 180−40=140'},
+    {_id:12,q:'El sueldo de 1200 soles sube en 1/3. ¿Cuánto es ahora?',a:'1600 soles',opts:_i4gshuf(['1600 soles','1400 soles','1500 soles','1800 soles']),mc:true,ste:'1/3×1200=400; 1200+400=1600'},
+    {_id:13,q:'La temperatura era 30°C y baja 1/5. ¿Cuánto es ahora?',a:'24°C',opts:_i4gshuf(['24°C','25°C','26°C','20°C']),mc:true,ste:'1/5×30=6; 30−6=24°C'},
+    {_id:14,q:'Una granja tiene 80 aves. Aumenta en 3/8. ¿Cuántas aves hay ahora?',a:'110',opts:_i4gshuf(['110','100','120','90']),mc:true,ste:'3/8×80=30; 80+30=110'},
+    {_id:15,q:'¿Cuál es el resultado correcto de disminuir 72 en 5/9?',a:'32',opts:_i4gshuf(['32','40','36','42']),mc:true,ste:'5/9×72=40; 72−40=32'},
+    {_id:16,q:'Un estanque de 540 L. Se llena aumentando 2/9. ¿Cuántos L hay ahora?',a:'660 L',opts:_i4gshuf(['660 L','600 L','720 L','540 L']),mc:true,ste:'2/9×540=120; 540+120=660 L'},
+    {_id:17,q:'Un precio de 150 soles baja 2/5. ¿Cuánto cuesta ahora?',a:'90 soles',opts:_i4gshuf(['90 soles','60 soles','100 soles','80 soles']),mc:true,ste:'2/5×150=60; 150−60=90 soles'},
+    {_id:18,q:'Un número de 56 sube en 3/7. ¿Cuánto es ahora?',a:'80',opts:_i4gshuf(['80','70','84','72']),mc:true,ste:'3/7×56=24; 56+24=80'},
+    {_id:19,q:'Una colección de 48 cartas se reduce en 1/4. ¿Cuántas quedan?',a:'36',opts:_i4gshuf(['36','40','24','30']),mc:true,ste:'1/4×48=12; 48−12=36'},
+    {_id:20,q:'¿Cuál es el resultado correcto de aumentar 90 en 4/9?',a:'130',opts:_i4gshuf(['130','120','140','110']),mc:true,ste:'4/9×90=40; 90+40=130'},
+  ]);
+}
+_SKILL_META['li1m_u6_b3']={ico:'📐',lbl:'Aumentar y disminuir en una fracción del total',qCount:4,gen:_genLi1mU6_B3,plantillas:['Disminuir N en sus a/b','Aumentar N en sus a/b','Edad/precio aumentado/disminuido','Cuánto se aumentó/disminuyó','Identificar resultado correcto']};
+
+function _genLi1mU6_B4(){
+  return _i4gpick([
+    {_id:1,q:'Los 3/5 de un grupo son 24 personas. ¿Cuántas hay en total?',a:'40',opts:_i4gshuf(['40','30','45','48']),mc:true,ste:'Si 3/5 = 24, entonces 1/5 = 8 → total = 5×8 = 40'},
+    {_id:2,q:'Los 2/3 de un número son 18. ¿Cuál es el número?',a:'27',opts:_i4gshuf(['27','24','36','30']),mc:true,ste:'Si 2/3 = 18, 1/3 = 9 → total = 3×9 = 27'},
+    {_id:3,q:'Las 3/4 de los alumnos son 45. ¿Cuántos hay en total?',a:'60',opts:_i4gshuf(['60','45','75','80']),mc:true,ste:'3/4 = 45 → 1/4 = 15 → total = 4×15 = 60'},
+    {_id:4,q:'Los 5/8 de un costal pesan 40 kg. ¿Cuánto pesa el costal lleno?',a:'64 kg',opts:_i4gshuf(['64 kg','50 kg','72 kg','80 kg']),mc:true,ste:'5/8 = 40 → 1/8 = 8 → total = 8×8 = 64 kg'},
+    {_id:5,q:'Las 2/5 del precio son 30 soles. ¿Cuánto es el precio total?',a:'75 soles',opts:_i4gshuf(['75 soles','60 soles','50 soles','90 soles']),mc:true,ste:'2/5 = 30 → 1/5 = 15 → total = 5×15 = 75 soles'},
+    {_id:6,q:'Los 7/10 de una cuerda miden 49 m. ¿Cuánto mide la cuerda?',a:'70 m',opts:_i4gshuf(['70 m','60 m','80 m','56 m']),mc:true,ste:'7/10 = 49 → 1/10 = 7 → total = 10×7 = 70 m'},
+    {_id:7,q:'Las 4/9 de la producción son 60 unidades. ¿Cuánto es la producción total?',a:'135',opts:_i4gshuf(['135','120','150','108']),mc:true,ste:'4/9 = 60 → 1/9 = 15 → total = 9×15 = 135'},
+    {_id:8,q:'Los 5/6 de la clase son 30 alumnos. ¿Cuántos son en total?',a:'36',opts:_i4gshuf(['36','30','42','40']),mc:true,ste:'5/6 = 30 → 1/6 = 6 → total = 6×6 = 36'},
+    {_id:9,q:'Las 3/7 de las monedas son 21. ¿Cuántas hay en total?',a:'49',opts:_i4gshuf(['49','42','56','35']),mc:true,ste:'3/7 = 21 → 1/7 = 7 → total = 7×7 = 49'},
+    {_id:10,q:'El 60% (3/5) de los estudiantes son 48. ¿Cuántos hay en total?',a:'80',opts:_i4gshuf(['80','60','100','90']),mc:true,ste:'3/5 = 48 → 1/5 = 16 → total = 5×16 = 80'},
+    {_id:11,q:'Las 5/9 de un terreno son 450 m². ¿Cuál es el área total?',a:'810 m²',opts:_i4gshuf(['810 m²','720 m²','900 m²','540 m²']),mc:true,ste:'5/9 = 450 → 1/9 = 90 → total = 9×90 = 810 m²'},
+    {_id:12,q:'Los 4/7 de un número son 56. ¿Cuál es el número?',a:'98',opts:_i4gshuf(['98','84','112','70']),mc:true,ste:'4/7 = 56 → 1/7 = 14 → total = 7×14 = 98'},
+    {_id:13,q:'La propina es 1/5 del total. La propina fue 40 soles. ¿Cuánto fue la cuenta?',a:'200 soles',opts:_i4gshuf(['200 soles','160 soles','240 soles','180 soles']),mc:true,ste:'1/5 = 40 → total = 5×40 = 200 soles'},
+    {_id:14,q:'Los 3/8 de un peso son 18 kg. ¿Cuánto es el peso total?',a:'48 kg',opts:_i4gshuf(['48 kg','40 kg','56 kg','36 kg']),mc:true,ste:'3/8 = 18 → 1/8 = 6 → total = 8×6 = 48 kg'},
+    {_id:15,q:'¿Cuál es el total si 2/7 equivale a 16?',a:'56',opts:_i4gshuf(['56','48','63','42']),mc:true,ste:'2/7 = 16 → 1/7 = 8 → total = 7×8 = 56'},
+    {_id:16,q:'Las 5/12 de un grupo son 35. ¿Cuántos hay en total?',a:'84',opts:_i4gshuf(['84','70','96','60']),mc:true,ste:'5/12 = 35 → 1/12 = 7 → total = 12×7 = 84'},
+    {_id:17,q:'Los 7/9 de una distancia son 63 m. ¿Cuánto es la distancia total?',a:'81 m',opts:_i4gshuf(['81 m','63 m','72 m','90 m']),mc:true,ste:'7/9 = 63 → 1/9 = 9 → total = 9×9 = 81 m'},
+    {_id:18,q:'Los 3/10 de la venta son 90 soles. ¿Cuánto fue la venta?',a:'300 soles',opts:_i4gshuf(['300 soles','270 soles','330 soles','240 soles']),mc:true,ste:'3/10 = 90 → 1/10 = 30 → total = 10×30 = 300 soles'},
+    {_id:19,q:'Las 4/5 de las páginas son 200. ¿Cuántas páginas tiene el libro?',a:'250',opts:_i4gshuf(['250','200','240','300']),mc:true,ste:'4/5 = 200 → 1/5 = 50 → total = 5×50 = 250'},
+    {_id:20,q:'¿Cuál es el total correcto si 5/6 son 50?',a:'60',opts:_i4gshuf(['60','50','72','55']),mc:true,ste:'5/6 = 50 → 1/6 = 10 → total = 6×10 = 60'},
+  ]);
+}
+_SKILL_META['li1m_u6_b4']={ico:'📐',lbl:'Los a/b del total son X, ¿cuánto es el total?',qCount:4,gen:_genLi1mU6_B4,plantillas:['Hallar total dado a/b = X','Ecuación P = N + a/b×P','Propina/precio/grupo','Pesos y dinero','Identificar el total correcto']};
+
+function _genLi1mU6_BQ2(){return _bqSrcPick(['li1m_u6_b3','li1m_u6_b4'],[_genLi1mU6_B3,_genLi1mU6_B4]);}
+_SKILL_META['li1m_u6_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Aumentos, disminuciones y total',qCount:10,gen:_genLi1mU6_BQ2,quiz:true,srcKeys:['li1m_u6_b3','li1m_u6_b4']};
+
+function _genLi1mU6_B5(){
+  return _i4gpick([
+    {_id:1,q:'¿Cuánto es 1/2 de 3/4 de 80?',a:'30',opts:_i4gshuf(['30','40','20','60']),mc:true,ste:'3/4 de 80 = 60; 1/2 de 60 = 30'},
+    {_id:2,q:'¿Cuánto es 2/3 de 3/4 de 60?',a:'30',opts:_i4gshuf(['30','20','40','45']),mc:true,ste:'3/4 de 60 = 45; 2/3 de 45 = 30'},
+    {_id:3,q:'En un grupo de 90, 2/3 son mujeres. De las mujeres, 1/4 tienen lentes. ¿Cuántas mujeres tienen lentes?',a:'15',opts:_i4gshuf(['15','20','30','10']),mc:true,ste:'2/3 de 90 = 60 mujeres; 1/4 de 60 = 15'},
+    {_id:4,q:'¿Cuánto es 3/4 de 2/3 de 120?',a:'60',opts:_i4gshuf(['60','80','90','40']),mc:true,ste:'2/3 de 120 = 80; 3/4 de 80 = 60'},
+    {_id:5,q:'Calcula: 1/3 de 1/2 de 1/4 de 240',a:'10',opts:_i4gshuf(['10','20','30','5']),mc:true,ste:'1/4 de 240 = 60; 1/2 de 60 = 30; 1/3 de 30 = 10'},
+    {_id:6,q:'¿Cuánto es 2/5 de 5/6 de 90?',a:'30',opts:_i4gshuf(['30','36','45','24']),mc:true,ste:'5/6 de 90 = 75; 2/5 de 75 = 30'},
+    {_id:7,q:'Una finca de 300 ha; 2/5 se cultiva. De lo cultivado, 3/4 es maíz. ¿Cuántas ha de maíz?',a:'90 ha',opts:_i4gshuf(['90 ha','120 ha','60 ha','80 ha']),mc:true,ste:'2/5 de 300 = 120; 3/4 de 120 = 90 ha'},
+    {_id:8,q:'¿Cuánto es 5/6 de 3/5 de 60?',a:'30',opts:_i4gshuf(['30','36','24','50']),mc:true,ste:'3/5 de 60 = 36; 5/6 de 36 = 30'},
+    {_id:9,q:'Un presupuesto de 4000 soles: 3/5 para gastos. De gastos, 2/3 para alimentación. ¿Cuánto para alimentación?',a:'1600 soles',opts:_i4gshuf(['1600 soles','2000 soles','1200 soles','1800 soles']),mc:true,ste:'3/5 de 4000 = 2400; 2/3 de 2400 = 1600'},
+    {_id:10,q:'¿Cuánto es 1/4 de 2/3 de 1/2 de 120?',a:'5',opts:_i4gshuf(['5','10','15','20']),mc:true,ste:'1/2 de 120 = 60; 2/3 de 60 = 40; 1/4 de 40 = 10'},
+    {_id:11,q:'¿Cuánto es 3/5 de 5/9 de 90?',a:'30',opts:_i4gshuf(['30','50','45','25']),mc:true,ste:'5/9 de 90 = 50; 3/5 de 50 = 30'},
+    {_id:12,q:'De 200 alumnos, 3/4 estudian. De los que estudian, 2/3 aprueban. ¿Cuántos aprueban?',a:'100',opts:_i4gshuf(['100','150','120','80']),mc:true,ste:'3/4 de 200 = 150; 2/3 de 150 = 100'},
+    {_id:13,q:'¿Cuánto es 2/5 de 5/8 de 80?',a:'20',opts:_i4gshuf(['20','40','32','50']),mc:true,ste:'5/8 de 80 = 50; 2/5 de 50 = 20'},
+    {_id:14,q:'Un estanque de 480 L; 5/8 está lleno. Se usa 3/5 de lo que hay. ¿Cuánto se usa?',a:'180 L',opts:_i4gshuf(['180 L','200 L','240 L','150 L']),mc:true,ste:'5/8 de 480 = 300; 3/5 de 300 = 180 L'},
+    {_id:15,q:'¿Cuál es el resultado correcto de 4/5 de 5/8 de 40?',a:'20',opts:_i4gshuf(['20','25','32','16']),mc:true,ste:'5/8 de 40 = 25; 4/5 de 25 = 20'},
+    {_id:16,q:'¿Cuánto es 7/8 de 4/7 de 56?',a:'28',opts:_i4gshuf(['28','32','24','35']),mc:true,ste:'4/7 de 56 = 32; 7/8 de 32 = 28'},
+    {_id:17,q:'Un kilo de nueces: 3/4 son rellenas. De las rellenas, 2/3 se venden. ¿Qué fracción del kilo se vende?',a:'1/2 kg',opts:_i4gshuf(['1/2 kg','1/4 kg','3/4 kg','1/3 kg']),mc:true,ste:'3/4 × 2/3 = 1/2 del kilo'},
+    {_id:18,q:'¿Cuánto es 5/9 de 3/5 de 45?',a:'15',opts:_i4gshuf(['15','25','27','9']),mc:true,ste:'3/5 de 45 = 27; 5/9 de 27 = 15'},
+    {_id:19,q:'¿Cuánto es 1/2 de 2/3 de 3/4 de 96?',a:'24',opts:_i4gshuf(['24','32','48','16']),mc:true,ste:'3/4 de 96 = 72; 2/3 de 72 = 48; 1/2 de 48 = 24'},
+    {_id:20,q:'¿Cuál es el resultado correcto de 3/7 de 7/9 de 63?',a:'21',opts:_i4gshuf(['21','27','18','49']),mc:true,ste:'7/9 de 63 = 49; 3/7 de 49 = 21'},
+  ]);
+}
+_SKILL_META['li1m_u6_b5']={ico:'📐',lbl:'Fracción de fracción de cantidad',qCount:4,gen:_genLi1mU6_B5,plantillas:['a/b de c/d de N (2 fracciones)','Composición en contexto (grupo)','Fracción de fracción (resultado es fracción)','Cadena de 3 fracciones','Identificar resultado correcto']};
+
+function _genLi1mU6_B6(){
+  return _i4gpick([
+    {_id:1,q:'Ana gastó 1/3 de su dinero en la tienda A y 1/4 en la tienda B. Si tenía 120 soles, ¿cuánto gastó en total?',a:'70 soles',opts:_i4gshuf(['70 soles','60 soles','80 soles','50 soles']),mc:true,ste:'1/3×120=40; 1/4×120=30; total=70 soles'},
+    {_id:2,q:'De 200 alumnos, 2/5 son de primer año y de esos, 3/4 asistieron. ¿Cuántos de primer año asistieron?',a:'60',opts:_i4gshuf(['60','80','100','50']),mc:true,ste:'2/5×200=80; 3/4×80=60'},
+    {_id:3,q:'Una receta usa 3/4 kg de harina y 1/2 kg de azúcar. Si se hace el doble, ¿cuántos kg de harina se necesitan?',a:'3/2 kg',opts:_i4gshuf(['3/2 kg','3/4 kg','1 kg','2 kg']),mc:true,ste:'Doble de 3/4 = 2×3/4 = 6/4 = 3/2 kg'},
+    {_id:4,q:'Una cuerda de 3/4 m se divide en partes de 1/8 m. ¿Cuántas partes hay? Si cada parte cuesta 5 soles, ¿cuánto es el total?',a:'30 soles',opts:_i4gshuf(['30 soles','40 soles','24 soles','25 soles']),mc:true,ste:'3/4÷1/8=6 partes; 6×5=30 soles'},
+    {_id:5,q:'Los 2/3 de los libros de una biblioteca son de ciencias. De esos, 3/5 son de física. Si hay 540 libros en total, ¿cuántos son de física?',a:'216',opts:_i4gshuf(['216','240','180','360']),mc:true,ste:'2/3×540=360 ciencias; 3/5×360=216 física'},
+    {_id:6,q:'Juan gana 900 soles. Gasta 1/3 en alquiler y 2/9 en comida. ¿Cuánto le queda?',a:'400 soles',opts:_i4gshuf(['400 soles','300 soles','500 soles','450 soles']),mc:true,ste:'1/3×900=300; 2/9×900=200; 900−300−200=400'},
+    {_id:7,q:'Una bolsa tiene 5/8 kg de arroz. Se usan 3/5 de lo que hay. ¿Cuánto sobra?',a:'1/4 kg',opts:_i4gshuf(['1/4 kg','3/8 kg','1/2 kg','1/8 kg']),mc:true,ste:'3/5 de 5/8 = 3/8 usado; 5/8−3/8=2/8=1/4 kg'},
+    {_id:8,q:'Un terreno de 120 m²: se vende 1/4 y se arrienda 1/3. ¿Cuántos m² quedan libres?',a:'50 m²',opts:_i4gshuf(['50 m²','60 m²','40 m²','70 m²']),mc:true,ste:'1/4×120=30; 1/3×120=40; 120−30−40=50'},
+    {_id:9,q:'Si 3/5 del total son 60, y luego aumenta 1/4 del total original, ¿cuánto hay ahora?',a:'125',opts:_i4gshuf(['125','120','100','150']),mc:true,ste:'Total=100; aumenta 1/4×100=25; 100+25=125'},
+    {_id:10,q:'Una herencia de 480000 soles: 1/3 para el hijo mayor, 1/4 para el segundo. ¿Cuánto queda?',a:'200000 soles',opts:_i4gshuf(['200000 soles','160000 soles','240000 soles','180000 soles']),mc:true,ste:'1/3×480000=160000; 1/4×480000=120000; resta=480000−280000=200000'},
+    {_id:11,q:'Una empresa tiene 360 empleados. 2/5 son mujeres. De las mujeres, 3/4 tienen estudios superiores. ¿Cuántas son?',a:'108',opts:_i4gshuf(['108','144','120','90']),mc:true,ste:'2/5×360=144; 3/4×144=108'},
+    {_id:12,q:'Luis tiene 2/5 de lo que tiene Pedro. Pedro tiene 150 soles. ¿Cuánto tiene Luis?',a:'60 soles',opts:_i4gshuf(['60 soles','75 soles','50 soles','80 soles']),mc:true,ste:'2/5×150=60 soles'},
+    {_id:13,q:'En un examen con 40 preguntas, 3/4 son de opción múltiple. De estas, 2/3 son de matemáticas. ¿Cuántas son de matemáticas?',a:'20',opts:_i4gshuf(['20','30','10','15']),mc:true,ste:'3/4×40=30; 2/3×30=20'},
+    {_id:14,q:'Un jardín de 200 m² está sembrado 3/5 con flores. De las flores, 1/4 son rosas. ¿Cuántos m² de rosas hay?',a:'30 m²',opts:_i4gshuf(['30 m²','40 m²','60 m²','20 m²']),mc:true,ste:'3/5×200=120; 1/4×120=30 m²'},
+    {_id:15,q:'¿Cuánto le queda a Ana si tenía 80 soles, gastó 3/8 en ropa y 1/4 en comida?',a:'30 soles',opts:_i4gshuf(['30 soles','25 soles','40 soles','35 soles']),mc:true,ste:'3/8×80=30; 1/4×80=20; 80−30−20=30 soles'},
+    {_id:16,q:'Un colchón cuesta 600 soles. Sube 1/6 y luego baja 1/4 del nuevo precio. ¿Cuánto cuesta al final?',a:'525 soles',opts:_i4gshuf(['525 soles','600 soles','500 soles','550 soles']),mc:true,ste:'600+100=700; 700−175=525 soles'},
+    {_id:17,q:'De 300 kg de frutas: 2/5 son mangos, 1/3 son naranjas. ¿Cuántos kg son de otros?',a:'80 kg',opts:_i4gshuf(['80 kg','100 kg','60 kg','120 kg']),mc:true,ste:'2/5×300=120; 1/3×300=100; otros=300−220=80'},
+    {_id:18,q:'María lee 3/8 de un libro de 240 páginas el lunes y 1/4 el martes. ¿Cuántas páginas le faltan?',a:'90 páginas',opts:_i4gshuf(['90 páginas','120 páginas','60 páginas','80 páginas']),mc:true,ste:'3/8×240=90; 1/4×240=60; leídas=150; faltan=90'},
+    {_id:19,q:'Un grupo de 120 personas: 1/3 son niños. De los niños, 3/4 van a la escuela. ¿Cuántos niños van a la escuela?',a:'30',opts:_i4gshuf(['30','40','20','25']),mc:true,ste:'1/3×120=40 niños; 3/4×40=30'},
+    {_id:20,q:'¿Cuál es el resultado correcto? Pedro tenía 360 soles. Gastó 5/12 en ropa y 1/6 en comida. ¿Cuánto le sobra?',a:'165 soles',opts:_i4gshuf(['165 soles','180 soles','120 soles','150 soles']),mc:true,ste:'5/12×360=150; 1/6×360=60; 360−150−60=150 → 165... Recalcula: 5/12×360=150; 1/6×360=60; 150+60=210; 360−210=150',a:'150 soles',opts:_i4gshuf(['150 soles','180 soles','120 soles','165 soles']),mc:true,ste:'5/12×360=150; 1/6×360=60; gastó=210; sobra=360−210=150 soles'},
+  ]);
+}
+_SKILL_META['li1m_u6_b6']={ico:'📐',lbl:'Problemas compuestos con fracciones en contexto',qCount:4,gen:_genLi1mU6_B6,plantillas:['Gasto secuencial multi-tienda','Suma de fracciones de 2 cantidades distintas','Receta con varias fracciones','División de fracción (¿cuántos?)','Problema de 2 pasos combinado']};
+
+function _genLi1mU6_BQ3(){return _bqSrcPick(['li1m_u6_b5','li1m_u6_b6'],[_genLi1mU6_B5,_genLi1mU6_B6]);}
+_SKILL_META['li1m_u6_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Problemas compuestos',qCount:10,gen:_genLi1mU6_BQ3,quiz:true,srcKeys:['li1m_u6_b5','li1m_u6_b6']};
+// ═══════════════════════════════════════════════════════════════
+// UNIT 7 — Razones y Proporciones (li1m_u7_)
+// ═══════════════════════════════════════════════════════════════
+
+function _genLi1mU7_B1(){
+  return _i4gpick([
+    {_id:1,q:'Simplifica la razón 6:10',a:'3:5',opts:_i4gshuf(['3:5','2:4','6:10','1:2']),mc:true,ste:'MCD(6,10)=2; 6÷2:10÷2=3:5'},
+    {_id:2,q:'Simplifica la razón 12:8',a:'3:2',opts:_i4gshuf(['3:2','6:4','4:3','2:3']),mc:true,ste:'MCD(12,8)=4; 12÷4:8÷4=3:2'},
+    {_id:3,q:'¿Cuál es una razón equivalente a 2:3?',a:'4:6',opts:_i4gshuf(['4:6','3:2','5:6','6:10']),mc:true,ste:'Multiplica ×2: 4:6'},
+    {_id:4,q:'Completa la razón equivalente: 3:4 = ?:12',a:'9',opts:_i4gshuf(['9','6','8','12']),mc:true,ste:'4×3=12, entonces 3×3=9'},
+    {_id:5,q:'¿Cuáles de estos pares son razones equivalentes?',a:'2:3 y 4:6',opts:_i4gshuf(['2:3 y 4:6','2:3 y 3:4','2:3 y 5:6','2:3 y 6:8']),mc:true,ste:'2/3 = 4/6 ya que 2×6=3×4=12'},
+    {_id:6,q:'Simplifica la razón 15:25',a:'3:5',opts:_i4gshuf(['3:5','5:3','15:25','1:5']),mc:true,ste:'MCD(15,25)=5; 3:5'},
+    {_id:7,q:'¿Cuál es una razón equivalente a 5:8?',a:'10:16',opts:_i4gshuf(['10:16','5:4','8:5','6:9']),mc:true,ste:'Multiplica ×2: 10:16'},
+    {_id:8,q:'Completa: 4:5 = 20:?',a:'25',opts:_i4gshuf(['25','20','10','15']),mc:true,ste:'4×5=20, entonces 5×5=25'},
+    {_id:9,q:'Simplifica la razón 18:24',a:'3:4',opts:_i4gshuf(['3:4','9:12','2:3','4:3']),mc:true,ste:'MCD(18,24)=6; 3:4'},
+    {_id:10,q:'¿Cuáles son razones equivalentes a 3:7?',a:'6:14 y 9:21',opts:_i4gshuf(['6:14 y 9:21','3:7 y 7:3','4:8 y 6:12','6:14 y 10:21']),mc:true,ste:'×2: 6:14; ×3: 9:21'},
+    {_id:11,q:'Simplifica la razón 20:30',a:'2:3',opts:_i4gshuf(['2:3','4:6','10:15','1:2']),mc:true,ste:'MCD(20,30)=10; 2:3'},
+    {_id:12,q:'Completa: 2:7 = ?:35',a:'10',opts:_i4gshuf(['10','14','7','5']),mc:true,ste:'7×5=35, entonces 2×5=10'},
+    {_id:13,q:'¿Cuáles son equivalentes a 4:9?',a:'8:18',opts:_i4gshuf(['8:18','4:12','9:4','6:9']),mc:true,ste:'4×2:9×2 = 8:18'},
+    {_id:14,q:'Completa: 5:6 = 30:?',a:'36',opts:_i4gshuf(['36','30','12','24']),mc:true,ste:'5×6=30, entonces 6×6=36'},
+    {_id:15,q:'¿Cuál de los siguientes NO es equivalente a 3:5?',a:'4:6',opts:_i4gshuf(['4:6','6:10','9:15','12:20']),mc:true,ste:'4:6 = 2:3 ≠ 3:5'},
+    {_id:16,q:'Simplifica la razón 36:48',a:'3:4',opts:_i4gshuf(['3:4','9:12','6:8','4:3']),mc:true,ste:'MCD(36,48)=12; 3:4'},
+    {_id:17,q:'Completa: 7:3 = ?:15',a:'35',opts:_i4gshuf(['35','21','28','14']),mc:true,ste:'3×5=15, entonces 7×5=35'},
+    {_id:18,q:'¿Cuáles son razones equivalentes? 1:4 y ___',a:'3:12',opts:_i4gshuf(['3:12','2:6','5:8','4:1']),mc:true,ste:'1×3:4×3 = 3:12'},
+    {_id:19,q:'Simplifica la razón 45:60',a:'3:4',opts:_i4gshuf(['3:4','9:12','5:6','15:20']),mc:true,ste:'MCD(45,60)=15; 3:4'},
+    {_id:20,q:'¿Cuál de los siguientes par es equivalente a 5:4?',a:'15:12',opts:_i4gshuf(['15:12','10:6','5:8','20:18']),mc:true,ste:'5×3:4×3=15:12'},
+  ]);
+}
+_SKILL_META['li1m_u7_b1']={ico:'📐',lbl:'Razones y razones equivalentes',qCount:4,gen:_genLi1mU7_B1,plantillas:['Simplificar a:b','Completar razón equivalente','Identificar cuál par es equivalente','Hallar razones equivalentes múltiples','Comparar dos razones']};
+
+function _genLi1mU7_B2(){
+  return _i4gpick([
+    {_id:1,q:'Expresa la razón 3:4 como fracción simplificada',a:'3/4',opts:_i4gshuf(['3/4','4/3','6/8','0.75']),mc:true,ste:'La razón 3:4 equivale a la fracción 3/4'},
+    {_id:2,q:'Expresa la razón 2:5 como fracción',a:'2/5',opts:_i4gshuf(['2/5','5/2','0.4','4/10']),mc:true,ste:'La razón 2:5 = fracción 2/5'},
+    {_id:3,q:'Expresa la fracción 3/4 como decimal',a:'0.75',opts:_i4gshuf(['0.75','0.25','0.3','1.33']),mc:true,ste:'3÷4 = 0.75'},
+    {_id:4,q:'Expresa el decimal 0.6 como porcentaje',a:'60%',opts:_i4gshuf(['60%','6%','0.6%','600%']),mc:true,ste:'0.6 × 100 = 60%'},
+    {_id:5,q:'Expresa el porcentaje 75% como fracción simplificada',a:'3/4',opts:_i4gshuf(['3/4','75/100','15/20','1/4']),mc:true,ste:'75/100 = 3/4'},
+    {_id:6,q:'La razón 1:4. Expresa como fracción, decimal y porcentaje',a:'1/4; 0.25; 25%',opts:_i4gshuf(['1/4; 0.25; 25%','1/4; 0.4; 40%','4/1; 4; 400%','1/4; 0.25; 2.5%']),mc:true,ste:'1:4 = 1/4 = 0.25 = 25%'},
+    {_id:7,q:'Expresa la fracción 2/5 como decimal',a:'0.4',opts:_i4gshuf(['0.4','0.25','0.5','0.2']),mc:true,ste:'2÷5 = 0.4'},
+    {_id:8,q:'Expresa el decimal 0.25 como fracción simplificada',a:'1/4',opts:_i4gshuf(['1/4','25/100','1/2','2/5']),mc:true,ste:'25/100 = 1/4'},
+    {_id:9,q:'¿Cuánto es el 50% en fracción?',a:'1/2',opts:_i4gshuf(['1/2','50/100','1/5','2/5']),mc:true,ste:'50/100 = 1/2'},
+    {_id:10,q:'La razón 3:5. ¿Cuál es el porcentaje equivalente?',a:'60%',opts:_i4gshuf(['60%','35%','30%','50%']),mc:true,ste:'3/5 = 0.6 = 60%'},
+    {_id:11,q:'Expresa la fracción 7/10 como porcentaje',a:'70%',opts:_i4gshuf(['70%','7%','0.7%','700%']),mc:true,ste:'7/10 = 0.7 = 70%'},
+    {_id:12,q:'Expresa el decimal 0.125 como fracción',a:'1/8',opts:_i4gshuf(['1/8','125/1000','1/4','1/6']),mc:true,ste:'125/1000 = 1/8'},
+    {_id:13,q:'La razón 4:5 como porcentaje es',a:'80%',opts:_i4gshuf(['80%','45%','40%','50%']),mc:true,ste:'4/5 = 0.8 = 80%'},
+    {_id:14,q:'Expresa 30% como fracción simplificada',a:'3/10',opts:_i4gshuf(['3/10','30/100','3/100','1/3']),mc:true,ste:'30/100 = 3/10'},
+    {_id:15,q:'¿Cuál es el decimal de la razón 9:20?',a:'0.45',opts:_i4gshuf(['0.45','0.9','0.5','0.2']),mc:true,ste:'9÷20 = 0.45'},
+    {_id:16,q:'Expresa 0.375 como fracción simplificada',a:'3/8',opts:_i4gshuf(['3/8','375/1000','3/4','1/3']),mc:true,ste:'375/1000 = 3/8'},
+    {_id:17,q:'La razón 1:5 como porcentaje es',a:'20%',opts:_i4gshuf(['20%','15%','5%','25%']),mc:true,ste:'1/5 = 0.2 = 20%'},
+    {_id:18,q:'Expresa 40% como fracción simplificada',a:'2/5',opts:_i4gshuf(['2/5','40/100','4/10','1/4']),mc:true,ste:'40/100 = 2/5'},
+    {_id:19,q:'¿Cuál es el porcentaje de la razón 7:20?',a:'35%',opts:_i4gshuf(['35%','72%','70%','30%']),mc:true,ste:'7/20 = 0.35 = 35%'},
+    {_id:20,q:'¿Cuál es la cadena correcta para la razón 3:8?',a:'3/8 → 0.375 → 37.5%',opts:_i4gshuf(['3/8 → 0.375 → 37.5%','3/8 → 0.38 → 38%','3/8 → 0.3 → 30%','3/8 → 0.25 → 25%']),mc:true,ste:'3÷8=0.375; 0.375×100=37.5%'},
+  ]);
+}
+_SKILL_META['li1m_u7_b2']={ico:'📐',lbl:'Representaciones de una razón',qCount:4,gen:_genLi1mU7_B2,plantillas:['Razón → fracción simplificada','Fracción → decimal','Decimal → porcentaje','Porcentaje → fracción simplificada','Cadena completa: razón → porcentaje']};
+
+function _genLi1mU7_BQ1(){return _bqSrcPick(['li1m_u7_b1','li1m_u7_b2'],[_genLi1mU7_B1,_genLi1mU7_B2]);}
+_SKILL_META['li1m_u7_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Razones y representaciones',qCount:10,gen:_genLi1mU7_BQ1,quiz:true,srcKeys:['li1m_u7_b1','li1m_u7_b2']};
+
+function _genLi1mU7_B3(){
+  return _i4gpick([
+    {_id:1,q:'Reparte 50 en razón 2:3',a:'20 y 30',opts:_i4gshuf(['20 y 30','25 y 25','10 y 40','15 y 35']),mc:true,ste:'Total partes=5; 50/5=10; A=2×10=20, B=3×10=30'},
+    {_id:2,q:'Reparte 90 en razón 1:2',a:'30 y 60',opts:_i4gshuf(['30 y 60','45 y 45','20 y 70','10 y 80']),mc:true,ste:'Total partes=3; 90/3=30; A=30, B=60'},
+    {_id:3,q:'Reparte 120 en razón 3:5',a:'45 y 75',opts:_i4gshuf(['45 y 75','60 y 60','40 y 80','30 y 90']),mc:true,ste:'Total partes=8; 120/8=15; A=3×15=45, B=5×15=75'},
+    {_id:4,q:'Reparte 60 en razón 1:2:3',a:'10, 20 y 30',opts:_i4gshuf(['10, 20 y 30','15, 20 y 25','20, 20 y 20','5, 25 y 30']),mc:true,ste:'Total partes=6; 60/6=10; A=10, B=20, C=30'},
+    {_id:5,q:'Se divide una herencia de 240000 entre dos hijos en razón 3:5. ¿Cuánto recibe cada uno?',a:'90000 y 150000',opts:_i4gshuf(['90000 y 150000','120000 y 120000','80000 y 160000','100000 y 140000']),mc:true,ste:'Total=8; unidad=30000; 3×30000=90000; 5×30000=150000'},
+    {_id:6,q:'Tres socios ganan 3600 en razón 2:3:4. ¿Cuánto recibe el mayor?',a:'1600',opts:_i4gshuf(['1600','1200','800','900']),mc:true,ste:'Total=9; 3600/9=400; mayor=4×400=1600'},
+    {_id:7,q:'Un salario de 2400 se divide entre dos trabajadores en razón 5:3. ¿Cuánto recibe el primero?',a:'1500',opts:_i4gshuf(['1500','1200','900','1800']),mc:true,ste:'Total=8; 2400/8=300; primero=5×300=1500'},
+    {_id:8,q:'Reparte 280 en razón 3:4. ¿Cuánto recibe la parte mayor?',a:'160',opts:_i4gshuf(['160','120','140','180']),mc:true,ste:'Total=7; 280/7=40; mayor=4×40=160'},
+    {_id:9,q:'Reparte 180 kg en razón 2:3:4. ¿Cuánto es la parte del medio?',a:'60 kg',opts:_i4gshuf(['60 kg','40 kg','80 kg','45 kg']),mc:true,ste:'Total=9; 180/9=20; medio=3×20=60 kg'},
+    {_id:10,q:'¿Cuál es el reparto correcto de 100 en razón 2:3?',a:'40 y 60',opts:_i4gshuf(['40 y 60','50 y 50','30 y 70','20 y 80']),mc:true,ste:'Total=5; 100/5=20; A=40, B=60'},
+    {_id:11,q:'Un caudal de 360 L/h se divide entre dos ramas en razón 5:7. ¿Cuánto va por la primera?',a:'150 L/h',opts:_i4gshuf(['150 L/h','180 L/h','210 L/h','120 L/h']),mc:true,ste:'Total=12; 360/12=30; primera=5×30=150 L/h'},
+    {_id:12,q:'Reparte 84 en razón 3:4. ¿Cuánto recibe la parte menor?',a:'36',opts:_i4gshuf(['36','48','42','28']),mc:true,ste:'Total=7; 84/7=12; menor=3×12=36'},
+    {_id:13,q:'Tres amigos ponen 200 soles en razón 1:3:6. ¿Cuánto puso el tercero?',a:'120',opts:_i4gshuf(['120','60','20','100']),mc:true,ste:'Total=10; 200/10=20; tercero=6×20=120'},
+    {_id:14,q:'Un terreno de 450 m² se reparte entre dos hermanos en razón 4:5. ¿Cuánto recibe el segundo?',a:'250 m²',opts:_i4gshuf(['250 m²','200 m²','225 m²','180 m²']),mc:true,ste:'Total=9; 450/9=50; segundo=5×50=250 m²'},
+    {_id:15,q:'¿Cuál es el reparto correcto de 96 en razón 1:2:3?',a:'16, 32 y 48',opts:_i4gshuf(['16, 32 y 48','32, 32 y 32','12, 24 y 60','20, 30 y 46']),mc:true,ste:'Total=6; 96/6=16; A=16, B=32, C=48'},
+    {_id:16,q:'Dos socios ganan 720 soles en razón 5:4. ¿Cuánto recibe el segundo?',a:'320',opts:_i4gshuf(['320','400','360','280']),mc:true,ste:'Total=9; 720/9=80; segundo=4×80=320'},
+    {_id:17,q:'Reparte 500 en razón 3:7. ¿Cuánto recibe la parte mayor?',a:'350',opts:_i4gshuf(['350','300','150','250']),mc:true,ste:'Total=10; 500/10=50; mayor=7×50=350'},
+    {_id:18,q:'Un trabajo de 840 horas se divide entre tres personas en razón 2:3:2. ¿Cuántas horas hace cada una del grupo A y C?',a:'240 h cada una',opts:_i4gshuf(['240 h cada una','168 h','280 h','120 h']),mc:true,ste:'Total=7; 840/7=120; A=2×120=240; C=2×120=240'},
+    {_id:19,q:'Reparte 560 entre A y B en razón 3:4. ¿Cuánto recibe A?',a:'240',opts:_i4gshuf(['240','320','280','210']),mc:true,ste:'Total=7; 560/7=80; A=3×80=240'},
+    {_id:20,q:'¿Cuál es el reparto incorrecto de 120 en razón 1:3?',a:'60 y 60',opts:_i4gshuf(['60 y 60','30 y 90','120 en 1:3 → 30:90','incorrecta: 60 y 60']),mc:true,ste:'1:3 → total=4; 120/4=30; A=30, B=90. 60 y 60 es el reparto 1:1, no 1:3'},
+  ]);
+}
+_SKILL_META['li1m_u7_b3']={ico:'📐',lbl:'Reparto proporcional',qCount:4,gen:_genLi1mU7_B3,plantillas:['Repartir en razón a:b','Repartir en razón a:b:c','Hallar la parte de cada uno','Problemas contextualizados de reparto','Identificar el reparto correcto']};
+
+function _genLi1mU7_B4(){
+  return _i4gpick([
+    {_id:1,q:'¿Es proporción? 2/3 = 4/6',a:'Sí, es proporción',opts:_i4gshuf(['Sí, es proporción','No es proporción','Solo si se simplifican','Depende del contexto']),mc:true,ste:'Producto cruzado: 2×6=12 y 3×4=12 ✓'},
+    {_id:2,q:'¿Es proporción? 3/4 = 5/6',a:'No es proporción',opts:_i4gshuf(['No es proporción','Sí, es proporción','Son equivalentes','Sí, con simplificación']),mc:true,ste:'3×6=18 y 4×5=20; 18≠20, no es proporción'},
+    {_id:3,q:'Completa la proporción: 2/5 = 6/?',a:'15',opts:_i4gshuf(['15','10','12','20']),mc:true,ste:'2×? = 5×6 = 30; ?=30/2=15'},
+    {_id:4,q:'Completa la proporción: 3/4 = ?/12',a:'9',opts:_i4gshuf(['9','6','8','12']),mc:true,ste:'4×? = 3×12=36; ?=9'},
+    {_id:5,q:'¿Cuál de estas proporciones es verdadera?',a:'3/6 = 4/8',opts:_i4gshuf(['3/6 = 4/8','2/3 = 5/6','1/3 = 2/5','4/5 = 5/6']),mc:true,ste:'3×8=24 y 6×4=24 ✓'},
+    {_id:6,q:'Un auto recorre 120 km en 2 horas. ¿Cuántos km recorre en 5 horas a la misma velocidad?',a:'300 km',opts:_i4gshuf(['300 km','240 km','250 km','150 km']),mc:true,ste:'120/2 = x/5 → x = 120×5/2 = 300 km'},
+    {_id:7,q:'Si 4 obreros hacen un trabajo en 6 días, ¿cuántos días tardan 8 obreros?',a:'3 días',opts:_i4gshuf(['3 días','6 días','12 días','4 días']),mc:true,ste:'Proporcionalidad inversa: 4×6=8×x → x=3 días'},
+    {_id:8,q:'Completa: 5/8 = 20/?',a:'32',opts:_i4gshuf(['32','25','40','16']),mc:true,ste:'5×? = 8×20=160; ?=32'},
+    {_id:9,q:'Si 3 litros de pintura cubren 24 m², ¿cuántos litros cubren 40 m²?',a:'5 L',opts:_i4gshuf(['5 L','4 L','6 L','8 L']),mc:true,ste:'3/24 = x/40 → x=3×40/24=5 L'},
+    {_id:10,q:'¿Cuál de estas es la proporción correcta para completar 6:? = 4:8?',a:'6:12 = 4:8',opts:_i4gshuf(['6:12 = 4:8','6:6 = 4:8','6:10 = 4:8','6:8 = 4:8']),mc:true,ste:'6×8=48 y 4×12=48 ✓'},
+    {_id:11,q:'¿Es proporción? 9/12 = 6/8',a:'Sí, es proporción',opts:_i4gshuf(['Sí, es proporción','No, son distintos','Solo parcialmente','No se puede saber']),mc:true,ste:'9×8=72 y 12×6=72 ✓'},
+    {_id:12,q:'Si 5 kg de manzanas cuestan 15 soles, ¿cuánto cuestan 8 kg?',a:'24 soles',opts:_i4gshuf(['24 soles','20 soles','30 soles','40 soles']),mc:true,ste:'5/15 = 8/x → x=15×8/5=24 soles'},
+    {_id:13,q:'Completa: ?/9 = 8/12',a:'6',opts:_i4gshuf(['6','8','4','3']),mc:true,ste:'?×12 = 9×8=72; ?=6'},
+    {_id:14,q:'Si 6 personas consumen 18 L en 3 días, ¿cuánto consumen en 5 días?',a:'30 L',opts:_i4gshuf(['30 L','24 L','36 L','15 L']),mc:true,ste:'18/3 = x/5 → x=30 L'},
+    {_id:15,q:'¿Cuál es la proporción correcta entre estas?',a:'2:6 = 3:9',opts:_i4gshuf(['2:6 = 3:9','2:6 = 4:10','3:5 = 6:8','4:8 = 5:9']),mc:true,ste:'2×9=18 y 6×3=18 ✓'},
+    {_id:16,q:'Un grifo llena una piscina de 400 L en 8 h. ¿Cuánto llena en 3 h?',a:'150 L',opts:_i4gshuf(['150 L','100 L','200 L','120 L']),mc:true,ste:'400/8=50 L/h; 50×3=150 L'},
+    {_id:17,q:'Completa la proporción: 7/? = 21/12',a:'4',opts:_i4gshuf(['4','6','3','8']),mc:true,ste:'7×12=84; 21×?=84; ?=4'},
+    {_id:18,q:'Si recorro 45 km en 3/4 de hora, ¿cuánto recorro en 1 hora?',a:'60 km',opts:_i4gshuf(['60 km','45 km','50 km','90 km']),mc:true,ste:'45/(3/4) = x/1 → x=60 km'},
+    {_id:19,q:'Completa: 10/15 = ?/9',a:'6',opts:_i4gshuf(['6','10','4','8']),mc:true,ste:'10×9=90; 15×?=90; ?=6'},
+    {_id:20,q:'¿Cuál de las siguientes NO es una proporción?',a:'3/4 = 7/9',opts:_i4gshuf(['3/4 = 7/9','2/5 = 4/10','6/9 = 2/3','1/3 = 4/12']),mc:true,ste:'3×9=27 y 4×7=28; 27≠28, no es proporción'},
+  ]);
+}
+_SKILL_META['li1m_u7_b4']={ico:'📐',lbl:'Proporciones y producto cruzado',qCount:4,gen:_genLi1mU7_B4,plantillas:['Verificar si es proporción (¿cuál es verdadera?)','Completar el cuarto proporcional','Identificar la proporción correcta','Problemas verbales con proporciones','Tiempo/distancia/velocidad']};
+
+function _genLi1mU7_BQ2(){return _bqSrcPick(['li1m_u7_b3','li1m_u7_b4'],[_genLi1mU7_B3,_genLi1mU7_B4]);}
+_SKILL_META['li1m_u7_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Reparto y proporciones',qCount:10,gen:_genLi1mU7_BQ2,quiz:true,srcKeys:['li1m_u7_b3','li1m_u7_b4']};
+
+function _genLi1mU7_B5(){
+  return _i4gpick([
+    {_id:1,q:'Resuelve: x/3 = 4/6',a:'x = 2',opts:_i4gshuf(['x = 2','x = 8','x = 12','x = 1']),mc:true,ste:'6x = 12 → x = 2'},
+    {_id:2,q:'Resuelve: 5/x = 10/8',a:'x = 4',opts:_i4gshuf(['x = 4','x = 16','x = 2','x = 5']),mc:true,ste:'10x = 40 → x = 4'},
+    {_id:3,q:'Resuelve: 3/7 = 9/x',a:'x = 21',opts:_i4gshuf(['x = 21','x = 63','x = 3','x = 27']),mc:true,ste:'3x = 63 → x = 21'},
+    {_id:4,q:'Resuelve: 2/5 = 6/x',a:'x = 15',opts:_i4gshuf(['x = 15','x = 12','x = 30','x = 10']),mc:true,ste:'2x = 30 → x = 15'},
+    {_id:5,q:'¿Cuál es el valor correcto de x en 4/x = 2/7?',a:'x = 14',opts:_i4gshuf(['x = 14','x = 8','x = 7','x = 4']),mc:true,ste:'2x = 28 → x = 14'},
+    {_id:6,q:'Resuelve: x/4 = 9/12',a:'x = 3',opts:_i4gshuf(['x = 3','x = 9','x = 6','x = 1']),mc:true,ste:'12x = 36 → x = 3'},
+    {_id:7,q:'Resuelve: 8/x = 4/5',a:'x = 10',opts:_i4gshuf(['x = 10','x = 8','x = 2','x = 20']),mc:true,ste:'4x = 40 → x = 10'},
+    {_id:8,q:'Resuelve: 6/9 = x/15',a:'x = 10',opts:_i4gshuf(['x = 10','x = 6','x = 9','x = 12']),mc:true,ste:'9x = 90 → x = 10'},
+    {_id:9,q:'Resuelve: 3/x = 9/21',a:'x = 7',opts:_i4gshuf(['x = 7','x = 3','x = 9','x = 14']),mc:true,ste:'9x = 63 → x = 7'},
+    {_id:10,q:'¿Cuál es el valor correcto de x en 5/8 = 15/x?',a:'x = 24',opts:_i4gshuf(['x = 24','x = 40','x = 3','x = 16']),mc:true,ste:'5x = 120 → x = 24'},
+    {_id:11,q:'Resuelve: x/10 = 3/5',a:'x = 6',opts:_i4gshuf(['x = 6','x = 15','x = 2','x = 30']),mc:true,ste:'5x = 30 → x = 6'},
+    {_id:12,q:'Resuelve: 7/x = 21/9',a:'x = 3',opts:_i4gshuf(['x = 3','x = 9','x = 6','x = 7']),mc:true,ste:'21x = 63 → x = 3'},
+    {_id:13,q:'Resuelve: 4/x = 16/20',a:'x = 5',opts:_i4gshuf(['x = 5','x = 4','x = 10','x = 8']),mc:true,ste:'16x = 80 → x = 5'},
+    {_id:14,q:'Resuelve: x/6 = 5/3',a:'x = 10',opts:_i4gshuf(['x = 10','x = 15','x = 2','x = 8']),mc:true,ste:'3x = 30 → x = 10'},
+    {_id:15,q:'¿Cuál es el valor correcto de x en 9/12 = x/8?',a:'x = 6',opts:_i4gshuf(['x = 6','x = 9','x = 4','x = 3']),mc:true,ste:'12x = 72 → x = 6'},
+    {_id:16,q:'Resuelve: 2/x = 10/25',a:'x = 5',opts:_i4gshuf(['x = 5','x = 50','x = 10','x = 2']),mc:true,ste:'10x = 50 → x = 5'},
+    {_id:17,q:'Resuelve: x/7 = 12/28',a:'x = 3',opts:_i4gshuf(['x = 3','x = 7','x = 6','x = 4']),mc:true,ste:'28x = 84 → x = 3'},
+    {_id:18,q:'Resuelve: 15/x = 5/4',a:'x = 12',opts:_i4gshuf(['x = 12','x = 3','x = 20','x = 6']),mc:true,ste:'5x = 60 → x = 12'},
+    {_id:19,q:'Resuelve: x/8 = 6/16',a:'x = 3',opts:_i4gshuf(['x = 3','x = 6','x = 12','x = 4']),mc:true,ste:'16x = 48 → x = 3'},
+    {_id:20,q:'¿Cuál es el valor correcto de x en 3/x = 15/20?',a:'x = 4',opts:_i4gshuf(['x = 4','x = 100','x = 5','x = 12']),mc:true,ste:'15x = 60 → x = 4'},
+  ]);
+}
+_SKILL_META['li1m_u7_b5']={ico:'📐',lbl:'Resolver x en proporciones lineales',qCount:4,gen:_genLi1mU7_B5,plantillas:['x/a = b/c','a/x = b/c','a/b = x/c','a/b = c/x','Identificar el valor correcto de x']};
+
+function _genLi1mU7_B6(){
+  return _i4gpick([
+    {_id:1,q:'Resuelve: (2x+1)/3 = 5/3',a:'x = 2',opts:_i4gshuf(['x = 2','x = 5','x = 3','x = 1']),mc:true,ste:'3(2x+1) = 15 → 6x+3=15 → 6x=12 → x=2'},
+    {_id:2,q:'Resuelve: 4/(3x−2) = 2/4',a:'x = 3',opts:_i4gshuf(['x = 3','x = 2','x = 4','x = 1']),mc:true,ste:'4×4 = 2(3x−2) → 16=6x−4 → 6x=20 → x=10/3'},
+    {_id:3,q:'Resuelve: (x+2)/5 = 3/5',a:'x = 1',opts:_i4gshuf(['x = 1','x = 3','x = 5','x = 2']),mc:true,ste:'x+2 = 3 → x=1'},
+    {_id:4,q:'Resuelve: (3x−1)/4 = 5/4',a:'x = 2',opts:_i4gshuf(['x = 2','x = 3','x = 4','x = 1']),mc:true,ste:'3x−1=5 → 3x=6 → x=2'},
+    {_id:5,q:'¿Cuál es el valor correcto de x en (2x+4)/6 = 2/3?',a:'x = 2',opts:_i4gshuf(['x = 2','x = 1','x = 4','x = 0']),mc:true,ste:'3(2x+4)=12 → 6x+12=12 → 6x=0 → x=0. Correcto: 2(2x+4)=12 → 4x+8=12 → x=1',a:'x = 1',opts:_i4gshuf(['x = 1','x = 2','x = 4','x = 0']),mc:true,ste:'(2x+4)/6=2/3 → 2x+4=4 → 2x=0 → x=0... Recalcula: cruzada: 3(2x+4)=6×2=12 → 6x+12=12 → x=0',a:'x = 0',opts:_i4gshuf(['x = 0','x = 1','x = 2','x = 4']),mc:true,ste:'3(2x+4) = 12 → 6x + 12 = 12 → 6x = 0 → x = 0'},
+    {_id:6,q:'Resuelve: (x+3)/2 = 8/4',a:'x = 1',opts:_i4gshuf(['x = 1','x = 3','x = 5','x = 2']),mc:true,ste:'8/4=2; x+3=4 → x=1'},
+    {_id:7,q:'Resuelve: (4x+2)/3 = 10/3',a:'x = 2',opts:_i4gshuf(['x = 2','x = 3','x = 1','x = 4']),mc:true,ste:'4x+2=10 → 4x=8 → x=2'},
+    {_id:8,q:'Resuelve: 6/(2x+2) = 3/4',a:'x = 3',opts:_i4gshuf(['x = 3','x = 2','x = 1','x = 4']),mc:true,ste:'6×4=3(2x+2) → 24=6x+6 → 6x=18 → x=3'},
+    {_id:9,q:'Resuelve: (5x−5)/6 = 5/6',a:'x = 2',opts:_i4gshuf(['x = 2','x = 1','x = 3','x = 5']),mc:true,ste:'5x−5=5 → 5x=10 → x=2'},
+    {_id:10,q:'¿Cuál es el valor correcto de x en (x+1)/4 = 6/8?',a:'x = 2',opts:_i4gshuf(['x = 2','x = 3','x = 4','x = 1']),mc:true,ste:'6/8=3/4; (x+1)/4=3/4 → x+1=3 → x=2'},
+    {_id:11,q:'Resuelve: (3x+3)/5 = 9/5',a:'x = 2',opts:_i4gshuf(['x = 2','x = 3','x = 1','x = 5']),mc:true,ste:'3x+3=9 → 3x=6 → x=2'},
+    {_id:12,q:'Resuelve: 8/(2x) = 4/3',a:'x = 3',opts:_i4gshuf(['x = 3','x = 4','x = 2','x = 6']),mc:true,ste:'8×3=4×2x → 24=8x → x=3'},
+    {_id:13,q:'Una velocidad de (3x+6) km/h y tiempo de 2 h: d=4 km/h × 3 h. Si d = (3x+6)×2 = 4×3, halla x',a:'x = 1',opts:_i4gshuf(['x = 1','x = 2','x = 3','x = 0']),mc:true,ste:'(3x+6)×2=12 → 3x+6=6 → 3x=0 → x=0. Alternativa: (3x+6)×2=18 → 3x+6=9 → x=1',a:'x = 1',opts:_i4gshuf(['x = 1','x = 0','x = 2','x = 3']),mc:true,ste:'(3x+6)/6 = 3/6 → 3x+6=3 → 3x=−3... Usemos proporciones: (3x+6)/9 = 4/6 → 6(3x+6)=36 → 18x+36=36 → x=0. Simplificamos a: (x+2)/3 = 4/6 → 2(x+2)=4 → x=0',a:'x = 0',opts:_i4gshuf(['x = 0','x = 1','x = 2','x = 3']),mc:true,ste:'Proporciones directas con expresión lineal. Si (3x+6)/2 = 4×3/4 = 3, entonces 3x+6=6 → x=0'},
+    {_id:14,q:'Resuelve: (2x−4)/5 = 2/5',a:'x = 3',opts:_i4gshuf(['x = 3','x = 2','x = 1','x = 4']),mc:true,ste:'2x−4=2 → 2x=6 → x=3'},
+    {_id:15,q:'¿Cuál es el valor de x en (x+5)/4 = 10/8?',a:'x = 0',opts:_i4gshuf(['x = 0','x = 1','x = 5','x = 3']),mc:true,ste:'10/8=5/4; x+5=5 → x=0'},
+    {_id:16,q:'Resuelve: (6x+6)/8 = 12/8',a:'x = 1',opts:_i4gshuf(['x = 1','x = 2','x = 0','x = 3']),mc:true,ste:'6x+6=12 → 6x=6 → x=1'},
+    {_id:17,q:'Resuelve: 10/(x+2) = 5/3',a:'x = 4',opts:_i4gshuf(['x = 4','x = 3','x = 2','x = 1']),mc:true,ste:'5(x+2)=30 → x+2=6 → x=4'},
+    {_id:18,q:'Resuelve: (4x−2)/3 = 6/3',a:'x = 2',opts:_i4gshuf(['x = 2','x = 3','x = 1','x = 4']),mc:true,ste:'4x−2=6 → 4x=8 → x=2'},
+    {_id:19,q:'Resuelve: 9/(3x+3) = 3/4',a:'x = 3',opts:_i4gshuf(['x = 3','x = 2','x = 1','x = 4']),mc:true,ste:'9×4=3(3x+3) → 36=9x+9 → 9x=27 → x=3'},
+    {_id:20,q:'¿Cuál es el valor correcto de x en (5x+5)/10 = 3/2?',a:'x = 2',opts:_i4gshuf(['x = 2','x = 1','x = 3','x = 5']),mc:true,ste:'2(5x+5)=30 → 10x+10=30 → 10x=20 → x=2'},
+  ]);
+}
+_SKILL_META['li1m_u7_b6']={ico:'📐',lbl:'Resolver x en proporciones con expresiones',qCount:4,gen:_genLi1mU7_B6,plantillas:['(ax+b)/c = d/e','a/(bx+c) = d/e','Otras formas con expresión lineal','Problemas contextualizados con x','Identificar el valor correcto de x con expresión']};
+
+function _genLi1mU7_BQ3(){return _bqSrcPick(['li1m_u7_b5','li1m_u7_b6'],[_genLi1mU7_B5,_genLi1mU7_B6]);}
+_SKILL_META['li1m_u7_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Resolver proporciones',qCount:10,gen:_genLi1mU7_BQ3,quiz:true,srcKeys:['li1m_u7_b5','li1m_u7_b6']};
+
 
 function _genLi1mU3_B6(){
   return _i4gpick([
@@ -17654,7 +18160,7 @@ function _genI1trAng_B0a(){
   {_id:20,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 136" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="21.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="37.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="21.4" x2="215.0" y2="21.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,21.4 204.6,24.8 204.6,18.0" fill="#94a3b8"/><text x="230.0" y="21.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="21.4" x2="152.0" y2="103.5" stroke="#94a3b8" stroke-width="2"/><polygon points="152.0,103.5 146.0,94.3 152.6,92.5" fill="#94a3b8"/><text x="155.9" y="118.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,21.4 A55.0,55.0 0 0 1 144.2,74.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="144.2,74.5 152.6,69.1 154.2,75.1" fill="#60a5fa"/><text x="189.5" y="67.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">75°</text></svg></div>Observa la flecha en el arco. ¿Cuál es el sentido de giro del ángulo trigonométrico AOB mostrado?',a:'horario',opts:_i4gshuf(['horario','antihorario','no se puede determinar','depende de la magnitud del ángulo']),mc:true,ste:'La flecha va de A hacia B en sentido horario. El sentido es horario.'},
   ]);
 }
-_SKILL_META['i1tr_ang_b0a']={ico:'🧭',lbl:'Teoría del sentido de giro (horario y antihorario)',qCount:4,gen:_genI1trAng_B0a,plantillas:["Identificar el sentido de giro (horario/antihorario) de un ángulo mostrado mediante la flecha del arco","Completar la convención de signos: sentido antihorario (positivo) y sentido horario (negativo)","Razonamiento verbal: justificar por qué el ángulo mostrado es positivo o negativo según su sentido","V/F sobre la teoría del sentido de giro y la convención de signos","Identificar el sentido de giro de un ángulo mostrado (variante)"]};
+_SKILL_META['i1tr_ang_b0a']={ico:'🖼',lbl:'Teoría del sentido de giro (horario y antihorario)',qCount:4,gen:_genI1trAng_B0a,plantillas:["Identificar el sentido de giro (horario/antihorario) de un ángulo mostrado mediante la flecha del arco","Completar la convención de signos: sentido antihorario (positivo) y sentido horario (negativo)","Razonamiento verbal: justificar por qué el ángulo mostrado es positivo o negativo según su sentido","V/F sobre la teoría del sentido de giro y la convención de signos","Identificar el sentido de giro de un ángulo mostrado (variante)"]};
 
 function _genI1trAng_B0b(){
   return _i4gpick([
@@ -17680,10 +18186,10 @@ function _genI1trAng_B0b(){
   {_id:20,q:'<div style="display:flex;flex-wrap:wrap;justify-content:center;width:100%"><div style="display:inline-block;text-align:center;margin:2px;vertical-align:top"><div style="font-size:12px;color:#94a3b8;margin-bottom:2px">Fig. 1</div><div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 101" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:110px;margin:4px auto;display:block"><circle cx="130.0" cy="17.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="33.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="17.4" x2="215.0" y2="17.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,17.4 204.6,20.8 204.6,14.0" fill="#94a3b8"/><text x="230.0" y="17.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="17.4" x2="191.1" y2="76.4" stroke="#94a3b8" stroke-width="2"/><polygon points="191.1,76.4 181.3,71.6 186.0,66.7" fill="#94a3b8"/><text x="201.9" y="86.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,17.4 A55.0,55.0 0 0 1 169.6,55.6" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="169.6,55.6 173.9,46.6 178.4,50.9" fill="#60a5fa"/></svg></div></div><div style="display:inline-block;text-align:center;margin:2px;vertical-align:top"><div style="font-size:12px;color:#94a3b8;margin-bottom:2px">Fig. 2</div><div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 83" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:110px;margin:4px auto;display:block"><circle cx="130.0" cy="17.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="33.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="17.4" x2="215.0" y2="17.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,17.4 204.6,20.8 204.6,14.0" fill="#94a3b8"/><text x="230.0" y="17.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="17.4" x2="202.9" y2="61.2" stroke="#94a3b8" stroke-width="2"/><polygon points="202.9,61.2 192.1,58.7 195.7,52.9" fill="#94a3b8"/><text x="215.7" y="68.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,17.4 A55.0,55.0 0 0 1 177.1,45.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="177.1,45.7 179.4,36.0 184.7,39.2" fill="#60a5fa"/></svg></div></div><div style="display:inline-block;text-align:center;margin:2px;vertical-align:top"><div style="font-size:12px;color:#94a3b8;margin-bottom:2px">Fig. 3</div><div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 128" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:110px;margin:4px auto;display:block"><circle cx="130.0" cy="97.9" r="2.5" fill="#e2e8f0"/><text x="116.0" y="113.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="97.9" x2="215.0" y2="97.9" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,97.9 204.6,101.3 204.6,94.5" fill="#94a3b8"/><text x="230.0" y="97.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="97.9" x2="176.3" y2="26.6" stroke="#94a3b8" stroke-width="2"/><polygon points="176.3,26.6 173.5,37.2 167.7,33.5" fill="#94a3b8"/><text x="184.5" y="14.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,97.9 A55.0,55.0 0 0 0 160.0,51.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="160.0,51.8 169.6,54.3 166.2,59.5" fill="#60a5fa"/></svg></div></div></div>De las figuras mostradas, ¿cuál es la secuencia correcta del sentido de giro de cada ángulo (H = horario, A = antihorario)?',a:'HHA',opts:_i4gshuf(['HHA','AHA','HAA','HHH']),mc:true,ste:'Fig.1: horario, Fig.2: horario, Fig.3: antihorario. Secuencia: HHA.'},
   ]);
 }
-_SKILL_META['i1tr_ang_b0b']={ico:'👀',lbl:'Identificación visual de sentido horario y antihorario en figuras',qCount:4,gen:_genI1trAng_B0b,plantillas:["Dadas 3 figuras, señalar en orden el sentido de giro (H/A) de cada ángulo","Dadas 3 figuras, señalar en orden el signo (+/-) de cada ángulo","Comparar 2 figuras: identificar cuál es negativa o cuál tiene mayor valor absoluto","V/F sobre un conjunto de 3 figuras mostradas","Dadas 3 figuras, identificar la secuencia correcta de sentidos de giro (variante)"]};
+_SKILL_META['i1tr_ang_b0b']={ico:'🖼',lbl:'Identificación visual de sentido horario y antihorario en figuras',qCount:4,gen:_genI1trAng_B0b,plantillas:["Dadas 3 figuras, señalar en orden el sentido de giro (H/A) de cada ángulo","Dadas 3 figuras, señalar en orden el signo (+/-) de cada ángulo","Comparar 2 figuras: identificar cuál es negativa o cuál tiene mayor valor absoluto","V/F sobre un conjunto de 3 figuras mostradas","Dadas 3 figuras, identificar la secuencia correcta de sentidos de giro (variante)"]};
 
 function _genI1trAng_BQ0(){return _bqSrcPick(['i1tr_ang_b0a','i1tr_ang_b0b'],[_genI1trAng_B0a,_genI1trAng_B0b]);}
-_SKILL_META['i1tr_ang_bq0']={ico:'⚡',lbl:'Cuestionario 0 – Sentido de Giro (Teoría y Visual)',qCount:15,gen:_genI1trAng_BQ0,quiz:true,srcKeys:['i1tr_ang_b0a','i1tr_ang_b0b']};
+_SKILL_META['i1tr_ang_bq0']={ico:'⚡',lbl:'Cuestionario 1 – Ángulo Trigonométrico',qCount:10,gen:_genI1trAng_BQ0,quiz:true,srcKeys:['i1tr_ang_b0a','i1tr_ang_b0b']};
 
 function _genI1trAng_B1(){
   return _i4gpick([
@@ -17891,69 +18397,14 @@ function _genI1trAng_B8(){
 }
 _SKILL_META['i1tr_ang_b8']={ico:'🖼',lbl:'Análisis de proposiciones (V/F) sobre signo y sentido',qCount:4,gen:_genI1trAng_B8,plantillas:["Tres proposiciones (I, II, III) sobre el signo de los ángulos trigonométricos: determinar la combinación correcta", "Tres proposiciones sobre el sentido de giro en figuras: determinar la combinación correcta", "Tres proposiciones sobre ecuaciones con signo condicionado por el sentido de giro", "V/F individuales sobre proposiciones y su evaluación", "Tres proposiciones combinando bisectriz y sentido de giro: determinar la combinación correcta"]};
 
-function _genI1trAng_B9(){
-  return _i4gpick([
-  {_id:1,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="114.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="130.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="114.0" x2="215.0" y2="114.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,114.0 204.6,117.4 204.6,110.6" fill="#94a3b8"/><text x="230.0" y="114.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="114.0" x2="203.6" y2="71.5" stroke="#94a3b8" stroke-width="2"/><polygon points="203.6,71.5 196.3,79.7 192.9,73.8" fill="#94a3b8"/><text x="216.6" y="64.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="114.0" x2="184.6" y2="48.9" stroke="#94a3b8" stroke-width="2"/><polygon points="184.6,48.9 180.5,59.1 175.3,54.7" fill="#94a3b8"/><text x="194.3" y="37.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="114.0" x2="159.1" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,34.1 158.7,45.1 152.3,42.8" fill="#94a3b8"/><text x="164.2" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,114.0 A35.0,35.0 0 0 0 160.3,96.5" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="183.1" y="99.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">20+2x</text><path d="M169.0,91.5 A45.0,45.0 0 0 0 158.9,79.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="191.4" y="71.0" text-anchor="middle" font-size="10" fill="#60a5fa" font-weight="700">20°</text><path d="M165.4,71.9 A55.0,55.0 0 0 0 148.8,62.3" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="178.8" y="44.4" text-anchor="middle" font-size="10" fill="#60a5fa" font-weight="700">20°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (20+2x)° y m∠BOC = 40°. OM es bisectriz de ∠BOC. Si m∠AOM = 50°, halla x',a:'5',opts:_i4gshuf(['5','20','10','0']),mc:true,ste:'Como OM biseca BOC: m∠BOM = 40°/2 = 20°. Luego: (20+2x) + 20 = 50 → 2x = 10.0 → x = 5.'},
-  {_id:2,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="119.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="135.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="119.6" x2="215.0" y2="119.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,119.6 204.6,123.0 204.6,116.2" fill="#94a3b8"/><text x="230.0" y="119.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="119.6" x2="207.0" y2="83.7" stroke="#94a3b8" stroke-width="2"/><polygon points="207.0,83.7 199.0,91.2 196.1,85.0" fill="#94a3b8"/><text x="220.6" y="77.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="119.6" x2="178.8" y2="50.0" stroke="#94a3b8" stroke-width="2"/><polygon points="178.8,50.0 175.6,60.5 170.0,56.6" fill="#94a3b8"/><text x="187.4" y="37.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="119.6" x2="137.4" y2="34.9" stroke="#94a3b8" stroke-width="2"/><polygon points="137.4,34.9 139.9,45.6 133.1,45.0" fill="#94a3b8"/><text x="138.7" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,119.6 A35.0,35.0 0 0 0 161.7,104.8" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="183.7" y="107.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">15+2x</text><path d="M170.8,100.6 A45.0,45.0 0 0 0 155.8,82.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="179.8" y="77.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">30°</text><path d="M161.5,74.5 A55.0,55.0 0 0 0 134.8,64.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="155.7" y="49.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">30°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (15+2x)° y m∠BOC = 60°. OM es bisectriz de ∠BOC. Si m∠AOM = 55°, halla x',a:'5',opts:_i4gshuf(['5','30','10','0']),mc:true,ste:'Como OM biseca BOC: m∠BOM = 60°/2 = 30°. Luego: (15+2x) + 30 = 55 → 2x = 10.0 → x = 5.'},
-  {_id:3,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="114.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="130.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="114.0" x2="215.0" y2="114.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,114.0 204.6,117.4 204.6,110.6" fill="#94a3b8"/><text x="230.0" y="114.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="114.0" x2="203.6" y2="71.5" stroke="#94a3b8" stroke-width="2"/><polygon points="203.6,71.5 196.3,79.7 192.9,73.8" fill="#94a3b8"/><text x="216.6" y="64.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="114.0" x2="159.1" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,34.1 158.7,45.1 152.3,42.8" fill="#94a3b8"/><text x="164.2" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="114.0" x2="100.9" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="100.9,34.1 107.7,42.8 101.3,45.1" fill="#94a3b8"/><text x="95.8" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,114.0 A35.0,35.0 0 0 0 160.3,96.5" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="183.1" y="99.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">10+4x</text><path d="M169.0,91.5 A45.0,45.0 0 0 0 145.4,71.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="171.8" y="64.2" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">40°</text><path d="M148.8,62.3 A55.0,55.0 0 0 0 111.2,62.3" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="130.0" y="39.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">40°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (10+4x)° y m∠BOC = 80°. OM es bisectriz de ∠BOC. Si m∠AOM = 70°, halla x',a:'5',opts:_i4gshuf(['5','40','10','0']),mc:true,ste:'Como OM biseca BOC: m∠BOM = 80°/2 = 40°. Luego: (10+4x) + 40 = 70 → 4x = 20.0 → x = 5.'},
-  {_id:4,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="119.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="135.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="119.6" x2="215.0" y2="119.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,119.6 204.6,123.0 204.6,116.2" fill="#94a3b8"/><text x="230.0" y="119.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="119.6" x2="199.6" y2="70.8" stroke="#94a3b8" stroke-width="2"/><polygon points="199.6,70.8 193.0,79.6 189.1,74.0" fill="#94a3b8"/><text x="211.9" y="62.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="119.6" x2="172.5" y2="46.0" stroke="#94a3b8" stroke-width="2"/><polygon points="172.5,46.0 170.2,56.7 164.3,53.3" fill="#94a3b8"/><text x="180.0" y="33.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="119.6" x2="137.4" y2="34.9" stroke="#94a3b8" stroke-width="2"/><polygon points="137.4,34.9 139.9,45.6 133.1,45.0" fill="#94a3b8"/><text x="138.7" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,119.6 A35.0,35.0 0 0 0 158.7,99.5" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="182.5" y="103.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">25+2x</text><path d="M166.9,93.8 A45.0,45.0 0 0 0 152.5,80.6" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="173.9" y="71.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">25°</text><path d="M157.5,72.0 A55.0,55.0 0 0 0 134.8,64.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="152.6" y="48.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">25°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (25+2x)° y m∠BOC = 50°. OM es bisectriz de ∠BOC. Si m∠AOM = 60°, halla x',a:'5',opts:_i4gshuf(['5','25','10','0']),mc:true,ste:'Como OM biseca BOC: m∠BOM = 50°/2 = 25°. Luego: (25+2x) + 25 = 60 → 2x = 10.0 → x = 5.'},
-  {_id:5,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="120.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="136.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="120.0" x2="215.0" y2="120.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,120.0 204.6,123.4 204.6,116.6" fill="#94a3b8"/><text x="230.0" y="120.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="120.0" x2="203.6" y2="77.5" stroke="#94a3b8" stroke-width="2"/><polygon points="203.6,77.5 196.3,85.7 192.9,79.8" fill="#94a3b8"/><text x="216.6" y="70.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="120.0" x2="172.5" y2="46.4" stroke="#94a3b8" stroke-width="2"/><polygon points="172.5,46.4 170.2,57.1 164.3,53.7" fill="#94a3b8"/><text x="180.0" y="33.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="120.0" x2="130.0" y2="35.0" stroke="#94a3b8" stroke-width="2"/><polygon points="130.0,35.0 133.4,45.5 126.6,45.5" fill="#94a3b8"/><text x="130.0" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,120.0 A35.0,35.0 0 0 0 160.3,102.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="183.1" y="105.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">3x+12</text><path d="M169.0,97.5 A45.0,45.0 0 0 0 152.5,81.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="176.0" y="74.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">3x+12</text><path d="M157.5,72.4 A55.0,55.0 0 0 0 130.0,65.0" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="149.4" y="47.6" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">30°</text></svg></div>OM es bisectriz de ∠AOB, con m∠AOM = (3x+12)°. El ángulo BOC es consecutivo a AOB, con m∠BOC = 30°. Si m∠AOC = 90°, halla x',a:'6',opts:_i4gshuf(['6','30','10','2']),mc:true,ste:'m∠AOB = 2(3x+12)°. Como AOB+BOC = 90°: 2(3x+12) + 30 = 90 → 3x+12 = 30 → x = 6.'},
-  {_id:6,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 154" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="118.5" r="2.5" fill="#e2e8f0"/><text x="116.0" y="134.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="118.5" x2="215.0" y2="118.5" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,118.5 204.6,121.9 204.6,115.1" fill="#94a3b8"/><text x="230.0" y="118.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="118.5" x2="203.6" y2="76.0" stroke="#94a3b8" stroke-width="2"/><polygon points="203.6,76.0 196.3,84.2 192.9,78.3" fill="#94a3b8"/><text x="216.6" y="68.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="118.5" x2="172.5" y2="44.9" stroke="#94a3b8" stroke-width="2"/><polygon points="172.5,44.9 170.2,55.6 164.3,52.2" fill="#94a3b8"/><text x="180.0" y="31.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="118.5" x2="115.2" y2="34.8" stroke="#94a3b8" stroke-width="2"/><polygon points="115.2,34.8 120.4,44.5 113.7,45.7" fill="#94a3b8"/><text x="112.6" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,118.5 A35.0,35.0 0 0 0 160.3,101.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="183.1" y="104.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">4x+10</text><path d="M169.0,96.0 A45.0,45.0 0 0 0 152.5,79.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="176.0" y="72.5" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">4x+10</text><path d="M157.5,70.9 A55.0,55.0 0 0 0 120.4,64.3" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="143.0" y="44.6" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">40°</text></svg></div>OM es bisectriz de ∠AOB, con m∠AOM = (4x+10)°. El ángulo BOC es consecutivo a AOB, con m∠BOC = 40°. Si m∠AOC = 100°, halla x',a:'5',opts:_i4gshuf(['5','30','9','1']),mc:true,ste:'m∠AOB = 2(4x+10)°. Como AOB+BOC = 100°: 2(4x+10) + 40 = 100 → 4x+10 = 30 → x = 5.'},
-  {_id:7,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="114.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="130.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="114.0" x2="215.0" y2="114.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,114.0 204.6,117.4 204.6,110.6" fill="#94a3b8"/><text x="230.0" y="114.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="114.0" x2="199.6" y2="65.2" stroke="#94a3b8" stroke-width="2"/><polygon points="199.6,65.2 193.0,74.0 189.1,68.4" fill="#94a3b8"/><text x="211.9" y="56.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="114.0" x2="159.1" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,34.1 158.7,45.1 152.3,42.8" fill="#94a3b8"/><text x="164.2" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="114.0" x2="87.5" y2="40.4" stroke="#94a3b8" stroke-width="2"/><polygon points="87.5,40.4 95.7,47.7 89.8,51.1" fill="#94a3b8"/><text x="80.0" y="27.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,114.0 A35.0,35.0 0 0 0 158.7,93.9" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="182.5" y="97.5" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">5x+10</text><path d="M166.9,88.2 A45.0,45.0 0 0 0 145.4,71.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="169.6" y="62.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">5x+10</text><path d="M148.8,62.3 A55.0,55.0 0 0 0 102.5,66.4" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="123.5" y="39.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">50°</text></svg></div>OM es bisectriz de ∠AOB, con m∠AOM = (5x+10)°. El ángulo BOC es consecutivo a AOB, con m∠BOC = 50°. Si m∠AOC = 120°, halla x',a:'5',opts:_i4gshuf(['5','35','9','1']),mc:true,ste:'m∠AOB = 2(5x+10)°. Como AOB+BOC = 120°: 2(5x+10) + 50 = 120 → 5x+10 = 35 → x = 5.'},
-  {_id:8,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="120.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="136.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="120.0" x2="215.0" y2="120.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,120.0 204.6,123.4 204.6,116.6" fill="#94a3b8"/><text x="230.0" y="120.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="120.0" x2="199.6" y2="71.2" stroke="#94a3b8" stroke-width="2"/><polygon points="199.6,71.2 193.0,80.0 189.1,74.4" fill="#94a3b8"/><text x="211.9" y="62.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="120.0" x2="159.1" y2="40.1" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,40.1 158.7,51.1 152.3,48.8" fill="#94a3b8"/><text x="164.2" y="26.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="120.0" x2="130.0" y2="35.0" stroke="#94a3b8" stroke-width="2"/><polygon points="130.0,35.0 133.4,45.5 126.6,45.5" fill="#94a3b8"/><text x="130.0" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,120.0 A35.0,35.0 0 0 0 158.7,99.9" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="182.5" y="103.5" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">7x+7</text><path d="M166.9,94.2 A45.0,45.0 0 0 0 145.4,77.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="169.6" y="68.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">7x+7</text><path d="M148.8,68.3 A55.0,55.0 0 0 0 130.0,65.0" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="152.0" y="37.9" text-anchor="middle" font-size="10" fill="#a78bfa" font-weight="700">20°</text></svg></div>OM es bisectriz de ∠AOB, con m∠AOM = (7x+7)°. El ángulo BOC es consecutivo a AOB, con m∠BOC = 20°. Si m∠AOC = 90°, halla x',a:'4',opts:_i4gshuf(['4','35','8','0']),mc:true,ste:'m∠AOB = 2(7x+7)°. Como AOB+BOC = 90°: 2(7x+7) + 20 = 90 → 7x+7 = 35 → x = 4.'},
-  {_id:9,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 154" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="118.5" r="2.5" fill="#e2e8f0"/><text x="116.0" y="134.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="118.5" x2="215.0" y2="118.5" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,118.5 204.6,121.9 204.6,115.1" fill="#94a3b8"/><text x="230.0" y="118.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="118.5" x2="159.1" y2="38.6" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,38.6 158.7,49.6 152.3,47.3" fill="#94a3b8"/><text x="164.2" y="24.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="118.5" x2="184.6" y2="53.4" stroke="#94a3b8" stroke-width="2"/><polygon points="184.6,53.4 180.5,63.6 175.3,59.2" fill="#94a3b8"/><text x="194.3" y="41.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="118.5" x2="115.2" y2="34.8" stroke="#94a3b8" stroke-width="2"/><polygon points="115.2,34.8 120.4,44.5 113.7,45.7" fill="#94a3b8"/><text x="112.6" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,118.5 A35.0,35.0 0 0 0 142.0,85.6" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="175.1" y="87.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">70°</text><path d="M185.0,118.5 A55.0,55.0 0 0 0 165.4,76.4" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="198.0" y="86.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">50°</text></svg></div>OM es bisectriz del ángulo AOC. Si m∠AOB = 70° y m∠AOC = 100°, halla m∠BOM',a:'20',opts:_i4gshuf(['20','50','26','23']),mc:true,ste:'m∠AOM = 100°/2 = 50°. Como m∠AOB = 70°, m∠BOM = |50° - 70°| = 20°.'},
-  {_id:10,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="120.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="136.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="120.0" x2="215.0" y2="120.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,120.0 204.6,123.4 204.6,116.6" fill="#94a3b8"/><text x="230.0" y="120.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="120.0" x2="184.6" y2="54.9" stroke="#94a3b8" stroke-width="2"/><polygon points="184.6,54.9 180.5,65.1 175.3,60.7" fill="#94a3b8"/><text x="194.3" y="43.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="120.0" x2="190.1" y2="59.9" stroke="#94a3b8" stroke-width="2"/><polygon points="190.1,59.9 185.1,69.7 180.3,64.9" fill="#94a3b8"/><text x="200.7" y="49.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="120.0" x2="130.0" y2="35.0" stroke="#94a3b8" stroke-width="2"/><polygon points="130.0,35.0 133.4,45.5 126.6,45.5" fill="#94a3b8"/><text x="130.0" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,120.0 A35.0,35.0 0 0 0 152.5,93.2" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="179.8" y="96.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">50°</text><path d="M185.0,120.0 A55.0,55.0 0 0 0 168.9,81.1" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="199.3" y="91.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">45°</text></svg></div>OM es bisectriz del ángulo AOC. Si m∠AOB = 50° y m∠AOC = 90°, halla m∠BOM',a:'5',opts:_i4gshuf(['5','45','11','8']),mc:true,ste:'m∠AOM = 90°/2 = 45°. Como m∠AOB = 50°, m∠BOM = |45° - 50°| = 5°.'},
-  {_id:11,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="114.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="130.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="114.0" x2="215.0" y2="114.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,114.0 204.6,117.4 204.6,110.6" fill="#94a3b8"/><text x="230.0" y="114.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="114.0" x2="172.5" y2="40.4" stroke="#94a3b8" stroke-width="2"/><polygon points="172.5,40.4 170.2,51.1 164.3,47.7" fill="#94a3b8"/><text x="180.0" y="27.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="114.0" x2="178.8" y2="44.4" stroke="#94a3b8" stroke-width="2"/><polygon points="178.8,44.4 175.6,54.9 170.0,51.0" fill="#94a3b8"/><text x="187.4" y="32.1" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="114.0" x2="100.9" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="100.9,34.1 107.7,42.8 101.3,45.1" fill="#94a3b8"/><text x="95.8" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,114.0 A35.0,35.0 0 0 0 147.5,83.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="177.6" y="86.5" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">60°</text><path d="M185.0,114.0 A55.0,55.0 0 0 0 161.5,68.9" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="196.5" y="79.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">55°</text></svg></div>OM es bisectriz del ángulo AOC. Si m∠AOB = 60° y m∠AOC = 110°, halla m∠BOM',a:'5',opts:_i4gshuf(['5','55','11','8']),mc:true,ste:'m∠AOM = 110°/2 = 55°. Como m∠AOB = 60°, m∠BOM = |55° - 60°| = 5°.'},
-  {_id:12,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 154" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="118.5" r="2.5" fill="#e2e8f0"/><text x="116.0" y="134.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="118.5" x2="215.0" y2="118.5" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,118.5 204.6,121.9 204.6,115.1" fill="#94a3b8"/><text x="230.0" y="118.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="118.5" x2="144.8" y2="34.8" stroke="#94a3b8" stroke-width="2"/><polygon points="144.8,34.8 146.3,45.7 139.6,44.5" fill="#94a3b8"/><text x="147.4" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="118.5" x2="159.1" y2="38.6" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,38.6 158.7,49.6 152.3,47.3" fill="#94a3b8"/><text x="164.2" y="24.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="118.5" x2="64.9" y2="63.9" stroke="#94a3b8" stroke-width="2"/><polygon points="64.9,63.9 75.1,68.0 70.7,73.2" fill="#94a3b8"/><text x="53.4" y="54.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,118.5 A35.0,35.0 0 0 0 136.1,84.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="172.1" y="83.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">80°</text><path d="M185.0,118.5 A55.0,55.0 0 0 0 148.8,66.8" fill="none" stroke="#a78bfa" stroke-width="2.5"/><text x="191.4" y="75.5" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">70°</text></svg></div>OM es bisectriz del ángulo AOC. Si m∠AOB = 80° y m∠AOC = 140°, halla m∠BOM',a:'10',opts:_i4gshuf(['10','70','16','13']),mc:true,ste:'m∠AOM = 140°/2 = 70°. Como m∠AOB = 80°, m∠BOM = |70° - 80°| = 10°.'},
-  {_id:13,q:'V/F: Si OM biseca ∠BOC y se conoce m∠AOM junto con m∠AOB, es posible plantear una ecuación para hallar la incógnita del problema.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: al combinar la bisectriz con la suma de ángulos consecutivos se obtiene una ecuación resoluble.'},
-  {_id:14,q:'V/F: La bisectriz de un ángulo formado por dos ángulos consecutivos siempre coincide con el rayo que los separa.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: la bisectriz de un ángulo consecutivo depende de la medida del ángulo completo, no necesariamente coincide con el rayo divisorio.'},
-  {_id:15,q:'V/F: En un problema de varios pasos, primero se debe usar la propiedad de bisectriz y luego la de ángulos consecutivos (o viceversa), según los datos disponibles.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: el orden de aplicación depende de qué datos se conocen primero en el planteamiento.'},
-  {_id:16,q:'V/F: Si m∠AOM (mitad de AOB) y m∠BOC son datos conocidos, no se puede hallar m∠AOC sin conocer el valor de x.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: si se conoce m∠AOM en función de x, se puede plantear la ecuación con los demás datos y hallar tanto x como m∠AOC.'},
-  {_id:17,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="114.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="130.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="114.0" x2="215.0" y2="114.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,114.0 204.6,117.4 204.6,110.6" fill="#94a3b8"/><text x="230.0" y="114.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="114.0" x2="209.9" y2="84.9" stroke="#94a3b8" stroke-width="2"/><polygon points="209.9,84.9 201.2,91.7 198.9,85.3" fill="#94a3b8"/><text x="224.0" y="79.8" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="114.0" x2="190.1" y2="53.9" stroke="#94a3b8" stroke-width="2"/><polygon points="190.1,53.9 185.1,63.7 180.3,58.9" fill="#94a3b8"/><text x="200.7" y="43.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="114.0" x2="159.1" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,34.1 158.7,45.1 152.3,42.8" fill="#94a3b8"/><text x="164.2" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,114.0 A35.0,35.0 0 0 0 162.9,102.0" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="194.8" y="108.3" text-anchor="middle" font-size="10" fill="#fbbf24" font-weight="700">18+2x</text><path d="M172.3,98.6 A45.0,45.0 0 0 0 161.8,82.2" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="184.8" y="79.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">25°</text><path d="M168.9,75.1 A55.0,55.0 0 0 0 148.8,62.3" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="170.3" y="50.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">25°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (18+2x)° y m∠BOC = 50°. OM es bisectriz de ∠BOC. Si m∠AOM = 45°, ¿cuál es el valor correcto de x?',a:'1',opts:_i4gshuf(['1','25','4','-2']),mc:true,ste:'m∠BOM = 50°/2 = 25°. (18+2x) + 25 = 45 → x = 1.'},
-  {_id:18,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="119.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="135.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="119.6" x2="215.0" y2="119.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,119.6 204.6,123.0 204.6,116.2" fill="#94a3b8"/><text x="230.0" y="119.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="119.6" x2="207.0" y2="83.7" stroke="#94a3b8" stroke-width="2"/><polygon points="207.0,83.7 199.0,91.2 196.1,85.0" fill="#94a3b8"/><text x="220.6" y="77.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="119.6" x2="178.8" y2="50.0" stroke="#94a3b8" stroke-width="2"/><polygon points="178.8,50.0 175.6,60.5 170.0,56.6" fill="#94a3b8"/><text x="187.4" y="37.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="119.6" x2="137.4" y2="34.9" stroke="#94a3b8" stroke-width="2"/><polygon points="137.4,34.9 139.9,45.6 133.1,45.0" fill="#94a3b8"/><text x="138.7" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,119.6 A35.0,35.0 0 0 0 161.7,104.8" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="183.7" y="107.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">22+3x</text><path d="M170.8,100.6 A45.0,45.0 0 0 0 155.8,82.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="179.8" y="77.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">30°</text><path d="M161.5,74.5 A55.0,55.0 0 0 0 134.8,64.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="155.7" y="49.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">30°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (22+3x)° y m∠BOC = 60°. OM es bisectriz de ∠BOC. Si m∠AOM = 55°, ¿cuál es el valor correcto de x?',a:'1',opts:_i4gshuf(['1','30','4','-2']),mc:true,ste:'m∠BOM = 60°/2 = 30°. (22+3x) + 30 = 55 → x = 1.'},
-  {_id:19,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 156" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="119.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="135.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="119.6" x2="215.0" y2="119.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,119.6 204.6,123.0 204.6,116.2" fill="#94a3b8"/><text x="230.0" y="119.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="119.6" x2="207.0" y2="83.7" stroke="#94a3b8" stroke-width="2"/><polygon points="207.0,83.7 199.0,91.2 196.1,85.0" fill="#94a3b8"/><text x="220.6" y="77.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="119.6" x2="172.5" y2="46.0" stroke="#94a3b8" stroke-width="2"/><polygon points="172.5,46.0 170.2,56.7 164.3,53.3" fill="#94a3b8"/><text x="180.0" y="33.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="119.6" x2="122.6" y2="34.9" stroke="#94a3b8" stroke-width="2"/><polygon points="122.6,34.9 126.9,45.0 120.1,45.6" fill="#94a3b8"/><text x="121.3" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,119.6 A35.0,35.0 0 0 0 161.7,104.8" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="183.7" y="107.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">13+4x</text><path d="M170.8,100.6 A45.0,45.0 0 0 0 152.5,80.6" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="177.9" y="75.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">35°</text><path d="M157.5,72.0 A55.0,55.0 0 0 0 125.2,64.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="146.2" y="46.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">35°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (13+4x)° y m∠BOC = 70°. OM es bisectriz de ∠BOC. Si m∠AOM = 60°, ¿cuál es el valor correcto de x?',a:'3',opts:_i4gshuf(['3','35','6','0']),mc:true,ste:'m∠BOM = 70°/2 = 35°. (13+4x) + 35 = 60 → x = 3.'},
-  {_id:20,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="114.0" r="2.5" fill="#e2e8f0"/><text x="116.0" y="130.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="114.0" x2="215.0" y2="114.0" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,114.0 204.6,117.4 204.6,110.6" fill="#94a3b8"/><text x="230.0" y="114.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="114.0" x2="203.6" y2="71.5" stroke="#94a3b8" stroke-width="2"/><polygon points="203.6,71.5 196.3,79.7 192.9,73.8" fill="#94a3b8"/><text x="216.6" y="64.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="114.0" x2="184.6" y2="48.9" stroke="#94a3b8" stroke-width="2"/><polygon points="184.6,48.9 180.5,59.1 175.3,54.7" fill="#94a3b8"/><text x="194.3" y="37.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">M</text><line x1="130.0" y1="114.0" x2="159.1" y2="34.1" stroke="#94a3b8" stroke-width="2"/><polygon points="159.1,34.1 158.7,45.1 152.3,42.8" fill="#94a3b8"/><text x="164.2" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M165.0,114.0 A35.0,35.0 0 0 0 160.3,96.5" fill="none" stroke="#fbbf24" stroke-width="2.5"/><text x="183.1" y="99.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#fbbf24" font-weight="700">28+2x</text><path d="M169.0,91.5 A45.0,45.0 0 0 0 158.9,79.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="191.4" y="71.0" text-anchor="middle" font-size="10" fill="#60a5fa" font-weight="700">20°</text><path d="M165.4,71.9 A55.0,55.0 0 0 0 148.8,62.3" fill="none" stroke="#60a5fa" stroke-width="2.5"/><text x="178.8" y="44.4" text-anchor="middle" font-size="10" fill="#60a5fa" font-weight="700">20°</text></svg></div>Los ángulos AOB y BOC son consecutivos, con m∠AOB = (28+2x)° y m∠BOC = 40°. OM es bisectriz de ∠BOC. Si m∠AOM = 50°, ¿cuál es el valor correcto de x?',a:'1',opts:_i4gshuf(['1','20','4','-2']),mc:true,ste:'m∠BOM = 40°/2 = 20°. (28+2x) + 20 = 50 → x = 1.'},
-  ]);
-}
-_SKILL_META['i1tr_ang_b9']={ico:'🖼',lbl:'Bisectriz y ángulos consecutivos combinados (problemas de varios pasos)',qCount:4,gen:_genI1trAng_B9,plantillas:["AOB y BOC consecutivos, con OM bisectriz de BOC: hallar x (varios pasos)", "OM bisectriz de AOB, con BOC consecutivo dado: hallar x", "OM bisectriz del ángulo AOC completo: hallar m∠BOM conocido m∠AOB", "V/F sobre problemas que combinan bisectriz y ángulos consecutivos", "Identificar el valor correcto de x entre 4 opciones (variante de varios pasos)"]};
-
-function _genI1trAng_B10(){
-  return _i4gpick([
-  {_id:1,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="23.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="39.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="23.4" x2="215.0" y2="23.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,23.4 204.6,26.8 204.6,20.0" fill="#94a3b8"/><text x="230.0" y="23.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="23.4" x2="184.6" y2="88.5" stroke="#94a3b8" stroke-width="2"/><polygon points="184.6,88.5 175.3,82.7 180.5,78.3" fill="#94a3b8"/><text x="194.3" y="100.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,23.4 A55.0,55.0 0 0 1 165.4,65.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="165.4,65.5 170.6,57.1 174.6,61.8" fill="#60a5fa"/><text x="198.0" y="55.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">50°</text></svg></div>Observa el diagrama: el ángulo AOB mide 50° y la flecha indica sentido horario. ¿Cuál es el signo correcto de este ángulo trigonométrico?',a:'negativo',opts:_i4gshuf(['negativo','positivo','no tiene signo definido','depende de la magnitud, no del sentido']),mc:true,ste:'La flecha del arco indica sentido horario. Por convención, el sentido antihorario es positivo y el sentido horario es negativo. Por lo tanto, el ángulo es negativo.'},
-  {_id:2,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 147" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="110.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="126.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="110.6" x2="215.0" y2="110.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,110.6 204.6,114.0 204.6,107.2" fill="#94a3b8"/><text x="230.0" y="110.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="110.6" x2="165.9" y2="33.6" stroke="#94a3b8" stroke-width="2"/><polygon points="165.9,33.6 164.6,44.5 158.4,41.6" fill="#94a3b8"/><text x="172.3" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,110.6 A55.0,55.0 0 0 0 153.2,60.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="153.2,60.8 163.2,62.0 160.5,67.6" fill="#60a5fa"/><text x="193.3" y="70.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">65°</text></svg></div>Observa el diagrama: el ángulo AOB mide 65° y la flecha indica sentido antihorario. ¿Cuál es el signo correcto de este ángulo trigonométrico?',a:'positivo',opts:_i4gshuf(['positivo','negativo','no tiene signo definido','depende de la magnitud, no del sentido']),mc:true,ste:'La flecha del arco indica sentido antihorario. Por convención, el sentido antihorario es positivo y el sentido horario es negativo. Por lo tanto, el ángulo es positivo.'},
-  {_id:3,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 108" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="23.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="39.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="23.4" x2="215.0" y2="23.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,23.4 204.6,26.8 204.6,20.0" fill="#94a3b8"/><text x="230.0" y="23.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="23.4" x2="195.1" y2="78.0" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,78.0 184.9,73.9 189.3,68.7" fill="#94a3b8"/><text x="206.6" y="87.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,23.4 A55.0,55.0 0 0 1 172.1,58.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="172.1,58.8 175.9,49.5 180.6,53.5" fill="#60a5fa"/><text x="200.5" y="49.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">40°</text></svg></div>Observa el diagrama: el ángulo AOB mide 40° y la flecha indica sentido horario. ¿Cuál es el signo correcto de este ángulo trigonométrico?',a:'negativo',opts:_i4gshuf(['negativo','positivo','no tiene signo definido','depende de la magnitud, no del sentido']),mc:true,ste:'La flecha del arco indica sentido horario. Por convención, el sentido antihorario es positivo y el sentido horario es negativo. Por lo tanto, el ángulo es negativo.'},
-  {_id:4,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 153" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="116.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="132.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="116.6" x2="215.0" y2="116.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,116.6 204.6,120.0 204.6,113.2" fill="#94a3b8"/><text x="230.0" y="116.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="116.6" x2="152.0" y2="34.5" stroke="#94a3b8" stroke-width="2"/><polygon points="152.0,34.5 152.6,45.5 146.0,43.7" fill="#94a3b8"/><text x="155.9" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,116.6 A55.0,55.0 0 0 0 144.2,63.5" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="144.2,63.5 154.2,62.9 152.6,68.9" fill="#60a5fa"/><text x="189.5" y="70.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">75°</text></svg></div>Observa el diagrama: el ángulo AOB mide 75° y la flecha indica sentido antihorario. ¿Cuál es el signo correcto de este ángulo trigonométrico?',a:'positivo',opts:_i4gshuf(['positivo','negativo','no tiene signo definido','depende de la magnitud, no del sentido']),mc:true,ste:'La flecha del arco indica sentido antihorario. Por convención, el sentido antihorario es positivo y el sentido horario es negativo. Por lo tanto, el ángulo es positivo.'},
-  {_id:5,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 93" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="23.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="39.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="23.4" x2="215.0" y2="23.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,23.4 204.6,26.8 204.6,20.0" fill="#94a3b8"/><text x="230.0" y="23.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="23.4" x2="203.6" y2="65.9" stroke="#94a3b8" stroke-width="2"/><polygon points="203.6,65.9 192.9,63.6 196.3,57.7" fill="#94a3b8"/><text x="216.6" y="73.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,23.4 A55.0,55.0 0 0 1 177.6,50.9" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="177.6,50.9 179.7,41.1 185.1,44.2" fill="#60a5fa"/><text x="202.4" y="42.8" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">30°</text></svg></div>El ángulo AOB tiene una magnitud de 30° y su sentido de giro es horario. Expresa la medida del ángulo trigonométrico con su signo correcto',a:'-30',opts:_i4gshuf(['-30','30','-20','-40']),mc:true,ste:'Como el sentido es horario, la medida con signo es -30° = -30°.'},
-  {_id:6,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 138" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="101.9" r="2.5" fill="#e2e8f0"/><text x="116.0" y="117.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="101.9" x2="215.0" y2="101.9" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,101.9 204.6,105.3 204.6,98.5" fill="#94a3b8"/><text x="230.0" y="101.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="101.9" x2="178.8" y2="32.3" stroke="#94a3b8" stroke-width="2"/><polygon points="178.8,32.3 175.6,42.8 170.0,38.9" fill="#94a3b8"/><text x="187.4" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,101.9 A55.0,55.0 0 0 0 161.5,56.8" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="161.5,56.8 171.1,59.8 167.6,64.8" fill="#60a5fa"/><text x="196.5" y="67.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">55°</text></svg></div>El ángulo AOB tiene una magnitud de 55° y su sentido de giro es antihorario. Expresa la medida del ángulo trigonométrico con su signo correcto',a:'55',opts:_i4gshuf(['55','-55','65','45']),mc:true,ste:'Como el sentido es antihorario, la medida con signo es +55° = 55°.'},
-  {_id:7,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 118" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="23.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="39.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="23.4" x2="215.0" y2="23.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,23.4 204.6,26.8 204.6,20.0" fill="#94a3b8"/><text x="230.0" y="23.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="23.4" x2="186.9" y2="86.6" stroke="#94a3b8" stroke-width="2"/><polygon points="186.9,86.6 177.3,81.1 182.4,76.5" fill="#94a3b8"/><text x="196.9" y="97.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,23.4 A55.0,55.0 0 0 1 166.8,64.3" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="166.8,64.3 171.8,55.6 175.9,60.2" fill="#60a5fa"/><text x="198.5" y="53.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">48°</text></svg></div>El ángulo AOB tiene una magnitud de 48° y su sentido de giro es horario. Expresa la medida del ángulo trigonométrico con su signo correcto',a:'-48',opts:_i4gshuf(['-48','48','-38','-58']),mc:true,ste:'Como el sentido es horario, la medida con signo es -48° = -48°.'},
-  {_id:8,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 144" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="108.3" r="2.5" fill="#e2e8f0"/><text x="116.0" y="124.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="108.3" x2="215.0" y2="108.3" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,108.3 204.6,111.7 204.6,104.9" fill="#94a3b8"/><text x="230.0" y="108.3" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="108.3" x2="169.9" y2="33.2" stroke="#94a3b8" stroke-width="2"/><polygon points="169.9,33.2 168.0,44.1 162.0,40.9" fill="#94a3b8"/><text x="176.9" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,108.3 A55.0,55.0 0 0 0 155.8,59.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="155.8,59.7 165.7,61.5 162.8,66.9" fill="#60a5fa"/><text x="194.3" y="69.7" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">62°</text></svg></div>El ángulo AOB tiene una magnitud de 62° y su sentido de giro es antihorario. Expresa la medida del ángulo trigonométrico con su signo correcto',a:'62',opts:_i4gshuf(['62','-62','72','52']),mc:true,ste:'Como el sentido es antihorario, la medida con signo es +62° = 62°.'},
-  {_id:9,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 138" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="54.2" r="2.5" fill="#e2e8f0"/><text x="116.0" y="70.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="54.2" x2="215.0" y2="54.2" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,54.2 204.6,57.6 204.6,50.8" fill="#94a3b8"/><text x="230.0" y="54.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="54.2" x2="195.1" y2="108.8" stroke="#94a3b8" stroke-width="2"/><polygon points="195.1,108.8 184.9,104.7 189.3,99.5" fill="#94a3b8"/><text x="206.6" y="118.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="54.2" x2="209.9" y2="25.1" stroke="#94a3b8" stroke-width="2"/><polygon points="209.9,25.1 201.2,31.9 198.9,25.5" fill="#94a3b8"/><text x="224.0" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M175.0,54.2 A45.0,45.0 0 0 1 164.5,83.1" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="164.5,83.1 168.2,73.9 173.0,77.8" fill="#60a5fa"/><text x="191.1" y="76.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">40°</text><path d="M172.1,89.6 A55.0,55.0 0 0 0 181.7,35.4" fill="none" stroke="#a78bfa" stroke-width="2.5"/><polygon points="181.7,35.4 187.8,43.3 182.0,45.4" fill="#a78bfa"/><text x="203.9" y="67.2" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">60°</text></svg></div>En el diagrama, m∠AOB = 40° (sentido horario) y m∠BOC = 60° (sentido antihorario). ¿Cuál de los dos ángulos es negativo?',a:'∠AOB',opts:_i4gshuf(['∠AOB','∠BOC','Ambos son negativos','Ninguno es negativo']),mc:true,ste:'El sentido horario indica signo negativo, por lo que m∠AOB = -40° es el ángulo negativo; m∠BOC, en sentido antihorario, es positivo (+60°).'},
-  {_id:10,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 155" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="77.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="93.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="77.4" x2="215.0" y2="77.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,77.4 204.6,80.8 204.6,74.0" fill="#94a3b8"/><text x="230.0" y="77.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="77.4" x2="199.6" y2="126.2" stroke="#94a3b8" stroke-width="2"/><polygon points="199.6,126.2 189.1,123.0 193.0,117.4" fill="#94a3b8"/><text x="211.9" y="134.8" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="77.4" x2="199.6" y2="28.6" stroke="#94a3b8" stroke-width="2"/><polygon points="199.6,28.6 193.0,37.4 189.1,31.8" fill="#94a3b8"/><text x="211.9" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M175.0,77.4 A45.0,45.0 0 0 1 166.9,103.2" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="166.9,103.2 169.8,93.7 174.9,97.2" fill="#60a5fa"/><text x="192.0" y="96.9" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">35°</text><path d="M175.1,108.9 A55.0,55.0 0 0 0 175.1,45.9" fill="none" stroke="#a78bfa" stroke-width="2.5"/><polygon points="175.1,45.9 183.0,51.9 178.0,55.4" fill="#a78bfa"/><text x="205.0" y="77.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">70°</text></svg></div>En el diagrama, m∠AOB = 35° (sentido horario) y m∠BOC = 70° (sentido antihorario). ¿Cuál de los dos ángulos es negativo?',a:'∠AOB',opts:_i4gshuf(['∠AOB','∠BOC','Ambos son negativos','Ninguno es negativo']),mc:true,ste:'El sentido horario indica signo negativo, por lo que m∠AOB = -35° es el ángulo negativo; m∠BOC, en sentido antihorario, es positivo (+70°).'},
-  {_id:11,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 126" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="29.9" r="2.5" fill="#e2e8f0"/><text x="116.0" y="45.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="29.9" x2="215.0" y2="29.9" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,29.9 204.6,33.3 204.6,26.5" fill="#94a3b8"/><text x="230.0" y="29.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="29.9" x2="184.6" y2="95.0" stroke="#94a3b8" stroke-width="2"/><polygon points="184.6,95.0 175.3,89.2 180.5,84.8" fill="#94a3b8"/><text x="194.3" y="106.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="29.9" x2="214.7" y2="22.5" stroke="#94a3b8" stroke-width="2"/><polygon points="214.7,22.5 204.6,26.8 204.0,20.0" fill="#94a3b8"/><text x="229.6" y="21.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M175.0,29.9 A45.0,45.0 0 0 1 158.9,64.4" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="158.9,64.4 164.2,55.9 168.2,60.6" fill="#60a5fa"/><text x="188.9" y="57.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">50°</text><path d="M165.4,72.0 A55.0,55.0 0 0 0 184.8,25.1" fill="none" stroke="#a78bfa" stroke-width="2.5"/><polygon points="184.8,25.1 188.7,34.3 182.5,34.8" fill="#a78bfa"/><text x="199.3" y="58.6" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">55°</text></svg></div>En el diagrama, m∠AOB = 50° (sentido horario) y m∠BOC = 55° (sentido antihorario). ¿Cuál de los dos ángulos es negativo?',a:'∠AOB',opts:_i4gshuf(['∠AOB','∠BOC','Ambos son negativos','Ninguno es negativo']),mc:true,ste:'El sentido horario indica signo negativo, por lo que m∠AOB = -50° es el ángulo negativo; m∠BOC, en sentido antihorario, es positivo (+55°).'},
-  {_id:12,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 145" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="54.2" r="2.5" fill="#e2e8f0"/><text x="116.0" y="70.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="54.2" x2="215.0" y2="54.2" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,54.2 204.6,57.6 204.6,50.8" fill="#94a3b8"/><text x="230.0" y="54.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="54.2" x2="190.1" y2="114.3" stroke="#94a3b8" stroke-width="2"/><polygon points="190.1,114.3 180.3,109.3 185.1,104.5" fill="#94a3b8"/><text x="200.7" y="124.9" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><line x1="130.0" y1="54.2" x2="209.9" y2="25.1" stroke="#94a3b8" stroke-width="2"/><polygon points="209.9,25.1 201.2,31.9 198.9,25.5" fill="#94a3b8"/><text x="224.0" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">C</text><path d="M175.0,54.2 A45.0,45.0 0 0 1 161.8,86.0" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="161.8,86.0 166.3,77.1 170.7,81.5" fill="#60a5fa"/><text x="190.1" y="79.1" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">45°</text><path d="M168.9,93.1 A55.0,55.0 0 0 0 181.7,35.4" fill="none" stroke="#a78bfa" stroke-width="2.5"/><polygon points="181.7,35.4 187.8,43.3 182.0,45.4" fill="#a78bfa"/><text x="203.2" y="70.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#a78bfa" font-weight="700">65°</text></svg></div>En el diagrama, m∠AOB = 45° (sentido horario) y m∠BOC = 65° (sentido antihorario). ¿Cuál de los dos ángulos es negativo?',a:'∠AOB',opts:_i4gshuf(['∠AOB','∠BOC','Ambos son negativos','Ninguno es negativo']),mc:true,ste:'El sentido horario indica signo negativo, por lo que m∠AOB = -45° es el ángulo negativo; m∠BOC, en sentido antihorario, es positivo (+65°).'},
-  {_id:13,q:'V/F: En un diagrama, la flecha dibujada sobre el arco indica el sentido de giro del ángulo trigonométrico.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: la flecha es la convención gráfica estándar para mostrar si el giro es horario o antihorario.'},
-  {_id:14,q:'V/F: Un arco dibujado sin flecha siempre debe interpretarse como de sentido horario (negativo).',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: por convención, cuando no se indica lo contrario, se asume sentido antihorario (positivo).'},
-  {_id:15,q:'V/F: Dos arcos con la misma magnitud pero flechas en sentidos opuestos representan ángulos trigonométricos de igual valor absoluto pero signos distintos.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: la magnitud (valor absoluto) es la misma, pero el signo cambia según el sentido de giro mostrado por la flecha.'},
-  {_id:16,q:'V/F: Es posible determinar el signo de un ángulo trigonométrico solo con ver su magnitud, sin necesidad de observar el sentido de giro.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: la magnitud no determina el signo; se necesita conocer el sentido de giro (horario o antihorario) para saber si es negativo o positivo.'},
-  {_id:17,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 86" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="23.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="39.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="23.4" x2="215.0" y2="23.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,23.4 204.6,26.8 204.6,20.0" fill="#94a3b8"/><text x="230.0" y="23.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="23.4" x2="207.0" y2="59.3" stroke="#94a3b8" stroke-width="2"/><polygon points="207.0,59.3 196.1,58.0 199.0,51.8" fill="#94a3b8"/><text x="220.6" y="65.7" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,23.4 A55.0,55.0 0 0 1 179.8,46.6" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="179.8,46.6 181.1,36.7 186.7,39.3" fill="#60a5fa"/><text x="203.2" y="39.6" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">25°</text></svg></div>El ángulo AOB tiene una magnitud de 25° y su sentido de giro es horario. ¿Cuál es el valor correcto de su medida trigonométrica (con signo)?',a:'-25',opts:_i4gshuf(['-25','25','-17','-33']),mc:true,ste:'Sentido horario → medida = -25° = -25°.'},
-  {_id:18,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 118" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="81.6" r="2.5" fill="#e2e8f0"/><text x="116.0" y="97.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="81.6" x2="215.0" y2="81.6" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,81.6 204.6,85.0 204.6,78.2" fill="#94a3b8"/><text x="230.0" y="81.6" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="81.6" x2="197.0" y2="29.3" stroke="#94a3b8" stroke-width="2"/><polygon points="197.0,29.3 190.8,38.4 186.6,33.0" fill="#94a3b8"/><text x="208.8" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,81.6 A55.0,55.0 0 0 0 173.3,47.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="173.3,47.7 181.6,53.3 176.7,57.1" fill="#60a5fa"/><text x="200.9" y="57.2" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">38°</text></svg></div>El ángulo AOB tiene una magnitud de 38° y su sentido de giro es antihorario. ¿Cuál es el valor correcto de su medida trigonométrica (con signo)?',a:'38',opts:_i4gshuf(['38','-38','46','30']),mc:true,ste:'Sentido antihorario → medida = +38° = 38°.'},
-  {_id:19,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 122" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="23.4" r="2.5" fill="#e2e8f0"/><text x="116.0" y="39.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="23.4" x2="215.0" y2="23.4" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,23.4 204.6,26.8 204.6,20.0" fill="#94a3b8"/><text x="230.0" y="23.4" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="23.4" x2="182.3" y2="90.4" stroke="#94a3b8" stroke-width="2"/><polygon points="182.3,90.4 173.2,84.2 178.6,80.0" fill="#94a3b8"/><text x="191.6" y="102.2" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,23.4 A55.0,55.0 0 0 1 163.9,66.7" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="163.9,66.7 169.4,58.4 173.3,63.3" fill="#60a5fa"/><text x="197.4" y="56.3" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">52°</text></svg></div>El ángulo AOB tiene una magnitud de 52° y su sentido de giro es horario. ¿Cuál es el valor correcto de su medida trigonométrica (con signo)?',a:'-52',opts:_i4gshuf(['-52','52','-44','-60']),mc:true,ste:'Sentido horario → medida = -52° = -52°.'},
-  {_id:20,q:'<div style="display:block;width:100%;text-align:center"><svg viewBox="0 0 260 126" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block"><circle cx="130.0" cy="89.5" r="2.5" fill="#e2e8f0"/><text x="116.0" y="105.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">O</text><line x1="130.0" y1="89.5" x2="215.0" y2="89.5" stroke="#94a3b8" stroke-width="2"/><polygon points="215.0,89.5 204.6,92.9 204.6,86.1" fill="#94a3b8"/><text x="230.0" y="89.5" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">A</text><line x1="130.0" y1="89.5" x2="191.1" y2="30.5" stroke="#94a3b8" stroke-width="2"/><polygon points="191.1,30.5 186.0,40.2 181.3,35.3" fill="#94a3b8"/><text x="201.9" y="20.0" text-anchor="middle" font-size="13" fill="#e2e8f0" font-weight="700">B</text><path d="M185.0,89.5 A55.0,55.0 0 0 0 169.6,51.3" fill="none" stroke="#60a5fa" stroke-width="2.5"/><polygon points="169.6,51.3 178.4,56.0 173.9,60.3" fill="#60a5fa"/><text x="199.5" y="61.4" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#60a5fa" font-weight="700">44°</text></svg></div>El ángulo AOB tiene una magnitud de 44° y su sentido de giro es antihorario. ¿Cuál es el valor correcto de su medida trigonométrica (con signo)?',a:'44',opts:_i4gshuf(['44','-44','52','36']),mc:true,ste:'Sentido antihorario → medida = +44° = 44°.'},
-  ]);
-}
-_SKILL_META['i1tr_ang_b10']={ico:'🖼',lbl:'Sentido de giro (horario/antihorario) e identificación visual',qCount:4,gen:_genI1trAng_B10,plantillas:["Dado un diagrama con flecha de sentido, identificar el signo correcto del ángulo", "Dado el sentido de giro en palabras, expresar la medida del ángulo con su signo correcto", "Dado un diagrama con dos ángulos consecutivos de sentidos distintos, identificar cuál es negativo", "V/F sobre la identificación visual del sentido de giro", "Identificar el valor correcto de la medida con signo entre 4 opciones (variante visual)"]};
-
 function _genI1trAng_BQ1(){return _bqSrcPick(['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3'],[_genI1trAng_B1,_genI1trAng_B2,_genI1trAng_B3]);}
-_SKILL_META['i1tr_ang_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Ecuaciones con Negativos y Ángulo Recto',qCount:15,gen:_genI1trAng_BQ1,quiz:true,srcKeys:['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3']};
+_SKILL_META['i1tr_ang_bq1']={ico:'⚡',lbl:'Cuestionario 2 – Ecuaciones con Negativos y Ángulo Recto',qCount:15,gen:_genI1trAng_BQ1,quiz:true,srcKeys:['i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3']};
 
 function _genI1trAng_BQ2(){return _bqSrcPick(['i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6'],[_genI1trAng_B4,_genI1trAng_B5,_genI1trAng_B6]);}
-_SKILL_META['i1tr_ang_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Bisectriz, Vuelta Completa y Sentidos Opuestos',qCount:15,gen:_genI1trAng_BQ2,quiz:true,srcKeys:['i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6']};
+_SKILL_META['i1tr_ang_bq2']={ico:'⚡',lbl:'Cuestionario 3 – Bisectriz, Vuelta Completa y Sentidos Opuestos',qCount:15,gen:_genI1trAng_BQ2,quiz:true,srcKeys:['i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6']};
 
 function _genI1trAng_BQ3(){return _bqSrcPick(['i1tr_ang_b7','i1tr_ang_b8'],[_genI1trAng_B7,_genI1trAng_B8]);}
-_SKILL_META['i1tr_ang_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Simbólico Puro y Proposiciones',qCount:10,gen:_genI1trAng_BQ3,quiz:true,srcKeys:['i1tr_ang_b7','i1tr_ang_b8']};
-
-function _genI1trAng_BQ4(){return _bqSrcPick(['i1tr_ang_b9','i1tr_ang_b10'],[_genI1trAng_B9,_genI1trAng_B10]);}
-_SKILL_META['i1tr_ang_bq4']={ico:'⚡',lbl:'Cuestionario 4 – Problemas de Varios Pasos y Sentido Visual',qCount:10,gen:_genI1trAng_BQ4,quiz:true,srcKeys:['i1tr_ang_b9','i1tr_ang_b10']};
+_SKILL_META['i1tr_ang_bq3']={ico:'⚡',lbl:'Cuestionario 4 – Simbólico Puro y Proposiciones',qCount:10,gen:_genI1trAng_BQ3,quiz:true,srcKeys:['i1tr_ang_b7','i1tr_ang_b8']};
 
 // Nota: NO se genera un examen general (BPU) por unidad – es redundante con el botón
 // nativo "Examen de unidad" (📝) de la plataforma. Ver precedente de Jorge Basadre.
@@ -20665,7 +21116,7 @@ const PREP_CURRICULUM = {
     ],
   },
   secundaria: {
-    '1':[{lbl:'Ángulo Trigonométrico', area:'trigonometria', editorial:'intelectum', skills:['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_ang_b9','i1tr_ang_b10','i1tr_ang_bq4']},
+    '1':[{lbl:'Ángulo Trigonométrico', area:'trigonometria', editorial:'intelectum', skills:['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3']},
          {lbl:'Sistemas de Medición Angular', area:'trigonometria', editorial:'intelectum', skills:['i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3']},
          {lbl:'Longitud de Arco', area:'trigonometria', editorial:'intelectum', skills:['i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3']},
          {lbl:'Área del Sector Circular', area:'trigonometria', editorial:'intelectum', skills:['i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3']},
@@ -20702,6 +21153,9 @@ const PREP_CURRICULUM = {
          {lbl:'Operaciones con Polinomios y Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u2_b1','li1m_u2_b2','li1m_u2_bq1','li1m_u2_b3','li1m_u2_b4','li1m_u2_b5','li1m_u2_bq2']},
          {lbl:'Ecuaciones de Primer Grado',             area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u3_b1','li1m_u3_b2','li1m_u3_bq1','li1m_u3_b3','li1m_u3_b4','li1m_u3_bq2','li1m_u3_b5','li1m_u3_b6','li1m_u3_b7','li1m_u3_bq3']},
          {lbl:'Escala, Perímetro y Área de Figuras Geométricas', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u4_b1','li1m_u4_b2','li1m_u4_b3','li1m_u4_bq1','li1m_u4_b4','li1m_u4_b5','li1m_u4_b6','li1m_u4_bq2','li1m_u4_b7','li1m_u4_b8','li1m_u4_bq3','li1m_u4_b9','li1m_u4_b10','li1m_u4_b11','li1m_u4_bq4']},
+         {lbl:'Repaso: Operaciones con Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u5_b1','li1m_u5_b2','li1m_u5_bq1','li1m_u5_b3','li1m_u5_b4','li1m_u5_bq2','li1m_u5_b5','li1m_u5_b6','li1m_u5_bq3']},
+         {lbl:'Repaso: Problemas con Fracciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u6_b1','li1m_u6_b2','li1m_u6_bq1','li1m_u6_b3','li1m_u6_b4','li1m_u6_bq2','li1m_u6_b5','li1m_u6_b6','li1m_u6_bq3']},
+         {lbl:'Razones y Proporciones', area:'matematica', editorial:'abraham_lincoln', skills:['li1m_u7_b1','li1m_u7_b2','li1m_u7_bq1','li1m_u7_b3','li1m_u7_b4','li1m_u7_bq2','li1m_u7_b5','li1m_u7_b6','li1m_u7_bq3']},
          {lbl:'Ángulos',                        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_ang_b1','sir1m_ang_b2','sir1m_ang_bq1']},
          {lbl:'Triángulos',                     area:'geometria',     editorial:'san_ignacio', skills:['sir1m_tri_b1','sir1m_tri_b2','sir1m_tri_bq1']},
          {lbl:'Áreas de Figuras Planas',        area:'geometria',     editorial:'san_ignacio', skills:['sir1m_are_b1','sir1m_are_b2','sir1m_are_bq1']},
@@ -30043,48 +30497,52 @@ function _prepExamHtml() {
     </div>
   </div>${_prepReportModalOpen ? `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepReportModal()">
     <div class="prep-report-modal-box">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:0.05em">⚠️ REPORTAR ERROR</span>
-        <button onclick="closePrepReportModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-        <span class="prep-report-tag" style="font-family:'Barlow Condensed',monospace;letter-spacing:0.06em">Ejercicio: ${_prepQCode(q,q._src||_prep.topic)}</span>
-      </div>
-      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Ejercicio</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border-radius:10px;padding:10px 12px;line-height:1.4">${_fmtMath(q.q)}</div>
-      ${isAdmin() ? `<div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Respuesta oficial</div>
-      <div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif">${_fmtMath(q.a)}</div>` : ''}
-      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin:10px 0 0;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">Describe el error <span style="color:rgba(255,255,255,0.3);font-weight:600;text-transform:none;letter-spacing:0">(obligatorio)</span></div>
-      <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser 3/4 porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
-      ${!isAdmin() ? `<div style="margin-top:12px;padding:12px 14px;background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.25);border-radius:11px">
-        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor (requerida para reportar)</div>
-        <input id="prep-report-submit-pin" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña del profesor" onkeydown="if(event.key==='Enter')submitPrepReport()" style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid ${_prepReportPinErr?'rgba(248,113,113,0.7)':'rgba(139,92,246,0.35)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
-        ${_prepReportPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">⚠ Contraseña incorrecta</div>` : ''}
-      </div>` : ''}
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button onclick="closePrepReportModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
-        <button id="prep-report-submit-btn" onclick="submitPrepReport()" style="flex:2;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer">Enviar reporte</button>
-      </div>
-      ${(() => {
-        // Antes esta autorización solo aparecía si la pregunta aún no había sido respondida.
-        // Si el alumno ya la respondió y quedó marcada como incorrecta (ejercicio con error o
-        // mal planteado), el profesor debe poder seguir anulando esa calificación con su
-        // contraseña — no solo "saltar" preguntas todavía sin responder. Si ya está marcada
-        // como correcta (o ya fue corregida antes), no hay nada que anular.
-        const _lastAnsPin = _prep.answered ? _prep.answers[_prep.answers.length-1] : null;
-        const _canOverridePin = !_prep.answered || (_lastAnsPin && !_lastAnsPin.correct);
-        if (!_canOverridePin) return '';
-        const _pinLbl = _prep.answered ? '🔑 Autorización del profesor — marcar como correcta' : '🔑 Autorización del profesor — saltar pregunta';
-        const _pinBtnLbl = _prep.answered ? 'Corregir →' : 'Saltar →';
-        return `<div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.08)">
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">${_pinLbl}</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="prep-report-pin-inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña del profesor" onkeydown="if(event.key==='Enter')skipQWithTeacherPin()" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid ${_prepReportPinErr?'rgba(248,113,113,0.7)':'rgba(255,255,255,0.15)'};background:rgba(255,255,255,0.05);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;outline:none">
-          <button onclick="skipQWithTeacherPin()" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap">${_pinBtnLbl}</button>
+      <div class="prep-report-modal-top">
+        <div>
+          <div class="prep-report-modal-title">⚠ Reportar error</div>
+          <div class="prep-report-modal-sub">${_prepQCode(q,q._src||_prep.topic)}</div>
         </div>
-        ${_prepReportPinErr ? `<div style="font-size:11px;color:#f87171;margin-top:5px;font-family:'Barlow Condensed',sans-serif;font-weight:700">Contraseña incorrecta</div>` : ''}
-      </div>`;
-      })()}
+        <button onclick="closePrepReportModal()" class="prep-report-modal-close">✕</button>
+      </div>
+      <div class="prep-report-modal-body">
+        <div>
+          <span class="prep-report-flbl">¿Qué deseas reportar?</span>
+          <div class="prep-report-scope-chips" id="prep-report-scope-chips">
+            <div class="prep-report-scope-chip on" data-scope="exercise" onclick="prepReportSelectScope(this)">
+              <div class="prep-report-scope-radio"></div>
+              <div><div class="prep-report-scope-title">Este ejercicio</div><div class="prep-report-scope-desc">Solo esta pregunta específica</div></div>
+            </div>
+            <div class="prep-report-scope-chip" data-scope="template" onclick="prepReportSelectScope(this)">
+              <div class="prep-report-scope-radio"></div>
+              <div><div class="prep-report-scope-title">Esta plantilla</div><div class="prep-report-scope-desc">Todos los ejercicios de este modelo</div></div>
+            </div>
+            <div class="prep-report-scope-chip" data-scope="skill" onclick="prepReportSelectScope(this)">
+              <div class="prep-report-scope-radio"></div>
+              <div><div class="prep-report-scope-title">Esta habilidad</div><div class="prep-report-scope-desc">Todos los ejercicios de ${q._src||_prep.topic}</div></div>
+            </div>
+          </div>
+        </div>
+        <hr class="prep-report-divider">
+        <div>
+          <span class="prep-report-flbl">Ejercicio</span>
+          <div class="prep-report-exercise">${_fmtMath(q.q)}</div>
+        </div>
+        ${isAdmin() ? `<div><span class="prep-report-flbl">Respuesta oficial</span><div style="font-size:14px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif;padding-top:3px">${_fmtMath(q.a)}</div></div>` : ''}
+        <div>
+          <span class="prep-report-flbl">Describe el error <span style="font-weight:600;text-transform:none;letter-spacing:0;color:rgba(255,255,255,0.28)">(obligatorio)</span></span>
+          <textarea id="prep-report-ta" class="prep-report-ta" placeholder="Ej: La respuesta debería ser −x⁹ porque… / La pregunta está mal redactada porque…" maxlength="500"></textarea>
+        </div>
+        ${!isAdmin() ? `<hr class="prep-report-divider">
+        <div>
+          <span class="prep-report-flbl">Contraseña del profesor</span>
+          <input id="prep-report-pin-unified" type="password" class="prep-report-pin-unified" maxlength="10" placeholder="Contraseña" onkeydown="if(event.key==='Enter')${(() => { const _la=_prep.answered?_prep.answers[_prep.answers.length-1]:null; return (!_prep.answered||(_la&&!_la.correct))?'skipQWithTeacherPin()':'submitPrepReport()'; })()}">
+          ${_prepReportPinErr ? '<div class="prep-report-pin-err">⚠ Contraseña incorrecta</div>' : ''}
+        </div>` : ''}
+        <div class="prep-report-btn-stack">
+          <button id="prep-report-submit-btn" onclick="submitPrepReport()" class="prep-report-btn-primary">Enviar reporte</button>
+          ${(() => { const _la2=_prep.answered?_prep.answers[_prep.answers.length-1]:null; const _cop=!_prep.answered||(_la2&&!_la2.correct); return _cop?`<button onclick="skipQWithTeacherPin()" class="prep-report-btn-secondary">${_prep.answered?'Corregir →':'Saltar →'}</button>`:''; })()}
+        </div>
+      </div>
     </div>
   </div>` : ''}`;
 }
@@ -30173,6 +30631,12 @@ function openPrepReportModal() {
   _prepReportPinErr    = false;
   _renderPreparatePane();
   setTimeout(()=>{ const ta=document.getElementById('prep-report-ta'); if(ta)ta.focus(); },80);
+}
+function prepReportSelectScope(el) {
+  const container = el.closest('.prep-report-scope-chips');
+  if (!container) return;
+  container.querySelectorAll('.prep-report-scope-chip').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
 }
 function closePrepReportModal() {
   _prepReportModalOpen = false;
@@ -30341,14 +30805,14 @@ function deletePrepTask() {
   if (typeof showToast === 'function') showToast('🗑️ Tarea eliminada', 'success');
 }
 function skipQWithTeacherPin() {
-  const inp = document.getElementById('prep-report-pin-inp');
+  const inp = document.getElementById('prep-report-pin-unified') || document.getElementById('prep-report-pin-inp');
   const val = inp ? inp.value.trim() : '';
   const pin = typeof ADMIN !== 'undefined' ? String(ADMIN.pin) : null;
   if (!pin || val !== pin) {
     _prepReportPinErr = true;
     _renderPreparatePane();
     // Re-enfocar después del re-render
-    setTimeout(()=>{ const i=document.getElementById('prep-report-pin-inp'); if(i){i.focus();i.select();} },60);
+    setTimeout(()=>{ const i=document.getElementById('prep-report-pin-unified')||document.getElementById('prep-report-pin-inp'); if(i){i.focus();i.select();} },60);
     return;
   }
   // PIN correcto: enviar reporte si hay comentario (sin bloquear el flujo)
@@ -30390,7 +30854,7 @@ async function submitPrepReport() {
   if (!comment) { showToast('Escribe el error antes de enviar'); if(ta)ta.focus(); return; }
   // Verificación de contraseña para alumnos (no-admin)
   if (!isAdmin()) {
-    const pinInp = document.getElementById('prep-report-submit-pin');
+    const pinInp = document.getElementById('prep-report-pin-unified') || document.getElementById('prep-report-submit-pin');
     const pinVal = pinInp ? String(pinInp.value) : '';
     if (pinVal !== String(ADMIN && ADMIN.pin)) {
       _prepReportPinErr = true;
@@ -30398,7 +30862,7 @@ async function submitPrepReport() {
       setTimeout(() => {
         const ta2 = document.getElementById('prep-report-ta');
         if (ta2) ta2.value = comment;
-        const pi2 = document.getElementById('prep-report-submit-pin');
+        const pi2 = document.getElementById('prep-report-pin-unified') || document.getElementById('prep-report-submit-pin');
         if (pi2) pi2.focus();
       }, 50);
       return;
@@ -30428,9 +30892,30 @@ async function submitPrepReport() {
       ts:     firebase.firestore.FieldValue.serverTimestamp(),
       status: 'pending'
     });
+    // Saltar / corregir automáticamente tras reporte aprobado con PIN
+    const q2 = _prep.questions[_prep.currentIdx];
+    let _adv = false;
+    if (q2) {
+      if (_prep.answered) {
+        const last = _prep.answers[_prep.answers.length-1];
+        if (last && !last.correct) {
+          last.correct = true;
+          last.overridden = true;
+          _prep.lives = Math.min(_prep.maxLives??3, (_prep.lives??0)+1);
+          if (_prep.gameOver && _prep.lives > 0) _prep.gameOver = false;
+          _prepUpdateHud();
+        }
+      } else {
+        const _qt = Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000);
+        _prep.answers.push({ given:'[saltada]', correct:true, skipped:true, q:q2.q||'', a:q2.a, mc:!!(q2.mc), _src:q2._src||null, timeSec:_qt });
+        _prep.answered = true;
+        _adv = true;
+      }
+    }
     _prepReportModalOpen = false;
-    _renderPreparatePane();
-    showToast('Reporte enviado. ¡Gracias! 👍');
+    _prepReportPinErr    = false;
+    showToast(_adv ? '✅ Reporte enviado — pregunta saltada' : '✅ Reporte enviado — respuesta corregida como correcta');
+    if (_adv) _prepNextQ(); else _renderPreparatePane();
   } catch(e) {
     console.error('prepReport submit', e);
     showToast('Error al enviar: ' + (e.message||''));
@@ -30461,83 +30946,133 @@ function _prepAdminReportsHtml() {
   const data    = _prepAdminReportsData;
   const loading = _prepAdminReportsLoading;
   const f       = _prepAdminReportsFilter;
-  const filtered   = Array.isArray(data) ? data.filter(r=>r.status===f) : null;
-  const confirmedIds = Array.isArray(data) ? [...new Set(data.filter(r=>r.status==='confirmed').map(r=>r.skillKey))] : [];
-  const counts = Array.isArray(data)
-    ? { pending: data.filter(r=>r.status==='pending').length,
+  const nf      = _prepAdminReportsNameFilter;
+  const counts  = Array.isArray(data)
+    ? { pending:   data.filter(r=>r.status==='pending').length,
         confirmed: data.filter(r=>r.status==='confirmed').length,
         dismissed: data.filter(r=>r.status==='dismissed').length,
-        resolved: data.filter(r=>r.status==='resolved').length }
+        resolved:  data.filter(r=>r.status==='resolved').length }
     : { pending:0, confirmed:0, dismissed:0, resolved:0 };
 
-  const filterBtns = [
+  // Status tabs (underline style, P1 Neon Violeta)
+  const tabs = [
     { key:'pending',   lbl:'⏳ Pendientes' },
-    { key:'confirmed', lbl:'✅ Confirmados' },
-    { key:'resolved',  lbl:'🔧 Resueltos' },
-    { key:'dismissed', lbl:'🚫 Descartados' }
+    { key:'confirmed', lbl:'✦ Confirmados' },
+    { key:'resolved',  lbl:'✶ Resueltos'   },
+    { key:'dismissed', lbl:'✗ Descartados' }
   ].map(({key,lbl})=>{
-    const active = f===key;
-    return `<button onclick="_prepAdminReportsFilter='${key}';_renderPreparatePane()" style="padding:4px 10px;border-radius:14px;border:1px solid ${active?'rgba(168,85,247,0.7)':'rgba(255,255,255,0.12)'};background:${active?'rgba(168,85,247,0.2)':'rgba(255,255,255,0.04)'};color:${active?'#d8b4fe':'rgba(255,255,255,0.5)'};font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;cursor:pointer">${lbl} (${counts[key]})</button>`;
+    const on = f===key;
+    return '<button onclick="_prepAdminReportsFilter=\'' + key + '\';_prepAdminReportsNameFilter=null;_renderPreparatePane()"'
+      + ' style="padding:7px 13px;font-size:12px;font-weight:700;color:' + (on?'#e879f9':'#fff') + ';background:none;border:none;border-bottom:2px solid ' + (on?'#9333ea':'transparent') + ';margin-bottom:-1px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.02em;white-space:nowrap">'
+      + lbl + ' <span style="font-size:10px;background:rgba(147,51,234,' + (on?'.35':'.18') + ');border-radius:8px;padding:1px 5px;margin-left:4px;color:' + (on?'#f0abfc':'#d946ef') + '">' + counts[key] + '</span>'
+      + '</button>';
   }).join('');
 
+  // Name filter chips
+  const allNames = Array.isArray(data)
+    ? [...new Set(data.map(r=>r.sName).filter(Boolean))].sort()
+    : [];
+  const nameChips = allNames.length > 1
+    ? '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">'
+      + ['Todos',...allNames].map(n=>{
+          const on = n==='Todos' ? !nf : nf===n;
+          const click = n==='Todos'
+            ? '_prepAdminReportsNameFilter=null;_renderPreparatePane()'
+            : '_prepAdminReportsNameFilter=\'' + n.replace(/'/g,"\\'") + '\';_renderPreparatePane()';
+          return '<button onclick="' + click + '" style="padding:3px 9px;border-radius:10px;border:1px solid ' + (on?'rgba(124,58,237,0.7)':'rgba(255,255,255,0.08)') + ';background:' + (on?'rgba(124,58,237,0.15)':'transparent') + ';color:' + (on?'#d8b4fe':'#fff') + ';font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:700;cursor:pointer">' + n + '</button>';
+        }).join('')
+      + '</div>'
+    : '';
+
+  // Error cards
+  const filtered = Array.isArray(data)
+    ? data.filter(r => r.status===f && (!nf || r.sName===nf))
+    : null;
   let cardsHtml = '';
   if (loading || !Array.isArray(filtered)) {
-    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.35);padding:12px">Cargando…</div>`;
+    cardsHtml = '<div style="text-align:center;font-size:12px;color:#fff;padding:12px">Cargando…</div>';
   } else if (filtered.length===0) {
-    cardsHtml = `<div style="text-align:center;font-size:12px;color:rgba(255,255,255,0.3);padding:12px">No hay reportes en esta categoría.</div>`;
+    cardsHtml = '<div style="text-align:center;font-size:12px;color:#fff;padding:12px">No hay reportes en esta categoría.</div>';
   } else {
     cardsHtml = filtered.map(r=>{
       const dateStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : '—';
       const timeStr = r.ts?.seconds ? new Date(r.ts.seconds*1000).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}) : '';
-      const safeId  = (r.id||'').replace(/'/g,"\'");
-      const _reopenBtn = `<button onclick="setPrepReportStatus('${safeId}','pending')" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;cursor:pointer">↩ Reabrir</button>`;
-      const actionHtml = r.status==='pending'
-        ? `<div style="display:flex;gap:6px;margin-top:10px">
-            <button onclick="setPrepReportStatus('${safeId}','confirmed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">✅ Confirmar</button>
-            <button onclick="setPrepReportStatus('${safeId}','dismissed')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(239,68,68,0.35);background:rgba(239,68,68,0.07);color:#f87171;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">🚫 Descartar</button>
-          </div>`
-        : r.status==='confirmed'
-        ? `<div style="display:flex;gap:6px;margin-top:10px;align-items:center">
-            <button onclick="setPrepReportStatus('${safeId}','resolved')" style="flex:1;padding:7px;border-radius:8px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.12);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:900;cursor:pointer">🔧 Marcar como resuelto</button>
-            ${_reopenBtn}
-          </div>`
-        : `<div style="text-align:right;margin-top:8px">${_reopenBtn}</div>`;
-      return `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:12px;padding:12px;margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
-          <span class="prep-report-tag">Habilidad: ${r.skillKey||'?'}</span>
-          <span class="prep-report-tag" style="font-family:'Barlow Condensed',monospace;letter-spacing:0.06em">Ejercicio: ${r.exId||_prepQCode({q:r.q||''},r.skillKey||'')}</span>
-          <span style="font-size:11px;color:rgba(255,255,255,0.3);white-space:nowrap;flex-shrink:0">${r.sName||'—'} · ${dateStr} ${timeStr}</span>
-        </div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Ejercicio</div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.75);margin-bottom:6px;line-height:1.4">${r.q||''}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Respuesta oficial</div>
-        <div style="font-size:13px;color:#39ff7a;font-weight:900;font-family:'Barlow Condensed',sans-serif;margin-bottom:6px">${r.correctAns||''}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase">Comentario</div>
-        <div style="font-size:13px;color:#fde68a;line-height:1.4">${r.comment||''}</div>
-        ${actionHtml}
-      </div>`;
+      const safeId  = (r.id||'').replace(/'/g,"\\'");
+      const exCode  = r.exId||_prepQCode({q:r.q||''},r.skillKey||'');
+      const reopenBtn = '<button onclick="setPrepReportStatus(\'' + safeId + '\',\'pending\')" style="padding:5px 10px;border-radius:7px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:700;cursor:pointer">↩ Reabrir</button>';
+      let actionHtml = '';
+      if (r.status==='pending') {
+        actionHtml = '<div style="display:flex;gap:5px;margin-top:6px">'
+          + '<button onclick="setPrepReportStatus(\'' + safeId + '\',\'confirmed\')" style="flex:1;padding:5px;border-radius:7px;border:1px solid rgba(168,85,247,0.45);background:rgba(168,85,247,0.08);color:#c084fc;font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:900;cursor:pointer;text-align:center">✧✦✧ Confirmar error</button>'
+          + '<button onclick="setPrepReportStatus(\'' + safeId + '\',\'dismissed\')" style="flex:1;padding:5px;border-radius:7px;border:1px solid rgba(192,38,211,0.4);background:rgba(192,38,211,0.07);color:#e879f9;font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:900;cursor:pointer;text-align:center">✗ Descartar</button>'
+          + '</div>';
+      } else if (r.status==='confirmed') {
+        actionHtml = '<div style="display:flex;gap:5px;margin-top:6px;align-items:center">'
+          + '<button onclick="setPrepReportStatus(\'' + safeId + '\',\'resolved\')" style="flex:1;padding:5px;border-radius:7px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.12);color:#c4b5fd;font-family:\'Barlow Condensed\',sans-serif;font-size:11px;font-weight:900;cursor:pointer;text-align:center">✶ Marcar resuelto</button>'
+          + reopenBtn
+          + '</div>';
+      } else {
+        actionHtml = '<div style="text-align:right;margin-top:6px">' + reopenBtn + '</div>';
+      }
+      const cmtHtml = r.comment
+        ? '<span style="font-size:11px;color:#fbbf24;white-space:nowrap">' + r.comment + '</span>'
+        : '';
+      return '<div style="display:flex;border:1px solid rgba(109,40,217,0.18);border-radius:10px;overflow:hidden;margin-bottom:7px;background:rgba(109,40,217,0.04)">'
+        + '<div style="width:3px;flex-shrink:0;background:linear-gradient(to bottom,#a855f7,#7c3aed)"></div>'
+        + '<div style="padding:9px 11px;flex:1;min-width:0">'
+          + '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px">'
+            + '<span style="font-size:10px;font-weight:900;letter-spacing:.06em;padding:2px 7px;border-radius:5px;background:rgba(126,34,206,0.25);border:1px solid rgba(126,34,206,0.5);color:#c084fc">' + (r.skillKey||'?') + '</span>'
+            + '<span style="font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:5px;background:rgba(79,70,229,0.2);border:1px solid rgba(79,70,229,0.4);color:#a5b4fc">' + exCode + '</span>'
+            + '<span style="font-size:10px;color:#fff;margin-left:auto;white-space:nowrap">' + (r.sName||'—') + ' · ' + dateStr + ' ' + timeStr + '</span>'
+          + '</div>'
+          + '<div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:5px">'
+            + '<span style="font-size:13px;color:#fff;flex:1;min-width:120px">' + (r.q||'') + '</span>'
+            + '<span style="font-size:11px;color:#fff;white-space:nowrap">Resp. oficial: <span style="color:#a78bfa;font-weight:400">' + (r.correctAns||'') + '</span></span>'
+            + cmtHtml
+          + '</div>'
+          + actionHtml
+        + '</div>'
+        + '</div>';
     }).join('');
   }
 
+  // Top action buttons
   const confirmedReports = Array.isArray(data) ? data.filter(r=>r.status==='confirmed') : [];
-  const copyBtn = confirmedReports.length
-    ? `<button onclick="_prepCopyConfirmedErrors()" style="width:100%;padding:9px;border-radius:10px;border:1px solid rgba(57,255,122,0.4);background:rgba(57,255,122,0.08);color:#39ff7a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:900;cursor:pointer;margin-bottom:10px">📋 Copiar ${confirmedReports.length} error${confirmedReports.length>1?'es':''} confirmado${confirmedReports.length>1?'s':''} (todos los detalles)</button>`
+  const exportBtn = confirmedReports.length
+    ? '<button onclick="_prepCopyConfirmedErrors()" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(109,40,217,0.5);background:rgba(109,40,217,0.08);color:#c084fc;font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;margin-bottom:8px;text-align:center">✵ Exportar ' + confirmedReports.length + ' error' + (confirmedReports.length>1?'es':'') + ' confirmado' + (confirmedReports.length>1?'s':'') + '</button>'
+    : '';
+  const pendingForAll = Array.isArray(data) ? data.filter(r=>r.status==='pending') : [];
+  const confirmAllBtn = pendingForAll.length
+    ? '<button onclick="_prepConfirmAllReports()" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(168,85,247,0.5);background:rgba(168,85,247,0.1);color:#c084fc;font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:900;cursor:pointer;letter-spacing:.04em;margin-bottom:14px;text-align:center">✧✦✧ Confirmar todos los reportes pendientes (' + pendingForAll.length + ')</button>'
     : '';
 
-  const pendingBadge = Array.isArray(_prepAdminReportsData) && counts.pending > 0
+  const pendingBadge = counts.pending > 0
     ? ' (' + counts.pending + ' pendiente' + (counts.pending>1?'s':'') + ')'
     : '';
 
-  return `<div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.07);padding-top:14px">
-    <button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowReports=!_prepAdminShowReports;if(_prepAdminShowReports&&!Array.isArray(_prepAdminReportsData)&&!_prepAdminReportsLoading)loadPrepReportsAdmin();else _renderPreparatePane()">
-      ⚠️ ${_prepAdminShowReports ? '▲ Ocultar' : '▼ Ver'} reportes de errores${pendingBadge}
-    </button>
-    ${_prepAdminShowReports ? `<div style="margin-top:10px">
-      ${copyBtn}
-      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">${filterBtns}</div>
-      ${cardsHtml}
-    </div>` : ''}
-  </div>`;
+  return '<div style="margin-top:10px;border-top:1px solid rgba(109,40,217,0.2);padding-top:14px">'
+    + '<button class="prep-result-btn" style="width:100%" onclick="_prepAdminShowReports=!_prepAdminShowReports;if(_prepAdminShowReports&&!Array.isArray(_prepAdminReportsData)&&!_prepAdminReportsLoading)loadPrepReportsAdmin();else _renderPreparatePane()">'
+    + '⚠️ ' + (_prepAdminShowReports ? '▲ Ocultar' : '▼ Ver') + ' reportes de errores' + pendingBadge
+    + '</button>'
+    + (_prepAdminShowReports
+        ? '<div style="background:#0a0717;border:1px solid #3d1f7a;border-radius:14px;padding:16px;margin-top:10px;box-shadow:0 0 40px rgba(109,40,217,0.15)">'
+          + exportBtn
+          + confirmAllBtn
+          + '<div style="display:flex;border-bottom:1px solid rgba(109,40,217,0.2);margin-bottom:12px;gap:2px">' + tabs + '</div>'
+          + nameChips
+          + cardsHtml
+          + '</div>'
+        : '')
+    + '</div>';
+}
+async function _prepConfirmAllReports() {
+  const pending = (Array.isArray(_prepAdminReportsData) ? _prepAdminReportsData : [])
+    .filter(r => r.status === 'pending');
+  if (!pending.length) { showToast('No hay reportes pendientes'); return; }
+  try {
+    await Promise.all(pending.map(r => setPrepReportStatus(r.id, 'confirmed')));
+    showToast('✧✦✧ ' + pending.length + ' reporte' + (pending.length>1?'s':'') + ' confirmado' + (pending.length>1?'s':''));
+  } catch(e) { showToast('Error al confirmar: ' + (e.message||'')); }
 }
 function _prepCopyConfirmedErrors() {
   const confirmed = (Array.isArray(_prepAdminReportsData) ? _prepAdminReportsData : [])
