@@ -15903,6 +15903,388 @@ _SKILL_META['sg3m3_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Verificación y Cál
 function _genSG3M3_BQ2(){return _bqSrcPick(['sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8'],[_genSG3M3_B5,_genSG3M3_B6,_genSG3M3_B7,_genSG3M3_B8]);}
 _SKILL_META['sg3m3_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Evaluación y Aplicación de Funciones Inversas',qCount:20,gen:_genSG3M3_BQ2,quiz:true,srcKeys:['sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8']};
 
+// ─── sg3m4_ : Medidas de Tendencia Central ── St. George's 3° Medio ───────────
+
+function sg3m4_b1(){
+  // Moda – datos crudos y tablas de frecuencia (5 plantillas)
+  const t=Math.floor(Math.random()*5);
+  if(t===0){
+    // Plantilla 1: Lista de datos con moda única
+    const vals=[[3,1,2,3,4,3,2,1,3,2],[5,2,5,3,5,1,2,5,3,4],[7,4,7,6,7,5,4,7,6,5],[2,8,2,4,2,6,8,2,4,6],[1,3,1,2,1,4,3,1,2,4]];
+    const dato=_i4gpick(vals);
+    const counts={};
+    dato.forEach(v=>{counts[v]=(counts[v]||0)+1;});
+    const moda=Object.keys(counts).reduce((a,b)=>counts[a]>counts[b]?a:b);
+    const distractores=[...new Set(dato)].filter(v=>v!=moda).slice(0,3);
+    while(distractores.length<3)distractores.push(Number(moda)+(distractores.length+1));
+    return{_id:1,q:`Los puntajes obtenidos por un grupo de estudiantes en una prueba son:\n${dato.join(', ')}\n¿Cuál es la moda de este conjunto de datos?`,a:`${moda}`,opts:_i4gshuf([`${moda}`,...distractores.map(String)]),mc:true,ste:`La moda es el valor que aparece con mayor frecuencia. El valor ${moda} aparece ${counts[moda]} veces, más que cualquier otro.`};
+  }
+  if(t===1){
+    // Plantilla 2: Tabla fi dada → valor modal
+    const tablas=[
+      {vals:[1,2,3,4,5],fis:[3,7,4,2,1],moda:2},
+      {vals:[0,1,2,3,4],fis:[2,5,8,4,1],moda:2},
+      {vals:[2,3,4,5,6],fis:[1,4,6,3,2],moda:4},
+      {vals:[10,11,12,13,14],fis:[2,3,8,5,2],moda:12},
+      {vals:[0,1,2,3,4],fis:[1,2,4,9,3],moda:3},
+    ];
+    const tb=_i4gpick(tablas);
+    const filas=tb.vals.map((v,i)=>`| ${v} | ${tb.fis[i]} |`).join('\n');
+    const dist=tb.vals.filter(v=>v!==tb.moda).slice(0,3);
+    return{_id:2,q:`Según la tabla de frecuencias:\n| Valor | fi |\n|---|---|\n${filas}\n¿Cuál es la moda?`,a:`${tb.moda}`,opts:_i4gshuf([`${tb.moda}`,...dist.map(String)]),mc:true,ste:`La moda es el valor con mayor frecuencia (fi). En la tabla, el valor ${tb.moda} tiene la mayor frecuencia.`};
+  }
+  if(t===2){
+    // Plantilla 3: Bimodal
+    const datos=[
+      {d:[2,3,2,4,3,5,2,3,4,5],modas:[2,3]},
+      {d:[1,1,2,2,3,4,1,2,3,4],modas:[1,2]},
+      {d:[5,6,5,7,6,8,5,6,7,8],modas:[5,6]},
+      {d:[0,0,1,1,2,3,0,1,2,3],modas:[0,1]},
+      {d:[4,4,5,5,6,7,4,5,6,7],modas:[4,5]},
+    ];
+    const d=_i4gpick(datos);
+    return{_id:3,q:`Se registraron los siguientes datos:\n${d.d.join(', ')}\n¿Cuáles son las modas del conjunto?`,a:`${d.modas[0]} y ${d.modas[1]}`,opts:_i4gshuf([`${d.modas[0]} y ${d.modas[1]}`,`Solo ${d.modas[0]}`,`Solo ${d.modas[1]}`,`No hay moda`]),mc:true,ste:`Cuando dos valores tienen la misma frecuencia máxima, el conjunto es bimodal. Aquí tanto ${d.modas[0]} como ${d.modas[1]} aparecen con igual frecuencia máxima.`};
+  }
+  if(t===3){
+    // Plantilla 4: ¿Hay moda? Todos distintos → no hay moda
+    const sinModa=[[1,2,3,4,5,6],[7,8,9,10,11,12],[2,4,6,8,10,12],[1,3,5,7,9,11],[0,1,2,3,4,5]];
+    const dato=_i4gpick(sinModa);
+    return{_id:4,q:`Un estudiante anotó las siguientes mediciones:\n${dato.join(', ')}\n¿Cuál es la moda de este conjunto?`,a:`No hay moda`,opts:_i4gshuf([`No hay moda`,`${dato[0]}`,`${dato[dato.length-1]}`,`${dato[Math.floor(dato.length/2)]}`]),mc:true,ste:`Para que exista moda, algún valor debe repetirse. Como todos los valores aparecen exactamente una vez, no hay moda.`};
+  }
+  // Plantilla 5: Datos del aula (hermanos, etc.)
+  const escenarios=[
+    {ctx:'cantidad de hermanos de 20 estudiantes',datos:[2,1,2,1,2,4,2,0,3,0,2,1,2,1,3,4,1,2,3,2],moda:2},
+    {ctx:'calificaciones de 15 alumnos',datos:[5,6,5,7,6,5,8,5,7,6,5,9,6,5,7],moda:5},
+    {ctx:'número de libros leídos por 12 estudiantes',datos:[1,2,3,2,1,2,3,2,1,2,3,2],moda:2},
+    {ctx:'tiempo en minutos que tardan en llegar al colegio',datos:[10,15,10,20,10,15,10,20,15,10,25,10],moda:10},
+    {ctx:'número de mascotas que tienen en casa',datos:[1,0,1,2,1,0,3,1,2,1,0,1,2,1],moda:1},
+  ];
+  const esc=_i4gpick(escenarios);
+  return{_id:5,q:`Se registró la ${esc.ctx}:\n${esc.datos.join(', ')}\n¿Cuál es la moda?`,a:`${esc.moda}`,opts:_i4gshuf([`${esc.moda}`,`${esc.moda+1}`,`${esc.moda-1}`,`${esc.moda+2}`]),mc:true,ste:`La moda es el valor más frecuente. Contando las repeticiones, ${esc.moda} aparece más veces que cualquier otro valor.`};
+}
+
+function sg3m4_b2(){
+  // Mediana – datos ordenados (n par e impar) (5 plantillas)
+  const t=Math.floor(Math.random()*5);
+  if(t===0){
+    // Plantilla 1: n impar, datos ya ordenados
+    const conjuntos=[[1,3,5,7,9],[2,4,6,8,10,12,14],[1,2,3,4,5,6,7],[10,20,30,40,50],[3,6,9,12,15,18,21]];
+    const d=_i4gpick(conjuntos);
+    const med=d[Math.floor(d.length/2)];
+    return{_id:1,q:`Los siguientes datos están ordenados de menor a mayor:\n${d.join(', ')}\n¿Cuál es la mediana?`,a:`${med}`,opts:_i4gshuf([`${med}`,`${med-d[1]+d[0]}`,`${d[0]}`,`${d[d.length-1]}`]),mc:true,ste:`Con n=${d.length} datos (impar), la mediana es el dato que ocupa la posición ${Math.floor(d.length/2)+1}, que es ${med}.`};
+  }
+  if(t===1){
+    // Plantilla 2: n par, datos ya ordenados → promedio dos centrales
+    const conjuntos=[[2,4,6,8],[1,3,5,7,9,11],[10,20,30,40],[2,5,8,11,14,17],[4,8,12,16,20,24]];
+    const d=_i4gpick(conjuntos);
+    const mid=d.length/2;
+    const med=(d[mid-1]+d[mid])/2;
+    return{_id:2,q:`Los siguientes datos están ordenados:\n${d.join(', ')}\n¿Cuál es la mediana?`,a:`${med}`,opts:_i4gshuf([`${med}`,`${d[mid-1]}`,`${d[mid]}`,`${med+1}`]),mc:true,ste:`Con n=${d.length} datos (par), la mediana es el promedio de los datos en las posiciones ${mid} y ${mid+1}: (${d[mid-1]}+${d[mid]})/2 = ${med}.`};
+  }
+  if(t===2){
+    // Plantilla 3: n impar, desordenados
+    const raw=[[5,1,9,3,7],[8,2,6,4,10,12,14],[15,5,25,10,20],[3,9,1,7,5,11,13],[2,6,4,8,10]];
+    const d=_i4gpick(raw);
+    const ord=[...d].sort((a,b)=>a-b);
+    const med=ord[Math.floor(ord.length/2)];
+    return{_id:3,q:`Un grupo registró los siguientes valores:\n${d.join(', ')}\nPrimero ordénalos y luego determina la mediana.`,a:`${med}`,opts:_i4gshuf([`${med}`,`${ord[0]}`,`${ord[ord.length-1]}`,`${med+2}`]),mc:true,ste:`Ordenados: ${ord.join(', ')}. Con n=${ord.length} datos, la mediana es el dato central en la posición ${Math.floor(ord.length/2)+1}: ${med}.`};
+  }
+  if(t===3){
+    // Plantilla 4: n par, desordenados
+    const raw=[[4,2,8,6],[9,3,7,1,5,11],[20,10,40,30],[6,2,10,4,8,12],[5,15,10,20,25,30]];
+    const d=_i4gpick(raw);
+    const ord=[...d].sort((a,b)=>a-b);
+    const mid=ord.length/2;
+    const med=(ord[mid-1]+ord[mid])/2;
+    return{_id:4,q:`Los datos registrados son:\n${d.join(', ')}\nOrdénalos y calcula la mediana.`,a:`${med}`,opts:_i4gshuf([`${med}`,`${ord[mid-1]}`,`${ord[mid]}`,`${med+1}`]),mc:true,ste:`Ordenados: ${ord.join(', ')}. Con n=${ord.length} (par), la mediana es (${ord[mid-1]}+${ord[mid]})/2 = ${med}.`};
+  }
+  // Plantilla 5: Tabla fi → mediana con Fi acumulada
+  const tablas=[
+    {vals:[1,2,3,4,5],fis:[2,5,8,4,1],n:20,med:3},
+    {vals:[0,1,2,3,4],fis:[1,4,7,5,3],n:20,med:2},
+    {vals:[5,6,7,8,9],fis:[2,3,8,5,2],n:20,med:7},
+    {vals:[10,11,12,13,14],fis:[3,5,6,4,2],n:20,med:12},
+    {vals:[1,2,3,4,5],fis:[1,3,9,5,2],n:20,med:3},
+  ];
+  const tb=_i4gpick(tablas);
+  let fi_acum=0;
+  const filas=tb.vals.map((v,i)=>{fi_acum+=tb.fis[i];return`| ${v} | ${tb.fis[i]} | ${fi_acum} |`;}).join('\n');
+  return{_id:5,q:`Dada la siguiente tabla de frecuencias (n=${tb.n}):\n| Valor | fi | Fi |\n|---|---|---|\n${filas}\n¿Cuál es la mediana?`,a:`${tb.med}`,opts:_i4gshuf([`${tb.med}`,`${tb.med-1}`,`${tb.med+1}`,`${tb.vals[0]}`]),mc:true,ste:`La mediana corresponde al valor donde la frecuencia acumulada Fi supera n/2 = ${tb.n/2}. Ese valor es ${tb.med}.`};
+}
+
+_SKILL_META['sg3m4_b1']={ico:'📐',lbl:'Moda – datos crudos y tablas de frecuencia',qCount:4,gen:sg3m4_b1};
+_SKILL_META['sg3m4_b2']={ico:'📐',lbl:'Mediana – datos ordenados (n par e impar)',qCount:4,gen:sg3m4_b2};
+
+_SKILL_META['sg3m4_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Moda y Mediana',qCount:10,gen:()=>_bqSrcPick(['sg3m4_b1','sg3m4_b2'],[sg3m4_b1,sg3m4_b2]),quiz:true,srcKeys:['sg3m4_b1','sg3m4_b2']};
+
+function sg3m4_b3(){
+  // Media aritmética (5 plantillas)
+  const t=Math.floor(Math.random()*5);
+  if(t===0){
+    // Plantilla 1: Lista corta → suma/n
+    const listas=[[4,6,8,10,12],[5,10,15,20],[3,7,11,15,19],[2,4,6,8,10,12],[6,9,12,15]];
+    const d=_i4gpick(listas);
+    const sum=d.reduce((a,b)=>a+b,0);
+    const media=sum/d.length;
+    return{_id:1,q:`Calcula la media aritmética de los siguientes datos:\n${d.join(', ')}`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+1}`,`${media-1}`,`${media+2}`]),mc:true,ste:`Media = (${d.join('+')})/  ${d.length} = ${sum}/${d.length} = ${media}.`};
+  }
+  if(t===1){
+    // Plantilla 2: Tabla fi·xi → media ponderada
+    const tablas=[
+      {vals:[1,2,3,4,5],fis:[3,7,4,4,2],n:20},
+      {vals:[0,1,2,3,4],fis:[2,5,8,3,2],n:20},
+      {vals:[2,3,4,5,6],fis:[2,4,6,5,3],n:20},
+      {vals:[5,6,7,8,9],fis:[2,3,8,4,3],n:20},
+      {vals:[1,2,3,4,5],fis:[2,4,7,5,2],n:20},
+    ];
+    const tb=_i4gpick(tablas);
+    const sumaFiXi=tb.vals.reduce((acc,v,i)=>acc+v*tb.fis[i],0);
+    const media=Math.round((sumaFiXi/tb.n)*100)/100;
+    const filas=tb.vals.map((v,i)=>`| ${v} | ${tb.fis[i]} | ${v*tb.fis[i]} |`).join('\n');
+    return{_id:2,q:`Usando la tabla de frecuencias (n=${tb.n}):\n| xi | fi | fi·xi |\n|---|---|---|\n${filas}\nCalcula la media aritmética.`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+0.5}`,`${media-0.5}`,`${media+1}`]),mc:true,ste:`Media = Σ(fi·xi)/n = ${sumaFiXi}/${tb.n} = ${media}.`};
+  }
+  if(t===2){
+    // Plantilla 3: Notas de estudiantes
+    const notas=[
+      [4,5,6,7,8],[5,6,6,7,7,8],[3,5,6,7,9],[4,6,6,8,6],[5,5,6,7,7],
+    ];
+    const d=_i4gpick(notas);
+    const sum=d.reduce((a,b)=>a+b,0);
+    const media=Math.round((sum/d.length)*100)/100;
+    return{_id:3,q:`Las notas de un estudiante en 5 evaluaciones son:\n${d.join(', ')}\n¿Cuál es su nota promedio (media)?`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+0.2}`,`${media-0.2}`,`${media+0.4}`]),mc:true,ste:`Media = (${d.join('+')})/  ${d.length} = ${sum}/${d.length} = ${media}.`};
+  }
+  if(t===3){
+    // Plantilla 4: Datos de aula con tabla completa → media
+    const escenarios=[
+      {ctx:'número de horas de estudio semanal',vals:[1,2,3,4,5],fis:[2,5,8,3,2],n:20},
+      {ctx:'cantidad de hermanos',vals:[0,1,2,3,4],fis:[3,7,6,3,1],n:20},
+      {ctx:'número de libros leídos',vals:[0,1,2,3,4],fis:[2,4,8,4,2],n:20},
+      {ctx:'puntaje en quiz',vals:[3,4,5,6,7],fis:[1,4,8,5,2],n:20},
+      {ctx:'tiempo de traslado (en minutos)',vals:[10,20,30,40,50],fis:[4,6,5,3,2],n:20},
+    ];
+    const esc=_i4gpick(escenarios);
+    const sumaFiXi=esc.vals.reduce((acc,v,i)=>acc+v*esc.fis[i],0);
+    const media=Math.round((sumaFiXi/esc.n)*100)/100;
+    const filas=esc.vals.map((v,i)=>`| ${v} | ${esc.fis[i]} |`).join('\n');
+    return{_id:4,q:`La tabla muestra la ${esc.ctx} de ${esc.n} estudiantes:\n| xi | fi |\n|---|---|\n${filas}\nCalcula la media.`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+0.5}`,`${media-0.5}`,`${esc.vals[Math.floor(esc.vals.length/2)]}`]),mc:true,ste:`Media = Σ(fi·xi)/n = ${sumaFiXi}/${esc.n} = ${media}.`};
+  }
+  // Plantilla 5: Media con decimales
+  const datos=[[2.5,3.5,4.5,5.5],[1.5,2.5,3.5,4.5,5.5],[10.5,11.5,12.5,13.5],[0.5,1.5,2.5,3.5,4.5]];
+  const d=_i4gpick(datos);
+  const sum=d.reduce((a,b)=>a+b,0);
+  const media=Math.round((sum/d.length)*100)/100;
+  return{_id:5,q:`Calcula la media aritmética:\n${d.join(', ')}`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+0.5}`,`${media-0.5}`,`${media+1}`]),mc:true,ste:`Media = (${d.join('+')})/  ${d.length} = ${sum}/${d.length} = ${media}.`};
+}
+
+function sg3m4_b4(){
+  // Incógnita en medidas – hallar p o k desde la media (5 plantillas)
+  const t=Math.floor(Math.random()*5);
+  if(t===0){
+    // Plantilla 1: Un dato desconocido p, media dada
+    const casos=[
+      {datos:[3,5,p=>p,7,9],mediaD:6,n:5,p:6,otros:[3,5,7,9]},
+      {datos:[4,8,p=>p,6,12],mediaD:7,n:5,p:5,otros:[4,8,6,12]},
+      {datos:[2,6,p=>p,10,14],mediaD:8,n:5,p:8,otros:[2,6,10,14]},
+      {datos:[1,5,p=>p,9,10],mediaD:6,n:5,p:5,otros:[1,5,9,10]},
+      {datos:[3,7,p=>p,11,9],mediaD:7,n:5,p:5,otros:[3,7,11,9]},
+    ];
+    const c=_i4gpick(casos);
+    const sumaOtros=c.otros.reduce((a,b)=>a+b,0);
+    return{_id:1,q:`Los datos de un conjunto son: ${c.otros.slice(0,2).join(', ')}, p, ${c.otros.slice(2).join(', ')}\nSi la media es ${c.mediaD}, ¿cuánto vale p?`,a:`p = ${c.p}`,opts:_i4gshuf([`p = ${c.p}`,`p = ${c.p+1}`,`p = ${c.p-1}`,`p = ${c.p+2}`]),mc:true,ste:`Media = suma/n → ${c.mediaD} = (${sumaOtros}+p)/${c.n} → p = ${c.mediaD*c.n} - ${sumaOtros} = ${c.p}.`};
+  }
+  if(t===1){
+    // Plantilla 2: Datos repetidos (p, p), media dada
+    const casos=[
+      {otros:[6,8,3,7],mediaD:6,n:6,p:4},
+      {otros:[5,3,8,10],mediaD:6,n:6,p:5},
+      {otros:[4,8,3,9],mediaD:6,n:6,p:6},
+      {otros:[10,6,8,3,7],mediaD:7,n:7,p:8},
+      {otros:[5,9,7,3],mediaD:6,n:6,p:6},
+    ];
+    const c=_i4gpick(casos);
+    const sumaOtros=c.otros.reduce((a,b)=>a+b,0);
+    return{_id:2,q:`Un conjunto tiene los datos: ${c.otros.join(', ')}, p, p\nSi la media es ${c.mediaD}, ¿cuánto vale p?`,a:`p = ${c.p}`,opts:_i4gshuf([`p = ${c.p}`,`p = ${c.p+1}`,`p = ${c.p-1}`,`p = ${c.p+2}`]),mc:true,ste:`Media = (${sumaOtros}+2p)/${c.n} = ${c.mediaD} → 2p = ${c.mediaD*c.n}-${sumaOtros} = ${c.mediaD*c.n-sumaOtros} → p = ${c.p}.`};
+  }
+  if(t===2){
+    // Plantilla 3: Suma total conocida, hallar dato faltante
+    const casos=[
+      {n:5,media:8,conocidos:[6,9,7,10],faltante:8},
+      {n:4,media:7,conocidos:[5,8,9],faltante:6},
+      {n:6,media:5,conocidos:[3,6,4,7,5],faltante:5},
+      {n:5,media:10,conocidos:[8,12,9,11],faltante:10},
+      {n:4,media:6,conocidos:[4,7,8],faltante:5},
+    ];
+    const c=_i4gpick(casos);
+    const sumaConocidos=c.conocidos.reduce((a,b)=>a+b,0);
+    return{_id:3,q:`Se tienen ${c.n} datos con una media de ${c.media}.\nSi ${c.n-1} de los datos son: ${c.conocidos.join(', ')}\n¿Cuál es el dato que falta?`,a:`${c.faltante}`,opts:_i4gshuf([`${c.faltante}`,`${c.faltante+1}`,`${c.faltante-1}`,`${c.faltante+2}`]),mc:true,ste:`Suma total = media × n = ${c.media} × ${c.n} = ${c.media*c.n}. Dato faltante = ${c.media*c.n} - ${sumaConocidos} = ${c.faltante}.`};
+  }
+  if(t===3){
+    // Plantilla 4: Hallar k de frecuencia para Σfi = n
+    const casos=[
+      {vals:[1,2,3,4,5],fis_expr:['k','4','6','3','2'],k:5,n:20},
+      {vals:[0,1,2,3,4],fis_expr:['2','k','7','4','1'],k:6,n:20},
+      {vals:[5,6,7,8,9],fis_expr:['2','3','k','4','2'],k:9,n:20},
+      {vals:[1,2,3,4,5],fis_expr:['3','5','k','4','2'],k:6,n:20},
+      {vals:[0,1,2,3,4],fis_expr:['1','4','8','k','2'],k:5,n:20},
+    ];
+    const c=_i4gpick(casos);
+    const filas=c.vals.map((v,i)=>`| ${v} | ${c.fis_expr[i]} |`).join('\n');
+    return{_id:4,q:`La tabla de frecuencias tiene un valor desconocido k (n=${c.n}):\n| xi | fi |\n|---|---|\n${filas}\n¿Cuánto vale k?`,a:`k = ${c.k}`,opts:_i4gshuf([`k = ${c.k}`,`k = ${c.k+1}`,`k = ${c.k-1}`,`k = ${c.k+2}`]),mc:true,ste:`La suma de todas las frecuencias debe ser n=${c.n}. Sumando los valores conocidos y despejando k = ${c.n} - (suma sin k) = ${c.k}.`};
+  }
+  // Plantilla 5: Tipo dado (2k, 6, 3, 7, 3, k) → hallar k
+  const casos=[
+    {expr:'2k, 6, 3, 7, 3, k',media:5,n:6,k:2,sum_sin_k:'6+3+7+3',val_sin_k:19},
+    {expr:'3k, 4, 5, 2, k',media:4,n:5,k:2,sum_sin_k:'4+5+2',val_sin_k:11},
+    {expr:'2k, 8, 4, k, 3',media:5,n:5,k:3,sum_sin_k:'8+4+3',val_sin_k:15},
+    {expr:'k, 6, 3, 8, k, 2',media:5,n:6,k:5,sum_sin_k:'6+3+8+2',val_sin_k:19},
+    {expr:'2k, 5, 3, k, 4',media:4,n:5,k:2,sum_sin_k:'5+3+4',val_sin_k:12},
+  ];
+  const c=_i4gpick(casos);
+  return{_id:5,q:`Los datos de un experimento son: ${c.expr}\nSi la media es ${c.media}, ¿cuánto vale k?`,a:`k = ${c.k}`,opts:_i4gshuf([`k = ${c.k}`,`k = ${c.k+1}`,`k = ${c.k-1}`,`k = ${c.k+2}`]),mc:true,ste:`Media = suma/n → ${c.media} = (expresión con k)/${c.n}. Resolviendo la ecuación, k = ${c.k}.`};
+}
+
+_SKILL_META['sg3m4_b3']={ico:'📐',lbl:'Media aritmética – Σfi·xi / n',qCount:4,gen:sg3m4_b3};
+_SKILL_META['sg3m4_b4']={ico:'📐',lbl:'Incógnita en medidas – hallar p o k desde la media',qCount:4,gen:sg3m4_b4};
+
+_SKILL_META['sg3m4_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Media e Incógnitas',qCount:10,gen:()=>_bqSrcPick(['sg3m4_b3','sg3m4_b4'],[sg3m4_b3,sg3m4_b4]),quiz:true,srcKeys:['sg3m4_b3','sg3m4_b4']};
+
+function sg3m4_b5(){
+  // Variables estadísticas y proposiciones V/F (5 plantillas)
+  const t=Math.floor(Math.random()*5);
+  if(t===0){
+    // Plantilla 1: Tipo de variable
+    const preguntas=[
+      {ctx:'Color de ojos de los estudiantes (azul, café, verde)',resp:'Variable cualitativa nominal',ops:['Variable cualitativa nominal','Variable cuantitativa discreta','Variable cuantitativa continua','Variable cualitativa ordinal']},
+      {ctx:'Número de hermanos de cada alumno',resp:'Variable cuantitativa discreta',ops:['Variable cuantitativa discreta','Variable cualitativa nominal','Variable cuantitativa continua','Variable cualitativa ordinal']},
+      {ctx:'Altura de los estudiantes en centímetros',resp:'Variable cuantitativa continua',ops:['Variable cuantitativa continua','Variable cuantitativa discreta','Variable cualitativa nominal','Variable cualitativa ordinal']},
+      {ctx:'Nivel educacional (básica, media, universitaria)',resp:'Variable cualitativa ordinal',ops:['Variable cualitativa ordinal','Variable cualitativa nominal','Variable cuantitativa discreta','Variable cuantitativa continua']},
+      {ctx:'Temperatura corporal en grados Celsius',resp:'Variable cuantitativa continua',ops:['Variable cuantitativa continua','Variable cuantitativa discreta','Variable cualitativa nominal','Variable cualitativa ordinal']},
+    ];
+    const p=_i4gpick(preguntas);
+    return{_id:1,q:`¿Qué tipo de variable estadística es la siguiente?\n"${p.ctx}"`,a:p.resp,opts:_i4gshuf(p.ops),mc:true,ste:`${p.resp}. Las variables cualitativas no admiten operaciones numéricas; las cuantitativas sí. Las discretas toman valores enteros; las continuas, cualquier valor en un intervalo.`};
+  }
+  if(t===1){
+    // Plantilla 2: Proposición sobre la media
+    const props=[
+      {prop:'Si 17 estudiantes tienen una estatura media de 160 cm, entonces todos miden exactamente 160 cm.',vf:'Falsa',exp:'La media es un promedio; no implica que todos tengan ese valor exacto.'},
+      {prop:'La media aritmética siempre es igual a uno de los datos del conjunto.',vf:'Falsa',exp:'La media puede ser un valor que no está en el conjunto de datos.'},
+      {prop:'Si la media de 5 exámenes es 6, entonces la suma de todas las notas es 30.',vf:'Verdadera',exp:'Suma = media × n = 6 × 5 = 30.'},
+      {prop:'Al agregar un dato igual a la media, el valor de la media no cambia.',vf:'Verdadera',exp:'Agregar un valor igual a la media no altera el promedio.'},
+      {prop:'La media siempre es mayor que la mediana.',vf:'Falsa',exp:'La relación entre media y mediana depende de la distribución; no siempre es así.'},
+    ];
+    const p=_i4gpick(props);
+    return{_id:2,q:`¿Es verdadera o falsa la siguiente proposición?\n"${p.prop}"`,a:p.vf,opts:_i4gshuf([p.vf,p.vf==='Verdadera'?'Falsa':'Verdadera']),mc:true,ste:p.exp};
+  }
+  if(t===2){
+    // Plantilla 3: Proposición moda/mediana
+    const props=[
+      {prop:'Un conjunto de datos siempre tiene exactamente una moda.',vf:'Falsa',exp:'Un conjunto puede ser bimodal, multimodal o no tener moda (si todos los valores son distintos).'},
+      {prop:'La mediana divide al conjunto ordenado en dos partes iguales.',vf:'Verdadera',exp:'Por definición, la mediana es el valor central que deja el 50% de datos a cada lado.'},
+      {prop:'Si todos los datos son iguales, la moda y la media son el mismo valor.',vf:'Verdadera',exp:'Si todos los datos son iguales a k, entonces moda = media = k.'},
+      {prop:'La mediana siempre es uno de los datos del conjunto.',vf:'Falsa',exp:'Con n par, la mediana es el promedio de los dos centrales, que puede no estar en el conjunto.'},
+      {prop:'La moda es la medida más adecuada para variables cualitativas nominales.',vf:'Verdadera',exp:'Para variables nominales no tiene sentido calcular media ni mediana; solo la moda (el más frecuente).'},
+    ];
+    const p=_i4gpick(props);
+    return{_id:3,q:`Indica si la siguiente afirmación es verdadera o falsa:\n"${p.prop}"`,a:p.vf,opts:_i4gshuf([p.vf,p.vf==='Verdadera'?'Falsa':'Verdadera']),mc:true,ste:p.exp};
+  }
+  if(t===3){
+    // Plantilla 4: ¿Qué medida aplica a variable nominal?
+    const preguntas=[
+      {ctx:'Se registró el color favorito de los estudiantes. ¿Qué medida de tendencia central es aplicable?',resp:'Moda',exp:'La moda es la única medida aplicable a variables cualitativas nominales.'},
+      {ctx:'Se encuestó la marca de celular preferida. ¿Con qué medida se puede resumir la información?',resp:'Moda',exp:'Para datos nominales como marcas, solo tiene sentido hablar de la categoría más frecuente: la moda.'},
+      {ctx:'En una encuesta sobre deporte favorito, ¿qué medida de tendencia central NO es aplicable?',resp:'Media aritmética',exp:'La media aritmética no se puede calcular con datos cualitativos nominales como deportes.'},
+      {ctx:'¿Cuál medida de tendencia central se puede calcular con cualquier tipo de variable estadística?',resp:'Moda',exp:'La moda aplica a cualquier tipo de variable (nominal, ordinal, discreta, continua). La media y mediana requieren datos cuantitativos o al menos ordinales.'},
+      {ctx:'¿Cuál medida de tendencia central requiere que los datos sean cuantitativos?',resp:'Media aritmética',exp:'La media requiere sumar valores, por lo que solo aplica a variables cuantitativas.'},
+    ];
+    const p=_i4gpick(preguntas);
+    return{_id:4,q:p.ctx,a:p.resp,opts:_i4gshuf([p.resp,'Mediana','Media aritmética','Moda'].filter((v,i,a)=>a.indexOf(v)===i).slice(0,4)),mc:true,ste:p.exp};
+  }
+  // Plantilla 5: Lectura de gráfico de barras → variable y medidas
+  const graficos=[
+    {ctx:'Un gráfico de barras muestra los días lluviosos por mes: enero=2, febrero=0, marzo=1, abril=3, mayo=0.',datos:[2,0,1,3,0],moda:0,media:1.2,mediana:1,tipo:'cuantitativa discreta'},
+    {ctx:'Un gráfico muestra las notas de 5 estudiantes: 4, 6, 7, 6, 8.',datos:[4,6,6,7,8],moda:6,media:6.2,mediana:6,tipo:'cuantitativa discreta'},
+    {ctx:'Un gráfico de barras muestra la cantidad de libros leídos: 1, 2, 1, 3, 2, 1.',datos:[1,1,1,2,2,3],moda:1,media:10/6,mediana:1.5,tipo:'cuantitativa discreta'},
+    {ctx:'Un gráfico muestra puntajes de prueba: 5, 7, 6, 7, 5.',datos:[5,5,6,7,7],moda:'5 y 7',media:6,mediana:6,tipo:'cuantitativa discreta'},
+    {ctx:'Un gráfico de barras registra el número de mascotas: 0, 1, 0, 2, 1, 0.',datos:[0,0,0,1,1,2],moda:0,media:4/6,mediana:0.5,tipo:'cuantitativa discreta'},
+  ];
+  const g=_i4gpick(graficos);
+  const ord=[...g.datos].sort((a,b)=>a-b);
+  return{_id:5,q:`${g.ctx}\n¿Cuál es la moda de los datos mostrados?`,a:`${g.moda}`,opts:_i4gshuf([`${g.moda}`,`${g.media.toFixed(1)}`,`${g.mediana}`,`No hay moda`]),mc:true,ste:`La moda es el valor que aparece con mayor frecuencia en el gráfico. Datos ordenados: ${ord.join(', ')}. Moda = ${g.moda}.`};
+}
+
+function sg3m4_b6(){
+  // Datos agrupados – clase modal y media estimada (5 plantillas)
+  const t=Math.floor(Math.random()*5);
+  if(t===0){
+    // Plantilla 1: Tabla de intervalos → clase modal
+    const tablas=[
+      {intervalos:['[0;5[','[5;10[','[10;15[','[15;20[','[20;25['],fis:[3,8,12,5,2],modal:'[10;15['},
+      {intervalos:['[0;10[','[10;20[','[20;30[','[30;40['],fis:[4,6,11,3],modal:'[20;30['},
+      {intervalos:['[5;10[','[10;15[','[15;20[','[20;25['],fis:[2,9,6,3],modal:'[10;15['},
+      {intervalos:['[0;5[','[5;10[','[10;15[','[15;20['],fis:[5,3,10,2],modal:'[10;15['},
+      {intervalos:['[10;20[','[20;30[','[30;40[','[40;50['],fis:[4,13,7,2],modal:'[20;30['},
+    ];
+    const tb=_i4gpick(tablas);
+    const filas=tb.intervalos.map((iv,i)=>`| ${iv} | ${tb.fis[i]} |`).join('\n');
+    const opsDist=tb.intervalos.filter(iv=>iv!==tb.modal).slice(0,3);
+    return{_id:1,q:`La siguiente tabla muestra datos agrupados:\n| Intervalo | fi |\n|---|---|\n${filas}\n¿Cuál es la clase modal?`,a:tb.modal,opts:_i4gshuf([tb.modal,...opsDist]),mc:true,ste:`La clase modal es el intervalo con mayor frecuencia. El intervalo ${tb.modal} tiene la frecuencia más alta.`};
+  }
+  if(t===1){
+    // Plantilla 2: Calcular media con punto medio
+    const tablas=[
+      {intervalos:['[0;10[','[10;20[','[20;30[','[30;40['],pms:[5,15,25,35],fis:[4,6,8,2],n:20},
+      {intervalos:['[0;5[','[5;10[','[10;15[','[15;20[','[20;25['],pms:[2.5,7.5,12.5,17.5,22.5],fis:[2,5,8,3,2],n:20},
+      {intervalos:['[5;10[','[10;15[','[15;20[','[20;25['],pms:[7.5,12.5,17.5,22.5],fis:[3,7,7,3],n:20},
+      {intervalos:['[0;10[','[10;20[','[20;30[','[30;40['],pms:[5,15,25,35],fis:[5,8,5,2],n:20},
+      {intervalos:['[10;20[','[20;30[','[30;40[','[40;50['],pms:[15,25,35,45],fis:[3,8,7,2],n:20},
+    ];
+    const tb=_i4gpick(tablas);
+    const sumaFiXi=tb.pms.reduce((acc,pm,i)=>acc+pm*tb.fis[i],0);
+    const media=Math.round((sumaFiXi/tb.n)*10)/10;
+    const filas=tb.intervalos.map((iv,i)=>`| ${iv} | ${tb.pms[i]} | ${tb.fis[i]} | ${tb.pms[i]*tb.fis[i]} |`).join('\n');
+    return{_id:2,q:`Calcula la media estimada de los datos agrupados (n=${tb.n}):\n| Intervalo | Punto medio (xi) | fi | fi·xi |\n|---|---|---|---|\n${filas}\nMedia ≈`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+2}`,`${media-2}`,`${media+5}`]),mc:true,ste:`Media ≈ Σ(fi·xi)/n = ${sumaFiXi}/${tb.n} ≈ ${media}.`};
+  }
+  if(t===2){
+    // Plantilla 3: Tipo ejercicio 4 (llamadas telefónicas de Said)
+    const datos=[
+      {ctx:'Said registró el tiempo (min) de 30 llamadas',intervalos:['[0;5[','[5;10[','[10;15[','[15;20[','[20;25[','[25;30['],fis:[8,7,6,5,3,1],n:30,modal:'[0;5[',pms:[2.5,7.5,12.5,17.5,22.5,27.5]},
+      {ctx:'Se midió el peso (kg) de 24 objetos',intervalos:['[0;5[','[5;10[','[10;15[','[15;20['],fis:[3,9,8,4],n:24,modal:'[5;10[',pms:[2.5,7.5,12.5,17.5]},
+    ];
+    const d=_i4gpick(datos);
+    const sumaFiXi=d.pms.reduce((acc,pm,i)=>acc+pm*d.fis[i],0);
+    const media=Math.round((sumaFiXi/d.n)*10)/10;
+    const filas=d.intervalos.map((iv,i)=>`| ${iv} | ${d.fis[i]} |`).join('\n');
+    return{_id:3,q:`${d.ctx} (n=${d.n}):\n| Intervalo | fi |\n|---|---|\n${filas}\n¿Cuál es la clase modal?`,a:d.modal,opts:_i4gshuf([d.modal,...d.intervalos.filter(iv=>iv!==d.modal).slice(0,3)]),mc:true,ste:`La clase modal es el intervalo con mayor frecuencia absoluta. El intervalo ${d.modal} tiene fi=${d.fis[d.intervalos.indexOf(d.modal)]}, la más alta.`};
+  }
+  if(t===3){
+    // Plantilla 4: Fi acumulada → mediana en datos agrupados
+    const tablas=[
+      {intervalos:['[0;10[','[10;20[','[20;30[','[30;40['],fis:[3,9,6,2],n:20,med_clase:'[10;20['},
+      {intervalos:['[5;10[','[10;15[','[15;20[','[20;25['],fis:[2,5,8,5],n:20,med_clase:'[15;20['},
+      {intervalos:['[0;5[','[5;10[','[10;15[','[15;20[','[20;25['],fis:[2,4,8,4,2],n:20,med_clase:'[10;15['},
+    ];
+    const tb=_i4gpick(tablas);
+    let acum=0;
+    const filas=tb.intervalos.map((iv,i)=>{acum+=tb.fis[i];return`| ${iv} | ${tb.fis[i]} | ${acum} |`;}).join('\n');
+    return{_id:4,q:`Tabla de frecuencias (n=${tb.n}):\n| Intervalo | fi | Fi |\n|---|---|---|\n${filas}\n¿En qué clase cae la mediana?`,a:tb.med_clase,opts:_i4gshuf([tb.med_clase,...tb.intervalos.filter(iv=>iv!==tb.med_clase).slice(0,3)]),mc:true,ste:`La mediana cae en el intervalo donde la frecuencia acumulada Fi supera n/2 = ${tb.n/2}. Esa clase es ${tb.med_clase}.`};
+  }
+  // Plantilla 5: Construir tabla y calcular media
+  const datos=[
+    {ctx:'alturas (cm) de alumnos',raw:[152,158,163,155,160,157,162,156,161,159,153,164,158,156,162,160,155,157,163,158],intervalos:['[150;155[','[155;160[','[160;165['],pms:[152.5,157.5,162.5],fis:[3,10,7],n:20},
+    {ctx:'pesos (kg) de mochilas',raw:[3,4,5,4,3,6,5,4,3,4,5,6,4,5,4,3,5,4,6,5],intervalos:['[3;4[','[4;5[','[5;6[','[6;7['],pms:[3.5,4.5,5.5,6.5],fis:[4,8,6,2],n:20},
+  ];
+  const d=_i4gpick(datos);
+  const sumaFiXi=d.pms.reduce((acc,pm,i)=>acc+pm*d.fis[i],0);
+  const media=Math.round((sumaFiXi/d.n)*10)/10;
+  const filas=d.intervalos.map((iv,i)=>`| ${iv} | ${d.pms[i]} | ${d.fis[i]} | ${d.pms[i]*d.fis[i]} |`).join('\n');
+  return{_id:5,q:`Se agruparon las ${d.ctx} (n=${d.n}). Tabla completada:\n| Intervalo | xi | fi | fi·xi |\n|---|---|---|---|\n${filas}\nEstima la media.`,a:`${media}`,opts:_i4gshuf([`${media}`,`${media+1}`,`${media-1}`,`${media+2}`]),mc:true,ste:`Media ≈ Σ(fi·xi)/n = ${sumaFiXi}/${d.n} ≈ ${media}.`};
+}
+
+_SKILL_META['sg3m4_b5']={ico:'📐',lbl:'Variables estadísticas y proposiciones V/F',qCount:4,gen:sg3m4_b5};
+_SKILL_META['sg3m4_b6']={ico:'📐',lbl:'Datos agrupados – clase modal y media estimada',qCount:4,gen:sg3m4_b6};
+
+_SKILL_META['sg3m4_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Variables y Datos Agrupados',qCount:10,gen:()=>_bqSrcPick(['sg3m4_b5','sg3m4_b6'],[sg3m4_b5,sg3m4_b6]),quiz:true,srcKeys:['sg3m4_b5','sg3m4_b6']};
+
 // ===== Colegio San Vicente del Retablo - 3ro Secundaria - Aritmética: Porcentajes (Unidad 01) =====
 
 function _genSVR3AR_B1(){
@@ -21180,6 +21562,7 @@ const PREP_CURRICULUM = {
          {lbl:'Relaciones y Funciones',                area:'matematica',     editorial:'st_georges',   skills:['sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4']},
          {lbl:'Composición de Funciones',            area:'matematica',     editorial:'st_georges',   skills:['sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2']},
          {lbl:'Función Inversa',                     area:'matematica',     editorial:'st_georges',   skills:['sg3m3_b1','sg3m3_b2','sg3m3_b3','sg3m3_b4','sg3m3_bq1','sg3m3_b5','sg3m3_b6','sg3m3_b7','sg3m3_b8','sg3m3_bq2']},
+    {lbl:'Medidas de Tendencia Central', area:'matematica', editorial:'st_georges', skills:['sg3m4_b1','sg3m4_b2','sg3m4_bq1','sg3m4_b3','sg3m4_b4','sg3m4_bq2','sg3m4_b5','sg3m4_b6','sg3m4_bq3']},
          {lbl:'Porcentajes',                       area:'aritmetica',     editorial:'san_vicente_retablo', skills:['svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2']},
          {lbl:'Reglas de Interés',                 area:'aritmetica',     editorial:'san_vicente_retablo', skills:['svr3ar2_b1','svr3ar2_b2','svr3ar2_b3','svr3ar2_bq1','svr3ar2_b4','svr3ar2_b5','svr3ar2_b6','svr3ar2_bq2']}],
     '5':[
