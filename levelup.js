@@ -21741,6 +21741,7 @@ function _preparatePaneHtml() {
     if (_prepTaskDeleteMode) {
       _paneHtml += `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepTaskModal()" style="z-index:9999">
         <div class="prep-report-modal-box" style="max-width:420px">
+          <div style="padding:20px;overflow-y:auto">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#f87171;letter-spacing:0.05em">🗑️ ELIMINAR TAREA</span>
             <button onclick="closePrepTaskModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
@@ -21758,11 +21759,13 @@ function _preparatePaneHtml() {
             <button onclick="_prepTaskDeleteMode=false;_prepTaskPinErr=false;_renderPreparatePane()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(139,92,246,0.12);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Reasignar</button>
             ${_isImpersonating ? `<button onclick="deletePrepTask()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(248,113,113,0.5);background:rgba(248,113,113,0.15);color:#fca5a5;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">🗑️ Eliminar</button>` : ''}
           </div>
+          </div>
         </div>
       </div>`;
     } else {
     _paneHtml += `<div class="prep-report-modal-ov" onclick="if(event.target===this)closePrepTaskModal()" style="z-index:9999">
       <div class="prep-report-modal-box" style="max-width:520px">
+        <div style="padding:20px;overflow-y:auto">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:0.05em">📌 AGREGAR COMO TAREA</span>
           <button onclick="closePrepTaskModal()" style="background:none;border:none;color:rgba(255,255,255,0.4);font-size:22px;cursor:pointer;line-height:1;padding:0">✕</button>
@@ -21787,6 +21790,7 @@ function _preparatePaneHtml() {
         <div style="margin-top:14px;display:flex;gap:8px">
           <button onclick="closePrepTaskModal()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">Cancelar</button>
           ${_isImpersonating ? `<button onclick="confirmPrepTask()" style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.2);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer">📌 Asignar</button>` : ''}
+        </div>
         </div>
       </div>
     </div>`;
@@ -26515,7 +26519,7 @@ function _prepStopInactivityWatcher() {
 // ── Sistema de pausa con contraseña de admin ──────────────────────────────────
 function _prepShowPauseOverlay() {
   const _existing = document.getElementById('_prep_pause_overlay');
-  if (_existing) return;
+  if (_existing) _existing.remove();
   const _ov = document.createElement('div');
   _ov.id = '_prep_pause_overlay';
   _ov.style.cssText = 'position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px)';
@@ -26525,7 +26529,7 @@ function _prepShowPauseOverlay() {
     <div style="font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:24px;line-height:1.5">El tiempo y todos los contadores están detenidos.<br>Solo el profesor puede reanudar la sesión.</div>
     <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em">🔑 Contraseña del profesor para reanudar</div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
-      <input id="_prep_pause_pin" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')_prepResume()" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none">
+      <input id="_prep_pause_pin" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter'){event.stopPropagation();_prepResume()}" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none">
       <button onclick="_prepResume()" style="padding:10px 16px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.2);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer;white-space:nowrap">▶ Reanudar</button>
     </div>
     <div id="_prep_pause_pin_err" style="font-size:11px;color:#f87171;font-family:'Barlow Condensed',sans-serif;font-weight:700;min-height:16px"></div>
@@ -26569,14 +26573,12 @@ function _prepPause() {
 
 function _prepResume() {
   if (!_prepPaused) return;
-  const _imp = typeof _isTeacher === 'function' && _isTeacher();
-  if (!_imp) {
-    const inp = document.getElementById('_prep_pause_pin');
-    if (!inp || String(inp.value) !== String(ADMIN && ADMIN.pin)) {
-      const errEl = document.getElementById('_prep_pause_pin_err');
-      if (errEl) errEl.textContent = 'Contraseña incorrecta';
-      return;
-    }
+  // Siempre validar PIN, sin excepción (ni para profe impersonando alumno)
+  const inp = document.getElementById('_prep_pause_pin');
+  if (!inp || String(inp.value) !== String(ADMIN && ADMIN.pin)) {
+    const errEl = document.getElementById('_prep_pause_pin_err');
+    if (errEl) errEl.textContent = 'Contraseña incorrecta';
+    return;
   }
   // Acumular tiempo de pausa para descontarlo de la duración final
   _prepPausedMs += Date.now() - _prepPauseStart;
@@ -26606,7 +26608,7 @@ function _prepShowPinRequestOverlay() {
       <button onclick="document.getElementById('_prep_pin_req_ov')?.remove()" style="background:none;border:none;color:rgba(255,255,255,0.3);font-size:22px;cursor:pointer;line-height:1;padding:0;margin-left:12px">✕</button>
     </div>
     <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-      <input id="_prep_pin_req_inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter')_prepPauseConfirm()" style="flex:1;padding:11px 14px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:17px;outline:none;letter-spacing:0.05em">
+      <input id="_prep_pin_req_inp" type="password" inputmode="numeric" maxlength="10" placeholder="Contraseña admin" onkeydown="if(event.key==='Enter'){event.stopPropagation();_prepPauseConfirm()}" style="flex:1;padding:11px 14px;border-radius:10px;border:1px solid rgba(139,92,246,0.4);background:rgba(255,255,255,0.06);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:17px;outline:none;letter-spacing:0.05em">
       <button onclick="_prepPauseConfirm()" style="padding:11px 16px;border-radius:10px;border:1px solid rgba(139,92,246,0.5);background:rgba(139,92,246,0.22);color:#c4b5fd;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;cursor:pointer;white-space:nowrap;letter-spacing:0.03em">Pausar →</button>
     </div>
     <div id="_prep_pin_req_err" style="font-size:11px;color:#f87171;font-weight:700;min-height:16px;letter-spacing:0.03em"></div>
@@ -26616,16 +26618,14 @@ function _prepShowPinRequestOverlay() {
 }
 function _prepPauseConfirm() {
   if (_prep.state !== 'exam' || _prepPaused) return;
-  const _imp = typeof _isTeacher === 'function' && _isTeacher();
-  if (!_imp) {
-    const _inp = document.getElementById('_prep_pin_req_inp');
-    const _val = _inp ? String(_inp.value) : '';
-    if (_val !== String(ADMIN && ADMIN.pin)) {
-      const _err = document.getElementById('_prep_pin_req_err');
-      if (_err) _err.textContent = 'Contraseña incorrecta';
-      if (_inp) { _inp.value = ''; _inp.focus(); }
-      return;
-    }
+  // Siempre validar PIN, sin excepción
+  const _inp = document.getElementById('_prep_pin_req_inp');
+  const _val = _inp ? String(_inp.value) : '';
+  if (_val !== String(ADMIN && ADMIN.pin)) {
+    const _err = document.getElementById('_prep_pin_req_err');
+    if (_err) _err.textContent = 'Contraseña incorrecta';
+    if (_inp) { _inp.value = ''; _inp.focus(); }
+    return;
   }
   const _ov = document.getElementById('_prep_pin_req_ov');
   if (_ov) _ov.remove();
@@ -26639,17 +26639,9 @@ function _prepPauseConfirm() {
 }
 // Abre el flujo de pausa con PIN desde el botón del HUD
 function _prepRequestPause() {
-  if (_prep.state !== 'exam' || _prepPaused) return;
-  const _imp = typeof _isTeacher === 'function' && _isTeacher();
-  if (_imp) {
-    _prepPaused = true; _prepPauseStart = Date.now();
-    clearInterval(_prepTimerIntv);
-    clearInterval(_prep.gameTimerIntv);
-    clearInterval(_prepInactivityIntv);
-    _snd.click();
-    _prepShowPauseOverlay();
-    return;
-  }
+  if (_prep.state !== 'exam') return;
+  if (_prepPaused) { _prepShowPauseOverlay(); return; }
+  // Siempre pedir PIN, sin excepción (ni para profe impersonando alumno)
   _prepShowPinRequestOverlay();
 }
 // ── LABEL CLEANER ────────────────────────────────────────────────────────────
@@ -29946,6 +29938,7 @@ function _prepSubmitText() {
 }
 function _prepNextQ() {
   if (!_prep.answered) return;
+  if (_prepPaused) return;
   _prep.currentIdx++;
   _prep.answered = false; _prep.selectedOpt = null;
   _prep.qStartTime = Date.now();

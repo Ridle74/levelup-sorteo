@@ -466,6 +466,7 @@ function setLoggedAdmin(on) {
 // ════════════════════════════════════════════════════════
 let DATA = JSON.parse(JSON.stringify(SEED));
 DATA.adminPin = ADMIN_PIN_DEFAULT;
+DATA.pagosConfirmados = {};
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
 const SEED_VERSION = 6;
@@ -474,6 +475,7 @@ let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
 let calJumpMode = 'today';     // 'today' | 'cur' | 'next'
 let selectedChild = null;      // studentId actualmente mostrado en calendario
+let adminPagosWeekOffset = 0;  // 0 = esta semana, -1 = semana pasada, etc.
 let currentView = 'login';
 let navHistory = [];   // pila de vistas visitadas, para los botones atrás/adelante
 let navIndex = -1;     // posición actual dentro de navHistory
@@ -483,11 +485,11 @@ let navIndex = -1;     // posición actual dentro de navHistory
 // (adminMode) decide a qué vista interna corresponde cada uno.
 const VIEW_SLUGS = {
   'a-inicio':'inicio', 'a-calendario':'calendario', 'a-solicitudes':'solicitudes',
-  'a-familias':'familias', 'a-config':'config',
-  'inicio':'inicio', 'calendario':'calendario', 'solicitar':'solicitar', 'perfil':'perfil'
+  'a-familias':'familias', 'a-config':'config', 'a-pagos':'pagos',
+  'inicio':'inicio', 'calendario':'calendario', 'solicitar':'solicitar', 'pagos':'pagos', 'perfil':'perfil'
 };
-const SLUG_TO_VIEW_ADMIN  = { inicio:'a-inicio', calendario:'a-calendario', solicitudes:'a-solicitudes', familias:'a-familias', config:'a-config' };
-const SLUG_TO_VIEW_PARENT = { inicio:'inicio', calendario:'calendario', solicitar:'solicitar', perfil:'perfil' };
+const SLUG_TO_VIEW_ADMIN  = { inicio:'a-inicio', calendario:'a-calendario', solicitudes:'a-solicitudes', familias:'a-familias', config:'a-config', pagos:'a-pagos' };
+const SLUG_TO_VIEW_PARENT = { inicio:'inicio', calendario:'calendario', solicitar:'solicitar', pagos:'pagos', perfil:'perfil' };
 // Sub-pestañas dentro de Solicitudes (4 bandejas: cuentas nuevas, hijos adicionales,
 // clases adicionales, cotizaciones), cada una con su propio sub-segmento de URL,
 // ej. /parents/solicitudes/cotizaciones.
@@ -745,6 +747,7 @@ function loadData() {
         DATA.freeSlots       = d.freeSlots       || [];
         DATA.quoteRequests   = d.quoteRequests   || [];
         DATA.templates       = d.templates       || [];
+        DATA.pagosConfirmados = d.pagosConfirmados || {};
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
         // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
         // explícitamente con FieldValue.delete() antes de escribir los nuevos.
@@ -771,6 +774,7 @@ function loadData() {
         DATA.freeSlots       = d.freeSlots       || [];
         DATA.quoteRequests   = d.quoteRequests   || [];
         DATA.templates       = d.templates       || [];
+        DATA.pagosConfirmados = d.pagosConfirmados || {};
       }
     } else {
       // Primera vez: sembrar Firestore con datos base. DATA ya es una copia de SEED
@@ -844,6 +848,10 @@ function saveSessions() {
 function saveFreeSlots() {
   REF.set({ freeSlots: DATA.freeSlots }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar horario libre.'); });
+}
+function savePagosConfirmados() {
+  REF.set({ pagosConfirmados: DATA.pagosConfirmados }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar confirmación.'); });
 }
 
 // ════════════════════════════════════════════════════════
@@ -949,8 +957,8 @@ function render() {
   }
 
   const views = adminMode
-    ? { 'a-inicio': vAdminInicio, 'a-familias': vAdminFamilias, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario, 'a-config': vAdminConfig }
-    : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar, perfil: vPerfil };
+    ? { 'a-inicio': vAdminInicio, 'a-familias': vAdminFamilias, 'a-solicitudes': vAdminSolicitudes, 'a-calendario': vAdminCalendario, 'a-config': vAdminConfig, 'a-pagos': vAdminPagos }
+    : { login: vLogin, inicio: vInicio, calendario: vCalendario, solicitar: vSolicitar, pagos: vPagos, perfil: vPerfil };
   app.innerHTML = `<div class="vw">${(views[currentView]||(adminMode?vAdminInicio:vLogin))()}</div>`;
 
   document.body.classList.toggle('nav-visible', loggedIn);
@@ -962,12 +970,14 @@ function render() {
           {r:'a-calendario',   i:'📅', l:'Calendario'},
           {r:'a-solicitudes',  i:'📥', l:'Solicitudes'},
           {r:'a-familias',     i:'👨‍👩‍👧', l:'Familias'},
-          {r:'a-config',       i:'⚙️', l:'Config'}
+          {r:'a-config',       i:'⚙️', l:'Config'},
+          {r:'a-pagos',        i:'💳', l:'Pagos'}
         ]
       : [
           {r:'inicio',     i:'🏠', l:'Inicio'},
           {r:'calendario', i:'📅', l:'Calendario'},
           {r:'solicitar',  i:'➕', l:'Solicitar'},
+          {r:'pagos',      i:'💳', l:'Pagos'},
           {r:'perfil',     i:'👤', l:'Perfil'}
         ];
     nav.querySelector('#nav-row').innerHTML = navItems.map(n =>
@@ -1084,6 +1094,18 @@ function calStep(dir) {
 // ════════════════════════════════════════════════════════
 // VIEWS
 // ════════════════════════════════════════════════════════
+function adminPagosStep(dir) { adminPagosWeekOffset += dir; render(); }
+function adminPagosToday()  { adminPagosWeekOffset = 0; render(); }
+function togglePagoConfirmado(pid, weekKey) {
+  var k = pid + '_' + weekKey;
+  if (DATA.pagosConfirmados[k]) {
+    delete DATA.pagosConfirmados[k];
+  } else {
+    DATA.pagosConfirmados[k] = { ts: new Date().toISOString() };
+  }
+  savePagosConfirmados();
+  render();
+}
 function vLogin() {
   return `
   <div class="login-wrap">
@@ -1640,7 +1662,478 @@ function saveChildProfile(childId) {
 }
 
 
-function vCalendario() {
+// ════════════════════════════════════════════════════════
+     // VISTA: Pagos semanales (por padre de familia)
+     // Algoritmo basado en data.sessions + data.cycles (sunat-honorarios.md)
+     // ════════════════════════════════════════════════════════
+     function vPagos() {
+       const parentId = getLoggedParent();
+       const parent   = DATA.parents[parentId];
+       if (!parent) { logout(); return ''; }
+
+       // Ciclo activo
+       var today = new Date().toISOString().slice(0, 10);
+       var activeCycle = (DATA.cycles || []).find(function(c) {
+         return (!c.start || c.start <= today) && today <= c.end;
+       });
+
+       // Lunes de la semana de referencia
+       function startOfWeek(d) {
+         var day = d.getDay();
+         var diff = (day === 0) ? -6 : 1 - day;
+         var mon = new Date(d);
+         mon.setDate(mon.getDate() + diff);
+         mon.setHours(0, 0, 0, 0);
+         return mon;
+       }
+
+       // fprado: paga los lunes por la SEMANA ANTERIOR
+       var isFprado = (parentId === 'fprado');
+       var refMonday = startOfWeek(new Date());
+       if (isFprado) refMonday.setDate(refMonday.getDate() - 7);
+
+       var weekDates = Array.from({ length: 7 }, function(_, i) {
+         var d = new Date(refMonday);
+         d.setDate(d.getDate() + i);
+         return d.toISOString().slice(0, 10);
+       });
+       var fmt = function(ds) { return ds.slice(8) + '/' + ds.slice(5, 7); };
+       var weekLabel = fmt(weekDates[0]) + ' – ' + fmt(weekDates[6]);
+
+       // Sesiones del ciclo activo
+       var activeSessions = (DATA.sessions || []).filter(function(s) {
+         if (!activeCycle) return false;
+         if (s.weekStart) return s.weekStart >= activeCycle.start && s.weekStart <= activeCycle.end;
+         if (s.cycleId != null) return s.cycleId == activeCycle.id;
+         return false;
+       });
+
+       // ¿La sesión aplica en esta fecha?
+       function isActiveOnDate(sess, dateStr) {
+         var d = new Date(dateStr + 'T00:00:00');
+         var dow = d.getDay();
+         var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
+         if (!activeDays.length || !activeDays.includes(dow)) return false;
+         if (sess.skipDates && sess.skipDates.includes(dateStr)) return false;
+         if (sess.weekStart) {
+           var ws = new Date(sess.weekStart + 'T00:00:00');
+           if (d < ws) return false;
+           if (sess.nWeeks) {
+             var we = new Date(ws.getTime() + sess.nWeeks * 7 * 24 * 60 * 60 * 1000);
+             if (d >= we) return false;
+           }
+         }
+         return true;
+       }
+
+       // Tarifas estándar
+       var RATES = {
+         Virtual:   { primaria: 20, secundaria: 25, preuni: 30 },
+         Domicilio: { primaria: 20, secundaria: 30, preuni: 40 }
+       };
+       function factor(tipo, n) {
+         if (tipo === 'Virtual') return (n === 1 ? 1 : n === 2 ? 0.75 : 0.5) * n;
+         return 1 + 0.5 * (n - 1);
+       }
+
+       // Recopilar instancias de esta semana para los hijos del padre
+       var children = parent.children || [];
+       var instances = [];
+       children.forEach(function(sid) {
+         var stu = DATA.students[String(sid)] || DATA.students[sid] || {};
+         activeSessions.filter(function(s) {
+           return String(s.studentId) === String(sid);
+         }).forEach(function(sess) {
+           weekDates.forEach(function(dateStr) {
+             if (isActiveOnDate(sess, dateStr)) {
+               instances.push({
+                 date: dateStr,
+                 start: sess.start,
+                 dur: sess.dur || 60,
+                 tipo: sess.modality || 'Virtual',
+                 nivel: stu.nivel || 'secundaria',
+                 stuName: stu.name || ('Alumno ' + sid),
+                 stuIcon: stu.icon || '👤',
+                 stuId: String(sid)
+               });
+             }
+           });
+         });
+       });
+
+       // ── Sin ciclo activo ──────────────────────────
+       if (!activeCycle) {
+         return '<div style="padding:16px;max-width:600px;margin:0 auto">'
+           + '<div class="dash-hero" style="margin-bottom:14px">'
+           +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111">Pagos semanales</div>'
+           + '</div>'
+           + '<div style="text-align:center;padding:40px 20px;color:rgba(0,0,0,0.3);font-size:13px;line-height:1.8">'
+           +   'Sin ciclo activo actualmente.<br>Los costos se actualizarán cuando comience el siguiente ciclo.'
+           + '</div>'
+           + '</div>';
+       }
+
+       // ── Sin clases esta semana ────────────────────
+       if (!instances.length) {
+         return '<div style="padding:16px;max-width:600px;margin:0 auto">'
+           + '<div class="dash-hero" style="margin-bottom:14px">'
+           +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,0,0,0.5)">' + (isFprado ? 'Semana anterior' : 'Esta semana') + ' · ' + weekLabel + '</div>'
+           +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-top:2px">Pagos semanales</div>'
+           +   '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:6px">' + parent.name + ' · ' + activeCycle.name + '</div>'
+           + '</div>'
+           + '<div style="text-align:center;padding:40px 20px;color:rgba(0,0,0,0.3);font-size:13px;line-height:1.8">Sin clases programadas para esta semana.</div>'
+           + '</div>';
+       }
+
+       // ── Cálculo del costo ─────────────────────────
+       var weeklyClass = 0;
+       var mov = 0;
+
+       if (isFprado) {
+         // Tarifas especiales por alumno (identificados por nombre)
+         var fpRates = {};
+         children.forEach(function(sid) {
+           var firstName = ((DATA.students[String(sid)] || DATA.students[sid] || {}).name || '').split(' ')[0];
+           if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
+           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
+           else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+           else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
+           else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
+           else fpRates[String(sid)] = { rph: 25, movPV: 30 };
+         });
+         // Costo de clases: cada alumno paga su tarifa individual
+         instances.forEach(function(inst) {
+           var r = fpRates[inst.stuId] || { rph: 25, movPV: 30 };
+           weeklyClass += Math.round(r.rph * (inst.dur / 60));
+         });
+         // Movilidad: por visita (date+start), se toma el movPV más alto del grupo
+         var visitMap = {};
+         instances.forEach(function(inst) {
+           if (inst.tipo !== 'Domicilio') return;
+           var k = inst.date + '_' + inst.start;
+           var r = fpRates[inst.stuId] || { movPV: 30 };
+           (visitMap[k] = visitMap[k] || []).push(r.movPV);
+         });
+         Object.values(visitMap).forEach(function(pvArr) {
+           var nonZero = pvArr.filter(function(v) { return v > 0; });
+           mov += nonZero.length ? Math.max.apply(null, nonZero) : 0;
+         });
+       } else {
+         // Algoritmo estándar: agrupar por fecha+hora+tipo para detectar dúo/trío
+         var groups = {};
+         instances.forEach(function(inst) {
+           var k = inst.date + '_' + inst.start + '_' + inst.tipo;
+           (groups[k] = groups[k] || []).push(inst);
+         });
+         Object.values(groups).forEach(function(g) {
+           var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
+           weeklyClass += Math.round(rate * factor(g[0].tipo, g.length) * (g[0].dur / 60));
+         });
+         // Movilidad domicilio: 1er visita del día = S/30, siguiente ≤30min de espera = S/15, sino S/30
+         var domUniq = [...new Map(
+           instances.filter(function(i) { return i.tipo === 'Domicilio'; })
+             .map(function(i) { return [i.date + '_' + i.start, i]; })
+         ).values()];
+         var byDate = {};
+         domUniq.forEach(function(i) {
+           var parts = i.start.split(':').map(Number);
+           (byDate[i.date] = byDate[i.date] || []).push({ min: parts[0]*60+parts[1], dur: i.dur });
+         });
+         Object.values(byDate).forEach(function(arr) {
+           arr.sort(function(a, b) { return a.min - b.min; });
+           arr.forEach(function(r, idx) {
+             mov += (idx === 0) ? 30 : (r.min - (arr[idx-1].min + arr[idx-1].dur) <= 30 ? 15 : 30);
+           });
+         });
+       }
+
+       var total = weeklyClass + mov;
+
+       // ── Render por día ────────────────────────────
+       var DAYS_FULL = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+       var byDay = {};
+       instances.forEach(function(inst) {
+         var dow = new Date(inst.date + 'T00:00:00').getDay();
+         if (!byDay[inst.date]) byDay[inst.date] = { dow: dow, items: [] };
+         byDay[inst.date].items.push(inst);
+       });
+       var dayKeys = Object.keys(byDay).sort();
+
+       var daysHtml = dayKeys.map(function(dk) {
+         var dg = byDay[dk];
+         var dateDisplay = DAYS_FULL[dg.dow] + ' ' + fmt(dk);
+         var startGroups = {};
+         dg.items.forEach(function(inst) {
+           (startGroups[inst.start] = startGroups[inst.start] || []).push(inst);
+         });
+         var itemsHtml = Object.keys(startGroups).sort().map(function(st) {
+           var grp = startGroups[st];
+           var studentsLine = grp.map(function(i) { return i.stuIcon + ' ' + i.stuName.split(' ')[0]; }).join(' · ');
+           var durH = grp[0].dur / 60;
+           var durLabel = Number.isInteger(durH) ? durH + 'h' : durH.toFixed(1) + 'h';
+           var modIcon = grp[0].tipo === 'Domicilio' ? '🏠' : '💻';
+           var groupLabel = grp.length === 2 ? ' · Dúo' : grp.length === 3 ? ' · Trío' : '';
+           return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0">'
+             + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;color:rgba(0,0,0,0.35);min-width:40px">' + st + '</div>'
+             + '<div style="flex:1;min-width:0">'
+             +   '<div style="font-size:13px;font-weight:700;color:#1a1a1a">' + studentsLine + '</div>'
+             +   '<div style="font-size:11px;color:rgba(0,0,0,0.4);margin-top:1px">' + modIcon + ' ' + grp[0].tipo + ' · ' + durLabel + groupLabel + '</div>'
+             + '</div>'
+             + '</div>';
+         }).join('<div style="border-top:1px solid rgba(0,0,0,0.05)"></div>');
+
+         return '<div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:14px;padding:12px 14px;margin-bottom:8px">'
+           + '<div style="font-size:10px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.4);margin-bottom:6px">' + dateDisplay + '</div>'
+           + itemsHtml
+           + '</div>';
+       }).join('');
+
+       // ── Banner resumen ────────────────────────────
+       var movHtml = mov > 0
+         ? '<div style="text-align:right">'
+         +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Clases + Mov.</div>'
+         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,0.6)">S/. ' + weeklyClass + ' + S/. ' + mov + '</div>'
+         + '</div>'
+         : '<div style="text-align:right">'
+         +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Aprox. mensual</div>'
+         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:20px;font-weight:900;color:rgba(255,255,255,0.6)">S/. ' + (total * 4) + '</div>'
+         + '</div>';
+
+       var semLabel = isFprado ? 'Semana anterior' : 'Esta semana';
+
+       var summaryHtml = '<div style="background:#111;border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">'
+         + '<div>'
+         +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45)">' + semLabel + '</div>'
+         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:34px;font-weight:900;color:#fff;line-height:1.05">S/. ' + total + '</div>'
+         + '</div>'
+         + movHtml
+         + '</div>';
+
+       return '<div style="padding:16px;max-width:600px;margin:0 auto">'
+         + '<div class="dash-hero" style="margin-bottom:14px">'
+         +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,0,0,0.5)">' + semLabel + ' · ' + weekLabel + '</div>'
+         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-top:2px">Pagos semanales</div>'
+         +   '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:6px">' + parent.name + ' · ' + activeCycle.name + '</div>'
+         + '</div>'
+         + summaryHtml
+         + '<div class="sec-lbl">Clases de la semana</div>'
+         + daysHtml
+         + '</div>';
+     }
+
+
+// ════════════════════════════════════════════════════════
+// VISTA ADMIN: Pagos semanales — resumen de todas las familias
+// Mismo algoritmo que vPagos() pero recorre todos los parents
+// ════════════════════════════════════════════════════════
+function vAdminPagos() {
+  var today = new Date().toISOString().slice(0, 10);
+  var activeCycle = (DATA.cycles || []).find(function(c) {
+    return (!c.start || c.start <= today) && today <= c.end;
+  });
+
+  function startOfWeek(d) {
+    var day = d.getDay();
+    var diff = (day === 0) ? -6 : 1 - day;
+    var mon = new Date(d);
+    mon.setDate(mon.getDate() + diff);
+    mon.setHours(0, 0, 0, 0);
+    return mon;
+  }
+
+  var refMonday = startOfWeek(new Date());
+  refMonday.setDate(refMonday.getDate() + adminPagosWeekOffset * 7);
+  var weekKey = refMonday.toISOString().slice(0,10);
+  var weekDates = Array.from({ length: 7 }, function(_, i) {
+    var d = new Date(refMonday);
+    d.setDate(d.getDate() + i);
+    return d.toISOString().slice(0, 10);
+  });
+  var fmt = function(ds) { return ds.slice(8) + '/' + ds.slice(5, 7); };
+  var weekLabel = fmt(weekDates[0]) + ' – ' + fmt(weekDates[6]);
+
+  var activeSessions = (DATA.sessions || []).filter(function(s) {
+    if (!activeCycle) return false;
+    if (s.weekStart) return s.weekStart >= activeCycle.start && s.weekStart <= activeCycle.end;
+    if (s.cycleId != null) return s.cycleId == activeCycle.id;
+    return false;
+  });
+
+  function isActiveOnDate(sess, dateStr) {
+    var d = new Date(dateStr + 'T00:00:00');
+    var dow = d.getDay();
+    var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
+    if (!activeDays.length || !activeDays.includes(dow)) return false;
+    if (sess.skipDates && sess.skipDates.includes(dateStr)) return false;
+    if (sess.weekStart) {
+      var ws = new Date(sess.weekStart + 'T00:00:00');
+      if (d < ws) return false;
+      if (sess.nWeeks) {
+        var we = new Date(ws.getTime() + sess.nWeeks * 7 * 24 * 60 * 60 * 1000);
+        if (d >= we) return false;
+      }
+    }
+    return true;
+  }
+
+  var RATES = {
+    Virtual:   { primaria: 20, secundaria: 25, preuni: 30 },
+    Domicilio: { primaria: 20, secundaria: 30, preuni: 40 }
+  };
+  function factor(tipo, n) {
+    if (tipo === 'Virtual') return (n === 1 ? 1 : n === 2 ? 0.75 : 0.5) * n;
+    return 1 + 0.5 * (n - 1);
+  }
+
+  function calcParent(parentId) {
+    var parent = DATA.parents[parentId];
+    if (!parent) return null;
+    var isFprado = (parentId === 'fprado');
+    var refMon = isFprado ? new Date(refMonday.getTime() - 7*24*60*60*1000) : new Date(refMonday.getTime());
+    var wDates = Array.from({ length: 7 }, function(_, i) {
+      var d = new Date(refMon);
+      d.setDate(d.getDate() + i);
+      return d.toISOString().slice(0, 10);
+    });
+    var children = parent.children || [];
+    var instances = [];
+    children.forEach(function(sid) {
+      var stu = DATA.students[String(sid)] || {};
+      activeSessions.filter(function(s) {
+        return String(s.studentId) === String(sid);
+      }).forEach(function(sess) {
+        wDates.forEach(function(dateStr) {
+          if (isActiveOnDate(sess, dateStr)) {
+            instances.push({
+              date: dateStr, start: sess.start, dur: sess.dur || 60,
+              tipo: sess.modality || 'Virtual', nivel: stu.nivel || 'secundaria',
+              stuId: String(sid)
+            });
+          }
+        });
+      });
+    });
+
+    if (!instances.length) return { name: parent.name, total: 0, weeklyClass: 0, mov: 0, instances: 0 };
+
+    var weeklyClass = 0, mov = 0;
+    if (isFprado) {
+      var fpRates = {};
+      children.forEach(function(sid) {
+        var firstName = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
+        if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
+        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
+        else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+        else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
+        else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
+        else fpRates[String(sid)] = { rph: 25, movPV: 30 };
+      });
+      instances.forEach(function(inst) {
+        var r = fpRates[inst.stuId] || { rph: 25 };
+        weeklyClass += Math.round(r.rph * (inst.dur / 60));
+      });
+      var visitMap = {};
+      instances.forEach(function(inst) {
+        if (inst.tipo !== 'Domicilio') return;
+        var k = inst.date + '_' + inst.start;
+        var r = fpRates[inst.stuId] || { movPV: 30 };
+        (visitMap[k] = visitMap[k] || []).push(r.movPV);
+      });
+      Object.values(visitMap).forEach(function(pvArr) {
+        var nonZero = pvArr.filter(function(v) { return v > 0; });
+        mov += nonZero.length ? Math.max.apply(null, nonZero) : 0;
+      });
+    } else {
+      var groups = {};
+      instances.forEach(function(inst) {
+        var k = inst.date + '_' + inst.start + '_' + inst.tipo;
+        (groups[k] = groups[k] || []).push(inst);
+      });
+      Object.values(groups).forEach(function(g) {
+        var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
+        weeklyClass += Math.round(rate * factor(g[0].tipo, g.length) * (g[0].dur / 60));
+      });
+      var domUniq = [];
+      var seen = {};
+      instances.filter(function(i) { return i.tipo === 'Domicilio'; }).forEach(function(i) {
+        var k = i.date + '_' + i.start;
+        if (!seen[k]) { seen[k] = true; domUniq.push(i); }
+      });
+      var byDate = {};
+      domUniq.forEach(function(i) {
+        var parts = i.start.split(':').map(Number);
+        (byDate[i.date] = byDate[i.date] || []).push({ min: parts[0]*60+parts[1], dur: i.dur });
+      });
+      Object.values(byDate).forEach(function(arr) {
+        arr.sort(function(a, b) { return a.min - b.min; });
+        arr.forEach(function(r, idx) {
+          mov += (idx === 0) ? 30 : (r.min - (arr[idx-1].min + arr[idx-1].dur) <= 30 ? 15 : 30);
+        });
+      });
+    }
+    return { name: parent.name, total: weeklyClass + mov, weeklyClass: weeklyClass, mov: mov, instances: instances.length };
+  }
+
+  if (!activeCycle) {
+    return '<div style="padding:16px;max-width:700px;margin:0 auto">'
+      + '<div class="dash-hero"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900">Pagos semanales</div></div>'
+      + '<div style="text-align:center;padding:40px 20px;color:rgba(0,0,0,0.3);font-size:13px">Sin ciclo activo actualmente.</div>'
+      + '</div>';
+  }
+
+  var rows = [];
+  var grandTotal = 0;
+  Object.keys(DATA.parents || {}).sort(function(a, b) {
+    return (DATA.parents[a].name || '').localeCompare(DATA.parents[b].name || '');
+  }).forEach(function(pid) {
+    var r = calcParent(pid);
+    if (r && r.total > 0) { rows.push({ pid: pid, ...r }); grandTotal += r.total; }
+  });
+
+  var rowsHtml = rows.map(function(r) {
+    var badge = r.mov > 0
+      ? '<span style="font-size:10px;color:rgba(0,0,0,0.4)"> (clases S/.' + r.weeklyClass + ' + mov S/.' + r.mov + ')</span>'
+      : '';
+    var confirmed = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[r.pid + '_' + weekKey]);
+    var confirmBtn = confirmed
+      ? '<button onclick="togglePagoConfirmado(\''+r.pid+'\',\''+weekKey+'\')"\''+
+        ' style="border:none;background:rgba(34,197,94,0.12);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:#15803d;white-space:nowrap">✓ Pagado</button>'
+      : '<button onclick="togglePagoConfirmado(\''+r.pid+'\',\''+weekKey+'\')"\''+
+        ' style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(0,0,0,0.45);white-space:nowrap">Confirmar</button>';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.06)">'
+      + '<div style="flex:1;min-width:0">'
+      +   '<div style="font-size:14px;font-weight:600;color:' + (confirmed ? '#15803d' : '#111') + '">' + r.name + '</div>'
+      +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;color:' + (confirmed ? '#15803d' : '#111') + '">S/. ' + r.total + badge + '</div>'
+      + '</div>'
+      + confirmBtn
+      + '</div>';
+  }).join('');
+
+  return '<div style="padding:16px;max-width:700px;margin:0 auto">'
+    + '<div class="dash-hero" style="margin-bottom:14px">'
+    +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,0,0,0.5)">' + (adminPagosWeekOffset === 0 ? 'Esta semana' : adminPagosWeekOffset === -1 ? 'Semana anterior' : 'Semana ' + adminPagosWeekOffset) + ' · ' + weekLabel + '</div>'
+    +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-top:2px">Pagos semanales</div>'
+    +   '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px">' + (activeCycle.name || '') + ' · ' + rows.filter(function(r){return r.total>0}).length + ' familias con clases</div>'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
+    +   '<button onclick="adminPagosStep(-1)" style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)">← Anterior</button>'
+    +   '<button onclick="adminPagosStep(1)" '+(adminPagosWeekOffset >= 0 ? 'disabled style="border:1px solid rgba(0,0,0,0.08);background:rgba(0,0,0,0.04);border-radius:10px;padding:7px 14px;cursor:default;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.2)"' : 'style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)"')+'>Siguiente →</button>'
+    +   (adminPagosWeekOffset < 0 ? '<button onclick="adminPagosToday()" style="margin-left:auto;border:none;background:#111;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#fff">Esta semana</button>' : '')
+    + '</div>'
+    + '<div style="background:#111;border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">'
+    +   '<div><div style="font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45)">Total semanal</div>'
+    +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:40px;font-weight:900;color:#fff;line-height:1.05">S/. ' + grandTotal + '</div></div>'
+    +   '<div style="text-align:right"><div style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Aprox. mensual</div>'
+    +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.6)">S/. ' + (grandTotal * 4) + '</div></div>'
+    + '</div>'
+    + '<div class="sec-lbl">Por familia</div>'
+    + '<div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:14px;padding:4px 14px 0">'
+    +   rowsHtml
+    + '</div>'
+    + '</div>';
+}
+
+          function vCalendario() {
   const parentId = getLoggedParent();
   const parent   = DATA.parents[parentId];
   if (!parent) { logout(); return ''; }
