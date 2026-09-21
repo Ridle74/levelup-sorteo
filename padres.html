@@ -1096,13 +1096,41 @@ function calStep(dir) {
 // ════════════════════════════════════════════════════════
 function adminPagosStep(dir) { adminPagosWeekOffset += dir; render(); }
 function adminPagosToday()  { adminPagosWeekOffset = 0; render(); }
-function togglePagoConfirmado(pid, weekKey) {
-  var k = pid + '_' + weekKey;
-  if (DATA.pagosConfirmados[k]) {
-    delete DATA.pagosConfirmados[k];
-  } else {
-    DATA.pagosConfirmados[k] = { ts: new Date().toISOString() };
-  }
+function openPagoConfirmPopup(pid, weekKey, name, total) {
+  var existing = document.getElementById('pago-confirm-popup');
+  if (existing) existing.remove();
+  var today = new Date().toISOString().slice(0,10);
+  var popup = document.createElement('div');
+  popup.id = 'pago-confirm-popup';
+  popup.style.cssText = 'position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:20px;';
+  popup.innerHTML =
+      '<div onclick="closePagoConfirmPopup()" style="position:absolute;inset:0;background:rgba(0,0,0,0.22)"></div>'
+    + '<div style="position:relative;z-index:1;background:#fff;border-radius:20px;padding:22px 22px 18px;width:100%;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.22)">'
+    + '<div style="font-size:11px;font-weight:900;color:rgba(0,0,0,0.4);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px">Confirmar pago</div>'
+    + '<div style="font-size:17px;font-weight:700;color:#111;margin-bottom:2px">' + name + '</div>'
+    + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-bottom:16px">S/. ' + total + '</div>'
+    + '<label style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.45);letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:6px">Fecha de pago</label>'
+    + '<input id="pago-fecha-input" type="date" value="' + today + '" style="width:100%;box-sizing:border-box;border:1.5px solid rgba(0,0,0,0.18);border-radius:10px;padding:10px 12px;font-size:14px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;color:#111;background:#fff;margin-bottom:14px;outline:none">'
+    + '<button onclick="confirmPagoWithDate(\'' + pid + '\',\'' + weekKey + '\')" style="display:block;width:100%;border:none;background:#111;border-radius:12px;padding:13px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#fff;margin-bottom:8px">✓ Confirmar pago</button>'
+    + '<button onclick="closePagoConfirmPopup()" style="display:block;width:100%;border:none;background:rgba(0,0,0,0.06);border-radius:12px;padding:11px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Cancelar</button>'
+    + '</div>';
+  document.body.appendChild(popup);
+  setTimeout(function(){ var inp = document.getElementById('pago-fecha-input'); if(inp) inp.focus(); }, 80);
+}
+function closePagoConfirmPopup() {
+  var el = document.getElementById('pago-confirm-popup');
+  if (el) el.remove();
+}
+function confirmPagoWithDate(pid, weekKey) {
+  var inp = document.getElementById('pago-fecha-input');
+  var fecha = inp ? inp.value : new Date().toISOString().slice(0,10);
+  DATA.pagosConfirmados[pid + '_' + weekKey] = { ts: new Date().toISOString(), fecha: fecha };
+  savePagosConfirmados();
+  closePagoConfirmPopup();
+  render();
+}
+function desconfirmarPago(pid, weekKey) {
+  delete DATA.pagosConfirmados[pid + '_' + weekKey];
   savePagosConfirmados();
   render();
 }
@@ -2095,11 +2123,11 @@ function vAdminPagos() {
       ? '<span style="font-size:10px;color:rgba(0,0,0,0.4)"> (clases S/.' + r.weeklyClass + ' + mov S/.' + r.mov + ')</span>'
       : '';
     var confirmed = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[r.pid + '_' + weekKey]);
+    var pagoInfo = confirmed ? DATA.pagosConfirmados[r.pid + '_' + weekKey] : null;
+    var pagoFecha = pagoInfo && pagoInfo.fecha ? (' · ' + pagoInfo.fecha.slice(5).replace('-','/')) : '';
     var confirmBtn = confirmed
-      ? '<button onclick="togglePagoConfirmado(\''+r.pid+'\',\''+weekKey+'\')"\''+
-        ' style="border:none;background:rgba(34,197,94,0.12);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:#15803d;white-space:nowrap">✓ Pagado</button>'
-      : '<button onclick="togglePagoConfirmado(\''+r.pid+'\',\''+weekKey+'\')"\''+
-        ' style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(0,0,0,0.45);white-space:nowrap">Confirmar</button>';
+      ? '<button onclick="desconfirmarPago(\''+r.pid+'\',\''+weekKey+'\')" style="border:none;background:rgba(34,197,94,0.12);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:#15803d;white-space:nowrap">✓ Pagado'+pagoFecha+'</button>'
+      : '<button onclick="openPagoConfirmPopup(\''+r.pid+'\',\''+weekKey+'\',\''+r.name+'\','+r.total+')" style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(0,0,0,0.45);white-space:nowrap">Confirmar</button>';
     return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.06)">'
       + '<div style="flex:1;min-width:0">'
       +   '<div style="font-size:14px;font-weight:600;color:' + (confirmed ? '#15803d' : '#111') + '">' + r.name + '</div>'
