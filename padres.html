@@ -1096,7 +1096,34 @@ function calStep(dir) {
 // ════════════════════════════════════════════════════════
 function adminPagosStep(dir) { adminPagosWeekOffset += dir; render(); }
 function adminPagosToday()  { adminPagosWeekOffset = 0; render(); }
+
+// Devuelve la descripción del servicio para el recibo de honorarios
+function getParentDescripcion(pid) {
+  var parent = DATA.parents[pid];
+  if (!parent) return 'Clases de matemática';
+  var children = parent.children || [];
+  var modalities = [], niveles = [];
+  children.forEach(function(sid) {
+    var stu = DATA.students[String(sid)];
+    if (stu && stu.nivel && niveles.indexOf(stu.nivel) < 0) niveles.push(stu.nivel);
+    (DATA.sessions || []).filter(function(s) {
+      return String(s.studentId) === String(sid);
+    }).forEach(function(s) {
+      if (s.modality && modalities.indexOf(s.modality) < 0) modalities.push(s.modality);
+    });
+  });
+  var tipo = modalities.length === 1 ? modalities[0] : null;
+  var nivel = niveles.length === 1 ? niveles[0] : null;
+  if (tipo === 'Virtual')   return 'Clases virtuales de matemática'   + (nivel ? ' nivel ' + nivel : '');
+  if (tipo === 'Domicilio') return 'Clases a domicilio de matemática' + (nivel ? ' nivel ' + nivel : '');
+  return 'Clases de matemática';
+}
+
+// Datos temporales del popup activo (evita escapar strings en onclick)
+var _pendingPago = {};
+
 function openPagoConfirmPopup(pid, weekKey, name, total) {
+  _pendingPago = { pid: pid, weekKey: weekKey, nombre: name, total: total, descripcion: getParentDescripcion(pid) };
   var existing = document.getElementById('pago-confirm-popup');
   if (existing) existing.remove();
   var today = new Date().toISOString().slice(0,10);
@@ -1111,7 +1138,7 @@ function openPagoConfirmPopup(pid, weekKey, name, total) {
     + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-bottom:16px">S/. ' + total + '</div>'
     + '<label style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.45);letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:6px">Fecha de pago</label>'
     + '<input id="pago-fecha-input" type="date" value="' + today + '" style="width:100%;box-sizing:border-box;border:1.5px solid rgba(0,0,0,0.18);border-radius:10px;padding:10px 12px;font-size:14px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;color:#111;background:#fff;margin-bottom:14px;outline:none">'
-    + '<button onclick="confirmPagoWithDate(\'' + pid + '\',\'' + weekKey + '\')" style="display:block;width:100%;border:none;background:#111;border-radius:12px;padding:13px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#fff;margin-bottom:8px">✓ Confirmar pago</button>'
+    + '<button onclick="confirmPagoWithDate()" style="display:block;width:100%;border:none;background:#111;border-radius:12px;padding:13px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#fff;margin-bottom:8px">✓ Confirmar pago</button>'
     + '<button onclick="closePagoConfirmPopup()" style="display:block;width:100%;border:none;background:rgba(0,0,0,0.06);border-radius:12px;padding:11px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Cancelar</button>'
     + '</div>';
   document.body.appendChild(popup);
@@ -1121,10 +1148,17 @@ function closePagoConfirmPopup() {
   var el = document.getElementById('pago-confirm-popup');
   if (el) el.remove();
 }
-function confirmPagoWithDate(pid, weekKey) {
+function confirmPagoWithDate() {
+  var d = _pendingPago;
   var inp = document.getElementById('pago-fecha-input');
   var fecha = inp ? inp.value : new Date().toISOString().slice(0,10);
-  DATA.pagosConfirmados[pid + '_' + weekKey] = { ts: new Date().toISOString(), fecha: fecha };
+  DATA.pagosConfirmados[d.pid + '_' + d.weekKey] = {
+    ts: new Date().toISOString(),
+    fecha: fecha,
+    total: d.total,
+    nombre: d.nombre,
+    descripcion: d.descripcion
+  };
   savePagosConfirmados();
   closePagoConfirmPopup();
   render();
@@ -1738,6 +1772,7 @@ function saveChildProfile(childId) {
 
        // ¿La sesión aplica en esta fecha?
        function isActiveOnDate(sess, dateStr) {
+         if (sess.recurring === false && sess.date) return dateStr === sess.date;
          var d = new Date(dateStr + 'T00:00:00');
          var dow = d.getDay();
          var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -1823,8 +1858,8 @@ function saveChildProfile(childId) {
          children.forEach(function(sid) {
            var firstName = ((DATA.students[String(sid)] || DATA.students[sid] || {}).name || '').split(' ')[0];
            if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
-           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
-           else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
+           else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
            else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
            else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
            else fpRates[String(sid)] = { rph: 25, movPV: 30 };
@@ -1988,6 +2023,7 @@ function vAdminPagos() {
   });
 
   function isActiveOnDate(sess, dateStr) {
+    if (sess.recurring === false && sess.date) return dateStr === sess.date;
     var d = new Date(dateStr + 'T00:00:00');
     var dow = d.getDay();
     var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -2050,8 +2086,8 @@ function vAdminPagos() {
       children.forEach(function(sid) {
         var firstName = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
         if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
-        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
-        else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
+        else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
         else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
         else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
         else fpRates[String(sid)] = { rph: 25, movPV: 30 };
