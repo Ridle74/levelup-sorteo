@@ -1772,7 +1772,6 @@ function saveChildProfile(childId) {
 
        // ¿La sesión aplica en esta fecha?
        function isActiveOnDate(sess, dateStr) {
-         if (sess.recurring === false && sess.date) return dateStr === sess.date;
          var d = new Date(dateStr + 'T00:00:00');
          var dow = d.getDay();
          var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -1858,8 +1857,8 @@ function saveChildProfile(childId) {
          children.forEach(function(sid) {
            var firstName = ((DATA.students[String(sid)] || DATA.students[sid] || {}).name || '').split(' ')[0];
            if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
-           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
-           else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
+           else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
            else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
            else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
            else fpRates[String(sid)] = { rph: 25, movPV: 30 };
@@ -1867,7 +1866,7 @@ function saveChildProfile(childId) {
          // Costo de clases: cada alumno paga su tarifa individual
          instances.forEach(function(inst) {
            var r = fpRates[inst.stuId] || { rph: 25, movPV: 30 };
-           weeklyClass += Math.round(r.rph * (inst.dur / 60));
+           weeklyClass += r.rph * (inst.dur / 60);
          });
          // Movilidad: por visita (date+start), se toma el movPV más alto del grupo
          var visitMap = {};
@@ -1890,7 +1889,7 @@ function saveChildProfile(childId) {
          });
          Object.values(groups).forEach(function(g) {
            var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
-           weeklyClass += Math.round(rate * factor(g[0].tipo, g.length) * (g[0].dur / 60));
+           weeklyClass += rate * factor(g[0].tipo, g.length) * (g[0].dur / 60);
          });
          // Movilidad domicilio: 1er visita del día = S/30, siguiente ≤30min de espera = S/15, sino S/30
          var domUniq = [...new Map(
@@ -2023,7 +2022,6 @@ function vAdminPagos() {
   });
 
   function isActiveOnDate(sess, dateStr) {
-    if (sess.recurring === false && sess.date) return dateStr === sess.date;
     var d = new Date(dateStr + 'T00:00:00');
     var dow = d.getDay();
     var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -2086,15 +2084,15 @@ function vAdminPagos() {
       children.forEach(function(sid) {
         var firstName = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
         if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
-        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
-        else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
+        else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
         else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
         else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
         else fpRates[String(sid)] = { rph: 25, movPV: 30 };
       });
       instances.forEach(function(inst) {
         var r = fpRates[inst.stuId] || { rph: 25 };
-        weeklyClass += Math.round(r.rph * (inst.dur / 60));
+        weeklyClass += r.rph * (inst.dur / 60);
       });
       var visitMap = {};
       instances.forEach(function(inst) {
@@ -2115,7 +2113,7 @@ function vAdminPagos() {
       });
       Object.values(groups).forEach(function(g) {
         var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
-        weeklyClass += Math.round(rate * factor(g[0].tipo, g.length) * (g[0].dur / 60));
+        weeklyClass += rate * factor(g[0].tipo, g.length) * (g[0].dur / 60);
       });
       var domUniq = [];
       var seen = {};
