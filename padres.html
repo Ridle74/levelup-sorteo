@@ -1772,6 +1772,7 @@ function saveChildProfile(childId) {
 
        // ¿La sesión aplica en esta fecha?
        function isActiveOnDate(sess, dateStr) {
+         if (sess.recurring === false && sess.date) return dateStr === sess.date;
          var d = new Date(dateStr + 'T00:00:00');
          var dow = d.getDay();
          var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -1857,8 +1858,8 @@ function saveChildProfile(childId) {
          children.forEach(function(sid) {
            var firstName = ((DATA.students[String(sid)] || DATA.students[sid] || {}).name || '').split(' ')[0];
            if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
-           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
-           else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+           else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
+           else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
            else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
            else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
            else fpRates[String(sid)] = { rph: 25, movPV: 30 };
@@ -2022,6 +2023,7 @@ function vAdminPagos() {
   });
 
   function isActiveOnDate(sess, dateStr) {
+    if (sess.recurring === false && sess.date) return dateStr === sess.date;
     var d = new Date(dateStr + 'T00:00:00');
     var dow = d.getDay();
     var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -2084,8 +2086,8 @@ function vAdminPagos() {
       children.forEach(function(sid) {
         var firstName = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
         if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
-        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 0 };
-        else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+        else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
+        else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
         else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
         else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
         else fpRates[String(sid)] = { rph: 25, movPV: 30 };
