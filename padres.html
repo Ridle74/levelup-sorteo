@@ -344,81 +344,89 @@ const SEED = {
   // horario semanal recurrente solo se muestra hasta el final del ciclo más lejano definido
   // aquí (ver getCycleHorizon()); start=null significa "sin límite inferior".
   cycles: [
-    { id:1, name:"MATHS ONEX", start:null, end:"2026-07-05" }
+    { id:1, name:"MATHS ONEX", start:null, end:"2026-07-05" },
+    { id:2, name:"CICLO 3", start:"2026-08-03", end:"2026-10-11" }
   ],
   parents: {
-    "fprado":      { name:"Fernando Prado",     pin:"6611", phone:"", children:[3,4,10,16,17] },
-    "vera":        { name:"Julissa Vera",      pin:"6622", phone:"", children:[8] },
-    "paredes":     { name:"Dora Paredes",      pin:"6633", phone:"", children:[5] },
-    "valdez":      { name:"Jenifer Valdez",    pin:"6644", phone:"", children:[6] },
-    "zambrano":    { name:"Lady Zambrano",     pin:"6623", phone:"", children:[9] },
-    "benites":     { name:"Marissa Benites",   pin:"6655", phone:"", children:[1,2] },
-    "garcia":      { name:"Diana García",      pin:"6666", phone:"", children:[12] },
-    "wvillalobos": { name:"Walther Villalobos", pin:"6677", phone:"", children:[7] },
-    "ruizcaro":    { name:"Claudia Ruizcaro",  pin:"6688", phone:"", children:[11] },
-    "villanueva":  { name:"Paola Villanueva",  pin:"6699", phone:"", children:[14] },
-    "urena":       { name:"Mercedes Ureña",    pin:"6600", phone:"", children:[13] },
-    "rivas":       { name:"Sol Rivas",         pin:"6612", phone:"", children:[15] }
+    "fprado":      { name:"Fernando Prado",      pin:"6611", phone:"", children:[3,4,10,16,17] },
+    "vera":        { name:"Julissa Vera",         pin:"6622", phone:"", children:[8] },
+    "paredes":     { name:"Dora Paredes",         pin:"6633", phone:"", children:[5] },
+    "valdez":      { name:"Jenifer Valdez",       pin:"6644", phone:"", children:[6] },
+    "zambrano":    { name:"Lady Zambrano",        pin:"6623", phone:"", children:[9] },
+    "benites":     { name:"Marissa Benites",      pin:"6655", phone:"", children:[1,2] },
+    "garcia":      { name:"Diana García",         pin:"6666", phone:"", children:[12] },
+    "wvillalobos": { name:"Walther Villalobos",   pin:"6677", phone:"", children:[7] },
+    "ruizcaro":    { name:"Claudia Ruizcaro",     pin:"6688", phone:"", children:[11] },
+    "villanueva":  { name:"Paola Villanueva",     pin:"6699", phone:"", children:[14] },
+    "urena":       { name:"Mercedes Ureña",       pin:"6600", phone:"", children:[13] },
+    "rivas":       { name:"Sol Rivas",            pin:"6612", phone:"", children:[15] },
+    "esmith":      { name:"Edward Smith",         pin:"6613", phone:"", children:[18,19] },
+    "karina":      { name:"Karina Karina",        pin:"6614", phone:"", children:[20] },
+    "allisonchino":{ name:"Allison Chino",        pin:"6615", phone:"", children:[21] },
+    "arauco":      { name:"Jessica Arauco",       pin:"6616", phone:"", children:[22] },
+    "lopez":       { name:"Jessica López",        pin:"6617", phone:"", children:[23] }
   },
   students: {
-    "1":  { name:"Rafaela Villena",   color:"#555", icon:"🐨",  modality:"Virtual" },
-    "2":  { name:"Mikela Villena",    color:"#555", icon:"👧🏼", modality:"Virtual" },
-    "3":  { name:"Alejandro Rodríguez", color:"#777", icon:"🦁",  modality:"Domicilio" },
-    "4":  { name:"Joao Prado",        color:"#777", icon:"👦🏻", modality:"Domicilio" },
-    "5":  { name:"Manuel Villacorta", color:"#444", icon:"👦🏻", modality:"Virtual" },
-    "6":  { name:"Augusto Giuffra",   color:"#888", icon:"🕷️",  modality:"Virtual" },
-    "7":  { name:"Maria Villalobos",  color:"#888", icon:"👧🏽", modality:"Virtual" },
-    "8":  { name:"Santiago Quinto",   color:"#555", icon:"🏃🏻", modality:"Virtual" },
-    "9":  { name:"Brunella Varillas", color:"#888", icon:"🦋",  modality:"Virtual" },
-    "10": { name:"Joanna Prado",      color:"#777", icon:"👧🏻", modality:"Domicilio" },
-    "11": { name:"Tiago Poma",        color:"rgba(0,0,0,0.5)", icon:"🐶",  modality:"Domicilio" },
-    "12": { name:"Mateo Ríos",        color:"#333", icon:"🐧",  modality:"Virtual" },
-    "13": { name:"Jorge Ureña",       color:"#333", icon:"👦🏻", modality:"Virtual" },
-    "14": { name:"Catalina Vera",     color:"#666", icon:"🐱",  modality:"Virtual" },
-    "15": { name:"Gustavo Pacheco",   color:"#777", icon:"🐯",  modality:"Virtual" },
-    "16": { name:"Josué Prado",       color:"#777", icon:"👦🏻", modality:"Domicilio" },
-    "17": { name:"Lucio Prado",       color:"#777", icon:"🐻",  modality:"Domicilio" }
+    "1":  { name:"Rafaela Villena",      color:"#555", icon:"🐨",  modality:"Virtual" },
+    "2":  { name:"Mikela Villena",       color:"#555", icon:"👧🏼", modality:"Virtual" },
+    "3":  { name:"Alejandro Rodríguez",  color:"#777", icon:"🦁",  modality:"Domicilio" },
+    "4":  { name:"Joao Prado",           color:"#777", icon:"👦🏻", modality:"Domicilio" },
+    "5":  { name:"Manuel Villacorta",    color:"#444", icon:"👦🏻", modality:"Virtual" },
+    "6":  { name:"Augusto Giuffra",      color:"#888", icon:"🕷️",  modality:"Virtual" },
+    "7":  { name:"Maria Villalobos",     color:"#888", icon:"👧🏽", modality:"Virtual" },
+    "8":  { name:"Santiago Quinto",      color:"#555", icon:"🏃🏻", modality:"Virtual" },
+    "9":  { name:"Brunella Varillas",    color:"#888", icon:"🦋",  modality:"Virtual" },
+    "10": { name:"Joanna Prado",         color:"#777", icon:"👧🏻", modality:"Domicilio" },
+    "11": { name:"Tiago Poma",           color:"rgba(0,0,0,0.5)", icon:"🐶", modality:"Virtual" },
+    "12": { name:"Mateo Ríos",           color:"#333", icon:"🐧",  modality:"Virtual" },
+    "13": { name:"Jorge Ureña",          color:"#333", icon:"👦🏻", modality:"Virtual" },
+    "14": { name:"Catalina Vera",        color:"#666", icon:"🐱",  modality:"Virtual" },
+    "15": { name:"Gustavo Pacheco",      color:"#777", icon:"🐯",  modality:"Virtual" },
+    "16": { name:"Josué Prado",          color:"#777", icon:"👦🏻", modality:"Domicilio" },
+    "17": { name:"Lucio Prado",          color:"#777", icon:"🐻",  modality:"Domicilio" },
+    "18": { name:"Alessandra Smith",     color:"#888", icon:"👧🏻", modality:"Domicilio" },
+    "19": { name:"Eduardo Smith",        color:"#888", icon:"👦🏻", modality:"Domicilio" },
+    "20": { name:"Alejandra Q.",         color:"#888", icon:"👧🏻", modality:"Virtual" },
+    "21": { name:"Fernanda Dolores",     color:"#888", icon:"👧🏻", modality:"Virtual" },
+    "22": { name:"Enzo Díaz",            color:"#888", icon:"👦🏻", modality:"Virtual" },
+    "23": { name:"Nicole Torres",        color:"#888", icon:"👧🏻", modality:"Virtual" }
   },
   sessions: [
     // Lunes
     { id:1,  studentId:3,  day:1, start:"16:00", dur:120, modality:"Domicilio", topic:"One to Family" },
-    { id:2,  studentId:8,  day:1, start:"18:30", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:3,  studentId:5,  day:1, start:"19:30", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:2,  studentId:8,  day:1, start:"19:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:3,  studentId:22, day:1, start:"20:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:4,  studentId:23, day:1, start:"21:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Martes
-    { id:4,  studentId:6,  day:2, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One (con Brunella)" },
-    { id:5,  studentId:9,  day:2, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One (con Augusto)" },
-    { id:6,  studentId:1,  day:2, start:"16:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:5,  studentId:1,  day:2, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:6,  studentId:2,  day:2, start:"16:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     { id:7,  studentId:4,  day:2, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
     { id:8,  studentId:16, day:2, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
     { id:9,  studentId:17, day:2, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
+    { id:10, studentId:20, day:2, start:"21:30", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Miércoles
-    { id:10, studentId:3,  day:3, start:"16:00", dur:120, modality:"Domicilio", topic:"One to Family" },
-    { id:11, studentId:2,  day:3, start:"18:30", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:12, studentId:5,  day:3, start:"19:30", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:11, studentId:3,  day:3, start:"16:00", dur:120, modality:"Domicilio", topic:"One to Family" },
+    { id:12, studentId:12, day:3, start:"19:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:13, studentId:6,  day:3, start:"20:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:14, studentId:23, day:3, start:"21:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Jueves
-    { id:13, studentId:7,  day:4, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:14, studentId:1,  day:4, start:"16:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:15, studentId:4,  day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
-    { id:16, studentId:16, day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
-    { id:17, studentId:17, day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
+    { id:15, studentId:21, day:4, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:16, studentId:4,  day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
+    { id:17, studentId:16, day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
+    { id:18, studentId:17, day:4, start:"17:30", dur:180, modality:"Domicilio", topic:"One to Family" },
+    { id:19, studentId:20, day:4, start:"21:30", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Viernes
-    { id:18, studentId:3,  day:5, start:"16:00", dur:120, modality:"Domicilio", topic:"One to Family" },
-    { id:19, studentId:6,  day:5, start:"18:30", dur:60,  modality:"Virtual",   topic:"One to One (con Brunella)" },
-    { id:20, studentId:9,  day:5, start:"18:30", dur:60,  modality:"Virtual",   topic:"One to One (con Augusto)" },
-    { id:21, studentId:5,  day:5, start:"19:30", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:20, studentId:3,  day:5, start:"16:00", dur:120, modality:"Domicilio", topic:"One to Family" },
+    { id:21, studentId:6,  day:5, start:"19:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:22, studentId:22, day:5, start:"20:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:23, studentId:23, day:5, start:"21:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Sábado
-    { id:22, studentId:12, day:6, start:"08:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:23, studentId:1,  day:6, start:"09:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:24, studentId:2,  day:6, start:"10:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:25, studentId:7,  day:6, start:"11:00", dur:120, modality:"Virtual",   topic:"One to One" },
-    { id:26, studentId:10, day:6, start:"14:30", dur:120, modality:"Domicilio", topic:"One to Family" },
-    { id:27, studentId:11, day:6, start:"17:00", dur:60,  modality:"Domicilio", topic:"One to Family" },
+    { id:24, studentId:20, day:6, start:"11:30", dur:120, modality:"Virtual",   topic:"One to One" },
+    { id:25, studentId:10, day:6, start:"15:00", dur:120, modality:"Domicilio", topic:"One to Family" },
     // Domingo
-    { id:28, studentId:2,  day:0, start:"09:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:29, studentId:14, day:0, start:"10:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:30, studentId:13, day:0, start:"11:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:31, studentId:15, day:0, start:"12:00", dur:60,  modality:"Virtual",   topic:"One to One" },
-    { id:32, studentId:7,  day:0, start:"15:00", dur:60,  modality:"Virtual",   topic:"One to One" }
+    { id:26, studentId:18, day:0, start:"09:00", dur:120, modality:"Domicilio", topic:"One to Family" },
+    { id:27, studentId:19, day:0, start:"11:00", dur:60,  modality:"Domicilio", topic:"One to Family" },
+    { id:28, studentId:11, day:0, start:"16:00", dur:60,  modality:"Virtual",   topic:"One to One" }
   ],
   requests: [],
   freeSlots: [],
@@ -469,7 +477,7 @@ DATA.adminPin = ADMIN_PIN_DEFAULT;
 DATA.pagosConfirmados = {};
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
-const SEED_VERSION = 6;
+const SEED_VERSION = 8;
 let appReady = false;
 let calMode = 'week';          // 'week' | '4dias'
 let calAnchor = startOfWeek(new Date());
@@ -1772,7 +1780,6 @@ function saveChildProfile(childId) {
 
        // ¿La sesión aplica en esta fecha?
        function isActiveOnDate(sess, dateStr) {
-         if (sess.recurring === false && sess.date) return dateStr === sess.date;
          var d = new Date(dateStr + 'T00:00:00');
          var dow = d.getDay();
          var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -1859,7 +1866,7 @@ function saveChildProfile(childId) {
            var firstName = ((DATA.students[String(sid)] || DATA.students[sid] || {}).name || '').split(' ')[0];
            if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
            else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
-           else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+           else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
            else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
            else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
            else fpRates[String(sid)] = { rph: 25, movPV: 30 };
@@ -2023,7 +2030,6 @@ function vAdminPagos() {
   });
 
   function isActiveOnDate(sess, dateStr) {
-    if (sess.recurring === false && sess.date) return dateStr === sess.date;
     var d = new Date(dateStr + 'T00:00:00');
     var dow = d.getDay();
     var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
@@ -2087,7 +2093,7 @@ function vAdminPagos() {
         var firstName = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
         if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
         else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
-        else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+        else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
         else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
         else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
         else fpRates[String(sid)] = { rph: 25, movPV: 30 };

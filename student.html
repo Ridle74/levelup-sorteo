@@ -2617,8 +2617,11 @@ function _ptsPureSkills(skills) {
 }
 // Fecha en la que una tarea asignada quedó 100% completada: la fecha en que se dominó la ÚLTIMA
 // de sus habilidades pendientes. null si todavía no está completa.
+// NOTA: a diferencia de _ptsAutoProgressForDate, aquí NO se aplica _ptsPureSkills porque las
+// tareas asignadas por el profesor pueden ser cuestionarios de banco (_bq) y deben contar
+// al completarse independientemente del tipo de topic.
 function _ptsTaskCompletionDate(task, histAsc) {
-  const skills = _ptsPureSkills(task.exam ? (task.skills||[]) : (task.topic ? [task.topic] : []));
+  const skills = task.exam ? (task.skills||[]) : (task.topic ? [task.topic] : []);
   if (!skills.length) return null;
   const dates = skills.map(k => _ptsFirstDominatedDate(k, histAsc));
   if (dates.some(d => !d)) return null; // aún falta al menos una habilidad
@@ -2627,7 +2630,16 @@ function _ptsTaskCompletionDate(task, histAsc) {
 function _ptsAutoTasksForDate(studentId, histAsc, dateKey) {
   const tasks = (overrides[String(studentId)]||{}).prepTasks || [];
   let n = 0;
-  tasks.forEach(t => { if (_ptsTaskCompletionDate(t, histAsc) === dateKey) n++; });
+  tasks.forEach(t => {
+    const completionDate = _ptsTaskCompletionDate(t, histAsc);
+    if (completionDate !== dateKey) return;
+    // Solo cuenta si se completó antes o en la fecha de vencimiento (dueAt)
+    if (t.dueAt) {
+      const dueDate = _ptsDateKeyFromSeconds(t.dueAt);
+      if (completionDate > dueDate) return; // entregada tarde → no cuenta
+    }
+    n++;
+  });
   return Math.min(n, PTS_TASKS_MAX);
 }
 // Recalcula y GUARDA (snapshot en pointsLog[id][dateKey].auto) los 3 valores automáticos para
