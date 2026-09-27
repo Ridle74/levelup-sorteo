@@ -29432,7 +29432,7 @@ async function _prepLoadDesafioLeaderboard(){
       const k=`${e.uid||e.name}__${e.topic}__${e.nivel||1}`;
       if(!byKey[k]||(e.timeSecs??Infinity)<(byKey[k].timeSecs??Infinity)) byKey[k]=e;
     });
-    _prepDesafioLb=Object.values(byKey).sort((a,b)=>(a.timeSecs||0)-(b.timeSecs||0)).slice(0,15);
+    _prepDesafioLb=Object.values(byKey).sort((a,b)=>(a.timeSecs||0)-(b.timeSecs||0));
   }catch(e){console.error('desafio lb',e);_prepDesafioLb=[];}
   _prepDesafioLbLoading=false;
   if(_prep.state!=='exam') _renderPreparatePane();
