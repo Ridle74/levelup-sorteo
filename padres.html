@@ -1129,28 +1129,93 @@ function getParentDescripcion(pid) {
 
 // Datos temporales del popup activo (evita escapar strings en onclick)
 var _pendingPago = {};
+var _pagoClassDates = window._pagoClassDates || {};  // pid → fechas (YYYY-MM-DD) con clase en la semana mostrada en Pagos
 
+// Fecha local YYYY-MM-DD (evita el desfase de toISOString, que usa UTC)
+function _pagoLocalISO(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+// Los 7 días (lunes→domingo) de la semana weekKey (YYYY-MM-DD del lunes)
+function _pagoWeekDays(weekKey) {
+  var p = weekKey.split('-').map(Number);
+  var SHORT  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  var COLORS = ['#1452C8','#B84516','#6523A0','#0C7560','#A0182E','#5A4490','#474747'];
+  return Array.from({ length: 7 }, function(_, i) {
+    var d = new Date(p[0], p[1] - 1, p[2] + i);
+    return { iso: _pagoLocalISO(d), num: d.getDate(), short: SHORT[i], color: COLORS[i] };
+  });
+}
+
+// Popup "Confirmar pago" — opción C: solo se pueden elegir los días de ESA semana
+// (chips con el color de cada día; puntito = día con clase). Sin día preseleccionado:
+// el botón queda deshabilitado hasta elegir uno, para no confirmar con una fecha equivocada.
 function openPagoConfirmPopup(pid, weekKey, name, total) {
-  _pendingPago = { pid: pid, weekKey: weekKey, nombre: name, total: total, descripcion: getParentDescripcion(pid) };
+  _pendingPago = { pid: pid, weekKey: weekKey, nombre: name, total: total, descripcion: getParentDescripcion(pid), fecha: null };
   var existing = document.getElementById('pago-confirm-popup');
   if (existing) existing.remove();
-  var today = new Date().toISOString().slice(0,10);
+  var days = _pagoWeekDays(weekKey);
+  var fmt = function(iso) { return iso.slice(8) + '/' + iso.slice(5, 7); };
   var popup = document.createElement('div');
   popup.id = 'pago-confirm-popup';
   popup.style.cssText = 'position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;padding:20px;';
   popup.innerHTML =
       '<div onclick="closePagoConfirmPopup()" style="position:absolute;inset:0;background:rgba(0,0,0,0.22)"></div>'
-    + '<div style="position:relative;z-index:1;background:#fff;border-radius:20px;padding:22px 22px 18px;width:100%;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.22)">'
-    + '<div style="font-size:11px;font-weight:900;color:rgba(0,0,0,0.4);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px">Confirmar pago</div>'
+    + '<div style="position:relative;z-index:1;background:#fff;border-radius:20px;padding:22px 22px 18px;width:100%;max-width:320px;box-sizing:border-box;box-shadow:0 8px 32px rgba(0,0,0,0.22)">'
+    + '<div style="font-size:11px;font-weight:900;color:rgba(0,0,0,0.5);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px">Confirmar pago</div>'
     + '<div style="font-size:17px;font-weight:700;color:#111;margin-bottom:2px">' + name + '</div>'
-    + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-bottom:16px">S/. ' + total + '</div>'
-    + '<label style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.45);letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:6px">Fecha de pago</label>'
-    + '<input id="pago-fecha-input" type="date" value="' + today + '" style="width:100%;box-sizing:border-box;border:1.5px solid rgba(0,0,0,0.18);border-radius:10px;padding:10px 12px;font-size:14px;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;color:#111;background:#fff;margin-bottom:14px;outline:none">'
-    + '<button onclick="confirmPagoWithDate()" style="display:block;width:100%;border:none;background:#111;border-radius:12px;padding:13px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#fff;margin-bottom:8px">✓ Confirmar pago</button>'
-    + '<button onclick="closePagoConfirmPopup()" style="display:block;width:100%;border:none;background:rgba(0,0,0,0.06);border-radius:12px;padding:11px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Cancelar</button>'
+    + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-bottom:14px">S/. ' + total + '</div>'
+    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+    +   '<span style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap">Fecha de pago</span>'
+    +   '<div style="flex:1;height:1px;background:rgba(0,0,0,0.08)"></div>'
+    +   '<span style="font-family:\'Space Mono\',monospace;font-size:11px;color:rgba(0,0,0,0.55)">' + fmt(days[0].iso) + ' – ' + fmt(days[6].iso) + '</span>'
+    + '</div>'
+    + '<div id="pago-dias" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:8px"></div>'
+    + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;font-family:\'Space Grotesk\',sans-serif;font-size:11px;color:rgba(0,0,0,0.55)">'
+    +   '<span style="width:5px;height:5px;border-radius:3px;background:#111"></span><span>Días con clase de esta familia</span>'
+    + '</div>'
+    + '<button id="pago-confirm-btn" onclick="confirmPagoWithDate()" disabled style="display:block;width:100%;border:none;border-radius:12px;padding:13px;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px"></button>'
+    + '<button onclick="closePagoConfirmPopup()" style="display:block;width:100%;border:none;background:rgba(0,0,0,0.06);border-radius:12px;padding:11px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(0,0,0,0.55)">Cancelar</button>'
     + '</div>';
   document.body.appendChild(popup);
-  setTimeout(function(){ var inp = document.getElementById('pago-fecha-input'); if(inp) inp.focus(); }, 80);
+  _renderPagoDias();
+}
+function _renderPagoDias() {
+  var d = _pendingPago;
+  var wrap = document.getElementById('pago-dias');
+  if (!wrap) return;
+  var classDates = _pagoClassDates[d.pid] || [];
+  var LONG = { Lun:'Lunes', Mar:'Martes', 'Mié':'Miércoles', Jue:'Jueves', Vie:'Viernes', 'Sáb':'Sábado', Dom:'Domingo' };
+  wrap.innerHTML = _pagoWeekDays(d.weekKey).map(function(day) {
+    var sel = d.fecha === day.iso;
+    var hasClass = classDates.indexOf(day.iso) >= 0;
+    var dot = hasClass ? (sel ? '#fff' : '#111') : 'transparent';
+    var st = sel
+      ? 'border:1.5px solid ' + day.color + ';background:' + day.color + ';color:#fff;'
+      : 'border:1.5px solid ' + day.color + ';background:#fff;color:' + day.color + ';';
+    return '<button type="button" onclick="selectPagoDia(\'' + day.iso + '\')" aria-label="' + LONG[day.short] + ' ' + day.num + '" aria-pressed="' + sel + '" '
+      + 'style="' + st + 'height:56px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0">'
+      + '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase">' + day.short + '</span>'
+      + '<span style="font-family:\'Space Mono\',monospace;font-size:16px;font-weight:700">' + day.num + '</span>'
+      + '<span style="width:4px;height:4px;border-radius:2px;background:' + dot + '"></span>'
+      + '</button>';
+  }).join('');
+  var btn = document.getElementById('pago-confirm-btn');
+  if (btn) {
+    if (d.fecha) {
+      var day = _pagoWeekDays(d.weekKey).filter(function(x){ return x.iso === d.fecha; })[0];
+      btn.disabled = false;
+      btn.style.background = '#111'; btn.style.color = '#fff'; btn.style.cursor = 'pointer';
+      btn.textContent = '✓ Confirmar · ' + day.short + ' ' + d.fecha.slice(8) + '/' + d.fecha.slice(5, 7);
+    } else {
+      btn.disabled = true;
+      btn.style.background = 'rgba(0,0,0,0.1)'; btn.style.color = 'rgba(0,0,0,0.5)'; btn.style.cursor = 'default';
+      btn.textContent = 'Elige el día del pago';
+    }
+  }
+}
+function selectPagoDia(iso) {
+  _pendingPago.fecha = iso;
+  _renderPagoDias();
 }
 function closePagoConfirmPopup() {
   var el = document.getElementById('pago-confirm-popup');
@@ -1158,8 +1223,10 @@ function closePagoConfirmPopup() {
 }
 function confirmPagoWithDate() {
   var d = _pendingPago;
-  var inp = document.getElementById('pago-fecha-input');
-  var fecha = inp ? inp.value : new Date().toISOString().slice(0,10);
+  var fecha = d.fecha;
+  // Seguridad: solo se acepta un día de la semana que se está confirmando
+  var validas = _pagoWeekDays(d.weekKey).map(function(x){ return x.iso; });
+  if (!fecha || validas.indexOf(fecha) < 0) { _renderPagoDias(); return; }
   DATA.pagosConfirmados[d.pid + '_' + d.weekKey] = {
     ts: new Date().toISOString(),
     fecha: fecha,
@@ -2469,7 +2536,8 @@ function vAdminPagos() {
     }
     var sortedInst = instances.slice().sort(function(a,b){return (a.date+a.start).localeCompare(b.date+b.start);});
     var firstSlot = sortedInst.length ? sortedInst[0] : null;
-    return { name: parent.name, total: weeklyClass + mov, weeklyClass: weeklyClass, mov: mov, instances: instances.length, firstSlot: firstSlot };
+    var classDates = instances.map(function(i){ return i.date; });
+    return { name: parent.name, total: weeklyClass + mov, weeklyClass: weeklyClass, mov: mov, instances: instances.length, firstSlot: firstSlot, classDates: classDates };
   }
 
   if (!activeCycle) {
@@ -2483,7 +2551,7 @@ function vAdminPagos() {
   var grandTotal = 0;
   Object.keys(DATA.parents || {}).forEach(function(pid) {
     var r = calcParent(pid);
-    if (r && r.total > 0) { rows.push({ pid: pid, ...r }); grandTotal += r.total; }
+    if (r && r.total > 0) { rows.push({ pid: pid, ...r }); grandTotal += r.total; (window._pagoClassDates = window._pagoClassDates || {})[pid] = r.classDates || []; }
   });
   // Ordenar por primer día de semana (Lun=1…Dom=7) y luego por hora
   rows.sort(function(a, b) {
