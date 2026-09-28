@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>PARENTS</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -417,7 +417,7 @@ const SEED = {
     { id:19, studentId:20, day:4, start:"21:30", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Viernes
     { id:20, studentId:3,  day:5, start:"16:00", dur:120, modality:"Domicilio", topic:"One to Family" },
-    { id:21, studentId:6,  day:5, start:"19:00", dur:60,  modality:"Virtual",   topic:"One to One" },
+    { id:21, studentId:6,  day:5, start:"19:00", dur:60,  modality:"Virtual",   topic:"One to One", classFee:15 },
     { id:22, studentId:22, day:5, start:"20:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     { id:23, studentId:23, day:5, start:"21:00", dur:60,  modality:"Virtual",   topic:"One to One" },
     // Sábado
@@ -1243,7 +1243,8 @@ function openPagoDetallePopup(pid, weekOffset) {
         if (isActiveOnDate(sess, dateStr)) instances.push({
           date:dateStr, start:sess.start, dur:sess.dur||60,
           tipo:sess.modality||'Virtual', nivel:stu.nivel||'secundaria',
-          stuName:stu.name||('Alumno '+sid), stuIcon:stu.icon||'👤', stuId:String(sid)
+          stuName:stu.name||('Alumno '+sid), stuIcon:stu.icon||'👤', stuId:String(sid),
+          classFee:sess.classFee, noMovilidad:sess.noMovilidad
         });
       });
     });
@@ -1313,16 +1314,17 @@ function openPagoDetallePopup(pid, weekOffset) {
     instances.forEach(function(inst){ var k=inst.date+'_'+inst.start+'_'+inst.tipo; (groups[k]=groups[k]||[]).push(inst); });
     Object.keys(groups).sort().forEach(function(k) {
       var g=groups[k]; var rate=(RATES[g[0].tipo]||RATES.Virtual)[g[0].nivel]||25;
-      var f=factor(g[0].tipo,g.length); var hrs=g[0].dur/60; var cost=rate*f*hrs; weeklyClass+=cost;
+      var f=factor(g[0].tipo,g.length); var hrs=g[0].dur/60;
+      var cost=g[0].classFee!=null?g[0].classFee:rate*f*hrs; weeklyClass+=cost;
       var dow=new Date(g[0].date+'T00:00:00').getDay();
       var stus=g.map(function(i){return i.stuIcon+' '+i.stuName.split(' ')[0];}).join(' · ');
       var gtag=g.length===2?' Dúo':g.length===3?' Trío':'';
-      var rn=g.length>1?'S/'+rate+'/h × factor '+f+' ('+gtag.trim()+') × '+(Number.isInteger(hrs)?hrs+'h':hrs.toFixed(1)+'h'):'S/'+rate+'/h × '+(Number.isInteger(hrs)?hrs+'h':hrs.toFixed(1)+'h');
+      var rn=g[0].classFee!=null?'S/'+g[0].classFee+' (tarifa especial C3)':(g.length>1?'S/'+rate+'/h × factor '+f+' ('+gtag.trim()+') × '+(Number.isInteger(hrs)?hrs+'h':hrs.toFixed(1)+'h'):'S/'+rate+'/h × '+(Number.isInteger(hrs)?hrs+'h':hrs.toFixed(1)+'h'));
       lineItems.push({type:'clase',label:DAYS_ES[dow]+' '+fmt(g[0].date)+'  '+g[0].start+'–'+addMin(g[0].start,g[0].dur),
         stu:stus+(g.length>1?'  ·'+gtag:'')+'  · '+g[0].tipo, rateNote:rn, cost:cost});
     });
     var seenMov={}, domUniq=[];
-    instances.filter(function(i){return i.tipo==='Domicilio';}).forEach(function(i){
+    instances.filter(function(i){return i.tipo==='Domicilio' && !i.noMovilidad;}).forEach(function(i){
       var k=i.date+'_'+i.start; if (!seenMov[k]){seenMov[k]=true;domUniq.push(i);}
     });
     var byDate={};
@@ -1337,6 +1339,14 @@ function openPagoDetallePopup(pid, weekOffset) {
         mov+=mc;
         lineItems.push({type:'mov',label:'🏠 Movilidad · '+DAYS_ES[dow]+' '+fmt(r.date)+'  '+r.start, stu:vl, rateNote:'',cost:mc});
       });
+    });
+    var noMovDates={};
+    instances.filter(function(i){return i.tipo==='Domicilio' && i.noMovilidad;}).forEach(function(i){
+      if (!noMovDates[i.date]) noMovDates[i.date]=i;
+    });
+    Object.values(noMovDates).forEach(function(i){
+      var dow=new Date(i.date+'T00:00:00').getDay();
+      lineItems.push({type:'mov',label:'🏠 Movilidad · '+DAYS_ES[dow]+' '+fmt(i.date), stu:'Primera visita · sin costo de movilidad', rateNote:'',cost:0});
     });
   }
   var total = weeklyClass + mov;
@@ -2078,6 +2088,18 @@ function saveChildProfile(childId) {
              }
            });
          });
+         // También incluir sesiones one-off (recurring:false) en la semana de este parent
+         (DATA.sessions || []).forEach(function(s) {
+           if (String(s.studentId) !== String(sid)) return;
+           if (s.recurring !== false || !s.date) return;
+           if (s.date < weekDates[0] || s.date > weekDates[weekDates.length - 1]) return;
+           instances.push({
+             date: s.date, start: s.start, dur: s.dur || 60,
+             tipo: s.modality || 'Virtual', nivel: stu.nivel || 'secundaria',
+             stuName: stu.name || ('Alumno ' + sid), stuIcon: stu.icon || '👤',
+             stuId: String(sid), classFee: s.classFee, noMovilidad: s.noMovilidad
+           });
+         });
        });
 
        // ── Sin ciclo activo ──────────────────────────
@@ -2347,9 +2369,20 @@ function vAdminPagos() {
             instances.push({
               date: dateStr, start: sess.start, dur: sess.dur || 60,
               tipo: sess.modality || 'Virtual', nivel: stu.nivel || 'secundaria',
-              stuId: String(sid)
+              stuId: String(sid), classFee: sess.classFee
             });
           }
+        });
+      });
+      // También incluir sesiones one-off (recurring:false) en la semana de este parent
+      (DATA.sessions || []).forEach(function(s) {
+        if (String(s.studentId) !== String(sid)) return;
+        if (s.recurring !== false || !s.date) return;
+        if (s.date < wDates[0] || s.date > wDates[wDates.length - 1]) return;
+        instances.push({
+          date: s.date, start: s.start, dur: s.dur || 60,
+          tipo: s.modality || 'Virtual', nivel: stu.nivel || 'secundaria',
+          stuId: String(sid), classFee: s.classFee, noMovilidad: s.noMovilidad
         });
       });
     });
@@ -2414,11 +2447,11 @@ function vAdminPagos() {
       });
       Object.values(groups).forEach(function(g) {
         var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
-        weeklyClass += rate * factor(g[0].tipo, g.length) * (g[0].dur / 60);
+        weeklyClass += g[0].classFee != null ? g[0].classFee : rate * factor(g[0].tipo, g.length) * (g[0].dur / 60);
       });
       var domUniq = [];
       var seen = {};
-      instances.filter(function(i) { return i.tipo === 'Domicilio'; }).forEach(function(i) {
+      instances.filter(function(i) { return i.tipo === 'Domicilio' && !i.noMovilidad; }).forEach(function(i) {
         var k = i.date + '_' + i.start;
         if (!seen[k]) { seen[k] = true; domUniq.push(i); }
       });
@@ -2434,7 +2467,9 @@ function vAdminPagos() {
         });
       });
     }
-    return { name: parent.name, total: weeklyClass + mov, weeklyClass: weeklyClass, mov: mov, instances: instances.length };
+    var sortedInst = instances.slice().sort(function(a,b){return (a.date+a.start).localeCompare(b.date+b.start);});
+    var firstSlot = sortedInst.length ? sortedInst[0] : null;
+    return { name: parent.name, total: weeklyClass + mov, weeklyClass: weeklyClass, mov: mov, instances: instances.length, firstSlot: firstSlot };
   }
 
   if (!activeCycle) {
@@ -2446,53 +2481,91 @@ function vAdminPagos() {
 
   var rows = [];
   var grandTotal = 0;
-  Object.keys(DATA.parents || {}).sort(function(a, b) {
-    return (DATA.parents[a].name || '').localeCompare(DATA.parents[b].name || '');
-  }).forEach(function(pid) {
+  Object.keys(DATA.parents || {}).forEach(function(pid) {
     var r = calcParent(pid);
     if (r && r.total > 0) { rows.push({ pid: pid, ...r }); grandTotal += r.total; }
   });
+  // Ordenar por primer día de semana (Lun=1…Dom=7) y luego por hora
+  rows.sort(function(a, b) {
+    function slotKey(fs) {
+      if (!fs) return '9_99:99';
+      var dow = (new Date(fs.date + 'T00:00:00').getDay()) || 7; // Dom=0→7, Lun=1…Sáb=6
+      return dow + '_' + (fs.start || '99:99');
+    }
+    return slotKey(a.firstSlot).localeCompare(slotKey(b.firstSlot));
+  });
 
-  var rowsHtml = rows.map(function(r) {
-    var badge = r.mov > 0
-      ? '<span style="font-size:10px;color:rgba(0,0,0,0.4)"> (clases S/.' + r.weeklyClass + ' + mov S/.' + r.mov + ')</span>'
-      : '';
-    var confirmed = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[r.pid + '_' + weekKey]);
-    var pagoInfo = confirmed ? DATA.pagosConfirmados[r.pid + '_' + weekKey] : null;
-    var pagoFecha = pagoInfo && pagoInfo.fecha ? (' · ' + pagoInfo.fecha.slice(5).replace('-','/')) : '';
-    var confirmBtn = confirmed
-      ? '<button onclick="desconfirmarPago(\''+r.pid+'\',\''+weekKey+'\')" style="border:none;background:rgba(34,197,94,0.12);border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:#15803d;white-space:nowrap">✓ Pagado'+pagoFecha+'</button>'
-      : '<button onclick="openPagoConfirmPopup(\''+r.pid+'\',\''+weekKey+'\',\''+r.name+'\','+r.total+')" style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:rgba(0,0,0,0.45);white-space:nowrap">Confirmar</button>';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.06)">'
-      + '<div onclick="openPagoDetallePopup(\''+r.pid+'\',adminPagosWeekOffset)" style="flex:1;min-width:0;cursor:pointer">'
-      +   '<div style="font-size:14px;font-weight:600;color:' + (confirmed ? '#15803d' : '#111') + '">' + r.name + '</div>'
-      +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;color:' + (confirmed ? '#15803d' : '#111') + '">S/. ' + r.total + badge + '</div>'
+  var DAY_NAMES  = {1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes',6:'Sábado',7:'Domingo'};
+  var DAY_COLORS = {1:'#1452C8',2:'#B84516',3:'#6523A0',4:'#0C7560',5:'#A0182E',6:'#5A4490',7:'#474747'};
+  var dayGroups = {};
+  rows.forEach(function(r) {
+    var dow = r.firstSlot ? ((new Date(r.firstSlot.date + 'T00:00:00').getDay()) || 7) : 9;
+    if (!dayGroups[dow]) dayGroups[dow] = [];
+    dayGroups[dow].push(r);
+  });
+
+  var groupedHtml = [1,2,3,4,5,6,7,9].filter(function(d){return dayGroups[d];}).map(function(dow) {
+    var group = dayGroups[dow];
+    var color = DAY_COLORS[dow] || '#474747';
+    var dayName = DAY_NAMES[dow] || 'Otros';
+    var groupRowsHtml = group.map(function(r, rIdx) {
+      var isLast = rIdx === group.length - 1;
+      var borderBottom = isLast ? 'none' : '1px solid rgba(0,0,0,0.07)';
+      var detailText = r.mov > 0 ? 'clases S/.' + r.weeklyClass + ' + mov S/.' + r.mov : '';
+      var confirmed = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[r.pid + '_' + weekKey]);
+      var pagoInfo = confirmed ? DATA.pagosConfirmados[r.pid + '_' + weekKey] : null;
+      var pagoFecha = pagoInfo && pagoInfo.fecha ? (' · ' + pagoInfo.fecha.slice(5).replace('-','/')) : '';
+      var nameColor = confirmed ? '#196e38' : '#0d0d0d';
+      var amtColor  = confirmed ? '#196e38' : '#0d0d0d';
+      var confirmBtn = confirmed
+        ? '<button onclick="desconfirmarPago(\''+r.pid+'\',\''+weekKey+'\')" style="flex-shrink:0;border:none;background:rgba(25,110,56,0.09);border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;letter-spacing:.02em;color:#196e38;white-space:nowrap">✓ Pagado'+pagoFecha+'</button>'
+        : '<button onclick="openPagoConfirmPopup(\''+r.pid+'\',\''+weekKey+'\',\''+r.name+'\','+r.total+')" style="flex-shrink:0;border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:11px;color:rgba(13,13,13,0.5);white-space:nowrap">Confirmar</button>';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:'+borderBottom+'">'
+        + '<div onclick="openPagoDetallePopup(\''+r.pid+'\',adminPagosWeekOffset)" style="flex:1;min-width:0;cursor:pointer">'
+        +   '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:'+nameColor+';margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>'
+        +   '<div style="display:flex;align-items:baseline;gap:6px">'
+        +     '<span style="font-family:\'Space Mono\',monospace;font-size:13px;font-weight:400;color:'+amtColor+';font-variant-numeric:tabular-nums;letter-spacing:-.01em">S/. '+r.total+'</span>'
+        +     (detailText ? '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:11px;color:rgba(0,0,0,0.3)">'+detailText+'</span>' : '')
+        +   '</div>'
+        + '</div>'
+        + confirmBtn
+        + '</div>';
+    }).join('');
+    return '<div style="margin-bottom:8px">'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+      + '<span style="background:'+color+';color:#fff;font-family:\'Space Grotesk\',sans-serif;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 12px 3px;border-radius:8px;white-space:nowrap">'+dayName+'</span>'
+      + '<div style="flex:1;height:1px;background:rgba(0,0,0,0.08)"></div>'
+      + '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:11px;color:rgba(0,0,0,0.3);white-space:nowrap">'+group.length+' famili'+(group.length===1?'a':'as')+'</span>'
       + '</div>'
-      + confirmBtn
+      + '<div style="background:#fff;border:1px solid rgba(0,0,0,0.09);border-radius:18px;padding:0 16px">'
+      + groupRowsHtml
+      + '</div>'
       + '</div>';
   }).join('');
 
-  return '<div style="padding:16px;max-width:700px;margin:0 auto">'
-    + '<div class="dash-hero" style="margin-bottom:14px">'
-    +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:rgba(0,0,0,0.5)">' + (adminPagosWeekOffset === 0 ? 'Esta semana' : adminPagosWeekOffset === -1 ? 'Semana anterior' : 'Semana ' + adminPagosWeekOffset) + ' · ' + weekLabel + '</div>'
-    +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#111;margin-top:2px">Pagos semanales</div>'
-    +   '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:4px">' + (activeCycle.name || '') + ' · ' + rows.filter(function(r){return r.total>0}).length + ' familias con clases</div>'
+  var weekHeader = adminPagosWeekOffset === 0 ? 'Esta semana' : adminPagosWeekOffset === -1 ? 'Semana anterior' : 'Semana ' + adminPagosWeekOffset;
+  var nextBtnStyle = adminPagosWeekOffset >= 0
+    ? 'border:1px solid rgba(0,0,0,0.08);background:rgba(0,0,0,0.04);border-radius:10px;padding:7px 14px;cursor:default;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(0,0,0,0.2)'
+    : 'border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(13,13,13,0.5)';
+
+  return '<div style="padding:16px 16px 88px;max-width:700px;margin:0 auto">'
+    + '<div style="background:#0d0d0d;border-radius:18px;padding:18px 22px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px">'
+    +   '<div>'
+    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.36);margin-bottom:4px">'+weekHeader+' · '+weekLabel+'</div>'
+    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:13px;font-weight:600;color:rgba(255,255,255,.60);margin-bottom:7px">Pagos semanales</div>'
+    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:46px;font-weight:700;letter-spacing:-.01em;color:#fff;line-height:1;font-variant-numeric:tabular-nums">S/. '+grandTotal+'</div>'
+    +   '</div>'
+    +   '<div style="text-align:right;flex-shrink:0">'
+    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:4px">Aprox. mensual</div>'
+    +     '<div style="font-family:\'Space Mono\',monospace;font-size:18px;font-weight:400;color:rgba(255,255,255,.48);font-variant-numeric:tabular-nums">S/. '+(grandTotal*4)+'</div>'
+    +   '</div>'
     + '</div>'
-    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
-    +   '<button onclick="adminPagosStep(-1)" style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)">← Anterior</button>'
-    +   '<button onclick="adminPagosStep(1)" '+(adminPagosWeekOffset >= 0 ? 'disabled style="border:1px solid rgba(0,0,0,0.08);background:rgba(0,0,0,0.04);border-radius:10px;padding:7px 14px;cursor:default;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.2)"' : 'style="border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)"')+'>Siguiente →</button>'
-    +   (adminPagosWeekOffset < 0 ? '<button onclick="adminPagosToday()" style="margin-left:auto;border:none;background:#111;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;font-weight:900;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#fff">Esta semana</button>' : '')
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">'
+    +   '<button onclick="adminPagosStep(-1)" style="border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(13,13,13,0.5)">← Anterior</button>'
+    +   '<button onclick="adminPagosStep(1)" '+(adminPagosWeekOffset >= 0 ? 'disabled ' : '')+' style="'+nextBtnStyle+'">Siguiente →</button>'
+    +   (adminPagosWeekOffset < 0 ? '<button onclick="adminPagosToday()" style="margin-left:auto;border:none;background:#0d0d0d;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:#fff">Esta semana</button>' : '')
     + '</div>'
-    + '<div style="background:#111;border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">'
-    +   '<div><div style="font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45)">Total semanal</div>'
-    +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:40px;font-weight:900;color:#fff;line-height:1.05">S/. ' + grandTotal + '</div></div>'
-    +   '<div style="text-align:right"><div style="font-size:9px;font-weight:900;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)">Aprox. mensual</div>'
-    +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.6)">S/. ' + (grandTotal * 4) + '</div></div>'
-    + '</div>'
-    + '<div class="sec-lbl">Por familia</div>'
-    + '<div style="background:#fff;border:1px solid rgba(0,0,0,0.1);border-radius:14px;padding:4px 14px 0">'
-    +   rowsHtml
-    + '</div>'
+    + groupedHtml
     + '</div>';
 }
 
