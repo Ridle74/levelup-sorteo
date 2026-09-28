@@ -1215,7 +1215,6 @@ function openPagoDetallePopup(pid, weekOffset) {
   var activeSessions = (DATA.sessions || []).filter(function(s) {
     if (s.weekStart) return s.weekStart >= activeCycle.start && s.weekStart <= activeCycle.end;
     if (s.cycleId != null) return s.cycleId == activeCycle.id;
-    if (s.recurring === false && s.date) return s.date >= weekDates[0] && s.date <= weekDates[6];
     return false;
   });
   function isActiveOnDate(sess, dateStr) {
@@ -1258,55 +1257,29 @@ function openPagoDetallePopup(pid, weekOffset) {
       var fn = ((DATA.students[String(sid)]||{}).name||'').split(' ')[0];
       if (fn==='Alejandro')          fpRates[String(sid)] = {rph:30,movPV:40};
       else if (fn==='Joao')          fpRates[String(sid)] = {rph:30,movPV:30};
-      else if (fn==='Josúe'||fn==='Josue'||fn==='Josué') fpRates[String(sid)] = {rph:15,movPV:0};
+      else if (fn==='Josúe'||fn==='Josue') fpRates[String(sid)] = {rph:15,movPV:0};
       else if (fn==='Lucio')         fpRates[String(sid)] = {rph:10,movPV:0};
       else if (fn==='Joanna')        fpRates[String(sid)] = {rph:20,movPV:30};
       else                           fpRates[String(sid)] = {rph:25,movPV:30};
     });
     instances.sort(function(a,b){ return (a.date+a.start).localeCompare(b.date+b.start); });
     instances.forEach(function(inst) {
-      var groupmates = instances.filter(function(i){ return i.date===inst.date && i.start===inst.start && i.stuId!==inst.stuId; });
-      var rph, movPV;
-      if (groupmates.length === 0) {
-        rph = (RATES[inst.tipo]||RATES.Virtual)[inst.nivel]||25;
-        var _fr0 = fpRates[inst.stuId];
-        movPV = _fr0 ? _fr0.movPV : 30;
-      } else {
-        var fr = fpRates[inst.stuId]||{rph:25,movPV:30}; rph = fr.rph; movPV = fr.movPV||0;
-      }
-      var hrs=inst.dur/60; var cost=rph*hrs; weeklyClass+=cost;
-      inst._movPV = movPV;
+      var r = fpRates[inst.stuId]||{rph:25}; var hrs=inst.dur/60; var cost=r.rph*hrs; weeklyClass+=cost;
       var dow=new Date(inst.date+'T00:00:00').getDay();
       lineItems.push({type:'clase', label:DAYS_ES[dow]+' '+fmt(inst.date)+'  '+inst.start+'–'+addMin(inst.start,inst.dur),
-        stu:inst.stuIcon+' '+inst.stuName.split(' ')[0], rateNote:'S/'+rph+'/h × '+(Number.isInteger(hrs)?hrs+'h':hrs.toFixed(1)+'h'), cost:cost});
+        stu:inst.stuIcon+' '+inst.stuName.split(' ')[0], rateNote:'S/'+r.rph+'/h × '+(Number.isInteger(hrs)?hrs+'h':hrs.toFixed(1)+'h'), cost:cost});
     });
     var visitMap = {};
     instances.forEach(function(inst) {
       if (inst.tipo!=='Domicilio') return;
-      var k=inst.date+'_'+inst.start;
-      if (!visitMap[k]) visitMap[k]={date:inst.date,start:inst.start,dur:inst.dur,pvArr:[],stus:[]};
-      visitMap[k].pvArr.push(inst._movPV != null ? inst._movPV : (fpRates[inst.stuId]||{movPV:30}).movPV);
-      visitMap[k].stus.push(((DATA.students[String(inst.stuId)]||{}).name||'').split(' ')[0]);
+      var k=inst.date+'_'+inst.start, r=fpRates[inst.stuId]||{movPV:30};
+      if (!visitMap[k]) visitMap[k]={date:inst.date,start:inst.start,pvArr:[]};
+      visitMap[k].pvArr.push(r.movPV);
     });
-    // Fusionar visitas consecutivas de Lucio+Alejandro (hermanos, misma casa → un solo viaje)
-    var visits = Object.values(visitMap).sort(function(a,b){ return (a.date+a.start).localeCompare(b.date+b.start); });
-    var finalVisits = [], skipNext = false;
-    visits.forEach(function(v, vi) {
-      if (skipNext) { skipNext=false; return; }
-      var next = visits[vi+1];
-      var hermanos = next && v.date===next.date && addMin(v.start,v.dur)===next.start &&
-          (v.stus.indexOf('Lucio')>=0||next.stus.indexOf('Lucio')>=0) &&
-          (v.stus.indexOf('Alejandro')>=0||next.stus.indexOf('Alejandro')>=0);
-      if (hermanos) {
-        finalVisits.push({date:v.date,start:v.start,pvArr:v.pvArr.concat(next.pvArr),merged:true});
-        skipNext=true;
-      } else { finalVisits.push(v); }
-    });
-    finalVisits.forEach(function(v) {
+    Object.values(visitMap).forEach(function(v) {
       var nz=v.pvArr.filter(function(x){return x>0;}); var mc=nz.length?Math.max.apply(null,nz):0;
       if (mc>0) { var dow=new Date(v.date+'T00:00:00').getDay(); mov+=mc;
-        var stuLabel=v.merged?'hermanos · visita única':'máx tarifa visita del grupo';
-        lineItems.push({type:'mov',label:'🏠 Movilidad · '+DAYS_ES[dow]+' '+fmt(v.date)+'  '+v.start, stu:stuLabel,rateNote:'',cost:mc}); }
+        lineItems.push({type:'mov',label:'🏠 Movilidad · '+DAYS_ES[dow]+' '+fmt(v.date)+'  '+v.start, stu:'máx tarifa visita del grupo',rateNote:'',cost:mc}); }
     });
   } else {
     var groups = {};
@@ -1341,87 +1314,44 @@ function openPagoDetallePopup(pid, weekOffset) {
   }
   var total = weeklyClass + mov;
 
-  // Inyectar estilos C1 una sola vez
-  if (!document.getElementById('pd-c1-css')) {
-    var pdSt=document.createElement('style');pdSt.id='pd-c1-css';
-    pdSt.textContent=[
-      '.pd-card{background:#111;border-radius:18px;overflow:hidden;box-shadow:0 8px 48px rgba(0,0,0,0.55);width:100%;max-width:680px}',
-      '.pd-hdr{padding:14px 20px 12px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}',
-      '.pd-hdr-l{display:flex;flex-direction:column;gap:2px}',
-      '.pd-lbl{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.35)}',
-      '.pd-name{font-family:\'Barlow Condensed\',sans-serif;font-size:20px;font-weight:700;color:#F0EEE9;letter-spacing:0.01em}',
-      '.pd-week{font-size:11px;color:rgba(255,255,255,0.35);margin-top:1px}',
-      '.pd-hdr-r{display:flex;align-items:center;gap:8px}',
-      '.pd-pill{font-size:9.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;border-radius:6px;padding:4px 10px}',
-      '.pd-pill-cl{background:rgba(129,140,248,0.15);color:#A5B4FC}',
-      '.pd-pill-mv{background:rgba(251,146,60,0.15);color:#FCA668}',
-      '.pd-closex{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:rgba(255,255,255,0.45);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}',
-      '.pd-body{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid rgba(255,255,255,0.08)}',
-      '.pd-body.no-mov{grid-template-columns:1fr}',
-      '.pd-col{padding:10px 0}',
-      '.pd-col+.pd-col{border-left:1px solid rgba(255,255,255,0.08)}',
-      '.pd-col-h{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:0 18px 6px}',
-      '.pd-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 18px;gap:8px;border-top:1px solid rgba(255,255,255,0.06)}',
-      '.pd-rl{display:flex;flex-direction:column;gap:1px;min-width:0}',
-      '.pd-rd{font-size:11px;font-weight:600;color:#F0EEE9;white-space:nowrap}',
-      '.pd-rs{font-size:10px;color:rgba(255,255,255,0.38)}',
-      '.pd-rs.mv{color:rgba(252,166,104,0.8)}',
-      '.pd-rc{font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:700;color:#F0EEE9;font-variant-numeric:tabular-nums;flex-shrink:0}',
-      '.pd-sub{display:flex;gap:24px;justify-content:flex-end;padding:8px 20px 10px}',
-      '.pd-si{display:flex;gap:8px;align-items:center}',
-      '.pd-si span:first-child{font-size:10px;color:rgba(255,255,255,0.35)}',
-      '.pd-si span:last-child{font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.55);font-variant-numeric:tabular-nums}',
-      '.pd-tot{background:#3DD68C;border-radius:12px;margin:0 18px 18px;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}',
-      '.pd-tot-l{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(0,0,0,0.5)}',
-      '.pd-tot-n{font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900;color:#0D2B1A;font-variant-numeric:tabular-nums}'
-    ].join('');
-    document.head.appendChild(pdSt);
+  function lineHtml(l) {
+    return '<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05)">'
+      +'<div style="flex:1;min-width:0">'
+      +  '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:12px;font-weight:700;color:rgba(0,0,0,0.38);letter-spacing:0.02em">'+l.label+'</div>'
+      +  '<div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-top:1px">'+l.stu+'</div>'
+      +  (l.rateNote?'<div style="font-size:11px;color:rgba(0,0,0,0.32);margin-top:1px">'+l.rateNote+'</div>':'')
+      +'</div>'
+      +'<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:900;color:#111;white-space:nowrap;padding-top:2px">S/ '+l.cost+'</div>'
+      +'</div>';
   }
 
   var claseLines = lineItems.filter(function(l){return l.type==='clase';});
   var movLines   = lineItems.filter(function(l){return l.type==='mov';});
-
-  function claseRowHtml(l) {
-    return '<div class="pd-row"><div class="pd-rl">'
-      +'<span class="pd-rd">'+l.label+'</span>'
-      +'<span class="pd-rs">'+l.stu+(l.rateNote?' · '+l.rateNote:'')+'</span>'
-      +'</div><span class="pd-rc">S/ '+l.cost+'</span></div>';
-  }
-  function movRowHtml(l) {
-    return '<div class="pd-row"><div class="pd-rl">'
-      +'<span class="pd-rd">'+l.label.replace('🏠 Movilidad · ','')+'</span>'
-      +'<span class="pd-rs mv">'+l.stu+'</span>'
-      +'</div><span class="pd-rc">S/ '+l.cost+'</span></div>';
-  }
-
-  var subHtml = movLines.length
-    ? '<div class="pd-sub"><div class="pd-si"><span>Subtotal clases</span><span>S/ '+weeklyClass+'</span></div>'
-      +'<div class="pd-si"><span>Movilidad</span><span>S/ '+mov+'</span></div></div>'
+  var subtotalesHtml = movLines.length
+    ? '<div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:11px;color:rgba(0,0,0,0.4)">Subtotal clases</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;color:rgba(0,0,0,0.5)">S/ '+weeklyClass+'</span></div>'
+    + '<div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:11px;color:rgba(0,0,0,0.4)">Movilidad</span><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:700;color:rgba(0,0,0,0.5)">S/ '+mov+'</span></div>'
     : '';
 
-  var html = '<div onclick="closePagoDetallePopup()" style="position:absolute;inset:0;background:transparent"></div>'
-    +'<div onclick="event.stopPropagation()" class="pd-card">'
-    +'<div class="pd-hdr">'
-    +'<div class="pd-hdr-l">'
-    +'<span class="pd-lbl">Desglose de pago</span>'
-    +'<span class="pd-name">'+parent.name+'</span>'
-    +'<span class="pd-week">'+weekLabel+'</span>'
+  var html = '<div onclick="closePagoDetallePopup()" style="position:absolute;inset:0;background:rgba(0,0,0,0.3)"></div>'
+    +'<div onclick="event.stopPropagation()" style="position:relative;z-index:1;background:#fff;border-radius:20px 20px 0 0;padding:22px 20px 36px;width:100%;max-width:480px;max-height:86vh;overflow-y:auto;box-shadow:0 -4px 40px rgba(0,0,0,0.18)">'
+    +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">'
+    +  '<div><div style="font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(0,0,0,0.4)">Desglose · '+weekLabel+'</div>'
+    +  '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:22px;font-weight:900;color:#111;margin-top:2px">'+parent.name+'</div></div>'
+    +'<button onclick="closePagoDetallePopup()" style="border:none;background:rgba(0,0,0,0.07);border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:13px;color:rgba(0,0,0,0.5);flex-shrink:0">✕</button>'
     +'</div>'
-    +'<div class="pd-hdr-r">'
-    +(movLines.length?'<span class="pd-pill pd-pill-cl">📚 Clases</span><span class="pd-pill pd-pill-mv">🏠 Movilidad</span>':'')
-    +'<button onclick="closePagoDetallePopup()" class="pd-closex">×</button>'
-    +'</div></div>'
-    +'<div class="pd-body'+(movLines.length?'':' no-mov')+'">'
-    +'<div class="pd-col"><div class="pd-col-h">Clases</div>'+claseLines.map(claseRowHtml).join('')+'</div>'
-    +(movLines.length?'<div class="pd-col"><div class="pd-col-h">Movilidad</div>'+movLines.map(movRowHtml).join('')+'</div>':'')
+    +'<div style="font-size:9px;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-bottom:2px">Clases</div>'
+    + claseLines.map(lineHtml).join('')
+    +(movLines.length?'<div style="font-size:9px;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;color:rgba(0,0,0,0.35);margin-top:12px;margin-bottom:2px">Movilidad</div>'+movLines.map(lineHtml).join(''):'')
+    +(subtotalesHtml?'<div style="margin-top:10px;border-top:1px solid rgba(0,0,0,0.08);padding-top:8px">'+subtotalesHtml+'</div>':'')
+    +'<div style="background:#111;border-radius:14px;padding:14px 18px;margin-top:14px;display:flex;justify-content:space-between;align-items:center">'
+    +  '<div style="font-size:10px;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.5)">Total semana</div>'
+    +  '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:30px;font-weight:900;color:#fff">S/. '+total+'</div>'
     +'</div>'
-    +subHtml
-    +'<div class="pd-tot"><span class="pd-tot-l">Total semana</span><span class="pd-tot-n">S/. '+total+'</span></div>'
     +'</div>';
 
   var popup = document.createElement('div');
   popup.id = 'pago-detalle-popup';
-  popup.style.cssText = 'position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;padding:16px';
+  popup.style.cssText = 'position:fixed;inset:0;z-index:800;display:flex;align-items:flex-end;justify-content:center';
   popup.innerHTML = html;
   document.body.appendChild(popup);
 }
@@ -2115,48 +2045,27 @@ function saveChildProfile(childId) {
            var firstName = ((DATA.students[String(sid)] || DATA.students[sid] || {}).name || '').split(' ')[0];
            if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
            else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
-           else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+           else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
            else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
            else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
            else fpRates[String(sid)] = { rph: 25, movPV: 30 };
          });
-         // Costo de clases: groupmates usan tarifa fpRates.rph, solos usan RATES estándar
-         function _addMin3(t,m){var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m;return String(Math.floor(tot/60)).padStart(2,'0')+':'+String(tot%60).padStart(2,'0');}
-         instances.sort(function(a,b){return (a.date+a.start).localeCompare(b.date+b.start);});
+         // Costo de clases: cada alumno paga su tarifa individual
          instances.forEach(function(inst) {
-           var groupmates=instances.filter(function(i){return i.date===inst.date&&i.start===inst.start&&i.stuId!==inst.stuId;});
-           var rph,movPV;
-           if(groupmates.length===0){
-             rph=(RATES[inst.tipo]||RATES.Virtual)[inst.nivel]||25;
-             var _f0=fpRates[inst.stuId]; movPV=_f0?_f0.movPV:30;
-           } else {
-             var _fr=fpRates[inst.stuId]||{rph:25,movPV:0}; rph=_fr.rph; movPV=_fr.movPV||0;
-           }
-           weeklyClass+=rph*(inst.dur/60);
-           inst._movPV3=movPV;
+           var r = fpRates[inst.stuId] || { rph: 25, movPV: 30 };
+           weeklyClass += r.rph * (inst.dur / 60);
          });
-         // Movilidad con hermanos merge (Lucio 16:00 → Alejandro 17:00 = una sola visita)
+         // Movilidad: por visita (date+start), se toma el movPV más alto del grupo
          var visitMap = {};
          instances.forEach(function(inst) {
-           if(inst.tipo!=='Domicilio') return;
-           var k=inst.date+'_'+inst.start;
-           if(!visitMap[k]) visitMap[k]={date:inst.date,start:inst.start,dur:inst.dur,pvArr:[],stus:[]};
-           visitMap[k].pvArr.push(inst._movPV3!=null?inst._movPV3:(fpRates[inst.stuId]||{movPV:30}).movPV);
-           visitMap[k].stus.push(((DATA.students[String(inst.stuId)]||{}).name||'').split(' ')[0]);
+           if (inst.tipo !== 'Domicilio') return;
+           var k = inst.date + '_' + inst.start;
+           var r = fpRates[inst.stuId] || { movPV: 30 };
+           (visitMap[k] = visitMap[k] || []).push(r.movPV);
          });
-         var _v3=Object.values(visitMap).sort(function(a,b){return (a.date+a.start).localeCompare(b.date+b.start);});
-         var _fn3=[],_sk3=false;
-         _v3.forEach(function(v,vi){
-           if(_sk3){_sk3=false;return;}
-           var nx=_v3[vi+1];
-           var herm=nx&&v.date===nx.date&&_addMin3(v.start,v.dur)===nx.start&&
-             (v.stus.indexOf('Lucio')>=0||nx.stus.indexOf('Lucio')>=0)&&
-             (v.stus.indexOf('Alejandro')>=0||nx.stus.indexOf('Alejandro')>=0);
-           if(herm){_fn3.push({pvArr:v.pvArr.concat(nx.pvArr)});_sk3=true;}else{_fn3.push(v);}
-         });
-         _fn3.forEach(function(v){
-           var nz=v.pvArr.filter(function(x){return x>0;});
-           mov+=nz.length?Math.max.apply(null,nz):0;
+         Object.values(visitMap).forEach(function(pvArr) {
+           var nonZero = pvArr.filter(function(v) { return v > 0; });
+           mov += nonZero.length ? Math.max.apply(null, nonZero) : 0;
          });
        } else {
          // Algoritmo estándar: agrupar por fecha+hora+tipo para detectar dúo/trío
@@ -2363,48 +2272,25 @@ function vAdminPagos() {
         var firstName = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
         if (firstName === 'Alejandro') fpRates[String(sid)] = { rph: 30, movPV: 40 };
         else if (firstName === 'Joao')   fpRates[String(sid)] = { rph: 30, movPV: 30 };
-        else if (firstName === 'Josúe' || firstName === 'Josue' || firstName === 'Josué') fpRates[String(sid)] = { rph: 15, movPV: 0 };
+        else if (firstName === 'Josúe' || firstName === 'Josue') fpRates[String(sid)] = { rph: 15, movPV: 0 };
         else if (firstName === 'Lucio')  fpRates[String(sid)] = { rph: 10, movPV: 0 };
         else if (firstName === 'Joanna') fpRates[String(sid)] = { rph: 20, movPV: 30 };
         else fpRates[String(sid)] = { rph: 25, movPV: 30 };
       });
-      function _addMin(t,m){var p=t.split(':').map(Number),tot=p[0]*60+p[1]+m;return String(Math.floor(tot/60)).padStart(2,'0')+':'+String(tot%60).padStart(2,'0');}
-      // Clases: misma lógica de groupmates que openPagoDetallePopup
-      instances.sort(function(a,b){return (a.date+a.start).localeCompare(b.date+b.start);});
       instances.forEach(function(inst) {
-        var groupmates = instances.filter(function(i){return i.date===inst.date&&i.start===inst.start&&i.stuId!==inst.stuId;});
-        var rph, movPV;
-        if (groupmates.length===0) {
-          rph = (RATES[inst.tipo]||RATES.Virtual)[inst.nivel]||25;
-          var _f0 = fpRates[inst.stuId]; movPV = _f0 ? _f0.movPV : 30;
-        } else {
-          var _fr = fpRates[inst.stuId]||{rph:25,movPV:0}; rph=_fr.rph; movPV=_fr.movPV||0;
-        }
-        weeklyClass += rph*(inst.dur/60);
-        inst._movPV = movPV;
+        var r = fpRates[inst.stuId] || { rph: 25 };
+        weeklyClass += r.rph * (inst.dur / 60);
       });
-      // Movilidad: con fusión de hermanos Lucio+Alejandro
       var visitMap = {};
       instances.forEach(function(inst) {
-        if (inst.tipo!=='Domicilio') return;
-        var k=inst.date+'_'+inst.start;
-        if (!visitMap[k]) visitMap[k]={date:inst.date,start:inst.start,dur:inst.dur,pvArr:[],stus:[]};
-        visitMap[k].pvArr.push(inst._movPV!=null?inst._movPV:(fpRates[inst.stuId]||{movPV:30}).movPV);
-        visitMap[k].stus.push(((DATA.students[String(inst.stuId)]||{}).name||'').split(' ')[0]);
+        if (inst.tipo !== 'Domicilio') return;
+        var k = inst.date + '_' + inst.start;
+        var r = fpRates[inst.stuId] || { movPV: 30 };
+        (visitMap[k] = visitMap[k] || []).push(r.movPV);
       });
-      var _visits=Object.values(visitMap).sort(function(a,b){return (a.date+a.start).localeCompare(b.date+b.start);});
-      var _final=[],_skip=false;
-      _visits.forEach(function(v,vi){
-        if(_skip){_skip=false;return;}
-        var nx=_visits[vi+1];
-        var herm=nx&&v.date===nx.date&&_addMin(v.start,v.dur)===nx.start&&
-          (v.stus.indexOf('Lucio')>=0||nx.stus.indexOf('Lucio')>=0)&&
-          (v.stus.indexOf('Alejandro')>=0||nx.stus.indexOf('Alejandro')>=0);
-        if(herm){_final.push({pvArr:v.pvArr.concat(nx.pvArr)});_skip=true;}else{_final.push(v);}
-      });
-      _final.forEach(function(v){
-        var nz=v.pvArr.filter(function(x){return x>0;});
-        mov+=nz.length?Math.max.apply(null,nz):0;
+      Object.values(visitMap).forEach(function(pvArr) {
+        var nonZero = pvArr.filter(function(v) { return v > 0; });
+        mov += nonZero.length ? Math.max.apply(null, nonZero) : 0;
       });
     } else {
       var groups = {};

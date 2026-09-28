@@ -2602,6 +2602,7 @@ function _ptsFirstDominatedDate(topicKey, histAsc) {
 // o null si aún no lo alcanzó. Versión timestamp de _ptsFirstDominatedDate, usada para
 // comparaciones exactas (ej: ¿se dominó DESPUÉS de que se asignó la tarea?).
 function _ptsFirstDominatedTimestamp(topicKey, histAsc) {
+  const histFiltered = histAsc.filter(h => !h.customConfig);
   for (let i=0; i<histFiltered.length; i++) {
     const sec = histFiltered[i].completedAt?.seconds; if (!sec) continue;
     if (_prepMasteryLevelH(topicKey, histFiltered.slice(0, i+1)) === 'dominado') {
