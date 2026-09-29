@@ -2583,6 +2583,8 @@ function vAdminPagos() {
       var confirmed = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[r.pid + '_' + weekKey]);
       var pagoInfo = confirmed ? DATA.pagosConfirmados[r.pid + '_' + weekKey] : null;
       var pagoFecha = pagoInfo && pagoInfo.fecha ? (' · ' + pagoInfo.fecha.slice(5).replace('-','/')) : '';
+      // Número de recibo por honorarios (si ya se emitió en SUNAT): "✓ Pagado · 09/28 · E001-132"
+      if (pagoInfo && pagoInfo.recibo) pagoFecha += ' · ' + pagoInfo.recibo;
       var nameColor = confirmed ? '#196e38' : '#0d0d0d';
       var amtColor  = confirmed ? '#196e38' : '#0d0d0d';
       var confirmBtn = confirmed
