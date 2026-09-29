@@ -2595,7 +2595,8 @@ function vAdminPagos() {
         +   '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:'+nameColor+';margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>'
         +   '<div style="display:flex;align-items:baseline;gap:6px">'
         +     '<span style="font-family:\'Space Mono\',monospace;font-size:13px;font-weight:400;color:'+amtColor+';font-variant-numeric:tabular-nums;letter-spacing:-.01em">S/. '+r.total+'</span>'
-        +     (detailText ? '<span style="font-family:\'Space Grotesk\',sans-serif;font-size:11px;color:rgba(0,0,0,0.3)">'+detailText+'</span>' : '')
+        // Desglose (clases + movilidad) ya no se muestra en la lista: solo el total, igual para
+        // virtuales y domicilio. El detalle sigue disponible al tocar la fila (openPagoDetallePopup).
         +   '</div>'
         + '</div>'
         + confirmBtn
