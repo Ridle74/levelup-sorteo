@@ -1131,6 +1131,38 @@ function getParentDescripcion(pid) {
 var _pendingPago = {};
 var _pagoClassDates = window._pagoClassDates || {};  // pid → fechas (YYYY-MM-DD) con clase en la semana mostrada en Pagos
 
+// Cambios de tarifa por hora con fecha de vigencia (familias generales, no fprado).
+// Las clases ANTERIORES a 'desde' conservan la tarifa previa.
+var TARIFA_CAMBIOS = [
+  { desde: '2026-09-29', tipo: 'Domicilio', nivel: 'primaria', monto: 25 }   // antes S/20
+];
+function tarifaHora(tipo, nivel, dateStr, base, pid) {
+  // 1) Tarifa propia de la familia (Firestore: DATA.parents[pid].tarifaHora = {Domicilio:{primaria:25}}),
+  //    vale para TODAS sus clases, pasadas y futuras.
+  var par = pid && DATA.parents && DATA.parents[pid];
+  var fam = par && par.tarifaHora && par.tarifaHora[tipo] && par.tarifaHora[tipo][nivel];
+  if (fam != null) return Number(fam);
+  // 2) Cambios generales con fecha de vigencia
+  var best = null;
+  TARIFA_CAMBIOS.forEach(function(c) {
+    if (c.tipo === tipo && c.nivel === nivel && dateStr && c.desde <= dateStr && (!best || c.desde > best.desde)) best = c;
+  });
+  return best ? best.monto : base;
+}
+
+// Movilidad fija por familia (se guarda en DATA.parents[pid].movilidad = [{desde:'YYYY-MM-DD', monto:N}]).
+// Si hay una regla vigente para esa fecha, la movilidad de ESE DÍA es ese monto fijo, sin importar
+// cuántas clases haya ese día. Si no hay regla, se usa la regla general (S/30 1ª visita, +15/30).
+// No toca horarios ni el SEED: vive solo en los datos de la familia en Firestore.
+function movilidadFija(pid, dateStr) {
+  var par = DATA.parents && DATA.parents[pid];
+  var rules = par && par.movilidad;
+  if (!Array.isArray(rules)) return null;
+  var best = null;
+  rules.forEach(function(r) { if (r && r.desde && r.desde <= dateStr && (!best || r.desde > best.desde)) best = r; });
+  return best ? Number(best.monto) : null;
+}
+
 // Fecha local YYYY-MM-DD (evita el desfase de toISOString, que usa UTC)
 function _pagoLocalISO(d) {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1146,6 +1178,26 @@ function _pagoWeekDays(weekKey) {
   });
 }
 
+// Días que se pueden elegir como fecha de pago:
+//  - semana actual o pasada → los 7 días de esa semana (lunes→domingo)
+//  - semana FUTURA (pago adelantado) → desde HOY hasta el domingo de esa semana
+function _pagoAllowedDays(weekKey) {
+  var SHORT  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  var COLORS = ['#1452C8','#B84516','#6523A0','#0C7560','#A0182E','#5A4490','#474747'];
+  var now = new Date(); now.setHours(0,0,0,0);
+  var dow = (now.getDay() + 6) % 7;                    // 0=Lun … 6=Dom
+  var curMonday = new Date(now); curMonday.setDate(now.getDate() - dow);
+  if (weekKey <= _pagoLocalISO(curMonday)) return _pagoWeekDays(weekKey);
+  var p = weekKey.split('-').map(Number);
+  var end = new Date(p[0], p[1] - 1, p[2] + 6);
+  var out = [];
+  for (var d = new Date(now); d <= end; d.setDate(d.getDate() + 1)) {
+    var i = (d.getDay() + 6) % 7;
+    out.push({ iso: _pagoLocalISO(d), num: d.getDate(), short: SHORT[i], color: COLORS[i] });
+  }
+  return out;
+}
+
 // Popup "Confirmar pago" — opción C: solo se pueden elegir los días de ESA semana
 // (chips con el color de cada día; puntito = día con clase). Sin día preseleccionado:
 // el botón queda deshabilitado hasta elegir uno, para no confirmar con una fecha equivocada.
@@ -1153,7 +1205,7 @@ function openPagoConfirmPopup(pid, weekKey, name, total) {
   _pendingPago = { pid: pid, weekKey: weekKey, nombre: name, total: total, descripcion: getParentDescripcion(pid), fecha: null };
   var existing = document.getElementById('pago-confirm-popup');
   if (existing) existing.remove();
-  var days = _pagoWeekDays(weekKey);
+  var days = _pagoAllowedDays(weekKey);
   var fmt = function(iso) { return iso.slice(8) + '/' + iso.slice(5, 7); };
   var popup = document.createElement('div');
   popup.id = 'pago-confirm-popup';
@@ -1167,7 +1219,7 @@ function openPagoConfirmPopup(pid, weekKey, name, total) {
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
     +   '<span style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.55);letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap">Fecha de pago</span>'
     +   '<div style="flex:1;height:1px;background:rgba(0,0,0,0.08)"></div>'
-    +   '<span style="font-family:\'Space Mono\',monospace;font-size:11px;color:rgba(0,0,0,0.55)">' + fmt(days[0].iso) + ' – ' + fmt(days[6].iso) + '</span>'
+    +   '<span style="font-family:\'Space Mono\',monospace;font-size:11px;color:rgba(0,0,0,0.55)">' + fmt(days[0].iso) + ' – ' + fmt(days[days.length - 1].iso) + '</span>'
     + '</div>'
     + '<div id="pago-dias" style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:8px"></div>'
     + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:16px;font-family:\'Space Grotesk\',sans-serif;font-size:11px;color:rgba(0,0,0,0.55)">'
@@ -1185,7 +1237,12 @@ function _renderPagoDias() {
   if (!wrap) return;
   var classDates = _pagoClassDates[d.pid] || [];
   var LONG = { Lun:'Lunes', Mar:'Martes', 'Mié':'Miércoles', Jue:'Jueves', Vie:'Viernes', 'Sáb':'Sábado', Dom:'Domingo' };
-  wrap.innerHTML = _pagoWeekDays(d.weekKey).map(function(day) {
+  var allowed = _pagoAllowedDays(d.weekKey);
+  // Alinear la cuadrícula por día de la semana (Lun en la 1ra columna)
+  var fp = allowed[0].iso.split('-').map(Number);
+  var lead = (new Date(fp[0], fp[1] - 1, fp[2]).getDay() + 6) % 7;
+  var blanks = Array.from({ length: lead }, function(){ return '<span></span>'; }).join('');
+  wrap.innerHTML = blanks + allowed.map(function(day) {
     var sel = d.fecha === day.iso;
     var hasClass = classDates.indexOf(day.iso) >= 0;
     var dot = hasClass ? (sel ? '#fff' : '#111') : 'transparent';
@@ -1202,7 +1259,7 @@ function _renderPagoDias() {
   var btn = document.getElementById('pago-confirm-btn');
   if (btn) {
     if (d.fecha) {
-      var day = _pagoWeekDays(d.weekKey).filter(function(x){ return x.iso === d.fecha; })[0];
+      var day = _pagoAllowedDays(d.weekKey).filter(function(x){ return x.iso === d.fecha; })[0];
       btn.disabled = false;
       btn.style.background = '#111'; btn.style.color = '#fff'; btn.style.cursor = 'pointer';
       btn.textContent = '✓ Confirmar · ' + day.short + ' ' + d.fecha.slice(8) + '/' + d.fecha.slice(5, 7);
@@ -1225,7 +1282,7 @@ function confirmPagoWithDate() {
   var d = _pendingPago;
   var fecha = d.fecha;
   // Seguridad: solo se acepta un día de la semana que se está confirmando
-  var validas = _pagoWeekDays(d.weekKey).map(function(x){ return x.iso; });
+  var validas = _pagoAllowedDays(d.weekKey).map(function(x){ return x.iso; });
   if (!fecha || validas.indexOf(fecha) < 0) { _renderPagoDias(); return; }
   DATA.pagosConfirmados[d.pid + '_' + d.weekKey] = {
     ts: new Date().toISOString(),
@@ -1380,7 +1437,7 @@ function openPagoDetallePopup(pid, weekOffset) {
     var groups = {};
     instances.forEach(function(inst){ var k=inst.date+'_'+inst.start+'_'+inst.tipo; (groups[k]=groups[k]||[]).push(inst); });
     Object.keys(groups).sort().forEach(function(k) {
-      var g=groups[k]; var rate=(RATES[g[0].tipo]||RATES.Virtual)[g[0].nivel]||25;
+      var g=groups[k]; var rate=tarifaHora(g[0].tipo, g[0].nivel, g[0].date, (RATES[g[0].tipo]||RATES.Virtual)[g[0].nivel]||25, pid);
       var f=factor(g[0].tipo,g.length); var hrs=g[0].dur/60;
       var cost=g[0].classFee!=null?g[0].classFee:rate*f*hrs; weeklyClass+=cost;
       var dow=new Date(g[0].date+'T00:00:00').getDay();
@@ -1398,6 +1455,13 @@ function openPagoDetallePopup(pid, weekOffset) {
     domUniq.forEach(function(i){var p=i.start.split(':').map(Number);(byDate[i.date]=byDate[i.date]||[]).push({min:p[0]*60+p[1],dur:i.dur,start:i.start,date:i.date});});
     Object.values(byDate).forEach(function(arr){
       arr.sort(function(a,b){return a.min-b.min;});
+      var _fija = movilidadFija(pid, arr[0].date);
+      if (_fija != null) {
+        var _dow = new Date(arr[0].date+'T00:00:00').getDay();
+        mov += _fija;
+        lineItems.push({type:'mov',label:'🏠 Movilidad · '+DAYS_ES[_dow]+' '+fmt(arr[0].date)+'  '+arr[0].start, stu:'Tarifa fija por día de clase', rateNote:'', cost:_fija});
+        return;
+      }
       arr.forEach(function(r,idx){
         var gap=idx>0?r.min-(arr[idx-1].min+arr[idx-1].dur):null;
         var mc=idx===0?30:(gap<=30?15:30);
@@ -2255,7 +2319,7 @@ function saveChildProfile(childId) {
            (groups[k] = groups[k] || []).push(inst);
          });
          Object.values(groups).forEach(function(g) {
-           var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
+           var rate = tarifaHora(g[0].tipo, g[0].nivel, g[0].date, (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25, parentId);
            weeklyClass += rate * factor(g[0].tipo, g.length) * (g[0].dur / 60);
          });
          // Movilidad domicilio: 1er visita del día = S/30, siguiente ≤30min de espera = S/15, sino S/30
@@ -2268,7 +2332,10 @@ function saveChildProfile(childId) {
            var parts = i.start.split(':').map(Number);
            (byDate[i.date] = byDate[i.date] || []).push({ min: parts[0]*60+parts[1], dur: i.dur });
          });
-         Object.values(byDate).forEach(function(arr) {
+         Object.keys(byDate).forEach(function(dateK) {
+           var arr = byDate[dateK];
+           var _fija = movilidadFija(parentId, dateK);
+           if (_fija != null) { mov += _fija; return; }   // tarifa fija por día de clase
            arr.sort(function(a, b) { return a.min - b.min; });
            arr.forEach(function(r, idx) {
              mov += (idx === 0) ? 30 : (r.min - (arr[idx-1].min + arr[idx-1].dur) <= 30 ? 15 : 30);
@@ -2356,8 +2423,9 @@ function saveChildProfile(childId) {
 // Mismo algoritmo que vPagos() pero recorre todos los parents
 // ════════════════════════════════════════════════════════
 function vAdminPagos() {
-  var today = new Date().toISOString().slice(0, 10);
-  var activeCycle = (DATA.cycles || []).find(function(c) {
+  var _now = new Date();
+  var today = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0') + '-' + String(_now.getDate()).padStart(2, '0');
+  var cycleToday = (DATA.cycles || []).find(function(c) {
     return (!c.start || c.start <= today) && today <= c.end;
   });
 
@@ -2381,11 +2449,29 @@ function vAdminPagos() {
   var fmt = function(ds) { return ds.slice(8) + '/' + ds.slice(5, 7); };
   var weekLabel = fmt(weekDates[0]) + ' – ' + fmt(weekDates[6]);
 
+  // Ciclo de la semana que se está viendo (solo para el mensaje de lista vacía).
+  var activeCycle = (DATA.cycles || []).find(function(c) {
+    return (!c.start || c.start <= weekDates[6]) && weekDates[0] <= c.end;
+  }) || null;
+
+  // Cada sesión recurrente pertenece a UN ciclo y solo cuenta en fechas dentro de ese
+  // ciclo. Así, al navegar a semanas futuras, el horario de un ciclo que ya terminó no se
+  // repite (p.ej. Ciclo 3 termina el 11/10 → desde el 12/10 no hay clases hasta que se
+  // registre el horario del ciclo siguiente). Se evalúa por FECHA de clase, porque
+  // fprado paga el lunes por la semana anterior.
+  function cycleOfSession(s) {
+    var cs = DATA.cycles || [];
+    if (s.cycleId != null) return cs.find(function(c) { return c.id == s.cycleId; }) || null;
+    if (s.weekStart) return cs.find(function(c) { return (!c.start || c.start <= s.weekStart) && s.weekStart <= c.end; }) || null;
+    return null;
+  }
+  var _sessCycle = new Map();   // sesión → su ciclo (sin tocar los objetos que se guardan en Firestore)
   var activeSessions = (DATA.sessions || []).filter(function(s) {
-    if (!activeCycle) return false;
-    if (s.weekStart) return s.weekStart >= activeCycle.start && s.weekStart <= activeCycle.end;
-    if (s.cycleId != null) return s.cycleId == activeCycle.id;
-    return false;
+    if (s.recurring === false) return false;   // las puntuales se suman aparte
+    var cyc = cycleOfSession(s);
+    if (!cyc) return false;
+    _sessCycle.set(s, cyc);
+    return true;
   });
 
   function isActiveOnDate(sess, dateStr) {
@@ -2394,6 +2480,10 @@ function vAdminPagos() {
     var activeDays = (sess.days && sess.days.length) ? sess.days : (sess.day != null ? [sess.day] : []);
     if (!activeDays.length || !activeDays.includes(dow)) return false;
     if (sess.skipDates && sess.skipDates.includes(dateStr)) return false;
+    // Solo dentro de las fechas del ciclo de ESA sesión
+    var _cyc = _sessCycle.get(sess);
+    if (_cyc && _cyc.end && dateStr > _cyc.end) return false;
+    if (_cyc && _cyc.start && dateStr < _cyc.start) return false;
     if (sess.weekStart) {
       var ws = new Date(sess.weekStart + 'T00:00:00');
       if (d < ws) return false;
@@ -2414,11 +2504,12 @@ function vAdminPagos() {
     return 1 + 0.5 * (n - 1);
   }
 
-  function calcParent(parentId) {
+  function calcParent(parentId, refMondayArg) {
+    var refMonday0 = refMondayArg || refMonday;
     var parent = DATA.parents[parentId];
     if (!parent) return null;
     var isFprado = (parentId === 'fprado');
-    var refMon = isFprado ? new Date(refMonday.getTime() - 7*24*60*60*1000) : new Date(refMonday.getTime());
+    var refMon = isFprado ? new Date(refMonday0.getTime() - 7*24*60*60*1000) : new Date(refMonday0.getTime());
     var wDates = Array.from({ length: 7 }, function(_, i) {
       var d = new Date(refMon);
       d.setDate(d.getDate() + i);
@@ -2513,7 +2604,7 @@ function vAdminPagos() {
         (groups[k] = groups[k] || []).push(inst);
       });
       Object.values(groups).forEach(function(g) {
-        var rate = (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25;
+        var rate = tarifaHora(g[0].tipo, g[0].nivel, g[0].date, (RATES[g[0].tipo] || RATES.Virtual)[g[0].nivel] || 25, parentId);
         weeklyClass += g[0].classFee != null ? g[0].classFee : rate * factor(g[0].tipo, g.length) * (g[0].dur / 60);
       });
       var domUniq = [];
@@ -2527,7 +2618,10 @@ function vAdminPagos() {
         var parts = i.start.split(':').map(Number);
         (byDate[i.date] = byDate[i.date] || []).push({ min: parts[0]*60+parts[1], dur: i.dur });
       });
-      Object.values(byDate).forEach(function(arr) {
+      Object.keys(byDate).forEach(function(dateK) {
+        var arr = byDate[dateK];
+        var _fija = movilidadFija(parentId, dateK);
+        if (_fija != null) { mov += _fija; return; }   // tarifa fija por día de clase
         arr.sort(function(a, b) { return a.min - b.min; });
         arr.forEach(function(r, idx) {
           mov += (idx === 0) ? 30 : (r.min - (arr[idx-1].min + arr[idx-1].dur) <= 30 ? 15 : 30);
@@ -2540,12 +2634,64 @@ function vAdminPagos() {
     return { name: parent.name, total: weeklyClass + mov, weeklyClass: weeklyClass, mov: mov, instances: instances.length, firstSlot: firstSlot, classDates: classDates };
   }
 
-  if (!activeCycle) {
+  // Sin ciclo ni hoy ni en la semana vista → mensaje. Si solo la semana vista está fuera de
+  // ciclo, se muestra la vista normal (con navegación) y la lista vacía.
+  if (!activeCycle && !cycleToday) {
     return '<div style="padding:16px;max-width:700px;margin:0 auto">'
       + '<div class="dash-hero"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:26px;font-weight:900">Pagos semanales</div></div>'
       + '<div style="text-align:center;padding:40px 20px;color:rgba(0,0,0,0.3);font-size:13px">Sin ciclo activo actualmente.</div>'
       + '</div>';
   }
+
+  // ── Ingreso del MES (reemplaza el antiguo "Aprox. mensual" = semana × 4) ──
+  // Mes = el del lunes de la semana que se está viendo.
+  //  • Días ya pasados (hasta HOY inclusive): suma de pagos CONFIRMADOS cuya fecha de pago cae en el mes.
+  //  • Días futuros del mes: se cuentan las clases programadas como si ya estuvieran pagadas
+  //    (parte proporcional del monto semanal de cada familia según sus clases en esos días).
+  //    Familias que ya pagaron esa semana no se vuelven a sumar. fprado (paga el lunes por la
+  //    semana anterior) se cuenta completo en el lunes de su semana de pago.
+  function _isoLocal(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var mY = refMonday.getFullYear(), mM = refMonday.getMonth();
+  var monthStart = _isoLocal(new Date(mY, mM, 1));
+  var monthEnd   = _isoLocal(new Date(mY, mM + 1, 0));
+  var monthName  = MESES[mM];
+  var mesCobrado = 0, mesProyectado = 0;
+  var cobradoHasta = today < monthEnd ? today : monthEnd;
+  Object.keys(DATA.pagosConfirmados || {}).forEach(function(k) {
+    var p = DATA.pagosConfirmados[k];
+    // Solo familias que existen hoy en la app (los registros antiguos "fam_…" de familias que
+    // luego se recrearon con otro id duplicarían el mismo pago).
+    var pidK = k.slice(0, -11);
+    if (!DATA.parents || !DATA.parents[pidK]) return;
+    if (p && p.fecha && p.fecha >= monthStart && p.fecha <= cobradoHasta) mesCobrado += Number(p.total) || 0;
+  });
+  if (monthEnd > today) {
+    var futFrom = today >= monthStart ? today : null;   // días > futFrom (o todo el mes si es futuro)
+    var inFuture = function(ds) { return ds >= monthStart && ds <= monthEnd && (futFrom === null || ds > futFrom); };
+    var firstDay = futFrom === null ? new Date(mY, mM, 1) : (function(){ var t = new Date(_now); t.setHours(0,0,0,0); t.setDate(t.getDate() + 1); return t; })();
+    var wk = startOfWeek(firstDay);
+    var endD = new Date(mY, mM + 1, 0);
+    while (wk <= endD) {
+      var wkKey = wk.toISOString().slice(0, 10);
+      Object.keys(DATA.parents || {}).forEach(function(pid) {
+        if (DATA.pagosConfirmados && DATA.pagosConfirmados[pid + '_' + wkKey]) return;  // ya pagó esa semana
+        var r = calcParent(pid, new Date(wk));
+        if (!r || !r.total) return;
+        if (pid === 'fprado') {
+          if (inFuture(_isoLocal(wk))) mesProyectado += r.total;
+          return;
+        }
+        var dates = r.classDates || [];
+        if (!dates.length) return;
+        var n = dates.filter(inFuture).length;
+        if (n) mesProyectado += r.total * n / dates.length;
+      });
+      wk = new Date(wk); wk.setDate(wk.getDate() + 7);
+    }
+  }
+  mesProyectado = Math.round(mesProyectado);
+  var mesTotal = mesCobrado + mesProyectado;
 
   var rows = [];
   var grandTotal = 0;
@@ -2576,6 +2722,8 @@ function vAdminPagos() {
     var group = dayGroups[dow];
     var color = DAY_COLORS[dow] || '#474747';
     var dayName = DAY_NAMES[dow] || 'Otros';
+    // Número del día de la semana que se está viendo: "Lunes 28"
+    if (dow >= 1 && dow <= 7 && weekDates[dow - 1]) dayName += ' ' + Number(weekDates[dow - 1].slice(8));
     var groupRowsHtml = group.map(function(r, rIdx) {
       var isLast = rIdx === group.length - 1;
       var borderBottom = isLast ? 'none' : '1px solid rgba(0,0,0,0.07)';
@@ -2614,8 +2762,13 @@ function vAdminPagos() {
       + '</div>';
   }).join('');
 
-  var weekHeader = adminPagosWeekOffset === 0 ? 'Esta semana' : adminPagosWeekOffset === -1 ? 'Semana anterior' : 'Semana ' + adminPagosWeekOffset;
-  var nextBtnStyle = adminPagosWeekOffset >= 0
+  var weekHeader = adminPagosWeekOffset === 0 ? 'Esta semana'
+    : adminPagosWeekOffset === -1 ? 'Semana anterior'
+    : adminPagosWeekOffset === 1 ? 'Próxima semana'
+    : adminPagosWeekOffset > 1 ? 'En ' + adminPagosWeekOffset + ' semanas'
+    : 'Hace ' + (-adminPagosWeekOffset) + ' semanas';
+  var PAGOS_MAX_FUTURO = 8;  // cuántas semanas hacia adelante se pueden ver
+  var nextBtnStyle = adminPagosWeekOffset >= PAGOS_MAX_FUTURO
     ? 'border:1px solid rgba(0,0,0,0.08);background:rgba(0,0,0,0.04);border-radius:10px;padding:7px 14px;cursor:default;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(0,0,0,0.2)'
     : 'border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(13,13,13,0.5)';
 
@@ -2627,16 +2780,22 @@ function vAdminPagos() {
     +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:46px;font-weight:700;letter-spacing:-.01em;color:#fff;line-height:1;font-variant-numeric:tabular-nums">S/. '+grandTotal+'</div>'
     +   '</div>'
     +   '<div style="text-align:right;flex-shrink:0">'
-    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:4px">Aprox. mensual</div>'
-    +     '<div style="font-family:\'Space Mono\',monospace;font-size:18px;font-weight:400;color:rgba(255,255,255,.48);font-variant-numeric:tabular-nums">S/. '+(grandTotal*4)+'</div>'
+    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.36);margin-bottom:4px">Mes de '+monthName+'</div>'
+    +     '<div style="font-family:\'Space Mono\',monospace;font-size:18px;font-weight:700;color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums">S/. '+mesTotal+'</div>'
+    +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:10px;color:rgba(255,255,255,.40);margin-top:4px;white-space:nowrap">Cobrado '+mesCobrado+(mesProyectado ? ' · Por cobrar '+mesProyectado : '')+'</div>'
     +   '</div>'
     + '</div>'
     + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">'
-    +   '<button onclick="adminPagosStep(-1)" style="border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(13,13,13,0.5)">← Anterior</button>'
-    +   '<button onclick="adminPagosStep(1)" '+(adminPagosWeekOffset >= 0 ? 'disabled ' : '')+' style="'+nextBtnStyle+'">Siguiente →</button>'
-    +   (adminPagosWeekOffset < 0 ? '<button onclick="adminPagosToday()" style="margin-left:auto;border:none;background:#0d0d0d;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:#fff">Esta semana</button>' : '')
+    // Navegación: 3 botones — Anterior · Esta semana · Siguiente
+    +   '<button onclick="adminPagosStep(-1)" style="flex:1;border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:rgba(13,13,13,0.5)">← Anterior</button>'
+    +   (adminPagosWeekOffset === 0
+          ? '<button disabled aria-current="true" style="flex:1;border:1px solid #0d0d0d;background:#0d0d0d;border-radius:10px;padding:8px 10px;cursor:default;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:#fff">Esta semana</button>'
+          : '<button onclick="adminPagosToday()" style="flex:1;border:1px solid #0d0d0d;background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:12px;color:#0d0d0d">Esta semana</button>')
+    +   '<button onclick="adminPagosStep(1)" '+(adminPagosWeekOffset >= PAGOS_MAX_FUTURO ? 'disabled ' : '')+' style="flex:1;'+nextBtnStyle+'">Siguiente →</button>'
     + '</div>'
-    + groupedHtml
+    + (groupedHtml || '<div style="text-align:center;padding:36px 20px;font-family:\'Space Grotesk\',sans-serif;font-size:13px;color:rgba(0,0,0,0.4)">'
+        + (activeCycle ? 'No hay clases registradas en esta semana.' : 'Esta semana está fuera de un ciclo registrado.<br>Aún no hay clases programadas.')
+        + '</div>')
     + '</div>';
 }
 
