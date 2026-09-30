@@ -23857,7 +23857,9 @@ function _ptsDetailModalHtml() {
       let totalTasksPts = 0;
       const taskEvents = [];
       pastDates.forEach(({date,key}) => {
-        const doneThatDay = myTasks.filter(t => typeof _ptsTaskCompletionDate === 'function' && _ptsTaskCompletionDate(t, hist) === key);
+        const doneThatDay = (typeof _ptsTasksCreditedOn === 'function')
+          ? _ptsTasksCreditedOn(student.id, hist, key, _ptsTaskClassKeys(student.id, allDates))
+          : myTasks.filter(t => typeof _ptsTaskCompletionDate === 'function' && _ptsTaskCompletionDate(t, hist) === key);
         // Respeta el mismo tope diario (tasksMax) que usa el cálculo oficial de puntos.
         doneThatDay.slice(0, tasksMax).forEach(t => taskEvents.push({date, label: taskLbl(t)}));
         totalTasksPts += Math.min(doneThatDay.length, tasksMax) * mult;
