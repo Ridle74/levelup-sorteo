@@ -23858,15 +23858,22 @@ function _ptsDetailModalHtml() {
       pastDates.forEach(({date,key}) => {
         topicsTouched.forEach(tk => {
           if (typeof _ptsFirstDominatedDate === 'function' && _ptsFirstDominatedDate(tk, hist) === key) {
-            progressEvents.push({date, label: skillLbl(tk)});
+            progressEvents.push({date, label: skillLbl(tk), pts: 1});
           }
         });
+        // Cuestionarios (+2) y exámenes (+3) dominados por primera vez (desde octubre 2026).
+        if (typeof _ptsQuizExamEventsForDate === 'function') {
+          _ptsQuizExamEventsForDate(hist, key).forEach(ev => progressEvents.push({
+            date, pts: ev.pts,
+            label: (ev.kind === 'exam' ? 'Examen: ' : 'Cuestionario: ') + ((typeof _cleanLbl === 'function') ? _cleanLbl(ev.label, ev.topic) : ev.label)
+          }));
+        }
       });
-      totalProgressPts = progressEvents.length;
+      totalProgressPts = progressEvents.reduce((a, ev) => a + (ev.pts || 1), 0);
       const progressRows = progressEvents.map(ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
         <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(ev.date)}</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">${ev.label}</div></div>
-        <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:#b06bff">+1</div>
+        <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:#b06bff">+${ev.pts || 1}</div>
       </div>`).join('');
 
       // Filas de la pestaña Tareas: una por cada tarea asignada que quedó completa este mes.

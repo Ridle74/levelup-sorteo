@@ -2662,7 +2662,44 @@ function _ptsAutoProgressForDate(histAsc, dateKey) {
   const topics = _ptsPureSkills([...new Set(histAsc.map(h=>h.topic).filter(Boolean))]);
   let n = 0;
   topics.forEach(tk => { if (_ptsFirstDominatedDate(tk, histAsc) === dateKey) n++; });
+  // Desde octubre 2026: cuestionarios y exámenes dominados por primera vez también suman.
+  _ptsQuizExamEventsForDate(histAsc, dateKey).forEach(ev => { n += ev.pts; });
   return n;
+}
+// ── Progreso por cuestionarios y exámenes (02/10/2026, decidido por el profesor) ──────────
+// Desde PTS_QE_FROM: dominar un CUESTIONARIO por primera vez = PTS_QUIZ puntos de Progreso y
+// un EXAMEN de unidad por primera vez = PTS_EXAM puntos, sin importar cuántas preguntas tengan.
+// Solo cuenta un intento DIRECTO al 100% (no la propagación automática desde un examen, ni
+// sesiones con configuración personalizada). Repetirlo después no vuelve a sumar.
+const PTS_QE_FROM = '2026-10-01';
+const PTS_QUIZ = 2;
+const PTS_EXAM = 3;
+function _ptsQuizExamEventsForDate(histAsc, dateKey) {
+  if (!Array.isArray(histAsc) || !dateKey || dateKey < PTS_QE_FROM) return [];
+  const pct = h => (typeof _prepReEvalPct === 'function') ? _prepReEvalPct(h) : (h.pct || 0);
+  const direct = histAsc.filter(h => h && h.topic && !h.customConfig && !h.partial && !h.autoFromExam && !h.autoFromQuiz && h.completedAt?.seconds);
+  const events = [];
+  // Exámenes: primer intento directo al 100% de cada examen de unidad.
+  const exFirst = {};
+  direct.filter(h => h.isUnitExam && pct(h) >= 100).forEach(h => {
+    if (!exFirst[h.topic] || h.completedAt.seconds < exFirst[h.topic].completedAt.seconds) exFirst[h.topic] = h;
+  });
+  Object.values(exFirst).forEach(h => {
+    if (_ptsDateKeyFromSeconds(h.completedAt.seconds) === dateKey) events.push({ kind:'exam', topic:h.topic, label:h.topicLabel || h.topic, pts:PTS_EXAM });
+  });
+  // Cuestionarios: primer intento directo al 100%, si no estaba ya dominado antes de ese día.
+  const qFirst = {};
+  direct.filter(h => !h.isUnitExam && /_bq\d/.test(h.topic) && pct(h) >= 100).forEach(h => {
+    if (!qFirst[h.topic] || h.completedAt.seconds < qFirst[h.topic].completedAt.seconds) qFirst[h.topic] = h;
+  });
+  Object.values(qFirst).forEach(h => {
+    const d = _ptsDateKeyFromSeconds(h.completedAt.seconds);
+    if (d !== dateKey) return;
+    const firstDom = _ptsFirstDominatedDate(h.topic, histAsc);
+    if (firstDom && firstDom < d) return; // ya estaba dominado (p. ej. por un examen perfecto anterior)
+    events.push({ kind:'quiz', topic:h.topic, label:h.topicLabel || h.topic, pts:PTS_QUIZ });
+  });
+  return events;
 }
 // Igual filtro de habilidades "puras" (excluye preguntas de banco/refuerzo _bq#/_bpu) que usa
 // _skillsScore en el panel admin de Preparate (levelup.js) — reimplementado aquí porque esa
