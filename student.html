@@ -2628,61 +2628,39 @@ function _ptsPureSkills(skills) {
   const pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
   return (skills||[]).filter(pf);
 }
-// Fecha en la que una tarea asignada quedó 100% completada (v3, 30/09/2026).
-// Mismo criterio que muestra la pestaña "Tareas" del alumno: la tarea cuenta cuando hay un
-// intento DENTRO del plazo [assignedAt, dueAt] con 100% (re-evaluado con _prepReEvalPct).
-// Antes se usaba "primera vez que la habilidad llegó a dominado", lo que dejaba sin punto las
-// tareas de repaso sobre temas ya dominados (caso Lucio: Leyes de Exponentes II, cj_b9).
-// Devuelve la fecha (YYYY-MM-DD) del primer intento al 100% o null.
+// Fecha en la que una tarea asignada quedó 100% completada: la fecha en que se dominó la ÚLTIMA
+// de sus habilidades pendientes. null si todavía no está completa.
+// NOTA: a diferencia de _ptsAutoProgressForDate, aquí NO se aplica _ptsPureSkills porque las
+// tareas asignadas por el profesor pueden ser cuestionarios de banco (_bq) y deben contar
+// al completarse independientemente del tipo de topic.
 function _ptsTaskCompletionDate(task, histAsc) {
-  if (!task || !Array.isArray(histAsc)) return null;
-  const from = task.assignedAt || 0;
-  const to   = task.dueAt || Infinity;
-  let topicKey, isUnitExam = !!task.exam;
-  if (isUnitExam) {
-    const sk = task.skills || [];
-    topicKey = sk.find(k => (typeof BINGO_TOPICS !== 'undefined') && BINGO_TOPICS[k] && !BINGO_TOPICS[k].quiz) || sk[0];
-  } else topicKey = task.topic;
-  if (!topicKey) return null;
-  const isQuiz = !isUnitExam && (typeof BINGO_TOPICS !== 'undefined') && !!(BINGO_TOPICS[topicKey]||{}).quiz;
-  const pctOf = h => (typeof _prepReEvalPct === 'function') ? _prepReEvalPct(h)
-    : (h.pct != null ? Math.round(h.pct) : (h.total ? Math.round((h.correct||0)/h.total*100) : 0));
-  let best = null;
-  histAsc.forEach(h => {
-    const sec = h.completedAt?.seconds || 0;
-    if (!sec || sec < from || sec > to) return;
-    if (h.topic !== topicKey) return;
-    if (isUnitExam && !h.isUnitExam) return;
-    if ((isUnitExam || isQuiz) && (h.autoFromExam || h.autoFromQuiz)) return;
-    if (pctOf(h) < 100) return;
-    if (best === null || sec < best) best = sec;
-  });
-  return best === null ? null : _ptsDateKeyFromSeconds(best);
+  const skills = task.exam ? (task.skills||[]) : (task.topic ? [task.topic] : []);
+  if (!skills.length) return null;
+  // Usamos timestamps (segundos) para detectar si la tarea fue completada DESPUÉS de ser asignada.
+  // La comparación por fecha (YYYY-MM-DD) falla cuando el alumno domina el tema y recibe la tarea
+  // el mismo día (ej: domina en clase a las 22:12 y el profesor asigna la tarea a las 22:39).
+  const timestamps = skills.map(k => _ptsFirstDominatedTimestamp(k, histAsc));
+  if (timestamps.some(t => !t)) return null; // aún falta al menos una habilidad
+  const completionTimestamp = Math.max(...timestamps); // la más tardía de todas
+  // Solo cuenta si la última habilidad se dominó ESTRICTAMENTE DESPUÉS de la asignación.
+  // Evita contar tareas asignadas sobre temas que el alumno ya dominaba.
+  if (task.assignedAt && completionTimestamp <= task.assignedAt) return null;
+  return _ptsDateKeyFromSeconds(completionTimestamp);
 }
-// Fecha de CLASE a la que se le acredita una tarea terminada en completionKey:
-// la última clase <= completionKey dentro del mismo mes; si la terminó antes de la primera clase
-// del mes, se acredita a la primera clase del mes. classKeys = fechas de clase del mes (YYYY-MM-DD).
-function _ptsTaskCreditDate(completionKey, classKeys) {
-  if (!completionKey || !classKeys || !classKeys.length) return null;
-  const month = completionKey.slice(0,7);
-  const inMonth = classKeys.filter(k => k.slice(0,7) === month).sort();
-  if (!inMonth.length) return null;
-  const prev = inMonth.filter(k => k <= completionKey);
-  return prev.length ? prev[prev.length-1] : inMonth[0];
-}
-// Fechas de clase del mes que pueden recibir puntos de Tareas (excluye las marcadas "Faltó").
-function _ptsTaskClassKeys(studentId, dates) {
-  const log = (typeof pointsLog !== 'undefined' && pointsLog[String(studentId)]) || {};
-  return (dates||[]).map(d => d.key).filter(k => !(log[k] && log[k].absent));
-}
-// Tareas acreditadas a una fecha de clase concreta (lista de objetos tarea, sin tope).
-function _ptsTasksCreditedOn(studentId, histAsc, dateKey, classKeys) {
+function _ptsAutoTasksForDate(studentId, histAsc, dateKey) {
   const tasks = (overrides[String(studentId)]||{}).prepTasks || [];
-  return tasks.filter(t => _ptsTaskCreditDate(_ptsTaskCompletionDate(t, histAsc), classKeys) === dateKey);
-}
-function _ptsAutoTasksForDate(studentId, histAsc, dateKey, classKeys) {
-  const keys = classKeys || [dateKey];
-  return Math.min(_ptsTasksCreditedOn(studentId, histAsc, dateKey, keys).length, PTS_TASKS_MAX);
+  let n = 0;
+  tasks.forEach(t => {
+    const completionDate = _ptsTaskCompletionDate(t, histAsc);
+    if (completionDate !== dateKey) return;
+    // Solo cuenta si se completó antes o en la fecha de vencimiento (dueAt)
+    if (t.dueAt) {
+      const dueDate = _ptsDateKeyFromSeconds(t.dueAt);
+      if (completionDate > dueDate) return; // entregada tarde → no cuenta
+    }
+    n++;
+  });
+  return Math.min(n, PTS_TASKS_MAX);
 }
 // Recalcula y GUARDA (snapshot en pointsLog[id][dateKey].auto) los 3 valores automáticos para
 // cada fecha de clase del mes mostrado. Se guarda un snapshot (no se recalcula en vivo en cada
@@ -2699,7 +2677,6 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
     const dates = getClassDatesForStudent(s.name, offset).filter(d => d.key >= PTS_AUTO_CUTOFF);
     if (!dates.length) return; // mes anterior al corte: queda congelado con el tildado clásico
     const histAsc = await _ptsFetchHist(s.id);
-    const taskClassKeys = _ptsTaskClassKeys(s.id, getClassDatesForStudent(s.name, offset));
     await savePointsLog(fresh => {
       const log = JSON.parse(JSON.stringify(fresh || {}));
       if (!log[key]) log[key] = {};
@@ -2711,7 +2688,7 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
           auto: {
             hours:    _ptsAutoHoursForDate(histAsc, dateKey),
             progress: _ptsAutoProgressForDate(histAsc, dateKey),
-            tasks:    _ptsAutoTasksForDate(s.id, histAsc, dateKey, taskClassKeys),
+            tasks:    _ptsAutoTasksForDate(s.id, histAsc, dateKey),
             computedAt: Date.now()
           }
         };
