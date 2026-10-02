@@ -23690,12 +23690,20 @@ function _ptsOpenDetail(offset) {
   _ptsDetailModal = { offset, student, loading: true, hist: null, type: 'hours', allView: false };
   _renderPreparatePane();
   if (typeof _ptsFetchHist !== 'function') { _ptsDetailModal.loading = false; _renderPreparatePane(); return; }
+  // Historial fresco al abrir el detalle (01/10/2026), para que lo que muestra el modal
+  // incluya la práctica más reciente aunque la pestaña lleve rato abierta.
+  if (typeof _ptsInvalidateHist === 'function') _ptsInvalidateHist(student.id);
   _ptsFetchHist(student.id).then(hist => {
     // Si mientras cargaba se cerró el modal, o se abrió otro (otro mes/alumno), no pisar ese estado.
     if (!_ptsDetailModal || _ptsDetailModal.student.id !== student.id || _ptsDetailModal.offset !== offset) return;
     _ptsDetailModal.hist = hist;
     _ptsDetailModal.loading = false;
     _renderPreparatePane();
+    // Guarda ese mismo cálculo en el snapshot del mes, para que el contador de puntos quede
+    // igual a lo que muestra el modal (mismas reglas, mismo historial).
+    if (typeof _ptsRefreshAutoSnapshot === 'function') {
+      _ptsRefreshAutoSnapshot(student, offset).then(() => _renderPreparatePane());
+    }
   });
 }
 function _ptsCloseDetail() { _ptsDetailModal = null; _renderPreparatePane(); }
@@ -23723,11 +23731,19 @@ function _ptsSwitchStudent(id) {
   _ptsDetailModal = { offset, student, loading: true, hist: null, type: 'hours', allView: false };
   _renderPreparatePane();
   if (typeof _ptsFetchHist !== 'function') { _ptsDetailModal.loading = false; _renderPreparatePane(); return; }
+  // Historial fresco al abrir el detalle (01/10/2026), para que lo que muestra el modal
+  // incluya la práctica más reciente aunque la pestaña lleve rato abierta.
+  if (typeof _ptsInvalidateHist === 'function') _ptsInvalidateHist(student.id);
   _ptsFetchHist(student.id).then(hist => {
     if (!_ptsDetailModal || _ptsDetailModal.student.id !== student.id || _ptsDetailModal.offset !== offset) return;
     _ptsDetailModal.hist = hist;
     _ptsDetailModal.loading = false;
     _renderPreparatePane();
+    // Guarda ese mismo cálculo en el snapshot del mes, para que el contador de puntos quede
+    // igual a lo que muestra el modal (mismas reglas, mismo historial).
+    if (typeof _ptsRefreshAutoSnapshot === 'function') {
+      _ptsRefreshAutoSnapshot(student, offset).then(() => _renderPreparatePane());
+    }
   });
 }
 // Tabla comparativa de Puntos del mes para TODOS los alumnos (opción "Ver todos"): lee los
@@ -23820,7 +23836,7 @@ function _ptsDetailModalHtml() {
       const skillLbl = tk => (typeof _cleanLbl === 'function') ? _cleanLbl((BINGO_TOPICS[tk]||{}).lbl, tk) : ((BINGO_TOPICS[tk]||{}).lbl || tk);
       const taskLbl = t => t.exam ? (t.label||'Examen de unidad') : ((BINGO_TOPICS[t.topic]||{}).lbl || t.topic || 'Tarea');
       const dlabel = date => `${dayShort[date.getDay()]} ${date.getDate()} de ${mesLbl}`;
-      const pastDates = dates.filter(d => d.date <= today).slice().reverse(); // más reciente primero
+      const pastDates = dates.filter(d => d.date <= today && !(typeof isDayBlocked === 'function' && isDayBlocked(student.id, d.key))).slice().reverse(); // más reciente primero (sin días bloqueados por intentos fallidos)
 
       // Filas de la pestaña Horas: una por día de clase pasado, con sus puntos y el tiempo real.
       let totalHoursPts = 0, totalRealSec = 0;
@@ -30080,6 +30096,8 @@ function _prepFinish() {
     _prep.unitDone.push(_prep.topic);
   }
   _prepSaveHistory();
+  // Regla de intentos fallidos seguidos (aviso a los 7, bloqueo del día a los 10).
+  try { _prepCheckFailStreak(); } catch(e) { console.error('fail-streak', e); }
   // Guardar en leaderboard si completó (no game over)
   if(!_prep.gameOver){
     try{
@@ -30134,6 +30152,42 @@ function _prepGetQuizSkills(quizTopic) {
     return unit.skills.slice(prevIdx+1, idx).filter(sk => !BINGO_TOPICS[sk]?.quiz);
   }
   return [];
+}
+// ── Intentos fallidos seguidos (01/10/2026) ─────────────────────────────────────────────
+// Cuenta, en el historial del alumno logueado, los intentos COMPLETOS más recientes de la MISMA
+// actividad (habilidad, cuestionario o examen) hechos HOY con menos de FAIL_STREAK_PCT% de
+// aciertos, hasta encontrar uno que no lo sea. A partir de FAIL_STREAK_WARN se avisa; al llegar
+// a FAIL_STREAK_BLOCK se bloquea la cuenta el resto del día (ver blockStudentToday en student.html).
+function _prepFailStreakCount(topic, isUnitExam) {
+  if (!Array.isArray(_prepHistoryData) || !topic) return 0;
+  const today = (typeof _localDateKey === 'function') ? _localDateKey() : null;
+  const dayOf = sec => { const d = new Date(sec*1000); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+  const pctMax = (typeof FAIL_STREAK_PCT !== 'undefined') ? FAIL_STREAK_PCT : 25;
+  const rows = _prepHistoryData
+    .filter(h => h && h.topic === topic && !!h.isUnitExam === !!isUnitExam && !h.partial && !h.autoFromExam && !h.autoFromQuiz && h.completedAt?.seconds && dayOf(h.completedAt.seconds) === today)
+    .sort((a,b) => b.completedAt.seconds - a.completedAt.seconds);
+  let n = 0;
+  for (const h of rows) { if (_prepReEvalPct(h) < pctMax) n++; else break; }
+  return n;
+}
+function _prepCheckFailStreak() {
+  if (typeof getLoggedId !== 'function' || typeof isAdmin !== 'function' || typeof blockStudentToday !== 'function') return;
+  const id = getLoggedId();
+  if (id === null || isAdmin()) return; // solo alumnos con cuenta (no profe ni invitados)
+  const n = _prepFailStreakCount(_prep.topic, _prep.isUnitExam);
+  const warnAt = (typeof FAIL_STREAK_WARN !== 'undefined') ? FAIL_STREAK_WARN : 7;
+  const blockAt = (typeof FAIL_STREAK_BLOCK !== 'undefined') ? FAIL_STREAK_BLOCK : 10;
+  const pctMax = (typeof FAIL_STREAK_PCT !== 'undefined') ? FAIL_STREAK_PCT : 25;
+  const lbl = _cleanLbl((BINGO_TOPICS[_prep.topic]||{}).lbl || _prep.topic);
+  if (n >= blockAt) {
+    blockStudentToday(id, { topic: _prep.topic, topicLabel: lbl, count: n }).then(() => {
+      setLoggedId(null);
+      go('login');
+      showToast(`Tu cuenta quedó bloqueada por hoy: ${n} intentos seguidos con menos de ${pctMax}% en "${lbl}". Tus puntos de hoy no cuentan.`, 'error');
+    });
+  } else if (n >= warnAt) {
+    showToast(`⚠️ Llevas ${n} intentos seguidos con menos de ${pctMax}% en "${lbl}". Si llegas a ${blockAt}, tu cuenta se bloquea por hoy y pierdes los puntos del día.`, 'error');
+  }
 }
 async function _prepSaveHistory() {
   try {

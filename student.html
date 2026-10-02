@@ -1757,6 +1757,7 @@ let tasks       = [];   // [{ id, title, desc, due, assignTo, completedBy:[], pe
 let points      = {};   // (legacy) { "1":{ hours:0, progress:0, tasks:0 }, ... }
 let pointsLog   = {};   // { "<studentId>": { "YYYY-MM-DD": {hours:[bool],progress:[bool],tasks:[bool]} } }
 let pointsHistory = {}; // { "YYYY-MM": [{id,nombre,pts}, ...top3] } — podio guardado automáticamente al cerrar cada mes (ver archiveMonthIfNeeded)
+let dayBlocks = {};      // { "<studentId>": { "YYYY-MM-DD": {topic, topicLabel, count, at, unblocked?, unblockedAt?} } } — bloqueo de 1 día por intentos fallidos seguidos (ver _prepCheckFailStreak en levelup.js)
 let taskMultipliers = {}; // { "<studentId>": N } — multiplicador de valor por cuadradito de Tareas (1 = normal). Editable por el admin, sin tocar código.
 // { "<studentId>": {units:N, cumple:bool, updatedAt} } — requisito del torneo mensual (mínimo
 // TORNEO_MIN_UNIDADES unidades 100% completas en Level Up). Cada alumno escribe SU PROPIO doc
@@ -2225,6 +2226,7 @@ function getStudentPoints(id, monthOffset=getCupoMonthOffset()) {
   const arrToBool = v => Array.isArray(v) ? v : (v ? [true] : []);
   Object.entries(log).forEach(([dateKey, marks]) => {
     if (!dateKey.startsWith(ym) || !marks || marks.absent) return;
+    if (isDayBlocked(id, dateKey)) return; // día bloqueado por intentos fallidos: sus puntos no cuentan
     // v2 (automático): si esta fecha ya tiene un snapshot calculado desde datos reales de PREP
     // (ver _ptsRefreshAutoSnapshot) y el admin NO lo anuló manualmente, se usa ese snapshot.
     // Es un snapshot GUARDADO (no un cálculo en vivo) para que el total de un mes ya cerrado
@@ -2262,6 +2264,7 @@ function getDateReachedScore(id, targetScore, monthOffset=getCupoMonthOffset()) 
   let cum = 0;
   for (const key of keys) {
     const e = log[key]; if (!e || e.absent) continue;
+    if (isDayBlocked(id, key)) continue; // día bloqueado: no suma
     // Igual prioridad que getStudentPoints: snapshot automático salvo anulación manual.
     if (e.auto && !e.manualOverride) {
       cum += (e.auto.hours||0) + (e.auto.progress||0) + (e.auto.tasks||0) * taskMult;
@@ -2402,6 +2405,46 @@ function savePointsLog(transformFn) {
     pointsLog = updated;
     return updated;
   });
+}
+// ── Bloqueo de 1 día por intentos fallidos seguidos (01/10/2026) ─────────────────────────
+// Regla del profesor: 10 intentos SEGUIDOS de la MISMA actividad, el MISMO día, con menos de
+// 25% de aciertos = mal comportamiento → la cuenta queda bloqueada el resto de ese día y los
+// puntos de ese día (Horas/Progreso/Tareas) no cuentan. El profesor puede desbloquear antes
+// desde la lista de alumnos (eso también devuelve los puntos de ese día).
+const FAIL_STREAK_PCT   = 25;  // intento "mal" = menos de este % de aciertos
+const FAIL_STREAK_WARN  = 7;   // desde aquí se avisa al alumno
+const FAIL_STREAK_BLOCK = 10;  // aquí se bloquea
+function _localDateKey(d=new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function saveDayBlocks(transformFn) {
+  return saveLmsFieldTx('dayBlocks', fresh => {
+    const updated = transformFn((fresh && typeof fresh==='object') ? JSON.parse(JSON.stringify(fresh)) : {});
+    dayBlocks = updated;
+    return updated;
+  });
+}
+// true si ese día está bloqueado para el alumno (y el profesor no lo desbloqueó).
+function isDayBlocked(id, dateKey) {
+  const e = (dayBlocks[String(id)]||{})[dateKey];
+  return !!(e && !e.unblocked);
+}
+function isBlockedToday(id) { return isDayBlocked(id, _localDateKey()); }
+function blockStudentToday(id, info) {
+  const key = String(id), day = _localDateKey();
+  return saveDayBlocks(fresh => {
+    if (!fresh[key]) fresh[key] = {};
+    if (fresh[key][day] && !fresh[key][day].unblocked) return fresh; // ya estaba bloqueado
+    fresh[key][day] = { ...(info||{}), at: Date.now() };
+    return fresh;
+  });
+}
+function unblockStudentDay(id, day) {
+  const key = String(id);
+  return saveDayBlocks(fresh => {
+    if (fresh[key] && fresh[key][day]) { fresh[key][day].unblocked = true; fresh[key][day].unblockedAt = Date.now(); }
+    return fresh;
+  }).then(() => { showToast('Alumno desbloqueado.','success'); try { renderStudentList(); } catch(e) {} });
 }
 function saveTaskMultipliers(transformFn) {
   return saveLmsFieldTx('taskMultipliers', fresh => {
@@ -2671,8 +2714,12 @@ function _ptsAutoTasksForDate(studentId, histAsc, dateKey) {
 let _ptsAutoLoading = {};
 async function _ptsRefreshAutoSnapshot(s, offset) {
   const key = String(s.id);
-  if (_ptsAutoLoading[key]) return;
-  _ptsAutoLoading[key] = true;
+  // Candado por alumno Y mes (01/10/2026): antes era solo por alumno, y en los días de traslape
+  // el refresh del mes oficial (ej. septiembre) bloqueaba en silencio el del mes en curso
+  // (octubre), que nunca llegaba a guardarse → el contador de octubre se quedaba en 0.
+  const lockKey = key + '_' + offset;
+  if (_ptsAutoLoading[lockKey]) return;
+  _ptsAutoLoading[lockKey] = true;
   try {
     const dates = getClassDatesForStudent(s.name, offset).filter(d => d.key >= PTS_AUTO_CUTOFF);
     if (!dates.length) return; // mes anterior al corte: queda congelado con el tildado clásico
@@ -2701,7 +2748,7 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
       _refreshPtsBars(s.id);
     }
   } catch(e) { console.error('[pts-auto] error calculando snapshot', e); }
-  finally { _ptsAutoLoading[key] = false; }
+  finally { _ptsAutoLoading[lockKey] = false; }
 }
 function fmtPtsMonth(monthOffset=0) {
   const base = new Date();
@@ -2902,6 +2949,11 @@ function doLogin() {
     err.textContent = 'Tu cuenta ha sido bloqueada por tu profesor. Contáctalo para más información.';
     err.style.display = 'block';
     setTimeout(() => err.style.display='none', 4500); return;
+  }
+  if (isBlockedToday(s.id)) {
+    err.textContent = 'Tu cuenta está bloqueada por hoy: hiciste 10 intentos seguidos con menos de 25% en la misma actividad. Podrás volver a entrar mañana.';
+    err.style.display = 'block';
+    setTimeout(() => err.style.display='none', 6000); return;
   }
   setLoggedId(s.id);
   go('dashboard');
@@ -8543,6 +8595,7 @@ function renderStudentList() {
     const row=document.createElement('div');
     row.className='student-row';
     if (s.blocked) { row.style.opacity = '0.55'; }
+    const _dayBlk = isBlockedToday(s.id) ? (dayBlocks[String(s.id)]||{})[_localDateKey()] : null;
     const linkedOk = s.padresId !== undefined && s.padresId !== null && !s.linkBroken;
     const nameTitle = linkedOk
       ? 'El nombre se edita desde emaths.me/parents'
@@ -8552,6 +8605,7 @@ function renderStudentList() {
         <div style="display:flex;align-items:center;gap:6px">
           <span class="pos-label">POS. ${idx+1}</span>
           ${s.blocked ? '<span style="background:rgba(239,68,68,0.22);color:#ff5c7a;font-size:9px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;padding:3px 7px;border-radius:6px">Bloqueado</span>' : ''}
+          ${_dayBlk ? `<span title="${(_dayBlk.count||10)} intentos seguidos con menos de ${FAIL_STREAK_PCT}% en ${String(_dayBlk.topicLabel||_dayBlk.topic||'').replace(/"/g,'&quot;')}" style="background:rgba(251,146,60,0.22);color:#fb923c;font-size:9px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;padding:3px 7px;border-radius:6px">🔒 Bloqueado hoy</span><button onclick="unblockStudentDay(${s.id},'${_localDateKey()}')" style="background:rgba(34,197,94,0.2);border:none;border-radius:6px;padding:3px 7px;color:#4ade80;cursor:pointer;font-size:9px;font-weight:900;letter-spacing:0.06em;text-transform:uppercase">Desbloquear</button>` : ''}
           <button class="msg-btn" title="Inicio de selección" onclick="copyMsg(${s.id},1)">📩</button>
           <button class="msg-btn" title="Aviso de torneo"     onclick="copyMsg(${s.id},2)">📢</button>
           <button class="msg-btn" title="Detalles de Next Up" onclick="copyMsg(${s.id},3)">🔴</button>
@@ -8855,6 +8909,7 @@ function confirmRestoreBackup() {
       pointsLog:       lms.pointsLog       || {},
       pointsHistory:   lms.pointsHistory   || {},
       taskMultipliers: lms.taskMultipliers || {},
+      dayBlocks:       lms.dayBlocks       || {},
       prompts:         lms.prompts         || {}
     }
   }).then(() => {
@@ -13231,6 +13286,7 @@ REF.onSnapshot(doc => {
   pointsLog   = typeof lms.pointsLog==='object' && lms.pointsLog ? lms.pointsLog : {};
   pointsHistory = typeof lms.pointsHistory==='object' && lms.pointsHistory ? lms.pointsHistory : {};
   taskMultipliers = typeof lms.taskMultipliers==='object' && lms.taskMultipliers ? lms.taskMultipliers : {};
+  dayBlocks = typeof lms.dayBlocks==='object' && lms.dayBlocks ? lms.dayBlocks : {};
   prompts = typeof lms.prompts==='object' && lms.prompts ? lms.prompts : {};
   storeCatalog = Array.isArray(lms.storeCatalog) ? lms.storeCatalog : [];
   // lmsDataLoaded solo se marca true cuando el documento REALMENTE existe en Firestore.
@@ -13274,6 +13330,25 @@ REF.onSnapshot(doc => {
         showToast('Tu cuenta ha sido bloqueada por tu profesor.', 'error');
         return;
       }
+      if (isBlockedToday(_loggedIdNow)) {
+        setLoggedId(null);
+        go('login');
+        showToast('Tu cuenta está bloqueada por hoy por muchos intentos fallidos seguidos.', 'error');
+        return;
+      }
+    }
+    // Aviso al profesor cuando aparece un bloqueo nuevo de hoy mientras tiene la app abierta.
+    if (isAdmin()) {
+      const _today = _localDateKey();
+      const _blockedNow = Object.keys(dayBlocks).filter(id => isDayBlocked(id, _today));
+      if (typeof window._dayBlocksSeen === 'undefined') window._dayBlocksSeen = new Set(_blockedNow);
+      _blockedNow.filter(id => !window._dayBlocksSeen.has(id)).forEach(id => {
+        const st = getStudents().find(x => String(x.id) === String(id));
+        const info = dayBlocks[id][_today] || {};
+        showToast(`🔒 ${st ? st.name : 'Alumno '+id} fue bloqueado por hoy (${info.count||10} intentos mal seguidos en ${info.topicLabel||info.topic||'una actividad'}).`, 'error');
+      });
+      window._dayBlocksSeen = new Set(_blockedNow);
+      try { if (document.getElementById('student-list')) renderStudentList(); } catch(e) {}
     }
     // Live-update tablero if it's open
     const hash = currentView;
