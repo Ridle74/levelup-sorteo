@@ -2910,6 +2910,9 @@ function router() {
     bingo: vBingoFullSetup, levelup: vLevelUpFullSetup, tienda: vTiendaSetup
   };
   if (setup[hash]) setup[hash]();
+  // Mensajes: escuchar el chat en cualquier vista con sesión (no solo en Actividad), para que
+  // Level Up también muestre el contador y el aviso de mensajes nuevos.
+  if (loggedId !== null) { try { startMsgsListeners(); refreshMsgsBadge(); } catch(e) { console.error('[msgs]', e); } }
 
   // Mantiene la URL sincronizada con la vista resuelta (p.ej. si el guard
   // de autenticación cambió la vista a 'login'), sin crear historial extra.
@@ -9668,15 +9671,49 @@ function vTareasSetup() {
 // ════════════════════════════════════════════════════════
 // MESSAGES
 // ════════════════════════════════════════════════════════
-function getMsgLastRead(k){ return parseInt(localStorage.getItem('msgRead_'+k)||'0'); }
-function setMsgLastRead(k){ localStorage.setItem('msgRead_'+k, String(Date.now())); }
+// ── Mensajes leídos POR CUENTA (03/10/2026) ──────────────────────────────────────────────
+// Antes la marca de "leído" vivía solo en el localStorage del navegador (y además compartida
+// entre todos los usuarios de ese navegador). Ahora se guarda en msgs/reads → { <uid>: { group: ts,
+// dm_<sid>: ts } }, así un mensaje leído en el celular queda leído también en la computadora.
+// Todo lo enviado antes de MSG_READS_START (03/10/2026 18:45, momento de publicar esto) se considera leído (para no mostrar de golpe como
+// "nuevos" los mensajes antiguos al estrenar esta función).
+const MSG_READS_START = Date.parse('2026-10-03T18:45:00-05:00');
+let _msgReadsRemote = {};      // marcas del usuario logueado, desde msgs/reads
+let _msgReadsUnsub  = null;
+function _msgReaderId(){ return isAdmin() ? 'teacher' : String(getLoggedId()); }
+function getMsgLastRead(k){
+  let loc = 0;
+  try { loc = parseInt(localStorage.getItem('msgRead_'+_msgReaderId()+'_'+k)||'0') || 0; } catch(e) {}
+  const rem = Number(_msgReadsRemote[k] || 0);
+  return Math.max(loc, rem, MSG_READS_START);
+}
+function setMsgLastRead(k){
+  if (getLoggedId() === null) return;
+  const ts = Date.now(), me = _msgReaderId();
+  try { localStorage.setItem('msgRead_'+me+'_'+k, String(ts)); } catch(e) {}
+  const prev = Number(_msgReadsRemote[k] || 0);
+  _msgReadsRemote[k] = ts;
+  refreshMsgsBadge();
+  if (ts - prev < 5000) return; // evita escrituras repetidas en ráfaga
+  MSGS_COL.doc('reads').set({ [me]: { [k]: ts } }, { merge: true }).catch(e => console.error('[msgs reads]', e));
+}
+function _startMsgReadsListener(){
+  if (_msgReadsUnsub) return;
+  const me = _msgReaderId();
+  _msgReadsUnsub = MSGS_COL.doc('reads').onSnapshot(snap => {
+    const all = snap.exists ? (snap.data() || {}) : {};
+    const mine = all[me] || {};
+    Object.keys(mine).forEach(k => { if (Number(mine[k]) > Number(_msgReadsRemote[k]||0)) _msgReadsRemote[k] = Number(mine[k]); });
+    refreshMsgsBadge();
+  }, e => console.error('[msgs reads listener]', e));
+}
 function msgsUnreadCount(arr, k){
   const lr = getMsgLastRead(k);
   const me = isAdmin() ? 'teacher' : String(getLoggedId());
   return arr.filter(m => m.ts > lr && m.from !== me).length;
 }
 function totalMsgsUnread(){
-  if (!getLoggedId()) return 0;
+  if (getLoggedId() === null) return 0; // ojo: el profesor tiene id 0 (antes "!getLoggedId()" lo excluía)
   let n = msgsUnreadCount(msgsGroupArr, 'group');
   if (!isAdmin()){
     n += msgsUnreadCount(msgsDmObj[String(getLoggedId())]||[], 'dm_'+getLoggedId());
@@ -9689,6 +9726,38 @@ function refreshMsgsBadge(){
   const n = totalMsgsUnread();
   const el = document.getElementById('nav-badge-tareas');
   if (el){ el.textContent = n>9?'9+':String(n||''); el.style.display = n>0?'flex':'none'; }
+  // Botón 💬 de la barra superior de Level Up (ver levelup.js)
+  const lb = document.getElementById('lu-msgs-badge');
+  if (lb){ lb.textContent = n>9?'9+':String(n||''); lb.style.display = n>0?'flex':'none'; }
+}
+// Abre el chat desde Level Up: el canal con mensajes sin leer (privado primero), o el grupal.
+function _luOpenMsgs(){
+  let target = null; // null = grupal
+  if (isAdmin()) {
+    const withUnread = Object.entries(msgsDmObj).find(([sid,arr]) => msgsUnreadCount(arr,'dm_'+sid) > 0);
+    if (withUnread && msgsUnreadCount(msgsGroupArr,'group') === 0) target = withUnread[0];
+  } else {
+    const sid = String(getLoggedId());
+    if (msgsUnreadCount(msgsDmObj[sid]||[], 'dm_'+sid) > 0) target = sid;
+  }
+  go('tareas'); setTaskFilter('msgs'); setMsgsDmView(target===null ? 'null' : target);
+}
+// B: aviso emergente dentro de Level Up cuando llega un mensaje nuevo.
+function _luMsgToast(key, m){
+  if (currentView !== 'levelup') return;
+  const sid = key==='group' ? null : key.slice(3);
+  const who = (m.fromName || 'Mensaje nuevo');
+  const txt = m.text || (m.att ? (m.att.type==='image' ? '📎 Imagen' : m.att.type==='link' ? '🔗 Enlace' : '📄 Archivo') : '');
+  let box = document.getElementById('lu-msg-toast');
+  if (!box) {
+    box = document.createElement('div'); box.id = 'lu-msg-toast';
+    box.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10050;max-width:min(92vw,420px);background:#1e1b4b;border:1px solid rgba(167,139,250,0.55);border-radius:14px;padding:10px 14px;color:#fff;font-family:Barlow,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,0.45);cursor:pointer;display:flex;gap:10px;align-items:flex-start';
+    document.body.appendChild(box);
+  }
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+  box.innerHTML = `<div style="font-size:20px;line-height:1">${key==='group'?'📢':'💬'}</div><div style="min-width:0"><div style="font-size:12px;font-weight:800;color:#c4b5fd">${esc(who)}${key==='group'?' · Chat grupal':' · Chat privado'}</div><div style="font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:330px">${esc(txt).slice(0,120)}</div><div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px">Toca para abrir el chat</div></div>`;
+  box.onclick = () => { box.remove(); go('tareas'); setTaskFilter('msgs'); setMsgsDmView(sid===null ? 'null' : sid); };
+  clearTimeout(box._t); box._t = setTimeout(() => { if (box.parentNode) box.remove(); }, 7000);
 }
 // ── Notificaciones de mensajes ──
 // Dos capas que se complementan: (1) aviso INSTANTÁNEO local (vía onSnapshot) que funciona ya
@@ -9795,7 +9864,7 @@ function _checkNewMsgsForNotify(key, arr){
   _notifBaseline[key] = maxTs;
   if (prevTs === undefined || maxTs <= prevTs) return;
   const me = isAdmin() ? 'teacher' : String(getLoggedId());
-  arr.filter(m => m.ts > prevTs && m.from !== me).forEach(m => _fireMsgNotification(key, m));
+  arr.filter(m => m.ts > prevTs && m.from !== me).forEach(m => { try { _luMsgToast(key, m); } catch(e) {} _fireMsgNotification(key, m); });
 }
 function _fireMsgNotification(key, m){
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted' || !_notifEnabled()) return;
@@ -9809,8 +9878,18 @@ function _fireMsgNotification(key, m){
   } catch(e){ console.error('[Notification]', e); }
 }
 function startMsgsListeners(){
-  if (msgsListeners['group']) return;
   const loggedId = getLoggedId(); if (loggedId === null) return;
+  // Si cambió el usuario en esta pestaña (cerró sesión y entró otro), se cortan los listeners
+  // del anterior para no mostrarle mensajes/contadores ajenos.
+  if (msgsListeners['group'] && msgsListeners._owner !== loggedId) {
+    Object.entries(msgsListeners).forEach(([k,u]) => { if (k !== '_owner' && typeof u === 'function') { try { u(); } catch(e) {} } });
+    msgsListeners = {}; msgsGroupArr = []; msgsDmObj = {}; _notifBaseline = {};
+    if (_msgReadsUnsub) { try { _msgReadsUnsub(); } catch(e) {} _msgReadsUnsub = null; }
+    _msgReadsRemote = {};
+  }
+  if (msgsListeners['group']) return;
+  msgsListeners._owner = loggedId;
+  _startMsgReadsListener();
   _silentlyRefreshFcmToken();
   msgsListeners['group'] = MSGS_COL.doc('group').onSnapshot(snap => {
     msgsGroupArr = (snap.exists ? snap.data().msgs||[] : []).sort((a,b)=>a.ts-b.ts);
@@ -9841,7 +9920,9 @@ function startMsgsListeners(){
 }
 function _renderMsgsInPlace(){
   const el = document.getElementById('msgs-body'); if (!el) return;
-  el.innerHTML = _buildMsgsBubbles(); _scrollMsgsToBottom(); refreshMsgsBadge();
+  el.innerHTML = _buildMsgsBubbles(); _scrollMsgsToBottom();
+  if (currentView === 'tareas' && taskFilter === 'msgs' && document.hasFocus()) setMsgLastRead(msgsDmView===null ? 'group' : 'dm_'+msgsDmView);
+  refreshMsgsBadge();
 }
 function _scrollMsgsToBottom(){
   setTimeout(()=>{ window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); },60);

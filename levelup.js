@@ -22891,11 +22891,18 @@ function _prepConfigHtml() {
       onfocus="_prepSearchExpand(this)" onblur="_prepSearchCollapse(this)">
     <div id="prep-search-results">${_searchHasQuery && (_prep.searchQuery||'').trim().length>=2 ? _prepSearchResultsHtml(_prep.searchQuery) : ''}</div>
   </div>`;
+  // Botón de mensajes del chat de Level Zone (grupal + privado) con contador de no leídos
+  // (03/10/2026). El número lo mantiene al día refreshMsgsBadge() en student.html.
+  const _luUnread = (typeof totalMsgsUnread === 'function' && typeof getLoggedId === 'function' && getLoggedId() !== null) ? totalMsgsUnread() : 0;
+  const _luMsgsBtn = (typeof _luOpenMsgs === 'function' && typeof getLoggedId === 'function' && getLoggedId() !== null)
+    ? `<button onclick="_luOpenMsgs()" title="Mensajes del chat" style="position:relative;display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:#fff;padding:4px 10px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;cursor:pointer">💬<span style="font-size:11px;letter-spacing:.04em">Chat</span><span id="lu-msgs-badge" style="display:${_luUnread>0?'flex':'none'};position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#ef4444;color:#fff;font-size:10px;font-weight:900;align-items:center;justify-content:center">${_luUnread>9?'9+':_luUnread}</span></button>`
+    : '';
   const topbar = `<div class="prep-kh-topbar">
     <div class="prep-kh-topbar-streak">🔥 <span>${_streak}</span></div>
     <span class="prep-kh-topbar-arr">→</span>
     <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel ¿?'}</div>
     <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '¿? habilidades'}</div>
+    ${_luMsgsBtn}
     ${_searchBar}
   </div>`;
 
