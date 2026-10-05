@@ -475,6 +475,7 @@ function setLoggedAdmin(on) {
 let DATA = JSON.parse(JSON.stringify(SEED));
 DATA.adminPin = ADMIN_PIN_DEFAULT;
 DATA.pagosConfirmados = {};
+DATA.creditos = {};       // { pid: [ {id, monto, desde:'<lunes semana origen>', fecha, motivo, ts, usos:{'<lunes>': monto}} ] } — Crédito a favor (05/10/2026)
 DATA.clasesEstado = {};   // { '<sessionId>|<fecha>' o '<sessionId>|oneoff': {k:'done'|'cancel'|'move', …} } — Estado de clase (04/10/2026)
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
@@ -758,6 +759,7 @@ function loadData() {
         DATA.templates       = d.templates       || [];
         DATA.pagosConfirmados = d.pagosConfirmados || {};
         DATA.clasesEstado = d.clasesEstado || {};
+        DATA.creditos = d.creditos || {};
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
         // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
         // explícitamente con FieldValue.delete() antes de escribir los nuevos.
@@ -786,6 +788,7 @@ function loadData() {
         DATA.templates       = d.templates       || [];
         DATA.pagosConfirmados = d.pagosConfirmados || {};
         DATA.clasesEstado = d.clasesEstado || {};
+        DATA.creditos = d.creditos || {};
       }
     } else {
       // Primera vez: sembrar Firestore con datos base. DATA ya es una copia de SEED
@@ -863,6 +866,10 @@ function saveFreeSlots() {
 function savePagosConfirmados() {
   REF.set({ pagosConfirmados: DATA.pagosConfirmados }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar confirmación.'); });
+}
+function saveCreditos() {
+  REF.set({ creditos: DATA.creditos }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar el crédito a favor.'); });
 }
 function saveClasesEstado() {
   REF.set({ clasesEstado: DATA.clasesEstado }, { merge:true })
@@ -1300,10 +1307,12 @@ function confirmPagoWithDate() {
     _recalcPagoPorClase(d.pid, d.weekKey);
     savePagosConfirmados(); closePagoConfirmPopup(); render(); return;
   }
+  var _cuP = _creditoUsadoEn(d.pid, d.weekKey);
   DATA.pagosConfirmados[d.pid + '_' + d.weekKey] = {
     ts: new Date().toISOString(),
     fecha: fecha,
     total: d.total,
+    creditoUsado: _cuP,
     nombre: d.nombre,
     descripcion: d.descripcion
   };
@@ -1326,6 +1335,21 @@ function desconfirmarPago(pid, weekKey) {
 //  · Cancelar: solo clases sin pagar. Reprogramar: también clases pagadas (no se vuelve a cobrar:
 //    se cobra en la semana de su día original).
 // ════════════════════════════════════════════════════════
+// ── Crédito a favor (05/10/2026) ──
+// Cuando se cancela una clase YA PAGADA, su monto queda a favor de la familia y se descuenta solo
+// de la(s) siguiente(s) semana(s) con cobro. El reparto por semana (usos) lo calcula el panel de
+// Pagos del profesor (_planCreditos) y se guarda, para que la vista del padre muestre lo mismo.
+function _creditosDe(pid) { return ((DATA.creditos || {})[pid] || []); }
+function _creditoUsadoEn(pid, wk) { return _creditosDe(pid).reduce(function(a, c) { return a + Number((c.usos || {})[wk] || 0); }, 0); }
+function _creditosOrigenEn(pid, wk) { return _creditosDe(pid).filter(function(c) { return c.desde === wk; }); }
+function _creditoFuentesEn(pid, wk) { return _creditosDe(pid).filter(function(c) { return (c.usos || {})[wk]; }); }
+function _montoClase(row, it) {
+  var rec = (DATA.pagosConfirmados || {})[row.pid + '_' + row.weekKey];
+  if (rec && rec.porClase && rec.clases && rec.clases[it.date]) return Number(rec.clases[it.date].total) || 0;
+  if (it.amt) return Math.round(Number(it.amt));
+  var n = (row.items || []).length || 1;
+  return Math.round(Number(row.bruto != null ? row.bruto : row.total || 0) / n);
+}
 function _esPagoPorClase(pid) { return !!(DATA.parents[pid] && DATA.parents[pid].pagoPorClase); }
 function _estadoDe(it) { return (DATA.clasesEstado || {})[it.ekey] || null; }
 function _cancelados(row) {
@@ -1367,6 +1391,7 @@ function _recalcPagoPorClase(pid, weekKey) {
 function _mostrarEstadoBtn(pid, weekKey) {
   var row = (window._pagoRows || {})[pid];
   if (!row) return true;
+  if (_creditosOrigenEn(pid, weekKey).length) return true;
   var marcadas = row.items.every(function(it) { return !!_estadoDe(it); });
   return !(_semanaPagada(pid, weekKey) && marcadas);
 }
@@ -1438,11 +1463,23 @@ function _drawEstado() {
   var goBtn = function(txt, color, act, on) { return '<button onclick="' + act + '" ' + (on ? '' : 'disabled ') + 'style="width:100%;border:none;border-radius:12px;padding:11px;font-weight:700;font-size:13px;margin-top:6px;' + gf + (on ? 'background:' + color + ';color:#fff;cursor:pointer' : 'background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.3);cursor:default') + '">' + txt + '</button>'; };
   var right = '';
   if (_estado.tab === 'cancel') {
-    var can = items.filter(function(it) { return !_estadoDe(it) && !_clasePagada(row.pid, wk, it); });
+    // Se pueden cancelar las clases sin marcar y también las reprogramadas que al final no se dieron.
+    // Si la clase ya está pagada, su monto queda como crédito a favor de la familia.
+    var can = items.filter(function(it) { var e = _estadoDe(it); return !e || e.k === 'move'; });
+    var selIt = _estado.sel ? can.filter(function(it) { return it.ekey === _estado.sel; })[0] : null;
+    var selPag = selIt && _clasePagada(row.pid, wk, selIt) ? _montoClase(row, selIt) : 0;
     right = '<div style="' + gf + 'font-size:15px;font-weight:700;margin-bottom:12px">Clase cancelada</div>'
-      + (can.length ? can.map(function(it) { return line('<input type="radio" name="est-c" id="est-c-' + it.ekey.replace(/[^a-z0-9]/gi, '_') + '" ' + (_estado.sel === it.ekey ? 'checked ' : '') + 'onchange="estadoSel(\'' + it.ekey + '\')" style="margin:0;width:16px;height:16px">' + lbl(it)); }).join('') : '<div style="' + gf + 'font-size:13px;color:rgba(0,0,0,0.5);padding:4px 0 10px">No hay clases sin pagar y sin marcar.</div>')
-      + _cancelados(row).map(function(c) { return line('<span style="flex:1;font-weight:600;text-decoration:line-through;color:rgba(0,0,0,0.45)">' + _dmy(c.date) + ' · ' + c.start + '</span>' + undo(c.ekey), 'background:rgba(0,0,0,0.03)'); }).join('')
-      + goBtn('Cancelar esta clase', '#B3261E', 'estadoCancelar()', !!_estado.sel);
+      + (can.length ? can.map(function(it) {
+          var e = _estadoDe(it), pag = _clasePagada(row.pid, wk, it);
+          var lb = e && e.k === 'move'
+            ? '<span style="flex:1;font-weight:600">' + _dmy(e.to.date) + ' · ' + e.to.start + '<span style="display:block;font-weight:500;font-size:11.5px;color:rgba(0,0,0,0.5)">reprogramada desde ' + _dmy(it.date) + '</span></span>'
+            : lbl(it);
+          return line('<input type="radio" name="est-c" id="est-c-' + it.ekey.replace(/[^a-z0-9]/gi, '_') + '" ' + (_estado.sel === it.ekey ? 'checked ' : '') + 'onchange="estadoSel(\'' + it.ekey + '\')" style="margin:0;width:16px;height:16px">' + lb
+            + (pag ? '<span style="' + gf + 'font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;white-space:nowrap;background:rgba(25,110,56,0.09);color:#196e38">pagada</span>' : ''));
+        }).join('') : '<div style="' + gf + 'font-size:13px;color:rgba(0,0,0,0.5);padding:4px 0 10px">No hay clases para cancelar.</div>')
+      + (selPag > 0 ? '<div style="' + gf + 'border:1px dashed #7A4DB8;background:rgba(122,77,184,0.08);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45;margin:4px 0 10px">Esta clase ya está pagada. Al cancelarla quedan <b style="color:#7A4DB8">S/. ' + selPag + ' a favor</b> de la familia, que se descuentan solos de su próxima semana con cobro.</div>' : '')
+      + _cancelados(row).map(function(c) { var ce = DATA.clasesEstado[c.ekey] || {}; return line('<span style="flex:1;font-weight:600;text-decoration:line-through;color:rgba(0,0,0,0.45)">' + _dmy(c.date) + ' · ' + c.start + '</span>' + (ce.creditoId ? '<span style="' + gf + 'font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;background:rgba(122,77,184,0.10);color:#7A4DB8">crédito</span>' : '') + undo(c.ekey), 'background:rgba(0,0,0,0.03)'); }).join('')
+      + goBtn(selPag > 0 ? 'Cancelar y dejar S/. ' + selPag + ' a favor' : 'Cancelar esta clase', '#B3261E', 'estadoCancelar()', !!_estado.sel);
   } else if (_estado.tab === 'done') {
     var list = items.filter(function(it) { var e = _estadoDe(it); return !e || e.k === 'done'; });
     right = '<div style="' + gf + 'font-size:15px;font-weight:700;margin-bottom:8px">Clase dictada</div>'
@@ -1503,16 +1540,31 @@ function estadoTodas() {
 function estadoCancelar() {
   var it = _itemByKey(_estado.sel); if (!it) return;
   var s = _sessById(it.sessId); if (!s) return;
+  var row = (window._pagoRows || {})[_estado.pid];
+  var prev = _estadoDe(it);
+  var pagada = row ? _clasePagada(row.pid, row.weekKey, it) : false;
+  var monto = pagada ? _montoClase(row, it) : 0;
   var rec = { k: 'cancel', ts: new Date().toISOString(), date: it.date, start: it.start, studentId: s.studentId };
-  if (it.oneOff) {   // clase puntual: se quita de la lista y se guarda para poder deshacerlo
+  if (prev && prev.k === 'move') {
+    // Clase reprogramada que al final no se dio: se quita la clase nueva (se guarda para deshacer).
+    rec.prevMove = prev;
+    var nueva = it.oneOff ? s : _sessById(prev.newId);
+    if (nueva) { rec.session = JSON.parse(JSON.stringify(nueva)); DATA.sessions = DATA.sessions.filter(function(x) { return x !== nueva; }); }
+  } else if (it.oneOff) {   // clase puntual: se quita de la lista y se guarda para poder deshacerlo
     rec.session = JSON.parse(JSON.stringify(s));
     DATA.sessions = DATA.sessions.filter(function(x) { return x !== s; });
   } else {
     s.skipDates = Array.from(new Set((s.skipDates || []).concat([it.date])));
   }
+  if (monto > 0 && row) {
+    var cr = { id: Date.now(), monto: monto, desde: row.weekKey, fecha: (prev && prev.k === 'move') ? prev.to.date : it.date, motivo: 'Clase cancelada ya pagada', ts: new Date().toISOString(), usos: {} };
+    DATA.creditos[row.pid] = _creditosDe(row.pid).concat([cr]);
+    rec.creditoId = cr.id;
+    saveCreditos();
+  }
   DATA.clasesEstado[it.ekey] = rec;
   _estado.sel = null;
-  _guardarEstado(); showToast('Clase cancelada', 'success');
+  _guardarEstado(); showToast(monto > 0 ? 'Clase cancelada · S/. ' + monto + ' a favor' : 'Clase cancelada', 'success');
 }
 function estadoReprogramar() {
   var it = _itemByKey(_estado.sel); if (!it) return;
@@ -1541,6 +1593,17 @@ function estadoReprogramar() {
 function estadoDeshacer(k) {
   var e = DATA.clasesEstado[k]; if (!e) return;
   var sid = k.split('|')[0], d = k.split('|')[1];
+  if (e.k === 'cancel' && e.creditoId) {
+    Object.keys(DATA.creditos || {}).forEach(function(p) {
+      DATA.creditos[p] = (DATA.creditos[p] || []).filter(function(c) { return String(c.id) !== String(e.creditoId); });
+    });
+    saveCreditos();
+  }
+  if (e.k === 'cancel' && e.prevMove) {
+    if (e.session && !_sessById(e.session.id)) DATA.sessions.push(e.session);
+    DATA.clasesEstado[k] = e.prevMove;
+    _guardarEstado(); showToast('Listo', 'success'); return;
+  }
   if (e.k === 'cancel') {
     if (e.session) { if (!_sessById(e.session.id)) DATA.sessions.push(e.session); }
     else { var s = _sessById(sid); if (s) s.skipDates = (s.skipDates || []).filter(function(x) { return x !== d; }); }
@@ -2668,11 +2731,23 @@ function saveChildProfile(childId) {
          + '</div>';
 
        var semLabel = isFprado ? 'Semana anterior' : 'Esta semana';
+       // Crédito a favor: mismo reparto que calcula el panel del profesor (clave = lunes que ve el profesor).
+       var _ckD = new Date(refMonday); if (isFprado) _ckD.setDate(_ckD.getDate() + 7);
+       var _ck = _ckD.toISOString().slice(0, 10);
+       var _cred = Math.min(_creditoUsadoEn(parentId, _ck), total);
+       var _credSrc = _creditoFuentesEn(parentId, _ck).map(function(c) { return 'clase del ' + _dmy(c.fecha).toLowerCase() + ' no dictada'; }).join(', ');
+       var _bruto = total; total = total - _cred;
+       var credHtml = _cred > 0
+         ? '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(122,77,184,0.10);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#1a1a1a">'
+         +   '<span>Saldo a favor (' + _credSrc + ')</span>'
+         +   '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:900;color:#7A4DB8">−S/. ' + _cred + '</span>'
+         + '</div>'
+         : '';
 
        var summaryHtml = '<div style="background:#111;border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">'
          + '<div>'
          +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45)">' + semLabel + '</div>'
-         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:34px;font-weight:900;color:#fff;line-height:1.05">S/. ' + total + '</div>'
+         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:34px;font-weight:900;color:#fff;line-height:1.05">' + (_cred > 0 ? '<span style="font-size:20px;color:rgba(255,255,255,0.4);text-decoration:line-through;margin-right:8px">S/. ' + _bruto + '</span>' : '') + 'S/. ' + total + '</div>'
          + '</div>'
          + movHtml
          + '</div>';
@@ -2684,6 +2759,7 @@ function saveChildProfile(childId) {
          +   '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:6px">' + parent.name + ' · ' + activeCycle.name + '</div>'
          + '</div>'
          + summaryHtml
+         + credHtml
          + '<div class="sec-lbl">Clases de la semana</div>'
          + daysHtml
          + '</div>';
@@ -2834,7 +2910,7 @@ function vAdminPagos() {
       });
     });
 
-    if (!instances.length) return { name: parent.name, total: 0, weeklyClass: 0, mov: 0, instances: 0 };
+    if (!instances.length) return { name: parent.name, total: 0, weeklyClass: 0, mov: 0, instances: 0, items: [], wDates: wDates, classDates: [] };
 
     var weeklyClass = 0, mov = 0;
     if (isFprado) {
@@ -2984,13 +3060,45 @@ function vAdminPagos() {
   mesProyectado = Math.round(mesProyectado);
   var mesTotal = mesCobrado + mesProyectado;
 
+  // Crédito a favor: reparto automático en las semanas siguientes a la de origen (FIFO). Las
+  // semanas ya confirmadas usan lo que se guardó al confirmar (creditoUsado).
+  function _planCreditos(pid) {
+    var ordered = _creditosDe(pid).slice().sort(function(a, b) { return (a.desde + a.ts).localeCompare(b.desde + b.ts); });
+    if (!ordered.length) return false;
+    var rest = ordered.map(function(c) { return Number(c.monto) || 0; });
+    var usos = ordered.map(function() { return {}; });
+    var w = new Date(ordered[0].desde + 'T00:00:00'); w.setDate(w.getDate() + 7);
+    var limit = startOfWeek(new Date()); limit.setDate(limit.getDate() + 9 * 7);
+    for (var guard = 0; w <= limit && guard < 60; guard++, w.setDate(w.getDate() + 7)) {
+      var wk = w.toISOString().slice(0, 10);
+      var disp = ordered.map(function(c, i) { return c.desde < wk ? rest[i] : 0; });
+      var pool = disp.reduce(function(a, b) { return a + b; }, 0);
+      if (!pool) continue;
+      var rec = (DATA.pagosConfirmados || {})[pid + '_' + wk], need;
+      if (rec && !rec.porClase) need = Number(rec.creditoUsado || 0);
+      else { var rr = calcParent(pid, new Date(w)); need = rr ? (Number(rr.total) || 0) : 0; }
+      need = Math.min(need, pool);
+      ordered.forEach(function(c, i) { if (!need || !disp[i]) return; var t = Math.min(disp[i], need); rest[i] -= t; need -= t; usos[i][wk] = t; });
+    }
+    var changed = false;
+    ordered.forEach(function(c, i) { if (JSON.stringify(c.usos || {}) !== JSON.stringify(usos[i])) { c.usos = usos[i]; changed = true; } });
+    return changed;
+  }
+  var _credChanged = false;
+  Object.keys(DATA.creditos || {}).forEach(function(pid) { if (_planCreditos(pid)) _credChanged = true; });
+  if (_credChanged) saveCreditos();
+
   var rows = [];
   var grandTotal = 0;
   window._pagoRows = {};
   Object.keys(DATA.parents || {}).forEach(function(pid) {
     var r = calcParent(pid);
-    if (r && r.total > 0) { rows.push({ pid: pid, ...r }); grandTotal += r.total; (window._pagoClassDates = window._pagoClassDates || {})[pid] = r.classDates || []; }
-    if (r && r.items) (window._pagoRows = window._pagoRows || {})[pid] = { pid: pid, name: r.name, items: r.items, wDates: r.wDates, weekKey: weekKey, total: r.total };
+    var _paidRow = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[pid + '_' + weekKey]);
+    if (r) { r.bruto = r.total; r.credito = Math.min(_creditoUsadoEn(pid, weekKey), r.total); r.total = r.total - r.credito; }
+    // Semana sin clases (todas canceladas) pero pagada o con crédito: se ubica en el día de la clase cancelada.
+    if (r && !r.firstSlot && r.wDates) { var _cz = _cancelados({ pid: pid, wDates: r.wDates }); if (_cz.length) r.firstSlot = { date: _cz[0].date, start: _cz[0].start }; }
+    if (r && (r.bruto > 0 || (_paidRow && r.items) || _creditosOrigenEn(pid, weekKey).length)) { rows.push({ pid: pid, ...r }); grandTotal += r.total; (window._pagoClassDates = window._pagoClassDates || {})[pid] = r.classDates || []; }
+    if (r && r.items) (window._pagoRows = window._pagoRows || {})[pid] = { pid: pid, name: r.name, items: r.items, wDates: r.wDates, weekKey: weekKey, total: r.total, bruto: r.bruto };
   });
   // Ordenar por primer día de semana (Lun=1…Dom=7) y luego por hora
   rows.sort(function(a, b) {
@@ -3034,19 +3142,30 @@ function vAdminPagos() {
       // Semana ya pagada pero el total subió (p. ej. clase reprogramada más larga): se muestra lo que falta.
       var _falta = (pagoInfo && pagoInfo.total != null && Number(r.total) > Number(pagoInfo.total)) ? Math.round(Number(r.total) - Number(pagoInfo.total)) : 0;
       var _faltaTag = _falta > 0 ? '<span style="flex-shrink:0;align-self:center;background:rgba(200,110,0,0.10);color:#9a5300;border-radius:9px;padding:6px 10px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;white-space:nowrap">Falta S/. ' + _falta + '</span>' : '';
-      var confirmBtn = confirmed
+      var _credOrig = _creditosOrigenEn(r.pid, weekKey).reduce(function(a, c) { return a + Number(c.monto || 0); }, 0);
+      var _credChip = _credOrig > 0 ? '<span style="flex-shrink:0;align-self:center;background:rgba(122,77,184,0.10);color:#7A4DB8;border-radius:9px;padding:6px 10px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;white-space:nowrap">Crédito S/. ' + _credOrig + '</span>' : '';
+      var _credFuentes = _creditoFuentesEn(r.pid, weekKey).map(function(c) { return 'clase del ' + _dmy(c.fecha).toLowerCase(); }).join(', ');
+      var _credNote = r.credito > 0
+        ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">−S/. ' + r.credito + ' crédito (' + _credFuentes + ')</div>'
+        : (_credOrig > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">S/. ' + _credOrig + ' a favor por clase cancelada</div>' : '');
+      if (!confirmed && r.credito > 0 && r.total <= 0) { nameColor = '#196e38'; amtColor = '#196e38'; }
+      var confirmBtn = (!confirmed && r.credito > 0 && r.total <= 0)
+        ? '<span style="flex-shrink:0;border:none;background:rgba(25,110,56,0.09);border-radius:9px;padding:6px 11px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;color:#196e38;white-space:nowrap">✓ Cubierto con crédito</span>'
+        : confirmed
         ? '<button onclick="desconfirmarPago(\''+r.pid+'\',\''+weekKey+'\')" style="flex-shrink:0;border:none;background:rgba(25,110,56,0.09);border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;letter-spacing:.02em;color:#196e38;white-space:nowrap">✓ Pagado'+pagoFecha+'</button>'
         : '<button onclick="openPagoConfirmPopup(\''+r.pid+'\',\''+weekKey+'\',\''+r.name+'\','+r.total+')" style="flex-shrink:0;border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:11px;color:rgba(13,13,13,0.5);white-space:nowrap">Confirmar</button>';
       return '<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:'+borderBottom+'">'
         + '<div onclick="openPagoDetallePopup(\''+r.pid+'\',adminPagosWeekOffset)" style="flex:1;min-width:0;cursor:pointer">'
         +   '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:'+nameColor+';margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>'
         +   '<div style="display:flex;align-items:baseline;gap:6px">'
+        +     (r.credito > 0 ? '<span style="font-family:\'Space Mono\',monospace;font-size:13px;color:rgba(0,0,0,0.3);text-decoration:line-through">S/. '+r.bruto+'</span>' : '')
         +     '<span style="font-family:\'Space Mono\',monospace;font-size:13px;font-weight:400;color:'+amtColor+';font-variant-numeric:tabular-nums;letter-spacing:-.01em">S/. '+r.total+'</span>'
         // Desglose (clases + movilidad) ya no se muestra en la lista: solo el total, igual para
         // virtuales y domicilio. El detalle sigue disponible al tocar la fila (openPagoDetallePopup).
         +   '</div>'
+        +   _credNote
         + '</div>'
-        + '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">' + confirmBtn + _faltaTag + _estBtn + '</div>'
+        + '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">' + confirmBtn + _faltaTag + _credChip + _estBtn + '</div>'
         + '</div>';
     }).join('');
     return '<div style="margin-bottom:8px">'
