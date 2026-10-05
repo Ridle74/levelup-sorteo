@@ -1968,6 +1968,16 @@ function buildPadCalNav(rangeStart, rangeEnd, _unused, isAdmin) {
 }
 function toggleCalEdit() { calEditMode = !calEditMode; render(); }
 
+// ¿Esta sesión puntual es una clase reprogramada? (desde Pagos → Estado de clase)
+function _calEsReprog(sessionId) {
+  if (sessionId == null) return false;
+  var s = (DATA.sessions || []).find(function(x) { return String(x.id) === String(sessionId); });
+  if (!s || s.recurring !== false) return false;
+  if (s.reprogFrom) return true;
+  var e = (DATA.clasesEstado || {})[s.id + '|oneoff'];
+  return !!(e && e.k === 'move');
+}
+var _CAL_REPROG_TAG = '<div style="display:inline-block;margin-top:2px;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#1452C8;background:rgba(20,82,200,0.10);border-radius:5px;padding:1px 5px;line-height:1.4">Reprogramada</div>';
 function buildPadCalGrid(dayList, activeSids, showParent) {
   const ROW_H = 56;
   const today = new Date(); today.setHours(0,0,0,0);
@@ -2168,6 +2178,8 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
             +(pName?'<div class="pcal-ev-parent">'+pName+'</div>':'')
             +'<div class="pcal-ev-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+'</div>'
             +(short?'':'<div class="pcal-ev-time">'+slot.start+'–'+end+'</div>')
+            // Reprogramada: etiqueta completa si la tarjeta es alta; si es corta (1 h), un ↻ en la esquina.
+            +(_calEsReprog(st.sessionId)?(hPx>=70?_CAL_REPROG_TAG:'<div title="Reprogramada" style="position:absolute;top:3px;right:4px;font-size:9px;font-weight:700;color:#1452C8;background:rgba(20,82,200,0.12);border-radius:5px;padding:0 4px;line-height:1.5">↻ Reprog.</div>'):'')
             +'</div>';
         }
 
@@ -2190,7 +2202,7 @@ function buildPadCalGrid(dayList, activeSids, showParent) {
           const rowEditIco = (showParent && calEditMode && st.sessionId)
             ? '<div class="pcal-ev-row-edit" onclick="openEditSession('+st.sessionId+',false,\''+dstr+'\');event.stopPropagation()">✏️</div>' : '';
           return '<div class="pcal-ev-row">'
-            +'<div class="pcal-ev-row-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+'</div>'
+            +'<div class="pcal-ev-row-name">'+(stData.icon||'')+' '+(stData.name||'').split(' ')[0]+(_calEsReprog(st.sessionId)?' <span style="font-size:9px;font-weight:700;color:#1452C8">↻</span>':'')+'</div>'
             +(rowFam?'<div class="pcal-ev-row-fam">'+rowFam+'</div>':'')
             +rowEditIco
             +'</div>';

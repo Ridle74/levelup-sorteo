@@ -24581,17 +24581,35 @@ function _prepTopicUnit(topic, level) {
 // consulta propia filtrada por uid — no usar _prepAdminHistData aquí: esa lista global está topada a 200
 // documentos COMPARTIDOS entre todos los alumnos y sin orden por fecha en la consulta, así que puede
 // faltarle actividad reciente de un alumno específico si otros alumnos generaron muchas sesiones).
+// Ventana del reporte (05/10/2026, pedido de Michel): el reporte SEMANAL cubre SIEMPRE una
+// semana de LUNES a DOMINGO, para todos los alumnos. Si se genera un lunes, es la semana que
+// acaba de terminar; cualquier otro día, la semana en curso (lunes → domingo). El DIARIO (days=1)
+// sigue siendo las últimas 24 h.
+function _prepReportWindow(days) {
+  const now = new Date();
+  if ((days || 7) !== 7) {
+    const endSec = Math.floor(now.getTime()/1000) + 1;
+    return { startSec: endSec - (days||1)*86400, endSec, startDate: new Date((endSec-(days||1)*86400)*1000), endDate: now, monday: null };
+  }
+  const mon = new Date(now); mon.setHours(0,0,0,0);
+  const back = (mon.getDay() + 6) % 7;            // días desde el lunes de esta semana
+  mon.setDate(mon.getDate() - back - (now.getDay() === 1 ? 7 : 0));
+  const sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+  const next = new Date(mon); next.setDate(next.getDate() + 7);
+  return { startSec: Math.floor(mon.getTime()/1000), endSec: Math.floor(next.getTime()/1000), startDate: mon, endDate: sun, monday: mon };
+}
 function _prepBuildWeeklyReportText(uid, hist) {
   const students = getStudents();
   const stu = students.find(s=>String(s.id)===String(uid));
   const name = stu ? stu.name : 'Alumno';
   hist = Array.isArray(hist) ? hist : [];
-  const nowSec = Math.floor(Date.now()/1000);
-  const weekAgoSec = nowSec - 7*86400;
-  const last7 = hist.filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec);
+  const _rw = _prepReportWindow(7);
+  const weekAgoSec = _rw.startSec, weekEndSec = _rw.endSec;
+  const last7 = hist.filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec && h.completedAt.seconds<weekEndSec);
   // Filtrar por cursos asignados: solo mostrar actividades de los cursos asignados al alumno.
   const _myCourses = _prepMyCourses(uid);
   const _isAssignedCourse = h => {
+    if (h.level === 'especial') return false;   // Desafíos de Dominio: siempre en su propia sección
     if (!_myCourses.length) return true;
     const u = _prepTopicUnit(h.topic, h.level);
     if (!u) return false;
@@ -24609,10 +24627,10 @@ function _prepBuildWeeklyReportText(uid, hist) {
   // practicadas/dominadas esta semana, aunque no se hayan resuelto sueltas ejercicio por ejercicio.
   const touched7 = last7.filter(_isAssignedCourse);
 
-  const todayStr = new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
-  const weekAgoStr = new Date(weekAgoSec*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
+  const todayStr = _rw.endDate.toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
+  const weekAgoStr = _rw.startDate.toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
 
-  if (!direct7.length) {
+  if (!direct7.length && !last7.some(h => h.level === 'especial' && !h.autoFromExam && !h.autoFromQuiz)) {
     return `📊 *REPORTE SEMANAL - ${name.toUpperCase()}*\n📅 ${weekAgoStr} al ${todayStr}\n\n${name} no registró actividad en Level Up esta semana.\n\n_MATHS LEVEL UP_`;
   }
 
@@ -25018,11 +25036,12 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   const name = stu ? stu.name : 'Alumno';
   hist = Array.isArray(hist) ? hist : [];
   const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const nowSec = Math.floor(Date.now()/1000);
-  const weekAgoSec = nowSec - days*86400;
-  const last7 = hist.filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec);
+  const _rwP = _prepReportWindow(days);
+  const weekAgoSec = _rwP.startSec, weekEndSec = _rwP.endSec;
+  const last7 = hist.filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec && h.completedAt.seconds<weekEndSec);
   const _myCoursesP = _prepMyCourses(uid);
   const _isAssignedCourseP = h => {
+    if (h.level === 'especial') return false;   // Desafíos de Dominio: siempre en la sección IV
     if (!_myCoursesP.length) return true;
     const u = _prepTopicUnit(h.topic, h.level);
     if (!u) return false;
@@ -25036,8 +25055,8 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   const direct7 = last7.filter(h=>!h.autoFromExam && !h.autoFromQuiz && _isAssignedCourseP(h));
   const touched7 = last7.filter(_isAssignedCourseP);
 
-  const todayStr = new Date().toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
-  const weekAgoStr = new Date(weekAgoSec*1000).toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
+  const todayStr = _rwP.endDate.toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
+  const weekAgoStr = _rwP.startDate.toLocaleDateString('es-PE',{day:'2-digit',month:'long'});
 
   const _desafio7Early = last7.filter(h => h.level === 'especial' && !h.autoFromExam && !h.autoFromQuiz);
   if (!direct7.length && !_desafio7Early.length) {
@@ -25260,7 +25279,7 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   // srcKeys de cada cuestionario para saber qué habilidades componen su grupo), terminando con el
   // examen de unidad. Lo no practicado ESTA SEMANA no aparece (al no tener sesiones en la
   // ventana, ni la unidad ni el curso se agregan a _activityCourseGroups).
-  const _histAssigned2 = hist.filter(_isAssignedCourseP).filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec);
+  const _histAssigned2 = hist.filter(_isAssignedCourseP).filter(h=>h.completedAt?.seconds && h.completedAt.seconds>=weekAgoSec && h.completedAt.seconds<weekEndSec);
   const _cleanQuizLbl = lbl => (lbl||'').replace(/^(Cuestionario\s*\d*\s*[–-]\s*|Examen\s*[–-]\s*)/i, '');
   const _pureUnitSkillsFor = uo => (uo.skills||[]).filter(_pureSkillFilter);
   // Estadísticas de una actividad (habilidad, cuestionario o examen) sobre TODO el historial
@@ -25689,7 +25708,9 @@ function _prepBuildWeeklyReportPdfHtml(uid, hist, days) {
   const _dayNames = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
   const _weekDays = [];
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-i);
+    // Semanal: los 7 días lunes→domingo de la ventana del reporte; diario: los últimos 7 días.
+    const d = _rwP.monday ? new Date(_rwP.monday) : new Date(); d.setHours(0,0,0,0);
+    if (_rwP.monday) d.setDate(d.getDate() + (6-i)); else d.setDate(d.getDate()-i);
     const dEnd = new Date(d); dEnd.setDate(dEnd.getDate()+1);
     const dSec = Math.floor(d.getTime()/1000), dEndSec = Math.floor(dEnd.getTime()/1000);
     const daySess = last7.filter(h=>{ const s=h.completedAt?.seconds||0; return s>=dSec && s<dEndSec && !h.autoFromExam && !h.autoFromQuiz; });
