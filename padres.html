@@ -1389,6 +1389,7 @@ function _recalcPagoPorClase(pid, weekKey) {
   rec.completo = row ? row.items.every(function(it) { return !!rec.clases[it.date]; }) : false;
 }
 function _mostrarEstadoBtn(pid, weekKey) {
+  return true;   // 05/10/2026: Michel pidió que "Estado de clase" se vea SIEMPRE, también con la semana pagada.
   var row = (window._pagoRows || {})[pid];
   if (!row) return true;
   if (_creditosOrigenEn(pid, weekKey).length) return true;
