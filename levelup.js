@@ -6926,7 +6926,7 @@ const PREP_LEVELS = {
       'sf6_car_b1','sf6_car_b2','sf6_car_bq1','sf6_car_b3','sf6_car_b4','sf6_car_bq2','sf6_are_b1','sf6_are_b2','sf6_are_bq1','sf6_are_b3','sf6_are_b4','sf6_are_bq2'] },
     areas:[{key:'matematica', lbl:'Matemática', ico:'🔢'},{key:'algebra', lbl:'Álgebra', ico:'α'},{key:'aritmetica', lbl:'Aritmética', ico:'🔢'},{key:'razonamiento', lbl:'Razonamiento Matemático', ico:'🧠'},{key:'geometria', lbl:'Geometría', ico:'◻'}] },
   secundaria: { lbl:'Secundaria', ico:'📐', gradeIco:'📚',
-    grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3','ac1_esc_b9','ac1_esc_b10','ac1_esc_bq4','ac1_esc_b11','ac1_esc_b12','ac1_esc_bq5','ac1_esc_b13','ac1_esc_b14','ac1_esc_bq6','ac1_esc_b15','ac1_esc_b16','ac1_esc_bq7','ac1_esc_b17','ac1_esc_b18','ac1_esc_bq8',],
+    grades:{ '1':['i1tr_ang_b0a','i1tr_ang_b0b','i1tr_ang_bq0','i1tr_ang_b1','i1tr_ang_b2','i1tr_ang_b3','i1tr_ang_bq1','i1tr_ang_b4','i1tr_ang_b5','i1tr_ang_b6','i1tr_ang_bq2','i1tr_ang_b7','i1tr_ang_b8','i1tr_ang_bq3','i1tr_sma_b1','i1tr_sma_b2','i1tr_sma_b3','i1tr_sma_bq1','i1tr_sma_b4','i1tr_sma_b5','i1tr_sma_bq2','i1tr_sma_b6','i1tr_sma_b7','i1tr_sma_b8','i1tr_sma_bq3','i1tr_lar_b1','i1tr_lar_b2','i1tr_lar_b3','i1tr_lar_bq1','i1tr_lar_b4','i1tr_lar_b5','i1tr_lar_bq2','i1tr_lar_b6','i1tr_lar_b7','i1tr_lar_b8','i1tr_lar_bq3','i1tr_asc_b1','i1tr_asc_b2','i1tr_asc_b3','i1tr_asc_bq1','i1tr_asc_b4','i1tr_asc_b5','i1tr_asc_b6','i1tr_asc_bq2','i1tr_asc_b7','i1tr_asc_b8','i1tr_asc_b9','i1tr_asc_b10','i1tr_asc_bq3','i1tr_rta_b1','i1tr_rta_b2','i1tr_rta_b3','i1tr_rta_bq1','i1tr_rta_b4','i1tr_rta_b5','i1tr_rta_b6','i1tr_rta_bq2','i1tr_rta_b7','i1tr_rta_b8','i1tr_rta_bq3','i1ar_cj_b1','i1ar_cj_b2','i1ar_cj_b3','i1ar_cj_bq1','i1ar_cj_b4','i1ar_cj_b5','i1ar_cj_b6','i1ar_cj_bq2','i1ar_cj_b7','i1ar_cj_b8','i1ar_cj_bq3','i1ar_cj_b9','i1ar_cj_b10','i1ar_cj_bq4','i1ar_nat_b1','i1ar_nat_b2','i1ar_nat_b3','i1ar_nat_bq1','i1ar_nat_b4','i1ar_nat_b5','i1ar_nat_b6','i1ar_nat_bq2','i1ar_nat_b7','i1ar_nat_b8','i1ar_nat_b9','i1ar_nat_bq3','i1ar_nmr_b1','i1ar_nmr_b2','i1ar_nmr_b3','i1ar_nmr_bq1','i1ar_nmr_b4','i1ar_nmr_b5','i1ar_nmr_b6','i1ar_nmr_bq2','i1ar_nmr_b7','i1ar_nmr_b8','i1ar_nmr_bq3','i1ar_nmr_b9','i1ar_nmr_b10','i1ar_nmr_bq4','fr1si_b1','fr1si_b2','fr1si_b3','fr1si_b4','fr1si_bq1','fr1si_b5','fr1si_b6','fr1si_b7','fr1si_bq2','fr1si_b8','fr1si_b9','fr1si_b10','fr1si_b11','fr1si_bq3','fr1si_b12','fr1si_b13','fr1si_bq4','i1a_ex1_b1','i1a_ex1_b2','i1a_ex1_bq1','i1a_ex1_b3','i1a_ex1_b6','i1a_ex1_bq2','i1a_ex2_b1','i1a_ex2_b2','i1a_ex2_bq1','i1a_ex2_b3','i1a_ex2_b4','i1a_ex2_bq2','i1a_etr_b1','i1a_etr_b2','i1a_etr_bq1','i1a_etr_b3','i1a_etr_b4','i1a_etr_bq2','i1a_mon_b1','i1a_mon_b2','i1a_mon_bq1','i1a_mon_b3','i1a_mon_b4','i1a_mon_bq2','i1a_mon_b5','i1a_mon_b6','i1a_mon_bq3','i1a_pol_b1','i1a_pol_b2','i1a_pol_bq1','i1a_pol_b3','i1a_pol_b4','i1a_pol_bq2','i1a_pol_b5','i1a_pol_b6','i1a_pol_bq3','i1a_pno_b1','i1a_pno_b2','i1a_pno_bq1','i1a_pno_b3','i1a_pno_b4','i1a_pno_bq2','i1a_div_b1','i1a_div_b2','i1a_div_bq1','i1a_div_b3','i1a_div_b4','i1a_div_bq2','i1a_fac_b1','i1a_fac_b2','i1a_fac_bq1','i1a_fac_b3','i1a_fac_b4','i1a_fac_bq2','i1a_rad_b1','i1a_rad_b2','i1a_rad_bq1','i1a_rad_b3','i1a_rad_b4','i1a_rad_bq2','i1a_rac_b1','i1a_rac_b2','i1a_rac_bq1','i1a_rac_b3','i1a_rac_b4','i1a_rac_bq2','i1a_ec1_b1','i1a_ec1_b2','i1a_ec1_bq1','i1a_ec1_b3','i1a_ec1_b4','i1a_ec1_bq2','i1a_sis_b1','i1a_sis_b2','i1a_sis_bq1','i1a_sis_b3','i1a_sis_b4','i1a_sis_bq2','i1a_ec2_b1','i1a_ec2_b2','i1a_ec2_bq1','i1a_ec2_b3','i1a_ec2_b4','i1a_ec2_bq2','i1a_ine_b1','i1a_ine_b2','i1a_ine_bq1','i1a_ine_b3','i1a_ine_b4','i1a_ine_bq2','i1a_vab_b1','i1a_vab_b2','i1a_vab_bq1','i1a_vab_b3','i1a_vab_b4','i1a_vab_bq2','i1a_log_b1','i1a_log_b2','i1a_log_bq1','i1a_log_b3','i1a_log_b4','i1a_log_bq2','i1a_fun_b1','i1a_fun_b2','i1a_fun_bq1','i1a_fun_b3','i1a_fun_b4','i1a_fun_bq2','i1a_prg_b1','i1a_prg_b2','i1a_prg_bq1','i1a_prg_b3','i1a_prg_b4','i1a_prg_bq2','ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3','ol1a_pn1_bpu','ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3','ol1a_pn2_bpu','ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3','ol1a_pn3_bpu','ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_bq1','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_bq2','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_par_b1','ol1g_par_b2','ol1g_par_bq1','ol1g_par_b3','ol1g_par_b4','ol1g_par_bq2','ol1g_par_b5','ol1g_par_b6','ol1g_par_bq3','ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu','ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu','ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu','ol1t_ga1_b1','ol1t_ga1_b2','ol1t_ga1_bq1','ol1t_ga1_b3','ol1t_ga1_b4','ol1t_ga1_bq2','ol1t_ga1_b5','ol1t_ga1_b6','ol1t_ga1_bq3','ol1t_ga1_bpu','ac1_esc_b1','ac1_esc_b2','ac1_esc_bq1','ac1_esc_b3','ac1_esc_b4','ac1_esc_b5','ac1_esc_bq2','ac1_esc_b6','ac1_esc_b7','ac1_esc_b8','ac1_esc_bq3','ac1_esc_b9','ac1_esc_b10','ac1_esc_bq4','ac1_esc_b11','ac1_esc_b12','ac1_esc_bq5','ac1_esc_b13','ac1_esc_b14','ac1_esc_bq6','ac1_esc_b15','ac1_esc_b16','ac1_esc_bq7','ac1_esc_b17','ac1_esc_b18','ac1_esc_bq8',],
       '2':['hca2_pol_b1','hca2_pol_b2','hca2_pol_b3','hca2_pol_bq1','hca2_pol_b4','hca2_pol_b5','hca2_pol_bq2','hca2_pol_bpu','hca2_dec_b1','hca2_dec_b2','hca2_dec_b3','hca2_dec_bq1','hca2_dec_b4','hca2_dec_b5','hca2_dec_b6','hca2_dec_bq2','hca2_dec_bpu','hca2_ec_b1','hca2_ec_b2','hca2_ec_bq1','hca2_ec_b3','hca2_ec_b4','hca2_ec_bq2','hca2_ec_b5','hca2_ec_bq3','hca2_ec_bpu','hca2_r3_b1','hca2_r3_b2','hca2_r3_bq1','hca2_r3_b3','hca2_r3_b4','hca2_r3_bq2','hca2_r3_b5','hca2_r3_bq3','hca2_r3_bpu','sa2_ang_b1','sa2_ang_b2','sa2_ang_bq1','sa2_ang_b3','sa2_ang_b4','sa2_ang_bq2','sa2_ang_b5','sa2_ang_b6','sa2_ang_bq3','sa2_ang_bpu','sa2_par_b1','sa2_par_b2','sa2_par_bq1','sa2_par_b3','sa2_par_b4','sa2_par_bq2','sa2_par_b5','sa2_par_b6','sa2_par_bq3','sa2_par_bpu','sa2_geom_ex','jb2g_aex_b1','jb2g_aex_b2','jb2g_aex_bq1','jb2g_aex_b3','jb2g_aex_b4','jb2g_aex_b5','jb2g_aex_bq2','jb2g_lnt_b1','jb2g_lnt_b2','jb2g_lnt_bq1','jb2g_lnt_b3','jb2g_lnt_b4','jb2g_lnt_b5','jb2g_lnt_bq2','jb2g_rep_b1','jb2g_rep_b2','jb2g_rep_bq1','jb2g_rep_b3','jb2g_rep_b4','jb2g_rep_b5','jb2g_rep_bq2'],
       '3':['trigo','trigvf','sg3m_b1','sg3m_b2','sg3m_bq1','sg3m_b3','sg3m_b4','sg3m_bq2','sg3m_b5','sg3m_b6','sg3m_bq3','sg3m_b7','sg3m_b8','sg3m_b9','sg3m_bq4','sg3m2_b1','sg3m2_b2','sg3m2_b3','sg3m2_bq1','sg3m2_b4','sg3m2_b5','sg3m2_b6','sg3m2_bq2','svr3ar_b1','svr3ar_b2','svr3ar_b3','svr3ar_bq1','svr3ar_b4','svr3ar_b5','svr3ar_b6','svr3ar_bq2','svr3ar2_b1','svr3ar2_b2','svr3ar2_b3','svr3ar2_bq1','svr3ar2_b4','svr3ar2_b5','svr3ar2_b6','svr3ar2_bq2'], '4':[], '5':['hca5_pot_b1','hca5_pot_b2','hca5_pot_b3','hca5_pot_bq1','hca5_pot_b4','hca5_pot_b5','hca5_pot_bq2','hca5_mpl_b1','hca5_mpl_b2','hca5_mpl_bq1','hca5_mpl_b3','hca5_mpl_b4','hca5_mpl_bq2','hca5_dvs_b1','hca5_dvs_b2','hca5_dvs_bq1','hca5_dvs_b3','hca5_dvs_b4','hca5_dvs_bq2','hca5_mul_b1','hca5_mul_b2','hca5_mul_bq1','hca5_mul_b3','hca5_mul_bq2','hca5_div_b1','hca5_div_b2','hca5_div_bq1','hca5_div_b3','hca5_div_bq2','hca5_ec_b1','hca5_ec_b2','hca5_ec_bq1','hca5_ec_b3','hca5_ec_b4','hca5_ec_bq2','hca5_hom_b1','hca5_hom_b2','hca5_hom_bq1','hca5_hom_b3','hca5_hom_b4','hca5_hom_bq2','hca5_het_b1','hca5_het_b2','hca5_het_bq1','hca5_het_b3','hca5_het_b4','hca5_het_bq2','hca9_b1','hca9_b2','hca9_b3','hca9_bq1','hca9_b4','hca9_b5','hca9_b6','hca9_bq2','snb5_nr_b1','snb5_nr_b2','snb5_nr_b3','snb5_nr_bq1','snb5_nr_b4','snb5_nr_b5','snb5_nr_bq2','snb5_nr_ex','snb5_il_b1','snb5_il_b2','snb5_il_bq1','snb5_il_b3','snb5_il_b4','snb5_il_bq2','snb5_il_ex','snb5_ic_b1','snb5_ic_b2','snb5_ic_bq1','snb5_ic_b3','snb5_ic_b4','snb5_ic_bq2','snb5_ic_ex','snb5_tr_b1','snb5_tr_b2','snb5_tr_bq1','snb5_tr_b3','snb5_tr_b4','snb5_tr_bq2','snb5_tr_ex','snb5_to_b1','snb5_to_b2','snb5_to_bq1','snb5_to_b3','snb5_to_bq2','snb5_to_ex','snb5_circ_b1','snb5_circ_b2','snb5_circ_bq1','snb5_circ_b3','snb5_circ_b4','snb5_circ_bq2','snb5_circ_ex','snb5_trig_b1','snb5_trig_b2','snb5_trig_bq1','snb5_trig_b3','snb5_trig_b4','snb5_trig_b5','snb5_trig_b6','snb5_trig_bq2','snb5_trig_ex','snb5_est_b1','snb5_est_b2','snb5_est_bq1','snb5_est_b3','snb5_est_b4','snb5_est_bq2','snb5_est_ex','inn5m_np_b1','inn5m_np_b2','inn5m_np_bq1','inn5m_np_b3','inn5m_np_b4','inn5m_np_b5','inn5m_np_bq2','inn5m_dv_b1','inn5m_dv_b2','inn5m_dv_bq1','inn5m_dv_b3','inn5m_dv_b4','inn5m_dv_b5','inn5m_dv_bq2','inn5m_ecu_b1','inn5m_ecu_b2','inn5m_ecu_bq1','inn5m_ecu_b3','inn5m_ecu_b4','inn5m_ecu_bq2','inn5m_ine_b1','inn5m_ine_b2','inn5m_ine_bq1','inn5m_ine_b3','inn5m_ine_b4','inn5m_ine_bq2'] },
     areas:[
@@ -11051,6 +11051,237 @@ function _genOl1gTra_BPU(){return _bqSrcPick(['ol1g_tra_b1','ol1g_tra_b2','ol1g_
 _SKILL_META['ol1g_tra_bpu']={ico:'⚡',lbl:'Examen – Trapecio',qCount:35,gen:_genOl1gTra_BPU,quiz:true,srcKeys:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_b6','ol1g_tra_b7']};
 
 
+
+// ══ Geometría 1° Secundaria – Saco Oliveros: Paralelogramos (ol1g_par) ═════════
+// Unidad 02 · 6 habilidades · 3 grupos · 3 BQs (+ examen automático ★)
+
+// SVG: romboide (A abajo-izq, B arriba-izq, C arriba-der, D abajo-der), rombo y cuadrado.
+var _ol1pS=(function(){
+  var T=function(x,y,s,c,sz){return '<text x="'+x+'" y="'+y+'" font-size="'+(sz||12)+'" fill="'+(c||'#e2e8f0')+'" font-weight="700" text-anchor="middle">'+s+'</text>';};
+  var W=function(vb,inner){return '<svg viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;margin:4px auto;display:block">'+inner+'</svg>';};
+  var Y='#f59e0b', G='#34d399', R='#f87171';
+  // L: {v:[A,B,C,D] nombres, AB,BC,CD,AD lados, a,b,c,d ángulos, diag:true, AO,OC,BO,OD, alt:'BE', bis:true}
+  function rom(L){L=L||{};var v=L.v||['A','B','C','D'];
+    var s='<polygon points="25,105 65,25 205,25 165,105" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="2"/>';
+    s+=T(14,114,v[0])+T(58,18,v[1])+T(214,22,v[2])+T(174,118,v[3]);
+    if(L.diag){s+='<line x1="25" y1="105" x2="205" y2="25" stroke="'+G+'" stroke-width="1.5"/><line x1="65" y1="25" x2="165" y2="105" stroke="'+G+'" stroke-width="1.5"/>'+T(115,80,'O',G,11);
+      if(L.AO)s+=T(60,84,L.AO,Y,11); if(L.OC)s+=T(168,42,L.OC,Y,11); if(L.BO)s+=T(80,56,L.BO,Y,11); if(L.OD)s+=T(152,80,L.OD,Y,11);}
+    if(L.alt){s+='<line x1="65" y1="25" x2="65" y2="105" stroke="'+Y+'" stroke-width="1.5" stroke-dasharray="4,3"/><rect x="65" y="97" width="8" height="8" fill="none" stroke="'+Y+'" stroke-width="1.2"/>'+T(65,120,'E',Y,11);}
+    if(L.bis){s+='<line x1="25" y1="105" x2="120" y2="25" stroke="'+G+'" stroke-width="1.5"/>'+T(120,18,'E',G,11);}
+    if(L.AB)s+=T(32,64,L.AB,Y,11); if(L.BC)s+=T(135,40,L.BC,Y,11); if(L.CD)s+=T(200,70,L.CD,Y,11); if(L.AD)s+=T(95,122,L.AD,Y,11);
+    if(L.a)s+=T(52,100,L.a,R,11); if(L.b)s+=T(76,42,L.b,R,11); if(L.c)s+=T(186,38,L.c,R,11); if(L.d)s+=T(150,100,L.d,R,11);
+    return W('0 0 230 128',s);}
+  // Rombo: A izq, B arriba, C der, D abajo. L: {AB,BC, ang:'37°', AC,BD (texto), diag:true}
+  function rmb(L){L=L||{};
+    var s='<polygon points="20,70 115,15 210,70 115,125" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="2"/>';
+    s+=T(10,74,'A')+T(115,11,'B')+T(221,74,'C')+T(115,138,'D');
+    if(L.diag){s+='<line x1="20" y1="70" x2="210" y2="70" stroke="'+G+'" stroke-width="1.5"/><line x1="115" y1="15" x2="115" y2="125" stroke="'+G+'" stroke-width="1.5"/><rect x="115" y="62" width="8" height="8" fill="none" stroke="'+G+'" stroke-width="1.2"/>'+T(108,84,'O',G,11);}
+    if(L.AB)s+=T(56,36,L.AB,Y,11); if(L.BC)s+=T(174,36,L.BC,Y,11);
+    if(L.ang)s+=T(52,66,L.ang,R,11);
+    return W('0 0 230 142',s);}
+  // Cuadrado: A abajo-izq, B arriba-izq, C arriba-der, D abajo-der. L: {AD,CD, e37:true, CE}
+  function cua(L){L=L||{};
+    var s='<polygon points="40,110 40,20 130,20 130,110" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="2"/>';
+    s+=T(30,122,'A')+T(30,18,'B')+T(140,18,'C')+T(140,122,'D');
+    if(L.AD)s+=T(85,126,L.AD,Y,11); if(L.CD)s+=T(152,70,L.CD,Y,11);
+    if(L.e37){s+='<line x1="40" y1="110" x2="130" y2="42" stroke="'+G+'" stroke-width="1.5"/>'+T(141,46,'E',G,11)+T(66,104,'37°',R,10); if(L.CE)s+=T(152,33,L.CE,Y,10);}
+    return W('0 0 170 130',s);}
+  return {rom:rom,rmb:rmb,cua:cua};
+}());
+function _ol1pQ(img,txt){return '<div style="text-align:center">'+img+'<div style="font-size:14px;margin-top:4px">'+txt+'</div></div>';}
+var _ol1pVF=['Verdadero','Falso'];
+
+// ── B1 📐 Clasificación de paralelogramos ────────────────────────────────────
+// P1(1-4): V/F cuadrado | P2(5-8): V/F rombo | P3(9-12): V/F rectángulo
+// P4(13-16): V/F romboide | P5(17-20): Completar enunciados
+function _genOl1gPar_B1(){var sh=_i4gshuf;return _i4gpick([
+  {_id:1,q:'Verdadero o falso: En un cuadrado sus cuatro lados son de igual longitud y sus cuatro ángulos son rectos.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Por definición, el cuadrado tiene 4 lados iguales y 4 ángulos de 90°.'},
+  {_id:2,q:'Verdadero o falso: Un cuadrado puede tener un ángulo de 100°.',a:'Falso',opts:sh(_ol1pVF),mc:true,ste:'Los cuatro ángulos de un cuadrado miden 90°, ninguno puede medir 100°.'},
+  {_id:3,q:'Verdadero o falso: En un cuadrado las diagonales son iguales y perpendiculares.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'El cuadrado es a la vez rectángulo (diagonales iguales) y rombo (diagonales perpendiculares).'},
+  {_id:4,q:'Verdadero o falso: Todo cuadrado es también un rombo.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'El cuadrado tiene sus 4 lados iguales, que es la condición del rombo.'},
+  {_id:5,q:'Verdadero o falso: En un rombo sus cuatro lados tienen igual longitud.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Por definición, el rombo tiene sus 4 lados de igual longitud.'},
+  {_id:6,q:'Verdadero o falso: En un rombo los cuatro ángulos siempre son rectos.',a:'Falso',opts:sh(_ol1pVF),mc:true,ste:'En el rombo los ángulos opuestos son iguales, pero no tienen que medir 90°. Solo el cuadrado los tiene rectos.'},
+  {_id:7,q:'Verdadero o falso: En un rombo las diagonales son perpendiculares.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Las diagonales del rombo se cortan formando ángulos de 90°.'},
+  {_id:8,q:'Verdadero o falso: Si un lado de un rombo mide 7 cm, su perímetro es 28 cm.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Los 4 lados son iguales: 4 × 7 = 28 cm.'},
+  {_id:9,q:'Verdadero o falso: En un rectángulo sus cuatro ángulos son rectos.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Por definición, el rectángulo tiene sus 4 ángulos de 90°.'},
+  {_id:10,q:'Verdadero o falso: En un rectángulo sus cuatro lados siempre son iguales.',a:'Falso',opts:sh(_ol1pVF),mc:true,ste:'En el rectángulo solo los lados opuestos son iguales (largo y ancho). Si los 4 fueran iguales sería un cuadrado.'},
+  {_id:11,q:'Verdadero o falso: En un rectángulo las diagonales tienen igual longitud.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Las dos diagonales del rectángulo son iguales.'},
+  {_id:12,q:'Verdadero o falso: En un rectángulo los lados opuestos tienen igual longitud.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'Como todo paralelogramo, el rectángulo tiene sus lados opuestos iguales.'},
+  {_id:13,q:'Verdadero o falso: En un romboide sus lados opuestos tienen igual longitud.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'En el romboide los lados opuestos son iguales y paralelos.'},
+  {_id:14,q:'Verdadero o falso: En un romboide sus ángulos opuestos son iguales.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'En todo paralelogramo los ángulos opuestos miden lo mismo.'},
+  {_id:15,q:'Verdadero o falso: En un romboide sus cuatro ángulos son rectos.',a:'Falso',opts:sh(_ol1pVF),mc:true,ste:'El romboide tiene dos ángulos agudos y dos obtusos. Con 4 ángulos rectos sería un rectángulo.'},
+  {_id:16,q:'Verdadero o falso: En un romboide dos ángulos consecutivos suman 180°.',a:'Verdadero',opts:sh(_ol1pVF),mc:true,ste:'En todo paralelogramo los ángulos consecutivos son suplementarios: suman 180°.'},
+  {_id:17,q:'Completa: En un romboide sus lados opuestos son ______.',a:'iguales y paralelos',opts:sh(['iguales y paralelos','perpendiculares','todos iguales','desiguales']),mc:true,ste:'En el romboide los lados opuestos son iguales y paralelos.'},
+  {_id:18,q:'Completa: En un cuadrado sus cuatro lados son ______ y sus cuatro ángulos son ______.',a:'iguales; rectos',opts:sh(['iguales; rectos','iguales; agudos','distintos; rectos','paralelos; obtusos']),mc:true,ste:'El cuadrado tiene 4 lados iguales y 4 ángulos rectos.'},
+  {_id:19,q:'Completa: En un rombo sus cuatro lados son ______.',a:'iguales',opts:sh(['iguales','rectos','distintos','perpendiculares']),mc:true,ste:'El rombo tiene sus 4 lados iguales.'},
+  {_id:20,q:'Completa: En un rectángulo sus cuatro ángulos son ______.',a:'rectos (90°)',opts:sh(['rectos (90°)','agudos','obtusos','llanos (180°)']),mc:true,ste:'El rectángulo tiene sus 4 ángulos rectos, de 90° cada uno.'}
+]);}
+_SKILL_META['ol1g_par_b1']={ico:'📐',lbl:'Clasificación de paralelogramos',qCount:4,gen:_genOl1gPar_B1,plantillas:['V/F sobre el cuadrado','V/F sobre el rombo','V/F sobre el rectángulo','V/F sobre el romboide','Completar enunciados']};
+
+// ── B2 🖼 Ángulos del romboide ────────────────────────────────────────────────
+// P1(1-4): Consecutivos suplementarios (3β+6β), hallar ∠A | P2(5-8): Consecutivos 5φ y 7φ, hallar el opuesto x
+// P3(9-12): Altura BE: ∠ABE y ∠C | P4(13-16): Ángulos opuestos iguales con expresiones
+// P5(17-20): Ángulos consecutivos en razón dada
+function _genOl1gPar_B2(){var sh=_i4gshuf,S=_ol1pS.rom;
+  var p1=function(c,d){return _ol1pQ(S({a:'x',c:c,d:d}),'ABCD es un romboide. Halla el valor de x.');};
+  var p2=function(a,d){return _ol1pQ(S({a:a,d:d,b:'x'}),'ABCD es un romboide. Halla el valor de x.');};
+  var p3=function(b,c){return _ol1pQ(S({alt:1,b:b,c:c}),'ABCD es un romboide y BE es altura (BE ⊥ AD). Halla el valor de x.');};
+  return _i4gpick([
+  {_id:1,q:p1('3β','6β'),a:'60°',opts:sh(['60°','120°','20°','40°']),mc:true,ste:'∠C y ∠D son consecutivos: 3β + 6β = 180° → β = 20°. ∠A es opuesto a ∠C: x = 3β = 60°.'},
+  {_id:2,q:p1('2β','7β'),a:'40°',opts:sh(['40°','140°','20°','60°']),mc:true,ste:'2β + 7β = 180° → β = 20°. x = ∠C = 2β = 40°.'},
+  {_id:3,q:p1('4β','5β'),a:'80°',opts:sh(['80°','100°','20°','40°']),mc:true,ste:'4β + 5β = 180° → β = 20°. x = ∠C = 4β = 80°.'},
+  {_id:4,q:p1('β','5β'),a:'30°',opts:sh(['30°','150°','60°','36°']),mc:true,ste:'β + 5β = 180° → β = 30°. x = ∠C = β = 30°.'},
+  {_id:5,q:p2('5φ','7φ'),a:'105°',opts:sh(['105°','75°','15°','90°']),mc:true,ste:'∠A y ∠D son consecutivos: 5φ + 7φ = 180° → φ = 15°. ∠B es opuesto a ∠D: x = 7φ = 105°.'},
+  {_id:6,q:p2('4φ','5φ'),a:'100°',opts:sh(['100°','80°','20°','90°']),mc:true,ste:'4φ + 5φ = 180° → φ = 20°. x = ∠D = 5φ = 100°.'},
+  {_id:7,q:p2('2φ','3φ'),a:'108°',opts:sh(['108°','72°','36°','90°']),mc:true,ste:'2φ + 3φ = 180° → φ = 36°. x = ∠D = 3φ = 108°.'},
+  {_id:8,q:p2('7φ','8φ'),a:'96°',opts:sh(['96°','84°','12°','105°']),mc:true,ste:'7φ + 8φ = 180° → φ = 12°. x = ∠D = 8φ = 96°.'},
+  {_id:9,q:p3('3x','7x'),a:'9°',opts:sh(['9°','10°','12°','8°']),mc:true,ste:'En el triángulo rectángulo ABE: ∠A = 90° − 3x. Como ∠A = ∠C: 90° − 3x = 7x → 10x = 90° → x = 9°.'},
+  {_id:10,q:p3('x','5x'),a:'15°',opts:sh(['15°','18°','12°','10°']),mc:true,ste:'∠A = 90° − x y ∠A = ∠C: 90° − x = 5x → 6x = 90° → x = 15°.'},
+  {_id:11,q:p3('4x','11x'),a:'6°',opts:sh(['6°','9°','12°','15°']),mc:true,ste:'∠A = 90° − 4x = ∠C = 11x → 15x = 90° → x = 6°.'},
+  {_id:12,q:p3('x+10°','2x+20°'),a:'20°',opts:sh(['20°','25°','30°','15°']),mc:true,ste:'∠A = 90° − (x + 10°) = 80° − x. Como ∠A = ∠C: 80° − x = 2x + 20° → 3x = 60° → x = 20°.'},
+  {_id:13,q:'En el romboide ABCD, ∠A = 2x + 10° y ∠C = 70°. Halla x.',a:'30°',opts:sh(['30°','35°','40°','25°']),mc:true,ste:'Los ángulos opuestos son iguales: 2x + 10° = 70° → 2x = 60° → x = 30°.'},
+  {_id:14,q:'En el romboide ABCD, ∠B = 3x − 15° y ∠D = 120°. Halla x.',a:'45°',opts:sh(['45°','35°','40°','50°']),mc:true,ste:'∠B = ∠D: 3x − 15° = 120° → 3x = 135° → x = 45°.'},
+  {_id:15,q:'En el romboide ABCD, ∠A = 5x y ∠C = 3x + 40°. Halla la medida de ∠A.',a:'100°',opts:sh(['100°','80°','20°','60°']),mc:true,ste:'∠A = ∠C: 5x = 3x + 40° → x = 20°. ∠A = 5(20°) = 100°.'},
+  {_id:16,q:'En el romboide ABCD, ∠B = 4x + 12° y ∠D = 6x − 18°. Halla la medida de ∠B.',a:'72°',opts:sh(['72°','108°','15°','90°']),mc:true,ste:'∠B = ∠D: 4x + 12° = 6x − 18° → 2x = 30° → x = 15°. ∠B = 4(15°) + 12° = 72°.'},
+  {_id:17,q:'Dos ángulos consecutivos de un romboide están en la razón 2 : 3. Halla el ángulo mayor.',a:'108°',opts:sh(['108°','72°','36°','120°']),mc:true,ste:'2k + 3k = 180° → k = 36°. El mayor es 3k = 108°.'},
+  {_id:18,q:'Dos ángulos consecutivos de un romboide están en la razón 1 : 2. Halla el ángulo menor.',a:'60°',opts:sh(['60°','120°','30°','90°']),mc:true,ste:'k + 2k = 180° → k = 60°. El menor mide 60°.'},
+  {_id:19,q:'Dos ángulos consecutivos de un romboide están en la razón 4 : 5. Halla el ángulo mayor.',a:'100°',opts:sh(['100°','80°','20°','120°']),mc:true,ste:'4k + 5k = 180° → k = 20°. El mayor es 5k = 100°.'},
+  {_id:20,q:'En un romboide, un ángulo mide 40° más que su ángulo consecutivo. Halla el ángulo mayor.',a:'110°',opts:sh(['110°','70°','140°','100°']),mc:true,ste:'x + (x + 40°) = 180° → 2x = 140° → x = 70°. El mayor mide 70° + 40° = 110°.'}
+]);}
+_SKILL_META['ol1g_par_b2']={ico:'🖼',lbl:'Ángulos del romboide',qCount:4,gen:_genOl1gPar_B2,plantillas:['Ángulos consecutivos suplementarios: hallar ∠A','Ángulos consecutivos: hallar el ángulo opuesto x','Altura BE: ∠ABE y ∠C','Ángulos opuestos iguales con expresiones','Ángulos consecutivos en razón dada']};
+
+function _genOl1gPar_BQ1(){return _bqSrcPick(['ol1g_par_b1','ol1g_par_b2'],[_genOl1gPar_B1,_genOl1gPar_B2]);}
+_SKILL_META['ol1g_par_bq1']={ico:'⚡',lbl:'Cuestionario 1 – Clasificación y ángulos',qCount:10,gen:_genOl1gPar_BQ1,quiz:true,srcKeys:['ol1g_par_b1','ol1g_par_b2']};
+
+// ── B3 🖼 Lados opuestos y bisectriz ──────────────────────────────────────────
+// P1(1-4): Lado opuesto con expresión (hallar y) | P2(5-8): Dos pares de lados (hallar x)
+// P3(9-12): Paralelogramo PQRS (hallar b) | P4(13-16): Bisectriz → triángulo isósceles (CE)
+// P5(17-20): Perímetro del romboide
+function _genOl1gPar_B3(){var sh=_i4gshuf,S=_ol1pS.rom;
+  var p1=function(ab,cd){return _ol1pQ(S({AB:ab,CD:cd}),'ABCD es un romboide. Halla el valor de y.');};
+  var p2=function(ab,bc,cd,ad){return _ol1pQ(S({AB:ab,BC:bc,CD:cd,AD:ad}),'ABCD es un romboide. Halla el valor de x.');};
+  var p3=function(pq,qr,rs,ps){return _ol1pQ(S({v:['P','Q','R','S'],AB:pq,BC:qr,CD:rs,AD:ps}),'PQRS es un paralelogramo. Halla el valor de b.');};
+  var p4=function(bc,cd){return _ol1pQ(S({bis:1,a:'α α',BC:bc,CD:cd}),'ABCD es un romboide y AE es bisectriz del ángulo A. Halla CE.');};
+  return _i4gpick([
+  {_id:1,q:p1('6','3y'),a:'2',opts:sh(['2','3','6','18']),mc:true,ste:'Lados opuestos iguales: CD = AB → 3y = 6 → y = 2.'},
+  {_id:2,q:p1('10','2y'),a:'5',opts:sh(['5','10','20','8']),mc:true,ste:'CD = AB → 2y = 10 → y = 5.'},
+  {_id:3,q:p1('12','4y'),a:'3',opts:sh(['3','4','8','48']),mc:true,ste:'CD = AB → 4y = 12 → y = 3.'},
+  {_id:4,q:p1('15','3y + 3'),a:'4',opts:sh(['4','5','6','3']),mc:true,ste:'CD = AB → 3y + 3 = 15 → 3y = 12 → y = 4.'},
+  {_id:5,q:p2('6','11','3y','x + y'),a:'9',opts:sh(['9','11','2','7']),mc:true,ste:'CD = AB → 3y = 6 → y = 2. AD = BC → x + y = 11 → x = 9.'},
+  {_id:6,q:p2('8','13','4y','x + y'),a:'11',opts:sh(['11','13','2','9']),mc:true,ste:'4y = 8 → y = 2. x + y = 13 → x = 11.'},
+  {_id:7,q:p2('9','15','3y','x + y'),a:'12',opts:sh(['12','15','3','9']),mc:true,ste:'3y = 9 → y = 3. x + y = 15 → x = 12.'},
+  {_id:8,q:p2('10','17','5y','x + 2y'),a:'13',opts:sh(['13','17','2','15']),mc:true,ste:'5y = 10 → y = 2. x + 2y = 17 → x + 4 = 17 → x = 13.'},
+  {_id:9,q:p3('2a','a + b','8','9'),a:'5',opts:sh(['5','4','9','1']),mc:true,ste:'PQ = RS → 2a = 8 → a = 4. QR = PS → a + b = 9 → b = 5.'},
+  {_id:10,q:p3('3a','a + b','12','10'),a:'6',opts:sh(['6','4','10','2']),mc:true,ste:'3a = 12 → a = 4. a + b = 10 → b = 6.'},
+  {_id:11,q:p3('2a','a + 2b','14','15'),a:'4',opts:sh(['4','7','8','3']),mc:true,ste:'2a = 14 → a = 7. a + 2b = 15 → 2b = 8 → b = 4.'},
+  {_id:12,q:p3('a + 3','2b','10','a + 5'),a:'6',opts:sh(['6','7','12','5']),mc:true,ste:'a + 3 = 10 → a = 7. QR = PS → 2b = a + 5 = 12 → b = 6.'},
+  {_id:13,q:p4('11','5'),a:'6',opts:sh(['6','5','11','16']),mc:true,ste:'Como AE es bisectriz y BC // AD, ∠BEA = ∠EAD = α: el triángulo ABE es isósceles y BE = AB = CD = 5. CE = BC − BE = 11 − 5 = 6.'},
+  {_id:14,q:p4('14','6'),a:'8',opts:sh(['8','6','14','20']),mc:true,ste:'Triángulo ABE isósceles: BE = AB = CD = 6. CE = 14 − 6 = 8.'},
+  {_id:15,q:p4('18','7'),a:'11',opts:sh(['11','7','18','25']),mc:true,ste:'BE = AB = CD = 7. CE = 18 − 7 = 11.'},
+  {_id:16,q:'En el romboide ABCD, la bisectriz del ángulo A corta a BC en E. Si BE = 9 y EC = 4, halla el perímetro del romboide.',a:'44',opts:sh(['44','26','36','52']),mc:true,ste:'Triángulo ABE isósceles: AB = BE = 9. BC = 9 + 4 = 13. Perímetro = 2(9 + 13) = 44.'},
+  {_id:17,q:'En el romboide ABCD, AB = x + 2, CD = 7 y BC = 2x + 1. Halla el perímetro.',a:'36',opts:sh(['36','18','28','40']),mc:true,ste:'AB = CD → x + 2 = 7 → x = 5. BC = 11. Perímetro = 2(7 + 11) = 36.'},
+  {_id:18,q:'En el romboide ABCD, AB = 2x, CD = 10 y AD = 3x + 4. Halla el perímetro.',a:'58',opts:sh(['58','29','48','62']),mc:true,ste:'2x = 10 → x = 5. AD = 19. Perímetro = 2(10 + 19) = 58.'},
+  {_id:19,q:'Un romboide tiene perímetro 40 cm y AB = 8 cm. Halla BC.',a:'12 cm',opts:sh(['12 cm','16 cm','24 cm','32 cm']),mc:true,ste:'2(AB + BC) = 40 → AB + BC = 20 → BC = 12 cm.'},
+  {_id:20,q:'Un romboide tiene perímetro 50 cm y BC mide 5 cm más que AB. Halla BC.',a:'15 cm',opts:sh(['15 cm','10 cm','20 cm','25 cm']),mc:true,ste:'2(AB + AB + 5) = 50 → 2AB + 5 = 25 → AB = 10. BC = 15 cm.'}
+]);}
+_SKILL_META['ol1g_par_b3']={ico:'🖼',lbl:'Lados opuestos y bisectriz',qCount:4,gen:_genOl1gPar_B3,plantillas:['Lado opuesto con expresión (hallar y)','Dos pares de lados (hallar x)','Paralelogramo PQRS (hallar b)','Bisectriz: triángulo isósceles (CE = BC − CD)','Perímetro del romboide']};
+
+// ── B4 🖼 Diagonales del paralelogramo ───────────────────────────────────────
+// P1(1-4): BO = OD | P2(5-8): AO = OC | P3(9-12): Hallar x + y
+// P4(13-16): Diagonal completa desde su mitad | P5(17-20): Razonamiento
+function _genOl1gPar_B4(){var sh=_i4gshuf,S=_ol1pS.rom;
+  var d=function(L,t){L.diag=1;return _ol1pQ(S(L),t);};
+  return _i4gpick([
+  {_id:1,q:d({BO:'2x',OD:'9'},'ABCD es un romboide. Halla x.'),a:'4,5',opts:sh(['4,5','9','18','3']),mc:true,ste:'Las diagonales se cortan en su punto medio: BO = OD → 2x = 9 → x = 4,5.'},
+  {_id:2,q:d({BO:'3x',OD:'12'},'ABCD es un romboide. Halla x.'),a:'4',opts:sh(['4','12','36','6']),mc:true,ste:'BO = OD → 3x = 12 → x = 4.'},
+  {_id:3,q:d({BO:'x + 5',OD:'13'},'ABCD es un romboide. Halla x.'),a:'8',opts:sh(['8','13','18','5']),mc:true,ste:'BO = OD → x + 5 = 13 → x = 8.'},
+  {_id:4,q:d({BO:'2x − 1',OD:'11'},'ABCD es un romboide. Halla x.'),a:'6',opts:sh(['6','5','11','12']),mc:true,ste:'BO = OD → 2x − 1 = 11 → 2x = 12 → x = 6.'},
+  {_id:5,q:d({AO:'4y',OC:'10'},'ABCD es un romboide. Halla y.'),a:'2,5',opts:sh(['2,5','10','40','5']),mc:true,ste:'AO = OC → 4y = 10 → y = 2,5.'},
+  {_id:6,q:d({AO:'5y',OC:'15'},'ABCD es un romboide. Halla y.'),a:'3',opts:sh(['3','15','5','10']),mc:true,ste:'AO = OC → 5y = 15 → y = 3.'},
+  {_id:7,q:d({AO:'y + 7',OC:'12'},'ABCD es un romboide. Halla y.'),a:'5',opts:sh(['5','12','19','7']),mc:true,ste:'AO = OC → y + 7 = 12 → y = 5.'},
+  {_id:8,q:d({AO:'3y − 2',OC:'16'},'ABCD es un romboide. Halla y.'),a:'6',opts:sh(['6','16','5','18']),mc:true,ste:'AO = OC → 3y − 2 = 16 → 3y = 18 → y = 6.'},
+  {_id:9,q:d({AO:'4y',OC:'10',BO:'2x',OD:'9'},'ABCD es un romboide. Calcula x + y.'),a:'7',opts:sh(['7','19','14','9']),mc:true,ste:'BO = OD → 2x = 9 → x = 4,5. AO = OC → 4y = 10 → y = 2,5. x + y = 7.'},
+  {_id:10,q:d({AO:'3x',OC:'15',BO:'2y',OD:'12'},'ABCD es un romboide. Calcula x + y.'),a:'11',opts:sh(['11','27','9','10']),mc:true,ste:'AO = OC → 3x = 15 → x = 5. BO = OD → 2y = 12 → y = 6. x + y = 11.'},
+  {_id:11,q:d({AO:'2x',OC:'8',BO:'3y',OD:'12'},'ABCD es un romboide. Calcula x + y.'),a:'8',opts:sh(['8','20','6','12']),mc:true,ste:'2x = 8 → x = 4. 3y = 12 → y = 4. x + y = 8.'},
+  {_id:12,q:d({AO:'x + 3',OC:'10',BO:'y − 2',OD:'6'},'ABCD es un romboide. Calcula x + y.'),a:'15',opts:sh(['15','16','13','17']),mc:true,ste:'x + 3 = 10 → x = 7. y − 2 = 6 → y = 8. x + y = 15.'},
+  {_id:13,q:'En el paralelogramo ABCD, las diagonales se cortan en O. Si AO = 7 cm, halla AC.',a:'14 cm',opts:sh(['14 cm','7 cm','21 cm','3,5 cm']),mc:true,ste:'O es punto medio de AC: AC = 2 · AO = 14 cm.'},
+  {_id:14,q:'En el paralelogramo ABCD, las diagonales se cortan en O. Si BD = 26 cm, halla BO.',a:'13 cm',opts:sh(['13 cm','26 cm','52 cm','6,5 cm']),mc:true,ste:'O es punto medio de BD: BO = 26 ÷ 2 = 13 cm.'},
+  {_id:15,q:'En el paralelogramo ABCD, AO = 2x + 1 y AC = 22. Halla x.',a:'5',opts:sh(['5','10','11','6']),mc:true,ste:'AO = AC ÷ 2 = 11 → 2x + 1 = 11 → x = 5.'},
+  {_id:16,q:'En el paralelogramo ABCD, BO = 3x y BD = 36. Halla x.',a:'6',opts:sh(['6','12','18','3']),mc:true,ste:'BO = 36 ÷ 2 = 18 → 3x = 18 → x = 6.'},
+  {_id:17,q:'En el paralelogramo ABCD, AC + BD = 40 cm y AO = 8 cm. Halla BO.',a:'12 cm',opts:sh(['12 cm','24 cm','16 cm','8 cm']),mc:true,ste:'AC = 2 · 8 = 16. BD = 40 − 16 = 24. BO = 24 ÷ 2 = 12 cm.'},
+  {_id:18,q:'En el paralelogramo ABCD, AO = BO + 3 y BD = 14 cm. Halla AC.',a:'20 cm',opts:sh(['20 cm','17 cm','10 cm','14 cm']),mc:true,ste:'BO = 7, AO = 7 + 3 = 10. AC = 2 · 10 = 20 cm.'},
+  {_id:19,q:'En el paralelogramo ABCD, AO = 2x y OC = x + 6. Halla AC.',a:'24',opts:sh(['24','12','6','18']),mc:true,ste:'AO = OC → 2x = x + 6 → x = 6. AO = 12 → AC = 24.'},
+  {_id:20,q:'En el paralelogramo ABCD, BO = 3x − 4 y OD = x + 8. Halla BD.',a:'28',opts:sh(['28','14','6','20']),mc:true,ste:'3x − 4 = x + 8 → 2x = 12 → x = 6. BO = 14 → BD = 28.'}
+]);}
+_SKILL_META['ol1g_par_b4']={ico:'🖼',lbl:'Diagonales del paralelogramo',qCount:4,gen:_genOl1gPar_B4,plantillas:['BO = OD (hallar x)','AO = OC (hallar y)','Hallar x + y con ambas diagonales','Diagonal completa desde su mitad','Razonamiento con diagonales']};
+
+function _genOl1gPar_BQ2(){return _bqSrcPick(['ol1g_par_b3','ol1g_par_b4'],[_genOl1gPar_B3,_genOl1gPar_B4]);}
+_SKILL_META['ol1g_par_bq2']={ico:'⚡',lbl:'Cuestionario 2 – Lados y diagonales',qCount:10,gen:_genOl1gPar_BQ2,quiz:true,srcKeys:['ol1g_par_b3','ol1g_par_b4']};
+
+// ── B5 🖼 El rombo ─────────────────────────────────────────────────────────────
+// P1(1-4): Lados iguales con expresiones → perímetro | P2(5-8): 37° y BD → AC
+// P3(9-12): 30° y AC → BD | P4(13-16): Diagonales dadas → lado/perímetro (3-4-5)
+// P5(17-20): Ángulo notable y una diagonal → lado
+function _genOl1gPar_B5(){var sh=_i4gshuf,S=_ol1pS.rmb;
+  var p1=function(ab,bc){return _ol1pQ(S({AB:ab,BC:bc}),'ABCD es un rombo. Calcula su perímetro.');};
+  var pa=function(ang,t){return _ol1pQ(S({diag:1,ang:ang}),t);};
+  return _i4gpick([
+  {_id:1,q:p1('3a','8 − a'),a:'24 u',opts:sh(['24 u','6 u','16 u','28 u']),mc:true,ste:'Lados iguales: 3a = 8 − a → 4a = 8 → a = 2. Lado = 6. Perímetro = 4 · 6 = 24 u.'},
+  {_id:2,q:p1('2a','12 − a'),a:'32 u',opts:sh(['32 u','8 u','24 u','16 u']),mc:true,ste:'2a = 12 − a → a = 4. Lado = 8. Perímetro = 32 u.'},
+  {_id:3,q:p1('4a','15 − a'),a:'48 u',opts:sh(['48 u','12 u','36 u','60 u']),mc:true,ste:'4a = 15 − a → a = 3. Lado = 12. Perímetro = 48 u.'},
+  {_id:4,q:p1('a + 5','2a + 1'),a:'36 u',opts:sh(['36 u','9 u','27 u','40 u']),mc:true,ste:'a + 5 = 2a + 1 → a = 4. Lado = 9. Perímetro = 36 u.'},
+  {_id:5,q:pa('37°','ABCD es un rombo y BD = 18 cm. Calcula AC.'),a:'24 cm',opts:sh(['24 cm','12 cm','18 cm','30 cm']),mc:true,ste:'Las diagonales son perpendiculares y se bisecan. En el triángulo AOB (37° y 53°): BO = 3k = 9 → k = 3, AO = 4k = 12. AC = 24 cm.'},
+  {_id:6,q:pa('37°','ABCD es un rombo y BD = 12 cm. Calcula AC.'),a:'16 cm',opts:sh(['16 cm','8 cm','12 cm','20 cm']),mc:true,ste:'BO = 6 = 3k → k = 2. AO = 4k = 8. AC = 16 cm.'},
+  {_id:7,q:pa('37°','ABCD es un rombo y BD = 24 cm. Calcula AC.'),a:'32 cm',opts:sh(['32 cm','16 cm','24 cm','40 cm']),mc:true,ste:'BO = 12 = 3k → k = 4. AO = 16. AC = 32 cm.'},
+  {_id:8,q:pa('37°','ABCD es un rombo y BD = 30 cm. Calcula AC.'),a:'40 cm',opts:sh(['40 cm','20 cm','30 cm','50 cm']),mc:true,ste:'BO = 15 = 3k → k = 5. AO = 20. AC = 40 cm.'},
+  {_id:9,q:pa('30°','ABCD es un rombo y AC = 6√3 cm. Calcula BD.'),a:'6 cm',opts:sh(['6 cm','3 cm','6√3 cm','12 cm']),mc:true,ste:'En el triángulo AOB (30° y 60°): AO = k√3 = 3√3 → k = 3. BO = k = 3. BD = 6 cm.'},
+  {_id:10,q:pa('30°','ABCD es un rombo y AC = 10√3 cm. Calcula BD.'),a:'10 cm',opts:sh(['10 cm','5 cm','10√3 cm','20 cm']),mc:true,ste:'AO = 5√3 = k√3 → k = 5. BO = 5. BD = 10 cm.'},
+  {_id:11,q:pa('30°','ABCD es un rombo y AC = 8√3 cm. Calcula BD.'),a:'8 cm',opts:sh(['8 cm','4 cm','8√3 cm','16 cm']),mc:true,ste:'AO = 4√3 → k = 4. BO = 4. BD = 8 cm.'},
+  {_id:12,q:pa('30°','ABCD es un rombo y BD = 14 cm. Calcula AC.'),a:'14√3 cm',opts:sh(['14√3 cm','7√3 cm','14 cm','28 cm']),mc:true,ste:'BO = 7 = k. AO = k√3 = 7√3. AC = 14√3 cm.'},
+  {_id:13,q:'Las diagonales de un rombo miden 6 cm y 8 cm. Halla el lado del rombo.',a:'5 cm',opts:sh(['5 cm','7 cm','10 cm','14 cm']),mc:true,ste:'Las mitades son 3 y 4, perpendiculares: forman un triángulo 3-4-5. Lado = 5 cm.'},
+  {_id:14,q:'Las diagonales de un rombo miden 12 cm y 16 cm. Halla su perímetro.',a:'40 cm',opts:sh(['40 cm','10 cm','28 cm','56 cm']),mc:true,ste:'Mitades 6 y 8 → lado 10 (triángulo 6-8-10). Perímetro = 4 · 10 = 40 cm.'},
+  {_id:15,q:'Las diagonales de un rombo miden 18 cm y 24 cm. Halla el lado del rombo.',a:'15 cm',opts:sh(['15 cm','21 cm','30 cm','42 cm']),mc:true,ste:'Mitades 9 y 12 → lado 15 (triángulo 9-12-15).'},
+  {_id:16,q:'Las diagonales de un rombo miden 24 cm y 32 cm. Halla su perímetro.',a:'80 cm',opts:sh(['80 cm','20 cm','56 cm','112 cm']),mc:true,ste:'Mitades 12 y 16 → lado 20. Perímetro = 4 · 20 = 80 cm.'},
+  {_id:17,q:pa('37°','ABCD es un rombo y BD = 18 cm. Halla el lado AB.'),a:'15 cm',opts:sh(['15 cm','12 cm','9 cm','18 cm']),mc:true,ste:'BO = 9 = 3k → k = 3. AB = 5k = 15 cm.'},
+  {_id:18,q:pa('37°','ABCD es un rombo y AC = 16 cm. Halla el lado AB.'),a:'10 cm',opts:sh(['10 cm','8 cm','6 cm','16 cm']),mc:true,ste:'AO = 8 = 4k → k = 2. AB = 5k = 10 cm.'},
+  {_id:19,q:pa('37°','ABCD es un rombo y BD = 6 cm. Halla su perímetro.'),a:'20 cm',opts:sh(['20 cm','5 cm','12 cm','16 cm']),mc:true,ste:'BO = 3 = 3k → k = 1. AB = 5. Perímetro = 4 · 5 = 20 cm.'},
+  {_id:20,q:pa('53°','ABCD es un rombo y AC = 12 cm. Halla el lado AB.'),a:'10 cm',opts:sh(['10 cm','8 cm','6 cm','12 cm']),mc:true,ste:'Con 53° en A: AO = 3k = 6 → k = 2 y BO = 4k = 8. AB = 5k = 10 cm.'}
+]);}
+_SKILL_META['ol1g_par_b5']={ico:'🖼',lbl:'El rombo',qCount:4,gen:_genOl1gPar_B5,plantillas:['Lados iguales con expresiones: perímetro','Ángulo de 37° y BD: hallar AC','Ángulo de 30° y AC: hallar BD','Diagonales dadas: lado o perímetro','Ángulo notable y una diagonal: hallar el lado']};
+
+// ── B6 📐 Rectángulo y cuadrado: perímetros ──────────────────────────────────
+// P1(1-4): Perímetro y relación largo/ancho → largo | P2(5-8): → ancho
+// P3(9-12): Cuadrado con lados en expresiones → perímetro | P4(13-16): Dos rectángulos con igual perímetro
+// P5(17-20): Cuadrado con segmento AE y ángulo de 37°
+function _genOl1gPar_B6(){var sh=_i4gshuf,S=_ol1pS.cua;
+  var p3=function(ad,cd){return _ol1pQ(S({AD:ad,CD:cd}),'ABCD es una región cuadrada. Calcula su perímetro.');};
+  var p5=function(ce,t){return _ol1pQ(S({e37:1,CE:ce}),t.replace('Calcula','Si CE = '+ce+', calcula'));};
+  return _i4gpick([
+  {_id:1,q:'El perímetro de una región rectangular es 30 m. Si el largo es el doble del ancho, calcula el largo.',a:'10 m',opts:sh(['10 m','5 m','15 m','20 m']),mc:true,ste:'Ancho = a, largo = 2a. 2(a + 2a) = 30 → 6a = 30 → a = 5. Largo = 10 m.'},
+  {_id:2,q:'El perímetro de un rectángulo es 36 m. Si el largo es el doble del ancho, calcula el largo.',a:'12 m',opts:sh(['12 m','6 m','18 m','24 m']),mc:true,ste:'6a = 36 → a = 6. Largo = 12 m.'},
+  {_id:3,q:'El perímetro de un rectángulo es 48 m. Si el largo es el triple del ancho, calcula el largo.',a:'18 m',opts:sh(['18 m','6 m','12 m','24 m']),mc:true,ste:'2(a + 3a) = 48 → 8a = 48 → a = 6. Largo = 18 m.'},
+  {_id:4,q:'El perímetro de un rectángulo es 50 m. Si el largo mide 5 m más que el ancho, calcula el largo.',a:'15 m',opts:sh(['15 m','10 m','20 m','25 m']),mc:true,ste:'2(a + a + 5) = 50 → 2a + 5 = 25 → a = 10. Largo = 15 m.'},
+  {_id:5,q:'El perímetro de un rectángulo es 40 m. Si el largo es el triple del ancho, calcula el ancho.',a:'5 m',opts:sh(['5 m','15 m','10 m','20 m']),mc:true,ste:'2(a + 3a) = 40 → 8a = 40 → a = 5 m.'},
+  {_id:6,q:'El perímetro de un rectángulo es 56 m. Si el largo es el triple del ancho, calcula el ancho.',a:'7 m',opts:sh(['7 m','21 m','14 m','28 m']),mc:true,ste:'8a = 56 → a = 7 m.'},
+  {_id:7,q:'El perímetro de un rectángulo es 24 m. Si el largo es el doble del ancho, calcula el ancho.',a:'4 m',opts:sh(['4 m','8 m','6 m','12 m']),mc:true,ste:'6a = 24 → a = 4 m.'},
+  {_id:8,q:'El perímetro de un rectángulo es 60 m. Si el largo es el cuádruple del ancho, calcula el ancho.',a:'6 m',opts:sh(['6 m','24 m','12 m','10 m']),mc:true,ste:'2(a + 4a) = 60 → 10a = 60 → a = 6 m.'},
+  {_id:9,q:p3('3a','8 − a'),a:'24',opts:sh(['24','6','16','36']),mc:true,ste:'Lados iguales: 3a = 8 − a → a = 2. Lado = 6. Perímetro = 4 · 6 = 24.'},
+  {_id:10,q:p3('2a','9 − a'),a:'24',opts:sh(['24','6','18','36']),mc:true,ste:'2a = 9 − a → a = 3. Lado = 6. Perímetro = 24.'},
+  {_id:11,q:p3('4a','10 − a'),a:'32',opts:sh(['32','8','20','64']),mc:true,ste:'4a = 10 − a → a = 2. Lado = 8. Perímetro = 32.'},
+  {_id:12,q:p3('5a','12 − a'),a:'40',opts:sh(['40','10','24','100']),mc:true,ste:'5a = 12 − a → a = 2. Lado = 10. Perímetro = 40.'},
+  {_id:13,q:'Dos terrenos son rectángulos: uno mide x m por 7 m y el otro 2x m por 4 m. Si tienen igual perímetro, halla x.',a:'3 m',opts:sh(['3 m','4 m','5 m','6 m']),mc:true,ste:'2(x + 7) = 2(2x + 4) → x + 7 = 2x + 4 → x = 3 m.'},
+  {_id:14,q:'Un rectángulo mide x m por 10 m y otro 2x m por 6 m. Si tienen igual perímetro, halla x.',a:'4 m',opts:sh(['4 m','6 m','2 m','10 m']),mc:true,ste:'x + 10 = 2x + 6 → x = 4 m.'},
+  {_id:15,q:'Un rectángulo mide (x + 2) m por 9 m y otro 3x m por 5 m. Si tienen igual perímetro, halla x.',a:'3 m',opts:sh(['3 m','2 m','4 m','6 m']),mc:true,ste:'x + 2 + 9 = 3x + 5 → x + 11 = 3x + 5 → 2x = 6 → x = 3 m.'},
+  {_id:16,q:'Un rectángulo mide x m por 12 m y otro 3x m por 4 m. Si tienen igual perímetro, calcula ese perímetro.',a:'32 m',opts:sh(['32 m','16 m','24 m','40 m']),mc:true,ste:'x + 12 = 3x + 4 → x = 4. Perímetro = 2(4 + 12) = 32 m.'},
+  {_id:17,q:p5('4 cm','ABCD es un cuadrado. Calcula AD.'),a:'16 cm',opts:sh(['16 cm','12 cm','20 cm','8 cm']),mc:true,ste:'En el triángulo ADE (37° y 53°): DE = 3k y AD = 4k. CE = CD − DE = 4k − 3k = k = 4. AD = 16 cm.'},
+  {_id:18,q:p5('3 cm','ABCD es un cuadrado. Calcula AD.'),a:'12 cm',opts:sh(['12 cm','9 cm','15 cm','6 cm']),mc:true,ste:'CE = 4k − 3k = k = 3. AD = 4k = 12 cm.'},
+  {_id:19,q:p5('5 cm','ABCD es un cuadrado. Calcula AD.'),a:'20 cm',opts:sh(['20 cm','15 cm','25 cm','10 cm']),mc:true,ste:'k = CE = 5. AD = 4k = 20 cm.'},
+  {_id:20,q:p5('2 cm','ABCD es un cuadrado. Calcula su perímetro.'),a:'32 cm',opts:sh(['32 cm','8 cm','24 cm','16 cm']),mc:true,ste:'k = CE = 2 → lado AD = 4k = 8. Perímetro = 4 · 8 = 32 cm.'}
+]);}
+_SKILL_META['ol1g_par_b6']={ico:'📐',lbl:'Rectángulo y cuadrado: perímetros',qCount:4,gen:_genOl1gPar_B6,plantillas:['Perímetro y relación largo/ancho: hallar el largo','Perímetro y relación largo/ancho: hallar el ancho','Cuadrado con lados en expresiones: perímetro','Dos rectángulos con igual perímetro','Cuadrado con segmento AE y ángulo de 37°']};
+
+function _genOl1gPar_BQ3(){return _bqSrcPick(['ol1g_par_b5','ol1g_par_b6'],[_genOl1gPar_B5,_genOl1gPar_B6]);}
+_SKILL_META['ol1g_par_bq3']={ico:'⚡',lbl:'Cuestionario 3 – Rombo, rectángulo y cuadrado',qCount:10,gen:_genOl1gPar_BQ3,quiz:true,srcKeys:['ol1g_par_b5','ol1g_par_b6']};
 
 // ══ Aritmética 1° Secundaria – Saco Oliveros (ol1ar) ═══════════════════════════
 // Unidad: Divisibilidad
@@ -21526,7 +21757,8 @@ const PREP_CURRICULUM = {
          {lbl:'Productos Notables I',            area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn1_b1','ol1a_pn1_b2','ol1a_pn1_bq1','ol1a_pn1_b3','ol1a_pn1_b4','ol1a_pn1_bq2','ol1a_pn1_b5','ol1a_pn1_b6','ol1a_pn1_bq3']},
          {lbl:'Productos Notables II',           area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn2_b1','ol1a_pn2_b2','ol1a_pn2_bq1','ol1a_pn2_b3','ol1a_pn2_b4','ol1a_pn2_bq2','ol1a_pn2_b5','ol1a_pn2_b6','ol1a_pn2_bq3']},
          {lbl:'Productos Notables III',          area:'algebra',    editorial:'saco_oliveros', skills:['ol1a_pn3_b1','ol1a_pn3_b2','ol1a_pn3_bq1','ol1a_pn3_b3','ol1a_pn3_b4','ol1a_pn3_bq2','ol1a_pn3_b5','ol1a_pn3_b6','ol1a_pn3_bq3']},
-         {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3','ol1g_tra_bpu']},
+         {lbl:'Trapecio',                        area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_tra_b1','ol1g_tra_b2','ol1g_tra_b3','ol1g_tra_bq1','ol1g_tra_b4','ol1g_tra_b5','ol1g_tra_bq2','ol1g_tra_b6','ol1g_tra_b7','ol1g_tra_bq3']},
+         {lbl:'Paralelogramos',                  area:'geometria',  editorial:'saco_oliveros', skills:['ol1g_par_b1','ol1g_par_b2','ol1g_par_bq1','ol1g_par_b3','ol1g_par_b4','ol1g_par_bq2','ol1g_par_b5','ol1g_par_b6','ol1g_par_bq3']},
          {lbl:'Divisibilidad',                   area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_div_b1','ol1ar_div_b2','ol1ar_div_bq1','ol1ar_div_b3','ol1ar_div_b4','ol1ar_div_bq2','ol1ar_div_b5','ol1ar_div_b6','ol1ar_div_bq3','ol1ar_div_bpu']},
          {lbl:'Criterios de Divisibilidad',        area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_crd_b1','ol1ar_crd_b2','ol1ar_crd_b3','ol1ar_crd_b4','ol1ar_crd_bq1','ol1ar_crd_b5','ol1ar_crd_b6','ol1ar_crd_b7','ol1ar_crd_bq2','ol1ar_crd_b8','ol1ar_crd_b9','ol1ar_crd_bq3','ol1ar_crd_bpu']},
          {lbl:'Clasificación NEP I',               area:'aritmetica',     editorial:'saco_oliveros', skills:['ol1ar_np_b1','ol1ar_np_b2','ol1ar_np_bq1','ol1ar_np_b3','ol1ar_np_b4','ol1ar_np_bq2','ol1ar_np_b5','ol1ar_np_b6','ol1ar_np_bq3','ol1ar_np_bpu']},
