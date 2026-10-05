@@ -1434,9 +1434,11 @@ function desconfirmarPagoClase(pid, weekKey, date) {
 
 // ── Ventana "Estado de clase" ─────────────────────────────
 var _estado = { pid: null, tab: 'done', sel: null, checks: {} };
-function openEstadoClase(pid) { _estado = { pid: pid, tab: 'done', sel: null, checks: {} }; _drawEstado(); }
+function openEstadoClase(pid) { _estado = { pid: pid, tab: 'done', sel: null, checks: {}, csel: {} }; _drawEstado(); }
 function closeEstadoClase() { var el = document.getElementById('estado-clase-popup'); if (el) el.remove(); }
-function estadoTab(t) { _estado.tab = t; _estado.sel = null; _estado.checks = {}; _drawEstado(); }
+function estadoTab(t) { _estado.tab = t; _estado.sel = null; _estado.checks = {}; _estado.csel = {}; _drawEstado(); }
+// Cancelar: se pueden marcar varias clases a la vez (casillas, como en "Clase dictada").
+function estadoCancelCheck(k, on) { _estado.csel = _estado.csel || {}; if (on) _estado.csel[k] = true; else delete _estado.csel[k]; _drawEstado(); }
 function estadoSel(k) { _estado.sel = k; var it = _itemByKey(k); _estado.dur = it ? (it.dur || 60) : 60; _drawEstado(); }
 function estadoCampo(c, v) { _estado[c] = v; }
 // Duración (min) de la clase nueva de una reprogramación; null si no se puede saber.
@@ -1466,20 +1468,24 @@ function _drawEstado() {
     // Se pueden cancelar las clases sin marcar y también las reprogramadas que al final no se dieron.
     // Si la clase ya está pagada, su monto queda como crédito a favor de la familia.
     var can = items.filter(function(it) { var e = _estadoDe(it); return !e || e.k === 'move'; });
-    var selIt = _estado.sel ? can.filter(function(it) { return it.ekey === _estado.sel; })[0] : null;
-    var selPag = selIt && _clasePagada(row.pid, wk, selIt) ? _montoClase(row, selIt) : 0;
+    var csel = _estado.csel || {};
+    var selIts = can.filter(function(it) { return csel[it.ekey]; });
+    var selPag = selIts.reduce(function(a, it) { return a + (_clasePagada(row.pid, wk, it) ? _montoClase(row, it) : 0); }, 0);
+    var nSel = selIts.length;
+    var cTxt = nSel <= 1 ? (selPag > 0 ? 'Cancelar y dejar S/. ' + selPag + ' a favor' : 'Cancelar esta clase')
+      : 'Cancelar ' + nSel + ' clases' + (selPag > 0 ? ' y dejar S/. ' + selPag + ' a favor' : '');
     right = '<div style="' + gf + 'font-size:15px;font-weight:700;margin-bottom:12px">Clase cancelada</div>'
       + (can.length ? can.map(function(it) {
           var e = _estadoDe(it), pag = _clasePagada(row.pid, wk, it);
           var lb = e && e.k === 'move'
             ? '<span style="flex:1;font-weight:600">' + _dmy(e.to.date) + ' · ' + e.to.start + '<span style="display:block;font-weight:500;font-size:11.5px;color:rgba(0,0,0,0.5)">reprogramada desde ' + _dmy(it.date) + '</span></span>'
             : lbl(it);
-          return line('<input type="radio" name="est-c" id="est-c-' + it.ekey.replace(/[^a-z0-9]/gi, '_') + '" ' + (_estado.sel === it.ekey ? 'checked ' : '') + 'onchange="estadoSel(\'' + it.ekey + '\')" style="margin:0;width:16px;height:16px">' + lb
+          return line('<input type="checkbox" id="est-c-' + it.ekey.replace(/[^a-z0-9]/gi, '_') + '" ' + (csel[it.ekey] ? 'checked ' : '') + 'onchange="estadoCancelCheck(\'' + it.ekey + '\',this.checked)" style="margin:0;width:16px;height:16px">' + lb
             + (pag ? '<span style="' + gf + 'font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;white-space:nowrap;background:rgba(25,110,56,0.09);color:#196e38">pagada</span>' : ''));
         }).join('') : '<div style="' + gf + 'font-size:13px;color:rgba(0,0,0,0.5);padding:4px 0 10px">No hay clases para cancelar.</div>')
-      + (selPag > 0 ? '<div style="' + gf + 'border:1px dashed #7A4DB8;background:rgba(122,77,184,0.08);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45;margin:4px 0 10px">Esta clase ya está pagada. Al cancelarla quedan <b style="color:#7A4DB8">S/. ' + selPag + ' a favor</b> de la familia, que se descuentan solos de su próxima semana con cobro.</div>' : '')
+      + (selPag > 0 ? '<div style="' + gf + 'border:1px dashed #7A4DB8;background:rgba(122,77,184,0.08);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45;margin:4px 0 10px">' + (nSel > 1 ? 'Hay clases ya pagadas. Al cancelarlas quedan' : 'Esta clase ya está pagada. Al cancelarla quedan') + ' <b style="color:#7A4DB8">S/. ' + selPag + ' a favor</b> de la familia, que se descuentan solos de su próxima semana con cobro.</div>' : '')
       + _cancelados(row).map(function(c) { var ce = DATA.clasesEstado[c.ekey] || {}; return line('<span style="flex:1;font-weight:600;text-decoration:line-through;color:rgba(0,0,0,0.45)">' + _dmy(c.date) + ' · ' + c.start + '</span>' + (ce.creditoId ? '<span style="' + gf + 'font-size:11px;font-weight:700;padding:2px 7px;border-radius:7px;background:rgba(122,77,184,0.10);color:#7A4DB8">crédito</span>' : '') + undo(c.ekey), 'background:rgba(0,0,0,0.03)'); }).join('')
-      + goBtn(selPag > 0 ? 'Cancelar y dejar S/. ' + selPag + ' a favor' : 'Cancelar esta clase', '#B3261E', 'estadoCancelar()', !!_estado.sel);
+      + goBtn(cTxt, '#B3261E', 'estadoCancelar()', nSel > 0);
   } else if (_estado.tab === 'done') {
     var list = items.filter(function(it) { var e = _estadoDe(it); return !e || e.k === 'done'; });
     right = '<div style="' + gf + 'font-size:15px;font-weight:700;margin-bottom:8px">Clase dictada</div>'
@@ -1538,9 +1544,21 @@ function estadoTodas() {
   _drawEstado();
 }
 function estadoCancelar() {
-  var it = _itemByKey(_estado.sel); if (!it) return;
-  var s = _sessById(it.sessId); if (!s) return;
+  var keys = Object.keys(_estado.csel || {});
+  if (!keys.length && _estado.sel) keys = [_estado.sel];
   var row = (window._pagoRows || {})[_estado.pid];
+  var its = keys.map(_itemByKey).filter(Boolean);   // se leen todas antes de modificar nada
+  if (!its.length) return;
+  var totalCred = 0, n = 0;
+  its.forEach(function(it, i) { var m = _cancelarClase(row, it, i); if (m >= 0) { n++; totalCred += m; } });
+  if (totalCred > 0) saveCreditos();
+  _estado.sel = null; _estado.csel = {};
+  _guardarEstado();
+  showToast((n > 1 ? n + ' clases canceladas' : 'Clase cancelada') + (totalCred > 0 ? ' · S/. ' + totalCred + ' a favor' : ''), 'success');
+}
+// Cancela una clase (sin guardar todavía). Devuelve el crédito generado (0 si no estaba pagada), o -1 si no se pudo.
+function _cancelarClase(row, it, idx) {
+  var s = _sessById(it.sessId); if (!s) return -1;
   var prev = _estadoDe(it);
   var pagada = row ? _clasePagada(row.pid, row.weekKey, it) : false;
   var monto = pagada ? _montoClase(row, it) : 0;
@@ -1557,14 +1575,12 @@ function estadoCancelar() {
     s.skipDates = Array.from(new Set((s.skipDates || []).concat([it.date])));
   }
   if (monto > 0 && row) {
-    var cr = { id: Date.now(), monto: monto, desde: row.weekKey, fecha: (prev && prev.k === 'move') ? prev.to.date : it.date, motivo: 'Clase cancelada ya pagada', ts: new Date().toISOString(), usos: {} };
+    var cr = { id: Date.now() + (idx || 0), monto: monto, desde: row.weekKey, fecha: (prev && prev.k === 'move') ? prev.to.date : it.date, motivo: 'Clase cancelada ya pagada', ts: new Date().toISOString(), usos: {} };
     DATA.creditos[row.pid] = _creditosDe(row.pid).concat([cr]);
     rec.creditoId = cr.id;
-    saveCreditos();
   }
   DATA.clasesEstado[it.ekey] = rec;
-  _estado.sel = null;
-  _guardarEstado(); showToast(monto > 0 ? 'Clase cancelada · S/. ' + monto + ' a favor' : 'Clase cancelada', 'success');
+  return monto;
 }
 function estadoReprogramar() {
   var it = _itemByKey(_estado.sel); if (!it) return;
