@@ -1388,6 +1388,21 @@ function _recalcPagoPorClase(pid, weekKey) {
   var row = (window._pagoRows || {})[pid];
   rec.completo = row ? row.items.every(function(it) { return !!rec.clases[it.date]; }) : false;
 }
+// Botón de Estado de clase: si TODAS las clases de la semana ya están marcadas, muestra su estado
+// (dictada / reprogramada) en vez de "Estado de clase". Al tocarlo se abre la misma ventana.
+function _estadoBtnHtml(pid, weekKey) {
+  var row = (window._pagoRows || {})[pid];
+  var items = row ? row.items : [];
+  var done = 0, move = 0, pend = 0;
+  items.forEach(function(it) { var e = _estadoDe(it); if (!e) pend++; else if (e.k === 'done') done++; else if (e.k === 'move') move++; });
+  var lbl = 'Estado de clase', bd = '#0d0d0d', bg = '#fff', col = '#0d0d0d';
+  if (items.length && !pend) {
+    if (!move) { lbl = '✓ ' + (done > 1 ? 'Clases dictadas' : 'Clase dictada'); bd = 'rgba(12,117,96,0.35)'; bg = 'rgba(12,117,96,0.10)'; col = '#0C7560'; }
+    else if (!done) { lbl = '↻ ' + (move > 1 ? 'Clases reprogramadas' : 'Clase reprogramada'); bd = 'rgba(20,82,200,0.35)'; bg = 'rgba(20,82,200,0.08)'; col = '#1452C8'; }
+    else { lbl = '✓ Dictada · ↻ Reprogramada'; bd = 'rgba(0,0,0,0.25)'; bg = '#fff'; col = '#0d0d0d'; }
+  }
+  return '<button onclick="openEstadoClase(\'' + pid + '\')" title="Ver o cambiar el estado de las clases" style="flex-shrink:0;border:1px solid ' + bd + ';background:' + bg + ';border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:11px;color:' + col + ';white-space:nowrap">' + lbl + '</button>';
+}
 function _mostrarEstadoBtn(pid, weekKey) {
   return true;   // 05/10/2026: Michel pidió que "Estado de clase" se vea SIEMPRE, también con la semana pagada.
   var row = (window._pagoRows || {})[pid];
@@ -1403,7 +1418,7 @@ function _dmy(iso) { var D = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']; retu
 function _filaPagoPorClase(r, weekKey, borderBottom) {
   var pagada = _semanaPagada(r.pid, weekKey);
   var col = pagada ? '#196e38' : '#0d0d0d';
-  var estBtn = _mostrarEstadoBtn(r.pid, weekKey) ? '<button onclick="openEstadoClase(\'' + r.pid + '\')" style="flex-shrink:0;border:1px solid #0d0d0d;background:#fff;border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:11px;color:#0d0d0d;white-space:nowrap">Estado de clase</button>' : '';
+  var estBtn = _estadoBtnHtml(r.pid, weekKey);
   var rec = (DATA.pagosConfirmados || {})[r.pid + '_' + weekKey];
   var subs = (r.items || []).map(function(it) {
     var amt = Math.round(it.amt || 0);
@@ -3155,7 +3170,7 @@ function vAdminPagos() {
       var amtColor  = confirmed ? '#196e38' : '#0d0d0d';
       var _isPC = _esPagoPorClase(r.pid);
       if (_isPC) return _filaPagoPorClase(r, weekKey, borderBottom);
-      var _estBtn = _mostrarEstadoBtn(r.pid, weekKey) ? '<button onclick="openEstadoClase(\''+r.pid+'\')" style="flex-shrink:0;border:1px solid #0d0d0d;background:#fff;border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:11px;color:#0d0d0d;white-space:nowrap">Estado de clase</button>' : '';
+      var _estBtn = _estadoBtnHtml(r.pid, weekKey);
       // Semana ya pagada pero el total subió (p. ej. clase reprogramada más larga): se muestra lo que falta.
       var _falta = (pagoInfo && pagoInfo.total != null && Number(r.total) > Number(pagoInfo.total)) ? Math.round(Number(r.total) - Number(pagoInfo.total)) : 0;
       var _faltaTag = _falta > 0 ? '<span style="flex-shrink:0;align-self:center;background:rgba(200,110,0,0.10);color:#9a5300;border-radius:9px;padding:6px 10px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;white-space:nowrap">Falta S/. ' + _falta + '</span>' : '';
