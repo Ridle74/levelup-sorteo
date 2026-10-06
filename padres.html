@@ -758,6 +758,7 @@ function loadData() {
         DATA.quoteRequests   = d.quoteRequests   || [];
         DATA.templates       = d.templates       || [];
         DATA.pagosConfirmados = d.pagosConfirmados || {};
+        DATA.recibosRespaldo = d.recibosRespaldo || {};
         DATA.clasesEstado = d.clasesEstado || {};
         DATA.creditos = d.creditos || {};
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
@@ -787,6 +788,7 @@ function loadData() {
         DATA.quoteRequests   = d.quoteRequests   || [];
         DATA.templates       = d.templates       || [];
         DATA.pagosConfirmados = d.pagosConfirmados || {};
+        DATA.recibosRespaldo = d.recibosRespaldo || {};
         DATA.clasesEstado = d.clasesEstado || {};
         DATA.creditos = d.creditos || {};
       }
@@ -866,6 +868,29 @@ function saveFreeSlots() {
 function savePagosConfirmados() {
   REF.set({ pagosConfirmados: DATA.pagosConfirmados }, { merge:true })
     .catch(e => { console.error(e); showToast('Error al guardar confirmación.'); });
+}
+// ── Recibo por honorarios al desconfirmar / volver a confirmar (05/10/2026) ──
+// Al desconfirmar un pago su número de recibo (y Nro. Operación) se guarda en DATA.recibosRespaldo;
+// al volver a confirmar la misma semana se restaura solo. Además el borrado se hace de verdad en
+// Firestore (antes, con set+merge, el pago "desconfirmado" seguía guardado en la base de datos).
+function _respaldarRecibo(k) {
+  var rec = (DATA.pagosConfirmados || {})[k];
+  if (!rec || !rec.recibo) return;
+  DATA.recibosRespaldo = DATA.recibosRespaldo || {};
+  DATA.recibosRespaldo[k] = { recibo: rec.recibo, nroOp: rec.nroOp || '', total: rec.total, ts: new Date().toISOString() };
+  REF.set({ recibosRespaldo: DATA.recibosRespaldo }, { merge:true }).catch(function(e) { console.error(e); });
+}
+function _restaurarRecibo(k) {
+  var bk = (DATA.recibosRespaldo || {})[k], rec = (DATA.pagosConfirmados || {})[k];
+  if (!bk || !rec || rec.recibo) return;
+  rec.recibo = bk.recibo; if (bk.nroOp) rec.nroOp = bk.nroOp;
+  if (Number(bk.total) !== Number(rec.total)) showToast('Ojo: el recibo ' + bk.recibo + ' se emitió por S/. ' + bk.total + ' y ahora el pago es S/. ' + rec.total + '.');
+  delete DATA.recibosRespaldo[k];
+  REF.update(new firebase.firestore.FieldPath('recibosRespaldo', k), firebase.firestore.FieldValue.delete()).catch(function(e) { console.error(e); });
+}
+function _borrarRemoto() {   // _borrarRemoto('pagosConfirmados', k[, 'clases', fecha])
+  var fp = new (Function.prototype.bind.apply(firebase.firestore.FieldPath, [null].concat([].slice.call(arguments))))();
+  return REF.update(fp, firebase.firestore.FieldValue.delete()).catch(function(e) { console.error(e); showToast('Error al desconfirmar el pago.'); });
 }
 function saveCreditos() {
   REF.set({ creditos: DATA.creditos }, { merge:true })
@@ -1305,6 +1330,7 @@ function confirmPagoWithDate() {
     rec.clases[d.classDate] = { fecha: fecha, total: d.total, ts: new Date().toISOString() };
     DATA.pagosConfirmados[_k] = rec;
     _recalcPagoPorClase(d.pid, d.weekKey);
+    _restaurarRecibo(_k);
     savePagosConfirmados(); closePagoConfirmPopup(); render(); return;
   }
   var _cuP = _creditoUsadoEn(d.pid, d.weekKey);
@@ -1316,13 +1342,16 @@ function confirmPagoWithDate() {
     nombre: d.nombre,
     descripcion: d.descripcion
   };
+  _restaurarRecibo(d.pid + '_' + d.weekKey);
   savePagosConfirmados();
   closePagoConfirmPopup();
   render();
 }
 function desconfirmarPago(pid, weekKey) {
-  delete DATA.pagosConfirmados[pid + '_' + weekKey];
-  savePagosConfirmados();
+  var k = pid + '_' + weekKey;
+  _respaldarRecibo(k);
+  delete DATA.pagosConfirmados[k];
+  _borrarRemoto('pagosConfirmados', k);
   render();
 }
 
@@ -1390,6 +1419,39 @@ function _recalcPagoPorClase(pid, weekKey) {
 }
 // Botón de Estado de clase: si TODAS las clases de la semana ya están marcadas, muestra su estado
 // (dictada / reprogramada) en vez de "Estado de clase". Al tocarlo se abre la misma ventana.
+// ── Etiquetas cortas de Pagos (06/10/2026): dos etiquetas a la izquierda de cada familia ──
+// Arriba el PAGO (Por cobrar / Pagado / Crédito / Falta X / Parcial) y abajo las CLASES
+// (Pendiente / Dictada / Reprog. / Mixto / Cancelada). Reemplazan a los botones de la derecha.
+var _TAG_ST = {
+  cobrar:  ['rgba(0,0,0,0.09)', '#fff', 'rgba(13,13,13,0.55)'],
+  pagado:  ['transparent', 'rgba(25,110,56,0.09)', '#196e38'],
+  credito: ['transparent', 'rgba(122,77,184,0.10)', '#7A4DB8'],
+  falta:   ['transparent', 'rgba(200,110,0,0.10)', '#9a5300'],
+  pend:    ['#0d0d0d', '#fff', '#0d0d0d'],
+  dict:    ['transparent', 'rgba(12,117,96,0.10)', '#0C7560'],
+  reprog:  ['transparent', 'rgba(20,82,200,0.08)', '#1452C8'],
+  mix:     ['rgba(0,0,0,0.2)', '#fff', '#0d0d0d'],
+  canc:    ['transparent', 'rgba(179,38,30,0.08)', '#B3261E']
+};
+function _tagHtml(k, label, onclick, title) {
+  var st = _TAG_ST[k];
+  return '<button onclick="' + onclick + ';event.stopPropagation()" title="' + (title || '') + '" style="display:flex;align-items:center;justify-content:center;gap:5px;width:100%;border-radius:7px;padding:4px 6px;font-family:\'Space Grotesk\',sans-serif;font-size:10.5px;font-weight:700;white-space:nowrap;cursor:pointer;border:1px solid ' + st[0] + ';background:' + st[1] + ';color:' + st[2] + '"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0"></span>' + label + '</button>';
+}
+function _tagClaseHtml(pid, weekKey) {
+  var row = (window._pagoRows || {})[pid];
+  var items = row ? row.items : [];
+  var done = 0, move = 0, pend = 0;
+  items.forEach(function(it) { var e = _estadoDe(it); if (!e) pend++; else if (e.k === 'done') done++; else if (e.k === 'move') move++; });
+  var k = 'pend', lbl = 'Pendiente';
+  if (!items.length) { if (row && _cancelados(row).length) { k = 'canc'; lbl = 'Cancelada'; } }
+  else if (!pend) {
+    if (!move) { k = 'dict'; lbl = 'Dictada'; }
+    else if (!done) { k = 'reprog'; lbl = 'Reprog.'; }
+    else { k = 'mix'; lbl = 'Mixto'; }
+  }
+  return _tagHtml(k, lbl, "openEstadoClase('" + pid + "')", 'Estado de clase');
+}
+function _tagsWrap(a, b) { return '<div style="display:flex;flex-direction:column;gap:4px;width:92px;flex-shrink:0">' + a + b + '</div>'; }
 function _estadoBtnHtml(pid, weekKey) {
   var row = (window._pagoRows || {})[pid];
   var items = row ? row.items : [];
@@ -1430,12 +1492,20 @@ function _filaPagoPorClase(r, weekKey, borderBottom) {
     return '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(0,0,0,0.04);border-radius:12px;padding:8px 10px">'
       + '<div style="flex:1;min-width:120px;font-family:\'Space Grotesk\',sans-serif;font-size:13px">' + _dmy(it.date) + ' · ' + it.start + '<span style="font-family:\'Space Mono\',monospace;margin-left:6px">S/. ' + amt + '</span></div>' + btn + '</div>';
   }).join('');
+  // Etiqueta de pago (familia con pago por clase): se confirma cada clase en su fila de abajo.
+  var nPag = (r.items || []).filter(function(it) { return _clasePagada(r.pid, weekKey, it); }).length, nTot = (r.items || []).length;
+  var tagP = (nTot && nPag === nTot) ? _tagHtml('pagado', 'Pagado', "showToast('Para desconfirmar, usa el botón de cada clase')", 'Todas las clases pagadas')
+    : nPag ? _tagHtml('falta', 'Parcial ' + nPag + '/' + nTot, "showToast('Confirma cada clase en su fila de abajo')", 'Algunas clases pagadas')
+    : _tagHtml('cobrar', 'Por cobrar', "showToast('Confirma cada clase en su fila de abajo')", 'Confirma cada clase abajo');
+  var recLine = rec && rec.recibo ? '<div style="font-family:\'Space Mono\',monospace;font-size:10.5px;color:rgba(0,0,0,0.45);margin-top:2px">' + rec.recibo + (rec.fecha ? ' · ' + rec.fecha.slice(8) + '/' + rec.fecha.slice(5, 7) : '') + '</div>' : '';
   return '<div style="padding:13px 0;border-bottom:' + borderBottom + '">'
     + '<div style="display:flex;align-items:center;gap:12px">'
     +   '<div onclick="openPagoDetallePopup(\'' + r.pid + '\',adminPagosWeekOffset)" style="flex:1;min-width:0;cursor:pointer">'
     +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:' + col + ';margin-bottom:2px">' + r.name + '</div>'
     +     '<span style="font-family:\'Space Mono\',monospace;font-size:13px;color:' + col + '">S/. ' + r.total + '</span>'
-    +   '</div>' + estBtn
+    +     recLine
+    +   '</div>'
+    +   _tagsWrap(tagP, _tagClaseHtml(r.pid, weekKey))
     + '</div>'
     + '<div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">' + subs + '</div>'
     + '</div>';
@@ -1444,8 +1514,11 @@ function desconfirmarPagoClase(pid, weekKey, date) {
   var k = pid + '_' + weekKey, rec = DATA.pagosConfirmados[k];
   if (!rec || !rec.clases) return;
   delete rec.clases[date];
+  if (!Object.keys(rec.clases).length) _respaldarRecibo(k);
   _recalcPagoPorClase(pid, weekKey);
-  savePagosConfirmados(); render();
+  if (DATA.pagosConfirmados[k]) { _borrarRemoto('pagosConfirmados', k, 'clases', date); savePagosConfirmados(); }
+  else _borrarRemoto('pagosConfirmados', k);
+  render();
 }
 
 // ── Ventana "Estado de clase" ─────────────────────────────
@@ -3176,7 +3249,7 @@ function vAdminPagos() {
       var _faltaTag = _falta > 0 ? '<span style="flex-shrink:0;align-self:center;background:rgba(200,110,0,0.10);color:#9a5300;border-radius:9px;padding:6px 10px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;white-space:nowrap">Falta S/. ' + _falta + '</span>' : '';
       var _credOrig = _creditosOrigenEn(r.pid, weekKey).reduce(function(a, c) { return a + Number(c.monto || 0); }, 0);
       var _credChip = _credOrig > 0 ? '<span style="flex-shrink:0;align-self:center;background:rgba(122,77,184,0.10);color:#7A4DB8;border-radius:9px;padding:6px 10px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;white-space:nowrap">Crédito S/. ' + _credOrig + '</span>' : '';
-      var _credFuentes = _creditoFuentesEn(r.pid, weekKey).map(function(c) { return 'clase del ' + _dmy(c.fecha).toLowerCase(); }).join(', ');
+      var _credFuentes = _creditoFuentesEn(r.pid, weekKey).map(function(c) { return _dmy(c.fecha); }).join(', ');
       var _credNote = r.credito > 0
         ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">−S/. ' + r.credito + ' crédito (' + _credFuentes + ')</div>'
         : (_credOrig > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">S/. ' + _credOrig + ' a favor por clase cancelada</div>' : '');
@@ -3186,6 +3259,13 @@ function vAdminPagos() {
         : confirmed
         ? '<button onclick="desconfirmarPago(\''+r.pid+'\',\''+weekKey+'\')" style="flex-shrink:0;border:none;background:rgba(25,110,56,0.09);border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;letter-spacing:.02em;color:#196e38;white-space:nowrap">✓ Pagado'+pagoFecha+'</button>'
         : '<button onclick="openPagoConfirmPopup(\''+r.pid+'\',\''+weekKey+'\',\''+r.name+'\','+r.total+')" style="flex-shrink:0;border:1px solid rgba(0,0,0,0.09);background:#fff;border-radius:9px;padding:6px 11px;cursor:pointer;font-family:\'Space Grotesk\',sans-serif;font-weight:600;font-size:11px;color:rgba(13,13,13,0.5);white-space:nowrap">Confirmar</button>';
+      // Etiqueta de PAGO
+      var _cubierto = !confirmed && r.credito > 0 && r.total <= 0;
+      var _tagP = _falta > 0 ? _tagHtml('falta', 'Falta ' + _falta, "desconfirmarPago('" + r.pid + "','" + weekKey + "')", 'Pagado, pero falta S/. ' + _falta + '. Tocar para desconfirmar')
+        : (_credOrig > 0 || _cubierto) ? _tagHtml('credito', 'Crédito', confirmed ? "desconfirmarPago('" + r.pid + "','" + weekKey + "')" : "showToast('Semana cubierta con crédito a favor')", confirmed ? 'Pagado y con saldo a favor. Tocar para desconfirmar' : 'Cubierto con crédito')
+        : confirmed ? _tagHtml('pagado', 'Pagado', "desconfirmarPago('" + r.pid + "','" + weekKey + "')", 'Tocar para desconfirmar')
+        : _tagHtml('cobrar', 'Por cobrar', "openPagoConfirmPopup('" + r.pid + "','" + weekKey + "','" + r.name + "'," + r.total + ")", 'Confirmar pago');
+      var _recLine = confirmed ? '<div style="font-family:\'Space Mono\',monospace;font-size:10.5px;color:rgba(0,0,0,0.45);margin-top:2px">' + (pagoInfo.recibo ? pagoInfo.recibo + ' · ' : '') + (pagoInfo.fecha ? pagoInfo.fecha.slice(8) + '/' + pagoInfo.fecha.slice(5, 7) : '') + '</div>' : '';
       return '<div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:'+borderBottom+'">'
         + '<div onclick="openPagoDetallePopup(\''+r.pid+'\',adminPagosWeekOffset)" style="flex:1;min-width:0;cursor:pointer">'
         +   '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:'+nameColor+';margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>'
@@ -3195,9 +3275,10 @@ function vAdminPagos() {
         // Desglose (clases + movilidad) ya no se muestra en la lista: solo el total, igual para
         // virtuales y domicilio. El detalle sigue disponible al tocar la fila (openPagoDetallePopup).
         +   '</div>'
+        +   _recLine
         +   _credNote
         + '</div>'
-        + '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">' + confirmBtn + _faltaTag + _credChip + _estBtn + '</div>'
+        + _tagsWrap(_tagP, _tagClaseHtml(r.pid, weekKey))   // etiquetas al extremo derecho (06/10/2026)
         + '</div>';
     }).join('');
     return '<div style="margin-bottom:8px">'
