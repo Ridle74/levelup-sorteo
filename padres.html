@@ -3335,17 +3335,17 @@ function vAdminPagos() {
   var _monthCap = monthName.charAt(0).toUpperCase() + monthName.slice(1);
 
   return '<div style="padding:16px 16px 88px;max-width:700px;margin:0 auto">'
-    + '<div style="background:#000;color:#fff;border-radius:16px;min-height:116px;padding:12px 10px;margin-bottom:16px;display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:8px">'
+    + '<div style="background:#000;color:#fff;border-radius:16px;min-height:116px;padding:12px clamp(6px,2.5vw,10px);margin-bottom:16px;display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:clamp(4px,2vw,8px)">'
     +   '<button onclick="adminPagosStep(-1)" aria-label="Semana anterior" style="' + _arrBase + 'cursor:pointer">' + _arrSvg('M10 3.5 5.5 8 10 12.5') + '</button>'
     +   '<div onclick="' + (adminPagosWeekOffset === 0 ? '' : 'adminPagosToday()') + '" title="' + (adminPagosWeekOffset === 0 ? '' : 'Volver a esta semana') + '" style="text-align:center;min-width:0;' + (adminPagosWeekOffset === 0 ? '' : 'cursor:pointer') + '">'
     +     '<div style="' + _IN + 'font-size:12px;font-weight:400;color:#fff"><span style="color:#85CC00;font-weight:500;font-size:10.5px">' + weekHeader + '</span>&nbsp; <strong style="font-weight:600">' + weekLabel + '</strong></div>'
-    +     '<div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:4px 0 8px">'
-    +       '<div style="' + _IN + 'font-size:30px;font-weight:600;line-height:1.1;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap">S/. ' + grandTotal + '</div>'
+    +     '<div style="display:flex;align-items:center;justify-content:center;gap:clamp(8px,3vw,14px);margin:4px 0 8px">'
+    +       '<div style="' + _IN + 'font-size:clamp(25px,8.5vw,30px);font-weight:600;line-height:1.1;letter-spacing:-.01em;font-variant-numeric:tabular-nums;white-space:nowrap">S/. ' + grandTotal + '</div>'
     +       '<span style="width:1px;height:30px;background:#fff;flex-shrink:0"></span>'
     +       '<div style="text-align:left"><span style="display:block;' + _IN + 'font-size:10px;font-weight:500;color:#85CC00">' + _monthCap + '</span><b style="' + _IN + 'font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap">S/. ' + mesTotal + '</b></div>'
     +     '</div>'
     +     '<div style="display:flex;gap:3px;height:8px">' + _blq + '</div>'
-    +     '<div style="display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:7px;' + _IN + 'font-size:11.5px;font-weight:400">'
+    +     '<div style="display:flex;justify-content:center;align-items:center;gap:clamp(6px,2.4vw,14px);flex-wrap:nowrap;white-space:nowrap;margin-top:7px;' + _IN + 'font-size:clamp(9.5px,3vw,11.5px);font-weight:400">'
     +       '<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#85CC00;margin-right:5px"></span>Cobrado <b style="font-weight:600;font-variant-numeric:tabular-nums">' + weekCobrado + '</b></span>'
     // Botoncito ↺ (S1) entre Cobrado y Por cobrar: verde lleno en la semana actual; contorno
     // fondo blanco con ícono negro en otra semana; al tocarlo vuelve a la semana actual.
