@@ -476,6 +476,7 @@ let DATA = JSON.parse(JSON.stringify(SEED));
 DATA.adminPin = ADMIN_PIN_DEFAULT;
 DATA.pagosConfirmados = {};
 DATA.creditos = {};       // { pid: [ {id, monto, desde:'<lunes semana origen>', fecha, motivo, ts, usos:{'<lunes>': monto}} ] } — Crédito a favor (05/10/2026)
+DATA.recomendaciones = {}; // { pidQueRecomendó: [ {id, refPid, desde, pct, ts, semanas:{'<lunes>':pct}} ] } — Descuento por recomendación (06/10/2026)
 DATA.clasesEstado = {};   // { '<sessionId>|<fecha>' o '<sessionId>|oneoff': {k:'done'|'cancel'|'move', …} } — Estado de clase (04/10/2026)
 // Versión de los datos semilla — al incrementarla se sobrescriben parents/students/sessions
 // en Firestore con los nuevos valores de SEED (preservando requests/accountRequests existentes).
@@ -761,6 +762,7 @@ function loadData() {
         DATA.recibosRespaldo = d.recibosRespaldo || {};
         DATA.clasesEstado = d.clasesEstado || {};
         DATA.creditos = d.creditos || {};
+        DATA.recomendaciones = d.recomendaciones || {};
         // Las cuentas/alumnos viejos que ya no están en SEED quedan como mapas
         // "huérfanos" en Firestore (merge no borra claves) — hay que eliminarlos
         // explícitamente con FieldValue.delete() antes de escribir los nuevos.
@@ -791,6 +793,7 @@ function loadData() {
         DATA.recibosRespaldo = d.recibosRespaldo || {};
         DATA.clasesEstado = d.clasesEstado || {};
         DATA.creditos = d.creditos || {};
+        DATA.recomendaciones = d.recomendaciones || {};
       }
     } else {
       // Primera vez: sembrar Firestore con datos base. DATA ya es una copia de SEED
@@ -891,6 +894,10 @@ function _restaurarRecibo(k) {
 function _borrarRemoto() {   // _borrarRemoto('pagosConfirmados', k[, 'clases', fecha])
   var fp = new (Function.prototype.bind.apply(firebase.firestore.FieldPath, [null].concat([].slice.call(arguments))))();
   return REF.update(fp, firebase.firestore.FieldValue.delete()).catch(function(e) { console.error(e); showToast('Error al desconfirmar el pago.'); });
+}
+function saveRecomendaciones() {
+  REF.set({ recomendaciones: DATA.recomendaciones }, { merge:true })
+    .catch(e => { console.error(e); showToast('Error al guardar la recomendación.'); });
 }
 function saveCreditos() {
   REF.set({ creditos: DATA.creditos }, { merge:true })
@@ -1368,6 +1375,35 @@ function desconfirmarPago(pid, weekKey) {
 // Cuando se cancela una clase YA PAGADA, su monto queda a favor de la familia y se descuenta solo
 // de la(s) siguiente(s) semana(s) con cobro. El reparto por semana (usos) lo calcula el panel de
 // Pagos del profesor (_planCreditos) y se guarda, para que la vista del padre muestre lo mismo.
+// ── Descuento por recomendación (06/10/2026) ──
+// 25% por cada recomendación activa (se suman, tope 100%), sobre el total con movilidad incluida.
+// Dura 4 semanas de cobro, contadas desde la semana de 'desde', y solo cuentan las semanas en que
+// la familia recomendada tiene clases y que no estén ya pagadas (confirmadas o cubiertas con crédito). El plan (semanas) lo calcula el panel de Pagos del profesor
+// (_planRecomendaciones) y se guarda, para que la vista del padre muestre lo mismo. Los pagos ya
+// confirmados conservan lo que tenían.
+var REC_PCT = 25, REC_SEMANAS = 4, REC_TOPE = 100;
+function _recsDe(pid) { return ((DATA.recomendaciones || {})[pid] || []); }
+function _recPctEn(pid, wk) { return Math.min(REC_TOPE, _recsDe(pid).reduce(function(a, r) { return a + Number((r.semanas || {})[wk] || 0); }, 0)); }
+function _r2(n) { return Math.round(n * 100) / 100; }
+function addRecomendacion() {
+  var a = (document.getElementById('rec-de') || {}).value, b = (document.getElementById('rec-a') || {}).value, f = (document.getElementById('rec-desde') || {}).value;
+  if (!a || !b || !f) { showToast('Completa quién recomendó, a quién y desde cuándo.'); return; }
+  if (a === b) { showToast('Una familia no puede recomendarse a sí misma.'); return; }
+  if (_recsDe(a).some(function(r) { return r.refPid === b; })) { showToast('Esa recomendación ya existe.'); return; }
+  if (!DATA.recomendaciones) DATA.recomendaciones = {};
+  if (!DATA.recomendaciones[a]) DATA.recomendaciones[a] = [];
+  DATA.recomendaciones[a].push({ id: 'rec_' + Date.now(), refPid: b, desde: f, pct: REC_PCT, ts: new Date().toISOString(), semanas: {} });
+  saveRecomendaciones(); showToast('Recomendación guardada'); render();
+}
+function deleteRecomendacion(pid, id) {
+  var list = _recsDe(pid), r = list.find(function(x) { return x.id === id; });
+  if (!r) return;
+  var pagadas = Object.keys(r.semanas || {}).filter(function(wk) { return (DATA.pagosConfirmados || {})[pid + '_' + wk]; });
+  if (pagadas.length) { showToast('Tiene semanas ya pagadas con descuento: desconfírmalas antes de borrarla.'); return; }
+  DATA.recomendaciones[pid] = list.filter(function(x) { return x.id !== id; });
+  if (!DATA.recomendaciones[pid].length) { delete DATA.recomendaciones[pid]; _borrarRemoto('recomendaciones', pid); }
+  saveRecomendaciones(); render();
+}
 function _creditosDe(pid) { return ((DATA.creditos || {})[pid] || []); }
 function _creditoUsadoEn(pid, wk) { return _creditosDe(pid).reduce(function(a, c) { return a + Number((c.usos || {})[wk] || 0); }, 0); }
 // Fecha ORIGINAL de la clase cancelada que generó el crédito (si era una reprogramada, el día de su horario).
@@ -1510,6 +1546,7 @@ function _filaPagoPorClase(r, weekKey, borderBottom) {
     +     '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:' + col + ';margin-bottom:2px">' + r.name + '</div>'
     +     '<span style="font-family:\'Space Mono\',monospace;font-size:13px;color:' + col + '">S/. ' + r.total + '</span>'
     +     recLine
+    +     (r.recDesc > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#1452C8;margin-top:3px">−S/. ' + r.recDesc + ' recomendación (' + r.recPct + '%)</div>' : '')
     +   '</div>'
     +   _tagsWrap(tagP, _tagClaseHtml(r.pid, weekKey))
     + '</div>'
@@ -2845,9 +2882,17 @@ function saveChildProfile(childId) {
        // Crédito a favor: mismo reparto que calcula el panel del profesor (clave = lunes que ve el profesor).
        var _ckD = new Date(refMonday); if (isFprado) _ckD.setDate(_ckD.getDate() + 7);
        var _ck = _ckD.toISOString().slice(0, 10);
+       var _recP = _recPctEn(parentId, _ck), _recD = _r2(total * _recP / 100), _brutoRec = total;
+       total = _r2(total - _recD);
        var _cred = Math.min(_creditoUsadoEn(parentId, _ck), total);
        var _credSrc = _creditoFuentesEn(parentId, _ck).map(function(c) { return 'clase del ' + _dmy(c.fecha).toLowerCase() + ' no dictada'; }).join(', ');
-       var _bruto = total; total = total - _cred;
+       var _bruto = _brutoRec; total = _r2(total - _cred);
+       var recHtml = _recD > 0
+         ? '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(20,82,200,0.08);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#1a1a1a">'
+         +   '<span>Descuento por recomendación (' + _recP + '%)</span>'
+         +   '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:18px;font-weight:900;color:#1452C8">−S/. ' + _recD + '</span>'
+         + '</div>'
+         : '';
        var credHtml = _cred > 0
          ? '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(122,77,184,0.10);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#1a1a1a">'
          +   '<span>Saldo a favor (' + _credSrc + ')</span>'
@@ -2858,7 +2903,7 @@ function saveChildProfile(childId) {
        var summaryHtml = '<div style="background:#111;border-radius:16px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">'
          + '<div>'
          +   '<div style="font-size:9px;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45)">' + semLabel + '</div>'
-         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:34px;font-weight:900;color:#fff;line-height:1.05">' + (_cred > 0 ? '<span style="font-size:20px;color:rgba(255,255,255,0.4);text-decoration:line-through;margin-right:8px">S/. ' + _bruto + '</span>' : '') + 'S/. ' + total + '</div>'
+         +   '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:34px;font-weight:900;color:#fff;line-height:1.05">' + ((_cred > 0 || _recD > 0) ? '<span style="font-size:20px;color:rgba(255,255,255,0.4);text-decoration:line-through;margin-right:8px">S/. ' + _bruto + '</span>' : '') + 'S/. ' + total + '</div>'
          + '</div>'
          + movHtml
          + '</div>';
@@ -2870,6 +2915,7 @@ function saveChildProfile(childId) {
          +   '<div style="font-size:12px;color:rgba(0,0,0,0.5);margin-top:6px">' + parent.name + ' · ' + activeCycle.name + '</div>'
          + '</div>'
          + summaryHtml
+         + recHtml
          + credHtml
          + '<div class="sec-lbl">Clases de la semana</div>'
          + daysHtml
@@ -3173,6 +3219,23 @@ function vAdminPagos() {
 
   // Crédito a favor: reparto automático en las semanas siguientes a la de origen (FIFO). Las
   // semanas ya confirmadas usan lo que se guardó al confirmar (creditoUsado).
+  function _planRecomendaciones(pid) {
+    var changed = false;
+    var limit = startOfWeek(new Date()); limit.setDate(limit.getDate() + 9 * 7);
+    _recsDe(pid).forEach(function(r) {
+      var old = r.semanas || {}, sem = {}, n = 0;
+      var w = startOfWeek(new Date(r.desde + 'T00:00:00'));
+      for (var g = 0; n < REC_SEMANAS && w <= limit && g < 40; g++, w.setDate(w.getDate() + 7)) {
+        var wk = w.toISOString().slice(0, 10);
+        if ((DATA.pagosConfirmados || {})[pid + '_' + wk]) { if (old[wk]) { sem[wk] = old[wk]; n++; } continue; }
+        if (_creditoUsadoEn(pid, wk) > 0) continue;   // semana ya pagada con crédito a favor
+        var a = calcParent(pid, new Date(w)), b = calcParent(r.refPid, new Date(w));
+        if (a && Number(a.total) > 0 && b && Number(b.total) > 0) { sem[wk] = Number(r.pct) || REC_PCT; n++; }
+      }
+      if (JSON.stringify(sem) !== JSON.stringify(old)) { r.semanas = sem; changed = true; }
+    });
+    return changed;
+  }
   function _planCreditos(pid) {
     var ordered = _creditosDe(pid).slice().sort(function(a, b) { return (a.desde + a.ts).localeCompare(b.desde + b.ts); });
     if (!ordered.length) return false;
@@ -3198,6 +3261,11 @@ function vAdminPagos() {
   var _credChanged = false;
   Object.keys(DATA.creditos || {}).forEach(function(pid) { if (_planCreditos(pid)) _credChanged = true; });
   if (_credChanged) saveCreditos();
+  // Recomendaciones DESPUÉS del crédito: una semana ya cubierta (aunque sea en parte) con saldo a
+  // favor ya está pagada, así que no cuenta como semana de descuento; pasa a la siguiente.
+  var _recChanged = false;
+  Object.keys(DATA.recomendaciones || {}).forEach(function(pid) { if (_planRecomendaciones(pid)) _recChanged = true; });
+  if (_recChanged) saveRecomendaciones();
 
   var rows = [];
   var grandTotal = 0;
@@ -3205,7 +3273,7 @@ function vAdminPagos() {
   Object.keys(DATA.parents || {}).forEach(function(pid) {
     var r = calcParent(pid);
     var _paidRow = !!(DATA.pagosConfirmados && DATA.pagosConfirmados[pid + '_' + weekKey]);
-    if (r) { r.bruto = r.total; r.credito = Math.min(_creditoUsadoEn(pid, weekKey), r.total); r.total = r.total - r.credito; }
+    if (r) { r.bruto = r.total; r.recPct = _recPctEn(pid, weekKey); r.recDesc = _r2(r.bruto * r.recPct / 100); var _neto = _r2(r.bruto - r.recDesc); r.credito = Math.min(_creditoUsadoEn(pid, weekKey), _neto); r.total = _r2(_neto - r.credito); }
     // Semana sin clases (todas canceladas) pero pagada o con crédito: se ubica en el día de la clase cancelada.
     if (r && !r.firstSlot && r.wDates) { var _cz = _cancelados({ pid: pid, wDates: r.wDates }); if (_cz.length) r.firstSlot = { date: _cz[0].date, start: _cz[0].start }; }
     if (r && (r.bruto > 0 || (_paidRow && r.items) || _creditosOrigenEn(pid, weekKey).length)) { rows.push({ pid: pid, ...r }); grandTotal += r.total; (window._pagoClassDates = window._pagoClassDates || {})[pid] = r.classDates || []; }
@@ -3256,6 +3324,7 @@ function vAdminPagos() {
       var _credOrig = _creditosOrigenEn(r.pid, weekKey).reduce(function(a, c) { return a + Number(c.monto || 0); }, 0);
       var _credChip = _credOrig > 0 ? '<span style="flex-shrink:0;align-self:center;background:rgba(122,77,184,0.10);color:#7A4DB8;border-radius:9px;padding:6px 10px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;white-space:nowrap">Crédito S/. ' + _credOrig + '</span>' : '';
       var _credFuentes = _creditoFuentesEn(r.pid, weekKey).map(function(c) { return _dmy(c.fecha); }).join(', ');
+      var _recNote = r.recDesc > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#1452C8;margin-top:3px">−S/. ' + r.recDesc + ' recomendación (' + r.recPct + '%)</div>' : '';
       var _credNote = r.credito > 0
         ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">−S/. ' + r.credito + ' crédito (' + _credFuentes + ')</div>'
         : (_credOrig > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">' + _creditosOrigenEn(r.pid, weekKey).map(function(c) { return '+ S/. ' + c.monto + ' a favor (' + _dmy(_fechaClaseCredito(c)) + ')'; }).join(', ') + '</div>' : '');
@@ -3276,12 +3345,13 @@ function vAdminPagos() {
         + '<div onclick="openPagoDetallePopup(\''+r.pid+'\',adminPagosWeekOffset)" style="flex:1;min-width:0;cursor:pointer">'
         +   '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:14px;font-weight:600;color:'+nameColor+';margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+r.name+'</div>'
         +   '<div style="display:flex;align-items:baseline;gap:6px">'
-        +     (r.credito > 0 ? '<span style="font-family:\'Space Mono\',monospace;font-size:13px;color:rgba(0,0,0,0.3);text-decoration:line-through">S/. '+r.bruto+'</span>' : '')
+        +     ((r.credito > 0 || r.recDesc > 0) ? '<span style="font-family:\'Space Mono\',monospace;font-size:13px;color:rgba(0,0,0,0.3);text-decoration:line-through">S/. '+r.bruto+'</span>' : '')
         +     '<span style="font-family:\'Space Mono\',monospace;font-size:13px;font-weight:400;color:'+amtColor+';font-variant-numeric:tabular-nums;letter-spacing:-.01em">S/. '+r.total+'</span>'
         // Desglose (clases + movilidad) ya no se muestra en la lista: solo el total, igual para
         // virtuales y domicilio. El detalle sigue disponible al tocar la fila (openPagoDetallePopup).
         +   '</div>'
         +   _recLine
+        +   _recNote
         +   _credNote
         + '</div>'
         + _tagsWrap(_tagP, _tagClaseHtml(r.pid, weekKey))   // etiquetas al extremo derecho (06/10/2026)
@@ -4805,6 +4875,40 @@ function isFamilyIncomplete(p, kids) {
   return false;
 }
 
+// Pestaña Familias → Recomendaciones (06/10/2026)
+function _bodyRecomendaciones() {
+  var opts = Object.entries(DATA.parents || {}).sort(function(a, b) { return a[1].name.localeCompare(b[1].name); })
+    .map(function(e) { return '<option value="' + e[0] + '">' + e[1].name + '</option>'; }).join('');
+  var hoyM = startOfWeek(new Date()).toISOString().slice(0, 10);
+  var items = [];
+  Object.keys(DATA.recomendaciones || {}).forEach(function(pid) {
+    _recsDe(pid).forEach(function(r) {
+      var wks = Object.keys(r.semanas || {}).sort();
+      var usadas = wks.filter(function(w) { return w < hoyM; }).length;
+      var activa = wks.some(function(w) { return w >= hoyM; }) || (wks.length < REC_SEMANAS);
+      var estado = wks.length >= REC_SEMANAS && !wks.some(function(w) { return w >= hoyM; })
+        ? '<span style="font-size:11px;font-weight:700;color:rgba(0,0,0,0.5);background:rgba(0,0,0,0.05);border-radius:8px;padding:3px 8px">Terminó</span>'
+        : '<span style="font-size:11px;font-weight:700;color:#196e38;background:rgba(25,110,56,0.09);border-radius:8px;padding:3px 8px">Activa · ' + usadas + '/' + REC_SEMANAS + ' sem.</span>';
+      var semTxt = wks.length ? wks.map(function(w) { return w.slice(8) + '/' + w.slice(5, 7); }).join(' · ') : 'Aún sin semanas';
+      items.push('<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(0,0,0,0.07)">'
+        + '<div style="min-width:0"><div style="font-size:13px;font-weight:700">' + ((DATA.parents[pid] || {}).name || pid) + ' ← ' + ((DATA.parents[r.refPid] || {}).name || r.refPid) + '</div>'
+        + '<div style="font-size:11px;color:rgba(0,0,0,0.5);margin-top:2px">' + (r.pct || REC_PCT) + '% · desde ' + r.desde.slice(8) + '/' + r.desde.slice(5, 7) + ' · semanas: ' + semTxt + '</div></div>'
+        + '<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">' + estado
+        + '<button onclick="deleteRecomendacion(\'' + pid + '\',\'' + r.id + '\')" style="border:1px solid rgba(0,0,0,0.12);background:#fff;border-radius:8px;padding:4px 8px;cursor:pointer;font-size:11px">Quitar</button></div></div>');
+    });
+  });
+  return '<div class="sec-lbl" style="margin-top:20px">Descuento por recomendación</div>'
+    + '<div class="req-card">'
+    + '<div style="font-size:11px;color:rgba(0,0,0,0.55);line-height:1.6;margin-bottom:10px">' + REC_PCT + '% de descuento al padre que recomendó, sobre el total con movilidad, durante ' + REC_SEMANAS + ' semanas de cobro en que la familia recomendada tenga clases. Varias recomendaciones se suman (tope ' + REC_TOPE + '%). El descuento se ve en Pagos y en la vista del padre.</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">'
+    +   '<select class="fsm" id="rec-de" style="margin-bottom:0"><option value="">Recomendó…</option>' + opts + '</select>'
+    +   '<select class="fsm" id="rec-a" style="margin-bottom:0"><option value="">Familia recomendada…</option>' + opts + '</select>'
+    +   '<input class="fsm" id="rec-desde" type="date" value="' + hoyM + '" style="margin-bottom:0">'
+    + '</div>'
+    + '<button class="btn-grn" style="margin-top:10px" onclick="addRecomendacion()">Guardar recomendación</button>'
+    + (items.length ? '<div style="margin-top:12px">' + items.join('') + '</div>' : '<p style="font-size:11px;color:rgba(0,0,0,0.4);margin:12px 0 0">Todavía no hay recomendaciones.</p>')
+    + '</div>';
+}
 function vAdminFamilias() {
   const parents = Object.entries(DATA.parents);
   const assignedIds = new Set();
@@ -4957,8 +5061,9 @@ function vAdminFamilias() {
       <button class="${famTab==='incompletas'?'on':''}" onclick="goFamilias('incompletas')">Incompletas${incompleteCount?' ('+incompleteCount+')':''}</button>
       <button class="${famTab==='completas'?'on':''}" onclick="goFamilias('completas')">Completas${completeCount?' ('+completeCount+')':''}</button>
       <button class="${famTab==='nueva-cuenta'?'on':''}" onclick="goFamilias('nueva-cuenta')">➕ Nueva cuenta</button>
+      <button class="${famTab==='recomendaciones'?'on':''}" onclick="goFamilias('recomendaciones')">Recomendaciones</button>
     </div>
-    ${famTab === 'nueva-cuenta' ? bodyNuevaCuenta : bodyFamiliasList}
+    ${famTab === 'nueva-cuenta' ? bodyNuevaCuenta : famTab === 'recomendaciones' ? _bodyRecomendaciones() : bodyFamiliasList}
     <button class="btn-ghost" onclick="logout()">Salir del modo administrador</button>
   </div>`;
 }
