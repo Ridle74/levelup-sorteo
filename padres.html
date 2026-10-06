@@ -3345,8 +3345,13 @@ function vAdminPagos() {
     +       '<div style="text-align:left"><span style="display:block;' + _IN + 'font-size:10px;font-weight:500;color:#85CC00">' + _monthCap + '</span><b style="' + _IN + 'font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap">S/. ' + mesTotal + '</b></div>'
     +     '</div>'
     +     '<div style="display:flex;gap:3px;height:8px">' + _blq + '</div>'
-    +     '<div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:7px;' + _IN + 'font-size:11.5px;font-weight:400">'
+    +     '<div style="display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:7px;' + _IN + 'font-size:11.5px;font-weight:400">'
     +       '<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#85CC00;margin-right:5px"></span>Cobrado <b style="font-weight:600;font-variant-numeric:tabular-nums">' + weekCobrado + '</b></span>'
+    // Botoncito ↺ (S1) entre Cobrado y Por cobrar: verde lleno en la semana actual; contorno
+    // fondo blanco con ícono negro en otra semana; al tocarlo vuelve a la semana actual.
+    +       (adminPagosWeekOffset === 0
+              ? '<span aria-current="true" title="Estás en esta semana" style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#85CC00;color:#000">' + '<svg viewBox="0 0 16 16" width="12" height="12" style="display:block"><path d="M3 8a5 5 0 1 0 1.5-3.6M3 2.5v2.5h2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' + '</span>'
+              : '<button onclick="event.stopPropagation();adminPagosToday()" title="Ir a esta semana" aria-label="Ir a esta semana" style="display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;padding:0;background:#fff;border:none;color:#000;cursor:pointer">' + '<svg viewBox="0 0 16 16" width="12" height="12" style="display:block"><path d="M3 8a5 5 0 1 0 1.5-3.6M3 2.5v2.5h2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' + '</button>')
     +       '<span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;border:1.5px solid #fff;box-sizing:border-box;margin-right:5px"></span>Por cobrar <b style="font-weight:600;font-variant-numeric:tabular-nums">' + weekPorCobrar + '</b></span>'
     +     '</div>'
     +   '</div>'
