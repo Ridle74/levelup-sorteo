@@ -1370,6 +1370,12 @@ function desconfirmarPago(pid, weekKey) {
 // Pagos del profesor (_planCreditos) y se guarda, para que la vista del padre muestre lo mismo.
 function _creditosDe(pid) { return ((DATA.creditos || {})[pid] || []); }
 function _creditoUsadoEn(pid, wk) { return _creditosDe(pid).reduce(function(a, c) { return a + Number((c.usos || {})[wk] || 0); }, 0); }
+// Fecha ORIGINAL de la clase cancelada que generó el crédito (si era una reprogramada, el día de su horario).
+function _fechaClaseCredito(c) {
+  var ce = DATA.clasesEstado || {};
+  for (var k in ce) { if (ce[k] && String(ce[k].creditoId) === String(c.id) && ce[k].date) return ce[k].date; }
+  return c.fecha;
+}
 function _creditosOrigenEn(pid, wk) { return _creditosDe(pid).filter(function(c) { return c.desde === wk; }); }
 function _creditoFuentesEn(pid, wk) { return _creditosDe(pid).filter(function(c) { return (c.usos || {})[wk]; }); }
 function _montoClase(row, it) {
@@ -3252,7 +3258,7 @@ function vAdminPagos() {
       var _credFuentes = _creditoFuentesEn(r.pid, weekKey).map(function(c) { return _dmy(c.fecha); }).join(', ');
       var _credNote = r.credito > 0
         ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">−S/. ' + r.credito + ' crédito (' + _credFuentes + ')</div>'
-        : (_credOrig > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">S/. ' + _credOrig + ' a favor</div>' : '');
+        : (_credOrig > 0 ? '<div style="font-family:\'Space Grotesk\',sans-serif;font-size:11.5px;font-weight:600;color:#7A4DB8;margin-top:3px">' + _creditosOrigenEn(r.pid, weekKey).map(function(c) { return '+ S/. ' + c.monto + ' a favor (' + _dmy(_fechaClaseCredito(c)) + ')'; }).join(', ') + '</div>' : '');
       if (!confirmed && r.credito > 0 && r.total <= 0) { nameColor = '#196e38'; amtColor = '#196e38'; }
       var confirmBtn = (!confirmed && r.credito > 0 && r.total <= 0)
         ? '<span style="flex-shrink:0;border:none;background:rgba(25,110,56,0.09);border-radius:9px;padding:6px 11px;font-family:\'Space Grotesk\',sans-serif;font-weight:700;font-size:11px;color:#196e38;white-space:nowrap">✓ Cubierto con crédito</span>'
