@@ -22756,6 +22756,15 @@ function _prepConfigHtml() {
               const _ds2 = _d2.toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) + ' ' + _d2.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
               return `<span style="font-size:10px;font-weight:700;margin-left:8px;color:${_overdue2?'#f87171':'rgba(255,255,255,0.3)'}">· Vence ${_ds2}${_overdue2?' ⚠️':''}</span>`;
             })() : '';
+            // Demostración (D1): etiqueta en la línea de abajo; solo tareas asignadas desde el 1 de octubre.
+            const _demoPill2 = (typeof DEMO_CUTOFF_SEC === 'undefined' || (t.assignedAt || 0) < DEMO_CUTOFF_SEC) ? '' : (() => {
+              const _dm = t.demo, _pl = (bg, fg, bd, txt) => `<span style="font-size:10px;font-weight:800;letter-spacing:.04em;padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px;background:${bg};color:${fg};border:1px solid ${bd}">${txt}</span>`;
+              if (!_dm) return _pl('transparent', '#fff', '#fff', 'Demo pendiente');
+              if (_dm.incompleta) return _pl('#000', '#fff', '#000', 'Demo interrumpida');
+              const _p = Number(_dm.pct) || 0, _c = _p >= 80 ? '#22c55e' : _p >= 60 ? '#fbbf24' : '#ff4d5e';
+              const _sg = Math.max(0, Math.round(Number(_dm.secs) || 0));
+              return _pl(_c, '#000', _c, `Demo ${_dm.correct}/${_dm.total} · ${Math.floor(_sg / 60)}:${String(_sg % 60).padStart(2, '0')}`);
+            })();
             return `<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:${_cardBg2};border:1px solid ${_cardBdr2};border-radius:12px;transition:background 0.15s" onmouseover="this.style.background='${_cardBgHov2}'" onmouseout="this.style.background='${_cardBg2}'">
               <div style="width:44px;height:44px;border-radius:10px;background:${_iconBg2};display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${ico}</div>
               <div style="flex:1;min-width:0">
@@ -22768,11 +22777,23 @@ function _prepConfigHtml() {
                   <span style="font-size:13px;color:rgba(255,255,255,0.9);font-weight:600;flex-shrink:0">${_pct2}%</span>
                   <button onclick="event.stopPropagation();_prepRemoveTask(${s.id},${ti})" style="background:none;border:none;color:rgba(255,255,255,0.22);font-size:16px;cursor:pointer;padding:0;line-height:1;flex-shrink:0" onmouseover="this.style.color='rgba(248,113,113,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.22)'">✕</button>
                 </div>
-                <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:4px">${_bottomTxt2}${_completedBadge2}${_dueLbl2}</div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:4px">${_bottomTxt2}${_completedBadge2}${_demoPill2}${_dueLbl2}</div>
               </div>
             </div>`;
           }).join('');
-          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':''), s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
+          // Resumen de demostraciones del mes (solo si el alumno ya tiene algún efecto de demostración).
+          const _oD = overrides[String(s.id)] || {}, _now3 = new Date(), _ym3 = _now3.getFullYear() + '-' + String(_now3.getMonth() + 1).padStart(2, '0');
+          let _demoRes = '';
+          if ((_oD.tasksMaxLog || []).length || Object.keys(_oD.demoPenal || {}).length || Object.keys(_oD.torneoBan || {}).length) {
+            const _hk = _ym3 + '-' + String(_now3.getDate()).padStart(2, '0');
+            const _mx = typeof _ptsTasksMax === 'function' ? _ptsTasksMax(String(s.id), _hk) : 5;
+            const _pn = Number((_oD.demoPenal || {})[_ym3]) || 0, _bn = Number((_oD.torneoBan || {})[_ym3]) || 0;
+            const _pr = ['Máx. tareas ' + _mx];
+            if (_pn) _pr.push('Demos ' + (_pn > 0 ? '−' + _pn : '+' + (-_pn)) + ' pts');
+            if (_bn) _pr.push(_bn >= 2 ? 'Sin 1.º y 2.º' : 'Sin torneo');
+            _demoRes = ' · ' + _pr.join(' · ');
+          }
+          return `${_secHdrMA(s.name+' · '+tasks.length+' tarea'+(tasks.length!==1?'s':'')+_demoRes, s.id, s.blocked)}<div style="display:flex;flex-direction:column;gap:8px">${cards}</div>`;
         }).filter(Boolean);
         const _tareasEmptyMsg = _tSubTab==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
         innerContent = _tSubHdr + (sections.length ? sections.join('<div style="margin-top:16px"></div>') : `<div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">${_tareasEmptyMsg}</div>`);
@@ -30756,10 +30777,10 @@ async function loadPrepHistory() {
     // crearlo con un clic).
     let snap;
     try {
-      snap = await db.collection('prepHistory').where('uid','==',uid).orderBy('completedAt','desc').limit(1000).get();
+      snap = await db.collection('prepHistory').where('uid','==',uid).orderBy('completedAt','desc').limit(3000).get();
     } catch(idxErr) {
       console.error('prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
-      snap = await db.collection('prepHistory').where('uid','==',uid).limit(1000).get();
+      snap = await db.collection('prepHistory').where('uid','==',uid).limit(3000).get();
     }
     _prepHistoryData = [];
     snap.forEach(doc => _prepHistoryData.push({ id:doc.id, ...doc.data() }));
