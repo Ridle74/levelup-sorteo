@@ -905,14 +905,27 @@ function saveWaEnviados() {
 // Un solo ícono en el Desglose de pago: copia el mensaje y abre WhatsApp (chat de la familia si
 // tiene celular guardado; si no, WhatsApp pide elegir el chat). Queda "✓ Enviado" con la hora.
 var WA_PAGO = '\n\nMi Yape y Plin están a este número: 918508591. Mi cuenta BCP es: 19171891762039 y mi interbancaria es: 00219117189176203951.';
-function _waEmoji(d) {   // estación en Perú (hemisferio sur)
-  var md = (d.getMonth() + 1) * 100 + d.getDate();
-  // Emojis a color de 3 bytes (sin pares sustitutos): la app de WhatsApp de escritorio daña los de 4 bytes
-  // (🌸, 🍂…) al recibir el texto desde el enlace.
-  if (md >= 1221 || md <= 320) return '\u2600\uFE0F';   // ☀️ verano
-  if (md <= 620) return '\u2614';                        // ☔ otoño
-  if (md <= 922) return '\u26C4';                        // ⛄ invierno
-  return '\u2618\uFE0F';                                 // ☘️ primavera
+function _waEmoji(d, sexo) {   // estación en Perú (hemisferio sur) · juego M1: mamá / papá
+  var md = (d.getMonth() + 1) * 100 + d.getDate(), papa = sexo === 'M';
+  if (md >= 1221 || md <= 320) return papa ? '☀️' : '🌺';   // verano: ☀️ / 🌺
+  if (md <= 620) return papa ? '🍁' : '🍂';                  // otoño: 🍁 / 🍂
+  if (md <= 922) return papa ? '⛄' : '❄️';                        // invierno: ⛄ / ❄️
+  return papa ? '🌿' : '🌸';                                 // primavera: 🌿 / 🌸
+}
+// Mamá o papá: lo que se marcó en Familias (DATA.parents[pid].sexo = 'F'|'M'); si no, se deduce del primer nombre.
+var _WA_HOMBRES = ['edward','walther','walter','fernando','carlos','jose','josé','juan','luis','miguel','jorge','pedro','david','daniel','ricardo','raul','raúl','victor','víctor','oscar','óscar','cesar','césar','eduardo','alberto','roberto','manuel','javier','andres','andrés','ivan','iván','hector','héctor','gabriel','rafael','joel','samuel','martin','martín','julio','hugo','ruben','rubén','ernesto','william','michael','john','jhon','richard','kevin','ronald','wilmer','wilson','nelson','edgar','elmer','percy','henry','frank','alex','alexander','christian','cristian','angel','ángel','enrique','felipe','gustavo','marco','mario','pablo','sergio','diego','renzo','bruno','omar','abel','isaac','moises','moisés','saul','saúl','noe','noé','paul','luciano','gonzalo','alonso','franco','ronny','jimmy','johnny','freddy','teddy','harold','arturo','alfredo','antonio','armando','orlando','rolando','fabio','fabricio','mauricio','patricio','benjamin','benjamín','elias','elías','jesus','jesús','adrian','adrián','sebastian','sebastián','nicolas','nicolás','tomas','tomás','lucas','matias','matías','emilio','julian','julián'];
+function _sexoPadre(pid) {
+  var p = (DATA.parents || {})[pid] || {};
+  if (p.sexo === 'F' || p.sexo === 'M') return p.sexo;
+  var n = String(p.name || '').trim().split(' ')[0].toLowerCase();
+  if (_WA_HOMBRES.indexOf(n) >= 0) return 'M';
+  if (/o$/.test(n) && n !== 'rocio' && n !== 'rocío' && n !== 'consuelo' && n !== 'amparo') return 'M';
+  return 'F';
+}
+function toggleSexoPadre(pid) {
+  var p = DATA.parents[pid]; if (!p) return;
+  p.sexo = _sexoPadre(pid) === 'M' ? 'F' : 'M';
+  saveParents(); render();
 }
 function _waSaludo(d) { var h = d.getHours(); return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches'; }
 function _waHora(t) { var p = t.split(':').map(Number), h = p[0] % 12 || 12; return { txt: String(h).padStart(2, '0') + (p[1] ? ':' + String(p[1]).padStart(2, '0') : ''), pm: p[0] >= 12 }; }
@@ -927,6 +940,21 @@ function _waCopiar(txt) {
   _waCopiarViejo(txt); return Promise.resolve();
 }
 function _waCopiarViejo(txt) { var t = document.createElement('textarea'); t.value = txt; t.style.cssText = 'position:fixed;opacity:0'; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e) {} t.remove(); }
+function waEnviarAviso() {
+  var c = window._waAvisoCtx; if (!c) return;
+  var tel = _waAbrirChat(c.pid, c.msg);
+  DATA.waEnviados['aviso_' + c.pid + '_' + c.fecha] = new Date().toISOString(); saveWaEnviados();
+  var el = document.getElementById('pd-wa-av'); if (el) el.textContent = ' · ✓ Avisado ' + _waFechaEnv(DATA.waEnviados['aviso_' + c.pid + '_' + c.fecha]);
+  showToast('Aviso copiado' + (tel ? '' : ' · elige el chat en WhatsApp'), 'success');
+}
+function _waAbrirChat(pid, msg) {
+  var tel = String(((DATA.parents[pid] || {}).phone) || '').replace(/\D/g, '');
+  if (tel.length === 9) tel = '51' + tel;
+  var _a = document.createElement('a'); _a.href = 'https://api.whatsapp.com/send?' + (tel ? 'phone=' + tel + '&' : '') + 'text=' + encodeURIComponent(msg); _a.target = '_blank'; _a.rel = 'noopener';
+  document.body.appendChild(_a); _a.click(); _a.remove();
+  try { _waCopiar(msg); } catch (e) {}
+  return tel;
+}
 function waEnviarCobro() {
   var c = window._waCtx; if (!c) return;
   var tel = String(((DATA.parents[c.pid] || {}).phone) || '').replace(/\D/g, '');
@@ -939,6 +967,26 @@ function waEnviarCobro() {
   DATA.waEnviados[c.pid + '_' + c.wk] = new Date().toISOString(); saveWaEnviados();
   var el = document.getElementById('pd-wa-env'); if (el) el.textContent = ' · ✓ Enviado ' + _waFechaEnv(DATA.waEnviados[c.pid + '_' + c.wk]);
   showToast('Mensaje copiado' + (tel ? '' : ' · elige el chat en WhatsApp'), 'success');
+}
+// Descarga directa: Level Up se carga en un iframe oculto, arma el PDF familiar y lo descarga sin
+// abrir otra pestaña; avisa con postMessage cuando termina (o si hubo un problema).
+function abrirReporteFamilia(pid) {
+  if (window._repFamIframe) { showToast('Ya se está generando un reporte, espera un momento.'); return; }
+  var f = document.createElement('iframe');
+  f.style.cssText = 'position:fixed;width:900px;height:700px;left:-10000px;top:0;border:0;opacity:0;pointer-events:none';
+  f.src = '/student?reporteFamilia=' + encodeURIComponent(pid);
+  window._repFamIframe = f;
+  var fin = function(ok, msg) {
+    window.removeEventListener('message', onMsg); clearTimeout(t);
+    setTimeout(function() { if (f.parentNode) f.remove(); }, 3000);
+    window._repFamIframe = null;
+    showToast(msg || (ok ? 'Reporte descargado' : 'No se pudo generar el reporte'), ok ? 'success' : 'error');
+  };
+  var onMsg = function(e) { if (e.origin !== location.origin || !e.data || !e.data.reporteFamilia) return; fin(e.data.reporteFamilia === 'ok', e.data.msg); };
+  var t = setTimeout(function() { fin(false, 'El reporte tardó demasiado. Inténtalo de nuevo.'); }, 90000);
+  window.addEventListener('message', onMsg);
+  document.body.appendChild(f);
+  showToast('Generando reporte semanal…', 'success');
 }
 function _waFechaEnv(iso) { var d = new Date(iso); return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
 function saveRecomendaciones() {
@@ -2006,7 +2054,7 @@ function openPagoDetallePopup(pid, weekOffset) {
       '.pd-lbl{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#85CC00}',
       '.pd-name{margin:3px 0 2px;font-size:20px;font-weight:700;color:#fff}',
       '.pd-week{font-size:12px;color:#fff}',
-      '.pd-closex{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#000;border:none;padding:0;cursor:pointer;flex-shrink:0}',
+      '.pd-closex{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#85CC00;color:#000;border:none;padding:0;cursor:pointer;flex-shrink:0}',
       '.pd-days{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 12px;overflow-y:auto}',
       '.pd-days.one{grid-template-columns:1fr}',
       '.pd-day:last-child:nth-child(odd){grid-column:1/-1}',
@@ -2055,13 +2103,13 @@ function openPagoDetallePopup(pid, weekOffset) {
   var _pagado = !!(DATA.pagosConfirmados || {})[pid + '_' + _wk];
   var DIAS_L = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   var _nom1 = function(n) { return String(n || '').split(' ')[0]; };
-  var _cab = '¡' + _waSaludo(_ahora) + ' ' + _nom1(parent.name) + '! ' + _waEmoji(_ahora) + ': ';
+  var _cab = '¡' + _waSaludo(_ahora) + ' ' + _nom1(parent.name) + '! ' + _waEmoji(_ahora, _sexoPadre(pid)) + ': ';
   // Clases de la semana agrupadas por día (sin repetir grupos a la misma hora)
   var _porDia = {};
   instances.slice().sort(function(a, b) { return (a.date + a.start).localeCompare(b.date + b.start); }).forEach(function(i) {
     (_porDia[i.date] = _porDia[i.date] || []).push(_waRango(i.start, i.dur) + ' para ' + _nom1(i.stuName));
   });
-  var _diaTxt = function(ds, hoy) { var dw = new Date(ds + 'T00:00:00').getDay(); return (hoy ? 'de hoy ' : 'del ') + DIAS_L[dw] + ' ' + _waUnir(_porDia[ds].filter(function(x, i, a) { return a.indexOf(x) === i; })); };
+  var _diaTxt = function(ds) { var dw = new Date(ds + 'T00:00:00').getDay(), dd = Math.round((new Date(ds + 'T00:00:00') - new Date(_hoy + 'T00:00:00')) / 86400000); return (dd === 0 ? 'de hoy ' : dd === 1 ? 'de mañana ' : dd === 2 ? 'de pasado mañana ' : 'del ') + DIAS_L[dw] + ' ' + _waUnir(_porDia[ds].filter(function(x, i, a) { return a.indexOf(x) === i; })); };
   var _diasProx = Object.keys(_porDia).sort().filter(function(ds) { return ds >= _hoy; });
   var _nClases = _diasProx.reduce(function(a, ds) { return a + _porDia[ds].length; }, 0);
   var _clasesTxt = _waUnir(_diasProx.map(function(ds) { return _diaTxt(ds, ds === _hoy); }));
@@ -2087,15 +2135,44 @@ function openPagoDetallePopup(pid, weekOffset) {
       + (_clasesTxt ? ' Recuerde confirmar con un adelanto ' + (_nClases > 1 ? 'las clases ' : 'la clase ') + _clasesTxt + '.' : '')
       + WA_PAGO;
   }
+  // Cierre con 😺 al final del texto principal (prueba de Michel 06/10: si WhatsApp de escritorio lo daña, volver a ☺️ '\u263A\uFE0F').
+  var _cierre = ' \uD83D\uDE3A', _ip = _waMsg.indexOf('\n\n');
+  _waMsg = _ip >= 0 ? _waMsg.slice(0, _ip) + _cierre + _waMsg.slice(_ip) : _waMsg + _cierre;
   window._waCtx = { pid: pid, wk: _wk, msg: _waMsg };
+  // ── Aviso de clase (06/10/2026): clase VIRTUAL de hoy por empezar o en curso (hermanos a la misma hora juntos) ──
+  window._waAvisoCtx = null;
+  var _minAhora = _ahora.getHours() * 60 + _ahora.getMinutes();
+  var _deHoy = (DATA.sessions || []).filter(function(s) {
+    if (children.map(String).indexOf(String(s.studentId)) < 0 || s.modality !== 'Virtual') return false;
+    if (s.recurring === false) return s.date === _hoy;
+    var cyc = (DATA.cycles || []).find(function(c) { return (!c.start || c.start <= _hoy) && _hoy <= c.end; });
+    if (!cyc || (s.cycleId != null && s.cycleId != cyc.id)) return false;
+    return isActiveOnDate(s, _hoy);
+  }).map(function(s) { var p = s.start.split(':').map(Number); return { ini: p[0] * 60 + p[1], fin: p[0] * 60 + p[1] + (s.dur || 60), start: s.start, nom: _nom1((DATA.students[String(s.studentId)] || {}).name) }; })
+    .filter(function(x) { return x.fin > _minAhora; }).sort(function(a, b) { return a.ini - b.ini; });
+  if (_deHoy.length) {
+    var _c0 = _deHoy[0], _noms = [];
+    _deHoy.filter(function(x) { return x.start === _c0.start; }).forEach(function(x) { if (_noms.indexOf(x.nom) < 0) _noms.push(x.nom); });
+    var _h12 = (Math.floor(_c0.ini / 60) % 12 || 12) + ':' + String(_c0.ini % 60).padStart(2, '0') + (_c0.ini >= 720 ? ' pm' : ' am');
+    window._waAvisoCtx = { pid: pid, fecha: _hoy, msg: '¡' + _waSaludo(_ahora) + ', ' + _nom1(parent.name) + '! \uD83D\uDE3A Ya estoy conectado esperando a ' + _waUnir(_noms) + ' para su clase de las ' + _h12 + '. Puede ingresar desde calendar.google.com'
+      + '\n\nSi no le aparece la clase en su calendario, envíeme por favor su correo de Gmail para darle acceso a los enlaces de las clases y a las grabaciones.' };
+  }
+  var _avIso = (DATA.waEnviados || {})['aviso_' + pid + '_' + _hoy];
+  var _camSvg = '<svg viewBox="0 0 16 16" width="16" height="16" style="display:block"><rect x="1.5" y="4" width="9" height="8" rx="1.8" fill="currentColor"/><path d="M11 7l3.5-2v6L11 9z" fill="currentColor"/></svg>';
+  // Siempre visible; deshabilitado si hoy no queda ninguna clase virtual de la familia.
+  var _avBtn = window._waAvisoCtx
+    ? '<button onclick="waEnviarAviso()" title="Avisar que la clase está por empezar" aria-label="Aviso de clase" style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#000;border:none;padding:0;cursor:pointer;flex-shrink:0">' + _camSvg + '</button>'
+    : '<button disabled title="Hoy no tiene clases virtuales pendientes" aria-label="Aviso de clase" style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#000;border:none;padding:0;cursor:default;flex-shrink:0;opacity:.3">' + _camSvg + '</button>';
   var _envIso = (DATA.waEnviados || {})[pid + '_' + _wk];
-  var _waBtn = '<button onclick="waEnviarCobro()" title="Copiar mensaje y abrir WhatsApp" aria-label="WhatsApp" style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#25D366;color:#fff;border:none;padding:0;cursor:pointer;flex-shrink:0">'
+  var _waBtn = '<button onclick="waEnviarCobro()" title="Copiar mensaje y abrir WhatsApp" aria-label="WhatsApp" style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#000;border:none;padding:0;cursor:pointer;flex-shrink:0">'
     + '<svg viewBox="0 0 24 24" width="17" height="17" style="display:block"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg></button>';
 
   var html = '<div onclick="closePagoDetallePopup()" style="position:absolute;inset:0;background:transparent"></div>'
     +'<div onclick="event.stopPropagation()" class="pd-card">'
-    +'<div class="pd-hdr"><div><div class="pd-lbl">Desglose de pago</div><div class="pd-name">'+parent.name+'</div><div class="pd-week">'+weekLabel+'<span id="pd-wa-env">'+(_envIso ? ' · ✓ Enviado '+_waFechaEnv(_envIso) : '')+'</span></div></div>'
-    +'<div style="display:flex;align-items:center;gap:8px">'+_waBtn
+    +'<div class="pd-hdr"><div><div class="pd-lbl">Desglose de pago</div><div class="pd-name">'+parent.name+'</div><div class="pd-week">'+weekLabel+'<span id="pd-wa-env">'+(_envIso ? ' · ✓ Enviado '+_waFechaEnv(_envIso) : '')+'</span><span id="pd-wa-av">'+(_avIso ? ' · ✓ Avisado '+_waFechaEnv(_avIso) : '')+'</span></div></div>'
+    +'<div style="display:flex;align-items:center;gap:8px">'+_waBtn+_avBtn
+    // Reporte semanal familiar (06/10/2026): abre Level Up, que arma el PDF de todos los hijos y lo descarga solo.
+    +'<button onclick="abrirReporteFamilia(\''+pid+'\')" title="Descargar reporte semanal de la familia" aria-label="Reporte semanal" style="display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#fff;color:#000;border:none;padding:0;cursor:pointer;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" style="display:block"><path d="M2 12l4-4 3 2.5L14 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.5 5H14v3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
     +'<button onclick="closePagoDetallePopup()" class="pd-closex" aria-label="Cerrar"><svg viewBox="0 0 12 12" width="12" height="12" style="display:block"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div></div>'
     +'<div class="pd-days'+(_fechas.length < 2 ? ' one' : '')+'">'+daysHtml+'</div>'
     +'<div class="pd-tot"><div><small>Total semana</small>'+(_hayMov ? '<div class="s">Clases S/ '+weeklyClass+' · Movilidad S/ '+mov+'</div>' : '')+'</div><b>S/. '+total+'</b></div>'
@@ -5060,7 +5137,7 @@ function vAdminFamilias() {
             <button class="btn-grn fam-pill-btn" onclick="saveFamilyNames('${id}')">Guardar nombres</button>
             <button class="btn-ghost fam-pill-btn" onclick="cancelEditNames()">Cancelar</button>
             ` : `
-            <div class="fam-pill">${p.name}</div>
+            <div class="fam-pill">${p.name}<span onclick="toggleSexoPadre('${id}')" title="${_sexoPadre(id)==='M'?'Papá':'Mamá'}${p.sexo?'':' (deducido del nombre)'} · tocar para cambiar" style="cursor:pointer;margin-left:6px">${_sexoPadre(id)==='M'?'👨':'👩'}</span></div>
             ${familyStatusBadgeHtml(p, kids)}
             <button class="btn-ghost fam-pill-btn" onclick="startEditNames('${id}')">✏️ Editar nombres</button>
             ${kids.length ? kids.map(({s}) => {

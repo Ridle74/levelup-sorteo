@@ -2015,7 +2015,8 @@ function getStudents() {
       // curso de Level Up para que sus puntos cuenten como cupo. Si no califica, el cupo se
       // muestra en 0 aunque tenga puntos — apenas complete la 6ª unidad, torneoElig se
       // actualiza solo (ver _prepSyncTorneoElig en levelup.js) y el cupo se habilita.
-      max:   (torneoElig[String(id)]?.units||0) >= (typeof TORNEO_MIN_UNIDADES!=='undefined'?TORNEO_MIN_UNIDADES:6) ? getTotalPts(id) : 0,
+      // Demostración con 0% (torneoBan): ese mes no participa del torneo → cupo 0.
+      max:   ((torneoElig[String(id)]?.units||0) >= (typeof TORNEO_MIN_UNIDADES!=='undefined'?TORNEO_MIN_UNIDADES:6) && !_torneoBan(id, _ymFromOffset(getCupoMonthOffset()))) ? getTotalPts(id) : 0,
       torneoUnidades: torneoElig[String(id)]?.units||0,
       pin:   ov.pin   !== undefined ? ov.pin   : base.pin,
       color: ov.color !== undefined ? ov.color : base.color,
@@ -2246,6 +2247,7 @@ function getStudentPoints(id, monthOffset=getCupoMonthOffset()) {
     arrToBool(marks.progress).forEach(v => { if (v) progress++; });
     arrToBool(marks.tasks).forEach(v => { if (v) tasks += taskMult; });
   });
+  tasks -= _demoPenal(id, ym);   // −1 por demostraciones de tareas de este mes (40% o menos)
   return { hours, progress, tasks };
 }
 function getTotalPts(id) { const p=getStudentPoints(id); return p.hours+p.progress+p.tasks; }
@@ -2549,6 +2551,24 @@ const PTS_AUTO_CUTOFF = '2026-09-01';
 // Editable por el admin desde el panel de Puntos — sin necesidad de tocar código para futuros casos como el de Joanna.
 function getTaskMult(id) { return Number(taskMultipliers[String(id)]) || 1; }
 
+// ── Demostración de tareas (06/10/2026, reglas de Michel) ───────────────────────────────────
+// Las tareas de Level Up asignadas desde DEMO_CUTOFF tienen un botón "Demostrar" (5 preguntas,
+// 3 min, un solo intento, solo en horario de clase). El resultado (guardado en la tarea como
+// t.demo) decide: el punto de la tarea (solo con 100%), el máximo de cuadraditos de Tareas por
+// clase del alumno (tasksMaxLog), descuentos de puntos (demoPenal, por mes de la tarea) y el
+// torneo (torneoBan: 1 = no participa ese mes; 2 = además no puede quedar 1.º ni 2.º).
+const DEMO_CUTOFF_SEC = Math.floor(new Date('2026-10-01T00:00:00').getTime() / 1000);   // desde el 1 de octubre (pedido de Michel)
+function _ptsTasksMax(id, dateKey) {
+  const log = ((overrides[String(id)] || {}).tasksMaxLog || []).slice().sort((a, b) => String(a.at).localeCompare(String(b.at)));
+  let v = PTS_TASKS_MAX;
+  log.forEach(e => { if (!dateKey || String(e.at) <= dateKey) v = Number(e.v); });
+  return Math.max(0, Math.min(PTS_TASKS_MAX, v));   // tope: 5 (PTS_TASKS_MAX)
+}
+// demoPenal: puntos a descontar ese mes (negativo = punto extra, cuando ya tenía el máximo de 5 tareas).
+function _demoPenal(id, ym) { return Number(((overrides[String(id)] || {}).demoPenal || {})[ym]) || 0; }
+function _torneoBan(id, ym) { return Number(((overrides[String(id)] || {}).torneoBan || {})[ym]) || 0; }
+function _ymFromOffset(off) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+
 // ════════════════════════════════════════════════════════
 // PUNTOS AUTOMÁTICOS (v2) — Horas/Progreso/Tareas calculados desde datos reales de PREP
 // (prepHistory / overrides[id].prepTasks), en vez de casillas marcadas a mano por el admin.
@@ -2716,8 +2736,10 @@ function _ptsPureSkills(skills) {
 // · El punto se anota en la última fecha de clase <= el día en que la completó (mismo mes);
 //   si la completó antes de la primera clase del mes, en la primera clase del mes.
 // Devuelve la fecha (YYYY-MM-DD) del primer intento al 100% dentro del plazo, o null.
-function _ptsTaskCompletionDate(task, histAsc) {
+function _ptsTaskCompletionDate(task, histAsc, ignorarDemo) {
   if (!task || !Array.isArray(histAsc)) return null;
+  // Desde DEMO_CUTOFF el punto solo se valida con la demostración al 100%.
+  if (!ignorarDemo && (task.assignedAt || 0) >= DEMO_CUTOFF_SEC && !(task.demo && !task.demo.incompleta && task.demo.pct === 100)) return null;
   const from = task.assignedAt || 0;
   const to   = task.dueAt || Infinity;
   const isUnitExam = !!task.exam;
@@ -2775,7 +2797,7 @@ function _ptsTasksCreditedOn(studentId, histAsc, dateKey, classKeys) {
   return tasks.filter(t => _ptsTaskCreditDate(_ptsTaskCompletionDate(t, histAsc), classKeys) === dateKey);
 }
 function _ptsAutoTasksForDate(studentId, histAsc, dateKey, classKeys) {
-  return Math.min(_ptsTasksCreditedOn(studentId, histAsc, dateKey, classKeys || [dateKey]).length, PTS_TASKS_MAX);
+  return Math.min(_ptsTasksCreditedOn(studentId, histAsc, dateKey, classKeys || [dateKey]).length, _ptsTasksMax(studentId, dateKey));
 }
 // Recalcula y GUARDA (snapshot en pointsLog[id][dateKey].auto) los 3 valores automáticos para
 // cada fecha de clase del mes mostrado. Se guarda un snapshot (no se recalcula en vivo en cada
@@ -11338,10 +11360,15 @@ const MESES_ES = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOS
 // del historial guardado en pointsLog — sin necesidad de capturar nada a mano.
 function getMonthTop3(monthOffset) {
   const students = getStudents();
-  return [...students]
+  const _ym = _ymFromOffset(monthOffset);
+  const sorted = [...students]
     .map(s => ({ id:s.id, nombre:s.name, pts: getTotalPts2(s.id, monthOffset) }))
-    .sort((a,b) => b.pts - a.pts)
-    .slice(0,3);
+    .sort((a,b) => b.pts - a.pts);
+  // torneoBan 2 (demostración con 0% estando ya impedido): no puede quedar 1.º ni 2.º.
+  const libres = sorted.filter(p => _torneoBan(p.id, _ym) < 2), vetados = sorted.filter(p => _torneoBan(p.id, _ym) >= 2);
+  const podio = libres.slice(0, 2);
+  const resto = [...libres.slice(2), ...vetados].sort((a,b) => b.pts - a.pts);
+  return [...podio, ...resto].slice(0,3);
 }
 function getTotalPts2(id, monthOffset) {
   const p = getStudentPoints(id, monthOffset);
@@ -13470,6 +13497,7 @@ REF.onSnapshot(doc => {
     document.getElementById('initial-loading').classList.add('hidden');
     router();
     _showSorteoNotice();
+    setTimeout(_reporteFamiliaDesdePagos, 1200);
   } else {
     // Si el alumno con la sesión activa fue bloqueado (por ejemplo, el profesor lo bloqueó
     // mientras el alumno ya estaba adentro, sin volver a poner su PIN), se le expulsa apenas
@@ -13545,6 +13573,39 @@ REF.onSnapshot(doc => {
   router();
   showToast('No se pudo conectar a la base de datos. Tus cambios NO se guardarán hasta reconectar — revisa tu conexión o recarga la página.');
 });
+
+// ── Reporte semanal familiar pedido desde Pagos (padres.html) — 06/10/2026 ──
+// padres.html abre student.html?reporteFamilia=<id de familia en padres>. Si el profesor está en su
+// cuenta, se busca a los hijos de esa familia en Level Up (por nombre, igual que el reporte de
+// WhatsApp), se arma el reporte semanal de la familia y se descarga el PDF solo.
+async function _reporteFamiliaDesdePagos() {
+  const fam = new URLSearchParams(location.search).get('reporteFamilia');
+  if (!fam) return;
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  // Pedido desde Pagos: llega dentro de un iframe oculto de padres.html (mismo sitio). Se acepta si el
+  // profesor está en su cuenta de Level Up o si quien lo pide es la pestaña Pagos del mismo sitio.
+  let _deP = false;
+  try { _deP = window.parent !== window && /^\/parents/.test(window.parent.location.pathname); } catch (e) {}
+  const _avisar = (ok, msg) => { if (_deP) { try { window.parent.postMessage({ reporteFamilia: ok ? 'ok' : 'error', msg: msg || '' }, location.origin); } catch (e) {} } else if (msg) showToast(msg, ok ? 'success' : 'error'); };
+  if (!isAdmin() && !_deP) { showToast('Para descargar el reporte, entra con la cuenta del profesor y vuelve a tocar el ícono en Pagos.'); return; }
+  try {
+    const d = (await db.collection('padres').doc('main').get()).data() || {};
+    const fp = (d.parents || {})[fam], ps = d.students || {};
+    if (!fp || !Array.isArray(fp.children) || !fp.children.length) { _avisar(false, 'No encontré a los hijos de esa familia.'); return; }
+    const norm = n => (n || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const all = getStudents();
+    const uids = fp.children.map(c => (ps[c] || {}).name).filter(Boolean)
+      .map(n => (all.find(s => s.name.trim() === n.trim()) || all.find(s => norm(s.name) === norm(n)) || {}).id)
+      .filter(id => id != null);
+    if (!uids.length) { _avisar(false, 'Ningún hijo de esa familia está registrado en Level Up.'); return; }
+    if (!_deP) showToast('Generando el reporte semanal de ' + fp.name + '…', 'success');
+    await _prepOpenWeeklyReport(String(uids[0]));
+    if ((_prepWeeklyReportSiblings || []).length) await _prepDownloadFamilyWeeklyReportPDF();
+    else await _prepDownloadReportPDFForUid(String(uids[0]), _prepWeeklyReportHist, 7);
+    if (typeof closeWeeklyReport === 'function') closeWeeklyReport();
+    _avisar(true, _deP ? '' : '');
+  } catch (e) { console.error('reporte familia desde pagos', e); _avisar(false, 'No se pudo generar el reporte.'); }
+}
 
 // Image viewer modal
 function openImgViewer(url, name){

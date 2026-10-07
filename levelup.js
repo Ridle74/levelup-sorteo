@@ -23807,6 +23807,16 @@ function _prepConfigHtml() {
             ${_rightEl}
           </div>
           <div style="font-size:11px;color:rgba(255,255,255,0.8);margin-top:4px">${_bottomTxt}${_completedBadge}${_dueLbl}</div>
+          ${(() => {   // Demostración (06/10/2026): solo tareas asignadas desde DEMO_CUTOFF
+            if (typeof DEMO_CUTOFF_SEC === 'undefined' || (t.assignedAt || 0) < DEMO_CUTOFF_SEC) return '';
+            const dm = t.demo;
+            const _pill = 'display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight:800;letter-spacing:.03em';
+            if (dm && dm.incompleta) return `<div style="${_pill};background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);color:#fca5a5">⏱ Demostración interrumpida</div>`;
+            if (dm) { const c = dm.pct >= 80 ? ['rgba(34,197,94,0.15)','rgba(34,197,94,0.45)','#4ade80'] : dm.pct >= 60 ? ['rgba(251,191,36,0.15)','rgba(251,191,36,0.45)','#fbbf24'] : ['rgba(248,113,113,0.15)','rgba(248,113,113,0.45)','#fca5a5']; return `<div style="${_pill};background:${c[0]};border:1px solid ${c[1]};color:${c[2]}">⏱ Demostración ${dm.correct}/${dm.total} · ${Math.floor((dm.secs||0)/60)}:${String((dm.secs||0)%60).padStart(2,'0')}${dm.pct===100?' · ✓ Punto validado':''}</div>`; }
+            if (!_done) return '';
+            const _ok = _demoEnClase(_taskUid);
+            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoStart('${_rmId}')" title="${_ok?'5 preguntas en 3 minutos · un solo intento':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
+          })()}
         </div>
       </div>`;
     }).join('');
@@ -24123,9 +24133,12 @@ function _ptsDetailModalHtml() {
           ? _ptsTasksCreditedOn(student.id, hist, key, _ptsTaskClassKeys(student.id, _ptsMonthKeys(student, offset)))
           : myTasks.filter(t => typeof _ptsTaskCompletionDate === 'function' && _ptsTaskCompletionDate(t, hist) === key);
         // Respeta el mismo tope diario (tasksMax) que usa el cálculo oficial de puntos.
-        doneThatDay.slice(0, tasksMax).forEach(t => taskEvents.push({date, label: taskLbl(t)}));
-        totalTasksPts += Math.min(doneThatDay.length, tasksMax) * mult;
+        const _tmD = (typeof _ptsTasksMax === 'function') ? _ptsTasksMax(student.id, key) : tasksMax;
+        doneThatDay.slice(0, _tmD).forEach(t => taskEvents.push({date, label: taskLbl(t)}));
+        totalTasksPts += Math.min(doneThatDay.length, _tmD) * mult;
       });
+      // Descuentos por demostraciones de tareas con 40% o menos (mes de la tarea).
+      if (typeof _demoPenal === 'function' && pastDates.length) totalTasksPts -= _demoPenal(student.id, pastDates[0].key.slice(0, 7));
       const taskRows = taskEvents.map(ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
         <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(ev.date)}</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">${ev.label}</div></div>
@@ -26421,6 +26434,119 @@ function _prepIsCustomConfig(topic) {
 // Inicia una habilidad desde la lista de tareas asignadas en Modo Regular por defecto.
 // Resetea qCount al valor natural del tema y garantiza que haya tiempo configurado,
 // de modo que _prepIsCustomConfig() devuelva false → "Modo: Regular".
+// ════════════════════════════════════════════════════════
+// DEMOSTRACIÓN DE TAREAS (06/10/2026) — reglas en student.html (DEMO_CUTOFF_SEC, _ptsTasksMax,
+// _demoPenal, _torneoBan). 5 preguntas del tema de la tarea, 3 minutos sin bonus de tiempo, un
+// solo intento y solo durante la clase del alumno (horario del calendario de padres).
+// ════════════════════════════════════════════════════════
+function _demoTaskId(t) { return t.exam ? 'exam:' + (t.skills || []).join(',') : t.topic; }
+function _demoEnClase(uid) {
+  // El profesor dentro de la cuenta del alumno (suplantación) = está con él: se permite a cualquier hora.
+  if (typeof _isTeacher === 'function' && _isTeacher()) return true;
+  try {
+    const st = (getStudents() || []).find(s => String(s.id) === String(uid));
+    if (!st || typeof getClassDatesForStudent !== 'function') return false;
+    const now = new Date(), key = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+    const hoy = getClassDatesForStudent(st.name, 0).find(d => d.key === key);
+    if (!hoy) return false;
+    const min = now.getHours() * 60 + now.getMinutes();
+    return (hoy.slots || []).some(sl => { const p = String(sl.start || '').split(':').map(Number); if (p.length < 2 || isNaN(p[0])) return false; const ini = p[0] * 60 + p[1]; return min >= ini && min < ini + (sl.dur || 60); });
+  } catch (e) { console.error('demo en clase', e); return false; }
+}
+function _demoBuildQs(t) {
+  const pf = k => !/_bq\d/.test(k) && !String(k).includes('_bpu');
+  let keys;
+  if (t.exam) keys = (t.skills || []).filter(k => BINGO_TOPICS[k] && pf(k) && !BINGO_TOPICS[k].quiz);
+  else { const d = BINGO_TOPICS[t.topic] || {}; keys = (d.srcKeys && d.srcKeys.length) ? d.srcKeys : [t.topic]; }
+  keys = (keys || []).filter(k => BINGO_TOPICS[k]);
+  if (!keys.length) return [];
+  const pools = keys.map(k => { const p = (typeof _qmBuildPool === 'function') ? _qmBuildPool(k) : []; return (p && p.length) ? p.slice().sort(() => Math.random() - 0.5) : null; });
+  const order = keys.map((k, i) => i).sort(() => Math.random() - 0.5);
+  const qs = [], seen = new Set();
+  for (let g = 0, i = 0; qs.length < 5 && g < 300; g++, i++) {
+    const ki = order[i % order.length], def = BINGO_TOPICS[keys[ki]];
+    let q = null;
+    if (pools[ki] && pools[ki].length) q = { ...pools[ki].shift() };
+    else if (def.gen) { try { q = def.gen(); } catch (e) { q = null; } }
+    if (!q || !q.q || seen.has(q.q)) continue;
+    seen.add(q.q); if (!q._src) q._src = keys[ki];
+    qs.push(_prepApplyMcMode(q));
+  }
+  return qs;
+}
+async function _demoStart(taskId) {
+  const uid = String(getLoggedId());
+  const tasks = (overrides[uid] || {}).prepTasks || [];
+  const t = tasks.find(x => _demoTaskId(x) === taskId);
+  if (!t) { showToast('No encontré la tarea.'); return; }
+  if (t.demo) { showToast('La demostración de esta tarea ya se hizo (un solo intento).'); return; }
+  if (!_demoEnClase(uid)) { showToast('La demostración solo se puede hacer durante tu clase.'); return; }
+  _prep.ansMode = 'mc';
+  const qs = _demoBuildQs(t);
+  if (!qs.length) { showToast('No se pudieron generar las preguntas de la demostración.'); return; }
+  const firstKey = t.exam ? ((t.skills || []).find(k => BINGO_TOPICS[k] && !BINGO_TOPICS[k].quiz) || (t.skills || [])[0]) : t.topic;
+  const label = t.exam ? (t.label || 'Examen de unidad') : _cleanLbl((BINGO_TOPICS[t.topic] || {}).lbl, t.topic);
+  // Un solo intento: se marca como iniciada antes de empezar (si se interrumpe, queda "Interrumpida").
+  t.demo = { incompleta: true, pct: 0, correct: 0, total: qs.length, secs: 0, at: Math.floor(Date.now() / 1000) };
+  try { await REF.update({ ['overrides.' + uid + '.prepTasks']: tasks }); } catch (e) { console.error('demo start save', e); }
+  _prepPaused = false; _prepPausedMs = 0; _prepPauseAskPin = false; _prepPausePinErr = false;
+  Object.assign(_prep, { state: 'exam', topic: firstKey, isUnitExam: false, quizNum: 0, unitSkillList: [], unitDone: [], questions: qs, answers: [], currentIdx: 0, selectedOpt: null, answered: false, startTime: Date.now(), endTime: null, timeLeft: 180, timeUnlimited: false, showReview: false, lives: 5, maxLives: 5, streak: 0, streakBonusAccum: 0, gameStartTime: Date.now(), retryLock: false, gameOver: false, qStartTime: Date.now(), customConfig: false, demo: { uid: uid, taskId: taskId, label: label } });
+  clearInterval(_prepTimerIntv); _prepTimerIntv = setInterval(_prepTickTimer, 1000);
+  clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
+  _prepStartInactivityWatcher();
+  _snd.start();
+  _renderPreparatePane();
+}
+async function _demoFinish() {
+  const dm = _prep.demo; _prep.demo = null;
+  const uid = dm.uid, o = overrides[uid] = overrides[uid] || {};
+  const tasks = o.prepTasks || [];
+  const t = tasks.find(x => _demoTaskId(x) === dm.taskId);
+  const total = (_prep.questions || []).length || 5;
+  const correct = (_prep.answers || []).filter(a => a.correct).length;
+  const pct = Math.round(correct / total * 100);
+  const secs = Math.min(180, Math.round(((_prep.endTime || Date.now()) - (_prep.startTime || Date.now())) / 1000));
+  // Mes de la tarea = mes en que hizo la práctica al 100% (fuera de clase); si no se encuentra, el actual.
+  const _now = new Date(), hoyKey = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0') + '-' + String(_now.getDate()).padStart(2, '0');
+  let ym = hoyKey.slice(0, 7);
+  try { const hAsc = (Array.isArray(_prepHistoryData) ? _prepHistoryData : []).slice().reverse(); const dk = t && typeof _ptsTaskCompletionDate === 'function' ? _ptsTaskCompletionDate(t, hAsc, true) : null; if (dk) ym = dk.slice(0, 7); } catch (e) {}
+  // Consecuencias (reglas de Michel)
+  const curMax = (typeof _ptsTasksMax === 'function') ? _ptsTasksMax(uid, hoyKey) : 5;
+  let dMax = 0, penal = 0, ban = false;
+  if (pct >= 100) dMax = 1;
+  else if (pct >= 80) dMax = 1;
+  else if (pct >= 60) { /* sin cambios */ }
+  else if (pct >= 40) penal = 1;
+  else { penal = 1; if (curMax > 0) dMax = -1; else penal += 1; if (pct === 0) ban = true; }
+  // Tope de 5 tareas: si ya tiene 5 y le tocaba +1, en vez de eso gana 1 punto.
+  const _tope = (typeof PTS_TASKS_MAX !== 'undefined') ? PTS_TASKS_MAX : 5;
+  if (dMax > 0 && curMax >= _tope) { dMax = 0; penal -= 1; }
+  if (dMax) { o.tasksMaxLog = (o.tasksMaxLog || []).concat([{ at: hoyKey, v: Math.max(0, curMax + dMax), por: dm.taskId }]); }
+  if (penal) { o.demoPenal = Object.assign({}, o.demoPenal || {}); o.demoPenal[ym] = (Number(o.demoPenal[ym]) || 0) + penal; }
+  if (ban) { o.torneoBan = Object.assign({}, o.torneoBan || {}); o.torneoBan[ym] = (Number(o.torneoBan[ym]) || 0) >= 1 ? 2 : 1; }
+  if (t) t.demo = { pct: pct, correct: correct, total: total, secs: secs, at: Math.floor(Date.now() / 1000), ym: ym, efectos: { tareas: dMax, puntos: -penal, torneo: ban ? o.torneoBan[ym] : 0 } };
+  try {
+    await REF.update({
+      ['overrides.' + uid + '.prepTasks']: tasks,
+      ['overrides.' + uid + '.tasksMaxLog']: o.tasksMaxLog || [],
+      ['overrides.' + uid + '.demoPenal']: o.demoPenal || {},
+      ['overrides.' + uid + '.torneoBan']: o.torneoBan || {}
+    });
+  } catch (e) { console.error('demo save', e); showToast('No se pudo guardar el resultado de la demostración.'); }
+  // Queda en el historial como una actividad más (tema "demo:…" para no contar como práctica del tema).
+  try {
+    const me = _bingoMe();
+    if (me && me.uid) db.collection('prepHistory').add({ uid: me.uid, name: me.name, level: _prep.level || '', grade: _prep.grade || '', topic: 'demo:' + (_prep.topic || ''), topicLabel: 'Demostración · ' + dm.label, isDemo: true, demoTaskId: dm.taskId, correct: correct, total: total, pct: pct, timeSec: secs, customConfig: false, answers: (_prep.answers || []).map(a => ({ q: a.q, a: a.a, given: a.given, correct: a.correct, timeSec: a.timeSec || 0, _id: a._id ?? null, _src: a._src || null })), completedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(e => console.error('demo hist', e));
+  } catch (e) { console.error('demo hist', e); }
+  const partes = [];
+  partes.push(pct === 100 ? 'punto de la tarea validado' : 'sin punto de la tarea');
+  if (dMax) partes.push((dMax > 0 ? '+1' : '−1') + ' tareas a futuro');
+  if (penal > 0) partes.push('−' + penal + ' punto' + (penal > 1 ? 's' : ''));
+  if (penal < 0) partes.push('+' + (-penal) + ' punto (ya tenía el máximo de tareas)');
+  if (ban) partes.push(o.torneoBan[ym] >= 2 ? 'sin opción a 1.º y 2.º puesto' : 'no participa en el torneo');
+  showToast('Demostración ' + correct + '/' + total + ': ' + partes.join(' · '), pct >= 80 ? 'success' : 'error');
+  _renderPreparatePane();
+}
 function _prepStartFromTask(topic) {
   const def = BINGO_TOPICS[topic] || {};
   const natQ = (def.srcKeys && def.srcKeys.length) ? def.srcKeys.length * 5 : 10;
@@ -29649,8 +29775,8 @@ function _combSubmitStep(){
     _prep.answered=true;
     _prep.answers.push({correct:true,given:q.a,q:q.q||'',a:q.a,_src:q._src||null,timeSec:Math.round((Date.now()-(_prep.qStartTime||Date.now()))/1000)});
     if(typeof _prep.streak==='number') _prep.streak++;
-    // Bonus de tiempo por racha
-    if (_prep.timeLeft > 0 && !_prep.timeUnlimited) {
+    // Bonus de tiempo por racha (no aplica en la demostración de tareas)
+    if (_prep.timeLeft > 0 && !_prep.timeUnlimited && !_prep.demo) {
       const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
       const _bRate = _bMode==='exam' ? 2.5 : _bMode==='quiz' ? 5 : 10;
       const _maxStreak = _bMode==='exam' ? 5 : _bMode==='quiz' ? 4 : 3;
@@ -30103,8 +30229,8 @@ function _prepHandleAnswer(correct, correctAns){
   if(correct){
     _prep.answered = true; _prep.selectedOpt = correctAns;
     if(typeof _prep.streak==='number') _prep.streak++;
-    // Bonus de tiempo por racha
-    if (_prep.timeLeft > 0 && !_prep.timeUnlimited) {
+    // Bonus de tiempo por racha (no aplica en la demostración de tareas)
+    if (_prep.timeLeft > 0 && !_prep.timeUnlimited && !_prep.demo) {
       const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
       const _bRate = _bMode==='exam' ? 2.5 : _bMode==='quiz' ? 5 : 10;
       const _maxStreak = _bMode==='exam' ? 5 : _bMode==='quiz' ? 4 : 3;
@@ -30172,7 +30298,7 @@ function _prepApplyLivesStreak(correct) {
   const _bMode = _prep.isUnitExam ? 'exam' : ((BINGO_TOPICS[_prep.topic]||{}).quiz ? 'quiz' : 'skill');
   if (correct) {
     if (typeof _prep.streak === 'number') _prep.streak++;
-    if (_prep.timeLeft > 0 && !_prep.timeUnlimited) {
+    if (_prep.timeLeft > 0 && !_prep.timeUnlimited && !_prep.demo) {
       const _bRate = _bMode==='exam' ? 2.5 : _bMode==='quiz' ? 5 : 10;
       const _maxStreak = _bMode==='exam' ? 5 : _bMode==='quiz' ? 4 : 3;
       const _isLevelUp = _prep.streak > _maxStreak;
@@ -30346,6 +30472,8 @@ async function _prepSaveHistoryPartial() {
 }
 
 function _prepFinish() {
+  // Evita terminar dos veces (p. ej. el setTimeout de game over + clic en Siguiente): guardaría el intento doble.
+  if (_prep.state === 'result') return;
   clearInterval(_prepTimerIntv);
   clearInterval(_prep.gameTimerIntv);
   _prepStopInactivityWatcher();
@@ -30360,6 +30488,7 @@ function _prepFinish() {
   }
   _prep.state = 'result'; _prep.endTime = Date.now();
   _snd.finish();
+  if (_prep.demo) { _demoFinish(); return; }
   // Marcar skill actual como completado en el contexto de unidad
   if (_prep.unitSkillList.length>0 && _prep.topic && !_prep.unitDone.includes(_prep.topic)) {
     _prep.unitDone.push(_prep.topic);
@@ -31026,7 +31155,7 @@ function _prepAdminHistoryHtml() {
 function _prepExamHtml() {
   const q = _prep.questions[_prep.currentIdx]; if (!q) return '';
   const def = BINGO_TOPICS[_prep.topic]||{};
-  const _examLbl = _prep.isUnitExam ? `Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}` : (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
+  const _examLbl = _prep.demo ? `Demostración: ${_prep.demo.label||_cleanLbl(def.lbl,_prep.topic)}` : _prep.isUnitExam ? `Examen: ${_prepUnitLabel()||_cleanLbl(def.lbl,_prep.topic)}` : (def.quiz&&_prep.quizNum)?`Cuestionario ${_prep.quizNum}: ${_cleanLbl(def.lbl,_prep.topic)}`:_cleanLbl(def.lbl,_prep.topic);
   const total = _prep.questions.length, idx = _prep.currentIdx;
   const pct = Math.round((idx/total)*100);
   const _fmtMath = s => {
