@@ -3,16 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=1366">
+<script>
+// Celulares muy angostos (320 px): el navegador no puede achicar 1366 px en la pantalla y la página
+// quedaba más ancha que el celular. En ese caso el ancho base es el máximo que sí entra (4 × pantalla).
+(function () { var sw = screen.width || 0; if (sw && sw * 4 < 1366) { var m = document.querySelector('meta[name=viewport]'); if (m) m.setAttribute('content', 'width=' + Math.floor(sw * 4)); } })();
+</script>
 <title>EMATHS</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <!-- Preconnect para Google Fonts (evita latencia DNS en primera carga) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Fuentes cargadas de forma asíncrona (no bloquea el primer render) -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;600&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;600&display=swap" media="print" onload="this.media='all';if(window._fwCss)window._fwCss()">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Montserrat:wght@300;400;600&display=swap"></noscript>
+<!-- Evita que el título y los botones salten de letra al cargar: se muestran cuando llegan
+     las fuentes de Google (o a los 1.2 s como máximo, para no dejarlos nunca ocultos). -->
+<script>
+(function () {
+  var d = document.documentElement; d.classList.add('fw');
+  var listo = false, fin = function () { if (!listo) { listo = true; d.classList.remove('fw'); } };
+  setTimeout(fin, 1200);
+  window._fwCss = function () {
+    if (!document.fonts || !document.fonts.load) return fin();
+    Promise.all([
+      document.fonts.load('400 48px "Playfair Display"'),
+      document.fonts.load('400 14px "Montserrat"')
+    ]).then(fin, fin);
+  };
+})();
+</script>
 <!-- Preload del logo SVG (crítico above-the-fold) -->
-<link rel="preload" href="logo.svg" as="image" type="image/svg+xml">
+<link rel="preload" as="image" type="image/webp" imagesrcset="logo-280.webp 280w, logo-1120.webp 1120w" imagesizes="(hover: hover) and (pointer: fine) 130px, (orientation: landscape) 130px, 560px">
 <style>
 @font-face {
   font-family: 'Jonathan';
@@ -24,6 +45,7 @@
 
 html {
   overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: auto;
   /* Full viewport — marble covers everything */
   background: #eeece7;
@@ -239,7 +261,7 @@ body {
 @keyframes rippleAnim { to{transform:scale(4);opacity:0} }
 
 /* ===== VERSIÓN MÓVIL TÁCTIL: compactar márgenes para que entre sin scroll ===== */
-@media (pointer: coarse) {
+@media (pointer: coarse) and (orientation: portrait) {
   .page { min-height: auto; padding-bottom: 40px; }
   .logo-section { margin-top: 90px; }
   .name-section { margin-top: 70px; }
@@ -249,8 +271,8 @@ body {
   .social-label { font-size: 16px; }
 }
 
-/* ===== VERSIÓN ESCRITORIO (mouse real, no táctil) ===== */
-@media (hover: hover) and (pointer: fine) {
+/* ===== VERSIÓN ESCRITORIO (mouse real, o celular/tablet en horizontal) ===== */
+@media (hover: hover) and (pointer: fine), (orientation: landscape) {
   .buttons-grid {
     width: 100%; max-width: 880px;
     display: grid;
@@ -306,7 +328,7 @@ body {
   body {
     min-height: auto;
     background-color: #f4f3ef;
-    background-image: url('marble_bg.svg');
+    background-image: url('marble_bg.webp');
     background-repeat: no-repeat;
     background-position: 65% 30%;
     background-size: 160% auto;
@@ -349,6 +371,23 @@ body {
   }
   .divider { width: 180px; margin: 0 0 34px; }
 }
+
+/* M1 (07/10/2026): en pantallas de más de 1366 px el mármol cubre todo el ancho de la ventana
+   (antes solo cubría la franja central del body y a los lados quedaba el crema del html).
+   Mismo tamaño y encuadre que tenía en el body; en 1366 px o menos no cambia nada. */
+@media (hover: hover) and (pointer: fine) and (min-width: 1367px), (orientation: landscape) and (min-width: 1367px) {
+  html {
+    background-color: #f4f3ef;
+    background-image: url('marble_bg.webp');
+    background-repeat: no-repeat;
+    background-position: calc(50% - 123px * var(--z, 1)) 30%;
+    background-size: max(calc(2186px * var(--z, 1)), calc(100vw + 400px)) auto;
+  }
+  body { background-image: none; background-color: transparent; }
+}
+
+/* Mientras llegan las fuentes (clase fw, ver script en <head>): textos con fuente de Google ocultos. */
+.fw .name-main, .fw .name-script, .fw .btn-text, .fw .btn-sub, .fw .refs-title { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -358,7 +397,7 @@ body {
 
 <!-- MARBLE BACKGROUND: real high-res marble photo, z-index 0 -->
 <div id="marbleBg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;overflow:hidden;">
-  <img src="marble_bg.svg" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;" alt="">
+  <img src="marble_bg.webp" style="width:100%;height:100%;object-fit:cover;object-position:center center;display:block;" alt="">
 </div>
 
 
@@ -375,8 +414,17 @@ body {
   var SNOW_COLORS  = ['#AAAAAA','#BBBBBB','#C8C8C8','#999999','#B5B5B5'];
 
   function resize() {
+    var oW = W, oH = H;
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
+    // Si la ventana cambia de tamaño (maximizar, otro monitor), reparte las hojas y copos
+    // que ya están cayendo en el nuevo ancho; antes se quedaban amontonados en el lado izquierdo.
+    if (oW && oH && (oW !== W || oH !== H)) {
+      var sx = W / oW, sy = H / oH;
+      [leaves, flakes].forEach(function (arr) {
+        (arr || []).forEach(function (p) { p.x *= sx; p.y *= sy; });
+      });
+    }
   }
   window.addEventListener('resize', resize);
   resize();
@@ -514,7 +562,7 @@ body {
 
   <div class="brand-row">
   <div class="logo-section">
-    <img class="logo-img" src="logo.svg" alt="easyMaths logo">
+    <img class="logo-img" src="logo-280.webp" srcset="logo-280.webp 280w, logo-1120.webp 1120w" sizes="(hover: hover) and (pointer: fine) 130px, (orientation: landscape) 130px, 560px" width="1120" height="972" alt="easyMaths logo">
   </div>
 
   <div class="name-section">
@@ -673,7 +721,12 @@ function ripple(e, btn) {
     var html = document.documentElement;
 
     if (vw >= 1366) {
-      // Desktop: content centered, marble fills full width via fixed bg
+      // Desktop: content centered, marble fills full width via fixed bg.
+      // Monitores de más de 1366 px: el contenido crece con la pantalla (antes quedaba chico al centro).
+      var full = vw / 1366, modo = '1';
+      var z = window.matchMedia('(hover: hover) and (pointer: fine)').matches ? Math.min(2, modo === '2' ? 1 + (full - 1) * 0.5 : full) : 1;
+      body.style.zoom = z > 1.001 ? String(z) : '';
+      html.style.setProperty('--z', z > 1.001 ? String(z) : '1');
       body.style.transform      = 'none';
       body.style.transformOrigin= 'top center';
       body.style.marginLeft     = 'auto';
@@ -682,6 +735,7 @@ function ripple(e, btn) {
     } else {
       // Narrow screen: scale content proportionally.
       var scale = vw / 1366;
+      body.style.zoom = ''; html.style.setProperty('--z', '1');
       body.style.transform      = 'scale(' + scale + ')';
       body.style.transformOrigin= 'top left';
       body.style.marginLeft     = '0';
@@ -748,11 +802,12 @@ function ripple(e, btn) {
     if (!branch || !social || !page) return;
     // Forzar bottom:auto para que top tenga efecto en movil
     branch.style.bottom = 'auto';
-    var isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var isDesktop = window.matchMedia('(hover: hover) and (pointer: fine), (orientation: landscape)').matches;
     var offset = isDesktop ? OFFSET_DESKTOP : OFFSET_MOBILE;
     var socialTop = social.getBoundingClientRect().top;
     var pageTop   = page.getBoundingClientRect().top;
-    branch.style.top = (socialTop - pageTop + offset) + 'px';
+    var z = (page.offsetWidth && page.getBoundingClientRect().width / page.offsetWidth) || 1;  // escala real (zoom o transform)
+    branch.style.top = ((socialTop - pageTop) / z + offset) + 'px';
     branch.style.opacity = '1';
   }
 
