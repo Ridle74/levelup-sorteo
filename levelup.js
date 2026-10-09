@@ -23779,23 +23779,35 @@ function _prepConfigHtml() {
       const pct     = Math.round((correct / total) * 100);
       return { correct, total, pct };
     };
-    // Sub-tab Activas/Vencidas para la lista plana de Mis Tareas (Mis Cursos)
-    const _tSubTabMC = _prep.tareasSubTabMC || 'activas';
+    // Sub-tab Activas/Vencidas/Por demostrar para la lista plana de Mis Tareas (Mis Cursos)
+    // 09/10/2026 (pedido de Michel): "Por demostrar" = tareas con Demostración (asignadas desde
+    // DEMO_CUTOFF) ya practicadas al 100% DENTRO del plazo y sin demostración terminada (incluye las
+    // que tienen el 1.er intento hecho), aunque ya hayan vencido. Mientras falte demostrarlas se
+    // MUEVEN a esta pestaña (no aparecen en Activas ni Vencidas). En horario de clase, si hay alguna,
+    // la pestaña se abre sola (hasta que el alumno elija otra).
+    const _hAscMC = Array.isArray(_prepHistoryData) ? _prepHistoryData.slice().reverse() : [];
+    const _isPorDemostrarMC = (t) => !!t && !t.demo && typeof DEMO_CUTOFF_SEC !== 'undefined' && (t.assignedAt || 0) >= DEMO_CUTOFF_SEC
+      && typeof _ptsTaskCompletionDate === 'function' && !!_ptsTaskCompletionDate(t, _hAscMC, true);
+    const _countDemoMC = _myTasks.filter(_isPorDemostrarMC).length;
+    const _enClaseMC = _countDemoMC > 0 && typeof _demoClaseActual === 'function' && !!_demoClaseActual(_taskUid);
+    const _tSubTabMC = _prep.tareasSubTabMC || (_enClaseMC ? 'demostrar' : 'activas');
     // Una tarea es "vencida" simplemente si ya pasó su fecha de vencimiento, esté o no
     // completada — antes una tarea completada nunca pasaba a "Vencidas" sin importar la
     // fecha, lo que hacía que tareas ya hechas pero con vencimiento pasado se quedaran
     // mezcladas para siempre en "Activas".
     const _isVencidaMC = (t) => !!t.dueAt && t.dueAt < (Date.now()/1000);
     let _countActivasMC = 0, _countVencidasMC = 0;
-    _myTasks.forEach(t => { if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
+    _myTasks.forEach(t => { if (_isPorDemostrarMC(t)) return; if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
     _myDesafios.forEach(d => { if (_isVencidaMC(d)) _countVencidasMC++; else _countActivasMC++; });
     const _tSubBtnMC = (key, lbl, n) => `<button onclick="_prep.tareasSubTabMC='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTabMC===key?' sel':''}">${lbl} (${n})</button>`;
     const _tSubHdrMC = (_myTasks.length || _myDesafios.length) ? `<div style="display:flex;gap:6px;margin:14px 0 14px">
       ${_tSubBtnMC('activas','Activas',_countActivasMC)}
       ${_tSubBtnMC('vencidas','Vencidas',_countVencidasMC)}
+      ${_tSubBtnMC('demostrar','Por demostrar',_countDemoMC)}
     </div>` : '';
-    const _myTasksFiltered = _myTasks.filter(t => _tSubTabMC==='vencidas' ? _isVencidaMC(t) : !_isVencidaMC(t));
-    const _tareasEmptyMsgMC = _tSubTabMC==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
+    const _myTasksFiltered = _myTasks.filter(t => _tSubTabMC==='demostrar' ? _isPorDemostrarMC(t)
+      : (!_isPorDemostrarMC(t) && (_tSubTabMC==='vencidas' ? _isVencidaMC(t) : !_isVencidaMC(t))));
+    const _tareasEmptyMsgMC = _tSubTabMC==='demostrar' ? 'No tienes tareas por demostrar 🎉' : _tSubTabMC==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
     const _taskCards = _myTasksFiltered.map(t => {
       const _isExamT = !!t.exam;
       const _taskId  = _isExamT ? `exam:${(t.skills||[]).join(',')}` : t.topic;
@@ -23863,18 +23875,18 @@ function _prepConfigHtml() {
             if (_it1) {   // 1.er intento sin 100%: muestra el resultado y, si sigue en esa clase, el 2.º intento
               const _r = _it1.incompleta ? '1.er intento interrumpido' : `1.er intento ${_it1.correct}/${_it1.total}`;
               const _ok2 = _demoPuedeReintentar(t, _taskUid);
-              return `<div style="${_pill};background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.35);color:#fbbf24">⏱ ${_r}</div>` + (_ok2 ? ` <button onclick="event.stopPropagation();_demoAviso('${_rmId}')" title="Último intento · cuenta el mejor de los 2" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:pointer;font-family:inherit">⏱ Demostrar · 2.º intento</button>` : '');
+              return `<div style="${_pill};background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.35);color:#fbbf24">⏱ ${_r}</div>` + (_ok2 ? ` <button onclick="event.stopPropagation();_demoAviso('${_rmId}',${Number(t.assignedAt) || 0})" title="Último intento · cuenta el mejor de los 2" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:pointer;font-family:inherit">⏱ Demostrar · 2.º intento</button>` : '');
             }
             if (!_done) return '';
             const _ok = _demoEnClase(_taskUid);
-            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoAviso('${_rmId}')" title="${_ok?'5 preguntas en 3 minutos · 2 intentos en la misma clase (cuenta el mejor)':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
+            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoAviso('${_rmId}',${Number(t.assignedAt) || 0})" title="${_ok?'5 preguntas en 3 minutos · 2 intentos en la misma clase (cuenta el mejor)':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
           })()}
         </div>
       </div>`;
     }).join('');
-    const _tasksSection = _myTasks.length ? `${_secHdr('Mis Tareas')}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : ''}` : '';
+    const _tasksSection = _myTasksFiltered.length ? `${_secHdr(_tSubTabMC==='demostrar' ? 'Por demostrar en clase' : 'Mis Tareas')}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : ''}` : '';
     // ── Desafío de Dominio ────────────────────────────────────────────────────
-    const _myDesafiosFiltered = _myDesafios.filter(d => _tSubTabMC==='vencidas' ? _isVencidaMC(d) : !_isVencidaMC(d));
+    const _myDesafiosFiltered = _tSubTabMC==='demostrar' ? [] : _myDesafios.filter(d => _tSubTabMC==='vencidas' ? _isVencidaMC(d) : !_isVencidaMC(d));
     const _retoColorDs = {Suma:'#22d3ee',Resta:'#ec4899',Multiplicación:'#fbbf24',División:'#a855f7',Multiplicacion:'#fbbf24',Division:'#a855f7','Op. Combinada':'#f97316',Ecuación:'#10b981'};
     const _retoRgbDs   = {Suma:'34,211,238',Resta:'236,72,153',Multiplicación:'251,191,36',División:'168,85,247',Multiplicacion:'251,191,36',Division:'168,85,247','Op. Combinada':'249,115,22',Ecuación:'16,185,129'};
     const _nivelLblDs = ['','Básico','Intermedio','Avanzado'];
@@ -26563,10 +26575,20 @@ function _demoPuedeReintentar(t, uid) {
   const c = _demoClaseActual(uid);
   return !!c && c === it[0].clase;
 }
-async function _demoStart(taskId) {
+// 09/10/2026: una misma actividad puede estar asignada varias veces (p. ej. se venció y el profesor
+// la volvió a asignar). Antes se tomaba siempre la PRIMERA tarea con ese tema, que podía ser la vieja
+// ya demostrada → "La demostración de esta tarea ya terminó" en la tarea nueva. Ahora se busca por
+// tema + fecha de asignación; sin fecha, la más reciente que aún no tenga demostración terminada.
+function _demoFindTask(tasks, taskId, asg) {
+  const ms = (tasks || []).filter(x => _demoTaskId(x) === taskId);
+  if (asg) { const e = ms.find(x => (x.assignedAt || 0) === Number(asg)); if (e) return e; }
+  const byNew = ms.slice().sort((a, b) => (b.assignedAt || 0) - (a.assignedAt || 0));
+  return byNew.find(x => !x.demo) || byNew[0];
+}
+async function _demoStart(taskId, asg) {
   const uid = String(getLoggedId());
   const tasks = (overrides[uid] || {}).prepTasks || [];
-  const t = tasks.find(x => _demoTaskId(x) === taskId);
+  const t = _demoFindTask(tasks, taskId, asg);
   if (!t) { showToast('No encontré la tarea.'); return; }
   if (t.demo) { showToast('La demostración de esta tarea ya terminó.'); return; }
   const clase = _demoClaseActual(uid);
@@ -26587,7 +26609,7 @@ async function _demoStart(taskId) {
   t.demoIntentos = prev.concat([{ incompleta: true, pct: 0, correct: 0, total: qs.length, secs: 0, at: Math.floor(Date.now() / 1000), clase: clase }]);
   try { await REF.update({ ['overrides.' + uid + '.prepTasks']: tasks }); } catch (e) { console.error('demo start save', e); }
   _prepPaused = false; _prepPausedMs = 0; _prepPauseAskPin = false; _prepPausePinErr = false;
-  Object.assign(_prep, { state: 'exam', topic: firstKey, isUnitExam: false, quizNum: 0, unitSkillList: [], unitDone: [], questions: qs, answers: [], currentIdx: 0, selectedOpt: null, answered: false, startTime: Date.now(), endTime: null, timeLeft: 180, timeUnlimited: false, showReview: false, lives: 5, maxLives: 5, streak: 0, streakBonusAccum: 0, gameStartTime: Date.now(), retryLock: false, gameOver: false, qStartTime: Date.now(), customConfig: false, demo: { uid: uid, taskId: taskId, label: label, intento: t.demoIntentos.length } });
+  Object.assign(_prep, { state: 'exam', topic: firstKey, isUnitExam: false, quizNum: 0, unitSkillList: [], unitDone: [], questions: qs, answers: [], currentIdx: 0, selectedOpt: null, answered: false, startTime: Date.now(), endTime: null, timeLeft: 180, timeUnlimited: false, showReview: false, lives: 5, maxLives: 5, streak: 0, streakBonusAccum: 0, gameStartTime: Date.now(), retryLock: false, gameOver: false, qStartTime: Date.now(), customConfig: false, demo: { uid: uid, taskId: taskId, asg: t.assignedAt || 0, label: label, intento: t.demoIntentos.length } });
   clearInterval(_prepTimerIntv); _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
   _prepStartInactivityWatcher();
@@ -26608,16 +26630,16 @@ const DEMO_ESCALERA = [
   { k: 0, c: '#ef4444', t: '−1 punto · −1 tarea por día', s: 'y no participas en el torneo de este mes' },
 ];
 function _demoAvisoCerrar() { const el = document.getElementById('_demo_aviso'); if (el) el.remove(); }
-function _demoAviso(taskId) {
+function _demoAviso(taskId, asg) {
   const uid = String(getLoggedId());
   const tasks = (overrides[uid] || {}).prepTasks || [];
-  const t = tasks.find(x => _demoTaskId(x) === taskId);
+  const t = _demoFindTask(tasks, taskId, asg);
   if (!t) { showToast('No encontré la tarea.'); return; }
   if (t.demo) { showToast('La demostración de esta tarea ya terminó.'); return; }
   const clase = _demoClaseActual(uid);
   if (!clase) { showToast('La demostración solo se puede hacer durante tu clase.'); return; }
   const prev = _demoIntentos(t);
-  if (prev.length >= DEMO_MAX_INTENTOS || (prev.length === 1 && prev[0].clase !== clase)) { _demoStart(taskId); return; } // _demoStart cierra y avisa
+  if (prev.length >= DEMO_MAX_INTENTOS || (prev.length === 1 && prev[0].clase !== clase)) { _demoStart(taskId, t.assignedAt || 0); return; } // _demoStart cierra y avisa
   _demoAvisoCerrar();
   if (typeof _snd !== 'undefined' && _snd.click) _snd.click();
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -26649,7 +26671,7 @@ function _demoAviso(taskId) {
     <div style="font-size:12px;color:#9a9cb4">Si sales de la demostración a la mitad, se gasta el intento.</div>
     <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:8px;position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom,0px));margin-bottom:calc(-18px - env(safe-area-inset-bottom,0px));padding:8px 0 calc(18px + env(safe-area-inset-bottom,0px));background:#151726">
       <button type="button" onclick="_demoAvisoCerrar()" style="min-height:46px;border-radius:12px;font-weight:900;font-size:14px;font-family:inherit;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);cursor:pointer">Ahora no</button>
-      <button type="button" onclick="_demoAvisoCerrar();_demoStart('${String(taskId).replace(/'/g, "\\'")}')" style="min-height:46px;border-radius:12px;font-weight:900;font-size:14px;font-family:inherit;color:#fff;background:#6d28d9;border:0;cursor:pointer">${p1 ? 'Empezar 2.º intento' : 'Empezar demostración'}</button>
+      <button type="button" onclick="_demoAvisoCerrar();_demoStart('${String(taskId).replace(/'/g, "\\'")}',${Number(t.assignedAt) || 0})" style="min-height:46px;border-radius:12px;font-weight:900;font-size:14px;font-family:inherit;color:#fff;background:#6d28d9;border:0;cursor:pointer">${p1 ? 'Empezar 2.º intento' : 'Empezar demostración'}</button>
     </div></div>`;
   document.body.appendChild(ov);
 }
@@ -26730,7 +26752,7 @@ async function _demoFinish() {
   const dm = _prep.demo; _prep.demo = null;
   const uid = dm.uid, o = overrides[uid] = overrides[uid] || {};
   const tasks = o.prepTasks || [];
-  const t = tasks.find(x => _demoTaskId(x) === dm.taskId);
+  const t = _demoFindTask(tasks, dm.taskId, dm.asg);
   const total = (_prep.questions || []).length || 5;
   const correct = (_prep.answers || []).filter(a => a.correct).length;
   const pct = Math.round(correct / total * 100);
