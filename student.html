@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20261009b"></script>
+  <script src="/levelup.js?v=20261009d"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2803,7 +2803,7 @@ const PTS_EXAM = 3;
 function _ptsQuizExamEventsForDate(histAsc, dateKey, studentId) {
   if (!Array.isArray(histAsc) || !dateKey || dateKey < PTS_QE_FROM) return [];
   const pct = h => (typeof _prepReEvalPct === 'function') ? _prepReEvalPct(h) : (h.pct || 0);
-  const direct = histAsc.filter(h => h && h.topic && !h.customConfig && !h.partial && !h.autoFromExam && !h.autoFromQuiz && h.completedAt?.seconds);
+  const direct = histAsc.filter(h => h && h.topic && !h.isDemo && !String(h.topic).startsWith('demo:') && !h.customConfig && !h.partial && !h.autoFromExam && !h.autoFromQuiz && h.completedAt?.seconds);
   const events = [];
   // Exámenes: primer intento directo al 100% de cada examen de unidad.
   const exFirst = {};
@@ -2836,7 +2836,9 @@ function _ptsQuizExamEventsForDate(histAsc, dateKey, studentId) {
 // _skillsScore en el panel admin de Preparate (levelup.js) — reimplementado aquí porque esa
 // función vive como closure local dentro de _renderPreparatePane y no es accesible desde afuera.
 function _ptsPureSkills(skills) {
-  const pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
+  // 09/10/2026: las demostraciones (tema 'demo:…') tampoco son habilidades: validan la tarea pero
+  // no suman Progreso (antes cada demostración al 100% sumaba +1 como si fuera una habilidad nueva).
+  const pf = k => !/_bq\d/.test(k) && !k.includes('_bpu') && !String(k).startsWith('demo:');
   return (skills||[]).filter(pf);
 }
 // ── Puntos de Tareas (regla v3, 02/10/2026, aprobada por el profesor) ───────────────────────

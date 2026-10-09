@@ -22760,6 +22760,8 @@ function _prepConfigHtml() {
             // Demostración (D1): etiqueta en la línea de abajo; solo tareas asignadas desde el 1 de octubre.
             const _demoPill2 = (typeof DEMO_CUTOFF_SEC === 'undefined' || (t.assignedAt || 0) < DEMO_CUTOFF_SEC) ? '' : (() => {
               const _dm = t.demo, _pl = (bg, fg, bd, txt) => `<span style="font-size:10px;font-weight:800;letter-spacing:.04em;padding:2px 8px;border-radius:20px;white-space:nowrap;margin-left:8px;background:${bg};color:${fg};border:1px solid ${bd}">${txt}</span>`;
+              const _it1p = (!_dm && Array.isArray(t.demoIntentos) && t.demoIntentos.length === 1) ? t.demoIntentos[0] : null;
+              if (_it1p) return _pl('transparent', '#fbbf24', '#fbbf24', _it1p.incompleta ? 'Demo 1.º interrumpido · queda 1' : `Demo 1.º ${_it1p.correct}/${_it1p.total} · queda 1`);
               if (!_dm) return _pl('transparent', '#fff', '#fff', 'Demo pendiente');
               if (_dm.incompleta) return _pl('#000', '#fff', '#000', 'Demo interrumpida');
               const _p = Number(_dm.pct) || 0, _c = _p >= 80 ? '#22c55e' : _p >= 60 ? '#fbbf24' : '#ff4d5e';
@@ -23721,6 +23723,7 @@ function _prepConfigHtml() {
     // ── Mis Tareas ────────────────────────────────────────────────────────────
     const _taskUid = String(typeof getLoggedId === 'function' ? getLoggedId() : null);
     const _myTasks = (overrides[_taskUid]?.prepTasks) || [];
+    if (typeof _demoCerrarPendientes === 'function' && _myTasks.some(x => !x.demo && Array.isArray(x.demoIntentos) && x.demoIntentos.length)) setTimeout(() => _demoCerrarPendientes(_taskUid), 0);
     const _myDesafios = (overrides[_taskUid]?.prepDesafios) || [];
     // Función de navegación para tareas (skill o examen)
     const _taskNavStr = (t) => {
@@ -23760,6 +23763,10 @@ function _prepConfigHtml() {
       const sessions = _prepHistoryData.filter(h => {
         const sec = h.completedAt?.seconds || 0;
         if (sec < _from || sec > _to) return false;
+        // 09/10/2026: los registros automáticos que deja el examen/cuestionario en cada habilidad
+        // no traen preguntas; si eran los más recientes, la tarjeta mostraba "0% Sin intentos" y
+        // escondía el botón Demostrar aunque el alumno ya la había hecho al 100%.
+        if (!Array.isArray(h.answers) || !h.answers.length) return false;
         if (isUnitExam) return h.isUnitExam && h.topic === topicKey && !h.autoFromExam && !h.autoFromQuiz;
         if (isQuiz)     return h.topic === topicKey && !h.autoFromExam && !h.autoFromQuiz;
         return h.topic === topicKey;
@@ -23852,9 +23859,15 @@ function _prepConfigHtml() {
             const _pill = 'display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight:800;letter-spacing:.03em';
             if (dm && dm.incompleta) return `<div style="${_pill};background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);color:#fca5a5">⏱ Demostración interrumpida</div>`;
             if (dm) { const c = dm.pct >= 80 ? ['rgba(34,197,94,0.15)','rgba(34,197,94,0.45)','#4ade80'] : dm.pct >= 60 ? ['rgba(251,191,36,0.15)','rgba(251,191,36,0.45)','#fbbf24'] : ['rgba(248,113,113,0.15)','rgba(248,113,113,0.45)','#fca5a5']; return `<div style="${_pill};background:${c[0]};border:1px solid ${c[1]};color:${c[2]}">⏱ Demostración ${dm.correct}/${dm.total} · ${Math.floor((dm.secs||0)/60)}:${String((dm.secs||0)%60).padStart(2,'0')}${dm.pct===100?' · ✓ Punto validado':''}</div>`; }
+            const _it1 = (Array.isArray(t.demoIntentos) && t.demoIntentos.length === 1) ? t.demoIntentos[0] : null;
+            if (_it1) {   // 1.er intento sin 100%: muestra el resultado y, si sigue en esa clase, el 2.º intento
+              const _r = _it1.incompleta ? '1.er intento interrumpido' : `1.er intento ${_it1.correct}/${_it1.total}`;
+              const _ok2 = _demoPuedeReintentar(t, _taskUid);
+              return `<div style="${_pill};background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.35);color:#fbbf24">⏱ ${_r}</div>` + (_ok2 ? ` <button onclick="event.stopPropagation();_demoStart('${_rmId}')" title="Último intento · cuenta el mejor de los 2" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:pointer;font-family:inherit">⏱ Demostrar · 2.º intento</button>` : '');
+            }
             if (!_done) return '';
             const _ok = _demoEnClase(_taskUid);
-            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoStart('${_rmId}')" title="${_ok?'5 preguntas en 3 minutos · un solo intento':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
+            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoStart('${_rmId}')" title="${_ok?'5 preguntas en 3 minutos · 2 intentos en la misma clase (cuenta el mejor)':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
           })()}
         </div>
       </div>`;
@@ -26516,42 +26529,95 @@ function _demoBuildQs(t) {
   }
   return qs;
 }
+// ── Demostración con 2 intentos (09/10/2026, decidido por el profesor) ─────────────────────
+// · Cada tarea tiene hasta 2 intentos de demostración, ambos en la MISMA clase.
+// · Si el 1.º sale 100% ya no hay 2.º. Cuenta el MEJOR de los intentos.
+// · Las consecuencias (+/− tareas a futuro, −puntos, torneo) se aplican UNA sola vez, al cerrar la
+//   demostración: tras un 100%, tras el 2.º intento, o cuando el alumno ya no está en la clase del
+//   1.º intento sin haber usado el 2.º (se cierra con el 1.º, ver _demoCerrarPendientes).
+// · Interrumpir un intento lo gasta (queda como intento sin terminar, 0%).
+// Datos: t.demoIntentos = [{pct, correct, total, secs, at, clase, incompleta?}] y t.demo = resultado
+// final (igual que antes: lo que usan los puntos, la pestaña Tareas y el panel del profesor).
+const DEMO_MAX_INTENTOS = 2;
+// Identificador de la clase en curso ('YYYY-MM-DD HH:MM'), o null si no está en clase. El profesor
+// dentro de la cuenta del alumno cuenta como "en clase" todo el día (misma regla que _demoEnClase).
+function _demoClaseActual(uid) {
+  const now = new Date(), key = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  if (typeof _isTeacher === 'function' && _isTeacher()) return key + ' prof';
+  try {
+    const st = (getStudents() || []).find(s => String(s.id) === String(uid));
+    if (!st || typeof getClassDatesForStudent !== 'function') return null;
+    const hoy = getClassDatesForStudent(st.name, 0).find(d => d.key === key);
+    if (!hoy) return null;
+    const min = now.getHours() * 60 + now.getMinutes();
+    const sl = (hoy.slots || []).find(sl => { const p = String(sl.start || '').split(':').map(Number); if (p.length < 2 || isNaN(p[0])) return false; const ini = p[0] * 60 + p[1]; return min >= ini && min < ini + (sl.dur || 60); });
+    return sl ? key + ' ' + sl.start : null;
+  } catch (e) { console.error('demo clase', e); return null; }
+}
+function _demoIntentos(t) { return (t && Array.isArray(t.demoIntentos)) ? t.demoIntentos : []; }
+// ¿La tarea tiene un 1.er intento sin 100% y todavía puede usar el 2.º (misma clase)?
+function _demoPuedeReintentar(t, uid) {
+  if (!t || t.demo) return false;
+  const it = _demoIntentos(t);
+  if (it.length !== 1) return false;
+  const c = _demoClaseActual(uid);
+  return !!c && c === it[0].clase;
+}
 async function _demoStart(taskId) {
   const uid = String(getLoggedId());
   const tasks = (overrides[uid] || {}).prepTasks || [];
   const t = tasks.find(x => _demoTaskId(x) === taskId);
   if (!t) { showToast('No encontré la tarea.'); return; }
-  if (t.demo) { showToast('La demostración de esta tarea ya se hizo (un solo intento).'); return; }
-  if (!_demoEnClase(uid)) { showToast('La demostración solo se puede hacer durante tu clase.'); return; }
+  if (t.demo) { showToast('La demostración de esta tarea ya terminó.'); return; }
+  const clase = _demoClaseActual(uid);
+  if (!clase) { showToast('La demostración solo se puede hacer durante tu clase.'); return; }
+  const prev = _demoIntentos(t);
+  if (prev.length >= DEMO_MAX_INTENTOS) { await _demoCerrar(uid, t); showToast('Ya usaste los 2 intentos de esta demostración.'); return; }
+  if (prev.length === 1 && prev[0].clase !== clase) {
+    await _demoCerrar(uid, t);
+    showToast('El 2.º intento solo se podía hacer en la misma clase del 1.º.');
+    return;
+  }
   _prep.ansMode = 'mc';
   const qs = _demoBuildQs(t);
   if (!qs.length) { showToast('No se pudieron generar las preguntas de la demostración.'); return; }
   const firstKey = t.exam ? ((t.skills || []).find(k => BINGO_TOPICS[k] && !BINGO_TOPICS[k].quiz) || (t.skills || [])[0]) : t.topic;
   const label = t.exam ? (t.label || 'Examen de unidad') : _cleanLbl((BINGO_TOPICS[t.topic] || {}).lbl, t.topic);
-  // Un solo intento: se marca como iniciada antes de empezar (si se interrumpe, queda "Interrumpida").
-  t.demo = { incompleta: true, pct: 0, correct: 0, total: qs.length, secs: 0, at: Math.floor(Date.now() / 1000) };
+  // El intento se anota ANTES de empezar: si se interrumpe, queda gastado (sin terminar, 0%).
+  t.demoIntentos = prev.concat([{ incompleta: true, pct: 0, correct: 0, total: qs.length, secs: 0, at: Math.floor(Date.now() / 1000), clase: clase }]);
   try { await REF.update({ ['overrides.' + uid + '.prepTasks']: tasks }); } catch (e) { console.error('demo start save', e); }
   _prepPaused = false; _prepPausedMs = 0; _prepPauseAskPin = false; _prepPausePinErr = false;
-  Object.assign(_prep, { state: 'exam', topic: firstKey, isUnitExam: false, quizNum: 0, unitSkillList: [], unitDone: [], questions: qs, answers: [], currentIdx: 0, selectedOpt: null, answered: false, startTime: Date.now(), endTime: null, timeLeft: 180, timeUnlimited: false, showReview: false, lives: 5, maxLives: 5, streak: 0, streakBonusAccum: 0, gameStartTime: Date.now(), retryLock: false, gameOver: false, qStartTime: Date.now(), customConfig: false, demo: { uid: uid, taskId: taskId, label: label } });
+  Object.assign(_prep, { state: 'exam', topic: firstKey, isUnitExam: false, quizNum: 0, unitSkillList: [], unitDone: [], questions: qs, answers: [], currentIdx: 0, selectedOpt: null, answered: false, startTime: Date.now(), endTime: null, timeLeft: 180, timeUnlimited: false, showReview: false, lives: 5, maxLives: 5, streak: 0, streakBonusAccum: 0, gameStartTime: Date.now(), retryLock: false, gameOver: false, qStartTime: Date.now(), customConfig: false, demo: { uid: uid, taskId: taskId, label: label, intento: t.demoIntentos.length } });
   clearInterval(_prepTimerIntv); _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
   _prepStartInactivityWatcher();
   _snd.start();
   _renderPreparatePane();
 }
-async function _demoFinish() {
-  const dm = _prep.demo; _prep.demo = null;
-  const uid = dm.uid, o = overrides[uid] = overrides[uid] || {};
+// Cierra la demostración de una tarea con el MEJOR intento y aplica sus consecuencias (una vez).
+// Devuelve el texto de las consecuencias para el aviso.
+async function _demoCerrar(uid, t) {
+  if (!t || t.demo) return [];
+  const o = overrides[uid] = overrides[uid] || {};
   const tasks = o.prepTasks || [];
-  const t = tasks.find(x => _demoTaskId(x) === dm.taskId);
-  const total = (_prep.questions || []).length || 5;
-  const correct = (_prep.answers || []).filter(a => a.correct).length;
-  const pct = Math.round(correct / total * 100);
-  const secs = Math.min(180, Math.round(((_prep.endTime || Date.now()) - (_prep.startTime || Date.now())) / 1000));
+  const it = _demoIntentos(t);
+  if (!it.length) return [];
+  const hechos = it.filter(x => !x.incompleta);
+  const partes = [];
+  if (!hechos.length) {
+    // Todos los intentos quedaron interrumpidos: igual que antes, sin punto y sin consecuencias.
+    const last = it[it.length - 1];
+    t.demo = { incompleta: true, pct: 0, correct: 0, total: last.total || 5, secs: 0, at: last.at, intentos: it.length };
+    try { await REF.update({ ['overrides.' + uid + '.prepTasks']: tasks }); } catch (e) { console.error('demo save', e); }
+    partes.push('sin punto de la tarea');
+    return partes;
+  }
+  const best = hechos.reduce((a, b) => (b.pct > a.pct ? b : a));
+  const pct = best.pct;
   // Mes de la tarea = mes en que hizo la práctica al 100% (fuera de clase); si no se encuentra, el actual.
   const _now = new Date(), hoyKey = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0') + '-' + String(_now.getDate()).padStart(2, '0');
   let ym = hoyKey.slice(0, 7);
-  try { const hAsc = (Array.isArray(_prepHistoryData) ? _prepHistoryData : []).slice().reverse(); const dk = t && typeof _ptsTaskCompletionDate === 'function' ? _ptsTaskCompletionDate(t, hAsc, true) : null; if (dk) ym = dk.slice(0, 7); } catch (e) {}
+  try { const hAsc = (Array.isArray(_prepHistoryData) ? _prepHistoryData : []).slice().reverse(); const dk = typeof _ptsTaskCompletionDate === 'function' ? _ptsTaskCompletionDate(t, hAsc, true) : null; if (dk) ym = dk.slice(0, 7); } catch (e) {}
   // Consecuencias (reglas de Michel)
   const curMax = (typeof _ptsTasksMax === 'function') ? _ptsTasksMax(uid, hoyKey) : 5;
   let dMax = 0, penal = 0, ban = false;
@@ -26563,10 +26629,11 @@ async function _demoFinish() {
   // Tope de 5 tareas: si ya tiene 5 y le tocaba +1, en vez de eso gana 1 punto.
   const _tope = (typeof PTS_TASKS_MAX !== 'undefined') ? PTS_TASKS_MAX : 5;
   if (dMax > 0 && curMax >= _tope) { dMax = 0; penal -= 1; }
-  if (dMax) { o.tasksMaxLog = (o.tasksMaxLog || []).concat([{ at: hoyKey, v: Math.max(0, curMax + dMax), por: dm.taskId }]); }
+  const taskId = _demoTaskId(t);
+  if (dMax) { o.tasksMaxLog = (o.tasksMaxLog || []).concat([{ at: hoyKey, v: Math.max(0, curMax + dMax), por: taskId }]); }
   if (penal) { o.demoPenal = Object.assign({}, o.demoPenal || {}); o.demoPenal[ym] = (Number(o.demoPenal[ym]) || 0) + penal; }
   if (ban) { o.torneoBan = Object.assign({}, o.torneoBan || {}); o.torneoBan[ym] = (Number(o.torneoBan[ym]) || 0) >= 1 ? 2 : 1; }
-  if (t) t.demo = { pct: pct, correct: correct, total: total, secs: secs, at: Math.floor(Date.now() / 1000), ym: ym, efectos: { tareas: dMax, puntos: -penal, torneo: ban ? o.torneoBan[ym] : 0 } };
+  t.demo = { pct: pct, correct: best.correct, total: best.total, secs: best.secs, at: best.at, ym: ym, intentos: it.length, efectos: { tareas: dMax, puntos: -penal, torneo: ban ? o.torneoBan[ym] : 0 } };
   try {
     await REF.update({
       ['overrides.' + uid + '.prepTasks']: tasks,
@@ -26575,17 +26642,55 @@ async function _demoFinish() {
       ['overrides.' + uid + '.torneoBan']: o.torneoBan || {}
     });
   } catch (e) { console.error('demo save', e); showToast('No se pudo guardar el resultado de la demostración.'); }
-  // Queda en el historial como una actividad más (tema "demo:…" para no contar como práctica del tema).
-  try {
-    const me = _bingoMe();
-    if (me && me.uid) db.collection('prepHistory').add({ uid: me.uid, name: me.name, level: _prep.level || '', grade: _prep.grade || '', topic: 'demo:' + (_prep.topic || ''), topicLabel: 'Demostración · ' + dm.label, isDemo: true, demoTaskId: dm.taskId, correct: correct, total: total, pct: pct, timeSec: secs, customConfig: false, answers: (_prep.answers || []).map(a => ({ q: a.q, a: a.a, given: a.given, correct: a.correct, timeSec: a.timeSec || 0, _id: a._id ?? null, _src: a._src || null })), completedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(e => console.error('demo hist', e));
-  } catch (e) { console.error('demo hist', e); }
-  const partes = [];
   partes.push(pct === 100 ? 'punto de la tarea validado' : 'sin punto de la tarea');
   if (dMax) partes.push((dMax > 0 ? '+1' : '−1') + ' tareas a futuro');
   if (penal > 0) partes.push('−' + penal + ' punto' + (penal > 1 ? 's' : ''));
   if (penal < 0) partes.push('+' + (-penal) + ' punto (ya tenía el máximo de tareas)');
   if (ban) partes.push(o.torneoBan[ym] >= 2 ? 'sin opción a 1.º y 2.º puesto' : 'no participa en el torneo');
+  return partes;
+}
+// Cierra las demostraciones que quedaron con 1 intento cuando el alumno ya no está en esa clase
+// (no usó el 2.º intento). Lo corre el propio alumno al cargar Level Up / ver sus tareas.
+let _demoCerrandoPend = false;
+async function _demoCerrarPendientes(uid) {
+  if (_demoCerrandoPend || uid === null || uid === undefined) return;
+  if (typeof isAdmin === 'function' && isAdmin()) return;
+  const o = overrides[String(uid)] || {};
+  const pend = (o.prepTasks || []).filter(t => !t.demo && _demoIntentos(t).length >= 1 && !_demoPuedeReintentar(t, uid) && !(_prep && _prep.demo && _prep.demo.taskId === _demoTaskId(t)));
+  if (!pend.length) return;
+  _demoCerrandoPend = true;
+  try { for (const t of pend) await _demoCerrar(String(uid), t); } catch (e) { console.error('demo pendientes', e); }
+  _demoCerrandoPend = false;
+  try { _renderPreparatePane(); } catch (e) {}
+}
+async function _demoFinish() {
+  const dm = _prep.demo; _prep.demo = null;
+  const uid = dm.uid, o = overrides[uid] = overrides[uid] || {};
+  const tasks = o.prepTasks || [];
+  const t = tasks.find(x => _demoTaskId(x) === dm.taskId);
+  const total = (_prep.questions || []).length || 5;
+  const correct = (_prep.answers || []).filter(a => a.correct).length;
+  const pct = Math.round(correct / total * 100);
+  const secs = Math.min(180, Math.round(((_prep.endTime || Date.now()) - (_prep.startTime || Date.now())) / 1000));
+  let partes = [];
+  if (t) {
+    const it = _demoIntentos(t).slice();
+    const idx = it.length ? it.length - 1 : 0;
+    it[idx] = { pct: pct, correct: correct, total: total, secs: secs, at: Math.floor(Date.now() / 1000), clase: (it[idx] && it[idx].clase) || _demoClaseActual(uid) };
+    t.demoIntentos = it;
+    if (pct >= 100 || it.length >= DEMO_MAX_INTENTOS) {
+      partes = await _demoCerrar(uid, t);
+    } else {
+      // 1.er intento sin 100%: se guarda y queda 1 intento más en esta misma clase (sin consecuencias aún).
+      try { await REF.update({ ['overrides.' + uid + '.prepTasks']: tasks }); } catch (e) { console.error('demo save', e); showToast('No se pudo guardar el resultado de la demostración.'); }
+      partes = ['te queda 1 intento más en esta clase'];
+    }
+  }
+  // Queda en el historial como una actividad más (tema "demo:…" para no contar como práctica del tema).
+  try {
+    const me = _bingoMe();
+    if (me && me.uid) db.collection('prepHistory').add({ uid: me.uid, name: me.name, level: _prep.level || '', grade: _prep.grade || '', topic: 'demo:' + (_prep.topic || ''), topicLabel: 'Demostración · ' + dm.label + (dm.intento > 1 ? ' (2.º intento)' : ''), isDemo: true, demoTaskId: dm.taskId, demoIntento: dm.intento || 1, correct: correct, total: total, pct: pct, timeSec: secs, customConfig: false, answers: (_prep.answers || []).map(a => ({ q: a.q, a: a.a, given: a.given, correct: a.correct, timeSec: a.timeSec || 0, _id: a._id ?? null, _src: a._src || null })), completedAt: firebase.firestore.FieldValue.serverTimestamp() }).catch(e => console.error('demo hist', e));
+  } catch (e) { console.error('demo hist', e); }
   showToast('Demostración ' + correct + '/' + total + ': ' + partes.join(' · '), pct >= 80 ? 'success' : 'error');
   _renderPreparatePane();
 }
