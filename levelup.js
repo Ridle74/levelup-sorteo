@@ -23858,16 +23858,16 @@ function _prepConfigHtml() {
             const dm = t.demo;
             const _pill = 'display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight:800;letter-spacing:.03em';
             if (dm && dm.incompleta) return `<div style="${_pill};background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);color:#fca5a5">⏱ Demostración interrumpida</div>`;
-            if (dm) { const c = dm.pct >= 80 ? ['rgba(34,197,94,0.15)','rgba(34,197,94,0.45)','#4ade80'] : dm.pct >= 60 ? ['rgba(251,191,36,0.15)','rgba(251,191,36,0.45)','#fbbf24'] : ['rgba(248,113,113,0.15)','rgba(248,113,113,0.45)','#fca5a5']; return `<div style="${_pill};background:${c[0]};border:1px solid ${c[1]};color:${c[2]}">⏱ Demostración ${dm.correct}/${dm.total} · ${Math.floor((dm.secs||0)/60)}:${String((dm.secs||0)%60).padStart(2,'0')}${dm.pct===100?' · ✓ Punto validado':''}</div>`; }
+            if (dm) { const c = dm.pct >= 80 ? ['rgba(34,197,94,0.15)','rgba(34,197,94,0.45)','#4ade80'] : dm.pct >= 60 ? ['rgba(251,191,36,0.15)','rgba(251,191,36,0.45)','#fbbf24'] : ['rgba(248,113,113,0.15)','rgba(248,113,113,0.45)','#fca5a5']; return `<div style="${_pill};background:${c[0]};border:1px solid ${c[1]};color:${c[2]}">⏱ Demostración ${dm.correct}/${dm.total} · ${Math.floor((dm.secs||0)/60)}:${String((dm.secs||0)%60).padStart(2,'0')}${dm.pct>=DEMO_PCT_PUNTO?' · ✓ Punto validado':''}</div>`; }
             const _it1 = (Array.isArray(t.demoIntentos) && t.demoIntentos.length === 1) ? t.demoIntentos[0] : null;
             if (_it1) {   // 1.er intento sin 100%: muestra el resultado y, si sigue en esa clase, el 2.º intento
               const _r = _it1.incompleta ? '1.er intento interrumpido' : `1.er intento ${_it1.correct}/${_it1.total}`;
               const _ok2 = _demoPuedeReintentar(t, _taskUid);
-              return `<div style="${_pill};background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.35);color:#fbbf24">⏱ ${_r}</div>` + (_ok2 ? ` <button onclick="event.stopPropagation();_demoStart('${_rmId}')" title="Último intento · cuenta el mejor de los 2" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:pointer;font-family:inherit">⏱ Demostrar · 2.º intento</button>` : '');
+              return `<div style="${_pill};background:rgba(251,191,36,0.10);border:1px solid rgba(251,191,36,0.35);color:#fbbf24">⏱ ${_r}</div>` + (_ok2 ? ` <button onclick="event.stopPropagation();_demoAviso('${_rmId}')" title="Último intento · cuenta el mejor de los 2" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:pointer;font-family:inherit">⏱ Demostrar · 2.º intento</button>` : '');
             }
             if (!_done) return '';
             const _ok = _demoEnClase(_taskUid);
-            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoStart('${_rmId}')" title="${_ok?'5 preguntas en 3 minutos · 2 intentos en la misma clase (cuenta el mejor)':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
+            return `<button ${_ok?'':'disabled'} onclick="event.stopPropagation();_demoAviso('${_rmId}')" title="${_ok?'5 preguntas en 3 minutos · 2 intentos en la misma clase (cuenta el mejor)':'Solo durante tu clase'}" style="${_pill};background:rgba(251,191,36,0.15);border:1px solid rgba(251,191,36,0.55);color:#fbbf24;cursor:${_ok?'pointer':'default'};opacity:${_ok?1:0.45};font-family:inherit">⏱ Demostrar${_ok?'':' · solo en clase'}</button>`;
           })()}
         </div>
       </div>`;
@@ -26594,6 +26594,65 @@ async function _demoStart(taskId) {
   _snd.start();
   _renderPreparatePane();
 }
+// ── Pantalla de reglas antes de la demostración (09/10/2026, opción A elegida por Michel) ──────
+// Al tocar "Demostrar" se abre una hoja desde abajo con las reglas y la escalera de premios y
+// castigos (DEMO_ESCALERA). La demostración empieza solo al tocar "Empezar" (_demoStart).
+// En el 2.º intento recuerda el resultado del 1.º y resalta ese escalón. Mismas validaciones que
+// _demoStart para no mostrar la hoja si no se puede empezar.
+const DEMO_ESCALERA = [
+  { k: 5, c: '#f5b524', t: '+1 tarea · +1 tarea por día', s: 'desde tu próxima clase', exam: '+1 punto extra por examen' },
+  { k: 4, c: '#4ade80', t: '+1 tarea', s: 'punto validado' },
+  { k: 3, c: '#9ca3af', t: 'Ni ganas ni pierdes', s: '' },
+  { k: 2, c: '#fb923c', t: '−1 punto', s: '' },
+  { k: 1, c: '#f87171', t: '−1 punto · −1 tarea por día', s: 'desde tu próxima clase' },
+  { k: 0, c: '#ef4444', t: '−1 punto · −1 tarea por día', s: 'y no participas en el torneo de este mes' },
+];
+function _demoAvisoCerrar() { const el = document.getElementById('_demo_aviso'); if (el) el.remove(); }
+function _demoAviso(taskId) {
+  const uid = String(getLoggedId());
+  const tasks = (overrides[uid] || {}).prepTasks || [];
+  const t = tasks.find(x => _demoTaskId(x) === taskId);
+  if (!t) { showToast('No encontré la tarea.'); return; }
+  if (t.demo) { showToast('La demostración de esta tarea ya terminó.'); return; }
+  const clase = _demoClaseActual(uid);
+  if (!clase) { showToast('La demostración solo se puede hacer durante tu clase.'); return; }
+  const prev = _demoIntentos(t);
+  if (prev.length >= DEMO_MAX_INTENTOS || (prev.length === 1 && prev[0].clase !== clase)) { _demoStart(taskId); return; } // _demoStart cierra y avisa
+  _demoAvisoCerrar();
+  if (typeof _snd !== 'undefined' && _snd.click) _snd.click();
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const name = t.exam ? (t.label || 'Examen de unidad') : _cleanLbl((BINGO_TOPICS[t.topic] || {}).lbl, t.topic);
+  const sub = t.exam ? 'Examen de unidad' : ((BINGO_TOPICS[t.topic] || {}).quiz ? 'Cuestionario' : 'Habilidad');
+  const p1 = prev.length === 1 ? prev[0] : null;
+  const p1k = p1 ? (p1.incompleta ? 0 : Math.round((p1.correct || 0))) : null;
+  const chip = 'font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)';
+  const rows = DEMO_ESCALERA.map(r => {
+    const hi = p1 && r.k === p1k;
+    const extra = (t.exam && r.exam) ? ` · <b style="color:#fde68a">${r.exam}</b>` : '';
+    return `<div style="display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:10px;min-height:40px;padding:6px 10px;border-radius:10px;background:#0f1020;border:1px solid ${hi ? 'rgba(251,191,36,.7)' : '#23253a'}">
+      <b style="font:800 18px/1 'Barlow Condensed',sans-serif;text-align:center;padding:5px 0;border-radius:7px;background:${r.c};color:#0b0b12">${r.k}/5</b>
+      <span style="font-size:13px;font-weight:700;color:#e3e4f0">${r.t}${(r.s || extra) ? `<small style="display:block;font-size:11.5px;font-weight:400;color:#9a9cb4">${r.s}${extra}</small>` : ''}</span></div>`;
+  }).join('');
+  const prevBox = p1 ? `<div style="padding:10px 12px;border-radius:12px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.4);font-size:13px;font-weight:700">Tu 1.er intento: ${p1.incompleta ? 'interrumpido (0/5)' : p1.correct + '/' + (p1.total || 5)}. Te queda 1 intento en esta clase; si sacas menos, se queda el ${p1.incompleta ? '0/5' : p1.correct + '/' + (p1.total || 5)}.</div>` : '';
+  const ov = document.createElement('div');
+  ov.id = '_demo_aviso';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(5,5,11,.85);display:flex;align-items:flex-end;justify-content:center';
+  ov.onclick = e => { if (e.target === ov) _demoAvisoCerrar(); };
+  ov.innerHTML = `<div role="dialog" aria-modal="true" aria-label="Reglas de la demostración" style="width:100%;max-width:440px;max-height:94vh;overflow:auto;background:#151726;border:1px solid #2a2c3e;border-bottom:0;border-radius:22px 22px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;color:#f2f2f7;box-sizing:border-box">
+    <div style="width:42px;height:5px;border-radius:9px;background:rgba(255,255,255,.2);margin:0 auto 2px"></div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8f91a8">Demostración · ${esc(sub)}</div>
+    <div style="font-weight:900;font-size:19px;line-height:1.15">${esc(name)}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px"><span style="${chip}">5 preguntas</span><span style="${chip}">3 minutos</span><span style="${chip}">2 intentos en esta clase</span><span style="${chip}">Cuenta el mejor</span></div>
+    ${prevBox}
+    <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8f91a8;margin-top:2px">Lo que te llevas</div>
+    <div style="display:flex;flex-direction:column;gap:5px">${rows}</div>
+    <div style="font-size:12px;color:#9a9cb4">Si sales de la demostración a la mitad, se gasta el intento.</div>
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:8px;position:sticky;bottom:calc(-18px - env(safe-area-inset-bottom,0px));margin-bottom:calc(-18px - env(safe-area-inset-bottom,0px));padding:8px 0 calc(18px + env(safe-area-inset-bottom,0px));background:#151726">
+      <button type="button" onclick="_demoAvisoCerrar()" style="min-height:46px;border-radius:12px;font-weight:900;font-size:14px;font-family:inherit;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);cursor:pointer">Ahora no</button>
+      <button type="button" onclick="_demoAvisoCerrar();_demoStart('${String(taskId).replace(/'/g, "\\'")}')" style="min-height:46px;border-radius:12px;font-weight:900;font-size:14px;font-family:inherit;color:#fff;background:#6d28d9;border:0;cursor:pointer">${p1 ? 'Empezar 2.º intento' : 'Empezar demostración'}</button>
+    </div></div>`;
+  document.body.appendChild(ov);
+}
 // Cierra la demostración de una tarea con el MEJOR intento y aplica sus consecuencias (una vez).
 // Devuelve el texto de las consecuencias para el aviso.
 async function _demoCerrar(uid, t) {
@@ -26618,19 +26677,23 @@ async function _demoCerrar(uid, t) {
   const _now = new Date(), hoyKey = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0') + '-' + String(_now.getDate()).padStart(2, '0');
   let ym = hoyKey.slice(0, 7);
   try { const hAsc = (Array.isArray(_prepHistoryData) ? _prepHistoryData : []).slice().reverse(); const dk = typeof _ptsTaskCompletionDate === 'function' ? _ptsTaskCompletionDate(t, hAsc, true) : null; if (dk) ym = dk.slice(0, 7); } catch (e) {}
-  // Consecuencias (reglas de Michel)
-  const curMax = (typeof _ptsTasksMax === 'function') ? _ptsTasksMax(uid, hoyKey) : 5;
+  // Consecuencias (reglas de Michel, actualizadas el 09/10/2026):
+  //  · 100%: +1 al tope diario de tareas (hasta 5). Si la tarea es un EXAMEN, además +1 punto
+  //    extra de Tareas (en total +2 con el punto de la tarea). Habilidades/cuestionarios: sin extra.
+  //  · 80–99%: valida el punto de la tarea (sin subir el tope ni el extra de examen). 60–79%: nada.
+  //  · 40–59%: −1 punto.  · <40%: −1 punto y −1 al tope (o −2 puntos si el tope ya es 0); 0% = sin torneo.
+  //  · Los cambios del tope cuentan DESDE LA SIGUIENTE CLASE (siguiente:true en tasksMaxLog), no el mismo día.
+  // curMax = tope ya incluyendo cambios pendientes de hoy, para que dos cambios el mismo día se acumulen.
+  const curMax = (typeof _ptsTasksMax === 'function') ? _ptsTasksMax(uid, '9999-12-31') : 5;
   let dMax = 0, penal = 0, ban = false;
-  if (pct >= 100) dMax = 1;
-  else if (pct >= 80) dMax = 1;
+  if (pct >= 100) { dMax = 1; if (t.exam) penal = -1; }
   else if (pct >= 60) { /* sin cambios */ }
   else if (pct >= 40) penal = 1;
   else { penal = 1; if (curMax > 0) dMax = -1; else penal += 1; if (pct === 0) ban = true; }
-  // Tope de 5 tareas: si ya tiene 5 y le tocaba +1, en vez de eso gana 1 punto.
   const _tope = (typeof PTS_TASKS_MAX !== 'undefined') ? PTS_TASKS_MAX : 5;
-  if (dMax > 0 && curMax >= _tope) { dMax = 0; penal -= 1; }
+  if (dMax > 0 && curMax >= _tope) dMax = 0;   // ya está en el tope: no sube más (y ya no se cambia por un punto)
   const taskId = _demoTaskId(t);
-  if (dMax) { o.tasksMaxLog = (o.tasksMaxLog || []).concat([{ at: hoyKey, v: Math.max(0, curMax + dMax), por: taskId }]); }
+  if (dMax) { o.tasksMaxLog = (o.tasksMaxLog || []).concat([{ at: hoyKey, v: Math.max(0, curMax + dMax), por: taskId, siguiente: true }]); }
   if (penal) { o.demoPenal = Object.assign({}, o.demoPenal || {}); o.demoPenal[ym] = (Number(o.demoPenal[ym]) || 0) + penal; }
   if (ban) { o.torneoBan = Object.assign({}, o.torneoBan || {}); o.torneoBan[ym] = (Number(o.torneoBan[ym]) || 0) >= 1 ? 2 : 1; }
   t.demo = { pct: pct, correct: best.correct, total: best.total, secs: best.secs, at: best.at, ym: ym, intentos: it.length, efectos: { tareas: dMax, puntos: -penal, torneo: ban ? o.torneoBan[ym] : 0 } };
@@ -26642,10 +26705,10 @@ async function _demoCerrar(uid, t) {
       ['overrides.' + uid + '.torneoBan']: o.torneoBan || {}
     });
   } catch (e) { console.error('demo save', e); showToast('No se pudo guardar el resultado de la demostración.'); }
-  partes.push(pct === 100 ? 'punto de la tarea validado' : 'sin punto de la tarea');
-  if (dMax) partes.push((dMax > 0 ? '+1' : '−1') + ' tareas a futuro');
+  partes.push(pct >= DEMO_PCT_PUNTO ? 'punto de la tarea validado' : 'sin punto de la tarea');
+  if (dMax) partes.push((dMax > 0 ? '+1' : '−1') + ' tarea por día desde tu próxima clase');
   if (penal > 0) partes.push('−' + penal + ' punto' + (penal > 1 ? 's' : ''));
-  if (penal < 0) partes.push('+' + (-penal) + ' punto (ya tenía el máximo de tareas)');
+  if (penal < 0) partes.push('+' + (-penal) + ' punto extra por el examen');
   if (ban) partes.push(o.torneoBan[ym] >= 2 ? 'sin opción a 1.º y 2.º puesto' : 'no participa en el torneo');
   return partes;
 }

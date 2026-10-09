@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20261009d"></script>
+  <script src="/levelup.js?v=20261009h"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2575,18 +2575,22 @@ function getTaskMult(id) { return Number(taskMultipliers[String(id)]) || 1; }
 
 // ── Demostración de tareas (06/10/2026, reglas de Michel) ───────────────────────────────────
 // Las tareas de Level Up asignadas desde DEMO_CUTOFF tienen un botón "Demostrar" (5 preguntas,
-// 3 min, un solo intento, solo en horario de clase). El resultado (guardado en la tarea como
-// t.demo) decide: el punto de la tarea (solo con 100%), el máximo de cuadraditos de Tareas por
+// 3 min, 2 intentos en la misma clase, solo en horario de clase). El resultado (guardado en la tarea como
+// t.demo) decide: el punto de la tarea (con 80% o más), el máximo de cuadraditos de Tareas por
 // clase del alumno (tasksMaxLog), descuentos de puntos (demoPenal, por mes de la tarea) y el
 // torneo (torneoBan: 1 = no participa ese mes; 2 = además no puede quedar 1.º ni 2.º).
+// 09/10/2026 (escalera elegida por Michel): la demostración valida el punto de la tarea desde 80% (4/5).
+const DEMO_PCT_PUNTO = 80;
 const DEMO_CUTOFF_SEC = Math.floor(new Date('2026-10-01T00:00:00').getTime() / 1000);   // desde el 1 de octubre (pedido de Michel)
 function _ptsTasksMax(id, dateKey) {
   const log = ((overrides[String(id)] || {}).tasksMaxLog || []).slice().sort((a, b) => String(a.at).localeCompare(String(b.at)));
   let v = PTS_TASKS_MAX;
-  log.forEach(e => { if (!dateKey || String(e.at) <= dateKey) v = Number(e.v); });
+  // 09/10/2026: los cambios marcados "siguiente" (demostraciones) cuentan desde el día SIGUIENTE
+  // a la demostración (la próxima clase), no el mismo día.
+  log.forEach(e => { if (!dateKey || (e.siguiente ? String(e.at) < dateKey : String(e.at) <= dateKey)) v = Number(e.v); });
   return Math.max(0, Math.min(PTS_TASKS_MAX, v));   // tope: 5 (PTS_TASKS_MAX)
 }
-// demoPenal: puntos a descontar ese mes (negativo = punto extra, cuando ya tenía el máximo de 5 tareas).
+// demoPenal: puntos a descontar ese mes (negativo = punto extra: demostración perfecta de un examen).
 function _demoPenal(id, ym) { return Number(((overrides[String(id)] || {}).demoPenal || {})[ym]) || 0; }
 function _torneoBan(id, ym) { return Number(((overrides[String(id)] || {}).torneoBan || {})[ym]) || 0; }
 function _ymFromOffset(off) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
@@ -2852,7 +2856,7 @@ function _ptsPureSkills(skills) {
 function _ptsTaskCompletionDate(task, histAsc, ignorarDemo) {
   if (!task || !Array.isArray(histAsc)) return null;
   // Desde DEMO_CUTOFF el punto solo se valida con la demostración al 100%.
-  if (!ignorarDemo && (task.assignedAt || 0) >= DEMO_CUTOFF_SEC && !(task.demo && !task.demo.incompleta && task.demo.pct === 100)) return null;
+  if (!ignorarDemo && (task.assignedAt || 0) >= DEMO_CUTOFF_SEC && !(task.demo && !task.demo.incompleta && task.demo.pct >= DEMO_PCT_PUNTO)) return null;
   const from = task.assignedAt || 0;
   const to   = task.dueAt || Infinity;
   const isUnitExam = !!task.exam;
