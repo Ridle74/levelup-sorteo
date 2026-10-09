@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20261008f"></script>
+  <script src="/levelup.js?v=20261009b"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2734,16 +2734,62 @@ function _ptsFirstDominatedDate(topicKey, histAsc) {
   const sec = _ptsFirstDominatedTimestamp(topicKey, histAsc);
   return sec ? _ptsDateKeyFromSeconds(sec) : null;
 }
-function _ptsAutoProgressForDate(histAsc, dateKey) {
+// ── Progreso solo de lo ASIGNADO (09/10/2026, decidido por el profesor) ──────────────────────
+// Desde PTS_ASSIGNED_FROM, una habilidad/cuestionario/examen solo suma Progreso si pertenece a lo
+// que el alumno tiene asignado:
+//  · Unidades de sus cursos en "Mis Cursos" (overrides[id].courses: nivel+grado+editorial+área,
+//    mismo filtro que la vista "Unidades" del profesor), SIN los temas excluidos
+//    (overrides[id].excludedTopics). El examen de una unidad cuenta si la unidad tiene al menos
+//    un tema no excluido.
+//  · Desafíos de Dominio: solo los retos asignados a ese alumno (overrides[id].prepDesafios,
+//    por nombre del reto = lbl de la unidad en PREP_CURRICULUM.especial).
+//  · Sin cursos ni desafíos asignados → no suma Progreso.
+//  · Las "Demostraciones" (topic 'demo:xxx') cuentan como su habilidad 'xxx'.
+// Horas y Tareas no cambian.
+const PTS_ASSIGNED_FROM = '2026-10-01';
+function _ptsAssignedTopics(studentId) {
+  const ov = (typeof overrides === 'object' && overrides) ? (overrides[String(studentId)] || {}) : {};
+  const courses = Array.isArray(ov.courses) ? ov.courses : [];
+  const excl = new Set(Array.isArray(ov.excludedTopics) ? ov.excludedTopics : []);
+  const skills = new Set(), examTopics = new Set();
+  const cur = (typeof PREP_CURRICULUM === 'object' && PREP_CURRICULUM) ? PREP_CURRICULUM : {};
+  courses.forEach(c => {
+    ((cur[c.level] || {})[c.grade] || [])
+      .filter(u => (!c.editorial || u.editorial === c.editorial) && (!c.area || u.area === c.area))
+      .forEach(u => {
+        const us = Array.isArray(u.skills) ? u.skills : [];
+        const live = us.filter(k => !excl.has(k));
+        live.forEach(k => skills.add(k));
+        if (live.length) us.forEach(k => examTopics.add(k));
+      });
+  });
+  const retos = new Set((Array.isArray(ov.prepDesafios) ? ov.prepDesafios : []).map(d => d && d.retoLbl).filter(Boolean));
+  if (retos.size) {
+    Object.values(cur.especial || {}).forEach(units => (units || []).forEach(u => {
+      if (!retos.has(u.lbl)) return;
+      (u.skills || []).forEach(k => { skills.add(k); examTopics.add(k); });
+    }));
+  }
+  return { skills, examTopics };
+}
+// ¿Este tema (o examen) suma Progreso para este alumno en esta fecha? Sin studentId no filtra.
+function _ptsCountsForProgress(studentId, topic, dateKey, isExam, assigned) {
+  if (studentId === undefined || studentId === null || !dateKey || dateKey < PTS_ASSIGNED_FROM) return true;
+  const a = assigned || _ptsAssignedTopics(studentId);
+  const t = String(topic || '').replace(/^demo:/, '');
+  return isExam ? a.examTopics.has(t) : a.skills.has(t);
+}
+function _ptsAutoProgressForDate(histAsc, dateKey, studentId) {
   // Se excluyen los cuestionarios (_bq#) y bancos de refuerzo (_bpu): son evaluaciones que
   // agregan varias habilidades, no una habilidad nueva en sí. Si se contaran aparte, dominar
   // el cuestionario 1 (que ya reusa las habilidades b1/b2/b3) sumaría puntos de Progreso
   // duplicados sobre las mismas habilidades ya contadas al dominarlas individualmente.
   const topics = _ptsPureSkills([...new Set(histAsc.map(h=>h.topic).filter(Boolean))]);
+  const assigned = (studentId !== undefined && studentId !== null) ? _ptsAssignedTopics(studentId) : null;
   let n = 0;
-  topics.forEach(tk => { if (_ptsFirstDominatedDate(tk, histAsc) === dateKey) n++; });
+  topics.forEach(tk => { if (_ptsFirstDominatedDate(tk, histAsc) === dateKey && _ptsCountsForProgress(studentId, tk, dateKey, false, assigned)) n++; });
   // Desde octubre 2026: cuestionarios y exámenes dominados por primera vez también suman.
-  _ptsQuizExamEventsForDate(histAsc, dateKey).forEach(ev => { n += ev.pts; });
+  _ptsQuizExamEventsForDate(histAsc, dateKey, studentId).forEach(ev => { n += ev.pts; });
   return n;
 }
 // ── Progreso por cuestionarios y exámenes (02/10/2026, decidido por el profesor) ──────────
@@ -2754,7 +2800,7 @@ function _ptsAutoProgressForDate(histAsc, dateKey) {
 const PTS_QE_FROM = '2026-10-01';
 const PTS_QUIZ = 2;
 const PTS_EXAM = 3;
-function _ptsQuizExamEventsForDate(histAsc, dateKey) {
+function _ptsQuizExamEventsForDate(histAsc, dateKey, studentId) {
   if (!Array.isArray(histAsc) || !dateKey || dateKey < PTS_QE_FROM) return [];
   const pct = h => (typeof _prepReEvalPct === 'function') ? _prepReEvalPct(h) : (h.pct || 0);
   const direct = histAsc.filter(h => h && h.topic && !h.customConfig && !h.partial && !h.autoFromExam && !h.autoFromQuiz && h.completedAt?.seconds);
@@ -2779,6 +2825,11 @@ function _ptsQuizExamEventsForDate(histAsc, dateKey) {
     if (firstDom && firstDom < d) return; // ya estaba dominado (p. ej. por un examen perfecto anterior)
     events.push({ kind:'quiz', topic:h.topic, label:h.topicLabel || h.topic, pts:PTS_QUIZ });
   });
+  // 09/10/2026: solo lo asignado al alumno (ver _ptsAssignedTopics).
+  if (studentId !== undefined && studentId !== null) {
+    const assigned = _ptsAssignedTopics(studentId);
+    return events.filter(ev => _ptsCountsForProgress(studentId, ev.topic, dateKey, ev.kind === 'exam', assigned));
+  }
   return events;
 }
 // Igual filtro de habilidades "puras" (excluye preguntas de banco/refuerzo _bq#/_bpu) que usa
@@ -2889,7 +2940,7 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
     monthKeys.forEach(dateKey => {
       computed[dateKey] = {
         hours:    _ptsAutoHoursForDate(histAsc, dateKey),
-        progress: _ptsAutoProgressForDate(histAsc, dateKey),
+        progress: _ptsAutoProgressForDate(histAsc, dateKey, s.id),
         tasks:    _ptsAutoTasksForDate(s.id, histAsc, dateKey, taskKeys)
       };
     });

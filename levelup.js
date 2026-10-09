@@ -24146,13 +24146,14 @@ function _ptsDetailModalHtml() {
       const progressEvents = [];
       pastDates.forEach(({date,key}) => {
         topicsTouched.forEach(tk => {
-          if (typeof _ptsFirstDominatedDate === 'function' && _ptsFirstDominatedDate(tk, hist) === key) {
+          if (typeof _ptsFirstDominatedDate === 'function' && _ptsFirstDominatedDate(tk, hist) === key &&
+              (typeof _ptsCountsForProgress !== 'function' || _ptsCountsForProgress(student.id, tk, key, false))) {
             progressEvents.push({date, label: skillLbl(tk), pts: 1});
           }
         });
         // Cuestionarios (+2) y exámenes (+3) dominados por primera vez (desde octubre 2026).
         if (typeof _ptsQuizExamEventsForDate === 'function') {
-          _ptsQuizExamEventsForDate(hist, key).forEach(ev => progressEvents.push({
+          _ptsQuizExamEventsForDate(hist, key, student.id).forEach(ev => progressEvents.push({
             date, pts: ev.pts,
             label: (ev.kind === 'exam' ? 'Examen: ' : 'Cuestionario: ') + ((typeof _cleanLbl === 'function') ? _cleanLbl(ev.label, ev.topic) : ev.label)
           }));
@@ -26645,7 +26646,7 @@ function _prepStartFromUnit(sk) {
   const _isUnlimited2 = _prep.timeSec === 0;
   const _autoTime2 = _isUnlimited2 ? 0 : qs.length * (def.quiz ? 40 : 60);
   _prepPaused = false; _prepPausedMs = 0; _prepPauseAskPin = false; _prepPausePinErr = false;
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,timeUnlimited:_isUnlimited2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now(),customConfig:_prepIsCustomConfig(sk)});
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_autoTime2,timeUnlimited:_isUnlimited2,showReview:false,lives:def.quiz?4:5,maxLives:def.quiz?4:5,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,gameOver:false,qStartTime:Date.now(),customConfig:_prepIsCustomConfig(sk)});
   clearInterval(_prepTimerIntv);
   if (_autoTime2>0 || _isUnlimited2) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
@@ -26751,7 +26752,9 @@ function _prepUnitExam(skills, unitIdx) {
   // El examen de unidad usa siempre 5 preguntas fijas por habilidad (perSkill), no _prep.qCount,
   // así que lo único que puede volverlo "no regular" aquí es haber elegido "Sin límite" de tiempo.
   _prepPaused = false; _prepPausedMs = 0; _prepPauseAskPin = false; _prepPausePinErr = false;
-  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,timeUnlimited:_isUnlimitedExam,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,qStartTime:Date.now(),customConfig:_isUnlimitedExam});
+  // 09/10/2026: gameOver:false — antes no se reiniciaba aquí y, si la práctica anterior había
+  // terminado por perder todas las vidas, el examen se cerraba solo tras la primera respuesta.
+  Object.assign(_prep,{state:'exam',questions:qs,answers:[],currentIdx:0,selectedOpt:null,answered:false,startTime:Date.now(),endTime:null,timeLeft:_examTime,timeUnlimited:_isUnlimitedExam,showReview:false,lives:3,maxLives:3,streak:0,streakBonusAccum:0,gameStartTime:Date.now(),retryLock:false,gameOver:false,qStartTime:Date.now(),customConfig:_isUnlimitedExam});
   clearInterval(_prepTimerIntv);
   if (_examTime > 0 || _isUnlimitedExam) _prepTimerIntv = setInterval(_prepTickTimer, 1000);
   clearInterval(_prep.gameTimerIntv); _prep.gameTimerIntv = setInterval(_prepGameTimerTick, 1000);
