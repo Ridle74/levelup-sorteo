@@ -21911,6 +21911,7 @@ function _renderPreparatePane() {
     const _solving = _prep.state === 'exam';
     if (_tbar) {
       _tbar.style.display = (_imp && !_solving) ? 'flex' : 'none';
+      document.body.classList.toggle('lu-switchbar', !!(_imp && !_solving));
       if (_imp) {
         const _curS = getFullList().find(x => x.id === getLoggedId());
         const _tbarName = document.getElementById('teacher-switch-bar-name');
@@ -22951,8 +22952,9 @@ function _prepConfigHtml() {
   })() : '';
   // Encabezado con dominio de curso
   const courseHeader = `<div class="prep-kh-course-hdr">
-    <div class="prep-kh-course-name">${lvDef.lbl||'¿?'}${isHiddenLevel?'':(_prep.grade?' · '+_prep.grade+'° Grado':' · ¿? Grado')}</div>
-    <div class="prep-kh-mastery-row">
+    <div class="prep-kh-course-name">${lvDef.lbl ? lvDef.lbl + (isHiddenLevel?'':(_prep.grade?' · '+_prep.grade+'° Grado':' · elige el grado')) : 'Elige un curso'}</div>
+    ${!shown && !isHiddenLevel ? `<div class="prep-kh-mastery-lbl" style="margin:2px 0 4px;white-space:normal">Toca una tarjeta del catálogo para ver tu nivel y tus habilidades.</div>` : ''}
+    <div class="prep-kh-mastery-row"${!shown && !isHiddenLevel ? ' style="display:none"' : ''}>
       <span class="prep-kh-mastery-lbl">Dominio del curso:</span>
       <div class="prep-kh-bar"><div class="prep-kh-bar-fill" style="width:${shown&&!masLoading&&allTopicKeys.length?coursePct:0}%"></div></div>
       <span class="prep-kh-mastery-lbl">${shown&&!masLoading&&allTopicKeys.length?coursePct+'%':'—'}</span>
@@ -23006,6 +23008,9 @@ function _prepConfigHtml() {
         : `<button class="prep-sel-btn" style="background:#fff;border-color:#ddd;color:#111;font-weight:600;gap:5px" onclick="_prepOpenLoginModal()">👤 Inicia sesión</button>`;
   // Sidebar: en "Mis Cursos" mostrar rankings; en curso normal mostrar unidades
   let _sidebarBody = '';
+  // 8A (07/10/2026): en celular el panel lateral está oculto, así que los puntos del mes y el
+  // ranking se muestran en una tarjeta arriba que se despliega al tocarla (ver .prep-mob-pts).
+  let _mobPtsCard = '';
   if (openSel === 'miscursos' && !isAdmin() && _myCourses.length) {
     const _pf2 = k => !/_bq\d/.test(k) && !k.includes('_bpu');
     const _allSk = [...new Set(_myCourses.flatMap(c =>
@@ -23119,10 +23124,23 @@ function _prepConfigHtml() {
         + _dGrp('—','Demás',demas.length,'rgba(255,255,255,0.06)','rgba(255,255,255,0.35)','rgba(255,255,255,0.3)',demas);
       _sidebarBody = _ptsBadge + (_body || `<div style="padding:20px 8px;text-align:center;font-size:11px;color:rgba(255,255,255,0.3)">Sin datos aún — ¡practica!</div>`);
     }
+    if (_ptsOficial !== null) {
+      const _abierto = !!_prep.mobPtsOpen;
+      const _rankBody = (_prepSideRanksLoading || !_prepSideRanks)
+        ? `<div style="padding:12px 8px;text-align:center;font-size:12px;color:rgba(255,255,255,0.4)">Cargando rankings…</div>`
+        : (_sidebarBody.slice(_ptsBadge.length) || '');
+      _mobPtsCard = `<div class="prep-mob-pts">
+        <div class="prep-mob-pts-hdr" onclick="_snd.click();_prep.mobPtsOpen=!_prep.mobPtsOpen;_renderPreparatePane()">
+          <span>🎯 ${_cupoOffset !== 0 ? 'Puntos de '+_mesNombre(_cupoOffset) : 'Puntos mensuales'} <span style="opacity:.6">${_abierto ? '▴' : '▾'}</span></span>
+          <span class="prep-mob-pts-val">${_ptsOficial}</span>
+        </div>
+        ${_abierto ? `<div class="prep-mob-pts-body">${_rankBody}<button class="prep-mob-pts-det" onclick="_ptsOpenDetail(${_cupoOffset})">Ver detalle día por día ▸</button></div>` : ''}
+      </div>`;
+    }
   } else {
     _sidebarBody = `<div class="prep-kh-sidebar-hdr">
-      <div class="prep-kh-sidebar-sub">${shown ? units.length+' Unidades' : '¿? Unidades'}</div>
-      <div class="prep-kh-sidebar-sub2">${shown ? totalSkillCount+' Habilidades' : '¿? Habilidades'}</div>
+      <div class="prep-kh-sidebar-sub">${shown ? units.length+' Unidades' : 'Elige un curso'}</div>
+      <div class="prep-kh-sidebar-sub2">${shown ? totalSkillCount+' Habilidades' : 'para ver sus unidades'}</div>
     </div>
     ${shown ? sidebarItems : ''}`;
   }
@@ -23151,10 +23169,10 @@ function _prepConfigHtml() {
     ? `<button onclick="_luOpenMsgs()" title="Mensajes del chat" style="position:relative;display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:#fff;padding:4px 10px;background:rgba(255,255,255,0.07);border:none;border-radius:8px;cursor:pointer">💬<span style="font-size:11px;letter-spacing:.04em">Chat</span><span id="lu-msgs-badge" style="display:${_luUnread>0?'flex':'none'};position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#ef4444;color:#fff;font-size:10px;font-weight:900;align-items:center;justify-content:center">${_luUnread>9?'9+':_luUnread}</span></button>`
     : '';
   const topbar = `<div class="prep-kh-topbar">
-    <div class="prep-kh-topbar-streak">🔥 <span>${_streak}</span></div>
-    <span class="prep-kh-topbar-arr">→</span>
-    <div class="prep-kh-topbar-level">${shown ? 'Nivel '+levelNum : 'Nivel ¿?'}</div>
-    <div class="prep-kh-topbar-skills">⭐ ${shown ? doneSkillCount+'/'+totalSkillCount+' habilidades' : '¿? habilidades'}</div>
+    <div class="prep-kh-topbar-streak">🔥 <span>${masLoading ? '…' : _streak}</span></div>
+    ${shown ? '<span class="prep-kh-topbar-arr">→</span>' : ''}
+    ${shown ? `<div class="prep-kh-topbar-level">Nivel ${levelNum}</div>
+    <div class="prep-kh-topbar-skills">⭐ ${doneSkillCount}/${totalSkillCount} habilidades</div>` : ''}
     ${_luMsgsBtn}
     ${_searchBar}
   </div>`;
@@ -23179,7 +23197,7 @@ function _prepConfigHtml() {
         <div style="font-size:13px;font-weight:700;color:#fff;text-align:center;font-family:'Orbitron',monospace">${u.lbl}</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.45);text-align:center">${_sc} habilidades</div>
         <div style="width:100%;margin-top:4px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden"><div style="height:100%;border-radius:3px;background:${cl};box-shadow:0 0 6px ${cl};width:${_pct}%"></div></div>
-        <div style="font-size:8.5px;color:rgba(255,255,255,0.35);text-align:right;width:100%">${_pct}% dominado</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);text-align:right;width:100%">${_pct}% dominado</div>
       </div>`;
     });
     const _selRetoSkills = _prep.selectedExamSkills;
@@ -23259,7 +23277,7 @@ function _prepConfigHtml() {
               <div style="font-size:9.5px;color:rgba(255,255,255,0.7)">${aeu.length} unidades</div>
               <div style="font-size:9.5px;color:rgba(255,255,255,0.7)">${_sc} habilidades</div>
               <div style="margin-top:4px;height:3px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden"><div style="height:100%;border-radius:3px;background:${_nc};box-shadow:0 0 6px ${_nc};width:${_pct}%"></div></div>
-              <div style="font-size:8.5px;color:rgba(255,255,255,0.35);text-align:right">${_pct}% dominado</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.45);text-align:right">${_pct}% dominado</div>
             </div>`);
           });
         });
@@ -23929,8 +23947,9 @@ function _prepConfigHtml() {
     ${_mobileBar}
     <div class="prep-filter-bar${_msi!==1?' prep-mob-filters-off':''}">
       <div style="flex:1;min-width:0">${selectorRow}</div>
-      ${_misCursosView ? '' : _challengeBtn}
+      ${_challengeBtn}
     </div>
+    ${_mobPtsCard}
     ${_misAlumnosView || _misCursosView || (_mobIndexPanel + courseHeader + legend + unitsHtml + (isAdmin() ? _prepAdminHistoryHtml() + _prepAdminReportsHtml() : _prepHistorySectionHtml()))}
   </div>`;
 
@@ -24251,7 +24270,8 @@ function _prepHistCardHtml(h, dateStr, timeStr, ok) {
         + '</div></div>';
     });
   }
-  const btnHtml = reEvalAnswers.length
+  // Intentos resumidos (h._arch, ver _prepHistCompact): mismo puntaje, sin detalle de ejercicios.
+  const btnHtml = (reEvalAnswers.length && !h._arch)
     ? '<button onclick="_prepExpandedHistId=_prepExpandedHistId===\'' + h.id + '\'?null:\'' + h.id + '\';_renderPreparatePane()" style="margin-top:6px;width:100%;background:rgba(255,255,255,0.06);border:none;border-radius:6px;padding:4px 8px;font-size:11px;color:rgba(255,255,255,0.5);cursor:pointer">'
       + (expanded ? '▲ Ocultar ejercicios' : '▼ Ver ejercicios (' + reEvalAnswers.length + ')') + '</button>'
       + (expanded ? '<div style="margin-top:6px">' + ansRows + '</div>' : '')
@@ -27568,6 +27588,17 @@ async function _prepLoadSideRanks(skillKeys) {
   if (!myUid || myUid === 'teacher') return;
   _prepSideRanksLoading = true;
   _prepSideRanksUid = myUid;
+  // 08/10/2026: caché de 10 minutos en este navegador (cada entrada pedía todos los registros de
+  // ranking de los temas del curso: hasta ~300 lecturas por visita).
+  const _srKey = '_prepSideRanks_v1_' + myUid + '_' + skillKeys.length + '_' + skillKeys.join(',').length;
+  try {
+    const c = JSON.parse(localStorage.getItem(_srKey) || 'null');
+    if (c && c.k === skillKeys.join(',') && Date.now() - c.at < 10*60*1000) {
+      _prepSideRanks = c.ranks || {}; _prepSideScores = c.scores || {}; _prepSideRanksLoading = false;
+      _renderPreparatePane();
+      return;
+    }
+  } catch(e) {}
   const ranks = {}, scores = {};
   const _rankBonus = [1.5, 1.25, 1.10];
   try {
@@ -27610,6 +27641,7 @@ async function _prepLoadSideRanks(skillKeys) {
         }
       }
     }
+    try { localStorage.setItem(_srKey, JSON.stringify({ k: skillKeys.join(','), at: Date.now(), ranks, scores })); } catch(e) {}
   } catch(e) { console.error('sideRanks load', e); }
   _prepSideRanks = ranks;
   _prepSideScores = scores;
@@ -30756,6 +30788,195 @@ async function _prepSaveHistory() {
     _prepSyncTorneoElig();
   } catch(e) { console.error('prep history save', e); }
 }
+// ── Historial compartido + archivo compacto por dominio (08/10/2026) ───────────────────────
+// PROBLEMA: Firestore cobra 1 LECTURA POR CADA REGISTRO descargado y el plan gratuito permite
+// 50.000 por día. Al entrar, cada alumno descargaba TODO su historial dos veces (loadPrepHistory
+// + _ptsFetchHist): Joao (1.088 registros) gastaba ~2.200 lecturas por entrada. Con unos pocos
+// alumnos entrando varias veces se agotaba la cuota y la app dejaba de cargar/guardar.
+// SOLUCIÓN (regla pedida por el profesor):
+//  1) Una sola descarga por alumno, compartida (_prepHistFetch).
+//  2) Archivo compacto por alumno (prepHistoryArchive/{uid}, 1 lectura) con TODO su historial
+//     anterior a hoy. Dentro del archivo, en cada habilidad/cuestionario/examen ya DOMINADO se
+//     conserva con detalle completo solo LA PARTIDA EN QUE LO DOMINÓ; los demás intentos de ese
+//     tema quedan resumidos (todos sus campos: fecha, %, aciertos, tiempo, nivel…; y en `answers`
+//     solo si cada respuesta fue correcta o no, sin enunciado ni respuesta dada). Lo NO dominado
+//     se conserva completo. Así niveles, puntos, intentos, tiempos y "x/y · %" se calculan
+//     EXACTAMENTE igual; solo deja de mostrarse "Ver ejercicios" en los intentos resumidos.
+//  3) Al cargar: archivo (1-2 lecturas) + solo los registros de HOY de prepHistory. El archivo se
+//     actualiza como mucho una vez al día por alumno (la primera carga del día).
+// prepHistory NUNCA se modifica ni se borra: el archivo es una copia. Si el archivo falta, está
+// incompleto o no se puede leer/escribir, se carga el historial completo como antes.
+const _PREP_ARCH_COL = 'prepHistoryArchive';
+const PREP_ARCH_CHUNK_CHARS = 700000; // por documento (límite Firestore: 1 MiB)
+const PREP_ARCH_MAX_CHUNKS = 6;
+// Reescribir un archivo grande muchas veces satura el límite de ancho de banda de escritura del plan
+// gratuito ("exceeded their maximum bandwidth for writes"). Por eso un archivo ya existente solo se
+// rehace con al menos PREP_ARCH_MIN_NEW registros nuevos o cada PREP_ARCH_MAX_AGE_DAYS días, y las
+// escrituras de archivos van en fila (una a la vez, con pausa) aunque se carguen varios alumnos juntos.
+const PREP_ARCH_MIN_NEW = 15;
+const PREP_ARCH_MAX_AGE_DAYS = 7;
+const PREP_ARCH_GAP_MS = 4000;
+let _prepArchQueue = Promise.resolve();
+const _prepArchPending = new Set(); // uid con un archivo ya en fila (evita escribirlo dos veces)
+const _prepHistStore = {}; // uid → { data:[...desc], at } | { loading:Promise }
+// Orden IDÉNTICO al de Firestore (completedAt con fracción de segundo y, en empate, id del
+// documento): varios registros de un mismo examen comparten el mismo segundo y el "último intento"
+// de una habilidad depende de cómo se desempatan — debe quedar igual que con la consulta original.
+const _prepHistAsc = (a,b) => {
+  const as = a.completedAt?.seconds||0, bs = b.completedAt?.seconds||0;
+  if (as !== bs) return as - bs;
+  const an = a.completedAt?.nanoseconds||0, bn = b.completedAt?.nanoseconds||0;
+  if (an !== bn) return an - bn;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+};
+const _prepHistDesc = (a,b) => _prepHistAsc(b, a);
+function _prepHistStripUndef(v) {
+  if (v === undefined) return null;
+  if (Array.isArray(v)) return v.map(_prepHistStripUndef);
+  if (v && typeof v === 'object' && v.constructor === Object) {
+    const o = {}; for (const k in v) { if (v[k] !== undefined) o[k] = _prepHistStripUndef(v[k]); } return o;
+  }
+  return v; // Timestamp y otros tipos de Firestore se guardan tal cual
+}
+// Versión resumida de un registro: idéntica salvo `answers`, que conserva la misma cantidad de
+// elementos y el resultado ya re-evaluado de cada uno (para que _prepReEvalAnswer/_prepReEvalPct
+// den exactamente lo mismo), sin enunciado, respuesta dada ni respuesta correcta.
+function _prepHistCompact(h) {
+  if (h._arch) return h;
+  const o = {};
+  for (const k in h) { if (k !== 'answers') o[k] = h[k]; }
+  if (Array.isArray(h.answers)) {
+    o.answers = h.answers.map(a => _prepReEvalAnswer(a) ? { correct: true } : { correct: false, given: 'x', a: 'y' });
+  }
+  o._arch = true;
+  return o;
+}
+// Aplica la regla del profesor sobre el historial (cualquier orden). Devuelve una lista nueva.
+function _prepHistApplyMasteryRule(records) {
+  // Cada ACTIVIDAD por separado: un examen de unidad usa como topic el de su primera habilidad, y
+  // las propagaciones automáticas (autoFromExam/autoFromQuiz) también comparten topic — no deben
+  // mezclarse con los intentos directos de esa habilidad.
+  const _actKey = h => (h.topic || '∅') + '|' + (h.isUnitExam ? 'examen' : h.autoFromExam ? 'auto-examen' : h.autoFromQuiz ? 'auto-cuest' : 'directo');
+  const byTopic = {};
+  records.forEach(h => { const k = _actKey(h); (byTopic[k] = byTopic[k] || []).push(h); });
+  const out = [];
+  Object.values(byTopic).forEach(list => {
+    list.sort(_prepHistAsc);
+    const mi = list.findIndex(h => !h.customConfig && _prepReEvalPct(h) >= 100);
+    list.forEach((h, i) => out.push(mi >= 0 && i !== mi ? _prepHistCompact(h) : h));
+  });
+  return out;
+}
+function _prepHistChunk(records) {
+  const chunks = []; let cur = [], size = 0;
+  records.forEach(r => {
+    const n = JSON.stringify(r).length + 1;
+    if (cur.length && size + n > PREP_ARCH_CHUNK_CHARS) { chunks.push(cur); cur = []; size = 0; }
+    cur.push(r); size += n;
+  });
+  if (cur.length) chunks.push(cur);
+  return chunks;
+}
+async function _prepHistReadArchive(uid) {
+  const d = await db.collection(_PREP_ARCH_COL).doc(uid).get();
+  if (!d.exists) return null;
+  const main = d.data() || {};
+  if (main.v !== 2 || !main.upTo || typeof main.upTo.seconds !== 'number' || !Array.isArray(main.records)) return null;
+  let records = main.records.slice();
+  const n = Number(main.chunks) || 1;
+  if (n > 1) {
+    const extra = await Promise.all([...Array(n-1)].map((_, i) => db.collection(_PREP_ARCH_COL).doc(uid + '__' + (i+1)).get()));
+    for (const s of extra) {
+      const c = s.exists ? s.data() : null;
+      if (!c || c.build !== main.build || !Array.isArray(c.records)) return null; // incompleto → carga completa
+      records = records.concat(c.records);
+    }
+  }
+  return { upTo: main.upTo, records, build: main.build };
+}
+async function _prepHistWriteArchive(uid, records, upTo) {
+  const chunks = _prepHistChunk(records.map(_prepHistStripUndef));
+  if (chunks.length > PREP_ARCH_MAX_CHUNKS) { console.warn('[hist] archivo de ' + uid + ' demasiado grande; se sigue cargando normal'); return; }
+  const build = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  // Primero las partes extra y al final el documento principal (que es el que "activa" la versión).
+  for (let i = 1; i < chunks.length; i++) {
+    await db.collection(_PREP_ARCH_COL).doc(uid + '__' + i).set({ v: 2, uid, build, part: i, records: chunks[i] });
+  }
+  await db.collection(_PREP_ARCH_COL).doc(uid).set({
+    v: 2, uid, build, upTo, chunks: chunks.length, count: records.length,
+    records: chunks[0] || [], updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  console.log('[hist] archivo compacto de ' + uid + ': ' + records.length + ' registros en ' + chunks.length + ' parte(s), hasta ' + upTo.toDate().toISOString().slice(0,10));
+}
+async function _prepHistMaybeArchive(uid, arch, recent, complete) {
+  if (!complete) return; // si la consulta pudo quedar recortada, no archivar (evita huecos)
+  const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+  const cutoffSec = Math.floor(today0.getTime() / 1000);
+  const old = recent.filter(h => h.completedAt?.seconds && h.completedAt.seconds < cutoffSec);
+  if (!old.length) return; // nada nuevo que archivar → sin escrituras
+  if (arch && old.length < PREP_ARCH_MIN_NEW && (cutoffSec - arch.upTo.seconds) < PREP_ARCH_MAX_AGE_DAYS*86400) return;
+  if (_prepArchPending.has(uid)) return;
+  _prepArchPending.add(uid);
+  const prev = arch ? arch.records : [];
+  const ids = new Set(prev.map(h => h.id));
+  const merged = _prepHistApplyMasteryRule(prev.concat(old.filter(h => !ids.has(h.id))));
+  let upTo = arch ? arch.upTo : null;
+  old.forEach(h => { const t = h.completedAt; if (!upTo || t.seconds > upTo.seconds || (t.seconds === upTo.seconds && t.nanoseconds > upTo.nanoseconds)) upTo = t; });
+  const job = _prepArchQueue.then(() => _prepHistWriteArchive(uid, merged, upTo))
+    .then(() => new Promise(r => setTimeout(r, PREP_ARCH_GAP_MS)));
+  _prepArchQueue = job.catch(() => new Promise(r => setTimeout(r, PREP_ARCH_GAP_MS)));
+  try { await job; } finally { _prepArchPending.delete(uid); }
+}
+async function _prepHistLoadRemote(uid) {
+  let arch = null;
+  try { arch = await _prepHistReadArchive(uid); }
+  catch(e) { console.warn('[hist] no se pudo leer el archivo compacto, se carga completo', e && (e.code || e.message)); }
+  let snap, ordered = true;
+  try {
+    let q = db.collection('prepHistory').where('uid','==',uid);
+    if (arch) q = q.where('completedAt','>',arch.upTo);
+    snap = await q.orderBy('completedAt','desc').limit(3000).get();
+  } catch(idxErr) {
+    // Si el índice compuesto (uid ASC, completedAt DESC) no existe, se cae a la consulta sin
+    // orden de servidor (trae todo; los archivados se descartan abajo por id duplicado).
+    console.error('prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
+    snap = await db.collection('prepHistory').where('uid','==',uid).limit(3000).get();
+    ordered = false;
+  }
+  const recent = [];
+  snap.forEach(doc => recent.push({ id:doc.id, ...doc.data() }));
+  const seen = new Set(recent.map(h => h.id));
+  const archived = arch ? arch.records.filter(h => h && h.id && !seen.has(h.id)) : [];
+  const all = recent.concat(archived).sort(_prepHistDesc);
+  // Mantenimiento en segundo plano: nunca bloquea ni rompe la carga.
+  _prepHistMaybeArchive(uid, arch, recent, ordered && recent.length < 3000)
+    .catch(e => console.warn('[hist] no se pudo actualizar el archivo compacto', e && (e.code || e.message)));
+  return all;
+}
+// Devuelve el historial (orden descendente) de un uid. Reutiliza la carga en curso o la ya hecha;
+// con {fresh:true} vuelve a pedirlo (salvo que ya haya una carga en curso, que se reutiliza).
+// El arreglo devuelto es compartido: quien lo vaya a modificar debe hacer .slice() primero.
+function _prepHistFetch(uid, opts) {
+  uid = String(uid);
+  const c = _prepHistStore[uid];
+  if (c && c.loading) return c.loading;
+  if (c && c.data && !(opts && opts.fresh)) return Promise.resolve(c.data);
+  const p = _prepHistLoadRemote(uid)
+    .then(data => { _prepHistStore[uid] = { data, at: Date.now() }; return data; })
+    .catch(e => { delete _prepHistStore[uid]; throw e; });
+  _prepHistStore[uid] = { loading: p };
+  return p;
+}
+function _prepHistInvalidate(uid) { delete _prepHistStore[String(uid)]; }
+// Si registros cambian de dueño (reasignación profesor → alumno), el archivo compacto de esos
+// uid deja de ser válido: se invalida (v:0) y la próxima carga vuelve a traer todo y lo rehace.
+function _prepHistArchiveReset(uid) {
+  if (uid === null || uid === undefined) return Promise.resolve();
+  uid = String(uid);
+  _prepHistInvalidate(uid);
+  return db.collection(_PREP_ARCH_COL).doc(uid).set({ v: 0, uid, records: [], resetAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .catch(e => console.warn('[hist] no se pudo reiniciar el archivo compacto de ' + uid, e && (e.code || e.message)));
+}
 async function loadPrepHistory() {
   _prepHistoryLoading = true;
   try {
@@ -30775,15 +30996,9 @@ async function loadPrepHistory() {
     // consulta falla con 'failed-precondition' — se cae de vuelta a la consulta anterior sin
     // romper la app mientras se crea el índice (Firestore imprime en consola un link para
     // crearlo con un clic).
-    let snap;
-    try {
-      snap = await db.collection('prepHistory').where('uid','==',uid).orderBy('completedAt','desc').limit(3000).get();
-    } catch(idxErr) {
-      console.error('prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
-      snap = await db.collection('prepHistory').where('uid','==',uid).limit(3000).get();
-    }
-    _prepHistoryData = [];
-    snap.forEach(doc => _prepHistoryData.push({ id:doc.id, ...doc.data() }));
+    // 08/10/2026: la consulta (con fallback de índice y archivo compacto) vive en _prepHistFetch,
+    // compartida con los Puntos del mes (_ptsFetchHist) para no descargar el historial dos veces.
+    _prepHistoryData = (await _prepHistFetch(uid, { fresh: true })).slice();
     // Se mantiene el sort en cliente como red de seguridad (por si se usó el fallback, o por
     // documentos con completedAt aún no resuelto por el servidor).
     _prepHistoryData.sort((a,b)=>(b.completedAt?.seconds||0)-(a.completedAt?.seconds||0));
@@ -30961,6 +31176,8 @@ async function _prepDoReassignHistoryToStudent(histId, studentId, studentName) {
         } catch (e2) { console.error('reasignar habilidades vinculadas al cuestionario/examen', e2); }
       }
     }
+    // El archivo compacto (prepHistoryArchive) del alumno y del origen ya no está al día.
+    await Promise.all([_prepHistArchiveReset(studentId), _prepHistArchiveReset(originalUid)]);
     _prepAdminReassignOpenId = null;
   } catch(e) {
     console.error('reasignar partida a alumno', e);
@@ -31017,8 +31234,10 @@ async function _prepBackfillReassignedPropagation() {
           db.collection('prepHistory').doc(id).update({ uid: rec.uid, name: rec.name, reassignedFromTeacher: true })
         ));
         fixedSkills += linkedIds.length;
+        await _prepHistArchiveReset(rec.uid);
       }
     }
+    if (fixedSkills) await _prepHistArchiveReset('teacher');
     alert('Listo: revisé ' + checkedRecords + ' cuestionario(s)/examen(es) ya asignados y corregí ' + fixedSkills + ' registro(s) de habilidad vinculados.');
     _prepAdminHistData = null; // forzar recarga para reflejar los cambios ya en esta sesión
     loadPrepHistoryAdmin();

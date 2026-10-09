@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20260902g"></script>
+  <script src="/levelup.js?v=20261008f"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -835,13 +835,13 @@ textarea.fsm { resize:none; height:64px; }
   .prep-filter-bar>.prep-kh-btn-challenge{display:none}
   .prep-mob-filters-off .prep-mob-filter-row{display:none !important}
   .prep-mob-filters-off .prep-mob-opts-row{display:none !important}
-  .prep-sel-btn{height:26px;min-width:0;padding:0 4px;font-size:9px;border-radius:6px;box-sizing:border-box;justify-content:center}
+  .prep-sel-btn{height:40px;min-width:0;padding:0 6px;font-size:11px;border-radius:8px;box-sizing:border-box;justify-content:center}
   .prep-mob-filter-row>.prep-sel-btn,.prep-kh-mobile-bar>.prep-sel-btn{width:100%}
   .prep-kh-mobile-bar{display:grid !important;grid-template-columns:repeat(5,1fr);gap:4px;padding:0 0 6px;justify-content:unset;align-items:stretch}
   .prep-kh-mobile-bar>:first-child{grid-column:span 2}
   .prep-kh-mobile-bar>:last-child{grid-column:span 2}
-  .prep-kh-mobile-bar>.prep-kh-btn-challenge{height:26px;font-size:9px;padding:0 4px;border-radius:6px;width:100%;box-sizing:border-box;justify-content:center}
-  .prep-mob-filter-row{display:grid !important;grid-template-columns:repeat(5,1fr) !important;gap:4px !important;overflow-x:visible !important;flex-wrap:unset !important;align-items:stretch}
+  .prep-kh-mobile-bar>.prep-kh-btn-challenge{height:40px;font-size:11px;padding:0 6px;border-radius:8px;width:100%;box-sizing:border-box;justify-content:center}
+  .prep-mob-filter-row{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:4px !important;overflow-x:visible !important;flex-wrap:unset !important;align-items:stretch}
   .prep-mob-filter-row>.prep-sel-btn{flex-shrink:unset !important}
   .prep-mob-dot{display:none !important}
   .prep-mob-filter-row .prep-mob-ico,.prep-mob-opts-row .prep-mob-ico{display:none !important}
@@ -1655,6 +1655,28 @@ body.gaming-fs #game-active-view{position:fixed;inset:0;z-index:500;background:#
 .bpm-next-tier{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.06em}
 .bpm-next-desc{font-size:12px;color:#94a3b8;margin-top:3px}
 .bpm-next-prize{font-size:14px;font-weight:900;color:#facc15;margin-top:4px}
+
+/* ===== Arreglos de Level Up (07/10/2026) ===== */
+/* 8A: tarjeta de Puntos mensuales en celular (el panel lateral está oculto ahí) */
+.prep-mob-pts{display:none}
+@media(max-width:680px){
+  .prep-mob-pts{display:block;margin:0 0 10px;border-radius:12px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.32);overflow:hidden}
+  .prep-mob-pts-hdr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;min-height:44px;cursor:pointer;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,0.85)}
+  .prep-mob-pts-val{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:#fbbf24}
+  .prep-mob-pts-body{padding:4px 0 10px;border-top:1px solid rgba(251,191,36,0.18)}
+  .prep-mob-pts-det{display:block;margin:6px 15px 0;width:calc(100% - 30px);height:40px;border-radius:8px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);color:#fff;font-family:'Lato',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+  /* 2: la leyenda de colores baja a una segunda línea en vez de salirse de la pantalla */
+  .prep-kh-legend{flex-wrap:wrap !important;row-gap:6px;column-gap:12px}
+}
+/* 6: pantallas muy angostas: el botón con el nombre ocupa su propia fila para que no se corte */
+@media(max-width:360px){
+  .prep-kh-mobile-bar>:first-child{grid-column:1 / -1}
+  .prep-kh-mobile-bar>:last-child{grid-column:span 3}
+}
+/* 11: con la barra "Viendo como" visible, espacio al final para que no tape lo último */
+body.lu-switchbar .prep-wrap{padding-bottom:84px !important}
+/* 12: el borde derecho del carrusel de cursos se desvanece para indicar que hay más tarjetas */
+#_csc{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 28px),transparent)}
 </style>
 </head>
 <body>
@@ -2603,15 +2625,25 @@ function _ptsFetchHist(studentId) {
   // alumno mientras el índice no existiera, aunque sí tuviera historial real. Ahora, si el orderBy
   // falla, se reintenta sin ordenar en el servidor y se ordena en el cliente como red de seguridad.
   const p = (async () => {
-    let snap;
-    try {
-      snap = await db.collection('prepHistory').where('uid','==',key).orderBy('completedAt','asc').limit(3000).get();
-    } catch(idxErr) {
-      console.error('[pts-auto] prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
-      snap = await db.collection('prepHistory').where('uid','==',key).limit(3000).get();
+    let arr;
+    if (typeof _prepHistFetch === 'function') {
+      // 08/10/2026: misma descarga que usa loadPrepHistory (levelup.js) — antes el historial del
+      // alumno se bajaba dos veces en paralelo al entrar a Level Up. Copia propia (.slice()) porque
+      // el arreglo compartido viene en orden descendente y aquí se necesita ascendente.
+      // Viene en orden descendente exacto de Firestore; invertido queda igual que la consulta
+      // ascendente original (mismo desempate en registros del mismo segundo).
+      arr = (await _prepHistFetch(key)).slice().reverse();
+    } else {
+      let snap;
+      try {
+        snap = await db.collection('prepHistory').where('uid','==',key).orderBy('completedAt','asc').limit(3000).get();
+      } catch(idxErr) {
+        console.error('[pts-auto] prepHistory orderBy query falló (¿falta índice compuesto uid+completedAt? revisa el link de Firestore en este error), usando fallback sin orden de servidor:', idxErr);
+        snap = await db.collection('prepHistory').where('uid','==',key).limit(3000).get();
+      }
+      arr = [];
+      snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
     }
-    const arr = [];
-    snap.forEach(doc => arr.push({ id: doc.id, ...doc.data() }));
     arr.sort((a,b) => (a.completedAt?.seconds||0) - (b.completedAt?.seconds||0));
     _ptsHistCache[key] = { data: arr };
     return arr;
@@ -2619,7 +2651,11 @@ function _ptsFetchHist(studentId) {
   _ptsHistCache[key] = { loading: p };
   return p;
 }
-function _ptsInvalidateHist(studentId) { delete _ptsHistCache[String(studentId)]; }
+function _ptsInvalidateHist(studentId) {
+  delete _ptsHistCache[String(studentId)];
+  // También la descarga compartida (levelup.js), para que "historial fresco" lo sea de verdad.
+  if (typeof _prepHistInvalidate === 'function') _prepHistInvalidate(studentId);
+}
 function _ptsDateKeyFromSeconds(sec) {
   const d = new Date(sec*1000);
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -2646,33 +2682,57 @@ function _ptsAutoHoursForDate(histAsc, dateKey) {
 // crecientes del historial para detectar el momento exacto del cambio de estado — antes esto no
 // existía: solo había una aproximación ("¿está dominada ahora Y se tocó esta semana?") que no
 // distinguía si ya estaba dominada desde antes. null si nunca llegó a dominarse.
-function _ptsFirstDominatedDate(topicKey, histAsc) {
-  // Se excluyen las sesiones con configuración personalizada (customConfig: cantidad de
-  // preguntas y/o tiempo distintos al de la habilidad por defecto, elegidos por el profesor
-  // vía "Configurar sesión") — no cuentan como prueba válida de dominio para efectos de
-  // puntos de Progreso/Tareas, ya que el alumno pudo haber tenido menos preguntas o más tiempo
-  // del que tendría en una sesión regular.
-  const histFiltered = histAsc.filter(h => !h.customConfig);
-  for (let i=0; i<histFiltered.length; i++) {
-    const sec = histFiltered[i].completedAt?.seconds; if (!sec) continue;
-    if (_prepMasteryLevelH(topicKey, histFiltered.slice(0, i+1)) === 'dominado') {
-      return _ptsDateKeyFromSeconds(sec);
-    }
+// Se excluyen las sesiones con configuración personalizada (customConfig: cantidad de
+// preguntas y/o tiempo distintos al de la habilidad por defecto, elegidos por el profesor
+// vía "Configurar sesión") — no cuentan como prueba válida de dominio para efectos de
+// puntos de Progreso/Tareas, ya que el alumno pudo haber tenido menos preguntas o más tiempo
+// del que tendría en una sesión regular.
+//
+// RENDIMIENTO (08/10/2026): antes, _ptsAutoProgressForDate recalculaba esto para TODAS las
+// habilidades en CADA día del mes, y cada cálculo re-evaluaba el dominio en cada prefijo del
+// historial (≈1.6 s con la página congelada para un alumno con ~500 registros y 13 días, y
+// crecía con el mes y con el historial). Ahora:
+//  · El resultado se memoriza por historial (WeakMap: se libera solo cuando el arreglo deja de
+//    usarse; se invalida si el arreglo cambia de tamaño/último registro o pasa 1 minuto).
+//  · En habilidades normales (no cuestionarios) el dominio depende SOLO de las sesiones de esa
+//    habilidad (ver _prepMasteryLevelH), así que si el registro agregado al prefijo es de otra
+//    habilidad el nivel no cambia y se reutiliza. Los cuestionarios se siguen evaluando completos
+//    porque su nivel también depende del examen de la unidad (_prepQuizExamBoost).
+// El resultado es idéntico al cálculo anterior.
+const _ptsFirstDomMemo = new WeakMap();
+function _ptsFirstDomMemoFor(histAsc) {
+  const last = histAsc.length ? histAsc[histAsc.length-1] : null;
+  const sig = histAsc.length + ':' + (last?.id || '') + ':' + (last?.completedAt?.seconds || 0);
+  let m = _ptsFirstDomMemo.get(histAsc);
+  if (!m || m.sig !== sig || Date.now() - m.at > 60000) {
+    m = { sig, at: Date.now(), ts: new Map(), filtered: histAsc.filter(h => !h.customConfig) };
+    _ptsFirstDomMemo.set(histAsc, m);
   }
-  return null;
+  return m;
 }
-// Timestamp Unix (segundos) en que una habilidad alcanzó 'dominado' por primera vez,
-// o null si aún no lo alcanzó. Versión timestamp de _ptsFirstDominatedDate, usada para
-// comparaciones exactas (ej: ¿se dominó DESPUÉS de que se asignó la tarea?).
 function _ptsFirstDominatedTimestamp(topicKey, histAsc) {
-  const histFiltered = histAsc.filter(h => !h.customConfig);
+  if (!Array.isArray(histAsc)) return null;
+  const m = _ptsFirstDomMemoFor(histAsc);
+  if (m.ts.has(topicKey)) return m.ts.get(topicKey);
+  const histFiltered = m.filtered;
+  const isQuiz = !!(typeof BINGO_TOPICS !== 'undefined' && BINGO_TOPICS[topicKey]?.quiz);
+  let result = null, lastLvl;
   for (let i=0; i<histFiltered.length; i++) {
-    const sec = histFiltered[i].completedAt?.seconds; if (!sec) continue;
-    if (_prepMasteryLevelH(topicKey, histFiltered.slice(0, i+1)) === 'dominado') {
-      return sec;
-    }
+    const h = histFiltered[i];
+    const lvl = (!isQuiz && lastLvl !== undefined && h.topic !== topicKey)
+      ? lastLvl
+      : _prepMasteryLevelH(topicKey, histFiltered.slice(0, i+1));
+    lastLvl = lvl;
+    const sec = h.completedAt?.seconds; if (!sec) continue;
+    if (lvl === 'dominado') { result = sec; break; }
   }
-  return null;
+  m.ts.set(topicKey, result);
+  return result;
+}
+// Fecha (YYYY-MM-DD) en que una habilidad alcanzó 'dominado' por primera vez, o null.
+function _ptsFirstDominatedDate(topicKey, histAsc) {
+  const sec = _ptsFirstDominatedTimestamp(topicKey, histAsc);
+  return sec ? _ptsDateKeyFromSeconds(sec) : null;
 }
 function _ptsAutoProgressForDate(histAsc, dateKey) {
   // Se excluyen los cuestionarios (_bq#) y bancos de refuerzo (_bpu): son evaluaciones que
@@ -2819,7 +2879,28 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
     if (!monthKeys.length) return; // mes anterior al corte: queda congelado con el tildado clásico
     const taskKeys = _ptsTaskClassKeys(s.id, monthKeys);
     const histAsc = await _ptsFetchHist(s.id);
-    await savePointsLog(fresh => {
+    // 08/10/2026: antes este cálculo (≈1-2 s) se hacía DENTRO de la transacción sobre sorteo/main,
+    // el documento que comparten todos los alumnos, y se guardaba SIEMPRE al entrar a Level Up.
+    // Con varios alumnos entrando a la vez, sus transacciones largas chocaban, Firestore las
+    // reintentaba (volviendo a leer el documento y a recalcular) hasta fallar → "Error al
+    // guardar"/carga trabada. Ahora: se calcula antes, la transacción solo copia los valores
+    // (milisegundos), y si nada cambió respecto a lo ya guardado no se escribe nada.
+    const computed = {};
+    monthKeys.forEach(dateKey => {
+      computed[dateKey] = {
+        hours:    _ptsAutoHoursForDate(histAsc, dateKey),
+        progress: _ptsAutoProgressForDate(histAsc, dateKey),
+        tasks:    _ptsAutoTasksForDate(s.id, histAsc, dateKey, taskKeys)
+      };
+    });
+    const curLog = ((typeof pointsLog === 'object' && pointsLog) ? pointsLog[key] : null) || {};
+    const changed = monthKeys.some(dateKey => {
+      const entry = curLog[dateKey] || {};
+      if (entry.absent || entry.manualOverride) return false;
+      const a = entry.auto, c = computed[dateKey];
+      return !a || a.hours !== c.hours || a.progress !== c.progress || a.tasks !== c.tasks;
+    });
+    if (changed) await savePointsLog(fresh => {
       const log = JSON.parse(JSON.stringify(fresh || {}));
       if (!log[key]) log[key] = {};
       monthKeys.forEach(dateKey => {
@@ -2827,12 +2908,7 @@ async function _ptsRefreshAutoSnapshot(s, offset) {
         if (entry.absent || entry.manualOverride) return; // se respeta la decisión manual del admin
         log[key][dateKey] = {
           ...entry,
-          auto: {
-            hours:    _ptsAutoHoursForDate(histAsc, dateKey),
-            progress: _ptsAutoProgressForDate(histAsc, dateKey),
-            tasks:    _ptsAutoTasksForDate(s.id, histAsc, dateKey, taskKeys),
-            computedAt: Date.now()
-          }
+          auto: { ...computed[dateKey], computedAt: Date.now() }
         };
       });
       return log;
@@ -13401,10 +13477,19 @@ async function downloadBackup() {
 }
 
 let _backupTimer = null;
+// 08/10/2026: antes CADA dispositivo conectado (también los de los alumnos) armaba y enviaba el
+// respaldo 8 s después de cada cambio en sorteo/main, leyendo 32 documentos cada vez. Ahora solo
+// lo hace la cuenta del profesor y como mucho una vez cada 30 minutos (el último cambio dentro de
+// esa ventana queda incluido en el envío programado al final de la ventana).
+const AUTO_BACKUP_MIN_MS = 30 * 60 * 1000;
 function scheduleAutoBackup() {
   if (!BACKUP_URL) return;
+  if (typeof isAdmin === 'function' && !isAdmin()) return;
   clearTimeout(_backupTimer);
-  _backupTimer = setTimeout(sendAutoBackup, 8000);
+  let last = 0;
+  try { last = Number(localStorage.getItem('_lastAutoBackupAt')) || 0; } catch(e) {}
+  const wait = Math.max(8000, last + AUTO_BACKUP_MIN_MS - Date.now());
+  _backupTimer = setTimeout(sendAutoBackup, wait);
 }
 
 async function sendAutoBackup() {
@@ -13412,6 +13497,7 @@ async function sendAutoBackup() {
   try {
     const payload = await _buildBackupPayload();
     await fetch(BACKUP_URL, { method: 'POST', body: JSON.stringify(payload) });
+    try { localStorage.setItem('_lastAutoBackupAt', String(Date.now())); } catch(e) {}
     console.log('[Backup] Guardado completo en Google Drive ✓');
   } catch(e) {
     console.warn('[Backup] No se pudo enviar:', e);
@@ -14432,5 +14518,16 @@ function _prepPinConfirm() {
   <span style="font-size:11px;background:rgba(255,255,255,0.18);border-radius:8px;padding:3px 9px;color:#fff;font-weight:900;letter-spacing:.05em">← Volver</span>
 </div>
 
+
+<script>
+// 7: la tecla Escape cierra las ventanas de inicio de sesión y de cambio de alumno (07/10/2026)
+document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape') return;
+  var lm = document.getElementById('prep-login-modal');
+  if (lm && lm.style.display !== 'none' && typeof _prepCloseLoginModal === 'function') { _prepCloseLoginModal(); return; }
+  var sm = document.getElementById('prep-switch-modal');
+  if (sm && sm.style.display !== 'none' && typeof _prepCloseSwitchModal === 'function') { _prepCloseSwitchModal(); }
+});
+</script>
 </body>
 </html>

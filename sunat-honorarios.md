@@ -3,7 +3,7 @@
 ## CREDENCIALES SUNAT
 
 - **RUC / Usuario:** 74648201
-- **Contraseña:** rino5gHZ
+- **Contraseña:** NO se guarda aquí. Michel inicia sesión en SUNAT; Claude nunca escribe la contraseña.
 - **URL portal:** https://e-menu.sunat.gob.pe/cl-ti-itmenu/MenuInternet.htm
 
 ---
@@ -73,7 +73,7 @@ El resultado es el array de recibos a emitir. Copiar la salida.
 
 ### Login
 1. Abrir nueva pestaña en: `https://e-menu.sunat.gob.pe/cl-ti-itmenu/MenuInternet.htm`
-2. Si no está logueado: ingresar RUC `74648201` y contraseña `rino5gHZ` → Iniciar Sesión
+2. Si la sesión SOL ya está iniciada, continuar. Si SUNAT pide iniciar sesión: NO escribir ninguna contraseña; detenerse y avisar a Michel con la lista de recibos pendientes. Michel inicia sesión y luego se continúa.
 
 ### Navegar al formulario
 - Menú SOL → Comprobantes de Pago → SEE-SOL → Recibo por Honorarios Electrónicos → **Emitir Recibo por Honorario Electrónico**
