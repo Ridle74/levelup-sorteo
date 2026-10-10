@@ -1303,6 +1303,25 @@ function movilidadFija(pid, dateStr) {
   return best ? Number(best.monto) : null;
 }
 
+// Movilidad de la familia Prado cuando el alumno va SOLO (nadie más en su mismo horario).
+// Si dos visitas de hermanos van seguidas (Lucio+Alejandro), se sigue cobrando UNA sola visita (la mayor).
+// Alumnos nuevos sin monto definido: S/30 hasta que Michel indique otro (10-oct-2026).
+var FP_MOV_SOLO = { 'Lucio':40, 'Alejandro':40, 'Eduardo':40, 'Alessandra':40, 'Joanna':30, 'Joao':30, 'Josué':30, 'Josúe':30, 'Josue':30 };
+// Tarifa por hora de la familia Prado cuando varios hijos comparten el MISMO horario (10-oct-2026):
+// el de tarifa normal más alta paga completo y cada uno de los demás paga el 50% de SU tarifa normal.
+// Empate: paga completo el de id de alumno menor (Joao 4 antes que Josué 16).
+// Ej.: Joao S/30 + Josué S/15 (50% de 30) + Joanna S/10 (50% de 20).
+function _fpRateGrupo(inst, groupmates, RATES) {
+  function norm(i) { return (RATES[i.tipo] || RATES.Virtual)[i.nivel] || 25; }
+  var grp = [inst].concat(groupmates);
+  var lider = grp.slice().sort(function(a, b) { return (norm(b) - norm(a)) || (Number(a.stuId) - Number(b.stuId)); })[0];
+  return String(lider.stuId) === String(inst.stuId) ? norm(inst) : norm(inst) / 2;
+}
+function _fpMovSolo(sid) {
+  var fn = ((DATA.students[String(sid)] || {}).name || '').split(' ')[0];
+  return FP_MOV_SOLO[fn] != null ? FP_MOV_SOLO[fn] : 30;
+}
+
 // Fecha local YYYY-MM-DD (evita el desfase de toISOString, que usa UTC)
 function _pagoLocalISO(d) {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -1956,10 +1975,9 @@ function openPagoDetallePopup(pid, weekOffset) {
       var rph, movPV;
       if (groupmates.length === 0) {
         rph = (RATES[inst.tipo]||RATES.Virtual)[inst.nivel]||25;
-        var _fr0 = fpRates[inst.stuId];
-        movPV = _fr0 ? _fr0.movPV : 30;
+        movPV = _fpMovSolo(inst.stuId);
       } else {
-        var fr = fpRates[inst.stuId]||{rph:25,movPV:30}; rph = fr.rph; movPV = fr.movPV||0;
+        var fr = fpRates[inst.stuId]||{rph:25,movPV:30}; rph = _fpRateGrupo(inst, groupmates, RATES); movPV = fr.movPV||0;
       }
       var hrs=inst.dur/60; var cost=rph*hrs; weeklyClass+=cost;
       inst._movPV = movPV;
@@ -2914,9 +2932,9 @@ function saveChildProfile(childId) {
            var rph,movPV;
            if(groupmates.length===0){
              rph=(RATES[inst.tipo]||RATES.Virtual)[inst.nivel]||25;
-             var _f0=fpRates[inst.stuId]; movPV=_f0?_f0.movPV:30;
+             movPV=_fpMovSolo(inst.stuId);
            } else {
-             var _fr=fpRates[inst.stuId]||{rph:25,movPV:0}; rph=_fr.rph; movPV=_fr.movPV||0;
+             var _fr=fpRates[inst.stuId]||{rph:25,movPV:0}; rph=_fpRateGrupo(inst,groupmates,RATES); movPV=_fr.movPV||0;
            }
            weeklyClass+=rph*(inst.dur/60);
            inst._movPV3=movPV;
@@ -3239,9 +3257,9 @@ function vAdminPagos() {
         var rph, movPV;
         if (groupmates.length===0) {
           rph = (RATES[inst.tipo]||RATES.Virtual)[inst.nivel]||25;
-          var _f0 = fpRates[inst.stuId]; movPV = _f0 ? _f0.movPV : 30;
+          movPV = _fpMovSolo(inst.stuId);
         } else {
-          var _fr = fpRates[inst.stuId]||{rph:25,movPV:0}; rph=_fr.rph; movPV=_fr.movPV||0;
+          var _fr = fpRates[inst.stuId]||{rph:25,movPV:0}; rph=_fpRateGrupo(inst, groupmates, RATES); movPV=_fr.movPV||0;
         }
         weeklyClass += rph*(inst.dur/60);
         inst._movPV = movPV;

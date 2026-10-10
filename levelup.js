@@ -11010,7 +11010,7 @@ function _genOl1gTra_B6(){var sh=_i4gshuf;return _i4gpick([
   {_id:15,q:'En el trapecio ABCD, BC=3x cm y AD=7x cm. Si PQ=8 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 14 cm','BC = 2 cm','BC = 12 cm']),mc:true,ste:'PQ=(7x−3x)/2=2x=8 → x=2. BC=3(2)=6 cm.'},
   {_id:16,q:'En el trapecio ABCD, BC=4x cm y AD=(4x+10) cm. Halla PQ.',a:'PQ = 5 cm',opts:sh(['PQ = 5 cm','PQ = 10 cm','PQ = 4x+5 cm','PQ = 2 cm']),mc:true,ste:'PQ=[(4x+10)−4x]/2=10/2=5 cm (independiente de x).'},
   {_id:17,q:'En el trapecio ABCD, BC=PQ. Si AD=18 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 9 cm','BC = 18 cm','BC = 3 cm']),mc:true,ste:'BC=PQ=(AD−BC)/2 → 2BC=AD−BC → 3BC=18 → BC=6 cm.'},
-  {_id:18,q:'En el trapecio ABCD, BC=2·PQ. Si AD=20 cm, halla BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 4 cm','BC = 10 cm','BC = 12 cm']),mc:true,ste:'BC=2·PQ=2·(AD−BC)/2=AD−BC → 2BC=20 → BC=10. Verifico: PQ=(20−10)/2=5, BC=10=2·5 ✓. BC=10 cm.'},
+  {_id:18,q:'En el trapecio ABCD, BC=2·PQ. Si AD=20 cm, halla BC.',a:'BC = 10 cm',opts:sh(['BC = 8 cm','BC = 4 cm','BC = 10 cm','BC = 12 cm']),mc:true,ste:'BC=2·PQ=2·(AD−BC)/2=AD−BC → 2BC=20 → BC=10. Verifico: PQ=(20−10)/2=5, BC=10=2·5 ✓. BC=10 cm.'},
   {_id:19,q:'En el trapecio ABCD, PQ=2·BC. Si AD=20 cm, halla BC.',a:'BC = 4 cm',opts:sh(['BC = 4 cm','BC = 8 cm','BC = 5 cm','BC = 10 cm']),mc:true,ste:'PQ=(AD−BC)/2=2BC → AD−BC=4BC → AD=5BC → 20=5BC → BC=4 cm.'},
   {_id:20,q:'En el trapecio ABCD, PQ=BC+4. Si AD=26 cm, halla BC.',a:'BC = 6 cm',opts:sh(['BC = 6 cm','BC = 9 cm','BC = 4 cm','BC = 3 cm']),mc:true,ste:'PQ=(AD−BC)/2=BC+4. Con AD=26: (26−BC)/2=BC+4 → 26−BC=2BC+8 → 3BC=18 → BC=6 cm.'}
 ]);}
@@ -11026,19 +11026,19 @@ function _genOl1gTra_B7(){var sh=_i4gshuf;return _i4gpick([
   {_id:3,q:'En el trapecio ABCD, MN=12 cm y PQ=4 cm. Halla AD y BC.',a:'AD = 16 cm, BC = 8 cm',opts:sh(['AD = 16 cm, BC = 8 cm','AD = 8 cm, BC = 16 cm','AD = 12 cm, BC = 4 cm','AD = 16 cm, BC = 4 cm']),mc:true,ste:'AD=MN+PQ=12+4=16 cm. BC=MN−PQ=12−4=8 cm.'},
   {_id:4,q:'En el trapecio ABCD, MN=18 cm y PQ=6 cm. Halla la diferencia AD−BC.',a:'12 cm',opts:sh(['12 cm','6 cm','24 cm','3 cm']),mc:true,ste:'AD−BC=(MN+PQ)−(MN−PQ)=2·PQ=2·6=12 cm.'},
   {_id:5,q:'En el trapecio ABCD, E y F son los puntos medios de las diagonales AC y BD. Si BC=6 cm y AD=18 cm, halla EF.',a:'EF = 6 cm',opts:sh(['EF = 6 cm','EF = 12 cm','EF = 3 cm','EF = 9 cm']),mc:true,ste:'EF = PQ = (AD−BC)/2 = (18−6)/2 = 6 cm.'},
-  {_id:6,q:'En el trapecio, E y F son puntos medios de las diagonales. Si MN=14 cm y EF=4 cm, halla AD.',a:'AD = 18 cm',opts:sh(['AD = 18 cm','AD = 14 cm','AD = 10 cm','AD = 22 cm']),mc:true,ste:'EF=PQ=4 cm. AD=MN+PQ=14+4=18 cm.'},
-  {_id:7,q:'En el trapecio, E y F son puntos medios de las diagonales. Si MN=11 cm y EF=3 cm, halla BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 14 cm','BC = 3 cm','BC = 11 cm']),mc:true,ste:'EF=PQ=3 cm. BC=MN−PQ=11−3=8 cm.'},
+  {_id:6,q:'En el trapecio ABCD (BC base menor y AD base mayor), E y F son puntos medios de las diagonales. Si MN=14 cm y EF=4 cm, halla AD.',a:'AD = 18 cm',opts:sh(['AD = 18 cm','AD = 14 cm','AD = 10 cm','AD = 22 cm']),mc:true,ste:'EF=PQ=4 cm. AD=MN+PQ=14+4=18 cm.'},
+  {_id:7,q:'En el trapecio ABCD (BC base menor y AD base mayor), E y F son puntos medios de las diagonales. Si MN=11 cm y EF=3 cm, halla BC.',a:'BC = 8 cm',opts:sh(['BC = 8 cm','BC = 14 cm','BC = 3 cm','BC = 11 cm']),mc:true,ste:'EF=PQ=3 cm. BC=MN−PQ=11−3=8 cm.'},
   {_id:8,q:'En el trapecio ABCD, E y F son puntos medios de diagonales con EF=5 cm. Si AD=22 cm, halla MN.',a:'MN = 17 cm',opts:sh(['MN = 17 cm','MN = 11 cm','MN = 5 cm','MN = 27 cm']),mc:true,ste:'EF=PQ=5 cm → BC=AD−2·PQ=22−10=12 cm. MN=(BC+AD)/2=(12+22)/2=17 cm.'},
-  {_id:9,q:'En el trapecio, MN=3x cm y PQ=x cm. Si AD=32 cm, halla x.',a:'x = 8',opts:sh(['x = 8','x = 4','x = 6','x = 10']),mc:true,ste:'AD=MN+PQ=3x+x=4x=32 → x=8.'},
-  {_id:10,q:'En el trapecio, MN=5x cm y PQ=x cm. Si BC=16 cm, halla x.',a:'x = 4',opts:sh(['x = 4','x = 2','x = 8','x = 6']),mc:true,ste:'BC=MN−PQ=5x−x=4x=16 → x=4.'},
-  {_id:11,q:'En el trapecio, MN=(2x+4) cm y PQ=(x−1) cm. Si AD=30 cm, halla x.',a:'x = 9',opts:sh(['x = 9','x = 7','x = 11','x = 6']),mc:true,ste:'AD=MN+PQ=(2x+4)+(x−1)=3x+3=30 → 3x=27 → x=9.'},
-  {_id:12,q:'En el trapecio, MN=20 cm, PQ=6 cm. ¿Cuánto mide la diferencia MN−PQ?',a:'14 cm',opts:sh(['14 cm','26 cm','10 cm','6 cm']),mc:true,ste:'MN−PQ=20−6=14=BC. La base menor mide 14 cm.'},
+  {_id:9,q:'En el trapecio ABCD (BC base menor y AD base mayor), MN=3x cm y PQ=x cm. Si AD=32 cm, halla x.',a:'x = 8',opts:sh(['x = 8','x = 4','x = 6','x = 10']),mc:true,ste:'AD=MN+PQ=3x+x=4x=32 → x=8.'},
+  {_id:10,q:'En el trapecio ABCD (BC base menor y AD base mayor), MN=5x cm y PQ=x cm. Si BC=16 cm, halla x.',a:'x = 4',opts:sh(['x = 4','x = 2','x = 8','x = 6']),mc:true,ste:'BC=MN−PQ=5x−x=4x=16 → x=4.'},
+  {_id:11,q:'En el trapecio ABCD (BC base menor y AD base mayor), MN=(2x+4) cm y PQ=(x−1) cm. Si AD=30 cm, halla x.',a:'x = 9',opts:sh(['x = 9','x = 7','x = 11','x = 6']),mc:true,ste:'AD=MN+PQ=(2x+4)+(x−1)=3x+3=30 → 3x=27 → x=9.'},
+  {_id:12,q:'En el trapecio ABCD (BC base menor y AD base mayor), MN=20 cm, PQ=6 cm. ¿Cuánto mide la diferencia MN−PQ?',a:'14 cm',opts:sh(['14 cm','26 cm','10 cm','6 cm']),mc:true,ste:'MN−PQ=20−6=14=BC. La base menor mide 14 cm.'},
   {_id:13,q:'En el trapecio isósceles ABCD, MN=13 cm y PQ=3 cm. Halla el perímetro sabiendo que AB=CD=7 cm.',a:'P = 40 cm',opts:sh(['P = 40 cm','P = 38 cm','P = 52 cm','P = 44 cm']),mc:true,ste:'BC=MN−PQ=13−3=10. AD=MN+PQ=13+3=16. P=10+16+7+7=40 cm.'},
   {_id:14,q:'En el trapecio isósceles, MN=16 cm, PQ=4 cm, AB=CD=8 cm. Halla el perímetro.',a:'P = 56 cm',opts:sh(['P = 56 cm','P = 48 cm','P = 64 cm','P = 40 cm']),mc:true,ste:'BC=MN−PQ=12 cm. AD=MN+PQ=20 cm. P=12+20+8+8=48 cm.'},
   {_id:15,q:'En el trapecio isósceles, MN=10 cm, PQ=2 cm, AB=CD=5 cm. Halla el perímetro.',a:'P = 30 cm',opts:sh(['P = 30 cm','P = 24 cm','P = 44 cm','P = 34 cm']),mc:true,ste:'BC=MN−PQ=8 cm. AD=MN+PQ=12 cm. P=8+12+5+5=30 cm.'},
   {_id:16,q:'En el trapecio isósceles, AB=CD=6, MN=14, PQ=4. Halla el perímetro.',a:'P = 40 cm',opts:sh(['P = 40 cm','P = 38 cm','P = 52 cm','P = 46 cm']),mc:true,ste:'BC=MN−PQ=10. AD=MN+PQ=18. P=10+18+6+6=40 cm.'},
   {_id:17,q:'En el trapecio ABCD, AD=24 cm y BC=8 cm. Halla MN y PQ.',a:'MN = 16 cm, PQ = 8 cm',opts:sh(['MN = 16 cm, PQ = 8 cm','MN = 8 cm, PQ = 16 cm','MN = 16 cm, PQ = 4 cm','MN = 12 cm, PQ = 6 cm']),mc:true,ste:'MN=(24+8)/2=16 cm. PQ=(24−8)/2=8 cm.'},
-  {_id:18,q:'En el trapecio, MN=18 cm y AD=28 cm. Halla PQ.',a:'PQ = 10 cm',opts:sh(['PQ = 10 cm','PQ = 18 cm','PQ = 8 cm','PQ = 5 cm']),mc:true,ste:'AD=MN+PQ → PQ=AD−MN=28−18=10 cm.'},
+  {_id:18,q:'En el trapecio ABCD (BC base menor y AD base mayor), MN=18 cm y AD=28 cm. Halla PQ.',a:'PQ = 10 cm',opts:sh(['PQ = 10 cm','PQ = 18 cm','PQ = 8 cm','PQ = 5 cm']),mc:true,ste:'AD=MN+PQ → PQ=AD−MN=28−18=10 cm.'},
   {_id:19,q:'En el trapecio isósceles, MN=15 cm, PQ=5 cm y AB=CD. Sabiendo que P=52 cm, halla AB.',a:'AB = 11 cm',opts:sh(['AB = 11 cm','AB = 6 cm','AB = 8 cm','AB = 13 cm']),mc:true,ste:'BC=15−5=10. AD=15+5=20. P=10+20+2·AB=52 → 2·AB=22 → AB=11 cm.'},
   {_id:20,q:'En el trapecio ABCD, MN+PQ=22 cm y MN−PQ=10 cm. Halla MN y PQ.',a:'MN = 16 cm, PQ = 6 cm',opts:sh(['MN = 16 cm, PQ = 6 cm','MN = 11 cm, PQ = 11 cm','MN = 22 cm, PQ = 10 cm','MN = 10 cm, PQ = 6 cm']),mc:true,ste:'Sistema: MN+PQ=22 y MN−PQ=10 → sumando: 2·MN=32 → MN=16. PQ=22−16=6 cm.'}
 ]);}
@@ -20607,7 +20607,7 @@ function _genI1arNat_B1(){
   {_id:12,q:'Efectúa: A = (8²−5²)² / ∛(√49+√400)',a:'507',opts:_i4gshuf(['507','509','505','511']),mc:true,ste:'√49=7, √400=20, suma=27, ∛27=3. (8²−5²)²=(64−25)²=39²=1521. 1521÷3=507.'},
   {_id:13,q:'V/F: En una operación combinada sin signos de agrupación, primero se resuelven las potencias y raíces, luego las multiplicaciones y divisiones, y al final las sumas y restas.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: ese es el orden correcto de la jerarquía de operaciones.'},
   {_id:14,q:'V/F: Los signos de agrupación (paréntesis, corchetes, llaves) se resuelven de afuera hacia adentro.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: los signos de agrupación se resuelven de ADENTRO hacia afuera, empezando por el más interno (paréntesis), luego corchetes, luego llaves.'},
-  {_id:15,q:'V/F: En la expresión 2+3×4, el resultado correcto es 20 si se suma primero.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: por jerarquía de operaciones, la multiplicación se resuelve antes que la suma: 2+3×4 = 2+12 = 14, no 20.'},
+  {_id:15,q:'V/F: El resultado correcto de 2+3×4 es 20.',a:'Falso',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es falso: por jerarquía de operaciones, la multiplicación se resuelve antes que la suma: 2+3×4 = 2+12 = 14, no 20.'},
   {_id:16,q:'V/F: Las multiplicaciones y divisiones tienen el mismo nivel de jerarquía y se resuelven en el orden en que aparecen, de izquierda a derecha.',a:'Verdadero',opts:_i4gshuf(['Verdadero','Falso']),mc:true,ste:'Es verdadero: multiplicación y división están al mismo nivel jerárquico; se ejecutan en el orden en que aparecen en la expresión.'},
   {_id:17,q:'Resuelve: 3³×2 + [2×(5²−3×4)+7] ÷ 3',a:'65',opts:_i4gshuf(['65','67','63','69']),mc:true,ste:'3³×2=54. Dentro del corchete: 5²−3×4=13, ×2=26, +7=33, ÷3=11. Total = 54+11 = 65.'},
   {_id:18,q:'Resuelve: 2⁴×2 + [3×(6²−4×5)+8] ÷ 4',a:'46',opts:_i4gshuf(['46','48','44','50']),mc:true,ste:'2⁴×2=32. Dentro del corchete: 6²−4×5=16, ×3=48, +8=56, ÷4=14. Total = 32+14 = 46.'},
@@ -26553,6 +26553,33 @@ function _demoBuildQs(t) {
 const DEMO_MAX_INTENTOS = 2;
 // Identificador de la clase en curso ('YYYY-MM-DD HH:MM'), o null si no está en clase. El profesor
 // dentro de la cuenta del alumno cuenta como "en clase" todo el día (misma regla que _demoEnClase).
+// 10/10/2026 (caso Nicole): una tarea cuenta toda práctica hecha entre su inicio y su vencimiento.
+// Si el profesor la asigna DURANTE la clase del alumno, lo que el alumno termina en esa misma clase
+// (aunque sea segundos después de asignarla) ya no debe contar: la tarea empieza al FIN de la clase,
+// según el horario del calendario de padres. Fuera de clase, el inicio queda tal cual.
+function _taskInicioFinClase(uid, startSec) {
+  try {
+    if (!startSec) return startSec;
+    const st = (getStudents() || []).find(s => String(s.id) === String(uid));
+    if (!st || typeof getClassDatesForStudent !== 'function') return startSec;
+    const d = new Date(startSec * 1000);
+    const key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const now = new Date();
+    const off = (d.getFullYear() - now.getFullYear()) * 12 + (d.getMonth() - now.getMonth()); // getClassDatesForStudent va por MES
+    const dia = (getClassDatesForStudent(st.name, off) || []).find(x => x.key === key);
+    if (!dia) return startSec;
+    const min = d.getHours() * 60 + d.getMinutes();
+    for (const sl of (dia.slots || [])) {
+      const p = String(sl.start || '').split(':').map(Number); if (p.length < 2 || isNaN(p[0])) continue;
+      const ini = p[0] * 60 + p[1], fin = ini + (Number(sl.dur) || 60);
+      if (min >= ini && min < fin) {
+        const f = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0); f.setMinutes(fin);
+        return Math.floor(f.getTime() / 1000);
+      }
+    }
+  } catch (e) { console.error('inicio tarea', e); }
+  return startSec;
+}
 function _demoClaseActual(uid) {
   const now = new Date(), key = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
   if (typeof _isTeacher === 'function' && _isTeacher()) return key + ' prof';
@@ -28457,6 +28484,25 @@ function _combClickCol(col,fromDIdx){
   _combAutoFocusForSelection(reopenedJoin?_combSt.toks.findIndex(t=>t.cs===col&&typeof t.v==='string'&&!_isParen(t.v)):undefined);
 }
 
+// Reporte de Mateo (07-oct-2026): en celular una operación combinada larga (13 columnas × 52 px ≈ 712 px)
+// no cabía y la cuadrícula quedaba recortada a los lados, así que una casilla del resultado (p. ej. la 3.ª
+// de 9×12=108) no se veía. Ahora la cuadrícula se reduce con zoom hasta caber (mínimo 55 %); si aun así no
+// cabe, se alinea a la izquierda y se puede deslizar horizontalmente, sin recortar nada.
+function _combFit(c){
+  const g=c&&c.firstElementChild; if(!g) return;
+  g.style.zoom='';
+  const host=c.parentElement||c;
+  const avail=host.clientWidth-8, w=g.scrollWidth;
+  let over=false;
+  if(avail>0&&w>avail){ const z=Math.max(0.55,avail/w); g.style.zoom=String(z); over=w*z>avail+1; }
+  c.style.maxWidth='100%';
+  c.style.overflowX=over?'auto':'';
+  c.style.alignItems=over?'flex-start':'center';
+}
+if(typeof window!=='undefined'&&!window._combFitResize){
+  window._combFitResize=true;
+  window.addEventListener('resize',()=>{const c=document.getElementById('_comb_container'); if(c) _combFit(c);});
+}
 function _combRender(){
   const c=document.getElementById('_comb_container');
   if(!c||!_combSt) return;
@@ -29856,6 +29902,7 @@ function _combRender(){
     }
   }
   c.innerHTML=`<div style="display:grid;grid-template-columns:repeat(${N},52px);gap:5px 3px;margin:0 auto;padding:4px 2px">${combinedHtml}</div>`;
+  _combFit(c);
 
   if(!_combNoAutoFocus){
     if(sel.length&&sel.every(i=>i<toks.length)){
@@ -32004,7 +32051,7 @@ function confirmPrepTask() {
     const m = (document.getElementById(prefix+'-m')?.value||'0').padStart(2,'0');
     return d ? Math.floor(new Date(`${d}T${h}:${m}:00`).getTime()/1000) : null;
   };
-  const _assignedAt = _readDt('prep-task-start') || Math.floor(Date.now()/1000);
+  const _assignedAt = _taskInicioFinClase(uid, _readDt('prep-task-start') || Math.floor(Date.now()/1000));
   const _dueAt      = _readDt('prep-task-due');
   const taskId = _prepTaskInfo.exam ? 'exam:'+(_prepTaskInfo.skills||[]).join(',') : _prepTaskInfo.topic;
   // Si ya existe, actualizar fechas; si no, añadir. Excepción: si la tarea existente ya
