@@ -6,7 +6,7 @@
 <title>LEVEL ZONE</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;600;700&family=Lato:wght@400;700;900&family=Orbitron:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="/levelup.js?v=20261010c"></script>
+  <script src="/levelup.js?v=20261010i"></script>
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -823,6 +823,9 @@ textarea.fsm { resize:none; height:64px; }
 .prep-kh-topbar-wrap{margin-left:259px}
 .prep-kh-mob-badge{height:26px;border-radius:6px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:rgba(255,255,255,0.55);font-family:'Lato',sans-serif;font-size:9px;font-weight:700;display:none;align-items:center;padding:0 5px;white-space:nowrap;letter-spacing:.01em}
 .prep-mob-opts-row{display:none}
+/* 10/10/2026 opción A: en escritorio Tareas · Cursos · Unidades van en la fila de filtros; en celular, en su fila de siempre */
+@media(min-width:681px){.prep-mc-tabs-mob{display:none !important}}
+@media(max-width:680px){.prep-mc-tabs-desk{display:none !important}}
 .prep-mob-opt-grp{display:flex;flex-direction:column;gap:3px}
 .prep-mob-index{display:none}
 @media(max-width:680px){.prep-mob-index{display:block;background:rgba(255,255,255,0.04);border-radius:10px;padding:6px 8px;margin-bottom:8px}}
@@ -1991,9 +1994,26 @@ function getLoggedId() {
   return v !== null ? parseInt(v) : null;
 }
 function setLoggedId(id) {
-  if (id === null) localStorage.removeItem('loggedId');
+  if (id === null) { localStorage.removeItem('loggedId'); _clearTeacherFlag(); }
   else localStorage.setItem('loggedId', String(id));
 }
+// 10/10/2026: la marca "profesor viendo como alumno" vivía solo en sessionStorage (una pestaña),
+// mientras el alumno elegido (loggedId) vive en localStorage (todas las pestañas). En otra pestaña,
+// o si Chrome recargaba la pestaña, el profesor quedaba como si fuera el alumno, sin barra ni botón
+// de cambiar alumno. Ahora la marca se guarda también en localStorage y las pestañas se sincronizan.
+function _clearTeacherFlag() {
+  try { localStorage.removeItem('_teacherSession'); } catch (e) {}
+  try { sessionStorage.removeItem('_teacherSession'); } catch (e) {}
+}
+window.addEventListener('storage', e => {
+  if (e.key !== 'loggedId' && e.key !== '_teacherSession') return;
+  if (e.key === '_teacherSession' && e.newValue !== '0') { try { sessionStorage.removeItem('_teacherSession'); } catch (_) {} }
+  if (typeof _prep !== 'undefined') { _prep.misCursosTab = null; _prep.tareasSubTabMC = null; _prep.rankOpen = null; }
+  if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
+  if (typeof _prepAdminHistData !== 'undefined') { _prepAdminHistData = null; _prepAdminHistLoading = false; }
+  if (document.getElementById('preparate-pane') && typeof loadPrepHistory === 'function') loadPrepHistory();
+  else if (typeof router === 'function') router();
+});
 function isAdmin() { return getLoggedId() === 0; }
 
 // ════════════════════════════════════════════════════════
@@ -3187,6 +3207,7 @@ function doLogin() {
     setTimeout(() => err.style.display='none', 6000); return;
   }
   setLoggedId(s.id);
+  _clearTeacherFlag();
   go('dashboard');
 }
 function doLogout() { setLoggedId(null); go('login'); }
@@ -13822,6 +13843,7 @@ function _prepModalLogin() {
     return;
   }
   setLoggedId(s.id);
+  _clearTeacherFlag();
   _prepCloseLoginModal();
   // Recargar historial con el uid del nuevo usuario
   if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
@@ -13831,7 +13853,11 @@ function _prepModalLogin() {
 
 // ── Teacher: cambio de alumno sin cerrar sesión ───────────────
 function _isTeacher() {
-  return sessionStorage.getItem('_teacherSession') === '0';
+  const id = getLoggedId();
+  if (id === null || id === 0) return false;
+  let f = null;
+  try { f = sessionStorage.getItem('_teacherSession') || localStorage.getItem('_teacherSession'); } catch (e) {}
+  return f === '0';
 }
 function _prepOpenSwitchModal() {
   const modal = document.getElementById('prep-switch-modal');
@@ -13869,6 +13895,8 @@ function _prepCloseSwitchModal() {
 }
 function _prepSwitchToStudent(id) {
   sessionStorage.setItem('_teacherSession', '0');
+  try { localStorage.setItem('_teacherSession', '0'); } catch (e) {}
+  if (typeof _prep !== 'undefined') { _prep.misCursosTab = null; _prep.tareasSubTabMC = null; _prep.rankOpen = null; }
   setLoggedId(id);
   _prepCloseSwitchModal();
   if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }
@@ -13876,7 +13904,7 @@ function _prepSwitchToStudent(id) {
   else if (typeof _renderPreparatePane === 'function') _renderPreparatePane();
 }
 function _prepReturnToTeacher() {
-  sessionStorage.removeItem('_teacherSession');
+  _clearTeacherFlag();
   setLoggedId(0);
   _prepCloseSwitchModal();
   if (typeof _prepHistoryData !== 'undefined') { _prepHistoryData = null; _prepHistoryLoading = false; }

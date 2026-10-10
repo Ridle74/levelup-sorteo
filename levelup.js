@@ -22589,7 +22589,7 @@ function _prepConfigHtml() {
     const _autoTasks = (overrides[_autoUid]?.prepTasks||[]).length + (overrides[_autoUid]?.prepDesafios||[]).length;
     if (_autoTasks > 0) {
       _prep.openSelector = 'miscursos';
-      _prep.misCursosTab = 'tareas';
+      _prep.misCursosTab = null; // 10/10/2026: la pestaña la elige la regla de Mis cursos (Tareas solo si hay Activas o Por demostrar)
       _prep._autoOpened = true;
     }
   }
@@ -23053,10 +23053,16 @@ function _prepConfigHtml() {
         ${_sc != null ? `<span style="font-family:'Orbitron',monospace;font-size:10px;color:#fbbf24;font-weight:700;flex-shrink:0">${_sc}</span>` : ''}
       </div>`;
     };
-    const _dGrp = (ico, lbl, count, hdrBg, hdrColor, dotColor, items) => items.length ? `<div style="border-radius:7px;overflow:hidden;margin-bottom:5px;margin-left:15px;margin-right:15px">
-      <div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:${hdrBg};font-size:10px;font-weight:700;color:${hdrColor};letter-spacing:.04em">${ico} ${lbl} · ${count}</div>
-      ${items.map(k => _dRow(k, dotColor)).join('')}
-    </div>` : '';
+    // 10/10/2026 (opción A de Michel): el ranking va compacto, una fila por grupo
+    // ("🥇 Top 1 · 32 temas ▸"); al tocarla se despliegan sus temas debajo (uno abierto a la vez).
+    const _dGrp = (ico, lbl, count, hdrBg, hdrColor, dotColor, items) => {
+      if (!items.length) return '';
+      const _open = _prep.rankOpen === lbl;
+      return `<div style="border-radius:7px;overflow:hidden;margin-bottom:5px;margin-left:15px;margin-right:15px">
+      <div role="button" tabindex="0" aria-expanded="${_open}" onclick="_snd.click();_prep.rankOpen=(_prep.rankOpen==='${lbl}'?null:'${lbl}');_renderPreparatePane()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}" style="display:flex;align-items:center;gap:6px;padding:8px 10px;min-height:20px;background:${hdrBg};font-size:11px;font-weight:700;color:${hdrColor};letter-spacing:.04em;cursor:pointer;user-select:none"><span style="flex:1">${ico} ${lbl}</span><span style="font-size:12px">${count} ${count === 1 ? 'tema' : 'temas'}</span><span style="display:inline-block;margin-left:6px;transition:transform .15s;transform:rotate(${_open ? 90 : 0}deg)">▸</span></div>
+      ${_open ? items.map(k => _dRow(k, dotColor)).join('') : ''}
+    </div>`;
+    };
     // Puntos mensuales del alumno (mismo puntaje que usa el sorteo/bingo para el cupo, ver
     // getTotalPts/getTotalPts2 en student.html) — pedido explícito: antes no se veía en ningún
     // lado dentro de Level Up. Durante la semana de traslape de mes (ver getCupoMonthOffset —
@@ -23670,6 +23676,7 @@ function _prepConfigHtml() {
 
   // ── Vista "Mis Cursos" (solo alumnos no-admin) ─────────────────────────────
   let _misCursosView = '';
+  let _mcTabsDesk = ''; // 10/10/2026 opción A: Tareas · Cursos · Unidades en la fila de filtros (escritorio)
   if (openSel === 'miscursos' && !isAdmin() && _myCourses.length) {
     const _pf = k => !/_bq\d/.test(k) && !k.includes('_bpu');
     const _vivid = ['#6d28d9','#2563eb','#0e7490','#be185d','#b45309','#15803d','#c2410c','#0f766e','#7e22ce','#1d4ed8','#b91c1c','#0369a1'];
@@ -23789,25 +23796,34 @@ function _prepConfigHtml() {
     const _isPorDemostrarMC = (t) => !!t && !t.demo && typeof DEMO_CUTOFF_SEC !== 'undefined' && (t.assignedAt || 0) >= DEMO_CUTOFF_SEC
       && typeof _ptsTaskCompletionDate === 'function' && !!_ptsTaskCompletionDate(t, _hAscMC, true);
     const _countDemoMC = _myTasks.filter(_isPorDemostrarMC).length;
+    // 10/10/2026 (pedido de Michel): "Demostradas" = tareas con la demostración ya terminada (vencidas o no),
+    // con su resultado (punto validado o no). Salen de Activas y Vencidas.
+    const _isDemostradaMC = (t) => !!t && !!t.demo;
+    const _countDemostradasMC = _myTasks.filter(_isDemostradaMC).length;
     const _enClaseMC = _countDemoMC > 0 && typeof _demoClaseActual === 'function' && !!_demoClaseActual(_taskUid);
-    const _tSubTabMC = _prep.tareasSubTabMC || (_enClaseMC ? 'demostrar' : 'activas');
+    let _tSubTabMC = _prep.tareasSubTabMC || (_enClaseMC ? 'demostrar' : 'activas');
     // Una tarea es "vencida" simplemente si ya pasó su fecha de vencimiento, esté o no
     // completada — antes una tarea completada nunca pasaba a "Vencidas" sin importar la
     // fecha, lo que hacía que tareas ya hechas pero con vencimiento pasado se quedaran
     // mezcladas para siempre en "Activas".
     const _isVencidaMC = (t) => !!t.dueAt && t.dueAt < (Date.now()/1000);
     let _countActivasMC = 0, _countVencidasMC = 0;
-    _myTasks.forEach(t => { if (_isPorDemostrarMC(t)) return; if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
+    _myTasks.forEach(t => { if (_isPorDemostrarMC(t) || _isDemostradaMC(t)) return; if (_isVencidaMC(t)) _countVencidasMC++; else _countActivasMC++; });
     _myDesafios.forEach(d => { if (_isVencidaMC(d)) _countVencidasMC++; else _countActivasMC++; });
+    // 10/10/2026: sin Activas pero con alguna Por demostrar, se abre directo Por demostrar.
+    if (!_prep.tareasSubTabMC && _countActivasMC === 0 && _countDemoMC > 0) _tSubTabMC = 'demostrar';
     const _tSubBtnMC = (key, lbl, n) => `<button onclick="_prep.tareasSubTabMC='${key}';_renderPreparatePane()" class="prep-sel-btn${_tSubTabMC===key?' sel':''}">${lbl} (${n})</button>`;
-    const _tSubHdrMC = (_myTasks.length || _myDesafios.length) ? `<div style="display:flex;gap:6px;margin:14px 0 14px">
+    const _tSubHdrMC = (_myTasks.length || _myDesafios.length) ? `<div class="prep-mc-subtabs" style="display:flex;gap:6px;margin:0 0 14px">
       ${_tSubBtnMC('activas','Activas',_countActivasMC)}
       ${_tSubBtnMC('vencidas','Vencidas',_countVencidasMC)}
       ${_tSubBtnMC('demostrar','Por demostrar',_countDemoMC)}
+      ${_tSubBtnMC('demostradas','Demostradas',_countDemostradasMC)}
     </div>` : '';
     const _myTasksFiltered = _myTasks.filter(t => _tSubTabMC==='demostrar' ? _isPorDemostrarMC(t)
-      : (!_isPorDemostrarMC(t) && (_tSubTabMC==='vencidas' ? _isVencidaMC(t) : !_isVencidaMC(t))));
-    const _tareasEmptyMsgMC = _tSubTabMC==='demostrar' ? 'No tienes tareas por demostrar 🎉' : _tSubTabMC==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
+      : _tSubTabMC==='demostradas' ? _isDemostradaMC(t)
+      : (!_isPorDemostrarMC(t) && !_isDemostradaMC(t) && (_tSubTabMC==='vencidas' ? _isVencidaMC(t) : !_isVencidaMC(t))));
+    if (_tSubTabMC==='demostradas') _myTasksFiltered.sort((a, b) => ((b.demo && b.demo.at) || 0) - ((a.demo && a.demo.at) || 0));
+    const _tareasEmptyMsgMC = _tSubTabMC==='demostrar' ? 'No tienes tareas por demostrar 🎉' : _tSubTabMC==='demostradas' ? 'Todavía no hay tareas demostradas' : _tSubTabMC==='vencidas' ? 'No hay tareas vencidas 🎉' : 'No hay tareas activas';
     const _taskCards = _myTasksFiltered.map(t => {
       const _isExamT = !!t.exam;
       const _taskId  = _isExamT ? `exam:${(t.skills||[]).join(',')}` : t.topic;
@@ -23870,7 +23886,7 @@ function _prepConfigHtml() {
             const dm = t.demo;
             const _pill = 'display:inline-flex;align-items:center;gap:5px;margin-top:7px;padding:5px 10px;border-radius:9px;font-size:11px;font-weight:800;letter-spacing:.03em';
             if (dm && dm.incompleta) return `<div style="${_pill};background:rgba(248,113,113,0.15);border:1px solid rgba(248,113,113,0.4);color:#fca5a5">⏱ Demostración interrumpida</div>`;
-            if (dm) { const c = dm.pct >= 80 ? ['rgba(34,197,94,0.15)','rgba(34,197,94,0.45)','#4ade80'] : dm.pct >= 60 ? ['rgba(251,191,36,0.15)','rgba(251,191,36,0.45)','#fbbf24'] : ['rgba(248,113,113,0.15)','rgba(248,113,113,0.45)','#fca5a5']; return `<div style="${_pill};background:${c[0]};border:1px solid ${c[1]};color:${c[2]}">⏱ Demostración ${dm.correct}/${dm.total} · ${Math.floor((dm.secs||0)/60)}:${String((dm.secs||0)%60).padStart(2,'0')}${dm.pct>=DEMO_PCT_PUNTO?' · ✓ Punto validado':''}</div>`; }
+            if (dm) { const c = dm.pct >= 80 ? ['rgba(34,197,94,0.15)','rgba(34,197,94,0.45)','#4ade80'] : dm.pct >= 60 ? ['rgba(251,191,36,0.15)','rgba(251,191,36,0.45)','#fbbf24'] : ['rgba(248,113,113,0.15)','rgba(248,113,113,0.45)','#fca5a5']; return `<div style="${_pill};background:${c[0]};border:1px solid ${c[1]};color:${c[2]}">⏱ Demostración ${dm.correct}/${dm.total} · ${Math.floor((dm.secs||0)/60)}:${String((dm.secs||0)%60).padStart(2,'0')}${dm.pct>=DEMO_PCT_PUNTO?' · ✓ Punto validado':' · ✗ Sin punto'}</div>`; }
             const _it1 = (Array.isArray(t.demoIntentos) && t.demoIntentos.length === 1) ? t.demoIntentos[0] : null;
             if (_it1) {   // 1.er intento sin 100%: muestra el resultado y, si sigue en esa clase, el 2.º intento
               const _r = _it1.incompleta ? '1.er intento interrumpido' : `1.er intento ${_it1.correct}/${_it1.total}`;
@@ -23884,9 +23900,9 @@ function _prepConfigHtml() {
         </div>
       </div>`;
     }).join('');
-    const _tasksSection = _myTasksFiltered.length ? `${_secHdr(_tSubTabMC==='demostrar' ? 'Por demostrar en clase' : 'Mis Tareas')}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : ''}` : '';
+    const _tasksSection = _myTasksFiltered.length ? `${_secHdr(_tSubTabMC==='demostrar' ? 'Por demostrar en clase' : _tSubTabMC==='demostradas' ? 'Tareas demostradas' : 'Mis Tareas')}${_myTasksFiltered.length ? `<div style="display:flex;flex-direction:column;gap:7px">${_taskCards}</div>` : ''}` : '';
     // ── Desafío de Dominio ────────────────────────────────────────────────────
-    const _myDesafiosFiltered = _tSubTabMC==='demostrar' ? [] : _myDesafios.filter(d => _tSubTabMC==='vencidas' ? _isVencidaMC(d) : !_isVencidaMC(d));
+    const _myDesafiosFiltered = (_tSubTabMC==='demostrar' || _tSubTabMC==='demostradas') ? [] : _myDesafios.filter(d => _tSubTabMC==='vencidas' ? _isVencidaMC(d) : !_isVencidaMC(d));
     const _retoColorDs = {Suma:'#22d3ee',Resta:'#ec4899',Multiplicación:'#fbbf24',División:'#a855f7',Multiplicacion:'#fbbf24',Division:'#a855f7','Op. Combinada':'#f97316',Ecuación:'#10b981'};
     const _retoRgbDs   = {Suma:'34,211,238',Resta:'236,72,153',Multiplicación:'251,191,36',División:'168,85,247',Multiplicacion:'251,191,36',Division:'168,85,247','Op. Combinada':'249,115,22',Ecuación:'16,185,129'};
     const _nivelLblDs = ['','Básico','Intermedio','Avanzado'];
@@ -23947,10 +23963,16 @@ function _prepConfigHtml() {
     }).join('');
     const _desafioSection = _myDesafiosFiltered.length ? `${_secHdr('Desafío de Dominio')}<div style="display:flex;flex-direction:column;gap:7px">${_desafioCards}</div>` : '';
     const _hasTareas = !!(_myTasks.length || _myDesafios.length);
-    if (!_prep.misCursosTab || (_prep.misCursosTab==='tareas' && !_hasTareas)) _prep.misCursosTab = _hasTareas ? 'tareas' : 'cursos';
-    const _mcTab = _prep.misCursosTab;
+    // 10/10/2026 (pedido de Michel): por defecto se abre Tareas solo si hay Activas o Por demostrar;
+    // si todas están vencidas (o no hay), se abre Cursos. La pestaña Tareas sigue disponible.
+    const _hasPendMC = (_countActivasMC + _countDemoMC) > 0;
+    const _defTabMC = _hasPendMC ? 'tareas' : 'cursos';
+    // Se fija solo cuando el historial ya cargó (Por demostrar depende de él); mientras carga se usa sin guardarla.
+    if ((!_prep.misCursosTab || (_prep.misCursosTab==='tareas' && !_hasTareas)) && Array.isArray(_prepHistoryData)) _prep.misCursosTab = _defTabMC;
+    const _mcTab = _prep.misCursosTab || _defTabMC;
     const _mcTabBtn = (key,lbl,n) => `<button onclick="_prep.misCursosTab='${key}';_renderPreparatePane()" class="prep-sel-btn${_mcTab===key?' sel':''}">${lbl}${n?` (${n})`:''}</button>`;
-    const _mcTabHdr = `<div style="display:flex;gap:6px;padding:0 0 12px">
+    _mcTabsDesk = (_hasTareas ? _mcTabBtn('tareas','📌 Tareas', _myTasks.length+_myDesafios.length) : '') + _mcTabBtn('cursos','📋 Cursos','') + _mcTabBtn('unidades','📚 Unidades','');
+    const _mcTabHdr = `<div class="prep-mc-tabs-mob" style="display:flex;gap:6px;padding:0 0 12px">
       ${_hasTareas ? _mcTabBtn('tareas','📌 Tareas', _myTasks.length+_myDesafios.length) : ''}
       ${_mcTabBtn('cursos','📋 Cursos','')}
       ${_mcTabBtn('unidades','📚 Unidades','')}
@@ -23971,7 +23993,9 @@ function _prepConfigHtml() {
   const contentArea = `<div class="prep-kh-content">
     ${_mobileBar}
     <div class="prep-filter-bar${_msi!==1?' prep-mob-filters-off':''}">
-      <div style="flex:1;min-width:0">${selectorRow}</div>
+      <div style="flex:1;min-width:0">${(_misCursosView && _mcTabsDesk && !_misAlumnosView)
+        ? `<div class="prep-mob-filter-row" style="${_rowStyle};margin:0 0 4px">${_misCursosBtn.replace(dot,'')}<span class="prep-mc-tabs-desk" style="width:1px;height:22px;background:rgba(255,255,255,0.15);margin:0 4px;flex-shrink:0"></span><span class="prep-mc-tabs-desk" style="display:flex;gap:5px">${_mcTabsDesk}</span></div>${_optsRow}`
+        : selectorRow}</div>
       ${_challengeBtn}
     </div>
     ${_mobPtsCard}
@@ -24021,6 +24045,18 @@ function _ptsOpenDetail(offset) {
   });
 }
 function _ptsCloseDetail() { _ptsDetailModal = null; _renderPreparatePane(); }
+// 10/10/2026 (opción 1 de Michel): ver los puntos de todo el mes o clase por clase.
+// _ptsDetailModal.claseIdx: null = todo el mes; si no, índice de la clase (orden cronológico).
+function _ptsSetDetailClase(modo) {
+  if (!_ptsDetailModal) return;
+  _ptsDetailModal.claseIdx = modo === 'mes' ? null : -1; // -1 = la última clase (se resuelve al dibujar)
+  _renderPreparatePane();
+}
+function _ptsNavClase(d) {
+  if (!_ptsDetailModal || _ptsDetailModal.claseIdx === null || _ptsDetailModal.claseIdx === undefined) return;
+  _ptsDetailModal.claseIdx = Math.max(0, (_ptsDetailModal.claseIdx | 0) + d); // se acota al dibujar
+  _renderPreparatePane();
+}
 function _ptsSetDetailType(type) {
   if (!_ptsDetailModal) return;
   _ptsDetailModal.type = type;
@@ -24154,17 +24190,20 @@ function _ptsDetailModalHtml() {
 
       // Filas de la pestaña Horas: una por día de clase pasado, con sus puntos y el tiempo real.
       let totalHoursPts = 0, totalRealSec = 0;
-      const hoursRows = pastDates.map(({date,key}) => {
+      const _hoursByKey = {};
+      const _hoursRowHtml = ({date,key}) => {
         const realSec = _ptsSecondsForDate(hist, key);
         const hPts = _ptsAutoHoursForDate(hist, key);
+        _hoursByKey[key] = { pts: hPts, sec: realSec };
         totalHoursPts += hPts; totalRealSec += realSec;
         const earned = hPts > 0;
-        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
+        return `<div data-key="${key}" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
           <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(date)}</div>
           <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">practicó ${_prepFmtDur(realSec)}${earned?'':' (no alcanzó)'}</div></div>
           <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:${earned?'#4fb6ff':'rgba(255,255,255,0.3)'}">+${hPts}</div>
         </div>`;
-      }).join('');
+      };
+      const _hoursRowsArr = pastDates.map(d => ({ key: d.key, html: _hoursRowHtml(d) }));
 
       // Filas de la pestaña Progreso: una por CADA habilidad dominada por primera vez este mes.
       let totalProgressPts = 0;
@@ -24173,43 +24212,82 @@ function _ptsDetailModalHtml() {
         topicsTouched.forEach(tk => {
           if (typeof _ptsFirstDominatedDate === 'function' && _ptsFirstDominatedDate(tk, hist) === key &&
               (typeof _ptsCountsForProgress !== 'function' || _ptsCountsForProgress(student.id, tk, key, false))) {
-            progressEvents.push({date, label: skillLbl(tk), pts: 1});
+            progressEvents.push({date, key, label: skillLbl(tk), pts: 1});
           }
         });
         // Cuestionarios (+2) y exámenes (+3) dominados por primera vez (desde octubre 2026).
         if (typeof _ptsQuizExamEventsForDate === 'function') {
           _ptsQuizExamEventsForDate(hist, key, student.id).forEach(ev => progressEvents.push({
-            date, pts: ev.pts,
+            date, key, pts: ev.pts,
             label: (ev.kind === 'exam' ? 'Examen: ' : 'Cuestionario: ') + ((typeof _cleanLbl === 'function') ? _cleanLbl(ev.label, ev.topic) : ev.label)
           }));
         }
       });
       totalProgressPts = progressEvents.reduce((a, ev) => a + (ev.pts || 1), 0);
-      const progressRows = progressEvents.map(ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
+      const _progressRowHtml = ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
         <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(ev.date)}</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">${ev.label}</div></div>
         <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:#b06bff">+${ev.pts || 1}</div>
-      </div>`).join('');
+      </div>`;
 
       // Filas de la pestaña Tareas: una por cada tarea asignada que quedó completa este mes.
       let totalTasksPts = 0;
       const taskEvents = [];
+      const _tasksMaxByKey = {};
+      const _keyOf = dt => dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
       pastDates.forEach(({date,key}) => {
         const doneThatDay = (typeof _ptsTasksCreditedOn === 'function' && typeof _ptsMonthKeys === 'function')
           ? _ptsTasksCreditedOn(student.id, hist, key, _ptsTaskClassKeys(student.id, _ptsMonthKeys(student, offset)))
           : myTasks.filter(t => typeof _ptsTaskCompletionDate === 'function' && _ptsTaskCompletionDate(t, hist) === key);
         // Respeta el mismo tope diario (tasksMax) que usa el cálculo oficial de puntos.
         const _tmD = (typeof _ptsTasksMax === 'function') ? _ptsTasksMax(student.id, key) : tasksMax;
-        doneThatDay.slice(0, _tmD).forEach(t => taskEvents.push({date, label: taskLbl(t)}));
+        doneThatDay.slice(0, _tmD).forEach(t => taskEvents.push({date, key, label: taskLbl(t)}));
+        _tasksMaxByKey[key] = _tmD;
         totalTasksPts += Math.min(doneThatDay.length, _tmD) * mult;
       });
-      // Descuentos por demostraciones de tareas con 40% o menos (mes de la tarea).
-      if (typeof _demoPenal === 'function' && pastDates.length) totalTasksPts -= _demoPenal(student.id, pastDates[0].key.slice(0, 7));
-      const taskRows = taskEvents.map(ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
-        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${dlabel(ev.date)}</div>
+      taskEvents.forEach(ev => { ev.pts = mult; });
+      // Descuentos (o punto extra) por demostraciones de tareas, en el mes de la tarea.
+      // 10/10/2026 (pedido de Michel): cada demostración que movió puntos sale como su propia fila
+      // (fecha, tema y nota), ordenada con las demás. Si el total guardado (demoPenal) no cuadra con
+      // las demostraciones, una fila "Ajuste por demostraciones" muestra la diferencia.
+      if (typeof _demoPenal === 'function' && pastDates.length) {
+        const _ymT = pastDates[0].key.slice(0, 7);
+        const _penalT = _demoPenal(student.id, _ymT);
+        totalTasksPts -= _penalT;
+        let _sumDemo = 0;
+        myTasks.forEach(t => {
+          const d = t && t.demo;
+          const p = d && d.efectos ? Number(d.efectos.puntos) || 0 : 0;
+          if (!d || d.ym !== _ymT || !p) return;
+          _sumDemo += p;
+          const dt = d.at ? new Date(d.at * (d.at < 1e12 ? 1000 : 1)) : pastDates[0].date;
+          const nota = (d.correct != null && d.total) ? ` · ${d.correct}/${d.total} (${d.pct}%)` : '';
+          const _mesDt = (typeof MESES_ES !== 'undefined' && dt.getMonth() !== pastDates[0].date.getMonth()) ? String(MESES_ES[dt.getMonth()]).toLowerCase() : null;
+          taskEvents.push({ date: dt, key: _keyOf(dt), dateLbl: _mesDt ? `${dayShort[dt.getDay()]} ${dt.getDate()} de ${_mesDt}` : null, pts: p, demo: true, label: (p > 0 && t.exam ? 'Examen perfecto en la demostración: ' : 'Demostración: ') + taskLbl(t) + nota });
+        });
+        const _dif = -_penalT - _sumDemo;
+        if (_dif) taskEvents.push({ date: pastDates[0].date, key: pastDates[0].key, pts: _dif, demo: true, label: 'Ajuste por demostraciones' });
+        taskEvents.sort((a, b) => b.date - a.date);
+      }
+      const _taskRowHtml = ev => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:800">${ev.dateLbl || dlabel(ev.date)}</div>
         <div style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px">${ev.label}</div></div>
-        <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:#39ff7a">+${mult}</div>
-      </div>`).join('');
+        <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:14px;flex-shrink:0;color:${ev.pts < 0 ? '#ff5a6e' : '#39ff7a'}">${ev.pts < 0 ? '−' + Math.abs(ev.pts) : '+' + ev.pts}</div>
+      </div>`;
+
+      // ── Vista "Por clase" (10/10/2026) ──
+      const _clases = pastDates.slice().reverse(); // orden cronológico
+      let _ci = _ptsDetailModal.claseIdx;
+      if (_ci !== null && _ci !== undefined) {
+        if (!_clases.length) _ci = null;
+        else { if (_ci < 0 || _ci >= _clases.length) _ci = _ci < 0 ? _clases.length - 1 : _clases.length - 1; _ptsDetailModal.claseIdx = _ci; }
+      } else _ci = null;
+      const _cl = _ci === null ? null : _clases[_ci];
+      const _onlyCl = ev => !_cl || ev.key === _cl.key;
+      const _hideDate = html => _cl ? html.replace(/<div style="font-size:12px;font-weight:800">[^<]*<\/div>\s*<div style="font-size:10px;color:rgba\(255,255,255,0\.35\);margin-top:1px">/, '<div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.85)">') : html;
+      const hoursRows = _hoursRowsArr.filter(_onlyCl).map(r => _hideDate(r.html)).join('');
+      const progressRows = progressEvents.filter(_onlyCl).map(ev => _hideDate(_progressRowHtml(ev))).join('');
+      const taskRows = taskEvents.filter(_onlyCl).map(ev => _hideDate(_taskRowHtml(ev))).join('');
 
       const ROWS = { hours: hoursRows, progress: progressRows, tasks: taskRows };
       const EMPTY_MSG = {
@@ -24218,15 +24296,33 @@ function _ptsDetailModalHtml() {
         tasks: 'Todavía no completa ninguna tarea asignada este mes.'
       };
       const TOTALS = { hours: totalHoursPts, progress: totalProgressPts, tasks: totalTasksPts };
+      if (_cl) {
+        EMPTY_MSG.hours = 'En esta clase no sumó puntos de horas.';
+        EMPTY_MSG.progress = 'En esta clase no dominó habilidades nuevas.';
+        EMPTY_MSG.tasks = 'En esta clase no sumó puntos de tareas.';
+      }
+      // Valores y máximos de la clase elegida: Horas hasta lo que dura la clase, Tareas hasta su tope del día.
+      const _clVal = _cl ? {
+        hours: (_hoursByKey[_cl.key] || {}).pts || 0,
+        progress: progressEvents.filter(_onlyCl).reduce((a, ev) => a + (ev.pts || 1), 0),
+        tasks: taskEvents.filter(_onlyCl).reduce((a, ev) => a + (ev.pts || 0), 0)
+      } : null;
+      const _clMax = _cl ? { hours: _cl.hours || 1, tasks: (_tasksMaxByKey[_cl.key] != null ? _tasksMaxByKey[_cl.key] : tasksMax) * mult } : null;
 
       const statTile = key => {
         const t = TYPES[key];
         return `<div style="flex:1;text-align:center;border-radius:10px;padding:11px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;background:${t.hex}1f;border:1px solid ${t.hex};box-shadow:0 0 16px ${t.hex}59, inset 0 0 12px ${t.hex}14">
           ${_ptsGlowBadge(t.icon, t.hex, 30)}
           <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,0.55)">${t.lbl}</div>
-          <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:19px;line-height:1;color:${t.hex};text-shadow:0 0 12px ${t.hex}b3">${TOTALS[key]}</div>
+          <div style="font-family:'Orbitron',monospace;font-weight:900;font-size:19px;line-height:1;color:${t.hex};text-shadow:0 0 12px ${t.hex}b3">${_cl ? (key === 'progress' ? '+' + _clVal.progress : _clVal[key] + '<span style="font-size:12px;opacity:.55">/' + _clMax[key] + '</span>') : TOTALS[key]}</div>
+          ${_cl ? (key === 'progress' ? '<div style="font-size:8.5px;color:rgba(255,255,255,0.4);line-height:1">sin tope</div>' : (() => { const mx = _clMax[key], v = Math.max(0, _clVal[key]); let sg = ''; for (let i = 0; i < mx; i++) sg += `<i style="flex:1;height:4px;border-radius:2px;background:${i < v ? t.hex : t.hex + '2e'};box-shadow:${i < v ? '0 0 6px ' + t.hex + 'aa' : 'none'}"></i>`; return `<div style="display:flex;gap:3px;width:70%">${sg}</div>`; })()) : ''}
         </div>`;
       };
+      const _segBtn = (lbl, on, modo) => `<button onclick="_ptsSetDetailClase('${modo}')" aria-pressed="${on}" style="flex:1;border:none;padding:7px 8px;border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:12px;letter-spacing:.03em;background:${on ? 'rgba(255,255,255,0.12)' : 'transparent'};color:${on ? '#fff' : 'rgba(255,255,255,0.45)'};box-shadow:${on ? 'inset 0 0 0 1px rgba(255,255,255,0.25)' : 'none'}">${lbl}</button>`;
+      const _arrowBtn = (d, dis, lbl) => `<button onclick="${dis ? '' : '_ptsNavClase(' + d + ')'}" ${dis ? 'disabled' : ''} aria-label="${lbl}" style="width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:${dis ? 'rgba(255,255,255,0.2)' : '#fff'};font-size:16px;font-weight:900;cursor:${dis ? 'default' : 'pointer'};flex-shrink:0;display:grid;place-items:center">${d < 0 ? '‹' : '›'}</button>`;
+      const _slotTxt = _cl ? (_cl.slots || []).map(sl => { if (!sl.start) return ''; const p = sl.start.split(':').map(Number), e = p[0] * 60 + p[1] + (sl.dur || 60); return sl.start + '–' + String(Math.floor(e / 60)).padStart(2, '0') + ':' + String(e % 60).padStart(2, '0'); }).filter(Boolean).join(', ') : '';
+      const _modoHtml = `<div style="display:flex;gap:4px;padding:3px;border-radius:10px;background:rgba(255,255,255,0.04);margin-bottom:10px">${_segBtn('Todo el mes', !_cl, 'mes')}${_segBtn('Por clase', !!_cl, 'clase')}</div>`
+        + (_cl ? `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:6px;border-radius:11px;background:rgba(255,255,255,0.04)">${_arrowBtn(-1, _ci === 0, 'Clase anterior')}<div style="flex:1;text-align:center;min-width:0"><div style="font-size:12.5px;font-weight:900">${dlabel(_cl.date)}</div><div style="font-size:9.5px;color:rgba(255,255,255,0.4)">clase ${_ci + 1} de ${_clases.length}${_slotTxt ? ' · ' + _slotTxt : ''} · practicó ${_prepFmtDur(((_hoursByKey[_cl.key] || {}).sec) || 0)}</div></div>${_arrowBtn(1, _ci === _clases.length - 1, 'Clase siguiente')}</div>` : '');
       const tabBtn = key => {
         const t = TYPES[key]; const sel = type === key;
         return `<button onclick="_ptsSetDetailType('${key}')" style="flex:1;border:none;padding:8px 6px;border-radius:9px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11.5px;display:flex;align-items:center;justify-content:center;gap:6px;background:${sel?t.hex+'29':'transparent'};color:${sel?t.hex:'rgba(255,255,255,0.4)'};box-shadow:${sel?'0 0 10px '+t.hex+'66':'none'}">
@@ -24235,8 +24331,9 @@ function _ptsDetailModalHtml() {
       };
 
       bodyHtml = `
+        ${_modoHtml}
         <div style="display:flex;gap:8px;margin-bottom:14px">${statTile('hours')}${statTile('progress')}${statTile('tasks')}</div>
-        ${type==='hours' ? `<div style="text-align:right;font-size:9px;color:rgba(255,255,255,0.3);margin:-8px 0 8px">${_prepFmtDur(totalRealSec)} reales practicados en total</div>` : ''}
+        ${type==='hours' && !_cl ? `<div style="text-align:right;font-size:9px;color:rgba(255,255,255,0.3);margin:-8px 0 8px">${_prepFmtDur(totalRealSec)} reales practicados en total</div>` : ''}
         <div style="display:flex;gap:6px;margin-bottom:4px;background:rgba(255,255,255,0.04);padding:4px;border-radius:12px">${tabBtn('hours')}${tabBtn('progress')}${tabBtn('tasks')}</div>
         <div style="background:#17161f;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0 13px">
           ${ROWS[type] || `<div style="text-align:center;padding:20px 10px;color:rgba(255,255,255,0.3);font-size:11px">${EMPTY_MSG[type]}</div>`}
